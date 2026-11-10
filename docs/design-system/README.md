@@ -163,6 +163,16 @@ Every inconsistency found while extracting, and how the system resolved it. *Ope
 | pages/my-business/* | Stat deltas put a bare "↑" in the text; "2 new since yesterday" uses the trend style for a count. | Stat docs wrap arrows in `aria-hidden` and reserve deltas for trends. *Open* in the mocks. |
 | notifications/request-toast/* | Tab totals use a neutral `.badge` with a status dot; stray `class="badge "` spaces. | Badge docs: counts use `.badge--count` with an `aria-label` noun. *Open* in the mocks. |
 | pages/*, dialogs/* | Icon paths written with trailing zeros (`5.400`, `2.500`). | Iconography page publishes normalised paths; harmless in the mocks. |
+| dialogs/* (21 dialogs, 71 mocks) | Destructive confirmations use `role="dialog"`; busy dialogs disable only Cancel, so Close and Esc can orphan the request; title and description wrappers are inline styles (`flex: 1`, `margin-top`) 68×. | Docs use `role="alertdialog"` for destructive confirms and block Close/Esc while busy; `.dialog__heading` and `.dialog__desc` added. *Open* in the mocks. |
+| dialogs/book-meeting/*, pages/product/* | Time and size chips are labels around hidden radios with `style="position: relative"`; no `min` on the meeting date. | `.chip:has(input)` handles position, checked and focus; text-field docs require `min` on future dates. *Open* in the mocks. |
+| assets/ui.css | Menu items removed the outline on focus, leaving a < 3:1 tint as the only indicator; switches had no hover; over-limit counters stayed subtle. | Menu focus keeps an inset ring; switch hover edge; `.field__counter[data-state="invalid"]`. |
+| assets/ui.css | Tooltip had `pointer-events: none` (fails 1.4.13 hoverable), `nowrap` (overflows at 320px) and a raw 300ms delay. | Hoverable, wraps at 16rem, delay `--duration-slow`. |
+| assets/ui.css | Tab indicator was plain gold (1.6:1 on cream); stepper hidden labels escaped scroll containers on phones; `.table-wrap` let hidden captions escape and widen the page. | Indicator `--color-accent-border`; `.stepper li` and `.table-wrap` are positioned. |
+| pages/* (top bar, tab bar, directory groups) | Unread and group counts put `aria-label` on a bare `<span>`, which assistive tech ignores; the account avatar is a link to a dialog page. | Docs pair the visible number with visually hidden text; the avatar is specified as a menu button. *Open* in the mocks. |
+| pages/requests, incoming-requests, admin-verifications | In-page tablists have no `aria-controls` or `role="tabpanel"` (1 of 11 has one). | Tabs and navigation pattern require a panel. *Open* in the mocks. |
+| pages/conversation/* | Chat log has no `role="log"`; the failed bubble puts `role="alert"` on an `<li>`; pending bubbles and meta dim text with opacity. | Message-thread docs add `role="log"`, move the alert to `.bubble__meta` and use token colours. *Open* in the mocks. |
+| pages/browse (pagination), sign-up | Disabled Previous page link keeps its `href`; the sign-up agreement checkbox is pre-checked; `.optional` wraps "(required)" 93×. | Pagination docs drop the `href`; consent defaults unchecked; `.field__label .required` alias added. *Open* in the mocks. |
+| pages/* | Inconsistent dates ("28 Oct" vs "Wed 28 Oct"), prices ("$528.00 + tax" vs "$64") and support codes (502 and 503 for the same areas). | Content foundation fixes the formats (`Wed 28 Oct`, `$64`, `$528 + tax`). *Open* in the mocks. |
 | (kit only) | Sidebar navigation, drawer, popover, tooltip, removable chips, avatar photo/group, `.badge--solid`, `.row-actions`, `.progress` and `.stepper` are in the kit but unused by any mock. | Documented as core components with honest "not yet in the mocks" notes; their CSS is kept. |
 
 ## Changelog
@@ -171,4 +181,16 @@ Every inconsistency found while extracting, and how the system resolved it. *Ope
 
 ## Verification
 
-Verification in progress; see the final commit.
+Run on 10 November 2026, all from the repository root:
+
+| Check | Command | Result |
+|---|---|---|
+| Contrast, both themes | `python .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 161 pairs passed, 0 failed |
+| Structure | `python .claude/skills/extracting-design-systems/scripts/check_design_system.py docs/design-system` | 72 pages (51 components, 8 patterns), 0 errors, 0 warnings |
+| Token export | `python .claude/skills/extracting-design-systems/scripts/tokens_to_json.py docs/design-system/tokens/tokens.css` | 290 tokens written to tokens.json |
+| Mocks on the system CSS | `python .claude/skills/writing-html-mocks/scripts/check_mocks.py docs/mocks` | 67 screens, 271 mocks, 0 errors, 0 warnings |
+| No horizontal scroll | every page at 360px in light and dark (Playwright) | 72 of 72 pages fit |
+| Screenshots reviewed | index, color, button, dialog, top-bar, text-field at 360 and 1280 px, light and dark | no overflow or clipped specimens; focus rings visible; dark dialogs and menus read as raised |
+| Mocks before vs after | all 271 mocks at 360 and 1280 px, both themes, old CSS vs system CSS | median change 0.1% of pixels: badge size, chip and tab colours, gold progress and focus details. `.media--ink` tiles are now a deeper neutral |
+
+Each token in `tokens.css` appears in the token table of exactly one foundation page (checked by script).
