@@ -96,7 +96,7 @@ Non-obvious rules:
 
 - Business rules live in handlers/domain services, not controllers.
 - The API does **not** apply EF migrations on startup. Run `jubilee migrate` explicitly. SQLite
-  (tests and the e2e API) has no migrations: the schema comes from the model on startup.
+  (the e2e API) and InMemory (tests) have no migrations: the schema comes from the model.
 - Seed data is idempotent and safe to re-run.
 - Endpoints require authentication by default (fallback policy). Preserve intentional
   `[AllowAnonymous]` access and keep Swagger above `UseAuthentication` when changing API auth.
@@ -108,13 +108,11 @@ Non-obvious rules:
 
 ### Tests
 
-Tests never need a database server: API and Infrastructure tests run on a per-fixture in-memory
-SQLite database, Application and CLI tests on SQLite or EF Core InMemory. API tests run
-sequentially (`xunit.runner.json`). Follow the existing test-project patterns when adding
-coverage; `pwsh eng/Test-Backend.ps1` runs the suite as CI does.
-
-Playwright runs against the API started by `eng/Start-E2eApi.ps1` (SQLite, seeded demo data; no
-LocalDB).
+**Mandatory (ADR 0009): backend tests SHALL NOT use a real database.** Every backend test runs on
+the EF Core InMemory provider (`Database:Provider=InMemory`, one store per fixture). No test opens
+SQLite, LocalDB, SQL Server or a database file. Inject database faults through `IAppDbContext`.
+API tests run sequentially (`xunit.runner.json`). Follow the existing test-project patterns when
+adding coverage; `pwsh eng/Test-Backend.ps1` runs the suite as CI does.
 
 ## Frontend architecture
 
@@ -158,6 +156,13 @@ design system).
 
 ## E2E architecture (Playwright)
 
+- **Mandatory (ADR 0009): e2e tests SHALL NOT execute the real backend or a database.** Every
+  `/api/**` request is answered with Playwright API mocking (`page.route`), installed for every
+  page by `e2e/fixtures/jb-test.ts` from the recorded answers in `e2e/fixtures/api/responses.json`;
+  a request without an answer fails the test. States the recording lacks are stubbed in
+  `e2e/fixtures/stubs.ts`. When an endpoint's answer changes, refresh the recording with
+  `npm run record-api` in `e2e/` (against `eng/Start-E2eApi.ps1`) in the same change; recording is
+  maintenance, never part of a test run.
 - Page Object Model: one page object per screen under `e2e/pages/`, owning the selectors and the
   interactions. Tests state intent; page objects know the DOM. Never put a selector in a test.
 - Specs import `test` and `expect` from `e2e/fixtures/jb-test.ts`; routes are keyed in

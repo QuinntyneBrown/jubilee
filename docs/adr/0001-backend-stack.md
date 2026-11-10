@@ -17,9 +17,9 @@ versions, and `AGENTS.md` requires that no test needs a database server.
   licence key, which the project does not have.
 - EF Core is the only data access. `Database:Provider` chooses SQL Server (the default, with
   migrations applied by `jubilee migrate`) or SQLite.
-- SQLite has no migrations: the API creates the schema from the model on start-up. Tests use an
-  in-memory SQLite database per fixture, and `eng/Start-E2eApi.ps1` starts the API on SQLite with
-  the demo data seeded.
+- SQLite has no migrations: the API creates the schema from the model on start-up.
+  `eng/Start-E2eApi.ps1` starts the API on SQLite with the demo data seeded. Tests used an
+  in-memory SQLite database per fixture until ADR 0009 moved them to EF Core InMemory.
 - The ten categories are a fixed catalogue in `Jubilee.Domain`, not a table, because `L2-023`
   fixes the list.
 

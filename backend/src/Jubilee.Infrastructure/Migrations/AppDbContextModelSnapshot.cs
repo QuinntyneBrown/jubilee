@@ -366,6 +366,8 @@ namespace Jubilee.Infrastructure.Migrations
                             b1.Property<string>("Label")
                                 .IsRequired();
 
+                            b1.Property<int>("Position");
+
                             b1.Property<string>("Value")
                                 .IsRequired();
 
@@ -391,6 +393,8 @@ namespace Jubilee.Infrastructure.Migrations
                             b1.Property<string>("Label")
                                 .IsRequired()
                                 .HasMaxLength(40);
+
+                            b1.Property<int>("Position");
 
                             b1.Property<int?>("Stock");
 

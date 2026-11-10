@@ -16,6 +16,9 @@ public sealed class ProductAttribute
     public string Label { get; private set; } = string.Empty;
 
     public string Value { get; private set; } = string.Empty;
+
+    /// <summary>Place in the owner's order, from 1.</summary>
+    public int Position { get; internal set; }
 }
 
 /// <summary>
@@ -37,6 +40,9 @@ public sealed class ProductOption
     public string Label { get; private set; } = string.Empty;
 
     public int? Stock { get; internal set; }
+
+    /// <summary>Place in the owner's order, from 1.</summary>
+    public int Position { get; internal set; }
 
     /// <summary>The most a member may ask for in one request: the stock, or 99 untracked (L2-035 AC3).</summary>
     public int MaxQuantity => Product.MaxQuantityFor(Stock);

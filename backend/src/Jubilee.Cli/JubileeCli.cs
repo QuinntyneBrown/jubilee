@@ -38,7 +38,7 @@ public static class JubileeCli
             .AddEnvironmentVariables()
             .AddCommandLine(args[1..])
             .Build();
-        var sqlite = DependencyInjection.UsesSqlite(configuration);
+        var sqlite = DependencyInjection.SchemaFromModel(configuration);
 
         await using var services = new ServiceCollection()
             .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Warning))

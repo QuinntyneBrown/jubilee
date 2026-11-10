@@ -5,26 +5,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Cli.Tests;
 
-public sealed class CliTests : IDisposable
+/// <summary>The CLI against a private EF Core InMemory store that outlives each command (ADR 0009).</summary>
+public sealed class CliTests
 {
-    private readonly string _directory = Path.Combine(Path.GetTempPath(), $"jubilee-cli-{Guid.NewGuid():N}");
-    private readonly string _connectionString;
+    private readonly string _store = $"jubilee-cli-{Guid.NewGuid():N}";
     private readonly StringWriter _output = new();
 
-    public CliTests()
-    {
-        Directory.CreateDirectory(_directory);
-        _connectionString = $"DataSource={Path.Combine(_directory, "jubilee.db")};Pooling=False";
-    }
-
-    public void Dispose() => Directory.Delete(_directory, recursive: true);
-
     private Task<int> Run(string command) => JubileeCli.RunAsync(
-        [command, "--Database:Provider=Sqlite", $"--ConnectionStrings:Jubilee={_connectionString}"], _output);
+        [command, $"--Database:Provider={Infrastructure.DependencyInjection.InMemoryProvider}", $"--ConnectionStrings:Jubilee={_store}"], _output);
 
     private async Task<T> Query<T>(Func<AppDbContext, Task<T>> query)
     {
-        await using var db = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>().UseSqlite(_connectionString).Options);
+        await using var db = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(_store, Infrastructure.DependencyInjection.InMemoryRoot)
+            .Options);
         return await query(db);
     }
 

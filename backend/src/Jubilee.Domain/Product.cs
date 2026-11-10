@@ -40,10 +40,16 @@ public sealed class Product
 
     public List<ProductAttribute> Attributes { get; private set; } = [];
 
+    /// <summary>The attributes in the owner's order.</summary>
+    public IEnumerable<ProductAttribute> OrderedAttributes => Attributes.OrderBy(a => a.Position);
+
     /// <summary>What the options choose, for example "Size"; null without options.</summary>
     public string? OptionName { get; private set; }
 
     public List<ProductOption> Options { get; private set; } = [];
+
+    /// <summary>The options in the owner's order.</summary>
+    public IEnumerable<ProductOption> OrderedOptions => Options.OrderBy(o => o.Position);
 
     /// <summary>Stock of a product without options; null is not tracked.</summary>
     public int? Stock { get; private set; }
@@ -88,6 +94,10 @@ public sealed class Product
         Description = Clean(description.Description);
         DeliveryLine = Clean(description.DeliveryLine);
         Attributes = [.. description.Attributes];
+        for (var i = 0; i < Attributes.Count; i++)
+        {
+            Attributes[i].Position = i + 1;
+        }
     }
 
     /// <summary>Replaces the options; a product without options keeps its own stock.</summary>
@@ -100,6 +110,10 @@ public sealed class Product
 
         OptionName = options.Count == 0 ? null : Clean(optionName) ?? "Option";
         Options = [.. options];
+        for (var i = 0; i < Options.Count; i++)
+        {
+            Options[i].Position = i + 1;
+        }
     }
 
     public void SetMinimumQuantity(int minimum) => MinimumQuantity = minimum is >= 1 and <= 999

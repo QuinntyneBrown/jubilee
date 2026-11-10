@@ -2,40 +2,26 @@ using System.Collections.Concurrent;
 using System.Data.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Jubilee.Application.Abstractions;
+using Jubilee.Domain;
+using Jubilee.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Jubilee.Api.Tests.Support;
 
-/// <summary>Makes every database command fail while <see cref="Unavailable"/> is set.</summary>
-public sealed class DatabaseOutage : DbCommandInterceptor
+/// <summary>
+/// Makes every use of the database fail while <see cref="Unavailable"/> is set. Tests run on EF
+/// Core InMemory (ADR 0009), which issues no commands, so the outage is felt where the
+/// application reaches the database: <see cref="IAppDbContext"/>.
+/// </summary>
+public sealed class DatabaseOutage
 {
     public const string SecretDetail = "Login failed for user 'jubilee_app' on tcp:sql-prod-01";
 
     public bool Unavailable { get; set; }
 
-    public override InterceptionResult<DbDataReader> ReaderExecuting(
-        DbCommand command, CommandEventData eventData, InterceptionResult<DbDataReader> result)
-    {
-        ThrowIfUnavailable();
-        return result;
-    }
-
-    public override ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(
-        DbCommand command, CommandEventData eventData, InterceptionResult<DbDataReader> result, CancellationToken cancellationToken = default)
-    {
-        ThrowIfUnavailable();
-        return ValueTask.FromResult(result);
-    }
-
-    public override ValueTask<InterceptionResult<object>> ScalarExecutingAsync(
-        DbCommand command, CommandEventData eventData, InterceptionResult<object> result, CancellationToken cancellationToken = default)
-    {
-        ThrowIfUnavailable();
-        return ValueTask.FromResult(result);
-    }
-
-    private void ThrowIfUnavailable()
+    internal void ThrowIfUnavailable()
     {
         if (Unavailable)
         {
@@ -44,6 +30,34 @@ public sealed class DatabaseOutage : DbCommandInterceptor
     }
 
     private sealed class OutageException(string message) : DbException(message);
+}
+
+/// <summary>The application's database, failing as <see cref="DatabaseOutage"/> says.</summary>
+public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outage) : IAppDbContext
+{
+    public DbSet<Listing> Listings => Use(inner.Listings);
+
+    public DbSet<Product> Products => Use(inner.Products);
+
+    public DbSet<Service> Services => Use(inner.Services);
+
+    public DbSet<FeaturedSlot> FeaturedSlots => Use(inner.FeaturedSlots);
+
+    public DbSet<StockAlert> StockAlerts => Use(inner.StockAlerts);
+
+    public DbSet<ListingView> ListingViews => Use(inner.ListingViews);
+
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        outage.ThrowIfUnavailable();
+        return inner.SaveChangesAsync(cancellationToken);
+    }
+
+    private T Use<T>(T set)
+    {
+        outage.ThrowIfUnavailable();
+        return set;
+    }
 }
 
 public sealed record CapturedLog(string Category, LogLevel Level, string Message, Exception? Exception);

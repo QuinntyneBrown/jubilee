@@ -54,6 +54,8 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.MinimumQuantity).HasDefaultValue(1);
         builder.Ignore(p => p.IsSoldOut);
         builder.Ignore(p => p.MaxQuantity);
+        builder.Ignore(p => p.OrderedOptions);
+        builder.Ignore(p => p.OrderedAttributes);
         // Options and attributes are read and written with their product, in the owner's order.
         builder.OwnsMany(p => p.Options, o =>
         {
