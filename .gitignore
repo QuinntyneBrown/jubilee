@@ -7,3 +7,6 @@ obj/
 TestResults/
 *.user
 .vs/
+
+# Node
+node_modules/
