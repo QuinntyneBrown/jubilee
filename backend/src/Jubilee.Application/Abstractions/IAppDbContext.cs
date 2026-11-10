@@ -15,5 +15,7 @@ public interface IAppDbContext
 
     DbSet<StockAlert> StockAlerts { get; }
 
+    DbSet<ListingView> ListingViews { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

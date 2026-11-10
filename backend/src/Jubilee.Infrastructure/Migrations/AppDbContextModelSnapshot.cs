@@ -121,6 +121,10 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<int>("Offers")
                         .HasColumnType("int");
 
+                    b.Property<string>("OwnerId")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("OwnerName")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -152,12 +156,37 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OwnerId");
+
                     b.HasIndex("Slug")
                         .IsUnique();
 
                     b.HasIndex("CategorySlug", "Stage");
 
                     b.ToTable("Listings", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ListingView", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ViewedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("VisitorKey")
+                        .IsRequired()
+                        .HasMaxLength(220)
+                        .HasColumnType("nvarchar(220)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListingId", "VisitorKey", "ViewedAt");
+
+                    b.ToTable("ListingViews", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Product", b =>
@@ -302,6 +331,15 @@ namespace Jubilee.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("Jubilee.Domain.FeaturedSlot", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Listing", null)
+                        .WithMany()
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ListingView", b =>
                 {
                     b.HasOne("Jubilee.Domain.Listing", null)
                         .WithMany()

@@ -23,6 +23,8 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Ignore(l => l.ReplyTimeBand);
         builder.Property(l => l.Kind).HasConversion<string>().HasMaxLength(16);
         builder.Property(l => l.OwnerName).HasMaxLength(200);
+        builder.Property(l => l.OwnerId).HasMaxLength(200);
+        builder.HasIndex(l => l.OwnerId);
         builder.PrimitiveCollection(l => l.Credentials).IsRequired();
         builder.Property(l => l.About).HasMaxLength(2000);
         builder.Property(l => l.Where).HasMaxLength(200);
@@ -62,6 +64,19 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.OwnsMany(p => p.Attributes, a => a.ToJson());
         builder.HasIndex(p => new { p.ListingId, p.Slug }).IsUnique();
         builder.HasOne<Listing>().WithMany().HasForeignKey(p => p.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ListingViewConfiguration : IEntityTypeConfiguration<ListingView>
+{
+    public void Configure(EntityTypeBuilder<ListingView> builder)
+    {
+        builder.ToTable("ListingViews");
+        builder.HasKey(v => v.Id);
+        builder.Property(v => v.Id).ValueGeneratedNever();
+        builder.Property(v => v.VisitorKey).HasMaxLength(220).IsRequired();
+        builder.HasIndex(v => new { v.ListingId, v.VisitorKey, v.ViewedAt });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(v => v.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
 

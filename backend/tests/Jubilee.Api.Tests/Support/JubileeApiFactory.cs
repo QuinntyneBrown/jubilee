@@ -109,6 +109,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         await WithDb(async db =>
         {
             await db.StockAlerts.ExecuteDeleteAsync();
+            await db.ListingViews.ExecuteDeleteAsync();
             await db.FeaturedSlots.ExecuteDeleteAsync();
             await db.Services.ExecuteDeleteAsync();
             await db.Products.ExecuteDeleteAsync();

@@ -24,6 +24,26 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
     public async Task<ListingPageDto> Handle(GetListingPageQuery request, CancellationToken cancellationToken)
     {
         var slug = request.Slug.Trim().ToLowerInvariant();
+        var viewer = request.Viewer;
+
+        // The owner and the verification team see the listing whatever its stage, uncached; the
+        // relation comes from the session, never from the client (L2-133).
+        if (viewer.Subject is { } subject)
+        {
+            var ownerId = await db.Listings.AsNoTracking()
+                .Where(l => l.Slug == slug)
+                .Select(l => l.OwnerId)
+                .SingleOrDefaultAsync(cancellationToken);
+            var relation = ownerId == subject ? ViewerRelation.Owner
+                : viewer.IsVerifier ? ViewerRelation.Verifier
+                : ViewerRelation.Member;
+            if (relation != ViewerRelation.Member)
+            {
+                var listing = await db.Listings.AsNoTracking().SingleOrDefaultAsync(l => l.Slug == slug, cancellationToken)
+                    ?? throw NotFound();
+                return await BuildAsync(listing, cancellationToken) with { ViewerRelation = Wire(relation) };
+            }
+        }
 
         // The public page is the same for every visitor and member, so it is cached; only the
         // viewer relation is the caller's own.

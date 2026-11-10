@@ -50,6 +50,11 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
         foreach (var (slug, demo) in Profiles)
         {
             var listing = listings[slug];
+            if (listing.OwnerId is null && Owners.TryGetValue(slug, out var owner))
+            {
+                listing.AssignOwner(owner);
+            }
+
             if (listing.About is null && listing.OwnerName is null)
             {
                 listing.Describe(demo.Profile);

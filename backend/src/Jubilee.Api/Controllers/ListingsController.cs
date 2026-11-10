@@ -24,4 +24,18 @@ public sealed class ListingsController(ISender sender) : ControllerBase
     [SessionAwareCache]
     public async Task<ActionResult<ListingPageDto>> Get(string slug, CancellationToken cancellationToken) =>
         Ok(await sender.Send(new GetListingPageQuery(slug, User.ToViewer()), cancellationToken));
+
+    /// <summary>The page was shown: counts a listing view unless the caller owns it (L2-037 AC3).</summary>
+    [HttpPost("views")]
+    public async Task<IActionResult> RecordView(string slug, CancellationToken cancellationToken)
+    {
+        await sender.Send(
+            new RecordListingViewCommand(
+                slug,
+                User.ToViewer(),
+                HttpContext.Connection.RemoteIpAddress?.ToString(),
+                Request.Headers.UserAgent.ToString()),
+            cancellationToken);
+        return NoContent();
+    }
 }

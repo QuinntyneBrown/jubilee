@@ -15,6 +15,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<StockAlert> StockAlerts => Set<StockAlert>();
 
+    public DbSet<ListingView> ListingViews => Set<ListingView>();
+
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>

@@ -29,6 +29,9 @@ public sealed class Listing
     /// <summary>The owner's name with credentials, for example "Trevor Chew, CKA®".</summary>
     public string? OwnerName { get; private set; }
 
+    /// <summary>The session subject of the member who owns the listing; null until claimed.</summary>
+    public string? OwnerId { get; private set; }
+
     public List<string> Credentials { get; private set; } = [];
 
     public string? About { get; private set; }
@@ -139,6 +142,10 @@ public sealed class Listing
     public void SetOffers(OfferFilter offers) => Offers = offers;
 
     public void SetKind(ListingKind kind) => Kind = kind;
+
+    public void AssignOwner(string subject) => OwnerId = string.IsNullOrWhiteSpace(subject)
+        ? throw new ArgumentException("An owner has a subject.", nameof(subject))
+        : subject;
 
     /// <summary>Replaces what the listing page tells members about the business.</summary>
     public void Describe(ListingProfile profile)

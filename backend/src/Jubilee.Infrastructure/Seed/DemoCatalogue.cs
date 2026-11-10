@@ -171,6 +171,16 @@ internal static class DemoCatalogue
         "waterworks-plumbing-drains",
     ];
 
+    /// <summary>
+    /// The session subjects of the demo owners, by listing slug. Signing in arrives with the
+    /// accounts journey, which issues these subjects to the demo cast.
+    /// </summary>
+    internal static readonly IReadOnlyDictionary<string, string> Owners = new Dictionary<string, string>
+    {
+        ["legacy-financial"] = "demo|trevor-chew",
+        ["luzandre"] = "demo|naomi-laurent",
+    };
+
     /// <summary>What the product page of a demo product tells members, by product slug.</summary>
     internal static readonly IReadOnlyDictionary<string, Action<Product>> ProductDetails = new Dictionary<string, Action<Product>>
     {
