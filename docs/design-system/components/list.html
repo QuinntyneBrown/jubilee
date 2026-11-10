@@ -105,7 +105,7 @@
       <ul>
         <li><b>Rows</b> (<code>.rows</code> / <code>.row</code>) are Jubilee’s main list: a title, muted meta lines, an optional price and actions, divided by hairlines. Used for services, products, requests and bookings.</li>
         <li><b>Stacked rows</b> (<code>.row--stack</code>) move the actions onto their own full-width line below 640px. Use them whenever a row has two buttons.</li>
-        <li><b>Free price</b> (<code>.row__price--free</code>) colours "Free" in the success tone; every other price is the default ink.</li>
+        <li><b>Free price</b> (<code>.row__price--free</code>) colours "Free" in the link green (<code>--color-fg-link</code>); every other price is the default ink.</li>
         <li><b>Kit list</b> (<code>.list</code> / <code>.list__item</code>) is the generic container. In the mocks <code>.list</code> wraps directory rows and message threads; <code>.list__item</code> is the plain item with an avatar, title and meta.</li>
         <li><b>Item list</b> (<code>.item-list</code>) is the bordered, compact list inside forms where the person adds and removes entries (services on <em>List your business</em>, line items on an order request).</li>
       </ul>
@@ -121,7 +121,7 @@
           <li><div><b>Title</b><small><code>.row__title</code>: semibold <code>--font-size-md</code>, wraps rather than truncates (<code>overflow-wrap: anywhere</code>).</small></div></li>
           <li><div><b>Meta lines</b><small><code>.row__meta</code>: one or two muted lines in <code>--text-body-sm</code>. Join facts with " · ".</small></div></li>
           <li><div><b>Actions</b><small><code>.row__actions</code>: small buttons, secondary before primary, each with an <code>aria-label</code> naming the row.</small></div></li>
-          <li><div><b>Divider</b><small>Hairline <code>--color-border-default</code> under each row; <code>.rows</code> adds one on top.</small></div></li>
+          <li><div><b>Divider</b><small>Hairline <code>--color-border-default</code> between rows; <code>.rows</code> draws one above the first row and one below the last.</small></div></li>
         </ol>
       </div>
     </section>
@@ -130,7 +130,7 @@
       <div class="ds-example"><div class="ds-example__canvas">
 <ul class="rows"><li class="row"><div class="row__body"><div class="row__title">Discovery meeting</div><div class="row__meta">30 min · In person or video</div></div><span class="row__price row__price--free">Free</span><a class="btn" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Discovery meeting">Book</a></li><li class="row"><div class="row__body"><div class="row__title">Retirement &amp; RRSP review</div><div class="row__meta">60 min · Bring your statements</div></div><span class="row__price">Ask</span><a class="btn" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Retirement &amp; RRSP review">Book</a></li><li class="row"><div class="row__body"><div class="row__title">Estate &amp; legacy plan</div><div class="row__meta">Two sessions, written plan</div></div><span class="row__price">Ask</span><a class="btn" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Estate &amp; legacy plan">Book</a></li></ul>
       </div>
-        <div class="ds-example__caption"><span>Service rows on Legacy Financial’s page: title, meta, price ("Free" in the success tone, "Ask" in ink) and one Book button.</span></div>
+        <div class="ds-example__caption"><span>Service rows on Legacy Financial’s page: title, meta, price ("Free" in green, "Ask" in ink) and one Book button.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="rows"&gt;&lt;li class="row"&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Discovery meeting&lt;/div&gt;&lt;div class="row__meta"&gt;30 min · In person or video&lt;/div&gt;&lt;/div&gt;&lt;span class="row__price row__price--free"&gt;Free&lt;/span&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Discovery meeting"&gt;Book&lt;/a&gt;&lt;/li&gt;&lt;li class="row"&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Retirement &amp;amp; RRSP review&lt;/div&gt;&lt;div class="row__meta"&gt;60 min · Bring your statements&lt;/div&gt;&lt;/div&gt;&lt;span class="row__price"&gt;Ask&lt;/span&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Retirement &amp;amp; RRSP review"&gt;Book&lt;/a&gt;&lt;/li&gt;&lt;li class="row"&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Estate &amp;amp; legacy plan&lt;/div&gt;&lt;div class="row__meta"&gt;Two sessions, written plan&lt;/div&gt;&lt;/div&gt;&lt;span class="row__price"&gt;Ask&lt;/span&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Estate &amp;amp; legacy plan"&gt;Book&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
       <h3>Stacked rows with two actions</h3>
       <div class="ds-example"><div class="ds-example__canvas">
@@ -158,7 +158,7 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="item-list"&gt;&lt;li&gt;&lt;span class="item-list__name"&gt;Wedding day coverage&lt;br&gt;&lt;span class="row__meta"&gt;8 hours · two photographers&lt;/span&gt;&lt;/span&gt;&lt;span class="price"&gt;$2,400&lt;/span&gt;&lt;button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Wedding day coverage"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/li&gt;&lt;li&gt;&lt;span class="item-list__name"&gt;Baptism or dedication&lt;br&gt;&lt;span class="row__meta"&gt;90 min&lt;/span&gt;&lt;/span&gt;&lt;span class="price"&gt;$350&lt;/span&gt;&lt;button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Baptism or dedication"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="btn btn--link" href="../../mocks/dialogs/service-editor/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 5v14M5 12h14"/&gt;&lt;/svg&gt;Add a service&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>Rows have one size: <code>--space-4</code> vertical padding, which with a 32px button gives a row of about 64px. Kit list items use <code>--space-3</code> × <code>--space-4</code>; item-list entries are compact (<code>--space-2</code> × <code>--space-3</code>) because they sit inside a form field. Do not add a dense row; use a table when density matters.</p>
+      <p>Rows have one size: <code>--space-4</code> vertical padding and no side padding, which with a 36px button gives a row of about 68px. Kit list items use <code>--space-3</code> × <code>--space-4</code>, with a 15px medium title and 13px meta; item-list entries are compact (<code>--space-3</code> all round, 15px text) because they sit inside a form field. Do not add a dense row; use a table when density matters.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Static rows have no states of their own; their buttons do. Interactive list items (links) have default, hover, focus, active and current. Forced here with <code>data-state</code> and <code>aria-current</code>.</p>
@@ -190,8 +190,8 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Lists use semantic tokens only: <code>--color-border-default</code> dividers, <code>--color-fg-muted</code> meta, <code>--color-bg-subtle</code> hover, <code>--color-accent-subtle</code> current, <code>--color-success-fg</code> for free prices. Item lists add a <code>--color-border-strong</code> outline because they behave like a form field.</p>
-      <p>Dark mode swaps the tokens; "Free" stays readable at 4.5:1 on both surfaces.</p>
+      <p>Lists use semantic tokens only: <code>--color-border-default</code> dividers, <code>--color-fg-muted</code> meta, <code>--color-bg-subtle</code> hover, <code>--color-accent-subtle</code> current, <code>--color-fg-link</code> for free prices. Item lists add a <code>--color-border-strong</code> outline (ink 15% in light) and a 12px radius because they behave like a form field.</p>
+      <p>Dark mode swaps the tokens. "Free" is 4.5:1 on cards in both themes; on the cream page in light it is 4.07:1, the design-reference value for green text.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -211,7 +211,7 @@
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Title on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Meta on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Free price on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Free price on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-link|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Title on hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Title on current</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Item-list outline</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
@@ -219,16 +219,17 @@
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Title on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Meta on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Free price on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Free price on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-link|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Title on hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Title on current</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Item-list outline</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
         </div></div>
       </div>
+      <p>The item-list outline fails the 3:1 check in light: it is ink 15% (about 1.4:1), a design-reference value recorded in <code>tokens/contrast-pairs.json</code>. <code>prefers-contrast: more</code> restores 3:1.</p>
       <h3>Motion</h3>
       <p>Lists do not animate. Hover background changes are instant.</p>
       <h3>Touch</h3>
-      <p>Interactive items are at least 44px tall. Row buttons are 32px with 8px between them; stacked rows make them full width on phones. Item-list remove buttons are 32px.</p>
+      <p>Interactive items are at least 44px tall. Row buttons are 36px with 8px between them; stacked rows make them full width on phones. Item-list remove buttons are 36px. On coarse pointers every button has a 44px hit area.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -242,7 +243,7 @@
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><ul class="rows"><li class="row row--stack"><span class="avatar" aria-hidden="true">RM</span><div class="row__body"><div class="row__title">Gold cross stoneware mug × 2</div><div class="row__meta">Order · Ruth Mensah</div><div class="row__meta">Pickup in Leslieville</div></div><div class="row__actions"><a class="btn" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Ruth Mensah">Decline</a><a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Ruth Mensah">Confirm</a></div></li></ul></div><figcaption>Two buttons in a row: use <code>.row--stack</code> so they get a full line on phones.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><ul class="rows"><li class="row"><span class="avatar" aria-hidden="true">RM</span><div class="row__body"><div class="row__title">Gold cross stoneware mug × 2</div><div class="row__meta">Order · Ruth Mensah</div></div><div class="row__actions"><button class="btn" type="button">Decline</button><button class="btn btn--sm btn--primary" type="button">Confirm</button></div></li></ul></div><figcaption>A plain row with two buttons squeezes the title to a few characters at 360px, and unnamed "Confirm" buttons repeat down the list.</figcaption></figure>
-        <figure class="ds-do"><div class="ds-example__canvas"><ul class="rows"><li class="row"><div class="row__body"><div class="row__title">Discovery meeting</div><div class="row__meta">30 min</div></div><span class="row__price row__price--free">Free</span><a class="btn" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Discovery meeting">Book</a></li></ul></div><figcaption>"Free" in the success tone, with a Book button named for the row.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><ul class="rows"><li class="row"><div class="row__body"><div class="row__title">Discovery meeting</div><div class="row__meta">30 min</div></div><span class="row__price row__price--free">Free</span><a class="btn" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Discovery meeting">Book</a></li></ul></div><figcaption>"Free" in green, with a Book button named for the row.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><ul class="rows"><li class="row"><div class="row__body"><div class="row__title">Discovery meeting</div><div class="row__meta">30 min</div></div><span class="row__price">$0</span><button class="btn" type="button">Book</button></li></ul></div><figcaption>"$0" reads as a mistake. Say "Free" and use <code>.row__price--free</code>.</figcaption></figure>
       </div>
     </section>
@@ -253,15 +254,15 @@
           <tr><td>Divider</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
           <tr><td>Divider width</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
           <tr><td>Title / meta</td><td><code>--color-fg-default</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
-          <tr><td>Free price</td><td><code>--color-success-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td></tr>
+          <tr><td>Free price</td><td><code>--color-fg-link</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-link" data-swatch></i><span data-token="--color-fg-link"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-link" data-swatch></i><span data-token="--color-fg-link"></span></span></td></tr>
           <tr><td>Hover / current</td><td><code>--color-bg-subtle</code> / <code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
           <tr><td>Item-list outline / surface</td><td><code>--color-border-strong</code> / <code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
           <tr><td>Row padding</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
           <tr><td>Kit item padding</td><td><code>--space-3</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
-          <tr><td>Item-list padding</td><td><code>--space-2</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-3"></span></td></tr>
+          <tr><td>Item-list padding</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
           <tr><td>Gap</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
-          <tr><td>Title type</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
-          <tr><td>Meta type</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Row title / kit title</td><td><code>--text-body</code> / <code>--text-body-md</code></td><td colspan="2"><span data-token="--text-body"></span> / <span data-token="--text-body-md"></span></td></tr>
+          <tr><td>Row meta / kit meta</td><td><code>--text-body-sm</code> / <code>--text-meta</code></td><td colspan="2"><span data-token="--text-body-sm"></span> / <span data-token="--text-meta"></span></td></tr>
           <tr><td>Item-list radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
         </tbody>
       </table></div>
@@ -283,13 +284,13 @@
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.rows</code> / <code>.row</code></td><td>Jubilee row list and row.</td></tr>
         <tr><td><code>.row__body</code> <code>.row__title</code> <code>.row__meta</code></td><td>Text block.</td></tr>
-        <tr><td><code>.row__price</code> <code>.row__price--free</code></td><td>Price; free in the success tone.</td></tr>
+        <tr><td><code>.row__price</code> <code>.row__price--free</code></td><td>Price; free in green (<code>--color-fg-link</code>).</td></tr>
         <tr><td><code>.row__actions</code></td><td>Action group at the end.</td></tr>
         <tr><td><code>.row--stack</code></td><td>Actions wrap onto a full-width line below 640px.</td></tr>
         <tr><td><code>.list</code> / <code>.list__item</code></td><td>Kit list and item.</td></tr>
         <tr><td><code>.list__item--interactive</code></td><td>Link item with hover.</td></tr>
         <tr><td><code>.list__body</code> <code>.list__title</code> <code>.list__meta</code></td><td>Kit item text.</td></tr>
-        <tr><td><code>.item-list</code> <code>.item-list__name</code></td><td>Bordered compact list inside a form.</td></tr>
+        <tr><td><code>.item-list</code> <code>.item-list__name</code></td><td>Bordered compact list inside a form: 12px radius, 12px row padding.</td></tr>
         <tr><td><code>aria-current="page"</code> / <code>data-state</code></td><td>Current item / forced state for docs.</td></tr>
       </tbody></table></div>
     </section>

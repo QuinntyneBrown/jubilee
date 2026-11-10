@@ -96,17 +96,17 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Actions</p>
       <h1>Link</h1>
-      <p class="ds-lead">Links move a member to another page or place. They are underlined text in Jubilee's link blue; anything that changes data is a button instead.</p>
+      <p class="ds-lead">Links move a member to another page or place. They are green text (<code>--color-fg-link</code>), underlined inside running text and on hover; anything that changes data is a button instead.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;a href&gt;</code></span><span class="ds-pill">Back link on 31 mock pages</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Use a link when activating it only navigates: “Forgot password?”, “View request”, “Back to browse”, a category in a business kicker. Use a <a href="../components/button.html">Button</a> when it changes something, and the <code>.btn--link</code> button when an action must look like a link (“Retry”). Navigation that should look like a button is <code>&lt;a class="btn"&gt;</code>.</p>
       <ul>
-        <li><b>Inline</b> sits in running text and inherits the type size; it is always underlined so it is not identified by colour alone (1.4.1).</li>
-        <li><b>Back link</b> (<code>.back-link</code>) opens detail pages: muted, with a left arrow, 44px tall.</li>
-        <li><b>Standalone</b> (<code>.link--standalone</code>) ends a card or section (“View request”, “See all”) with a small chevron.</li>
-        <li><b>Muted</b> (<code>.link--muted</code>) is for low-priority links in captions and the footer; still underlined.</li>
+        <li><b>Inline</b> sits in running text (a paragraph, list item, table cell, label or help text) and inherits the type size; there it is always underlined, so it is not identified by colour alone (1.4.1).</li>
+        <li><b>Back link</b> (<code>.back-link</code>) opens detail pages: 14px muted text with a left arrow, not underlined, 24px tall.</li>
+        <li><b>Standalone</b> (<code>.link--standalone</code>) ends a card or section (“View request”, “See all”): 13px semibold green with a small chevron, underlined on hover only.</li>
+        <li><b>Muted</b> (<code>.link--muted</code>) is for low-priority links in captions; underlined in running text and on hover like any link.</li>
         <li><b>External</b> links to a business's own site add the external icon and tell screen readers it opens a new tab.</li>
       </ul>
     </section>
@@ -118,7 +118,7 @@
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Label</b><small>The words that describe the destination; the accessible name. Colour <code>--color-fg-link</code>.</small></div></li>
-          <li><div><b>Underline</b><small>1px (<code>--border-width-hairline</code>) at a 0.15em offset; thickens to <code>--border-width-thick</code> on hover.</small></div></li>
+          <li><div><b>Underline</b><small>1px at a 0.15em offset. Shown inside running text, as here, and on hover; a link outside running text has no underline until hovered.</small></div></li>
         </ol>
       </div>
     </section>
@@ -144,19 +144,19 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;a class="link--standalone" href="https://luzandre.com" target="_blank" rel="noopener"&gt;luzandre.com&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/&gt;&lt;/svg&gt;&lt;span class="visually-hidden"&gt; (opens in a new tab)&lt;/span&gt;&lt;/a&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>Links take the size of their text: body in paragraphs, <code>--text-body-sm</code> in captions and back links, <code>--text-label</code> for standalone links.</p>
+      <p>Links take the size of their text: body in paragraphs, <code>--text-body-sm</code> in captions and back links, <code>--text-meta</code> (13px) in semibold for standalone links.</p>
       <div class="ds-example"><div class="ds-example__canvas">
         <a href="../../mocks/pages/help/default.html" class="text-sm">Help (small)</a>
         <a href="../../mocks/pages/help/default.html">Help (body)</a>
         <a class="link--standalone" href="../../mocks/pages/help/default.html">Help (label)<svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
       </div>
-        <div class="ds-example__caption"><span>Never shrink a link below <code>--font-size-sm</code>.</span></div>
+        <div class="ds-example__caption"><span>Never shrink a link below <code>--font-size-meta</code> (13px).</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;a href="../../mocks/pages/help/default.html" class="text-sm"&gt;Help (small)&lt;/a&gt;
 &lt;a href="../../mocks/pages/help/default.html"&gt;Help (body)&lt;/a&gt;
 &lt;a class="link--standalone" href="../../mocks/pages/help/default.html"&gt;Help (label)&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="m9 6 6 6-6 6"/&gt;&lt;/svg&gt;&lt;/a&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
-      <p>Hover and focus are forced with <code>data-state</code>. Jubilee does not style <code>:visited</code>: members revisit the same businesses and the colour change carried no meaning. Active keeps the hover look. Links are never disabled; when the destination is not available, show plain text.</p>
+      <p>Hover and focus are forced with <code>data-state</code>. Hover darkens the green to <code>--color-fg-link-hover</code> and adds the underline; back links turn <code>--color-fg-default</code> and stay without one. Jubilee does not style <code>:visited</code>: members revisit the same businesses and the colour change carried no meaning. Active keeps the hover look. Links are never disabled; when the destination is not available, show plain text.</p>
       <div class="ds-matrix"><table>
         <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th></tr></thead>
         <tbody>
@@ -180,7 +180,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Links read <code>--color-fg-link</code> and <code>--color-fg-link-hover</code>. Dark mode lightens both to stay above 4.5:1 on the dark surfaces. Muted and back links use <code>--color-fg-muted</code> and turn <code>--color-fg-default</code> on hover. The footer sets <code>color: inherit</code> so its links match its muted text.</p>
+      <p>Links read <code>--color-fg-link</code> and <code>--color-fg-link-hover</code>. In light both are green (<code>#00875a</code>, hover <code>#006644</code>); dark mode lightens both to stay above 4.5:1 on the dark surfaces. Muted and back links use <code>--color-fg-muted</code> and turn <code>--color-fg-default</code> on hover. The footer sets <code>color: inherit</code> so its links match its muted text.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -191,7 +191,7 @@
         <tr><td><kbd>Enter</kbd></td><td>Follows it. Space scrolls the page, as browsers do.</td></tr>
       </tbody></table></div>
       <h3>Focus</h3>
-      <p>The shared 2px ring with a 2px offset and <code>--radius-sm</code> corners; gold on the brand band.</p>
+      <p>The shared 2px ring with a 2px offset and <code>--radius-xs</code> corners; gold on the brand band.</p>
       <h3>Labelling</h3>
       <p>The link text names the destination out of context (“View request”, “Back to browse”), never “click here” or “more”. Icons are <code>aria-hidden</code>; “opens in a new tab” is visually hidden text inside the link.</p>
       <h3>Contrast</h3>
@@ -213,10 +213,11 @@
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
       </div>
+      <p>Green link text on the cream page is 4.07:1 in light, below the 4.5:1 of 1.4.3. This is a design-reference value, recorded in <code>tokens/contrast-pairs.json</code>; on white cards and dialogs the same green passes. <code>prefers-contrast: more</code> switches links to the darker green and restores 4.5:1.</p>
       <h3>Motion</h3>
-      <p>No transition on inline links; the hover thickening is instant. Back links transition colour over <code>--duration-fast</code>, zeroed under reduced motion.</p>
+      <p>No transition on links; the hover colour and underline appear at once.</p>
       <h3>Touch</h3>
-      <p>Back links are 44px tall (<code>--target-comfortable</code>) and standalone links 24px (<code>--target-min</code>). Inline links are exempt from 2.5.8 as part of a sentence, but two links never sit closer than a word apart.</p>
+      <p>Back links and standalone links are 24px tall (<code>--target-min</code>); on coarse pointers their hit area grows to 44px (<code>--target-comfortable</code>) without changing how they look. Inline links are exempt from 2.5.8 as part of a sentence, but two links never sit closer than a word apart.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -240,12 +241,11 @@
         <tbody>
           <tr><td>Link / hover</td><td><code>--color-fg-link</code> / <code>--color-fg-link-hover</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-link" data-swatch></i><span data-token="--color-fg-link"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-link-hover" data-swatch></i><span data-token="--color-fg-link-hover"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-link" data-swatch></i><span data-token="--color-fg-link"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-link-hover" data-swatch></i><span data-token="--color-fg-link-hover"></span></span></td></tr>
           <tr><td>Muted link / hover</td><td><code>--color-fg-muted</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
-          <tr><td>Underline / hover underline</td><td><code>--border-width-hairline</code> / <code>--border-width-thick</code></td><td colspan="2"><span data-token="--border-width-hairline"></span> / <span data-token="--border-width-thick"></span></td></tr>
-          <tr><td>Back link height</td><td><code>--target-comfortable</code></td><td colspan="2"><span data-token="--target-comfortable"></span></td></tr>
-          <tr><td>Standalone height</td><td><code>--target-min</code></td><td colspan="2"><span data-token="--target-min"></span></td></tr>
-          <tr><td>Standalone label</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
+          <tr><td>Back and standalone height / touch hit area</td><td><code>--target-min</code> / <code>--target-comfortable</code></td><td colspan="2"><span data-token="--target-min"></span> / <span data-token="--target-comfortable"></span></td></tr>
+          <tr><td>Standalone label</td><td><code>--text-meta</code> / <code>--font-weight-semibold</code></td><td colspan="2"><span data-token="--text-meta"></span> / <span data-token="--font-weight-semibold"></span></td></tr>
           <tr><td>Back link text</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
           <tr><td>Icon</td><td><code>--icon-size-sm</code></td><td colspan="2"><span data-token="--icon-size-sm"></span></td></tr>
+          <tr><td>Icon gap (back / standalone)</td><td><code>--space-1-5</code> / <code>--space-1</code></td><td colspan="2"><span data-token="--space-1-5"></span> / <span data-token="--space-1"></span></td></tr>
           <tr><td>Focus ring</td><td><code>--color-focus-ring</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td></tr>
           <tr><td>Focus ring on brand</td><td><code>--color-focus-ring-on-brand</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-focus-ring-on-brand" data-swatch></i><span data-token="--color-focus-ring-on-brand"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-focus-ring-on-brand" data-swatch></i><span data-token="--color-focus-ring-on-brand"></span></span></td></tr>
         </tbody>
@@ -258,9 +258,9 @@
   luzandre.com&lt;svg class="icon" aria-hidden="true"&gt;…&lt;/svg&gt;&lt;span class="visually-hidden"&gt; (opens in a new tab)&lt;/span&gt;
 &lt;/a&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>a</code></td><td>Base link: link blue, underlined.</td></tr>
-        <tr><td><code>.back-link</code></td><td>Muted back link with arrow, 44px tall.</td></tr>
-        <tr><td><code>.link--standalone</code></td><td>Label-weight link that ends a section, with a small icon.</td></tr>
+        <tr><td><code>a</code></td><td>Base link: green; underlined inside running text and on hover.</td></tr>
+        <tr><td><code>.back-link</code></td><td>Muted back link with arrow, 24px tall, 44px hit area on touch.</td></tr>
+        <tr><td><code>.link--standalone</code></td><td>13px semibold link that ends a section, with a small icon.</td></tr>
         <tr><td><code>.link--muted</code></td><td>Muted colour for captions and footers.</td></tr>
         <tr><td><code>.btn--link</code></td><td>A button styled as a link (actions).</td></tr>
         <tr><td><code>data-state="hover"</code></td><td>Documentation only: forces hover.</td></tr>
@@ -275,7 +275,7 @@
         <li><a href="../../mocks/pages/conversation/default.html">pages/conversation/default</a> (View request)</li>
         <li><a href="../../mocks/pages/edit-listing/default.html">pages/edit-listing/default</a> (website field)</li>
       </ul>
-      <p>Drift fixed during extraction: <code>.link--standalone</code> and <code>.link--muted</code> are defined but no mock uses them; standalone links in cards were plain <code>&lt;a&gt;</code> inside clusters with inline margins. Back links appear on 31 pages and are consistent. The mocks never mark external links; the system adds the icon and hidden text. Body links on the brand band inherit the link blue, which is not in the contrast pairs against <code>--color-bg-brand</code>; keep links on ink inside components that re-map them (top bar, hero chips) until a <code>.hero a</code> rule exists.</p>
+      <p>Drift fixed during extraction: <code>.link--standalone</code> and <code>.link--muted</code> are defined but no mock uses them; standalone links in cards were plain <code>&lt;a&gt;</code> inside clusters with inline margins. Back links appear on 31 pages and are consistent. The mocks never mark external links; the system adds the icon and hidden text. Body links on the brand band inherit the link green, which is not in the contrast pairs against <code>--color-bg-brand</code>; keep links on ink inside components that re-map them (top bar, hero chips) until a <code>.hero a</code> rule exists.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

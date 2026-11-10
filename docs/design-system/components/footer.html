@@ -115,9 +115,9 @@
           <span class="ds-callout" style="left: 4%; top: 50%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 62%; top: 50%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 2%; top: 8%;" aria-hidden="true">3</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Tagline</b><small><code>&lt;span&gt;</code> in <code>--text-body-sm</code>, <code>--color-fg-muted</code>.</small></div></li>
-          <li><div><b>Links</b><small><code>.cluster</code> of underlined links inheriting the muted colour.</small></div></li>
-          <li><div><b>Container</b><small><code>.footer</code>: surface, hairline top border, <code>--space-8</code> vertical and <code>--layout-margin</code> side padding, wrapping flex row.</small></div></li>
+          <li><div><b>Tagline</b><small><code>&lt;span&gt;</code> in <code>--text-meta</code> (13px), <code>--color-fg-muted</code>.</small></div></li>
+          <li><div><b>Links</b><small><code>.cluster</code> of links inheriting the muted colour; underlined on hover only.</small></div></li>
+          <li><div><b>Container</b><small><code>.footer</code>: no fill, an ink-15% hairline rule on top (<code>--color-border-rule</code>), <code>--space-8</code> vertical padding, wrapping flex row. The side padding lines its content up with the 80rem container, and is never less than <code>--layout-margin</code>.</small></div></li>
         </ol>
       </div>
     </section>
@@ -129,11 +129,11 @@
         <div class="ds-example__caption"><span>As on <code>pages/browse/default</code>.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;footer class="footer" style="width: 100%;"&gt;&lt;span&gt;© 2026 Jubilee · Toronto’s Christian marketplace&lt;/span&gt;&lt;span class="cluster"&gt;&lt;a href="../../mocks/pages/statement-of-faith/default.html"&gt;Statement of faith&lt;/a&gt;&lt;a href="../../mocks/pages/help/default.html"&gt;Help&lt;/a&gt;&lt;a href="../../mocks/pages/terms/default.html"&gt;Terms&lt;/a&gt;&lt;a href="../../mocks/pages/privacy/default.html"&gt;Privacy&lt;/a&gt;&lt;/span&gt;&lt;/footer&gt;</code></pre></details></div>
     </section>
-    <section class="ds-section" id="sizes" data-na="One size: --space-8 vertical padding and --text-body-sm."><h2><a href="#sizes">Sizes</a></h2>
-      <p class="ds-na">One size: --space-8 vertical padding and --text-body-sm.</p>
+    <section class="ds-section" id="sizes" data-na="One size: --space-8 vertical padding and --text-meta (13px)."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size: --space-8 vertical padding and --text-meta (13px).</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
-      <p>The footer is static; its links have link states, forced with <code>data-state</code>. Links are never disabled.</p>
+      <p>The footer is static; its links have link states, forced with <code>data-state</code>. Hover turns a link <code>--color-fg-default</code> and underlines it. Links are never disabled.</p>
       <div class="ds-matrix"><table>
         <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th></tr></thead>
         <tbody>
@@ -149,13 +149,14 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>The row wraps: below about 600px the links drop under the tagline, left-aligned.</li>
+        <li>The row wraps: when the tagline and links do not fit on one line, the links drop under the tagline, left-aligned.</li>
+        <li>On wide screens the content stops at the 80rem container width, in line with the top bar and page content; the rule runs the full width.</li>
         <li>Links wrap within the cluster at 360px; none truncate.</li>
         <li>With the phone tab bar visible, the body's bottom padding keeps the footer above it.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Surface, border and muted-text tokens; flips with the theme. The footer is never on the brand band: the ink bar at the top is the only band in the page chrome.</p>
+      <p>No fill: the page canvas shows through. The rule (<code>--color-border-rule</code>: ink 15% in light, cream 20% in dark) and the muted text flip with the theme. The footer is never on the brand band: the ink bar at the top is the only band in the page chrome.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -172,18 +173,18 @@
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Tagline and links</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Tagline and links</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Tagline and links</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Tagline and links</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
       <p>None.</p>
       <h3>Touch</h3>
-      <p>Links are inline <code>--text-body-sm</code> text separated by <code>--space-3</code>; each is under 24px tall but the spacing exception of 2.5.8 holds because no 24px circle around one overlaps another.</p>
+      <p>Links are inline <code>--text-meta</code> text separated by <code>--space-3</code>; each is under 24px tall but the spacing exception of 2.5.8 holds because no 24px circle around one overlaps another.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -204,11 +205,12 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Background / top edge</td><td><code>--color-bg-surface</code> / <code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Top rule</td><td><code>--color-border-rule</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-rule" data-swatch></i><span data-token="--color-border-rule"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-rule" data-swatch></i><span data-token="--color-border-rule"></span></span></td></tr>
           <tr><td>Text and links</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
-          <tr><td>Padding</td><td><code>--space-8</code> / <code>--layout-margin</code></td><td colspan="2"><span data-token="--space-8"></span> / <span data-token="--layout-margin"></span></td></tr>
+          <tr><td>Link hover</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Padding (vertical / minimum side) / content width</td><td><code>--space-8</code> / <code>--layout-margin</code> / <code>--layout-container-max</code></td><td colspan="2"><span data-token="--space-8"></span> / <span data-token="--layout-margin"></span> / <span data-token="--layout-container-max"></span></td></tr>
           <tr><td>Gap</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
-          <tr><td>Type</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Type</td><td><code>--text-meta</code></td><td colspan="2"><span data-token="--text-meta"></span></td></tr>
           <tr><td>Edge width</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
         </tbody>
       </table></div>
@@ -224,7 +226,7 @@
   &lt;/span&gt;
 &lt;/footer&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.footer</code></td><td>Page footer strip.</td></tr>
+        <tr><td><code>.footer</code></td><td>Page footer: top rule, no fill, content aligned to the container.</td></tr>
         <tr><td><code>.cluster</code></td><td>Link group; see Layout primitives.</td></tr>
       </tbody></table></div>
     </section>
@@ -236,7 +238,7 @@
         <li><a href="../../mocks/pages/help/default.html">pages/help/default</a> (Help current)</li>
         <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> (no footer (auth))</li>
       </ul>
-      <p>Drift fixed during extraction: none in markup: all 220 footers are byte-identical. In CSS, <code>.footer a { color: inherit }</code> outranks the global <code>a:hover</code> colour, so a real hover only thickens the underline; the forced <code>data-state="hover"</code> cell above shows the generic link-hover colour instead (noted for a CSS fix).</p>
+      <p>Drift fixed during extraction: none in markup: all 220 footers are byte-identical. In CSS, <code>.footer a { color: inherit }</code> used to outrank the global <code>a:hover</code> colour; the kit now sets <code>.footer a:hover</code> and its <code>data-state="hover"</code> twin to <code>--color-fg-default</code>, so the forced cell above matches a real hover.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

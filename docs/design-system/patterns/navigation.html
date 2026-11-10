@@ -104,7 +104,7 @@
       <p>The frame is the <a href="../components/top-bar.html">Top bar</a> (ink, <code>.topbar--ink</code>) on every signed-in page, the <a href="../components/tab-bar.html">Tab bar</a> below 768px, a <a href="../components/skip-link.html">Skip link</a> before both, and the <a href="../components/footer.html">Footer</a>. Inside the content, a page has at most one way up (<a href="../components/breadcrumb.html">Breadcrumb</a> or <a href="../components/link.html">back link</a>), one page header (h1, subtitle, page actions) and, when it has sections, <a href="../components/tabs.html">Tabs</a>. Long lists end in <a href="../components/pagination.html">Pagination</a>.</p>
       <ul>
         <li><b>Primary destinations</b> are few and fixed: Browse, Messages, List your business / My business, the bell and the account menu. On phones: Browse, List, Messages, You.</li>
-        <li><b>The current place is always marked</b> with <code>aria-current="page"</code>: a gold underline in the top bar, a gold pill in the tab bar, a gold underline on tabs.</li>
+        <li><b>The current place is always marked</b> with <code>aria-current="page"</code>: a 2px gold underline at the bottom edge of the top bar, a gold pill behind the icon in the tab bar, a gold underline on tabs.</li>
         <li><b>Buyer and seller share one frame.</b> Joanna sees "List your business"; once Naomi owns a listing the same slot reads "My business". Miriam (verification team) gets a Verifications link with a waiting count.</li>
         <li><b>Auth pages have no frame</b>: just the wordmark linking to Welcome, the card, and a foot link.</li>
       </ul>
@@ -159,11 +159,11 @@
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Element</th><th scope="col">Current</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">With count</th></tr></thead><tbody>
-        <tr><td>Top-bar link (ink)</td><td>Gold underline, full-strength label</td><td>Label to full strength</td><td>Gold ring (<code>--color-focus-ring-on-brand</code>)</td><td><code>.badge--count</code> with <code>aria-label="2 unread"</code></td></tr>
-        <tr><td>Tab bar item</td><td>Gold pill behind the icon, semibold</td><td>Label to default colour</td><td>Shared ring</td><td>Count badge on the icon corner</td></tr>
-        <tr><td>Tab</td><td>Gold underline, semibold (<code>aria-current</code> or <code>aria-selected</code>)</td><td>Label to default colour</td><td>Shared ring</td><td>Neutral <code>.badge</code> after the label</td></tr>
+        <tr><td>Top-bar link (ink)</td><td>2px gold underline at the bar's bottom edge; label cream instead of cream 60%</td><td>Label to cream</td><td>Gold ring (<code>--color-focus-ring-on-brand</code>)</td><td><code>.badge--count</code> with <code>aria-label="2 unread"</code></td></tr>
+        <tr><td>Tab bar item</td><td>48 × 32px gold pill behind the icon; label ink instead of muted, weight unchanged</td><td>Label to default colour</td><td>Shared ring</td><td>Count badge on the icon corner</td></tr>
+        <tr><td>Tab</td><td>Gold underline (<code>--color-accent-border</code>), label to default colour, weight unchanged (<code>aria-current</code> or <code>aria-selected</code>)</td><td>Label to default colour</td><td>Shared ring</td><td>Neutral <code>.badge</code> after the label</td></tr>
         <tr><td>Breadcrumb</td><td>Last item is text with <code>aria-current="page"</code></td><td>Underline</td><td>Shared ring</td><td>—</td></tr>
-        <tr><td>Pagination</td><td>Gold page (<code>aria-current</code>)</td><td>Subtle background</td><td>Shared ring</td><td>Disabled ends at 50%, <code>aria-disabled</code></td></tr>
+        <tr><td>Pagination</td><td>Gold fill with an ink number, no edge (<code>aria-current</code>)</td><td>Subtle background</td><td>Shared ring</td><td>Disabled ends at 50%, <code>aria-disabled</code></td></tr>
       </tbody></table></div>
       <h3>Both themes</h3>
       <div class="ds-themes">
@@ -173,8 +173,8 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>Below 768px (<code>--layout-breakpoint-md</code>) the top-bar links and the List your business button hide (<code>.only-desktop</code>) and the fixed tab bar appears; the body gets bottom padding of <code>--layout-tabbar-height</code> so content and toasts clear it.</li>
-        <li>Below 1024px the top-bar search collapses to an icon button (<code>.only-narrow</code>) that opens the search page.</li>
+        <li>Below 768px (<code>--layout-breakpoint-md</code>) the top-bar links and the List your business button hide (<code>.only-desktop</code>) and the fixed tab bar appears; the body gets bottom padding of <code>--layout-tabbar-height</code> (72px) so content and toasts clear it. The tab bar is cream at 95% with an 8px blur and an ink-10% top edge; its labels are 11px medium.</li>
+        <li>The search field sits in the top bar from 768px, as a 40px pill. Below 768px it collapses to an icon button (<code>.only-narrow</code>) that opens the search page.</li>
         <li>The account menu is an anchored menu from 640px and a bottom sheet below it.</li>
         <li>Tabs scroll horizontally when they do not fit (<code>overflow-x: auto</code>, no scrollbar); the current tab scrolls into view. Breadcrumbs wrap rather than truncate.</li>
         <li>Page-header actions wrap below the title; on a detail page the primary takes the full row.</li>
@@ -201,7 +201,8 @@
         <div class="ds-pair"><span>Inactive top-bar link</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-muted|--color-bg-brand" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Current-link indicator on ink</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-bg-brand" data-min="3"></span></div>
         <div class="ds-pair"><span>Focus ring on ink</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring-on-brand|--color-bg-brand" data-min="3"></span></div>
-        <div class="ds-pair"><span>Selected tab label</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Selected tab label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Selected tab underline</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
         <div class="ds-pair"><span>Breadcrumb text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
@@ -209,14 +210,15 @@
         <div class="ds-pair"><span>Inactive top-bar link</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-muted|--color-bg-brand" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Current-link indicator on ink</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-bg-brand" data-min="3"></span></div>
         <div class="ds-pair"><span>Focus ring on ink</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring-on-brand|--color-bg-brand" data-min="3"></span></div>
-        <div class="ds-pair"><span>Selected tab label</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Selected tab label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Selected tab underline</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
         <div class="ds-pair"><span>Breadcrumb text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
       <p>Tab underlines and hover colours change over <code>--duration-fast</code>; nothing slides. Reduced motion zeroes the transitions.</p>
       <h3>Touch</h3>
-      <p>Top-bar links are the full bar height (<code>--layout-topbar-height</code>); tab bar items are <code>--layout-tabbar-height</code> tall and a quarter of the width; tabs and back links are 44px (<code>--target-comfortable</code>).</p>
+      <p>Top-bar links and tabs are 40px tall (<code>--control-height-md</code>); top-bar icon buttons are 36px circles. On coarse pointers nav links, tabs, back links and buttons get a hit area at least 44px tall (<code>--target-comfortable</code>) without changing size. The tab bar is <code>--layout-tabbar-height</code> (72px) tall and its items share the width equally.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>

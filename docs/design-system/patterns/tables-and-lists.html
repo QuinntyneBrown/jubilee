@@ -163,7 +163,7 @@
         <tr><td>Error</td><td><code>.empty--error</code> replaces the collection; the header and filters stay</td><td><a href="../../mocks/pages/my-products/error.html">my-products/error</a></td></tr>
         <tr><td>Long</td><td>Pagination with the range in words; 16 cards a page</td><td><a href="../../mocks/pages/category/long.html">category/long</a></td></tr>
         <tr><td>Sorted</td><td><code>aria-sort</code> on the header, arrow after its label; one sorted column at a time</td><td><a href="../../mocks/pages/admin-verifications/default.html">admin-verifications</a></td></tr>
-        <tr><td>Unread / new</td><td>Accent-subtle background and bold title, plus hidden "Unread." text</td><td><a href="../../mocks/pages/notifications/default.html">notifications</a></td></tr>
+        <tr><td>Unread / new</td><td>Accent-subtle background and semibold title, plus hidden "Unread." text</td><td><a href="../../mocks/pages/notifications/default.html">notifications</a></td></tr>
         <tr><td>Selected</td><td><code>aria-selected="true"</code> or <code>aria-current</code>: accent-subtle background (open conversation)</td><td><a href="../../mocks/pages/conversation/default.html">conversation</a></td></tr>
       </tbody></table></div>
       <h3>Row states</h3>
@@ -183,10 +183,10 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>Card grids are two columns on phones and up to four from 1024px (<code>.card-grid</code>, gap <code>--space-6</code>/<code>--space-4</code>).</li>
+        <li>Card grids are two columns on phones, three from 640px and four from 1024px (<code>.card-grid</code>; row gap <code>--space-8</code>, column gap <code>--layout-gutter</code>).</li>
         <li>Tables scroll horizontally inside <code>.table-wrap</code>; the first column holds the name so it is visible first. Keep tables to five columns; the verification queue’s six is the maximum.</li>
         <li>Rows stack below 640px (<code>.row--stack</code>): actions move under the body and share the width.</li>
-        <li>The inbox is a list and a conversation side by side from 768px; on phones the list is the page and a conversation opens on its own with a back link.</li>
+        <li>The inbox is a list and a conversation side by side from 1024px; below that the list is the page and a conversation opens on its own with a back link.</li>
         <li>Filter tabs scroll horizontally; their counts never wrap under the label.</li>
       </ul>
     </section>
@@ -225,7 +225,7 @@
       <h3>Motion</h3>
       <p>Row hover and the appearance of row actions transition over <code>--duration-fast</code>; skeleton shimmer stops under reduced motion.</p>
       <h3>Touch</h3>
-      <p>Row actions are small buttons (32px) spaced 8px apart; on phones stacked row actions grow to the full row width. Whole-item links (threads, notifications) are at least 64px tall.</p>
+      <p>Row actions are small buttons (36px) spaced 8px apart, with a hit area of at least 44px on coarse pointers; on phones stacked row actions grow to the full row width. Whole-item links (threads, notifications) are at least 64px tall.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>

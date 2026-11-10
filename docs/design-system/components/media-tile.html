@@ -104,7 +104,7 @@
       <p>Every picture in Jubilee goes in a media tile: cards in a <a href="../components/business-card.html">Business card</a> grid, the large photo on a business or product page, order thumbnails in lists. It fixes the shape (so the layout never jumps while photos load), rounds the corners and gives a tone to show when there is no photo yet.</p>
       <ul>
         <li><b>Tones</b> (neutral, gold, green, blue, ink) are placeholders and fallbacks only. The mocks pair them loosely with categories (gold for shops, green for financial and health, ink for trades); product uses the business's own photo.</li>
-        <li><b>Shapes</b>: 4:3 by default, <code>.media--square</code> for products, <code>.media--thumb</code> (48px square) beside rows and in order summaries.</li>
+        <li><b>Shapes</b>: 4:3 by default, <code>.media--square</code> for products, <code>.media--wide</code> (16:10), <code>.media--hero</code> for the large photo on a business page, and <code>.media--thumb</code> (48px square, 8px radius) beside rows and in order summaries.</li>
         <li><b>Tag</b> (<code>.media__tag</code>): an optional category pill in the top-left corner.</li>
       </ul>
       <p>The tile is never interactive on its own. When it is part of a link (a card), the link carries the name and the states.</p>
@@ -116,9 +116,9 @@
           <span class="ds-callout" style="left: 10%; top: 10%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 50%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 96%; top: 90%;" aria-hidden="true">3</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Tag (optional)</b><small><code>.media__tag</code>: surface pill, <code>--text-caption</code> semibold, <code>--shadow-1</code>, inset <code>--space-3</code>.</small></div></li>
+          <li><div><b>Tag (optional)</b><small><code>.media__tag</code>: cream pill (<code>--color-bg-canvas</code>), 12px semibold (<code>--text-caption</code>), no shadow, inset <code>--space-3</code>.</small></div></li>
           <li><div><b>Icon (stand-in only)</b><small>28% of the width, max 5rem, stroke 1.25, coloured by the tone. Replaced by the photo in product.</small></div></li>
-          <li><div><b>Frame</b><small><code>aspect-ratio: 4 / 3</code>, <code>--radius-lg</code>, hairline <code>--color-border-default</code> edge, <code>overflow: hidden</code>.</small></div></li>
+          <li><div><b>Frame</b><small><code>aspect-ratio: 4 / 3</code>, <code>--radius-lg</code> (16px), an ink-5% hairline drawn as a box-shadow (<code>--color-border-media</code>), <code>--color-bg-subtle</code> fill, <code>overflow: hidden</code>.</small></div></li>
         </ol>
       </div>
     </section>
@@ -131,7 +131,7 @@
         <div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--blue"><span class="media__tag">Blue</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg></div></div>
         <div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--ink"><span class="media__tag">Ink</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9zM14 6l3-3"/></svg></div></div>
       </div>
-        <div class="ds-example__caption"><span>Neutral (<code>--color-bg-subtle</code>), gold (<code>--color-accent-subtle</code>), green (<code>--color-success-bg</code>), blue (<code>--color-info-bg</code>) and ink (<code>--color-bg-brand</code>).</span></div>
+        <div class="ds-example__caption"><span>Neutral (<code>--color-bg-subtle</code>), gold (<code>--color-accent-subtle</code>), green (<code>--color-success-bg</code>), blue (<code>--color-info-bg</code>) and ink (<code>--color-bg-subtle-hover</code>, a deeper neutral for charcoal and ink products).</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="inline-size: calc(var(--space-24) * 2);"&gt;&lt;div class="media"&gt;&lt;span class="media__tag"&gt;Neutral&lt;/span&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="3" y="5" width="18" height="14" rx="2"/&gt;&lt;circle cx="9" cy="10" r="1.5"/&gt;&lt;path d="m4 18 5-5 4 4 3-3 4 4"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;div style="inline-size: calc(var(--space-24) * 2);"&gt;&lt;div class="media media--gold"&gt;&lt;span class="media__tag"&gt;Gold&lt;/span&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;div style="inline-size: calc(var(--space-24) * 2);"&gt;&lt;div class="media media--green"&gt;&lt;span class="media__tag"&gt;Green&lt;/span&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/div&gt;
@@ -144,13 +144,13 @@
 &lt;/div&gt;</code></pre>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>Width always comes from the container; the modifier fixes the shape.</p>
+      <p>Width always comes from the container; the modifier fixes the shape. Not shown below: <code>.media--wide</code> is 16:10, and <code>.media--hero</code> is the large photo on a business page: 4:3 and full-bleed with square corners on phones, 16:10 with a 24px radius from 768px, no hairline.</p>
       <div class="ds-example"><div class="ds-example__canvas">
         <div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--gold"><span class="media__tag">Shop</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg></div></div>
         <div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--ink media--square"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg></div></div>
         <div class="media media--gold media--thumb"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg></div>
       </div>
-        <div class="ds-example__caption"><span>4:3 (default, cards and detail pages) · square (<code>.media--square</code>, products) · thumb (<code>.media--thumb</code>, 48px = <code>--control-height-lg</code>, <code>--radius-md</code>, icon 50%).</span></div>
+        <div class="ds-example__caption"><span>4:3 (default, cards and detail pages) · square (<code>.media--square</code>, products) · thumb (<code>.media--thumb</code>, 48px = <code>--control-height-lg</code>, <code>--radius-sm</code> 8px, no hairline, icon 50%).</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="inline-size: calc(var(--space-24) * 2);"&gt;&lt;div class="media media--gold"&gt;&lt;span class="media__tag"&gt;Shop&lt;/span&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;div style="inline-size: calc(var(--space-24) * 2);"&gt;&lt;div class="media media--ink media--square"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;div class="media media--gold media--thumb"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/&gt;&lt;/svg&gt;&lt;/div&gt;</code></pre></details></div>
@@ -173,7 +173,7 @@
         <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="cluster" style="padding: var(--space-4);"><div style="inline-size: calc(var(--space-24) + var(--space-8));"><div class="media"><span class="media__tag">Neutral</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg></div></div><div style="inline-size: calc(var(--space-24) + var(--space-8));"><div class="media media--gold"><span class="media__tag">Gold</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg></div></div><div style="inline-size: calc(var(--space-24) + var(--space-8));"><div class="media media--green"><span class="media__tag">Green</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></svg></div></div><div style="inline-size: calc(var(--space-24) + var(--space-8));"><div class="media media--blue"><span class="media__tag">Blue</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg></div></div><div style="inline-size: calc(var(--space-24) + var(--space-8));"><div class="media media--ink"><span class="media__tag">Ink</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9zM14 6l3-3"/></svg></div></div></div></div></div>
       </div>
       <ul>
-        <li><b>In a hovered card</b> the tile lifts to <code>--shadow-2</code>; this is set by <code>.biz-card:hover .media</code>.</li>
+        <li><b>In a hovered card</b> the photo or icon inside the tile zooms to <code>--zoom-scale</code> (1.03) over <code>--duration-slow</code>; the frame does not move or lift. This is set by <code>.biz-card:hover .media &gt; img</code> and <code>&gt; .icon</code>.</li>
         <li><b>Loading</b> uses <code>.skeleton--media</code> (or <code>.skeleton--square</code>) of the same ratio, so nothing shifts when the photo arrives.</li>
         <li><b>Photo failed</b> falls back to the business's tone and icon without the tag; never a broken-image icon.</li>
       </ul>
@@ -181,14 +181,15 @@
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
         <li>The tile is fluid: 100% of its column at every width, the ratio fixed by <code>aspect-ratio</code>.</li>
-        <li>In the feature grid's first card from 1024px the ratio is released (<code>aspect-ratio: auto</code>) and the tile stretches to at least 20rem tall.</li>
+        <li>In the feature grid's first card from 1024px the ratio is released (<code>aspect-ratio: auto</code>) and the tile stretches to at least 17.5rem tall.</li>
         <li>Thumbs stay 48px at every width. The tag never scales.</li>
+        <li><code>.media--hero</code> runs edge to edge below 768px (it cancels the page margin) and becomes a 16:10 tile with a 24px radius from 768px.</li>
         <li>Serve photos with <code>srcset</code> at 1×/2× for each column width; the tile never shows a photo larger than 640px wide.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Tones are semantic tokens, so both themes are automatic: the subtle backgrounds darken in dark mode and the icon colours lighten. Ink uses <code>--color-bg-brand</code> with <code>--color-border-on-brand</code>, so it stays ink in both themes, like the hero.</p>
-      <p>The tag is a surface pill in both themes; its <code>--shadow-1</code> keeps it apart from light photos.</p>
+      <p>Tones are semantic tokens, so both themes are automatic: the subtle backgrounds darken in dark mode and the icon colours lighten. Ink is a deeper neutral (<code>--color-bg-subtle-hover</code> with a <code>--color-fg-muted</code> icon), not the brand band. The hairline is <code>--color-border-media</code>: ink 5% in light, cream 10% in dark.</p>
+      <p>The tag takes the page colour (<code>--color-bg-canvas</code>): a cream pill in light, an ink pill in dark. It has no shadow.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -208,20 +209,20 @@
         <div class="ds-pair"><span>Gold icon</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-accent-subtle" data-min="3"></span></div>
         <div class="ds-pair"><span>Green icon</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-success-bg" data-min="3"></span></div>
         <div class="ds-pair"><span>Blue icon</span><span class="ds-pair__ratio" data-contrast="--color-info-fg|--color-info-bg" data-min="3"></span></div>
-        <div class="ds-pair"><span>Ink icon</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-muted|--color-bg-brand" data-min="3"></span></div>
-        <div class="ds-pair"><span>Tag label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Ink icon</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-subtle-hover" data-min="3"></span></div>
+        <div class="ds-pair"><span>Tag label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Neutral icon</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-subtle" data-min="3"></span></div>
         <div class="ds-pair"><span>Gold icon</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-accent-subtle" data-min="3"></span></div>
         <div class="ds-pair"><span>Green icon</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-success-bg" data-min="3"></span></div>
         <div class="ds-pair"><span>Blue icon</span><span class="ds-pair__ratio" data-contrast="--color-info-fg|--color-info-bg" data-min="3"></span></div>
-        <div class="ds-pair"><span>Ink icon</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-muted|--color-bg-brand" data-min="3"></span></div>
-        <div class="ds-pair"><span>Tag label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Ink icon</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-subtle-hover" data-min="3"></span></div>
+        <div class="ds-pair"><span>Tag label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>None on the tile. The hover lift in cards is instant. Photo loading never fades in longer than <code>--duration-fast</code>, which reduced motion zeroes.</p>
+      <p>The frame does not move. In a hovered card the photo or icon zooms to 1.03 over <code>--duration-slow</code> (300ms); reduced motion sets the scale to 1. Photo loading never fades in longer than <code>--duration-fast</code>, which reduced motion zeroes.</p>
       <h3>Touch</h3>
       <p>Not a target. The card or page action around it provides the target.</p>
     </section>
@@ -237,7 +238,7 @@
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--green"><span class="media__tag">Financial</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></svg></div></div></div><figcaption>Use the tone and icon only as a stand-in or fallback, with the category as a short tag.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--gold"><span class="media__tag">Free first meeting · Verified</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></svg></div></div></div><figcaption>Overloading the tag. It is a category word; perks and Verified belong in the card meta where they are read in order.</figcaption></figure>
-        <figure class="ds-do"><div class="ds-example__canvas"><div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--ink"><span class="media__tag">Home</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9zM14 6l3-3"/></svg></div></div></div><figcaption>Ink tiles keep their on-brand border so they hold their edge on the cream canvas and in dark mode.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--ink"><span class="media__tag">Home</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9zM14 6l3-3"/></svg></div></div></div><figcaption>Ink tiles are a deeper neutral for charcoal and ink subjects; the tag stays a cream pill on top.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div style="inline-size: calc(var(--space-24) * 2);"><div class="media media--gold"><span class="visually-hidden">Picture of Legacy Financial</span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></svg></div></div></div><figcaption>Hidden "Picture of…" text inside a card. It repeats the name the card already reads and adds noise to every link.</figcaption></figure>
       </div>
     </section>
@@ -245,19 +246,19 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Radius / thumb radius</td><td><code>--radius-lg</code> / <code>--radius-md</code></td><td colspan="2"><span data-token="--radius-lg"></span> / <span data-token="--radius-md"></span></td></tr>
-          <tr><td>Edge</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Radius / thumb radius / hero radius from 768px</td><td><code>--radius-lg</code> / <code>--radius-sm</code> / <code>--radius-xl</code></td><td colspan="2"><span data-token="--radius-lg"></span> / <span data-token="--radius-sm"></span> / <span data-token="--radius-xl"></span></td></tr>
+          <tr><td>Edge</td><td><code>--color-border-media</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-media" data-swatch></i><span data-token="--color-border-media"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-media" data-swatch></i><span data-token="--color-border-media"></span></span></td></tr>
           <tr><td>Edge width</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
           <tr><td>Neutral background / icon</td><td><code>--color-bg-subtle</code> / <code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
           <tr><td>Gold background / icon</td><td><code>--color-accent-subtle</code> / <code>--color-warning-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-warning-fg" data-swatch></i><span data-token="--color-warning-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-warning-fg" data-swatch></i><span data-token="--color-warning-fg"></span></span></td></tr>
           <tr><td>Green background / icon</td><td><code>--color-success-bg</code> / <code>--color-success-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-bg" data-swatch></i><span data-token="--color-success-bg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-bg" data-swatch></i><span data-token="--color-success-bg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td></tr>
           <tr><td>Blue background / icon</td><td><code>--color-info-bg</code> / <code>--color-info-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-info-bg" data-swatch></i><span data-token="--color-info-bg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-info-fg" data-swatch></i><span data-token="--color-info-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-info-bg" data-swatch></i><span data-token="--color-info-bg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-info-fg" data-swatch></i><span data-token="--color-info-fg"></span></span></td></tr>
-          <tr><td>Ink background / edge / icon</td><td><code>--color-bg-brand</code> / <code>--color-border-on-brand</code> / <code>--color-fg-on-brand-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-brand" data-swatch></i><span data-token="--color-bg-brand"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-on-brand" data-swatch></i><span data-token="--color-border-on-brand"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-brand-muted" data-swatch></i><span data-token="--color-fg-on-brand-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-brand" data-swatch></i><span data-token="--color-bg-brand"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-on-brand" data-swatch></i><span data-token="--color-border-on-brand"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-brand-muted" data-swatch></i><span data-token="--color-fg-on-brand-muted"></span></span></td></tr>
+          <tr><td>Ink background / icon</td><td><code>--color-bg-subtle-hover</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
           <tr><td>Thumb size</td><td><code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-lg"></span></td></tr>
-          <tr><td>Tag background / label</td><td><code>--color-bg-surface</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Tag background / label</td><td><code>--color-bg-canvas</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-canvas" data-swatch></i><span data-token="--color-bg-canvas"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-canvas" data-swatch></i><span data-token="--color-bg-canvas"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
           <tr><td>Tag font / weight</td><td><code>--text-caption</code> / <code>--font-weight-semibold</code></td><td colspan="2"><span data-token="--text-caption"></span> / <span data-token="--font-weight-semibold"></span></td></tr>
-          <tr><td>Tag inset / padding</td><td><code>--space-3</code> / <code>--space-2</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-2"></span></td></tr>
-          <tr><td>Tag shadow / hover lift</td><td><code>--shadow-1</code> / <code>--shadow-2</code></td><td colspan="2"><span data-token="--shadow-1"></span> / <span data-token="--shadow-2"></span></td></tr>
+          <tr><td>Tag inset / padding (block / inline)</td><td><code>--space-3</code> / <code>--space-1</code> / <code>--space-2-5</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-1"></span> / <span data-token="--space-2-5"></span></td></tr>
+          <tr><td>Hover zoom / duration / easing</td><td><code>--zoom-scale</code> / <code>--duration-slow</code> / <code>--ease-standard</code></td><td colspan="2"><span data-token="--zoom-scale"></span> / <span data-token="--duration-slow"></span> / <span data-token="--ease-standard"></span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -271,11 +272,13 @@
 &lt;!-- thumb beside a row --&gt;
 &lt;div class="media media--gold media--thumb"&gt;&lt;svg class="icon" aria-hidden="true"&gt;…&lt;/svg&gt;&lt;/div&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.media</code></td><td>Frame: 4:3, rounded, hairline edge, neutral tone.</td></tr>
+        <tr><td><code>.media</code></td><td>Frame: 4:3, 16px radius, ink-5% hairline, neutral tone.</td></tr>
         <tr><td><code>.media--gold</code> <code>--green</code> <code>--blue</code> <code>--ink</code></td><td>Tone.</td></tr>
         <tr><td><code>.media--square</code></td><td>1:1.</td></tr>
-        <tr><td><code>.media--thumb</code></td><td>48px square, smaller radius, larger icon.</td></tr>
-        <tr><td><code>.media__tag</code></td><td>Category pill, top-left.</td></tr>
+        <tr><td><code>.media--wide</code></td><td>16:10.</td></tr>
+        <tr><td><code>.media--hero</code></td><td>Business hero photo: full-bleed on phones; 16:10 with a 24px radius from 768px.</td></tr>
+        <tr><td><code>.media--thumb</code></td><td>48px square, 8px radius, no hairline, larger icon.</td></tr>
+        <tr><td><code>.media__tag</code></td><td>Cream category pill, top-left, no shadow.</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
@@ -287,7 +290,7 @@
         <li><a href="../../mocks/pages/my-products/default.html">pages/my-products/default</a> (thumbs)</li>
         <li><a href="../../mocks/pages/saved/default.html">pages/saved/default</a> (ink tile in a saved card)</li>
       </ul>
-      <p>Drift fixed during extraction: <code>.media--ink</code> was used 114 times but never defined; it is now defined on the brand tokens. The mocks emit an empty class slot (<code>class="media media--green "</code>) everywhere, which is harmless but should not be copied. No mock shows a real photo, so there was no rule for one: <code>.media &gt; img</code> needs <code>width: 100%; height: 100%; object-fit: cover;</code> in the CSS (proposed).</p>
+      <p>Drift fixed during extraction: <code>.media--ink</code> was used 114 times but never defined; it is now defined as a deeper neutral (<code>--color-bg-subtle-hover</code>). The mocks emit an empty class slot (<code>class="media media--green "</code>) everywhere, which is harmless but should not be copied. No mock shows a real photo, so there was no rule for one; the CSS now has <code>.media &gt; img</code>, which fills the frame with <code>object-fit: cover</code>.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

@@ -145,7 +145,7 @@
           </div></div>
         </div>
       </div>
-        <div class="ds-example__caption"><span>Icon in a tinted circle (gold for empty, danger for error), an h2 or h3 title that fits the page outline, at most two sentences, at most two actions.</span></div>
+        <div class="ds-example__caption"><span>A 24px icon in a tinted circle (ink 5% for empty, danger tint for error), an h2 or h3 title that fits the page outline, at most two sentences, at most two actions.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="cluster" style="align-items: stretch; width: 100%;"&gt;
   &lt;div class="card" style="flex: 1 1 18rem;"&gt;&lt;div class="empty empty--compact"&gt;
     &lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="4" y="5" width="16" height="15" rx="2"/&gt;&lt;path d="M8 3v4M16 3v4M4 10h16"/&gt;&lt;/svg&gt;&lt;/div&gt;
@@ -223,7 +223,7 @@
         <div class="ds-pair"><span>Title on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Explanation on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Error icon on its tint</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon|--color-danger-bg" data-min="3"></span></div>
-        <div class="ds-pair"><span>Link inside text</span><span class="ds-pair__ratio" data-contrast="--color-fg-link|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Link inside text (design reference value, below 4.5:1)</span><span class="ds-pair__ratio" data-contrast="--color-fg-link|--color-bg-canvas" data-min="4.0"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Title on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
@@ -232,10 +232,11 @@
         <div class="ds-pair"><span>Link inside text</span><span class="ds-pair__ratio" data-contrast="--color-fg-link|--color-bg-canvas" data-min="4.5"></span></div>
         </div></div>
       </div>
+      <p>In the light theme a green link on the cream page is 4.07:1. This follows the design reference and is below the 4.5:1 that WCAG 1.4.3 asks for; <code>prefers-contrast: more</code> restores 4.5:1. It is recorded in <code>tokens/contrast-pairs.json</code>.</p>
       <h3>Motion</h3>
       <p>Empty and error states appear without animation; nothing bounces or pulses to draw attention.</p>
       <h3>Touch</h3>
-      <p>Actions are medium buttons (44px). The inline suggestion link sits in a sentence, so its target is its line height, which the 24px spacing exception covers.</p>
+      <p>Actions are default buttons, 40px tall, with a hit area of at least 44px on coarse pointers. The inline suggestion link sits in a sentence, so its target is its line height, which the 24px spacing exception covers.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
