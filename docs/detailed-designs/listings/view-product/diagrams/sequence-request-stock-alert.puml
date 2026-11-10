@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Ask for a back-in-stock alert
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ProductPage" as page
+  participant "BackInStockButton" as button
+  participant "ProductsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ProductsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RequestStockAlertCommandHandler" as handler
+  participant "StockAlert" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+page --> actor : Show "Sold out" badge and "Sold out in every size" and the restock note with "Request this item" disabled (L2-036)
+actor -> button : Press "Tell me when it's back"
+alt Visitor without a session
+  button --> actor : Open the sign-in prompt
+else Signed-in member
+  button -> client : requestStockAlert(productId)
+  client -> controller : PUT /api/products/{id}/stock-alert
+  controller -> controller : Authenticate the session and check the CSRF token
+  controller -> handler : Send RequestStockAlertCommand
+  handler -> db : Load Product and any open StockAlert of the member
+  db --> handler : Product and alert or none
+  alt No open alert exists
+    handler -> entity : Create for the member and the product
+    entity --> handler : StockAlert with NotifiedAt empty
+    handler -> db : Save changes in one unit of work
+    db --> handler : Commit result
+  else Open alert exists
+    handler -> handler : Keep the existing alert so that one notice is sent (L2-036)
+  end
+  handler --> controller : Success
+  controller --> client : 204 No Content
+  client --> button : Saved
+  button --> actor : Show the saved state of the alert
+end
+@enduml

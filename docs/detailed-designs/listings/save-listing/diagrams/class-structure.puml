@@ -1,0 +1,97 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Save a listing
+
+enum SavedItemKind {
+  Business
+  Product
+}
+
+class SavedItem {
+  +Guid Id
+  +Guid MemberId
+  +SavedItemKind Kind
+  +Guid TargetId
+  +DateTimeOffset SavedAt
+}
+
+class SavedList {
+  +{static} int MaxItems = 500
+  +Guid MemberId
+  +int Count
+  +Add(kind: SavedItemKind, targetId: Guid, now: DateTimeOffset): Result<SavedItem>
+  +Remove(kind: SavedItemKind, targetId: Guid): bool
+}
+
+class SaveItemCommand {
+  +Guid MemberId
+  +SavedItemKind Kind
+  +Guid TargetId
+}
+
+class SaveItemCommandHandler {
+  +Handle(command: SaveItemCommand): Task<Result>
+}
+
+class UnsaveItemCommand {
+  +Guid MemberId
+  +SavedItemKind Kind
+  +Guid TargetId
+}
+
+class UnsaveItemCommandHandler {
+  +Handle(command: UnsaveItemCommand): Task<Result>
+}
+
+class GetSavedListQuery {
+  +Guid MemberId
+}
+
+class GetSavedListQueryHandler {
+  +Handle(query: GetSavedListQuery): Task<Result<SavedListDto>>
+}
+
+class SavedListDto {
+  +int BusinessCount
+  +int ProductCount
+  +IReadOnlyList<SavedEntryDto> Entries
+}
+
+class SavedEntryDto {
+  +SavedItemKind Kind
+  +Guid TargetId
+  +bool IsAvailable
+  +DateTimeOffset SavedAt
+  +BusinessCardDto? Business
+  +ProductCardDto? Product
+}
+
+class SavedStore {
+  +isSaved(kind: SavedItemKind, id: string): Signal<boolean>
+  +toggle(target: SaveTarget): Promise<void>
+  +undo(target: SaveTarget): Promise<void>
+  +load(): Promise<void>
+}
+
+SavedList "1" *-- "0..500" SavedItem
+SavedItem --> "1" SavedItemKind
+SaveItemCommandHandler ..> SaveItemCommand : handles
+SaveItemCommandHandler --> SavedList : adds to
+UnsaveItemCommandHandler ..> UnsaveItemCommand : handles
+UnsaveItemCommandHandler --> SavedList : removes from
+GetSavedListQueryHandler ..> GetSavedListQuery : handles
+GetSavedListQueryHandler ..> SavedListDto : returns
+SavedListDto *-- "0..*" SavedEntryDto
+SavedStore ..> SavedListDto : holds
+@enduml

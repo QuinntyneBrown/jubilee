@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Use another e-mail
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "VerifyEmailPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ChangeUnconfirmedEmailCommandHandler" as handler
+  participant "Member" as entity
+  participant "ILinkTokenService" as tokens
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+participant "E-mail provider" as email
+
+actor -> page : Press "Use another e-mail" and enter a new address
+page -> client : changeUnconfirmedEmail(address)
+client -> controller : PUT /api/account/unconfirmed-email
+controller -> controller : Authenticate session and check anti-CSRF token (L2-135)
+controller -> handler : Send ChangeUnconfirmedEmailCommand
+handler -> db : Load member
+db --> handler : Member
+alt address malformed or member already confirmed
+  handler --> controller : Validation failure
+  controller --> client : 422 ProblemDetails with field code
+  client --> page : Field error
+  page --> actor : Show the field error and keep the typed address
+else address accepted
+  handler -> entity : ReplaceUnconfirmedEmail(address) (L2-004)
+  entity --> handler : Address replaced - bounce flag cleared
+  handler -> tokens : SupersedeOutstanding(member, EmailConfirmation)
+  tokens --> handler : Earlier links stop working
+  handler -> tokens : Issue(member, EmailConfirmation, 24 hours)
+  tokens --> handler : New token and its hash
+  handler -> db : Save member - token hash - outbox message in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Result
+  controller --> client : 202 Accepted
+  client --> page : Changed
+  page --> actor : Show "Confirm your e-mail" naming the new address
+  job -> db : Read pending outbox message
+  db --> job : ConfirmationEmailRequested
+  job -> email : Send confirmation e-mail to the new address
+  email --> job : Accepted
+end
+@enduml

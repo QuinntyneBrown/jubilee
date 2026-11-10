@@ -1,0 +1,102 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Sign in
+
+enum SignInOutcome {
+  SignedIn
+  InvalidCredentials
+  Locked
+}
+
+enum PendingActionKind {
+  Message
+  Book
+  Ask
+  Order
+  Save
+}
+
+class SignInCommand {
+  +string Email
+  +string Password
+  +bool KeepSignedIn
+  +string IpAddress
+}
+
+class SignInCommandHandler {
+  +Handle(command: SignInCommand): Task<SignInResult>
+}
+
+class SignInResult {
+  +SignInOutcome Outcome
+  +string SessionId
+  +string FirstName
+  +TimeSpan? RetryAfter
+}
+
+interface ISignInAttemptTracker {
+  +IsLocked(emailKey: string): Task<bool>
+  +RecordFailure(emailKey: string, ipAddress: string): Task<AttemptState>
+  +Reset(emailKey: string): Task
+}
+
+class AttemptState {
+  +int AccountFailures
+  +int IpFailures
+  +bool LockStarted
+}
+
+interface IPasswordHasher {
+  +Hash(password: string): string
+  +Verify(hash: string, password: string): bool
+}
+
+interface ISessionStore {
+  +Create(memberId: Guid, persistent: bool): Task<Session>
+}
+
+class Member {
+  +Guid Id
+  +string FirstName
+  +EmailAddress Email
+  +string PasswordHash
+}
+
+class PendingAction <<TypeScript>> {
+  +kind: PendingActionKind
+  +targetId: string
+  +returnPath: string
+}
+
+class PendingActionService <<TypeScript>> {
+  +remember(action: PendingAction): void
+  +resume(): void
+}
+
+class ReturnUrlService <<TypeScript>> {
+  +sanitise(raw: string): string
+}
+
+SignInCommandHandler ..> SignInCommand : handles
+SignInCommandHandler ..> SignInResult : returns
+SignInResult --> SignInOutcome : has
+SignInCommandHandler ..> ISignInAttemptTracker : uses
+ISignInAttemptTracker ..> AttemptState : returns
+SignInCommandHandler ..> IPasswordHasher : uses
+SignInCommandHandler ..> ISessionStore : uses
+SignInCommandHandler --> Member : loads
+PendingActionService "1" o-- "0..1" PendingAction : holds
+PendingAction --> PendingActionKind : has
+PendingActionService ..> ReturnUrlService : uses
+@enduml

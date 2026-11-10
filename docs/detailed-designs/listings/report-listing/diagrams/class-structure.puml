@@ -1,0 +1,95 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Report a listing
+
+enum ReportReason {
+  NotARealBusiness
+  MisleadingOrOutOfDate
+  BadExperience
+  SomethingElse
+}
+
+enum ReportStatus {
+  Open
+  InReview
+  Resolved
+}
+
+class Report {
+  +Guid Id
+  +Guid ListingId
+  +Guid ReporterId
+  +ReportStatus Status
+  +DateTimeOffset CreatedAt
+  +{static} Create(listingId: Guid, reporterId: Guid, reason: ReportReason, description: string, now: DateTimeOffset): Report
+  +AcceptsAdditionAt(now: DateTimeOffset): bool
+  +AddEntry(reason: ReportReason, description: string, now: DateTimeOffset): void
+}
+
+class ReportEntry {
+  +Guid Id
+  +ReportReason Reason
+  +string Description
+  +DateTimeOffset SubmittedAt
+}
+
+class ReportListingCommand {
+  +string ListingSlug
+  +Guid ReporterId
+  +ReportReason? Reason
+  +string Description
+}
+
+class ReportListingCommandValidator {
+  +{static} int MaxDescriptionLength = 2000
+  +Validate(command: ReportListingCommand): ValidationResult
+}
+
+class ReportListingCommandHandler {
+  +Handle(command: ReportListingCommand): Task<Result<Guid>>
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +string Slug
+  +IsPublic(): bool
+}
+
+class OutboxMessage {
+  +Guid Id
+  +string Type
+  +string Payload
+  +DateTimeOffset OccurredAt
+  +DateTimeOffset? DispatchedAt
+}
+
+class IdempotencyRecord {
+  +string Key
+  +Guid MemberId
+  +int StatusCode
+  +string ResponseBody
+  +DateTimeOffset ExpiresAt
+}
+
+Report "1" *-- "1..*" ReportEntry
+Report --> "1" ReportStatus
+ReportEntry --> "1" ReportReason
+Report "0..*" --> "1" Listing : about
+ReportListingCommandHandler ..> ReportListingCommand : handles
+ReportListingCommandValidator ..> ReportListingCommand : validates
+ReportListingCommandHandler --> Report : creates or extends
+ReportListingCommandHandler ..> OutboxMessage : writes
+ReportListingCommand --> "0..1" ReportReason
+@enduml

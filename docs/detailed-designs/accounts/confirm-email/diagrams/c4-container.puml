@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Confirm e-mail
+
+Person(member, "Member", "Unconfirmed account holder")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "VerifyEmailPage and VerifyEmailBanner")
+  Container(api, "Jubilee API", "ASP.NET Core", "Confirms tokens and blocks restricted actions")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Sends confirmation e-mail from the outbox")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members - link tokens - outbox")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and resend counters")
+}
+System_Ext(email, "E-mail provider", "Delivers e-mail and reports bounces")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Confirms - resends - changes the address", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Reads session and counts resends", "Redis protocol")
+Rel(worker, db, "Reads outbox messages", "EF Core")
+Rel(worker, email, "Sends confirmation e-mail", "HTTPS")
+Rel(email, api, "Posts bounce events to /api/webhooks/email-events", "HTTPS")
+@enduml

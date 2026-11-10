@@ -1,0 +1,80 @@
+@startuml
+title UML sequence behaviour — Search the directory
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SearchBox" as box
+  participant "SearchPage" as page
+  participant "SearchApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RateLimitMiddleware" as limit
+  participant "SearchController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SearchDirectoryQueryHandler" as handler
+  participant "SearchQueryText" as text
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Search index" as index
+  database "Jubilee database" as db
+end box
+actor -> box : Type "plumber" and submit
+box -> page : Navigate to /search?q=plumber (L2-029)
+page -> client : search(q, tab)
+client -> limit : GET /api/search?q=plumber
+limit -> cache : Increment the counter for the IP address
+cache --> limit : Count in the current minute
+alt More than 60 searches in the minute
+  limit --> client : 429 ProblemDetails (L2-032)
+  client --> page : Rate limited
+  page --> actor : Show the error state
+else Within the limit
+  limit -> controller : Pass the request
+  controller -> handler : Send SearchDirectoryQuery
+  handler -> text : From(raw query)
+  text --> handler : Trimmed text of at most 100 characters (L2-032)
+  alt Search index available
+    handler -> index : SearchAsync with stemming and case and accent folding (L2-029)
+    index --> handler : Live hits with match ranges and counts
+    opt No hit
+      handler -> index : SuggestAsync(text)
+      index --> handler : Close term and most relevant category or none (L2-030)
+    end
+  else Search index unavailable
+    handler -> db : SearchByNameAsync over live listing names (L2-181)
+    db --> handler : Hits without match explanations
+  end
+  opt Signed-in member
+    handler -> db : Record RecentSearch (L2-031)
+    db --> handler : Saved
+  end
+  handler --> controller : SearchResults
+  controller --> client : 200 with hits and counts
+  client --> page : Typed result
+  alt Hits found
+    page --> actor : Show "Results for “plumber”" with tabs and counts and mark highlights (L2-029)
+  else Nothing matches
+    page --> actor : Show "Nothing matches “plumbre”" with "Did you mean plumber?" when a close term exists (L2-030)
+  end
+end
+opt Search fails
+  controller --> client : 503 ProblemDetails with JB-SRCH-503
+  client --> page : Load error
+  page --> actor : Show "We couldn't load your results" with JB-SRCH-503 (L2-029)
+end
+@enduml

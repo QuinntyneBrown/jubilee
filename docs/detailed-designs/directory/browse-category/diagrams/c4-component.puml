@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse a category
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "CategoryPage", "Angular page", "Renders heading and count and cards for /c/:category")
+  Component(filters, "FilterChips and FiltersDialog", "Angular components", "Inline chips from 768 px and a sheet below 768 px")
+  Component(pager, "SortControl and Pagination", "Angular components", "Choose the sort order and the page")
+  Component(store, "CategoryStore", "Signal store", "Holds the CategoryQuery read from the query string")
+  Component(client, "DirectoryApi", "Typed HTTP client", "Calls the category endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "CategoriesController", "ASP.NET Core controller", "Exposes GET /api/categories/{slug}/listings")
+  Component(handler, "GetCategoryListingsQueryHandler", "MediatR handler", "Filters and sorts and pages live listings")
+  Component(filterset, "CategoryFilterSet", "Value object", "Keeps allowed filter values and ignores the rest")
+  Component(sort, "ListingSortPolicy", "Domain service", "Orders by Recommended or Newest or Name")
+  Component(window, "PageWindow", "Value object", "Clamps the page number to the valid range")
+}
+ContainerDb(cache, "Cache", "Redis", "Result pages for at most 60 seconds")
+ContainerDb(db, "Jubilee database", "SQL Server", "Category and Listing rows")
+
+Rel(page, store, "Reads state from")
+Rel(filters, store, "Toggles filters in")
+Rel(pager, store, "Sets sort and page in")
+Rel(store, client, "Loads results through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetCategoryListingsQuery")
+Rel(handler, filterset, "Builds predicates with")
+Rel(handler, sort, "Orders with")
+Rel(handler, window, "Pages with")
+Rel(handler, cache, "Reads and writes", "Redis protocol")
+Rel(handler, db, "Queries", "EF Core")
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Reset password
+
+Person(visitor, "Visitor", "Resets a forgotten password")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "ForgotPasswordPage and ResetPasswordPage")
+  Container(api, "Jubilee API", "ASP.NET Core", "Accepts reset requests and changes the password")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Looks up the account - issues the link - sends e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members - link tokens - outbox")
+  ContainerDb(cache, "Cache", "Redis", "Reset counters and sessions")
+}
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+System_Ext(breach, "Breached-password service", "k-anonymity range query")
+
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(web, api, "Requests a link and submits the new password", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Ends sessions", "Redis protocol")
+Rel(api, breach, "Range query", "HTTPS")
+Rel(worker, db, "Reads outbox and writes token hashes", "EF Core")
+Rel(worker, cache, "Counts reset requests per e-mail", "Redis protocol")
+Rel(worker, email, "Sends reset link and security e-mail", "HTTPS")
+@enduml

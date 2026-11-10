@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — View a business page
+
+Person(visitor, "Visitor", "Reads a listing without an account")
+Person(member, "Member", "Reads a listing and starts a request or message")
+Person(owner, "Owner", "Checks how members see the listing")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Opens /b/:slug in", "HTTPS")
+Rel(member, jubilee, "Opens /b/:slug in", "HTTPS")
+Rel(owner, jubilee, "Opens their own listing in", "HTTPS")
+@enduml

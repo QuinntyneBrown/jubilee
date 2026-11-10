@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Search the directory
+
+Person(visitor, "Visitor", "Searches without an account")
+Person(member, "Member", "Searches while signed in and keeps recent searches")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Searches businesses and services and products in", "HTTPS")
+Rel(member, jubilee, "Searches and manages recent searches in", "HTTPS")
+@enduml

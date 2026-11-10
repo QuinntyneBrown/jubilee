@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage session
+
+Person(member, "Member", "Stays signed in - is signed out on expiry - signs out")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(member, jubilee, "Uses a signed-in session and signs out of", "HTTPS")
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Join with e-mail
+
+Person(visitor, "Visitor", "Creates a free account")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "JoinPage with its form and success state")
+  Container(api, "Jubilee API", "ASP.NET Core", "Validates the join request and creates the member")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox and sends e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members - link tokens - outbox")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and join rate-limit counters")
+}
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+System_Ext(bot, "Bot challenge provider", "Verifies challenge tokens")
+System_Ext(breach, "Breached-password service", "k-anonymity range query")
+
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(web, api, "POST /api/account/join", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Counts join attempts and stores the session", "Redis protocol")
+Rel(api, bot, "Verifies challenge token", "HTTPS")
+Rel(api, breach, "Range query", "HTTPS")
+Rel(worker, db, "Reads outbox messages", "EF Core")
+Rel(worker, email, "Sends confirmation e-mail", "HTTPS")
+@enduml

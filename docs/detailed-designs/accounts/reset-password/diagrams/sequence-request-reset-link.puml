@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Request a reset link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ForgotPasswordPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "PasswordResetController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RequestPasswordResetCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "SendPasswordResetLinkHandler" as send
+end box
+participant "E-mail provider" as email
+
+actor -> page : Enter an e-mail and press "Send reset link"
+alt e-mail empty or malformed
+  page --> actor : Show "Fix 1 thing to continue" and "Enter an e-mail address like name@example.com" (L2-008)
+else e-mail well formed
+  page -> client : requestPasswordReset(email)
+  client -> controller : POST /api/account/password-reset-requests
+  controller -> handler : Send RequestPasswordResetCommand
+  handler -> db : Save PasswordResetRequested outbox message - no account lookup (L2-141)
+  db --> handler : Commit result
+  handler --> controller : Result
+  controller --> client : 202 Accepted - same body for every e-mail
+  client --> page : Accepted
+  page --> actor : Show "Check your e-mail. If {address} has an account, a reset link is on its way. It works for 60 minutes."
+  send -> db : Read outbox message
+  db --> send : PasswordResetRequested
+  send -> cache : Increment reset counter for the e-mail (L2-008)
+  cache --> send : Count in the last hour
+  send -> db : Find member by normalised e-mail
+  db --> send : Member or nothing
+  opt account exists and count is at most 3
+    send -> send : Supersede earlier reset tokens and issue a 60-minute token (L2-140)
+    send -> db : Save token hash
+    db --> send : Commit result
+    send -> email : Send reset link e-mail
+    email --> send : Accepted
+  end
+end
+@enduml

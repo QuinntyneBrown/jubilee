@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Open the saved page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SavedPage" as page
+  participant "SavedStore" as store
+  participant "SavedApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SavedController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetSavedListQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /saved
+page -> store : load()
+store -> client : getSavedList()
+client -> controller : GET /api/saved
+controller -> controller : Authenticate the session and take the member from it (L2-133)
+controller -> handler : Send GetSavedListQuery
+handler -> db : Load SavedItem rows of the member newest first with targets
+db --> handler : Rows and the current state of each target
+handler -> handler : Mark paused or removed targets as not available (L2-042)
+handler --> controller : SavedListDto
+controller --> client : 200 with entries and counts
+client --> store : Typed result
+store --> page : Entries
+alt One or more items saved
+  page --> actor : Show "3 businesses · 1 product" with cards newest saved first (L2-042)
+  opt Entry is not available
+    page --> actor : Show "No longer available" with "Remove" and no link (L2-042)
+  end
+else Nothing saved
+  page --> actor : Show "Save businesses to find them again." with "Browse businesses" (L2-042)
+end
+opt Saved list fails to load
+  controller --> client : 503 ProblemDetails with JB-SAV-503
+  client --> store : Load error
+  store --> page : Error
+  page --> actor : Show "We couldn't load your saved list" with JB-SAV-503 (L2-042)
+end
+@enduml

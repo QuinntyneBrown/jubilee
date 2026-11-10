@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Save a listing
+
+Person(member, "Member", "Saves items and opens the saved page")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Heart buttons and toasts and the page /saved")
+  Container(api, "Jubilee API", "ASP.NET Core", "Saved list endpoints under /api/saved")
+  ContainerDb(db, "Jubilee database", "SQL Server", "SavedItem rows and listings and products")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Saves and unsaves and lists through", "JSON/HTTPS")
+Rel(api, db, "Reads and writes SavedItem rows in", "EF Core")
+@enduml

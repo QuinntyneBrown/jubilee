@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Join with e-mail
+
+Person(visitor, "Visitor", "Creates a free account at /join")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the confirmation e-mail and the join-attempt notice")
+System_Ext(bot, "Bot challenge provider", "Verifies the invisible challenge on the join form")
+System_Ext(breach, "Breached-password service", "Answers k-anonymity range queries for password hashes")
+
+Rel(visitor, jubilee, "Joins with e-mail and password using", "HTTPS")
+Rel(jubilee, email, "Sends confirmation e-mail via")
+Rel(jubilee, bot, "Verifies challenge token with", "HTTPS")
+Rel(jubilee, breach, "Checks password hash prefix with", "HTTPS")
+Rel(email, visitor, "Delivers the confirmation link to")
+@enduml

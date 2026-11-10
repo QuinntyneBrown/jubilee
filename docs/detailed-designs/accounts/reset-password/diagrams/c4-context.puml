@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Reset password
+
+Person(visitor, "Visitor", "Forgot the password of an account")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the reset link and the security e-mail")
+System_Ext(breach, "Breached-password service", "Answers k-anonymity range queries for password hashes")
+
+Rel(visitor, jubilee, "Requests a reset link and chooses a new password in", "HTTPS")
+Rel(jubilee, email, "Sends the reset link and the security e-mail via")
+Rel(jubilee, breach, "Checks the new password with", "HTTPS")
+Rel(email, visitor, "Delivers the reset link to")
+@enduml

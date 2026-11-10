@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Continue with Google
+
+Person(visitor, "Visitor", "Joins or signs in with Google")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "JoinPage - SignInPage - GoogleAgreementPage")
+  Container(api, "Jubilee API", "ASP.NET Core", "Runs the authorization code flow with PKCE")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members and their Google identity")
+  ContainerDb(cache, "Cache", "Redis", "Pending sign-in transactions and sessions")
+}
+System_Ext(google, "Google Identity", "OpenID Connect provider")
+
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(web, api, "Navigates to /api/auth/google/start and posts the agreement", "HTTPS")
+Rel(api, google, "Redirects the browser to - exchanges the code with", "OpenID Connect")
+Rel(visitor, google, "Consents at", "HTTPS")
+Rel(api, cache, "Stores state - nonce - code verifier - session", "Redis protocol")
+Rel(api, db, "Reads and writes members", "EF Core")
+@enduml

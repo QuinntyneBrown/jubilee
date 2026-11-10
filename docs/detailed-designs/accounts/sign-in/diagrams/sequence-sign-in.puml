@@ -1,0 +1,83 @@
+@startuml
+title UML sequence behaviour — Sign in with e-mail and password
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SignInPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RateLimitMiddleware" as limit
+  participant "SessionController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SignInCommandHandler" as handler
+  participant "ISignInAttemptTracker" as tracker
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+
+actor -> page : Enter e-mail and password and press "Sign in"
+page -> page : Check e-mail format and set the busy state (L2-006)
+page -> client : signIn(email, password, keepSignedIn)
+client -> limit : POST /api/session
+limit -> cache : Read failure counter for the IP (L2-007)
+alt 20 failures from the IP within 15 minutes
+  cache --> limit : Limit reached
+  limit --> client : 429 with Retry-After
+  client --> page : Rate-limit error
+  page --> actor : Show "You're doing that a lot. Try again in {n} minutes."
+else within the IP limit
+  cache --> limit : Below limit
+  limit -> controller : Forward request
+  controller -> handler : Send SignInCommand
+  handler -> tracker : IsLocked(emailKey)
+  tracker --> handler : Lock state
+  alt account locked
+    handler --> controller : Outcome Locked
+    controller --> client : 429 with code SIGN_IN_LOCKED and Retry-After
+    client --> page : Locked
+    page --> actor : Show "Too many tries. Wait 15 minutes or reset your password." (L2-007)
+  else not locked
+    handler -> db : Load member by normalised e-mail
+    db --> handler : Member or nothing
+    handler -> handler : Verify password with Argon2id - or a dummy hash when no member (L2-141)
+    alt wrong password or no account
+      handler -> tracker : RecordFailure(emailKey, ip)
+      tracker --> handler : Attempt state
+      opt fifth failure within 15 minutes for an existing account
+        handler -> db : Save SignInBlockedEmailRequested outbox message (L2-007)
+        db --> handler : Commit result
+      end
+      handler --> controller : Outcome InvalidCredentials
+      controller --> client : 401 with code INVALID_CREDENTIALS
+      client --> page : Invalid credentials
+      page --> actor : Show "That password doesn't match this e-mail. Try again or reset it." and keep the e-mail
+    else password matches
+      handler -> tracker : Reset(emailKey) (L2-007)
+      tracker --> handler : Counter cleared
+      handler -> cache : Create Session with a new identifier (L2-010)
+      cache --> handler : Session
+      handler --> controller : Outcome SignedIn
+      controller --> client : 200 with session cookie and member summary
+      client --> page : Signed-in member
+      page --> actor : Show "Welcome back, {first name}" and go to the return path or /
+    end
+  end
+end
+@enduml

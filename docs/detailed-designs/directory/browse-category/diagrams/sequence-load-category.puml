@@ -1,0 +1,77 @@
+@startuml
+title UML sequence behaviour — Load a category page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "CategoryPage" as page
+  participant "CategoryStore" as store
+  participant "DirectoryApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "CategoriesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetCategoryListingsQueryHandler" as handler
+  participant "PageWindow" as window
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+actor -> page : Open /c/home-property?page=2
+page -> store : Read CategoryQuery from the query string
+store -> client : getListings(slug, query)
+client -> controller : GET /api/categories/home-property/listings?page=2
+controller -> handler : Send GetCategoryListingsQuery
+handler -> cache : Get result page by query key
+alt Cached within 60 seconds
+  cache --> handler : CategoryPageResult
+else Not cached
+  cache --> handler : Miss
+  handler -> db : Load Category by slug
+  db --> handler : Category or none
+  alt Unknown category slug
+    handler --> controller : NotFound
+    controller --> client : 404 ProblemDetails (L2-023)
+    client --> store : Not found
+    store --> page : Not found
+    page --> actor : Show the not-found page (L2-113)
+  else Category found
+    handler -> db : Count and load live listings only (L2-028)
+    db --> handler : Total and rows in Recommended order (L2-025)
+    handler -> window : Clamp(page, total) with 16 per page (L2-026)
+    window --> handler : Nearest valid page
+    handler -> cache : Store result page for 60 seconds
+    cache --> handler : Stored
+  end
+end
+handler --> controller : CategoryPageResult
+controller --> client : 200 with cards and window
+client --> store : Typed result
+store --> page : Cards and total and page
+alt Total is 0 and no filter is applied
+  page --> actor : Show "No one has listed here yet" (L2-023)
+else Total is 16 or fewer
+  page --> actor : Show cards and "Showing all {n}" without pagination (L2-026)
+else More than 16
+  page --> actor : Show 16 cards and "Showing 17–32 of 312" and move focus to the results heading (L2-026)
+end
+opt Request fails or the service is unavailable
+  controller --> client : 503 ProblemDetails with JB-CAT-503
+  client --> page : Load error
+  page --> actor : Show "We couldn't load this category" with JB-CAT-503 (L2-023)
+end
+@enduml

@@ -1,0 +1,90 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Share a listing
+
+class ShareListingDialog {
+  +listing: ShareTarget
+  +copied: Signal<boolean>
+  +canUseNativeShare: boolean
+  +copy(): Promise<void>
+  +openEmail(): void
+  +openWhatsApp(): void
+  +openNativeShare(): Promise<void>
+  +done(): void
+}
+
+class ShareTarget {
+  +slug: string
+  +name: string
+  +tagline: string
+}
+
+class ShareLinkBuilder {
+  +canonicalUrl(slug: string): string
+  +mailtoUrl(target: ShareTarget): string
+  +whatsAppUrl(target: ShareTarget): string
+}
+
+class ClipboardService {
+  +writeText(text: string): Promise<boolean>
+}
+
+class WebShareService {
+  +isSupported(): boolean
+  +share(data: ShareData): Promise<void>
+}
+
+class ListingDocumentController {
+  +Get(slug: string): Task<IActionResult>
+}
+
+class GetListingPreviewQuery {
+  +string Slug
+}
+
+class GetListingPreviewQueryHandler {
+  +Handle(query: GetListingPreviewQuery): Task<Result<ListingPreview>>
+}
+
+class ListingPreview {
+  +string CanonicalUrl
+  +string Title
+  +string Description
+  +string ImageUrl
+}
+
+class OpenGraphTagBuilder {
+  +Build(preview: ListingPreview): string
+}
+
+class Listing {
+  +Guid Id
+  +string Slug
+  +string Name
+  +string Tagline
+  +ListingStage Stage
+  +IsPublic(): bool
+}
+
+ShareListingDialog --> "1" ShareTarget : shares
+ShareListingDialog ..> ShareLinkBuilder : uses
+ShareListingDialog ..> ClipboardService : uses
+ShareListingDialog ..> WebShareService : uses
+ListingDocumentController ..> GetListingPreviewQuery : sends
+ListingDocumentController ..> OpenGraphTagBuilder : uses
+GetListingPreviewQueryHandler ..> GetListingPreviewQuery : handles
+GetListingPreviewQueryHandler ..> ListingPreview : returns
+GetListingPreviewQueryHandler --> Listing : loads
+OpenGraphTagBuilder ..> ListingPreview : encodes
+@enduml

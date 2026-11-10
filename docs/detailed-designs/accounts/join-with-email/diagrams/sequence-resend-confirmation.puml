@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Send the confirmation e-mail again
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "JoinPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ResendConfirmationCommandHandler" as handler
+  participant "ILinkTokenService" as tokens
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+participant "E-mail provider" as email
+
+actor -> page : Press "Send it again"
+page -> client : resendConfirmation()
+client -> controller : POST /api/account/confirmation/resend
+controller -> controller : Authenticate session and check anti-CSRF token (L2-135)
+controller -> cache : Increment resend counter for the member (L2-137)
+alt more than 5 resends in the hour
+  cache --> controller : Limit exceeded
+  controller --> client : 429 with Retry-After
+  client --> page : Rate-limit error
+  page --> actor : Show "You're doing that a lot. Try again in {n} minutes."
+else within the limit
+  cache --> controller : Count within limit
+  controller -> handler : Send ResendConfirmationCommand
+  handler -> tokens : SupersedeOutstanding(member, EmailConfirmation)
+  tokens -> db : Mark earlier tokens superseded (L2-001)
+  db --> tokens : Updated
+  handler -> tokens : Issue(member, EmailConfirmation, 24 hours)
+  tokens --> handler : New token and its SHA-256 hash (L2-140)
+  handler -> db : Save token hash and outbox message in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Result
+  controller --> client : 202 Accepted
+  client --> page : Resent
+  page --> actor : Confirm that a new link is on its way
+  job -> db : Read pending outbox message
+  db --> job : ConfirmationEmailRequested
+  job -> email : Send confirmation e-mail with the new link
+  email --> job : Accepted
+end
+@enduml

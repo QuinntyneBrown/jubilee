@@ -1,0 +1,107 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Join with e-mail
+
+enum EmailStatus {
+  Unconfirmed
+  Confirmed
+}
+
+enum LinkTokenPurpose {
+  EmailConfirmation
+  PasswordReset
+  EmailChange
+  ChurchReference
+  DataDownload
+}
+
+class EmailAddress <<value object>> {
+  +string Value
+  +{static} Parse(raw: string): EmailAddress
+  -Normalise(raw: string): string
+}
+
+class Member {
+  +Guid Id
+  +string FirstName
+  +string LastName
+  +EmailAddress Email
+  +EmailStatus EmailStatus
+  +string PasswordHash
+  +string HomeChurch
+  +DateTimeOffset AgreementAcceptedAt
+  +DateTimeOffset CreatedAt
+  +{static} Join(firstName: string, lastName: string, email: EmailAddress, passwordHash: string, homeChurch: string, now: DateTimeOffset): Member
+}
+
+class LinkToken {
+  +Guid Id
+  +Guid MemberId
+  +LinkTokenPurpose Purpose
+  +byte[] TokenHash
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? UsedAt
+  +DateTimeOffset? SupersededAt
+  +Supersede(now: DateTimeOffset): void
+}
+
+class JoinWithEmailCommand {
+  +string FirstName
+  +string LastName
+  +string Email
+  +string Password
+  +string HomeChurch
+  +bool AgreementAccepted
+  +string ChallengeToken
+}
+
+class JoinWithEmailCommandValidator {
+  +Validate(command: JoinWithEmailCommand): ValidationResult
+}
+
+class JoinWithEmailCommandHandler {
+  +Handle(command: JoinWithEmailCommand): Task<JoinResult>
+}
+
+class ResendConfirmationCommandHandler {
+  +Handle(command: ResendConfirmationCommand): Task<Result>
+}
+
+interface IPasswordHasher {
+  +Hash(password: string): string
+  +Verify(hash: string, password: string): bool
+}
+
+interface ILinkTokenService {
+  +Issue(memberId: Guid, purpose: LinkTokenPurpose, lifetime: TimeSpan): IssuedToken
+  +SupersedeOutstanding(memberId: Guid, purpose: LinkTokenPurpose): void
+}
+
+interface IBreachedPasswordChecker {
+  +IsBreached(password: string): Task<bool>
+}
+
+Member *-- EmailAddress : owns
+Member --> EmailStatus : has
+Member "1" --> "*" LinkToken : receives
+LinkToken --> LinkTokenPurpose : has
+JoinWithEmailCommandHandler ..> JoinWithEmailCommand : handles
+JoinWithEmailCommandValidator ..> JoinWithEmailCommand : validates
+JoinWithEmailCommandValidator ..> IBreachedPasswordChecker : uses
+JoinWithEmailCommandHandler ..> IPasswordHasher : uses
+JoinWithEmailCommandHandler ..> ILinkTokenService : uses
+JoinWithEmailCommandHandler --> Member : creates
+ResendConfirmationCommandHandler ..> ILinkTokenService : uses
+ILinkTokenService --> LinkToken : issues
+@enduml

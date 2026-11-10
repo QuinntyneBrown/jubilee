@@ -1,0 +1,44 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Join with e-mail
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "JoinPage", "Angular page", "Join form - success state - resend action")
+  Component(summary, "ErrorSummary", "Angular component", "Lists every invalid field as a link")
+  Component(client, "AccountApi", "Typed HTTP client", "Calls the account endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(limit, "RateLimitMiddleware", "ASP.NET Core middleware", "5 joins per IP per hour")
+  Component(ctrl, "AccountController", "ASP.NET Core controller", "Exposes /api/account endpoints")
+  Component(validator, "JoinWithEmailCommandValidator", "FluentValidation validator", "Field lengths - password policy - agreement")
+  Component(handler, "JoinWithEmailCommandHandler", "MediatR handler", "Creates the member and the confirmation token")
+  Component(member, "Member", "Domain entity", "Owns e-mail status and credentials")
+  Component(hasher, "IPasswordHasher", "Application service", "Argon2id hashing")
+  Component(tokens, "ILinkTokenService", "Application service", "Issues and supersedes link tokens")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "OutboxDispatcherJob", "Hosted job", "Sends queued e-mail")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Members - link tokens - outbox")
+ContainerDb(cache, "Cache", "Redis", "Rate-limit counters and sessions")
+System_Ext(bot, "Bot challenge provider", "Verifies challenge tokens")
+System_Ext(breach, "Breached-password service", "k-anonymity range query")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+
+Rel(page, summary, "Shows field errors in")
+Rel(page, client, "Submits the form through")
+Rel(client, limit, "POST /api/account/join", "JSON/HTTPS")
+Rel(limit, cache, "Increments counter")
+Rel(limit, ctrl, "Passes allowed requests to")
+Rel(ctrl, validator, "Validates through MediatR pipeline")
+Rel(ctrl, handler, "Sends JoinWithEmailCommand")
+Rel(ctrl, bot, "Verifies challenge token")
+Rel(validator, breach, "Checks password")
+Rel(handler, member, "Creates")
+Rel(handler, hasher, "Hashes password with")
+Rel(handler, tokens, "Issues confirmation token with")
+Rel(handler, db, "Saves member - token - outbox message", "EF Core")
+Rel(job, db, "Reads outbox")
+Rel(job, email, "Sends confirmation e-mail")
+@enduml

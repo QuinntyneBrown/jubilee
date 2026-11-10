@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Accept the agreement after joining with Google
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "AgreementGuard" as guard
+  participant "GoogleAgreementPage" as page
+  participant "AccountApi" as client
+  participant "SessionService" as session
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AcceptAgreementCommandHandler" as handler
+  participant "Member" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> guard : Open any route after joining with Google
+guard -> session : Read agreement flag
+session --> guard : Agreement not accepted
+guard --> actor : Redirect to /join/agreement (L2-003)
+actor -> page : Tick the agreement and continue
+alt agreement not ticked
+  page --> actor : Show "Agree to the statement of faith to join."
+else agreement ticked
+  page -> client : acceptAgreement()
+  client -> controller : POST /api/account/agreement
+  controller -> controller : Authenticate session and check anti-CSRF token (L2-135)
+  controller -> handler : Send AcceptAgreementCommand
+  handler -> db : Load member
+  db --> handler : Member
+  handler -> entity : AcceptAgreement(now)
+  entity --> handler : Account usable
+  handler -> db : Save changes in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Result
+  controller --> client : 204 No Content
+  client --> page : Accepted
+  page -> session : Refresh the signed-in member
+  session --> page : Agreement accepted
+  page --> actor : Navigate to the return URL or /
+end
+@enduml

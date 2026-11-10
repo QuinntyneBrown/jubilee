@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — View a product and start a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ProductPage" as page
+  participant "ProductRequestForm" as form
+  participant "ProductsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ProductsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetProductPageQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /b/luzandre/p/faith-heavyweight-tee
+page -> client : getProductPage(slug, product)
+client -> controller : GET /api/listings/luzandre/products/faith-heavyweight-tee
+controller -> handler : Send GetProductPageQuery
+handler -> db : Load Product with options and photos where the listing is live (L2-028)
+db --> handler : Product or none
+alt Product found
+  handler -> db : Load up to three other products of the shop (L2-035)
+  db --> handler : Other products
+  handler --> controller : ProductPageDto
+  controller --> client : 200 with the product page
+  client --> page : Typed result
+  page --> actor : Show photos and price and options and "Request this item" (L2-035)
+else Product or listing not public
+  handler --> controller : NotFound
+  controller --> client : 404 ProblemDetails
+  client --> page : Not found
+  page --> actor : Show the not-found page
+else Load fails
+  controller --> client : 503 ProblemDetails with JB-PRD-503
+  client --> page : Load error
+  page --> actor : Show "We couldn't load this product" with JB-PRD-503 and "Back to {shop}" (L2-035)
+end
+actor -> form : Press "Request this item"
+form -> form : Validate the option choice and the quantity
+alt No size chosen
+  form --> actor : Show "Choose a size." on the size group and keep the dialog closed (L2-035)
+else Quantity below the minimum order quantity
+  form --> actor : Show "This item has a minimum of 12." (L2-035)
+else Valid selection
+  form -> page : Emit the option and a quantity from 1 to the stock available or 99 (L2-035)
+  page --> actor : Open the order request dialog with the selection
+end
+@enduml

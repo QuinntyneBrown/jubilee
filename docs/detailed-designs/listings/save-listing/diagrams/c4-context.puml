@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Save a listing
+
+Person(visitor, "Visitor", "Is asked to sign in before saving")
+Person(member, "Member", "Saves businesses and products to a private list")
+Person(owner, "Owner", "Sees how many members saved the listing")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Presses a heart in", "HTTPS")
+Rel(member, jubilee, "Saves and unsaves items and opens /saved in", "HTTPS")
+Rel(owner, jubilee, "Reads the Saved by members count in", "HTTPS")
+@enduml

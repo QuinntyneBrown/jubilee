@@ -1,0 +1,111 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — View a product
+
+enum StockChange {
+  None
+  BecameSoldOut
+  BackInStock
+}
+
+class Product {
+  +Guid Id
+  +Guid ListingId
+  +string Slug
+  +string Name
+  +decimal Price
+  +bool PricedPerUnit
+  +int? Stock
+  +int MinimumOrderQuantity
+  +string? RestockNote
+  +bool IsSoldOut
+  +MaxQuantity(optionId: Guid?): int
+  +SetStock(optionId: Guid?, stock: int?): StockChange
+}
+
+class ProductOption {
+  +Guid Id
+  +string GroupName
+  +string Label
+  +int? Stock
+  +int DisplayOrder
+}
+
+class ProductAttribute {
+  +string Name
+  +string Value
+}
+
+class ListingPhoto {
+  +Guid Id
+  +string Url
+  +string AltText
+  +int DisplayOrder
+}
+
+class StockAlert {
+  +Guid Id
+  +Guid ProductId
+  +Guid MemberId
+  +DateTimeOffset RequestedAt
+  +DateTimeOffset? NotifiedAt
+  +MarkNotified(now: DateTimeOffset): void
+}
+
+class GetProductPageQueryHandler {
+  +Handle(query: GetProductPageQuery): Task<Result<ProductPageDto>>
+}
+
+class ProductPageDto {
+  +string Name
+  +string PriceText
+  +string DeliveryLine
+  +string ShopName
+  +bool IsSoldOut
+  +bool ViewerHasStockAlert
+  +IReadOnlyList<ProductOptionDto> Options
+  +IReadOnlyList<ProductCardDto> MoreFromShop
+}
+
+class RequestStockAlertCommand {
+  +Guid ProductId
+  +Guid MemberId
+}
+
+class RequestStockAlertCommandHandler {
+  +Handle(command: RequestStockAlertCommand): Task<Result>
+}
+
+class ProductBackInStock {
+  +Guid ProductId
+  +DateTimeOffset OccurredAt
+}
+
+class StockAlertNotifier {
+  +HandleAsync(message: ProductBackInStock): Task
+}
+
+Product "1" *-- "0..*" ProductOption
+Product "1" *-- "0..*" ProductAttribute
+Product "1" *-- "0..*" ListingPhoto
+Product "1" o-- "0..*" StockAlert
+Product ..> StockChange : returns
+Product ..> ProductBackInStock : raises
+GetProductPageQueryHandler ..> ProductPageDto : returns
+GetProductPageQueryHandler --> Product : loads
+RequestStockAlertCommandHandler ..> RequestStockAlertCommand : handles
+RequestStockAlertCommandHandler ..> StockAlert : creates
+StockAlertNotifier ..> ProductBackInStock : consumes
+StockAlertNotifier --> "0..*" StockAlert : marks notified
+@enduml

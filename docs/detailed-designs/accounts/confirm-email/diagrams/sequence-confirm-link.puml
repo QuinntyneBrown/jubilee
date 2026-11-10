@@ -1,0 +1,73 @@
+@startuml
+title UML sequence behaviour — Open the confirmation link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "VerifyEmailPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ConfirmEmailCommandHandler" as handler
+  participant "LinkToken" as token
+  participant "Member" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> page : Open /verify-email/:token
+page -> page : Read the token and remove it from the address bar (L2-140)
+page --> actor : Show "Confirming your e-mail…"
+page -> client : confirmEmail(token)
+client -> controller : POST /api/account/confirmation
+controller -> handler : Send ConfirmEmailCommand
+handler -> db : Find LinkToken by SHA-256 hash and purpose (L2-140)
+db --> handler : Token and member - or nothing
+alt token unknown or malformed
+  handler --> controller : Outcome Expired
+  controller --> client : 200 with outcome expired
+  client --> page : Expired
+  page --> actor : Show "This link has expired" with "Send a new link"
+else token already used
+  handler --> controller : AlreadyConfirmed if the member is confirmed - otherwise Expired
+  controller --> client : 200 with outcome
+  client --> page : Outcome
+  page --> actor : Show the success state or the expired state (L2-004)
+else token older than 24 hours or superseded
+  handler --> controller : Outcome Expired
+  controller --> client : 200 with outcome expired
+  client --> page : Expired
+  page --> actor : Show "This link has expired" with "Send a new link"
+else token valid
+  handler -> token : Redeem(now)
+  token --> handler : Marked used
+  handler -> entity : ConfirmEmail(now) (L2-004)
+  entity --> handler : EmailStatus Confirmed
+  handler -> db : Save changes in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Outcome Confirmed
+  controller --> client : 200 with outcome confirmed
+  client --> page : Confirmed
+  page --> actor : Show "E-mail confirmed" with "Start browsing" and "List your business"
+end
+opt server or network failure
+  client --> page : Failure
+  page --> actor : Show "We couldn't load your verification" with JB-VERIFY-502 and "Try again"
+end
+@enduml

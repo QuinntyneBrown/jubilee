@@ -1,0 +1,98 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Manage session
+
+enum SessionEndReason {
+  SignedOut
+  AbsoluteLifetime
+  Inactivity
+  PasswordChanged
+  EndedFromOtherDevice
+}
+
+class Session {
+  +string Id
+  +Guid MemberId
+  +bool Persistent
+  +string CsrfToken
+  +string DeviceLabel
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset LastActivityAt
+  +Touch(now: DateTimeOffset): void
+}
+
+class SessionPolicy {
+  +TimeSpan AbsoluteLifetime = 30 days
+  +TimeSpan IdleTimeout = 12 hours
+  +IsExpired(session: Session, now: DateTimeOffset): bool
+  +CookieMaxAge(session: Session): TimeSpan?
+}
+
+interface ISessionStore {
+  +Create(memberId: Guid, persistent: bool): Task<Session>
+  +Find(sessionId: string): Task<Session>
+  +Touch(session: Session): Task
+  +End(sessionId: string, reason: SessionEndReason): Task
+  +EndOthers(memberId: Guid, keepSessionId: string): Task<int>
+  +EndAllForMember(memberId: Guid): Task
+  +CountForMember(memberId: Guid): Task<int>
+}
+
+class RedisSessionStore {
+  -GenerateId(): string
+}
+
+class SessionAuthenticationMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+}
+
+class CsrfMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+}
+
+class SessionController {
+  +Get(): Task<SessionView>
+  +SignOut(): Task<IActionResult>
+  +EndOthers(): Task<IActionResult>
+}
+
+class SessionView {
+  +Guid MemberId
+  +string FirstName
+  +string EmailStatus
+  +int OtherSessionCount
+  +string CsrfToken
+}
+
+class DraftStore <<TypeScript>> {
+  +save(memberId: string, key: string, draft: unknown): void
+  +restore(memberId: string, key: string): unknown
+  +discard(memberId: string, key: string): void
+}
+
+class SessionExpiredInterceptor <<TypeScript>> {
+  +intercept(request: HttpRequest, next: HttpHandlerFn): Observable<HttpEvent>
+}
+
+RedisSessionStore ..|> ISessionStore
+ISessionStore --> "*" Session : stores
+ISessionStore ..> SessionEndReason : records
+SessionPolicy ..> Session : evaluates
+SessionAuthenticationMiddleware ..> ISessionStore : uses
+SessionAuthenticationMiddleware ..> SessionPolicy : uses
+CsrfMiddleware ..> Session : reads CsrfToken
+SessionController ..> ISessionStore : uses
+SessionController ..> SessionView : returns
+SessionExpiredInterceptor ..> DraftStore : uses
+@enduml

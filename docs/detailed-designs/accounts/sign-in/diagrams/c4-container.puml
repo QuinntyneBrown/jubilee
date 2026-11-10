@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Sign in
+
+Person(visitor, "Visitor", "Signs in")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "SignInPage and SignInRequiredDialog")
+  Container(api, "Jubilee API", "ASP.NET Core", "Verifies credentials - throttles - issues the session")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Sends the lockout e-mail from the outbox")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and failed-attempt counters")
+}
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(web, api, "POST /api/session", "JSON/HTTPS")
+Rel(api, db, "Reads members and writes outbox", "EF Core")
+Rel(api, cache, "Counts failures and stores the session", "Redis protocol")
+Rel(worker, db, "Reads outbox messages", "EF Core")
+Rel(worker, email, "Sends the lockout notice", "HTTPS")
+@enduml

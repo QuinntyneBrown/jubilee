@@ -1,0 +1,103 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Continue with Google
+
+enum EmailStatus {
+  Unconfirmed
+  Confirmed
+}
+
+enum GoogleSignInOutcome {
+  SignedIn
+  Linked
+  CreatedAwaitingAgreement
+  EmailNotVerified
+  Rejected
+}
+
+class Member {
+  +Guid Id
+  +EmailAddress Email
+  +EmailStatus EmailStatus
+  +string GoogleSubject
+  +string PasswordHash
+  +DateTimeOffset? AgreementAcceptedAt
+  +{static} JoinWithGoogle(identity: GoogleIdentity, now: DateTimeOffset): Member
+  +LinkGoogle(subject: string): void
+  +AcceptAgreement(now: DateTimeOffset): void
+  +IsUsable(): bool
+}
+
+class GoogleIdentity <<value object>> {
+  +string Subject
+  +string Email
+  +bool EmailVerified
+  +string GivenName
+  +string FamilyName
+}
+
+class OidcTransaction {
+  +string State
+  +string Nonce
+  +string CodeVerifier
+  +ReturnUrl ReturnUrl
+  +DateTimeOffset CreatedAt
+}
+
+class ReturnUrl <<value object>> {
+  +string Path
+  +{static} Parse(raw: string): ReturnUrl
+}
+
+interface IOidcTransactionStore {
+  +Save(transaction: OidcTransaction): Task
+  +Consume(state: string): Task<OidcTransaction>
+}
+
+interface IGoogleIdentityClient {
+  +BuildAuthorizationUrl(transaction: OidcTransaction): Uri
+  +Redeem(code: string, transaction: OidcTransaction): Task<GoogleIdentity>
+}
+
+class CompleteGoogleSignInCommand {
+  +GoogleIdentity Identity
+  +ReturnUrl ReturnUrl
+}
+
+class CompleteGoogleSignInCommandHandler {
+  +Handle(command: CompleteGoogleSignInCommand): Task<GoogleSignInResult>
+}
+
+class AcceptAgreementCommandHandler {
+  +Handle(command: AcceptAgreementCommand): Task<Result>
+}
+
+class GoogleSignInController {
+  +Start(returnUrl: string): IActionResult
+  +Callback(code: string, state: string): Task<IActionResult>
+}
+
+GoogleSignInController ..> IOidcTransactionStore : uses
+GoogleSignInController ..> IGoogleIdentityClient : uses
+GoogleSignInController ..> CompleteGoogleSignInCommand : sends
+IOidcTransactionStore --> OidcTransaction : stores
+OidcTransaction *-- ReturnUrl : owns
+IGoogleIdentityClient ..> GoogleIdentity : returns
+CompleteGoogleSignInCommand --> GoogleIdentity : carries
+CompleteGoogleSignInCommandHandler ..> CompleteGoogleSignInCommand : handles
+CompleteGoogleSignInCommandHandler --> Member : creates or links
+CompleteGoogleSignInCommandHandler ..> GoogleSignInOutcome : returns
+AcceptAgreementCommandHandler --> Member : mutates
+Member --> EmailStatus : has
+@enduml
