@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="Jubilee">
+  <rect width="96" height="96" rx="20" fill="#0b0e14"/>
+  <g transform="translate(12 12) scale(3)" fill="none" stroke="#ffb81c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 4v9a4 4 0 0 0 8 0V4M12 2v6M9.5 5h5"/>
+  </g>
+</svg>

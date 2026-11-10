@@ -18,6 +18,7 @@ later feature follows it.
 - `backend/` — .NET solution
 - `frontend/` — Angular workspace (`jubilee`, `api`, `components`)
 - `e2e/` — Playwright suite
+- `docs/assets/` — the logo (`jubilee-icon.svg`) and other images the docs share
 - `docs/mocks/` — static design reference (the source of truth for the UI)
 - `docs/design-system/` — tokens, foundations, components and patterns extracted from the mocks
 - `docs/specs/` — requirements (`L1.md` high level, `L2.md` detailed with acceptance criteria)
