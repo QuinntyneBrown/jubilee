@@ -7,6 +7,7 @@ const home = '**/api/directory/home';
 const categoryListings = '**/api/categories/*/listings?*';
 const legacyFinancial = '**/api/listings/legacy-financial';
 const luzandre = '**/api/listings/luzandre';
+const tee = '**/api/listings/luzandre/products/faith-heavyweight-tee-charcoal';
 
 /** The ProblemDetails the API sends when a directory read cannot be served (L2-118). */
 function unavailable(reference: string) {
@@ -114,6 +115,10 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         products: [],
         productCount: 0,
       }));
+    case 'product-loading':
+      return page.route(tee, pending);
+    case 'product-error':
+      return page.route(tee, (route) => route.fulfill(unavailable('JB-PRD-503')));
     case 'category-not-found':
       return page.route(categoryListings, (route) =>
         route.fulfill({

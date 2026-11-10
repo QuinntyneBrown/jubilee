@@ -22,7 +22,7 @@ import {
   categoryTile,
 } from 'components';
 import { Subscription } from 'rxjs';
-import { ListingKindHints } from '../../services/listing-kind-hints';
+import { ListingHints } from '../../services/listing-hints';
 import { LoadState, errorReference } from '../../services/load-state';
 
 const REPLIES: Record<ReplyTimeBand, string> = {
@@ -69,7 +69,7 @@ export class BusinessPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly title = inject(Title);
-  private readonly hints = inject(ListingKindHints);
+  private readonly hints = inject(ListingHints);
   private request?: Subscription;
   private slug = '';
 
@@ -123,7 +123,8 @@ export class BusinessPage {
     this.state.set({ status: 'loading' });
     this.request = this.api.getListing(this.slug).subscribe({
       next: (listing) => {
-        this.hints.remember(listing.slug, listing.kind);
+        this.hints.remember(listing.slug, listing.kind, listing.name);
+        this.hints.rememberProducts(listing.products);
         this.hints.rememberCategory(listing.related, listing.category.slug);
         this.state.set({ status: 'loaded', value: listing });
         this.title.setTitle(`${listing.name} · Jubilee`);

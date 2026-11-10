@@ -13,7 +13,7 @@ import {
   parseCategoryQuery,
 } from 'api';
 import { Subscription } from 'rxjs';
-import { ListingKindHints } from './listing-kind-hints';
+import { ListingHints } from './listing-hints';
 import { LoadState, errorReference } from './load-state';
 
 /** One applied filter: its group and its value. */
@@ -32,7 +32,7 @@ export class CategoryStore {
   private readonly api = inject(DIRECTORY_API);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly hints = inject(ListingKindHints);
+  private readonly hints = inject(ListingHints);
   private request?: Subscription;
   private slug = '';
 

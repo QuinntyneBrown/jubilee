@@ -22,7 +22,9 @@ export type StubName =
   | 'business-edge'
   | 'shop-loading'
   | 'shop-error'
-  | 'shop-empty';
+  | 'shop-empty'
+  | 'product-loading'
+  | 'product-error';
 
 export interface ScreenRoute {
   app: string;
@@ -143,6 +145,30 @@ export const routes = {
     mock: 'pages/shop/empty.html',
     who: 'member',
     stub: 'shop-empty',
+  },
+  product: {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/default.html',
+    who: 'member',
+  },
+  'product.invalid': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/invalid.html',
+    who: 'member',
+  },
+  'product.loading': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/loading.html',
+    who: 'member',
+    stub: 'product-loading',
+    via: '/b/luzandre',
+  },
+  'product.error': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/error.html',
+    who: 'member',
+    stub: 'product-error',
+    via: '/b/luzandre',
   },
   'not-found': { app: '/no-such-page', mock: 'pages/not-found/default.html', who: 'member' },
 } as const satisfies Record<string, ScreenRoute>;

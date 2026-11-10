@@ -3,6 +3,7 @@ import { BrowsePage } from '../pages/browse.page';
 import { BusinessPage } from '../pages/business.page';
 import { CategoryFiltersScreen, CategoryPage } from '../pages/category.page';
 import { NotFoundPage } from '../pages/not-found.page';
+import { ProductInvalidScreen, ProductPage, ProductWithSizeScreen } from '../pages/product.page';
 import { WelcomePage } from '../pages/welcome.page';
 import type { RouteKey } from './routes';
 import type { Screen } from './visual';
@@ -38,5 +39,9 @@ export const screens: {
   { key: 'shop.loading', screen: (page) => new BusinessPage(page) },
   { key: 'shop.error', screen: (page) => new BusinessPage(page) },
   { key: 'shop.empty', screen: (page) => new BusinessPage(page) },
+  { key: 'product', screen: (page) => new ProductWithSizeScreen(page) },
+  { key: 'product.invalid', screen: (page) => new ProductInvalidScreen(page) },
+  { key: 'product.loading', screen: (page) => new ProductPage(page) },
+  { key: 'product.error', screen: (page) => new ProductPage(page) },
   { key: 'not-found', screen: (page) => new NotFoundPage(page) },
 ];

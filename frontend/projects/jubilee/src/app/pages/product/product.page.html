@@ -1,0 +1,126 @@
+@let current = state();
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb">
+    <li><a routerLink="/">Browse</a></li>
+    @if (shopName(); as shop) {
+      <li>
+        <a [routerLink]="['/b', slug()]">{{ shop }}</a>
+      </li>
+    }
+    <li aria-current="page">{{ productName() ?? 'Product' }}</li>
+  </ol>
+</nav>
+@switch (current.status) {
+  @case ('loading') {
+    <h1 class="visually-hidden">Loading this product</h1>
+    <p class="visually-hidden" role="status">Loading this product…</p>
+    <div class="split split--even" aria-hidden="true" style="margin-top: var(--space-4)">
+      <div><span class="skeleton skeleton--square"></span></div>
+      <div class="stack">
+        <span class="skeleton skeleton--h1"></span>
+        <span class="skeleton skeleton--text skeleton--w30"></span>
+        <span class="skeleton skeleton--text"></span>
+        <span class="skeleton skeleton--text"></span>
+        <span class="skeleton skeleton--text"></span>
+        <span
+          class="skeleton skeleton--btn"
+          style="width: 100%; height: var(--control-height-lg)"
+        ></span>
+      </div>
+    </div>
+  }
+  @case ('error') {
+    <div
+      jb-empty-state
+      icon="alert"
+      heading="We couldn’t load this product"
+      [level]="1"
+      [error]="true"
+    >
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" [routerLink]="['/b', slug()]"
+        >Back to {{ shopName() ?? 'the shop' }}</a
+      >
+    </div>
+  }
+  @case ('loaded') {
+    @let product = current.value;
+    <div class="split split--even" style="margin-top: var(--space-4)">
+      <div>
+        <div
+          jb-media-tile
+          shape="square"
+          [tint]="product.tile.tint"
+          [icon]="product.tile.icon"
+          [tag]="product.soldOut ? 'Sold out' : ''"
+        ></div>
+      </div>
+      <div class="detail-head">
+        <h1>{{ product.name }}</h1>
+        <p>
+          <span class="price" style="font-size: var(--font-size-2xl)">{{
+            product.priceCents | jbPrice: product.perUnit
+          }}</span>
+          @if (product.deliveryLine) {
+            <span class="text-muted">· {{ product.deliveryLine }}</span>
+          }
+        </p>
+        <p class="detail-head__kicker">
+          Sold by <a [routerLink]="['/b', product.shop.slug]">{{ product.shop.name }}</a>
+          @if (product.shop.verified) {
+            <svg jb-icon name="verified"></svg>Verified
+          }
+        </p>
+        <jb-product-request-form [product]="product" (requested)="startRequest($event)" />
+        <p class="text-caption">
+          No payment now. {{ product.shop.name }} confirms stock and tells you how to pay.
+        </p>
+        @if (product.description || product.attributes.length) {
+          <section aria-labelledby="pd">
+            <h2 id="pd" style="margin-top: var(--space-4)">Details</h2>
+            @if (product.description) {
+              <p style="margin-top: var(--space-2)">{{ product.description }}</p>
+            }
+            @if (product.attributes.length) {
+              <dl class="dl" style="margin-top: var(--space-4)">
+                @for (attribute of product.attributes; track $index) {
+                  <dt>{{ attribute.label }}</dt>
+                  <dd>{{ attribute.value }}</dd>
+                }
+              </dl>
+            }
+          </section>
+        }
+      </div>
+    </div>
+    @if (product.more.length) {
+      <section
+        class="section"
+        aria-labelledby="more"
+        style="border-top: 1px solid var(--color-border-default); padding-top: var(--space-8)"
+      >
+        <div class="section-head">
+          <h2 id="more">More from {{ product.shop.name }}</h2>
+          <a [routerLink]="['/b', product.shop.slug]">Visit shop</a>
+        </div>
+        <ul class="card-grid">
+          @for (other of product.more; track other.slug) {
+            <li>
+              <a
+                jb-product-card
+                [product]="other"
+                [showShop]="false"
+                [routerLink]="['/b', product.shop.slug, 'p', other.slug]"
+              ></a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+}

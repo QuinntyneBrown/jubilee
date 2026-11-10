@@ -6,5 +6,6 @@ export * from './lib/models/categories';
 export * from './lib/models/category-query';
 export * from './lib/models/directory';
 export * from './lib/models/listing';
+export * from './lib/models/product';
 export * from './lib/models/navigation';
 export * from './lib/models/session';

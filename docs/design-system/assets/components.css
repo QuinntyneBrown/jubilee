@@ -504,6 +504,8 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 @media (max-width: 47.99rem) { .topbar .btn--sm { min-height: var(--target-comfortable); } }
 /* A row action is a primary control: 44 px tall on a phone (L2-162). */
 @media (max-width: 47.99rem) { .row .btn--sm { min-height: var(--target-comfortable); } }
+/* A choice chip (a radio or checkbox in a label) is a primary control: 44 px on a phone (L2-162). */
+@media (max-width: 47.99rem) { .chip:has(input) { min-height: var(--target-comfortable); min-width: var(--target-comfortable); justify-content: center; } }
 .topbar__dot { position: absolute; top: var(--space-2); right: var(--space-2); width: var(--indicator-size); height: var(--indicator-size); border-radius: var(--radius-full); background: var(--color-accent); }
 
 /* ---------- Phone tab bar ---------------------------------------------------- */

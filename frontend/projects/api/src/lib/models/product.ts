@@ -1,0 +1,31 @@
+import { ProductCard } from './directory';
+
+/** One option of a product; `maxQuantity` bounds the quantity without revealing the stock. */
+export interface ProductOption {
+  label: string;
+  maxQuantity: number;
+}
+
+/** `GET /api/listings/{slug}/products/{product}`: the product page (L2-035, L2-036). */
+export interface ProductPage {
+  id: string;
+  slug: string;
+  name: string;
+  priceCents: number;
+  perUnit: boolean;
+  /** For example "plus $9 shipping, or free pickup". */
+  deliveryLine: string | null;
+  tile: ProductCard['tile'];
+  shop: { slug: string; name: string; verified: boolean };
+  description: string | null;
+  attributes: { label: string; value: string }[];
+  /** What the options choose, for example "Size"; null without options. */
+  optionName: string | null;
+  options: ProductOption[];
+  minimumQuantity: number;
+  /** The bound before an option is chosen, or of a product without options. */
+  maxQuantity: number;
+  soldOut: boolean;
+  restockNote: string | null;
+  more: ProductCard[];
+}

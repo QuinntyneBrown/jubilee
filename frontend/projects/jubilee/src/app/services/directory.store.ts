@@ -1,13 +1,13 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { BrowseHome, DIRECTORY_API } from 'api';
-import { ListingKindHints } from './listing-kind-hints';
+import { ListingHints } from './listing-hints';
 import { LoadState, errorReference } from './load-state';
 
 /** DirectoryStore: the browse home directory and its load state. Provided by the page. */
 @Injectable()
 export class DirectoryStore {
   private readonly api = inject(DIRECTORY_API);
-  private readonly hints = inject(ListingKindHints);
+  private readonly hints = inject(ListingHints);
   private readonly current = signal<LoadState<BrowseHome>>({ status: 'loading' });
 
   readonly state = this.current.asReadonly();
@@ -21,6 +21,7 @@ export class DirectoryStore {
           this.hints.rememberCategory([business], business.categorySlug);
         }
         for (const group of value.groups) this.hints.rememberCategory(group.businesses, group.slug);
+        this.hints.rememberProducts(value.products);
         this.current.set({ status: 'loaded', value });
       },
       error: (error: unknown) =>
