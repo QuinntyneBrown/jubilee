@@ -34,6 +34,12 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 context, StatusCodes.Status404NotFound, "We can't find that.", notFound.Message, notFound.Code);
         }
 
+        if (exception is ConflictException conflict)
+        {
+            return ProblemWriter.WriteAsync(
+                context, StatusCodes.Status409Conflict, "That can't be done now.", conflict.Message, conflict.Code);
+        }
+
         // An endpoint that declares an error reference is a read the page shows a load-error
         // state for: whatever stopped it (database down, timeout, anything unhandled), the
         // service was unavailable to the caller.

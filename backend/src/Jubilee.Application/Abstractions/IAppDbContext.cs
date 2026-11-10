@@ -13,5 +13,7 @@ public interface IAppDbContext
 
     DbSet<FeaturedSlot> FeaturedSlots { get; }
 
+    DbSet<StockAlert> StockAlerts { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

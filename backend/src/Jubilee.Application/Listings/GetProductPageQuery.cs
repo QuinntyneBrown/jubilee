@@ -33,9 +33,10 @@ public sealed record ProductPageDto(
     int MaxQuantity,
     bool SoldOut,
     string? RestockNote,
-    IReadOnlyList<ProductCardDto> More);
+    IReadOnlyList<ProductCardDto> More,
+    bool StockAlertRequested = false);
 
-public sealed record GetProductPageQuery(string ListingSlug, string ProductSlug) : IRequest<ProductPageDto>;
+public sealed record GetProductPageQuery(string ListingSlug, string ProductSlug, Viewer Viewer) : IRequest<ProductPageDto>;
 
 public sealed class GetProductPageQueryHandler(IAppDbContext db, IDirectoryReadCache cache)
     : IRequestHandler<GetProductPageQuery, ProductPageDto>
@@ -45,14 +46,25 @@ public sealed class GetProductPageQueryHandler(IAppDbContext db, IDirectoryReadC
     /// <summary>"More from {shop}" shows at most this many other products, newest first (L2-035 AC5).</summary>
     public const int MoreCount = 3;
 
-    public Task<ProductPageDto> Handle(GetProductPageQuery request, CancellationToken cancellationToken)
+    public async Task<ProductPageDto> Handle(GetProductPageQuery request, CancellationToken cancellationToken)
     {
         var listingSlug = request.ListingSlug.Trim().ToLowerInvariant();
         var productSlug = request.ProductSlug.Trim().ToLowerInvariant();
-        return cache.GetOrCreateAsync<ProductPageDto>(
+        // The public page is the same for everyone and cached; whether the member already asked
+        // to be told when it is back is their own.
+        var page = await cache.GetOrCreateAsync<ProductPageDto>(
             $"product|{listingSlug}|{productSlug}",
             ct => BuildAsync(listingSlug, productSlug, ct),
             cancellationToken);
+        if (!page.SoldOut || request.Viewer.Subject is not { } subject)
+        {
+            return page;
+        }
+
+        var requested = await db.StockAlerts.AnyAsync(
+            a => a.ProductId == page.Id && a.MemberSubject == subject && a.NotifiedAt == null,
+            cancellationToken);
+        return page with { StockAlertRequested = requested };
     }
 
     private async Task<ProductPageDto> BuildAsync(string listingSlug, string productSlug, CancellationToken cancellationToken)

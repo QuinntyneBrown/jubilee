@@ -13,6 +13,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<Service> Services => Set<Service>();
 
+    public DbSet<StockAlert> StockAlerts => Set<StockAlert>();
+
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>

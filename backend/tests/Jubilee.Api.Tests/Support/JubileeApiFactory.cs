@@ -69,10 +69,20 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     {
     }
 
-    public HttpClient CreateMemberClient(string name = "Joanna Adeyemi")
+    public HttpClient CreateMemberClient(string name = "Joanna Adeyemi", string? subject = null, string? role = null)
     {
         var client = CreateClient();
         client.DefaultRequestHeaders.Add(TestAuthHandler.UserHeader, name);
+        if (subject is not null)
+        {
+            client.DefaultRequestHeaders.Add(TestAuthHandler.SubjectHeader, subject);
+        }
+
+        if (role is not null)
+        {
+            client.DefaultRequestHeaders.Add(TestAuthHandler.RoleHeader, role);
+        }
+
         return client;
     }
 
@@ -98,6 +108,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         Logs.Clear();
         await WithDb(async db =>
         {
+            await db.StockAlerts.ExecuteDeleteAsync();
             await db.FeaturedSlots.ExecuteDeleteAsync();
             await db.Services.ExecuteDeleteAsync();
             await db.Products.ExecuteDeleteAsync();

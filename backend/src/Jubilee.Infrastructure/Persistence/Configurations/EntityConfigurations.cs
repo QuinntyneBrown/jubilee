@@ -65,6 +65,22 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
     }
 }
 
+public sealed class StockAlertConfiguration : IEntityTypeConfiguration<StockAlert>
+{
+    public void Configure(EntityTypeBuilder<StockAlert> builder)
+    {
+        builder.ToTable("StockAlerts");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.MemberSubject).HasMaxLength(200).IsRequired();
+        // One open alert per member and product (L2-036 AC2).
+        builder.HasIndex(a => new { a.ProductId, a.MemberSubject })
+            .IsUnique()
+            .HasFilter("[NotifiedAt] IS NULL");
+        builder.HasOne<Product>().WithMany().HasForeignKey(a => a.ProductId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
 public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
 {
     public void Configure(EntityTypeBuilder<Service> builder)

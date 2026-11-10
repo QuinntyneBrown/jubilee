@@ -273,6 +273,34 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("Services", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.StockAlert", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MemberSubject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("NotifiedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("RequestedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId", "MemberSubject")
+                        .IsUnique()
+                        .HasFilter("[NotifiedAt] IS NULL");
+
+                    b.ToTable("StockAlerts", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.FeaturedSlot", b =>
                 {
                     b.HasOne("Jubilee.Domain.Listing", null)
@@ -350,6 +378,15 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasOne("Jubilee.Domain.Listing", null)
                         .WithMany()
                         .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.StockAlert", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
