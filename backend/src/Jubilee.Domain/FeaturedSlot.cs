@@ -29,6 +29,4 @@ public sealed class FeaturedSlot
     };
 
     public void RestartOn(DateOnly startsOn) => StartsOn = startsOn;
-
-    public bool IsCurrentOn(DateOnly today) => StartsOn <= today && today < StartsOn.AddDays(DurationDays);
 }
