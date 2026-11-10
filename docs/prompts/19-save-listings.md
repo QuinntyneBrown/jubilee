@@ -1,10 +1,10 @@
-# Feature: View a business and its products
+# Feature: Save listings for later
 
 ## Goal
 
-Anyone opens a verified business's public page, either a service business or a shop, sees its services or products, hours, area and related businesses, and opens a product's detail page. Sold-out products offer a back-in-stock alert. An owner viewing their own listing sees owner controls instead of buyer actions.
+A member saves or unsaves a business or product from its card or page and finds everything they saved on the saved page. A visitor who presses save is asked to sign in and returned afterwards. The list is private to the member.
 
-Roles: Visitor, Member, Owner. Journey 8 of 26 in `docs/journey.md`.
+Roles: Member. Journey 19 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,20 +48,16 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/listings/view-business-page/README.md`
-- `docs/detailed-designs/listings/view-product/README.md`
-- `docs/detailed-designs/trust-content/show-verified-mark/README.md`
-- `docs/detailed-designs/performance/meet-page-budgets/README.md`
+- `docs/detailed-designs/listings/save-listing/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-028`, `L2-033`, `L2-034`, `L2-035`, `L2-036`, `L2-037`, `L2-040`, `L2-088`, `L2-111`, `L2-118`, `L2-133`, `L2-151`, `L2-153`, `L2-155`.
+Requirements in `docs/specs/L2.md`: `L2-005`, `L2-012`, `L2-041`, `L2-042`, `L2-118`, `L2-133`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/business/`
-- `docs/mocks/pages/shop/`
-- `docs/mocks/pages/product/`
+- `docs/mocks/pages/saved/`
+- `docs/mocks/dialogs/sign-in-required/`
 
-Builds on: journey 6 (Discover businesses, `docs/prompts/06-discover-businesses.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 2 (View a business and its products, `docs/prompts/02-view-business-and-products.md`); journey 5 (Sign in and out, `docs/prompts/05-sign-in-and-out.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -77,12 +73,10 @@ Builds on: journey 6 (Discover businesses, `docs/prompts/06-discover-businesses.
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Service business page: details, services, hours, verified mark; loading, not-found and error states.
-  2. Shop page with its product grid.
-  3. Product detail page with photos, price and options.
-  4. Sold out and back-in-stock alerts.
-  5. Owner's view of their own listing; related businesses.
-  6. Unverified, paused or removed listings are not public.
+  1. Save and unsave toggle with optimistic update, undo toast and failure rollback.
+  2. Saved page: businesses and products, loading, empty and error states.
+  3. Saved items that are no longer live are shown as unavailable.
+  4. Sign-in prompt for visitors, then the save completes.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -97,12 +91,10 @@ Builds on: journey 6 (Discover businesses, `docs/prompts/06-discover-businesses.
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- The request dialogs the action buttons open (journeys 11 to 13).
-- Share and report (journey 9).
-- Save (journey 10).
+- Back-in-stock alerts (journey 8).
 
 ## Done means
-- Anyone can open a live business or shop page and its products, and each page shows the right actions for the viewer.
+- A member can save and unsave businesses and products and see them on the saved page.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

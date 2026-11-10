@@ -1,10 +1,10 @@
-# Feature: Request a product
+# Feature: Recover from errors
 
 ## Goal
 
-A confirmed member opens the order-request dialog from a product, chooses quantity, options and pickup or delivery, and sends the request. The shop confirms or declines; the member pays the business directly.
+When something goes wrong the user sees a clear page: not found, forbidden, server error or planned maintenance. Each page says what happened and what to do next, carries an error reference code tied to the server log, and never loses the user's work.
 
-Roles: Member. Journey 13 of 26 in `docs/journey.md`.
+Roles: Visitor, Member, Owner, Verification team. Journey 23 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,15 +48,18 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/requests/request-item/README.md`
+- `docs/detailed-designs/system-pages/show-error-pages/README.md`
+- `docs/detailed-designs/system-pages/run-maintenance-mode/README.md`
+- `docs/detailed-designs/operations/observe-the-system/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-005`, `L2-043`, `L2-046`, `L2-132`, `L2-133`.
+Requirements in `docs/specs/L2.md`: `L2-113`, `L2-114`, `L2-115`, `L2-117`, `L2-118`, `L2-132`, `L2-133`, `L2-175`, `L2-176`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/dialogs/order-request/`
-
-Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); journey 8 (View a business and its products, `docs/prompts/08-view-business-and-products.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+- `docs/mocks/pages/not-found/`
+- `docs/mocks/pages/forbidden/`
+- `docs/mocks/pages/server-error/`
+- `docs/mocks/pages/maintenance/`
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -72,9 +75,10 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Order-request dialog: quantity, options, fulfilment choice and validation.
-  2. Create order request: idempotent, stock and availability re-checked, owner notified.
-  3. Sold-out, busy, success and failed states.
+  1. Not-found page for unknown routes and missing resources.
+  2. Forbidden page for authenticated users without access.
+  3. Server-error page with the `JB-<AREA>-<NNN>` reference and correlation ID in the log; retry keeps typed input.
+  4. Maintenance mode: switched by configuration without a deploy, HTTP 503 with `Retry-After`, e-mailed link validity extended.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -89,11 +93,11 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Any payment, cart or checkout: Jubilee takes no payment.
-- Tracking the request (journey 14).
+- Session-expired page (journey 2).
+- Offline page (journey 24).
 
 ## Done means
-- A confirmed member can send an order request for an available product.
+- Every failure ends on a clear page with a reference code and a way forward.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

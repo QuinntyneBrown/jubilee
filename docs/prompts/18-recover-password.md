@@ -1,16 +1,16 @@
-# Feature: Moderate reports and feature businesses
+# Feature: Recover a forgotten password
 
 ## Goal
 
-A verification team member reviews reports about listings and conversations, resolves each one with a resolution note (dismiss, message the reporter or owner, place the listing on hold, or remove it), and chooses up to five businesses to feature on the browse home. Each action is authorised, audited and takes effect on the public pages.
+A visitor who forgot their password asks for a reset link, receives it by e-mail, and sets a new password through a time-limited single-use link. The response never reveals whether an account exists. A successful reset ends the account's other sessions.
 
-Roles: Verification team. Journey 20 of 26 in `docs/journey.md`.
+Roles: Visitor. Journey 18 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
 ## Finish the whole feature in one run. Do not stop. (CRITICAL)
 
-- You are authorised to take this feature all the way: mocks, design-system alignment, artifact alignment, foundation, incremental implementation, progress tracking, green tests and a PR. Go through
+- You are authorised to take this feature all the way: artifact alignment, foundation, incremental implementation, progress tracking, green tests and a PR. Go through
   every phase and every slice in one continuous run. Do not pause between phases to report, ask for approval,
   or wait for "continue".
 - Do not end your turn until the "Done means" list at the bottom is fully true. A partial result, a plan, or
@@ -48,44 +48,37 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/verification/handle-reports/README.md`
-- `docs/detailed-designs/verification/feature-businesses/README.md`
-- `docs/detailed-designs/operations/record-audit-log/README.md`
+- `docs/detailed-designs/accounts/reset-password/README.md`
+- `docs/detailed-designs/security/secure-transport-and-tokens/README.md`
+- `docs/detailed-designs/security/limit-abuse/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-063`, `L2-098`, `L2-105`, `L2-106`, `L2-133`, `L2-150`, `L2-180`.
+Requirements in `docs/specs/L2.md`: `L2-007`, `L2-008`, `L2-009`, `L2-080`, `L2-134`, `L2-136`, `L2-137`, `L2-139`, `L2-140`, `L2-141`, `L2-143`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/admin-verifications/`
+- `docs/mocks/pages/forgot-password/`
+- `docs/mocks/pages/reset-password/`
 
-Builds on: journey 9 (Share or report a listing, `docs/prompts/09-share-or-report-listing.md`); journey 19 (Verify a listing, `docs/prompts/19-verify-a-listing.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 4 (Join Jubilee, `docs/prompts/04-join-jubilee.md`); journey 5 (Sign in and out, `docs/prompts/05-sign-in-and-out.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
-## Phase 1: Mocks (`writing-html-mocks`)
-- The designs for this journey state that no mocks exist for the admin reports pages or the featured-businesses page (`/admin/featured`).
-- Add them under `docs/mocks/pages/` in every state (default, loading, empty, error, busy, success, forbidden), with any dialogs under `docs/mocks/dialogs/`. Use the cast in `docs/mocks/README.md` (Miriam Castillo for staff screens). Update `docs/mocks/manifest.json`, `docs/mocks/index.html` and the coverage counts in `docs/mocks/README.md`.
-- Reuse `docs/mocks/pages/admin-verifications/` as the layout neighbour.
-
-## Phase 2: Design system alignment (`extracting-design-systems`)
-- If the new mocks introduce a component, variant or state that `docs/design-system/` lacks, add it there. If they do not, change nothing.
-
-## Phase 3: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
+## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
 - Where they disagree, or a design leaves a `<TO SUPPLY>` this journey cannot be built without, decide, then correct the artifact with the named skill: `docs/specs/L2.md` for behaviour, the design `README.md` and its PlantUML sources for structure. Re-render changed diagrams with `python .claude/skills/writing-software-design-documents/scripts/render_puml.py docs/detailed-designs`.
 - Keep the traceability matrix in `docs/specs/L2.md` and the index in `docs/detailed-designs/README.md` true.
 
-## Phase 4: Foundation, only if it is missing (`implementing-incrementally`)
+## Phase 2: Foundation, only if it is missing (`implementing-incrementally`)
 - No application code exists in this repo at the time of writing. Check first. If the solution already exists, skip this phase and follow its conventions.
 - Otherwise create the smallest skeleton the architecture baseline describes: the Angular app (`Jubilee Web`), `Jubilee.Api`, `Jubilee.Application`, `Jubilee.Domain`, `Jubilee.Infrastructure`, `Jubilee.Worker`, the database migrations, and test projects for each side. Choose current stable versions and the stack's standard test tools, since the repo states none.
 - Bring in the tokens from `docs/design-system/tokens/` and build only the components this journey needs, as `docs/detailed-designs/design-system/apply-design-tokens/README.md` and `docs/detailed-designs/design-system/build-components/README.md` describe.
 - Write the build, test, lint and run commands into a root `README.md`, and add a CI workflow that runs them.
 - Prove the skeleton with one end-to-end test (a health endpoint reached from the app) before starting the journey.
 
-## Phase 5: Incremental implementation (`implementing-incrementally`, test-first)
+## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Reports queue and report detail for listing and conversation reports.
-  2. Report actions: dismiss, message reporter or owner, hold, remove; resolution note required; overdue marking; the reporter is never shown to the owner.
-  3. Featured businesses: choose, order, cap at five; browse home reflects it.
-  4. Audit log entries for every action.
+  1. Forgot-password form with the same response for known and unknown addresses; rate limited.
+  2. Reset e-mail with a hashed, single-use, expiring token.
+  3. Reset-password page: valid, invalid, expired and used link states; password rules.
+  4. On success: other sessions revoked, security event logged, confirmation e-mail sent.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -95,15 +88,15 @@ Builds on: journey 9 (Share or report a listing, `docs/prompts/09-share-or-repor
   - Run the regression checks, then commit.
 - Enforce authorization, validation, rate limits and idempotency on the server for every endpoint, as the security and interaction-states designs require. The client checks are for feedback only.
 
-## Phase 6: Progress tracking (`estimating-designs`)
+## Phase 4: Progress tracking (`estimating-designs`)
 - Refresh `docs/estimates/` with the `estimating-designs` skill so the percentage complete of each design this journey touched is true. Create the folder if it does not exist.
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Any moderation tooling beyond the two designs.
+- Changing the password while signed in (journey 4).
 
 ## Done means
-- The verification team can resolve reports and control which businesses are featured.
+- A visitor can reset a forgotten password through an e-mailed link and sign in with the new one.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

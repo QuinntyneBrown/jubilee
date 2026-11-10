@@ -1,10 +1,10 @@
-# Feature: Book a meeting
+# Feature: List a business
 
 ## Goal
 
-A confirmed member opens "Book a meeting" from a service, chooses the service, a day, video call or in person, and an available time, adds an optional note and sends the request. No payment is taken. A confirmed booking offers an add-to-calendar file.
+A confirmed member lists a business for free in a guided form: they choose what they offer, enter the listing details, add first products or services, name a church reference, agree to the statement of faith, and submit for verification. A live preview shows the listing as they type, and they can save a draft and return to it. A member may own more than one listing.
 
-Roles: Member. Journey 11 of 26 in `docs/journey.md`.
+Roles: Member, Owner. Journey 10 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,16 +48,20 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/requests/book-meeting/README.md`
-- `docs/detailed-designs/interaction-states/deduplicate-writes/README.md`
+- `docs/detailed-designs/onboarding/describe-listing/README.md`
+- `docs/detailed-designs/onboarding/name-church-reference/README.md`
+- `docs/detailed-designs/onboarding/save-draft/README.md`
+- `docs/detailed-designs/onboarding/submit-for-verification/README.md`
+- `docs/detailed-designs/interaction-states/validate-forms/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-005`, `L2-043`, `L2-044`, `L2-050`, `L2-120`, `L2-127`, `L2-132`.
+Requirements in `docs/specs/L2.md`: `L2-005`, `L2-071`, `L2-072`, `L2-073`, `L2-074`, `L2-075`, `L2-076`, `L2-077`, `L2-078`, `L2-079`, `L2-118`, `L2-126`, `L2-127`, `L2-128`, `L2-130`, `L2-132`, `L2-133`, `L2-146`, `L2-182`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/dialogs/book-meeting/`
+- `docs/mocks/pages/list-business/`
+- `docs/mocks/pages/statement-of-faith/`
 
-Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); journey 8 (View a business and its products, `docs/prompts/08-view-business-and-products.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 4 (Join Jubilee, `docs/prompts/04-join-jubilee.md`); journey 5 (Sign in and out, `docs/prompts/05-sign-in-and-out.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -73,11 +77,13 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. `Request` entity with the shared status model and allowed transitions.
-  2. Availability API: slots computed from business hours in America/Toronto.
-  3. Booking dialog: day and time picker, validation, busy, success and failed states.
-  4. Create booking: idempotent, slot re-checked, owner notified through the outbox.
-  5. Calendar file for a confirmed booking, cancelled when the booking is.
+  1. Step 1: choose what you offer; draft created.
+  2. Listing details with validation and the live preview.
+  3. Products or services during onboarding.
+  4. Church reference details and the statement-of-faith agreement.
+  5. Save a draft and resume it; draft expiry by background job.
+  6. Submit for verification: idempotent, listing enters the pending stage, reference request queued.
+  7. A second listing for the same owner.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -92,12 +98,12 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Quote and order requests (journeys 12 and 13).
-- The member's request list and cancelling (journey 14).
-- The owner's confirm and decline (journey 23).
+- The church reference's answer (journey 18).
+- The verification team's review (journey 19).
+- The owner workspace after submission (journey 21).
 
 ## Done means
-- A confirmed member can send a booking request for an available slot and add a confirmed booking to their calendar.
+- A confirmed member can complete the listing form, save a draft on the way, and submit the listing for verification.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

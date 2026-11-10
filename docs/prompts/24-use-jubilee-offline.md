@@ -61,7 +61,7 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 - `docs/mocks/pages/browse/`
 - `docs/mocks/pages/conversation/`
 
-Builds on: journey 6 (Discover businesses, `docs/prompts/06-discover-businesses.md`); journey 15 (Message a business, `docs/prompts/15-message-a-business.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 1 (Discover businesses, `docs/prompts/01-discover-businesses.md`); journey 6 (Message a business, `docs/prompts/06-message-a-business.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.

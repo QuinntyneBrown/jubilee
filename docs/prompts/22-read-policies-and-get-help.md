@@ -4,7 +4,7 @@
 
 Anyone opens the statement of faith, terms of use, privacy notice and help page from the footer or from links in forms. The pages are public, readable at every viewport and show when they were last updated.
 
-Roles: Visitor, Member. Journey 25 of 26 in `docs/journey.md`.
+Roles: Visitor, Member. Journey 22 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 

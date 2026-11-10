@@ -1,10 +1,10 @@
-# Feature: Save listings for later
+# Feature: Share or report a listing
 
 ## Goal
 
-A member saves or unsaves a business or product from its card or page and finds everything they saved on the saved page. A visitor who presses save is asked to sign in and returned afterwards. The list is private to the member.
+From a business page anyone opens the share dialog to copy the link or use the device's share sheet. A member opens the report dialog, chooses a reason, adds details and submits it to the verification team once, with clear success and failure states.
 
-Roles: Member. Journey 10 of 26 in `docs/journey.md`.
+Roles: Visitor, Member. Journey 21 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,16 +48,18 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/listings/save-listing/README.md`
+- `docs/detailed-designs/listings/share-listing/README.md`
+- `docs/detailed-designs/listings/report-listing/README.md`
+- `docs/detailed-designs/interaction-states/confirm-in-dialogs/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-005`, `L2-012`, `L2-041`, `L2-042`, `L2-118`, `L2-133`.
+Requirements in `docs/specs/L2.md`: `L2-028`, `L2-038`, `L2-039`, `L2-126`, `L2-127`, `L2-128`, `L2-129`, `L2-130`, `L2-132`, `L2-133`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/saved/`
-- `docs/mocks/dialogs/sign-in-required/`
+- `docs/mocks/dialogs/share-listing/`
+- `docs/mocks/dialogs/report-listing/`
 
-Builds on: journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); journey 8 (View a business and its products, `docs/prompts/08-view-business-and-products.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 2 (View a business and its products, `docs/prompts/02-view-business-and-products.md`); journey 5 (Sign in and out, `docs/prompts/05-sign-in-and-out.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -73,10 +75,9 @@ Builds on: journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); jo
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Save and unsave toggle with optimistic update, undo toast and failure rollback.
-  2. Saved page: businesses and products, loading, empty and error states.
-  3. Saved items that are no longer live are shown as unavailable.
-  4. Sign-in prompt for visitors, then the save completes.
+  1. Share dialog: copy link with confirmation, native share where the browser supports it.
+  2. Report dialog: reasons, validation, busy, success and failed states.
+  3. Report API: idempotent, rate limited, stored for the verification team.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -91,10 +92,10 @@ Builds on: journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); jo
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Back-in-stock alerts (journey 8).
+- The verification team's handling of reports (journey 20).
 
 ## Done means
-- A member can save and unsave businesses and products and see them on the saved page.
+- Anyone can share a listing, and a member can report one and know it was received.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

@@ -1,10 +1,10 @@
-# Feature: Recover a forgotten password
+# Feature: View a business and its products
 
 ## Goal
 
-A visitor who forgot their password asks for a reset link, receives it by e-mail, and sets a new password through a time-limited single-use link. The response never reveals whether an account exists. A successful reset ends the account's other sessions.
+Anyone opens a verified business's public page, either a service business or a shop, sees its services or products, hours, area and related businesses, and opens a product's detail page. Sold-out products offer a back-in-stock alert. An owner viewing their own listing sees owner controls instead of buyer actions.
 
-Roles: Visitor. Journey 3 of 26 in `docs/journey.md`.
+Roles: Visitor, Member, Owner. Journey 2 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,18 +48,20 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/accounts/reset-password/README.md`
-- `docs/detailed-designs/security/secure-transport-and-tokens/README.md`
-- `docs/detailed-designs/security/limit-abuse/README.md`
+- `docs/detailed-designs/listings/view-business-page/README.md`
+- `docs/detailed-designs/listings/view-product/README.md`
+- `docs/detailed-designs/trust-content/show-verified-mark/README.md`
+- `docs/detailed-designs/performance/meet-page-budgets/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-007`, `L2-008`, `L2-009`, `L2-080`, `L2-134`, `L2-136`, `L2-137`, `L2-139`, `L2-140`, `L2-141`, `L2-143`.
+Requirements in `docs/specs/L2.md`: `L2-028`, `L2-033`, `L2-034`, `L2-035`, `L2-036`, `L2-037`, `L2-040`, `L2-088`, `L2-111`, `L2-118`, `L2-133`, `L2-151`, `L2-153`, `L2-155`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/forgot-password/`
-- `docs/mocks/pages/reset-password/`
+- `docs/mocks/pages/business/`
+- `docs/mocks/pages/shop/`
+- `docs/mocks/pages/product/`
 
-Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 1 (Discover businesses, `docs/prompts/01-discover-businesses.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -75,10 +77,12 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Forgot-password form with the same response for known and unknown addresses; rate limited.
-  2. Reset e-mail with a hashed, single-use, expiring token.
-  3. Reset-password page: valid, invalid, expired and used link states; password rules.
-  4. On success: other sessions revoked, security event logged, confirmation e-mail sent.
+  1. Service business page: details, services, hours, verified mark; loading, not-found and error states.
+  2. Shop page with its product grid.
+  3. Product detail page with photos, price and options.
+  4. Sold out and back-in-stock alerts.
+  5. Owner's view of their own listing; related businesses.
+  6. Unverified, paused or removed listings are not public.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -93,10 +97,12 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Changing the password while signed in (journey 4).
+- The request dialogs the action buttons open (journeys 11 to 13).
+- Share and report (journey 9).
+- Save (journey 10).
 
 ## Done means
-- A visitor can reset a forgotten password through an e-mailed link and sign in with the new one.
+- Anyone can open a live business or shop page and its products, and each page shows the right actions for the viewer.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

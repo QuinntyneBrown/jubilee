@@ -1,10 +1,10 @@
-# Feature: Recover from errors
+# Feature: Stay notified
 
 ## Goal
 
-When something goes wrong the user sees a clear page: not found, forbidden, server error or planned maintenance. Each page says what happened and what to do next, carries an error reference code tied to the server log, and never loses the user's work.
+A member or owner is told about the events that matter to them: the notification centre lists them with unread badges, toasts announce them as they happen, persistent banners stay until resolved, and e-mail reaches them according to their preferences, including meeting reminders.
 
-Roles: Visitor, Member, Owner, Verification team. Journey 26 of 26 in `docs/journey.md`.
+Roles: Member, Owner. Journey 17 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,18 +48,26 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/system-pages/show-error-pages/README.md`
-- `docs/detailed-designs/system-pages/run-maintenance-mode/README.md`
-- `docs/detailed-designs/operations/observe-the-system/README.md`
+- `docs/detailed-designs/notifications/view-notification-centre/README.md`
+- `docs/detailed-designs/notifications/show-toasts-and-banners/README.md`
+- `docs/detailed-designs/notifications/deliver-real-time-events/README.md`
+- `docs/detailed-designs/notifications/send-email-notifications/README.md`
+- `docs/detailed-designs/operations/deliver-email/README.md`
+- `docs/detailed-designs/accessibility/announce-to-screen-readers/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-113`, `L2-114`, `L2-115`, `L2-117`, `L2-118`, `L2-132`, `L2-133`, `L2-175`, `L2-176`.
+Requirements in `docs/specs/L2.md`: `L2-004`, `L2-005`, `L2-016`, `L2-061`, `L2-064`, `L2-065`, `L2-066`, `L2-067`, `L2-068`, `L2-069`, `L2-070`, `L2-118`, `L2-121`, `L2-133`, `L2-157`, `L2-159`, `L2-179`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/not-found/`
-- `docs/mocks/pages/forbidden/`
-- `docs/mocks/pages/server-error/`
-- `docs/mocks/pages/maintenance/`
+- `docs/mocks/pages/notifications/`
+- `docs/mocks/notifications/toast/`
+- `docs/mocks/notifications/request-toast/`
+- `docs/mocks/notifications/message-toast/`
+- `docs/mocks/notifications/listing-toast/`
+- `docs/mocks/notifications/verify-email-banner/`
+- `docs/mocks/notifications/verification-banner/`
+
+Builds on: journey 5 (Sign in and out, `docs/prompts/05-sign-in-and-out.md`); journey 20 (Manage profile and settings, `docs/prompts/20-manage-profile-and-settings.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -75,10 +83,13 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Not-found page for unknown routes and missing resources.
-  2. Forbidden page for authenticated users without access.
-  3. Server-error page with the `JB-<AREA>-<NNN>` reference and correlation ID in the log; retry keeps typed input.
-  4. Maintenance mode: switched by configuration without a deploy, HTTP 503 with `Retry-After`, e-mailed link validity extended.
+  1. Notification store written through the outbox; notification centre page with read and mark-all-read.
+  2. Unread badges in the site chrome.
+  3. Real-time hub that delivers events to signed-in clients, with reconnect.
+  4. Toast host: queueing, stacking, timing, undo actions, screen-reader announcement.
+  5. Persistent banner host.
+  6. E-mail notifications that honour preferences and muted conversations.
+  7. Scheduled meeting reminders.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -93,11 +104,11 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Session-expired page (journey 2).
-- Offline page (journey 24).
+- Choosing the preferences (journey 4).
+- The offline banner (journey 24).
 
 ## Done means
-- Every failure ends on a clear page with a reference code and a way forward.
+- Members and owners learn of each relevant event in the app and by e-mail, as their preferences allow.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

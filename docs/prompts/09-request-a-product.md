@@ -1,10 +1,10 @@
-# Feature: Answer a church reference
+# Feature: Request a product
 
 ## Goal
 
-The pastor or elder an owner named receives an e-mail with a time-limited, single-use link, opens the reference form without an account, and confirms or declines the owner privately. The owner sees only the stage of the reference, never the answer, and can send a reminder or change the reference.
+A confirmed member opens the order-request dialog from a product, chooses quantity, options and pickup or delivery, and sends the request. The shop confirms or declines; the member pays the business directly.
 
-Roles: Church reference, Owner. Journey 18 of 26 in `docs/journey.md`.
+Roles: Member. Journey 9 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,18 +48,15 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/church-reference/answer-church-reference/README.md`
-- `docs/detailed-designs/church-reference/track-reference-outcome/README.md`
-- `docs/detailed-designs/privacy/protect-reference-answers/README.md`
-- `docs/detailed-designs/security/secure-transport-and-tokens/README.md`
+- `docs/detailed-designs/requests/request-item/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-018`, `L2-080`, `L2-081`, `L2-082`, `L2-083`, `L2-084`, `L2-086`, `L2-126`, `L2-133`, `L2-136`, `L2-139`, `L2-140`, `L2-146`, `L2-150`, `L2-182`.
+Requirements in `docs/specs/L2.md`: `L2-005`, `L2-043`, `L2-046`, `L2-132`, `L2-133`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/church-reference/`
+- `docs/mocks/dialogs/order-request/`
 
-Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 2 (View a business and its products, `docs/prompts/02-view-business-and-products.md`); journey 4 (Join Jubilee, `docs/prompts/04-join-jubilee.md`); journey 5 (Sign in and out, `docs/prompts/05-sign-in-and-out.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -75,11 +72,9 @@ Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`). I
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Reference request e-mail with a hashed, single-use, 14-day token.
-  2. Reference form: valid, expired, already answered and invalid link states.
-  3. Submit the answer; confidential storage; listing stage advanced.
-  4. Owner's view of the reference stage, without the answer.
-  5. Reminders, changing the reference, and deletion of the answer on schedule.
+  1. Order-request dialog: quantity, options, fulfilment choice and validation.
+  2. Create order request: idempotent, stock and availability re-checked, owner notified.
+  3. Sold-out, busy, success and failed states.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -94,10 +89,11 @@ Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`). I
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- The verification team reading the answer (journey 19).
+- Any payment, cart or checkout: Jubilee takes no payment.
+- Tracking the request (journey 14).
 
 ## Done means
-- A church reference can answer once through their link, and the owner sees the stage but never the answer.
+- A confirmed member can send an order request for an available product.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

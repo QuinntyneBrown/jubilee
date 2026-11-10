@@ -1,10 +1,10 @@
-# Feature: Request a quote
+# Feature: Verify a listing
 
 ## Goal
 
-A confirmed member opens "Request a quote" from a service, describes what they need, gives their timing and contact preference, and sends the request. The business replies later; no payment is taken.
+A verification team member opens the queue of submitted listings, opens one to review it with the church reference's answer and a checklist, and approves and publishes it, requests changes, or declines it. The owner is told the outcome, can resubmit after changes, and every decision is written to the audit log.
 
-Roles: Member. Journey 12 of 26 in `docs/journey.md`.
+Roles: Verification team, Owner. Journey 12 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,15 +48,25 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/requests/request-quote/README.md`
+- `docs/detailed-designs/verification/work-verification-queue/README.md`
+- `docs/detailed-designs/verification/review-and-approve-listing/README.md`
+- `docs/detailed-designs/verification/request-changes/README.md`
+- `docs/detailed-designs/operations/record-audit-log/README.md`
+- `docs/detailed-designs/security/authorize-requests/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-005`, `L2-043`, `L2-045`, `L2-126`, `L2-132`.
+Requirements in `docs/specs/L2.md`: `L2-098`, `L2-099`, `L2-100`, `L2-101`, `L2-102`, `L2-103`, `L2-104`, `L2-118`, `L2-133`, `L2-143`, `L2-146`, `L2-150`, `L2-180`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/dialogs/request-quote/`
+- `docs/mocks/pages/admin-verifications/`
+- `docs/mocks/pages/admin-verification/`
+- `docs/mocks/dialogs/approve-listing/`
+- `docs/mocks/dialogs/request-changes/`
+- `docs/mocks/notifications/verification-banner/`
+- `docs/mocks/notifications/listing-toast/`
+- `docs/mocks/pages/forbidden/`
 
-Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); journey 8 (View a business and its products, `docs/prompts/08-view-business-and-products.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 10 (List a business, `docs/prompts/10-list-a-business.md`); journey 11 (Answer a church reference, `docs/prompts/11-answer-church-reference.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -72,9 +82,12 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Quote dialog: fields, validation and character limits.
-  2. Create quote request: idempotent, owner notified through the outbox.
-  3. Busy, success ("View request") and failed states; unconfirmed members are refused with the reason.
+  1. `verifier` role and policy; non-staff get the forbidden page.
+  2. Verification queue: filters, search, loading, empty, no-results and error states.
+  3. Review screen: listing, reference answer (access audited) and checklist.
+  4. Approve and publish: dialog, listing goes live, owner notified.
+  5. Request changes: dialog, owner banner, resubmission returns the listing to the queue.
+  6. Decline a listing.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -89,11 +102,10 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Photo attachments on a quote unless the design requires them.
-- Tracking the request (journey 14).
+- Reports and featured businesses (journey 20).
 
 ## Done means
-- A confirmed member can send a quote request to a business and see it was sent.
+- The verification team can work the queue to an approved, changes-requested or declined outcome, and the owner is told.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

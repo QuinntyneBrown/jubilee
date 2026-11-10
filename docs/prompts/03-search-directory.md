@@ -4,7 +4,7 @@
 
 Anyone types a keyword in the search box and sees results grouped into businesses, services and products, each with the reason it matched. An empty search page offers suggestions, and a search with no results offers help.
 
-Roles: Visitor, Member. Journey 7 of 26 in `docs/journey.md`.
+Roles: Visitor, Member. Journey 3 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -57,7 +57,7 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 
 - `docs/mocks/pages/search/`
 
-Builds on: journey 6 (Discover businesses, `docs/prompts/06-discover-businesses.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 1 (Discover businesses, `docs/prompts/01-discover-businesses.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.

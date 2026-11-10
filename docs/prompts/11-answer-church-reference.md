@@ -1,10 +1,10 @@
-# Feature: Stay notified
+# Feature: Answer a church reference
 
 ## Goal
 
-A member or owner is told about the events that matter to them: the notification centre lists them with unread badges, toasts announce them as they happen, persistent banners stay until resolved, and e-mail reaches them according to their preferences, including meeting reminders.
+The pastor or elder an owner named receives an e-mail with a time-limited, single-use link, opens the reference form without an account, and confirms or declines the owner privately. The owner sees only the stage of the reference, never the answer, and can send a reminder or change the reference.
 
-Roles: Member, Owner. Journey 16 of 26 in `docs/journey.md`.
+Roles: Church reference, Owner. Journey 11 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,26 +48,18 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/notifications/view-notification-centre/README.md`
-- `docs/detailed-designs/notifications/show-toasts-and-banners/README.md`
-- `docs/detailed-designs/notifications/deliver-real-time-events/README.md`
-- `docs/detailed-designs/notifications/send-email-notifications/README.md`
-- `docs/detailed-designs/operations/deliver-email/README.md`
-- `docs/detailed-designs/accessibility/announce-to-screen-readers/README.md`
+- `docs/detailed-designs/church-reference/answer-church-reference/README.md`
+- `docs/detailed-designs/church-reference/track-reference-outcome/README.md`
+- `docs/detailed-designs/privacy/protect-reference-answers/README.md`
+- `docs/detailed-designs/security/secure-transport-and-tokens/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-004`, `L2-005`, `L2-016`, `L2-061`, `L2-064`, `L2-065`, `L2-066`, `L2-067`, `L2-068`, `L2-069`, `L2-070`, `L2-118`, `L2-121`, `L2-133`, `L2-157`, `L2-159`, `L2-179`.
+Requirements in `docs/specs/L2.md`: `L2-018`, `L2-080`, `L2-081`, `L2-082`, `L2-083`, `L2-084`, `L2-086`, `L2-126`, `L2-133`, `L2-136`, `L2-139`, `L2-140`, `L2-146`, `L2-150`, `L2-182`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/notifications/`
-- `docs/mocks/notifications/toast/`
-- `docs/mocks/notifications/request-toast/`
-- `docs/mocks/notifications/message-toast/`
-- `docs/mocks/notifications/listing-toast/`
-- `docs/mocks/notifications/verify-email-banner/`
-- `docs/mocks/notifications/verification-banner/`
+- `docs/mocks/pages/church-reference/`
 
-Builds on: journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); journey 4 (Manage profile and settings, `docs/prompts/04-manage-profile-and-settings.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 10 (List a business, `docs/prompts/10-list-a-business.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -83,13 +75,11 @@ Builds on: journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); jo
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Notification store written through the outbox; notification centre page with read and mark-all-read.
-  2. Unread badges in the site chrome.
-  3. Real-time hub that delivers events to signed-in clients, with reconnect.
-  4. Toast host: queueing, stacking, timing, undo actions, screen-reader announcement.
-  5. Persistent banner host.
-  6. E-mail notifications that honour preferences and muted conversations.
-  7. Scheduled meeting reminders.
+  1. Reference request e-mail with a hashed, single-use, 14-day token.
+  2. Reference form: valid, expired, already answered and invalid link states.
+  3. Submit the answer; confidential storage; listing stage advanced.
+  4. Owner's view of the reference stage, without the answer.
+  5. Reminders, changing the reference, and deletion of the answer on schedule.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -104,11 +94,10 @@ Builds on: journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); jo
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Choosing the preferences (journey 4).
-- The offline banner (journey 24).
+- The verification team reading the answer (journey 19).
 
 ## Done means
-- Members and owners learn of each relevant event in the app and by e-mail, as their preferences allow.
+- A church reference can answer once through their link, and the owner sees the stage but never the answer.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

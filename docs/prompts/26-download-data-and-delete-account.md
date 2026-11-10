@@ -1,10 +1,10 @@
-# Feature: Message a business
+# Feature: Download data and delete account
 
 ## Goal
 
-A confirmed member starts a conversation with a business from its page, and both sides exchange messages in a one-to-one conversation. The inbox lists conversations with unread counts, search and mute. Messages show sending, sent and failed states with retry, accept photo attachments, and show the business's away status. Either side can report a conversation.
+From the account page a member requests a download of their data and receives a time-limited link by e-mail when the export is ready. A member can also permanently delete their account after confirming in a dialog; their personal data is removed or anonymised according to the retention schedule.
 
-Roles: Member, Owner. Journey 15 of 26 in `docs/journey.md`.
+Roles: Member. Journey 26 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,23 +48,19 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/messaging/start-conversation/README.md`
-- `docs/detailed-designs/messaging/read-inbox/README.md`
-- `docs/detailed-designs/messaging/exchange-messages/README.md`
-- `docs/detailed-designs/messaging/report-conversation/README.md`
-- `docs/detailed-designs/security/secure-uploads/README.md`
-- `docs/detailed-designs/notifications/deliver-real-time-events/README.md`
+- `docs/detailed-designs/accounts/download-data/README.md`
+- `docs/detailed-designs/accounts/delete-account/README.md`
+- `docs/detailed-designs/privacy/retain-and-protect-data/README.md`
+- `docs/detailed-designs/operations/run-background-jobs/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-005`, `L2-055`, `L2-056`, `L2-057`, `L2-058`, `L2-059`, `L2-060`, `L2-061`, `L2-062`, `L2-063`, `L2-070`, `L2-118`, `L2-121`, `L2-126`, `L2-132`, `L2-133`, `L2-135`, `L2-138`, `L2-180`.
+Requirements in `docs/specs/L2.md`: `L2-017`, `L2-018`, `L2-128`, `L2-129`, `L2-133`, `L2-140`, `L2-143`, `L2-146`, `L2-147`, `L2-148`, `L2-175`, `L2-180`, `L2-182`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/messages/`
-- `docs/mocks/pages/conversation/`
-- `docs/mocks/dialogs/new-message/`
-- `docs/mocks/notifications/message-toast/`
+- `docs/mocks/pages/account/`
+- `docs/mocks/dialogs/delete-account/`
 
-Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); journey 8 (View a business and its products, `docs/prompts/08-view-business-and-products.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 4 (Join Jubilee, `docs/prompts/04-join-jubilee.md`); journey 5 (Sign in and out, `docs/prompts/05-sign-in-and-out.md`); journey 20 (Manage profile and settings, `docs/prompts/20-manage-profile-and-settings.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -80,13 +76,11 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. New-message dialog: start or reuse the member-business conversation.
-  2. Inbox: conversation list, unread badges, loading, empty and error states; two-pane layout on wide viewports.
-  3. Conversation: history, send with sending, sent and failed states, retry without duplicates.
-  4. Real-time delivery to the other side and the message toast.
-  5. Photo attachments through secure upload.
-  6. Inbox search, mute and away status.
-  7. Report a conversation; message-safety rules.
+  1. Request a data export; background job builds it; states for requested, ready and failed.
+  2. E-mailed 7-day download link that requires the signed-in owner of the data.
+  3. Delete-account dialog: live counts, typed DELETE confirmation, busy and failed states.
+  4. Deletion job: sessions ended, personal data removed or anonymised, audit record written.
+  5. Rules for an owner with a live listing or open requests.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -101,11 +95,10 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Queuing messages while offline (journey 24).
-- E-mail notification of new messages (journey 16).
+- The full retention schedule for data unrelated to account deletion.
 
 ## Done means
-- A member and a business can exchange messages reliably, with an inbox that shows what is unread.
+- A member can obtain a copy of their data and can delete their account for good.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

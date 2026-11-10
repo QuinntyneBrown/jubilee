@@ -1,10 +1,10 @@
-# Feature: Verify a listing
+# Feature: Respond to customer requests
 
 ## Goal
 
-A verification team member opens the queue of submitted listings, opens one to review it with the church reference's answer and a checklist, and approves and publishes it, requests changes, or declines it. The owner is told the outcome, can resubmit after changes, and every decision is written to the audit log.
+An owner opens "Incoming requests" to see the bookings, quotes and order requests customers sent, and confirms or declines each one in a dialog, with a reason when declining. The customer is told the outcome at once, and the listing's response-time badge reflects how quickly the owner answers.
 
-Roles: Verification team, Owner. Journey 19 of 26 in `docs/journey.md`.
+Roles: Owner. Journey 13 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,25 +48,20 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/verification/work-verification-queue/README.md`
-- `docs/detailed-designs/verification/review-and-approve-listing/README.md`
-- `docs/detailed-designs/verification/request-changes/README.md`
-- `docs/detailed-designs/operations/record-audit-log/README.md`
-- `docs/detailed-designs/security/authorize-requests/README.md`
+- `docs/detailed-designs/requests/handle-incoming-requests/README.md`
+- `docs/detailed-designs/requests/confirm-request/README.md`
+- `docs/detailed-designs/requests/decline-request/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-098`, `L2-099`, `L2-100`, `L2-101`, `L2-102`, `L2-103`, `L2-104`, `L2-118`, `L2-133`, `L2-143`, `L2-146`, `L2-150`, `L2-180`.
+Requirements in `docs/specs/L2.md`: `L2-043`, `L2-051`, `L2-052`, `L2-053`, `L2-054`, `L2-070`, `L2-128`, `L2-129`, `L2-133`, `L2-182`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/admin-verifications/`
-- `docs/mocks/pages/admin-verification/`
-- `docs/mocks/dialogs/approve-listing/`
-- `docs/mocks/dialogs/request-changes/`
-- `docs/mocks/notifications/verification-banner/`
-- `docs/mocks/notifications/listing-toast/`
-- `docs/mocks/pages/forbidden/`
+- `docs/mocks/pages/incoming-requests/`
+- `docs/mocks/dialogs/confirm-request/`
+- `docs/mocks/dialogs/decline-request/`
+- `docs/mocks/notifications/request-toast/`
 
-Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`); journey 18 (Answer a church reference, `docs/prompts/18-answer-church-reference.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 7 (Book a meeting, `docs/prompts/07-book-a-meeting.md`); journey 8 (Request a quote, `docs/prompts/08-request-a-quote.md`); journey 9 (Request a product, `docs/prompts/09-request-a-product.md`); journey 15 (Run a business listing, `docs/prompts/15-run-a-business-listing.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -82,12 +77,11 @@ Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`); j
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. `verifier` role and policy; non-staff get the forbidden page.
-  2. Verification queue: filters, search, loading, empty, no-results and error states.
-  3. Review screen: listing, reference answer (access audited) and checklist.
-  4. Approve and publish: dialog, listing goes live, owner notified.
-  5. Request changes: dialog, owner banner, resubmission returns the listing to the queue.
-  6. Decline a listing.
+  1. Incoming requests list with tabs; loading, empty and error states; live arrival of new requests.
+  2. Confirm dialog, undo window, customer notified.
+  3. Decline dialog with reason, customer notified.
+  4. Invalid transitions refused with a clear message.
+  5. Response-time badge computed by a background job.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -102,10 +96,10 @@ Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`); j
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Reports and featured businesses (journey 20).
+- The member's side (journey 14).
 
 ## Done means
-- The verification team can work the queue to an approved, changes-requested or declined outcome, and the owner is told.
+- An owner can see every incoming request and confirm or decline it, and the customer learns the outcome.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

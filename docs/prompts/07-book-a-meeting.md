@@ -1,10 +1,10 @@
-# Feature: Discover businesses
+# Feature: Book a meeting
 
 ## Goal
 
-Anyone lands on the public welcome page, moves to the browse home with featured businesses and products, and opens a category page where they filter, sort and page through verified businesses. Only verified, live listings appear. The site chrome (top bar, phone tab bar, footer) carries them between pages at every viewport.
+A confirmed member opens "Book a meeting" from a service, chooses the service, a day, video call or in person, and an available time, adds an optional note and sends the request. No payment is taken. A confirmed booking offers an add-to-calendar file.
 
-Roles: Visitor, Member. Journey 6 of 26 in `docs/journey.md`.
+Roles: Member. Journey 7 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,21 +48,16 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/directory/view-welcome-page/README.md`
-- `docs/detailed-designs/directory/browse-home/README.md`
-- `docs/detailed-designs/directory/browse-category/README.md`
-- `docs/detailed-designs/trust-content/render-site-chrome/README.md`
-- `docs/detailed-designs/trust-content/show-verified-mark/README.md`
-- `docs/detailed-designs/responsive-design/adapt-navigation/README.md`
+- `docs/detailed-designs/requests/book-meeting/README.md`
+- `docs/detailed-designs/interaction-states/deduplicate-writes/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-012`, `L2-020`, `L2-021`, `L2-022`, `L2-023`, `L2-024`, `L2-025`, `L2-026`, `L2-027`, `L2-028`, `L2-065`, `L2-106`, `L2-111`, `L2-112`, `L2-113`, `L2-118`, `L2-133`, `L2-156`, `L2-162`, `L2-163`, `L2-164`.
+Requirements in `docs/specs/L2.md`: `L2-005`, `L2-043`, `L2-044`, `L2-050`, `L2-120`, `L2-127`, `L2-132`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/welcome/`
-- `docs/mocks/pages/browse/`
-- `docs/mocks/pages/category/`
-- `docs/mocks/dialogs/filters/`
+- `docs/mocks/dialogs/book-meeting/`
+
+Builds on: journey 2 (View a business and its products, `docs/prompts/02-view-business-and-products.md`); journey 4 (Join Jubilee, `docs/prompts/04-join-jubilee.md`); journey 5 (Sign in and out, `docs/prompts/05-sign-in-and-out.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -78,12 +73,11 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Site chrome: top bar, phone tab bar and footer, signed-out and signed-in.
-  2. Welcome page with category counts.
-  3. Browse home: featured businesses and products; visitor and member variants; loading, empty and error states.
-  4. Category page: business cards with content rules and the verified mark; pagination.
-  5. Filters (dialog on small screens) and sorting, held in the URL.
-  6. Public queries return only verified, live listings; short-lived read cache.
+  1. `Request` entity with the shared status model and allowed transitions.
+  2. Availability API: slots computed from business hours in America/Toronto.
+  3. Booking dialog: day and time picker, validation, busy, success and failed states.
+  4. Create booking: idempotent, slot re-checked, owner notified through the outbox.
+  5. Calendar file for a confirmed booking, cancelled when the booking is.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -98,12 +92,12 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Keyword search (journey 7).
-- Business and product pages (journey 8).
-- Choosing which businesses are featured (journey 20); seed featured data instead.
+- Quote and order requests (journeys 12 and 13).
+- The member's request list and cancelling (journey 14).
+- The owner's confirm and decline (journey 23).
 
 ## Done means
-- Anyone can move from the welcome page to browse home to a filtered, sorted category page and see only verified, live businesses.
+- A confirmed member can send a booking request for an available slot and add a confirmed booking to their calendar.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

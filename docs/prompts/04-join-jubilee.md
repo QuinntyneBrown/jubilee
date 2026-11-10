@@ -1,10 +1,10 @@
-# Feature: Share or report a listing
+# Feature: Join Jubilee
 
 ## Goal
 
-From a business page anyone opens the share dialog to copy the link or use the device's share sheet. A member opens the report dialog, chooses a reason, adds details and submits it to the verification team once, with clear success and failure states.
+A visitor creates a free account at `/join` with e-mail and password or with Google, receives a confirmation e-mail, and confirms the address through a 24-hour single-use link. Until then the member is unconfirmed: a persistent banner says so and the restricted actions are refused.
 
-Roles: Visitor, Member. Journey 9 of 26 in `docs/journey.md`.
+Roles: Visitor, Member. Journey 4 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,18 +48,19 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/listings/share-listing/README.md`
-- `docs/detailed-designs/listings/report-listing/README.md`
-- `docs/detailed-designs/interaction-states/confirm-in-dialogs/README.md`
+- `docs/detailed-designs/accounts/join-with-email/README.md`
+- `docs/detailed-designs/accounts/confirm-email/README.md`
+- `docs/detailed-designs/accounts/continue-with-google/README.md`
+- `docs/detailed-designs/security/secure-transport-and-tokens/README.md`
+- `docs/detailed-designs/operations/deliver-email/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-028`, `L2-038`, `L2-039`, `L2-126`, `L2-127`, `L2-128`, `L2-129`, `L2-130`, `L2-132`, `L2-133`.
+Requirements in `docs/specs/L2.md`: `L2-001`, `L2-002`, `L2-003`, `L2-004`, `L2-005`, `L2-010`, `L2-012`, `L2-068`, `L2-080`, `L2-118`, `L2-134`, `L2-135`, `L2-136`, `L2-137`, `L2-139`, `L2-140`, `L2-141`, `L2-179`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/dialogs/share-listing/`
-- `docs/mocks/dialogs/report-listing/`
-
-Builds on: journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); journey 8 (View a business and its products, `docs/prompts/08-view-business-and-products.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+- `docs/mocks/pages/sign-up/`
+- `docs/mocks/pages/verify-email/`
+- `docs/mocks/notifications/verify-email-banner/`
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -75,9 +76,12 @@ Builds on: journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); jo
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Share dialog: copy link with confirmation, native share where the browser supports it.
-  2. Report dialog: reasons, validation, busy, success and failed states.
-  3. Report API: idempotent, rate limited, stored for the verification team.
+  1. Join form with client and server validation; account created unconfirmed; password hashed.
+  2. Confirmation e-mail through the outbox; "Check your e-mail" state; "Send it again" invalidates earlier links.
+  3. Confirmation link: success, expired, already used and invalid states.
+  4. Verify-e-mail banner and the `ConfirmedMember` policy that refuses restricted actions.
+  5. Continue with Google: new account, existing account, cancelled and failed states.
+  6. Rate limiting and no account enumeration on join and resend.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -92,10 +96,11 @@ Builds on: journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); jo
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- The verification team's handling of reports (journey 20).
+- Sign-in, lockout and sign-out (journey 2).
+- Password reset (journey 3).
 
 ## Done means
-- Anyone can share a listing, and a member can report one and know it was received.
+- A visitor can join by e-mail or Google, confirm their address, and is treated as unconfirmed until they do.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

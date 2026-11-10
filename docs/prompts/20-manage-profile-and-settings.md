@@ -4,7 +4,7 @@
 
 A member opens their account page to edit their profile, change their e-mail address (re-confirmed by link) or password (current password required), and opens preferences to choose which e-mail notifications they receive, including consent for commercial e-mail.
 
-Roles: Member. Journey 4 of 26 in `docs/journey.md`.
+Roles: Member. Journey 20 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -60,7 +60,7 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 - `docs/mocks/pages/account/`
 - `docs/mocks/pages/preferences/`
 
-Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 4 (Join Jubilee, `docs/prompts/04-join-jubilee.md`); journey 5 (Sign in and out, `docs/prompts/05-sign-in-and-out.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.

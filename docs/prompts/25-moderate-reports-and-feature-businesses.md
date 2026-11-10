@@ -1,16 +1,16 @@
-# Feature: Run a business listing
+# Feature: Moderate reports and feature businesses
 
 ## Goal
 
-An owner opens "My business" to see the listing's status, activity and what needs attention, both before and after it goes live. They edit the listing's details and photos, and pause the listing so it leaves the public directory, then resume it later.
+A verification team member reviews reports about listings and conversations, resolves each one with a resolution note (dismiss, message the reporter or owner, place the listing on hold, or remove it), and chooses up to five businesses to feature on the browse home. Each action is authorised, audited and takes effect on the public pages.
 
-Roles: Owner. Journey 21 of 26 in `docs/journey.md`.
+Roles: Verification team. Journey 25 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
 ## Finish the whole feature in one run. Do not stop. (CRITICAL)
 
-- You are authorised to take this feature all the way: artifact alignment, foundation, incremental implementation, progress tracking, green tests and a PR. Go through
+- You are authorised to take this feature all the way: mocks, design-system alignment, artifact alignment, foundation, incremental implementation, progress tracking, green tests and a PR. Go through
   every phase and every slice in one continuous run. Do not pause between phases to report, ask for approval,
   or wait for "continue".
 - Do not end your turn until the "Done means" list at the bottom is fully true. A partial result, a plan, or
@@ -48,43 +48,44 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/owner-workspace/view-business-overview/README.md`
-- `docs/detailed-designs/owner-workspace/edit-listing/README.md`
-- `docs/detailed-designs/owner-workspace/pause-listing/README.md`
-- `docs/detailed-designs/security/secure-uploads/README.md`
-- `docs/detailed-designs/performance/meet-page-budgets/README.md`
+- `docs/detailed-designs/verification/handle-reports/README.md`
+- `docs/detailed-designs/verification/feature-businesses/README.md`
+- `docs/detailed-designs/operations/record-audit-log/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-028`, `L2-065`, `L2-067`, `L2-085`, `L2-086`, `L2-087`, `L2-088`, `L2-096`, `L2-097`, `L2-118`, `L2-126`, `L2-127`, `L2-129`, `L2-133`, `L2-135`, `L2-138`, `L2-151`, `L2-153`, `L2-155`.
+Requirements in `docs/specs/L2.md`: `L2-063`, `L2-098`, `L2-105`, `L2-106`, `L2-133`, `L2-150`, `L2-180`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/my-business/`
-- `docs/mocks/pages/edit-listing/`
-- `docs/mocks/dialogs/unpublish-listing/`
-- `docs/mocks/notifications/listing-toast/`
+- `docs/mocks/pages/admin-verifications/`
 
-Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`); journey 19 (Verify a listing, `docs/prompts/19-verify-a-listing.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 12 (Verify a listing, `docs/prompts/12-verify-a-listing.md`); journey 21 (Share or report a listing, `docs/prompts/21-share-or-report-listing.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
-## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
+## Phase 1: Mocks (`writing-html-mocks`)
+- The designs for this journey state that no mocks exist for the admin reports pages or the featured-businesses page (`/admin/featured`).
+- Add them under `docs/mocks/pages/` in every state (default, loading, empty, error, busy, success, forbidden), with any dialogs under `docs/mocks/dialogs/`. Use the cast in `docs/mocks/README.md` (Miriam Castillo for staff screens). Update `docs/mocks/manifest.json`, `docs/mocks/index.html` and the coverage counts in `docs/mocks/README.md`.
+- Reuse `docs/mocks/pages/admin-verifications/` as the layout neighbour.
+
+## Phase 2: Design system alignment (`extracting-design-systems`)
+- If the new mocks introduce a component, variant or state that `docs/design-system/` lacks, add it there. If they do not, change nothing.
+
+## Phase 3: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
 - Where they disagree, or a design leaves a `<TO SUPPLY>` this journey cannot be built without, decide, then correct the artifact with the named skill: `docs/specs/L2.md` for behaviour, the design `README.md` and its PlantUML sources for structure. Re-render changed diagrams with `python .claude/skills/writing-software-design-documents/scripts/render_puml.py docs/detailed-designs`.
 - Keep the traceability matrix in `docs/specs/L2.md` and the index in `docs/detailed-designs/README.md` true.
 
-## Phase 2: Foundation, only if it is missing (`implementing-incrementally`)
+## Phase 4: Foundation, only if it is missing (`implementing-incrementally`)
 - No application code exists in this repo at the time of writing. Check first. If the solution already exists, skip this phase and follow its conventions.
 - Otherwise create the smallest skeleton the architecture baseline describes: the Angular app (`Jubilee Web`), `Jubilee.Api`, `Jubilee.Application`, `Jubilee.Domain`, `Jubilee.Infrastructure`, `Jubilee.Worker`, the database migrations, and test projects for each side. Choose current stable versions and the stack's standard test tools, since the repo states none.
 - Bring in the tokens from `docs/design-system/tokens/` and build only the components this journey needs, as `docs/detailed-designs/design-system/apply-design-tokens/README.md` and `docs/detailed-designs/design-system/build-components/README.md` describe.
 - Write the build, test, lint and run commands into a root `README.md`, and add a CI workflow that runs them.
 - Prove the skeleton with one end-to-end test (a health endpoint reached from the app) before starting the journey.
 
-## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
+## Phase 5: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Owner workspace access: only the owner reaches it; others get the forbidden page.
-  2. Overview before going live: verification stage and next steps.
-  3. Overview when live: stats, unread badges and response-time badge.
-  4. Edit listing: sections, validation, unsaved-changes guard, saved toast.
-  5. Listing photos: secure upload, reorder, remove, image delivery sizes.
-  6. Pause and resume: dialog, public pages and search updated, banner while paused.
+  1. Reports queue and report detail for listing and conversation reports.
+  2. Report actions: dismiss, message reporter or owner, hold, remove; resolution note required; overdue marking; the reporter is never shown to the owner.
+  3. Featured businesses: choose, order, cap at five; browse home reflects it.
+  4. Audit log entries for every action.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -94,16 +95,15 @@ Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`); j
   - Run the regression checks, then commit.
 - Enforce authorization, validation, rate limits and idempotency on the server for every endpoint, as the security and interaction-states designs require. The client checks are for feedback only.
 
-## Phase 4: Progress tracking (`estimating-designs`)
+## Phase 6: Progress tracking (`estimating-designs`)
 - Refresh `docs/estimates/` with the `estimating-designs` skill so the percentage complete of each design this journey touched is true. Create the folder if it does not exist.
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Products and services (journey 22).
-- Incoming requests (journey 23).
+- Any moderation tooling beyond the two designs.
 
 ## Done means
-- An owner can see how their listing is doing, change it, and take it off and back on the directory.
+- The verification team can resolve reports and control which businesses are featured.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

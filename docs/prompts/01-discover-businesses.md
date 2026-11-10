@@ -1,10 +1,10 @@
-# Feature: Download data and delete account
+# Feature: Discover businesses
 
 ## Goal
 
-From the account page a member requests a download of their data and receives a time-limited link by e-mail when the export is ready. A member can also permanently delete their account after confirming in a dialog; their personal data is removed or anonymised according to the retention schedule.
+Anyone lands on the public welcome page, moves to the browse home with featured businesses and products, and opens a category page where they filter, sort and page through verified businesses. Only verified, live listings appear. The site chrome (top bar, phone tab bar, footer) carries them between pages at every viewport.
 
-Roles: Member. Journey 5 of 26 in `docs/journey.md`.
+Roles: Visitor, Member. Journey 1 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,19 +48,21 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/accounts/download-data/README.md`
-- `docs/detailed-designs/accounts/delete-account/README.md`
-- `docs/detailed-designs/privacy/retain-and-protect-data/README.md`
-- `docs/detailed-designs/operations/run-background-jobs/README.md`
+- `docs/detailed-designs/directory/view-welcome-page/README.md`
+- `docs/detailed-designs/directory/browse-home/README.md`
+- `docs/detailed-designs/directory/browse-category/README.md`
+- `docs/detailed-designs/trust-content/render-site-chrome/README.md`
+- `docs/detailed-designs/trust-content/show-verified-mark/README.md`
+- `docs/detailed-designs/responsive-design/adapt-navigation/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-017`, `L2-018`, `L2-128`, `L2-129`, `L2-133`, `L2-140`, `L2-143`, `L2-146`, `L2-147`, `L2-148`, `L2-175`, `L2-180`, `L2-182`.
+Requirements in `docs/specs/L2.md`: `L2-012`, `L2-020`, `L2-021`, `L2-022`, `L2-023`, `L2-024`, `L2-025`, `L2-026`, `L2-027`, `L2-028`, `L2-065`, `L2-106`, `L2-111`, `L2-112`, `L2-113`, `L2-118`, `L2-133`, `L2-156`, `L2-162`, `L2-163`, `L2-164`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/account/`
-- `docs/mocks/dialogs/delete-account/`
-
-Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 2 (Sign in and out, `docs/prompts/02-sign-in-and-out.md`); journey 4 (Manage profile and settings, `docs/prompts/04-manage-profile-and-settings.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+- `docs/mocks/pages/welcome/`
+- `docs/mocks/pages/browse/`
+- `docs/mocks/pages/category/`
+- `docs/mocks/dialogs/filters/`
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -76,11 +78,12 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Request a data export; background job builds it; states for requested, ready and failed.
-  2. E-mailed 7-day download link that requires the signed-in owner of the data.
-  3. Delete-account dialog: live counts, typed DELETE confirmation, busy and failed states.
-  4. Deletion job: sessions ended, personal data removed or anonymised, audit record written.
-  5. Rules for an owner with a live listing or open requests.
+  1. Site chrome: top bar, phone tab bar and footer, signed-out and signed-in.
+  2. Welcome page with category counts.
+  3. Browse home: featured businesses and products; visitor and member variants; loading, empty and error states.
+  4. Category page: business cards with content rules and the verified mark; pagination.
+  5. Filters (dialog on small screens) and sorting, held in the URL.
+  6. Public queries return only verified, live listings; short-lived read cache.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -95,10 +98,12 @@ Builds on: journey 1 (Join Jubilee, `docs/prompts/01-join-jubilee.md`); journey 
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- The full retention schedule for data unrelated to account deletion.
+- Keyword search (journey 7).
+- Business and product pages (journey 8).
+- Choosing which businesses are featured (journey 20); seed featured data instead.
 
 ## Done means
-- A member can obtain a copy of their data and can delete their account for good.
+- Anyone can move from the welcome page to browse home to a filtered, sorted category page and see only verified, live businesses.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

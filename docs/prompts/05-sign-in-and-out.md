@@ -1,10 +1,10 @@
-# Feature: Manage products and services
+# Feature: Sign in and out
 
 ## Goal
 
-An owner keeps their catalogue current: they list their products and services, add or edit one in an editor dialog, reorder them, mark a product sold out, and delete one after confirming. Changes appear on the public listing.
+A member signs in at the sign-in page with e-mail and password or Google, is returned to where they came from, keeps a session that expires safely, and signs out from the user menu. A visitor who tries a member-only action sees the sign-in prompt. An expired session shows the session-expired page without losing the user's work.
 
-Roles: Owner. Journey 22 of 26 in `docs/journey.md`.
+Roles: Visitor, Member. Journey 5 of 26 in `docs/journey.md`.
 
 Nothing outside this journey changes. Where the code for it does not exist yet, this prompt creates it.
 
@@ -48,22 +48,24 @@ Nothing outside this journey changes. Where the code for it does not exist yet, 
 
 Detailed designs (read each `README.md` and its `diagrams/`):
 
-- `docs/detailed-designs/owner-workspace/manage-products/README.md`
-- `docs/detailed-designs/owner-workspace/manage-services/README.md`
-- `docs/detailed-designs/interaction-states/confirm-in-dialogs/README.md`
+- `docs/detailed-designs/accounts/sign-in/README.md`
+- `docs/detailed-designs/accounts/manage-session/README.md`
+- `docs/detailed-designs/accounts/continue-with-google/README.md`
+- `docs/detailed-designs/system-pages/handle-session-expiry/README.md`
+- `docs/detailed-designs/security/protect-credentials-and-sessions/README.md`
+- `docs/detailed-designs/security/limit-abuse/README.md`
 
-Requirements in `docs/specs/L2.md`: `L2-089`, `L2-090`, `L2-091`, `L2-092`, `L2-093`, `L2-094`, `L2-095`, `L2-127`, `L2-128`, `L2-129`, `L2-130`, `L2-132`, `L2-133`.
+Requirements in `docs/specs/L2.md`: `L2-003`, `L2-006`, `L2-007`, `L2-008`, `L2-009`, `L2-010`, `L2-011`, `L2-012`, `L2-116`, `L2-134`, `L2-135`, `L2-137`, `L2-141`, `L2-143`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
-- `docs/mocks/pages/my-products/`
-- `docs/mocks/pages/my-services/`
-- `docs/mocks/dialogs/product-editor/`
-- `docs/mocks/dialogs/service-editor/`
-- `docs/mocks/dialogs/delete-product/`
-- `docs/mocks/dialogs/delete-service/`
+- `docs/mocks/pages/sign-in/`
+- `docs/mocks/pages/session-expired/`
+- `docs/mocks/dialogs/sign-in-required/`
+- `docs/mocks/dialogs/sign-out/`
+- `docs/mocks/dialogs/user-menu/`
 
-Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`); journey 21 (Run a business listing, `docs/prompts/21-run-a-business-listing.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 4 (Join Jubilee, `docs/prompts/04-join-jubilee.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
@@ -79,12 +81,11 @@ Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`); j
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Products list: loading, empty and error states; table becomes cards on small screens.
-  2. Product editor: add and edit with validation, photos and stock.
-  3. Delete a product with confirmation and undo.
-  4. Services list and service editor (action type, duration, price).
-  5. Delete a service; rules when open requests refer to it.
-  6. Reorder products and services by drag and by keyboard.
+  1. Sign in with e-mail and password; session cookie and CSRF protection; generic failure message.
+  2. Throttling and lockout after repeated failures.
+  3. Sign-in-required dialog and return to origin after sign-in.
+  4. User menu and sign-out confirmation; sign-out ends the session on the server.
+  5. Idle and absolute session lifetime; session-expired page that restores the user's place and draft.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test at the level the criterion needs: API or domain tests for rules, browser tests for what the user sees. Run responsive criteria at 360, 576, 768, 992 and 1280 px, in light and dark themes.
@@ -99,10 +100,11 @@ Builds on: journey 17 (List a business, `docs/prompts/17-list-a-business.md`); j
 - Keep the designs and mocks aligned with what was built.
 
 ## Deferred (out of scope)
-- Listing details and photos (journey 21).
+- Account creation and e-mail confirmation (journey 1).
+- Password reset (journey 3).
 
 ## Done means
-- An owner can create, change, reorder and remove products and services, and the public listing follows.
+- A member can sign in, be returned to their origin, stay signed in within the session limits, and sign out.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as deferred with the reason.
 - All the new and existing tests pass, using the commands in the root `README.md`.
 - Docs and design artifacts agree with the code.

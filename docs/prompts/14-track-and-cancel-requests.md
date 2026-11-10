@@ -60,7 +60,7 @@ Mocks (every state file in each folder; the full list is in `docs/mocks/manifest
 - `docs/mocks/dialogs/cancel-request/`
 - `docs/mocks/notifications/request-toast/`
 
-Builds on: journey 11 (Book a meeting, `docs/prompts/11-book-a-meeting.md`); journey 12 (Request a quote, `docs/prompts/12-request-a-quote.md`); journey 13 (Request a product, `docs/prompts/13-request-a-product.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
+Builds on: journey 7 (Book a meeting, `docs/prompts/07-book-a-meeting.md`); journey 8 (Request a quote, `docs/prompts/08-request-a-quote.md`); journey 9 (Request a product, `docs/prompts/09-request-a-product.md`). If one of these is not implemented yet, build only the smallest seam this journey needs (for example seeded data or the one entity) and note it as deferred. Do not stop.
 
 ## Phase 1: Align the artifacts (`engineering-requirements`, `writing-software-design-documents`)
 - Read the sources above. The requirements, designs and mocks for this journey already exist; do not rewrite them.
