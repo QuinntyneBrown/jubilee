@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Answer a church reference request
+
+Person(owner, "Owner", "Named the reference and may send the request again")
+Person_Ext(reference, "Church reference", "Pastor or elder who answers without an account")
+Person(verifier, "Verification team member", "Reads the private answer on the review screen")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
+System_Ext(email, "E-mail provider", "Delivers the reference request e-mail")
+
+Rel(owner, jubilee, "Submits a listing or presses Send the request again")
+Rel(jubilee, email, "Sends the reference request via")
+Rel(email, reference, "Delivers the single-use link to")
+Rel(reference, jubilee, "Opens /reference/:token and answers")
+Rel(jubilee, verifier, "Shows the answer privately to")
+@enduml

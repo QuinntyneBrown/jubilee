@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — List another business
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyBusinessPage" as page
+  participant "ListingSwitcher" as switcher
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "StartListingDraftCommandHandler" as handler
+  participant "Member" as member
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /my-business
+page -> switcher : Render
+switcher -> client : getMyListings()
+client -> controller : GET /api/my/listings
+controller --> client : OwnerListingSummary list with stages
+client --> switcher : Listings
+switcher --> actor : Show each listing and "List another business" (L2-079)
+actor -> switcher : Choose "List another business"
+switcher -> client : startDraft(kind)
+client -> controller : POST /api/listings
+controller -> controller : Authenticate session
+controller -> handler : Send StartListingDraftCommand
+handler -> db : Count the owner's listings
+db --> handler : Count
+handler -> member : CanStartListing(count)
+alt Owner already has 5 listings (L2-079)
+  member --> handler : Refused
+  handler --> controller : LISTING_LIMIT_REACHED
+  controller --> client : 409 ProblemDetails
+  client --> switcher : Limit reached
+  switcher --> actor : Show "You can list up to 5 businesses. Write to help@jubilee.example for more."
+else Fewer than 5 listings
+  member --> handler : Allowed
+  handler -> db : Insert listing in stage Draft
+  db --> handler : Commit result
+  handler --> controller : ListingDraftDto
+  controller --> client : 201 Created
+  client --> switcher : New draft
+  switcher --> actor : Open /list with the new draft and show both listings in the switcher
+end
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Choose what to offer and describe the business
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "ListingDraftStore" as store
+  participant "ListingPreviewCard" as preview
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "StartListingDraftCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /list
+page -> page : AuthGuard checks the session (L2-071)
+alt Visitor
+  page --> actor : Redirect to sign in or join with returnUrl=/list
+else Signed-in member
+  page --> actor : Show "What do you offer?" with Products and Services
+  actor -> page : Choose Products or Services
+  page -> store : setKind(kind)
+  store -> client : startDraft(kind)
+  client -> controller : POST /api/listings
+  controller -> controller : Authenticate session and apply member policy
+  controller -> handler : Send StartListingDraftCommand
+  handler -> entity : Create listing in stage Draft with the kind
+  entity --> handler : New draft
+  handler -> db : Save in one unit of work
+  db --> handler : Commit result
+  handler --> controller : ListingDraftDto
+  controller --> client : 201 Created
+  client --> store : Draft with listingId
+  store --> page : Draft signal
+  page --> actor : Show the sections for the kind (L2-071)
+  actor -> page : Type name or tagline or pick a category
+  page -> page : Stop name at 120 characters and count tagline "{n} / 90" (L2-072)
+  page -> store : patchDetails(values)
+  store --> preview : Changed signals
+  preview --> actor : Redraw "How members see you" within 100 ms (L2-076)
+  opt Member switches between Products and Services
+    actor -> page : Choose the other card
+    page -> store : setKind(other)
+    store --> page : Same values with the other sections (L2-071)
+  end
+end
+@enduml

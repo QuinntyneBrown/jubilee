@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Change the reference
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "VerificationBanner" as banner
+  participant "ChangeReferenceDialog" as dialog
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ChangeReferenceCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> banner : Press "Change reference"
+banner -> dialog : Open
+actor -> dialog : Enter the new church and pastor's e-mail and confirm
+dialog -> dialog : Validate under the fields and focus the first invalid field (L2-126)
+dialog -> client : changeReference(listingId, church, email)
+client -> controller : PUT /api/listings/{listingId}/reference
+controller -> controller : Authenticate and check the caller owns the listing
+controller -> handler : Send ChangeReferenceCommand
+handler -> handler : Apply the reference rules of L2-074
+alt E-mail invalid or the owner's own
+  handler --> controller : Validation failure
+  controller --> client : 422 ProblemDetails with per-field codes
+  client --> dialog : Field errors
+  dialog --> actor : Show the message under the field
+else Valid
+  handler -> db : Load listing with reference and open token
+  db --> handler : Listing
+  handler -> entity : ChangeReference(church, email, now)
+  entity --> handler : New reference in Waiting and stage WaitingOnReference
+  handler -> db : Revoke the old token and save with a ReferenceRequested outbox message (L2-084)
+  db --> handler : Commit result
+  handler --> controller : VerificationStatusDto
+  controller --> client : 200 OK
+  client --> dialog : Changed
+  dialog --> banner : Close
+  banner --> actor : Show "Waiting for your church reference." for the new reference
+end
+@enduml

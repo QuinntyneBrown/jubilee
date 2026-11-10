@@ -1,0 +1,121 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Describe a listing
+
+enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsADecision
+  ChangesRequested
+  Live
+  Paused
+  Declined
+}
+
+enum ListingKind {
+  Services
+  Shop
+}
+
+enum ListingFlagKind {
+  ContactDetailsInText
+  DiscountCodeInText
+  ReferenceNamedOften
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingKind Kind
+  +ListingStage Stage
+  +string Name
+  +string Tagline
+  +Guid? CategoryId
+  +string StoreAddress
+  +string ServiceArea
+  +ListingSlug Slug
+  +ChangeKind(kind: ListingKind): void
+  +Describe(details: ListingDetails): void
+  +AssignSlug(slug: ListingSlug): void
+  +AddFlag(flag: ListingFlag): void
+}
+
+class ListingDetails <<value object>> {
+  +string Name
+  +string Tagline
+  +Guid? CategoryId
+  +string StoreAddress
+  +string ServiceArea
+}
+
+class ListingSlug <<value object>> {
+  +string Value
+  +{static} From(name: string): ListingSlug
+  +WithSuffix(n: int): ListingSlug
+}
+
+class ListingFlag {
+  +Guid Id
+  +ListingFlagKind Kind
+  +string Field
+  +DateTimeOffset RaisedAt
+}
+
+class Category {
+  +Guid Id
+  +string Name
+  +string Slug
+}
+
+class Product {
+  +Guid Id
+  +string Name
+  +int PriceCents
+}
+
+class Service {
+  +Guid Id
+  +string Name
+  +string Detail
+  +int? PriceCents
+}
+
+class ListingDetailsValidator {
+  +int NameMaxLength = 120
+  +int TaglineMaxLength = 90
+  +Validate(details: ListingDetails): ValidationResult
+}
+
+class ContentFlagScanner {
+  +Scan(name: string, tagline: string): IReadOnlyList<ListingFlag>
+}
+
+class SlugGenerator {
+  +NextFree(name: string): Task<ListingSlug>
+}
+
+Listing --> ListingKind : has
+Listing --> ListingStage : has
+Listing *-- "0..1" ListingSlug : owns
+Listing "1" *-- "*" ListingFlag : carries
+Listing "*" --> "0..1" Category : filed under
+Listing "1" *-- "*" Product : offers
+Listing "1" *-- "*" Service : offers
+ListingFlag --> ListingFlagKind : has
+Listing ..> ListingDetails : applies
+ListingDetailsValidator ..> ListingDetails : validates
+ContentFlagScanner ..> ListingFlag : produces
+SlugGenerator ..> ListingSlug : produces
+@enduml

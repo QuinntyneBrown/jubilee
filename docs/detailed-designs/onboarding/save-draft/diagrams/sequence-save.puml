@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Save a draft by button or autosave
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "DraftAutosaver" as auto
+  participant "ListingDraftStore" as store
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SaveListingDraftCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+alt Member presses "Save draft"
+  actor -> page : Press "Save draft"
+  page -> store : save(manual)
+else Member types and stops for 10 seconds (L2-077)
+  actor -> page : Type in a field
+  page -> auto : notifyChange()
+  auto -> auto : Restart the 10-second timer
+  auto -> store : save(autosave)
+end
+store -> client : saveDraft(listingId, values, rowVersion)
+client -> controller : PUT /api/listings/{listingId}/draft
+controller -> controller : Authenticate and check the caller owns the listing
+controller -> handler : Send SaveListingDraftCommand
+handler -> db : Load listing in stage Draft
+db --> handler : Listing
+handler -> entity : ApplyDraft(values, now) without required-field rules (L2-077)
+entity --> handler : Values applied and LastTouchedAt set
+handler -> db : Save in one unit of work
+db --> handler : Commit result
+handler --> controller : ListingDraftDto with SavedAt
+controller --> client : 200 OK
+client --> store : Saved draft
+store --> page : Status saved at time
+opt Manual save
+  page --> actor : Show "Draft saved. Saved today at {time}."
+end
+@enduml

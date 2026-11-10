@@ -1,0 +1,106 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Save a draft
+
+enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsADecision
+  ChangesRequested
+  Live
+  Paused
+  Declined
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingStage Stage
+  +DateTimeOffset LastTouchedAt
+  +DateTimeOffset? DraftExpiryNoticeSentAt
+  +byte[] RowVersion
+  +ApplyDraft(values: ListingDraftValues, now: DateTimeOffset): void
+  +MarkExpiryNoticeSent(now: DateTimeOffset): void
+}
+
+class ListingDraftValues <<value object>> {
+  +ListingKind Kind
+  +string Name
+  +string Tagline
+  +Guid? CategoryId
+  +string StoreAddress
+  +string ServiceArea
+  +string ChurchName
+  +string ReferenceEmail
+  +bool AgreesToStatementOfFaith
+}
+
+enum ListingKind {
+  Services
+  Shop
+}
+
+class SaveListingDraftCommand {
+  +Guid ListingId
+  +ListingDraftValues Values
+  +byte[] RowVersion
+  +bool IsAutosave
+}
+
+class SaveListingDraftCommandHandler {
+  +Handle(command: SaveListingDraftCommand): Task<ListingDraftDto>
+}
+
+class GetListingDraftQuery {
+  +Guid ListingId
+}
+
+class GetListingDraftQueryHandler {
+  +Handle(query: GetListingDraftQuery): Task<ListingDraftDto>
+}
+
+class ListingDraftDto {
+  +Guid ListingId
+  +ListingDraftValues Values
+  +DateTimeOffset SavedAt
+  +byte[] RowVersion
+}
+
+class DraftRetentionJob {
+  +int UntouchedDays = 180
+  +int DeleteAfterNoticeDays = 14
+  +RunAsync(now: DateTimeOffset): Task
+}
+
+class OutboxMessage {
+  +Guid Id
+  +string Type
+  +string Payload
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? DispatchedAt
+}
+
+Listing --> ListingStage : has
+Listing ..> ListingDraftValues : applies
+ListingDraftValues --> ListingKind : has
+SaveListingDraftCommandHandler ..> SaveListingDraftCommand : handles
+SaveListingDraftCommand *-- ListingDraftValues : carries
+SaveListingDraftCommandHandler --> Listing : loads / mutates
+SaveListingDraftCommandHandler ..> ListingDraftDto : returns
+GetListingDraftQueryHandler ..> GetListingDraftQuery : handles
+GetListingDraftQueryHandler ..> ListingDraftDto : returns
+DraftRetentionJob --> "*" Listing : warns / deletes
+DraftRetentionJob ..> OutboxMessage : writes
+@enduml

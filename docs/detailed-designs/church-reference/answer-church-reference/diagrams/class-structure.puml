@@ -1,0 +1,123 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Answer a church reference request
+
+class ChurchReference {
+  +Guid Id
+  +Guid ListingId
+  +string ChurchName
+  +EmailAddress Email
+  +ChurchReferenceStatus Status
+  +DateTimeOffset RequestedAt
+  +RecordAnswer(answer: ReferenceAnswer): void
+  +MarkReported(now: DateTimeOffset): void
+}
+
+enum ChurchReferenceStatus {
+  Waiting
+  Confirmed
+  CantVouch
+  DoesntKnow
+}
+
+class ReferenceAnswer {
+  +Guid Id
+  +Guid ChurchReferenceId
+  +ReferenceAnswerKind Kind
+  +string ReferenceName
+  +string ReferenceRole
+  +string Note
+  +DateTimeOffset AnsweredAt
+}
+
+enum ReferenceAnswerKind {
+  KnowsAndVouches
+  KnowsCannotVouch
+  DoesNotKnow
+}
+
+class LinkToken {
+  +Guid Id
+  +LinkTokenPurpose Purpose
+  +byte[] TokenHash
+  +Guid ListingId
+  +string BoundEmail
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? UsedAt
+  +DateTimeOffset? RevokedAt
+  +IsOpen(now: DateTimeOffset): bool
+  +Redeem(now: DateTimeOffset): void
+  +Revoke(now: DateTimeOffset): void
+}
+
+enum LinkTokenPurpose {
+  EmailConfirmation
+  PasswordReset
+  EmailChange
+  ChurchReference
+  DataDownload
+}
+
+class LinkTokenService {
+  +Issue(purpose: LinkTokenPurpose, listingId: Guid, email: string): IssuedToken
+  +Find(rawToken: string): Task<LinkToken?>
+}
+
+class IssuedToken <<value object>> {
+  +string RawToken
+  +LinkToken Stored
+}
+
+class SubmitReferenceAnswerCommand {
+  +string Token
+  +ReferenceAnswerKind? Answer
+  +string Name
+  +string Role
+  +string Note
+}
+
+class SubmitReferenceAnswerCommandValidator {
+  +int NoteMaxLength = 1000
+  +Validate(command: SubmitReferenceAnswerCommand): ValidationResult
+}
+
+class OwnerWording <<value object>> {
+  +string FullName
+  +string FirstName
+  +string Possessive
+  +string Subject
+}
+
+class OwnerWordingFormatter {
+  +For(owner: Member): OwnerWording
+}
+
+class ReferenceRequestView {
+  +OwnerWording Owner
+  +string BusinessName
+  +string ChurchName
+}
+
+ChurchReference --> ChurchReferenceStatus : has
+ChurchReference "1" *-- "0..1" ReferenceAnswer : receives
+ReferenceAnswer --> ReferenceAnswerKind : has
+ChurchReference "1" --> "*" LinkToken : reached through
+LinkToken --> LinkTokenPurpose : has
+LinkTokenService ..> IssuedToken : returns
+IssuedToken --> LinkToken : wraps
+SubmitReferenceAnswerCommandValidator ..> SubmitReferenceAnswerCommand : validates
+SubmitReferenceAnswerCommand ..> ReferenceAnswer : becomes
+OwnerWordingFormatter ..> OwnerWording : produces
+ReferenceRequestView *-- OwnerWording : words
+@enduml

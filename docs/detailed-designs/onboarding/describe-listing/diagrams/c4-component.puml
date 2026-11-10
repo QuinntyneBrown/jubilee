@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Describe a listing
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ListBusinessPage", "Angular page", "Hosts the /list form and lays out the preview")
+  Component(picker, "OfferKindPicker", "Angular component", "Products or Services cards")
+  Component(details, "ListingDetailsForm", "Angular reactive form", "Business name and tagline and category with the 90-character counter")
+  Component(items, "OnboardingItemsSection", "Angular component", "Lists products or services and opens the editor dialogs")
+  Component(preview, "ListingPreviewCard", "Angular component", "How members see you card marked Pending verification")
+  Component(store, "ListingDraftStore", "Signal store", "Holds the draft that the form and preview read")
+  Component(client, "ListingsApi", "Typed HTTP client", "Calls /api/listings")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Authenticates and applies the listing owner policy")
+  Component(start, "StartListingDraftCommandHandler", "MediatR handler", "Creates the draft for the chosen kind")
+  Component(validator, "ListingDetailsValidator", "FluentValidation validator", "Name and tagline and category rules shared with submission")
+  Component(listing, "Listing", "Domain entity", "Owns kind and details and stage and the slug")
+  Component(scanner, "ContentFlagScanner", "Domain service", "Flags contact details and discount codes in name or tagline")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings and items")
+
+Rel(page, picker, "Renders")
+Rel(page, details, "Renders")
+Rel(page, items, "Renders")
+Rel(page, preview, "Renders beside or below the form")
+Rel(picker, store, "Sets the kind")
+Rel(details, store, "Patches name and tagline and category")
+Rel(preview, store, "Reads signals")
+Rel(store, client, "Starts and loads the draft")
+Rel(client, ctrl, "POST /api/listings", "JSON/HTTPS")
+Rel(ctrl, start, "Sends StartListingDraftCommand")
+Rel(start, listing, "Creates")
+Rel(validator, listing, "Checks details for")
+Rel(listing, scanner, "Asks for flags at submission")
+Rel(start, db, "Persists", "EF Core")
+@enduml

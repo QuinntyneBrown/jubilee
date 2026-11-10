@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Save a draft
+
+Person(owner, "Member", "Saves and reopens a draft")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Save draft button and autosave and draft loading states")
+  Container(api, "Jubilee API", "ASP.NET Core", "Draft endpoints under /api/listings")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Draft retention job and outbox dispatch")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listing drafts and outbox messages")
+}
+Rel(owner, web, "Presses Save draft or stops typing", "HTTPS")
+Rel(web, api, "Saves and loads the draft", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Finds untouched drafts and deletes them", "EF Core")
+Rel(worker, email, "Sends the expiry notice", "HTTPS")
+@enduml

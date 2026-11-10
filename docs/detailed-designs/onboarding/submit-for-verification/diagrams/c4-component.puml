@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Submit for verification
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ListBusinessPage", "Angular page", "Submitting and invalid and submitted states of /list")
+  Component(summary, "ErrorSummary", "Shared UI", "Fix n things to continue with a link to each field")
+  Component(switcher, "ListingSwitcher", "Angular component", "Lists the owner's listings at the top of My business")
+  Component(client, "ListingsApi", "Typed HTTP client", "Submits and lists and starts listings")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(idem, "IdempotencyMiddleware", "ASP.NET Core middleware", "Returns the original result for a repeated key")
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Authenticates and checks ownership and e-mail confirmation")
+  Component(validator, "SubmitListingCommandValidator", "FluentValidation validator", "Runs every required-field rule")
+  Component(submit, "SubmitListingCommandHandler", "MediatR handler", "Moves the listing to WaitingOnReference and queues the reference request")
+  Component(start, "StartListingDraftCommandHandler", "MediatR handler", "Starts a further draft up to 5 listings per owner")
+  Component(listing, "Listing", "Domain entity", "Owns the stage transition")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings and outbox")
+ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
+
+Rel(page, summary, "Shows errors in")
+Rel(page, client, "Submits through")
+Rel(switcher, client, "Loads listings and starts another")
+Rel(client, idem, "POST /api/listings/id/submission", "JSON/HTTPS")
+Rel(idem, cache, "Looks up the key")
+Rel(idem, ctrl, "Passes a first request to")
+Rel(ctrl, validator, "Validates the command with")
+Rel(ctrl, submit, "Sends SubmitListingCommand")
+Rel(ctrl, start, "Sends StartListingDraftCommand")
+Rel(submit, listing, "Calls SubmitForVerification on")
+Rel(submit, db, "Saves listing and outbox message", "EF Core")
+Rel(start, db, "Counts and inserts listings", "EF Core")
+@enduml
