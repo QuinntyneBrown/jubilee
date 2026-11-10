@@ -484,7 +484,9 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .topbar--ink { background: var(--color-bg-brand); border-bottom-color: var(--color-border-on-brand); color: var(--color-fg-on-brand); }
 .topbar--ink :focus-visible { outline-color: var(--color-focus-ring-on-brand); }
 .topbar--ink .topbar__brand { color: var(--color-fg-on-brand); font-family: var(--font-family-display); font-weight: var(--font-weight-extrabold); font-size: var(--font-size-2xl); letter-spacing: var(--letter-spacing-tight); }
-.brand-mark { color: var(--color-accent); width: var(--icon-size-lg); height: var(--icon-size-lg); }
+.brand-mark { width: var(--icon-size-lg); height: var(--icon-size-lg); fill: none; stroke-width: 14.5; stroke-linecap: butt; stroke-linejoin: miter; flex: none; }
+.brand-mark__j { stroke: currentColor; }
+.brand-mark__bar { stroke: var(--color-accent); }
 .topbar--ink .topbar__nav { margin-left: 0; align-items: center; gap: var(--space-2); }
 .topbar--ink .nav-link { color: var(--color-fg-on-brand-muted); border-radius: 0; min-height: var(--layout-topbar-height); }
 .topbar--ink .nav-link:hover, .topbar--ink .nav-link[data-state="hover"] { background: transparent; color: var(--color-fg-on-brand); }
@@ -714,7 +716,7 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 /* ---------- Auth and bare pages ---------------------------------------------------------------------- */
 .auth-layout { align-content: center; gap: var(--space-6); }
 .auth-brand { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-family-display); font-weight: var(--font-weight-extrabold); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tight); color: var(--color-fg-default); text-decoration: none; }
-.auth-brand .brand-mark { color: var(--color-accent-border); width: var(--icon-size-lg); height: var(--icon-size-lg); }
+.auth-brand .brand-mark { width: var(--icon-size-lg); height: var(--icon-size-lg); }
 .auth-card h1 { font-size: var(--font-size-2xl); }
 .auth-foot { font: var(--text-body-sm); color: var(--color-fg-muted); text-align: center; }
 .divider-text { display: flex; align-items: center; gap: var(--space-3); font: var(--text-caption); color: var(--color-fg-muted); }
