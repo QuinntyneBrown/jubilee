@@ -1,5 +1,5 @@
 import { test as base, expect, type Page } from '@playwright/test';
-import { joanna, mockNow } from './cast';
+import { joanna, mockNow, type NavigationSummary } from './cast';
 import { routes, type RouteKey, type ScreenRoute, type Who } from './routes';
 import { applyStub } from './stubs';
 
@@ -11,7 +11,7 @@ export interface OpenOptions {
   /** Overrides who is signed in for this visit (app only). */
   who?: Who;
   /** Overrides the navigation summary a member gets (app only). */
-  navigation?: Partial<(typeof joanna)['navigation']>;
+  navigation?: Partial<NavigationSummary>;
 }
 
 /** Opens screens by route key against the app, or against the mocks when JB_BASELINE=1. */
@@ -37,6 +37,8 @@ export class Jb {
       localStorage.setItem('jubilee-theme', value);
     }, theme);
     await this.page.goto(path);
+    // The app renders after it has resolved the session; wait for its shell.
+    await this.page.locator('main#main').waitFor({ state: 'attached' });
   }
 
   /**

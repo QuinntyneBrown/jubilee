@@ -6,7 +6,7 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { HttpSessionApi, SESSION_API } from 'api';
+import { HttpNavigationApi, HttpSessionApi, NAVIGATION_API, SESSION_API } from 'api';
 import { routes } from './app.routes';
 import { SessionService } from './services/session.service';
 
@@ -17,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideRouter(routes),
     { provide: SESSION_API, useClass: HttpSessionApi },
+    { provide: NAVIGATION_API, useClass: HttpNavigationApi },
     provideAppInitializer(() => inject(SessionService).resolve()),
   ],
 };

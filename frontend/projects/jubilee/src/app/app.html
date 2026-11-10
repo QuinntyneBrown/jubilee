@@ -1,0 +1,14 @@
+<a jb-skip-link></a>
+@if (routeData().shell === 'app') {
+  <header
+    jb-top-bar
+    [member]="member()"
+    [current]="routeData().section ?? null"
+    (searched)="search($event)"
+  ></header>
+}
+<main id="main" tabindex="-1"><router-outlet /></main>
+@if (routeData().shell === 'app') {
+  <footer jb-site-footer [year]="year"></footer>
+  <nav jb-tab-bar [member]="member()" [current]="routeData().section ?? null"></nav>
+}

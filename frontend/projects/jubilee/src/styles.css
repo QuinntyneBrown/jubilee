@@ -4,3 +4,8 @@
 jb-root {
   display: contents;
 }
+
+/* A routed page is a block inside `main`, where the mocks have the page content directly. */
+.jb-page {
+  display: block;
+}
