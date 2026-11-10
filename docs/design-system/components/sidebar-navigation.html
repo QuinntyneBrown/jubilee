@@ -104,7 +104,7 @@
       <p><b>Honest status:</b> <code>.sidebar</code>, <code>.sidebar__group</code> and <code>.sidebar-layout</code> exist in <code>components.css</code>, but none of the 272 mocks use them. The two places with section navigation, My business (5 sections) and Account (4 sections), use <a href="../components/tabs.html">Tabs</a> as page navigation, which is the right choice for five or fewer sections.</p>
       <p>Reach for the sidebar when a workspace grows past what one tab row holds: more than six sections, sections in groups, or an admin tool used for hours at a desk (a future verification and moderation console for Miriam Castillo's team is the likely first case).</p>
       <ul>
-        <li><b>Grouped</b>: overline group labels (<code>.sidebar__group</code>) over <code>.nav-link</code>s. The current link gets the accent-subtle pill.</li>
+        <li><b>Grouped</b>: overline group labels (<code>.sidebar__group</code>) over <code>.nav-link</code>s. The current link gets a <code>--color-bg-subtle</code> pill and ink text.</li>
         <li><b>Drawer</b> below 1024px: the sidebar is hidden and opened from a <code>.topbar__menu</code> button, setting <code>data-open="true"</code>. Use the <a href="../components/drawer.html">Drawer</a> behaviour for focus and dismissal.</li>
       </ul>
     </section>
@@ -116,8 +116,8 @@
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Group label</b><small><code>.sidebar__group</code>: <code>--text-overline</code>, uppercase, <code>--color-fg-subtle</code>. Names the workspace or a group.</small></div></li>
-          <li><div><b>Current link</b><small><code>.nav-link[aria-current="page"]</code>: <code>--color-accent-subtle</code> pill with <code>--color-fg-accent</code> label.</small></div></li>
-          <li><div><b>Link</b><small>Full-width <code>.nav-link</code>: icon, label, optional count badge; <code>--target-comfortable</code> tall, <code>--radius-md</code>.</small></div></li>
+          <li><div><b>Current link</b><small><code>.nav-link[aria-current="page"]</code>: <code>--color-bg-subtle</code> pill with a <code>--color-fg-default</code> label.</small></div></li>
+          <li><div><b>Link</b><small>Full-width <code>.nav-link</code>: icon, label, optional count badge; 40px tall (<code>--control-height-md</code>), 16px side padding, <code>--radius-full</code> pill, 14px medium <code>--text-label</code>.</small></div></li>
           <li><div><b>Container</b><small><code>.sidebar</code>: surface, hairline right border, <code>--space-4</code> padding, <code>--layout-sidebar-width</code> wide, sticky full height from 1024px.</small></div></li>
         </ol>
       </div>
@@ -136,8 +136,8 @@
         <div class="ds-example__caption"><span><code>.sidebar-layout</code> puts the sidebar and content in two columns from 1024px; this frame imitates it.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="ds-frame ds-frame--sm" style="display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); width: 100%;"&gt;&lt;nav class="sidebar" data-open="true" aria-label="Business sections" style="position: static; height: auto; width: 100%; max-width: var(--layout-sidebar-width);"&gt;&lt;p class="sidebar__group" id="sidebar-navigation-v2-g1"&gt;WaterWorks Plumbing &amp;amp; Drains&lt;/p&gt;&lt;a class="nav-link" href="../../mocks/pages/my-business/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/&gt;&lt;/svg&gt;Overview&lt;/a&gt;&lt;a class="nav-link" href="../../mocks/pages/edit-listing/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/&gt;&lt;/svg&gt;Listing&lt;/a&gt;&lt;a class="nav-link" href="../../mocks/pages/my-products/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/&gt;&lt;/svg&gt;Products&lt;/a&gt;&lt;a class="nav-link" href="../../mocks/pages/my-services/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9zM14 6l3-3"/&gt;&lt;/svg&gt;Services&lt;/a&gt;&lt;a class="nav-link" href="../../mocks/pages/incoming-requests/default.html" aria-current="page"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="3" y="5" width="18" height="14" rx="2"/&gt;&lt;path d="m3 7 9 6 9-6"/&gt;&lt;/svg&gt;Requests&lt;span class="badge badge--count" aria-hidden="true"&gt;3&lt;/span&gt;&lt;span class="visually-hidden"&gt;, 3 open&lt;/span&gt;&lt;/a&gt;&lt;p class="sidebar__group" id="sidebar-navigation-v2-g2"&gt;Account&lt;/p&gt;&lt;a class="nav-link" href="../../mocks/pages/account/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="8" r="4"/&gt;&lt;path d="M4 21a8 8 0 0 1 16 0"/&gt;&lt;/svg&gt;Profile&lt;/a&gt;&lt;a class="nav-link" href="../../mocks/pages/preferences/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="3"/&gt;&lt;path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/&gt;&lt;/svg&gt;Notification settings&lt;/a&gt;&lt;a class="nav-link" href="../../mocks/pages/saved/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/&gt;&lt;/svg&gt;Saved&lt;/a&gt;&lt;/nav&gt;&lt;div class="stack" style="padding: var(--space-6);"&gt;&lt;h3&gt;Requests&lt;/h3&gt;&lt;p class="text-muted"&gt;3 open · Kitchen drain is slow and gurgling, from Joanna Adeyemi&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
-    <section class="ds-section" id="sizes" data-na="One size: --layout-sidebar-width wide, links --target-comfortable tall. Density does not change it."><h2><a href="#sizes">Sizes</a></h2>
-      <p class="ds-na">One size: --layout-sidebar-width wide, links --target-comfortable tall. Density does not change it.</p>
+    <section class="ds-section" id="sizes" data-na="One size: --layout-sidebar-width (256px) wide, links 40px tall (--control-height-md). Density does not change it."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size: --layout-sidebar-width (256px) wide, links 40px tall (--control-height-md). Density does not change it.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Links only; forced with <code>data-state</code>. A section the person cannot use is left out, not disabled.</p>
@@ -162,7 +162,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Surface tokens only, so it flips with the theme. The current pill uses <code>--color-accent-subtle</code> with <code>--color-fg-accent</code>, which keeps 4.5:1 in both themes.</p>
+      <p>Surface tokens only, so it flips with the theme. The current pill uses <code>--color-bg-subtle</code> (ink 5% in light) with <code>--color-fg-default</code>, the same look as a hovered link, so <code>aria-current="page"</code> carries the state for assistive tech.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -182,22 +182,22 @@
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Link</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Hovered link</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Current link</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current link</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Group label</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Link</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Hovered link</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Current link</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current link</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Group label</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>Link colour transitions over <code>--duration-fast</code>. The drawer slides in over <code>--duration-base</code>; both zero under reduced motion.</p>
+      <p>Link colour and fill transition over <code>--duration-fast</code> (150ms). The drawer slides in over <code>--duration-slow</code> (300ms); both zero under reduced motion.</p>
       <h3>Touch</h3>
-      <p>Links are full width and <code>--target-comfortable</code> (44px) tall with <code>--space-1</code> between them.</p>
+      <p>Links are full width and 40px tall (<code>--control-height-md</code>) with <code>--space-1</code> between them. On coarse pointers each gets an invisible hit area at least 44px tall (<code>--target-comfortable</code>).</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -220,12 +220,12 @@
         <tbody>
           <tr><td>Background / edge</td><td><code>--color-bg-surface</code> / <code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
           <tr><td>Link / hover</td><td><code>--color-fg-muted</code> / <code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
-          <tr><td>Current</td><td><code>--color-accent-subtle</code> / <code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
+          <tr><td>Current</td><td><code>--color-bg-subtle</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
           <tr><td>Group label</td><td><code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
           <tr><td>Width</td><td><code>--layout-sidebar-width</code></td><td colspan="2"><span data-token="--layout-sidebar-width"></span></td></tr>
           <tr><td>Padding</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
-          <tr><td>Link height</td><td><code>--target-comfortable</code></td><td colspan="2"><span data-token="--target-comfortable"></span></td></tr>
-          <tr><td>Link radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
+          <tr><td>Link height / touch hit area</td><td><code>--control-height-md</code> / <code>--target-comfortable</code></td><td colspan="2"><span data-token="--control-height-md"></span> / <span data-token="--target-comfortable"></span></td></tr>
+          <tr><td>Link radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>Group label type</td><td><code>--text-overline</code></td><td colspan="2"><span data-token="--text-overline"></span></td></tr>
           <tr><td>Link type</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
           <tr><td>Transition</td><td><code>--duration-fast</code></td><td colspan="2"><span data-token="--duration-fast"></span></td></tr>

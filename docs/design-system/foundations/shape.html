@@ -101,7 +101,7 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#radii">Radius scale</a></li><li><a href="#borders">Border widths</a></li><li><a href="#sizes">Fixed sizes</a></li><li><a href="#usage">Usage</a></li><li><a href="#tokens">Tokens</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Jubilee is round. Actions and selection controls are pills (<code>--radius-full</code>): buttons, chips, badges, search, avatars. Containers grow their radius with their size: inputs and menus 10px, cards, media tiles and dialogs 16px, sheets and the CTA band 20px.</p>
+      <p>Jubilee is round. Actions and selection controls are pills (<code>--radius-full</code>): buttons, chips, badges, search, avatars. Containers grow their radius with their size: credential tags and thumbnails 8px; inputs, choice cards, item lists and menus 12px; cards, media tiles and dialogs 16px; the business hero image, bottom sheets and the CTA band 24px.</p>
     </section>
     <section class="ds-section" id="radii"><h2><a href="#radii">Radius scale</a></h2>
       <div class="ds-scale">
@@ -113,18 +113,18 @@
         <div class="ds-scale__row"><code>--radius-full</code><span data-token="--radius-full"></span><span class="ds-scale__box" style="--size: var(--radius-full);"></span></div>
       </div>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Radius</th><th scope="col">For</th></tr></thead><tbody>
-        <tr><td>xs 2px</td><td>checkbox, tab indicator</td></tr>
-        <tr><td>sm 4px</td><td>tooltips, inline code, menu items, focus outline</td></tr>
-        <tr><td>md 10px</td><td>inputs, selects, menus, toasts, alerts, thumbnails, tags</td></tr>
+        <tr><td>xs 4px</td><td>checkbox</td></tr>
+        <tr><td>sm 8px</td><td>credential tags, thumbnails, tooltips, inline code, menu items</td></tr>
+        <tr><td>md 12px</td><td>inputs, selects, choice cards, item lists, menus, popovers, toasts, alerts, accordions</td></tr>
         <tr><td>lg 16px</td><td>cards, media tiles, tables, inbox, dialogs (≥ 640px)</td></tr>
-        <tr><td>xl 20px</td><td>bottom-sheet top corners, CTA band</td></tr>
+        <tr><td>xl 24px</td><td>business hero image (≥ 768px), bottom-sheet top corners, CTA band</td></tr>
         <tr><td>full</td><td>buttons, chips, badges, avatars, search fields, switches</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="borders"><h2><a href="#borders">Border widths</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">Use</th></tr></thead><tbody>
         <tr><td><code>--border-width-hairline</code></td><td><span data-token="--border-width-hairline"></span></td><td>every component edge and divider</td></tr>
-        <tr><td><code>--border-width-thick</code></td><td><span data-token="--border-width-thick"></span></td><td>tab and current-link indicator, timeline rail, spinner</td></tr>
+        <tr><td><code>--border-width-thick</code></td><td><span data-token="--border-width-thick"></span></td><td>tab and current-link indicator, timeline rail, spinner; a selected card or choice card has a 2px ink edge</td></tr>
         <tr><td><code>--border-width-accent</code></td><td><span data-token="--border-width-accent"></span></td><td>leading edge of alerts and the error summary</td></tr>
       </tbody></table></div>
     </section>
@@ -132,7 +132,7 @@
       <div class="ds-example"><div class="ds-example__canvas">
 <span class="avatar avatar--sm" aria-hidden="true">JA</span><span class="avatar" aria-hidden="true">JA</span><span class="avatar avatar--lg" aria-hidden="true">JA</span><span class="badge badge--success">Verified</span><span class="badge badge--count" aria-label="3 unread">3</span><span class="dot" style="color: var(--color-accent-border);" aria-hidden="true"></span>
       </div>
-        <div class="ds-example__caption"><span>Avatar sm/md/lg (32/40/56px), badge height 20px, indicator dot 8px.</span></div></div>
+        <div class="ds-example__caption"><span>Avatar sm/md/lg (36/40/56px), badge height 20px, indicator dot 8px. Every avatar is green with cream initials.</span></div></div>
     </section>
     <section class="ds-section" id="usage"><h2><a href="#usage">Usage</a></h2>
       <ul>
@@ -144,20 +144,27 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>2px  checkbox, tab indicator</td><td><code>--radius-xs</code></td><td colspan="2"><span data-token="--radius-xs"></span></td></tr>
-          <tr><td>4px  tooltips, code, menu items</td><td><code>--radius-sm</code></td><td colspan="2"><span data-token="--radius-sm"></span></td></tr>
-          <tr><td>10px inputs, menus, toasts, alerts, thumbnails</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
-          <tr><td>16px cards, media tiles, dialogs, tables</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr>
-          <tr><td>20px bottom sheets, CTA band</td><td><code>--radius-xl</code></td><td colspan="2"><span data-token="--radius-xl"></span></td></tr>
+          <tr><td>4px  checkbox</td><td><code>--radius-xs</code></td><td colspan="2"><span data-token="--radius-xs"></span></td></tr>
+          <tr><td>8px  credential tags, thumbnails, menu items, tooltips</td><td><code>--radius-sm</code></td><td colspan="2"><span data-token="--radius-sm"></span></td></tr>
+          <tr><td>12px inputs, choice cards, item lists, menus, toasts, alerts</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
+          <tr><td>16px media tiles, cards, dialogs, tables</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr>
+          <tr><td>24px business hero image, bottom sheets, CTA band</td><td><code>--radius-xl</code></td><td colspan="2"><span data-token="--radius-xl"></span></td></tr>
           <tr><td>buttons, chips, badges, avatars, search</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>—</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
           <tr><td>—</td><td><code>--border-width-thick</code></td><td colspan="2"><span data-token="--border-width-thick"></span></td></tr>
           <tr><td>alert and error-summary leading edge</td><td><code>--border-width-accent</code></td><td colspan="2"><span data-token="--border-width-accent"></span></td></tr>
-          <tr><td>32px  top bar, rows</td><td><code>--avatar-size-sm</code></td><td colspan="2"><span data-token="--avatar-size-sm"></span></td></tr>
+          <tr><td>36px  top bar, rows</td><td><code>--avatar-size-sm</code></td><td colspan="2"><span data-token="--avatar-size-sm"></span></td></tr>
           <tr><td>40px  lists, threads, dialog icons</td><td><code>--avatar-size-md</code></td><td colspan="2"><span data-token="--avatar-size-md"></span></td></tr>
           <tr><td>56px  profile headers</td><td><code>--avatar-size-lg</code></td><td colspan="2"><span data-token="--avatar-size-lg"></span></td></tr>
           <tr><td>8px   status dots, unread dots</td><td><code>--indicator-size</code></td><td colspan="2"><span data-token="--indicator-size"></span></td></tr>
           <tr><td>20px  badges and count badges</td><td><code>--badge-height</code></td><td colspan="2"><span data-token="--badge-height"></span></td></tr>
+          <tr><td>16px  checkboxes and radios</td><td><code>--checkbox-size</code></td><td colspan="2"><span data-token="--checkbox-size"></span></td></tr>
+          <tr><td>44px</td><td><code>--switch-width</code></td><td colspan="2"><span data-token="--switch-width"></span></td></tr>
+          <tr><td>24px</td><td><code>--switch-height</code></td><td colspan="2"><span data-token="--switch-height"></span></td></tr>
+          <tr><td>20px</td><td><code>--switch-knob</code></td><td colspan="2"><span data-token="--switch-knob"></span></td></tr>
+          <tr><td>20px</td><td><code>--spinner-size</code></td><td colspan="2"><span data-token="--spinner-size"></span></td></tr>
+          <tr><td>48px  pill behind the current tab-bar icon</td><td><code>--tabbar-pill-width</code></td><td colspan="2"><span data-token="--tabbar-pill-width"></span></td></tr>
+          <tr><td>32px</td><td><code>--tabbar-pill-height</code></td><td colspan="2"><span data-token="--tabbar-pill-height"></span></td></tr>
         </tbody>
       </table></div>
     </section>

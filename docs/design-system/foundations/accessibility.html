@@ -98,29 +98,29 @@
       <h1>Accessibility</h1>
       <p class="ds-lead">WCAG 2.2 AA commitments for every Jubilee component, the shared focus ring and how the system is tested.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">WCAG 2.2 AA</span></div>
-      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#perceivable">Perceivable</a></li><li><a href="#operable">Operable</a></li><li><a href="#understandable">Understandable</a></li><li><a href="#robust">Robust</a></li><li><a href="#focus">The focus ring</a></li><li><a href="#testing">Testing</a></li><li><a href="#contract">Component contract</a></li><li><a href="#tokens">Tokens</a></li></ul>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#perceivable">Perceivable</a></li><li><a href="#operable">Operable</a></li><li><a href="#understandable">Understandable</a></li><li><a href="#robust">Robust</a></li><li><a href="#exceptions">Contrast exceptions</a></li><li><a href="#focus">The focus ring</a></li><li><a href="#testing">Testing</a></li><li><a href="#contract">Component contract</a></li><li><a href="#tokens">Tokens</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Jubilee targets WCAG 2.2 AA in both themes. These are the system's commitments; every component page answers them in its Accessibility section (role and APG pattern, keyboard, focus, labelling, live contrast, motion, touch).</p>
+      <p>Jubilee targets WCAG 2.2 AA in both themes, with three contrast exceptions that follow the design reference exactly (listed under <a href="#exceptions">Contrast exceptions</a>). These are the system's commitments; every component page answers them in its Accessibility section (role and APG pattern, keyboard, focus, labelling, live contrast, motion, touch).</p>
     </section>
     <section class="ds-section" id="perceivable"><h2><a href="#perceivable">Perceivable</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Requirement</th><th scope="col">SC</th><th scope="col">Rule in Jubilee</th></tr></thead><tbody>
-        <tr><td>Text contrast</td><td>1.4.3</td><td>Body, label and secondary text ≥ 4.5:1 on every surface it sits on, both themes (<code>contrast-pairs.json</code>). Gold is never text.</td></tr>
-        <tr><td>Non-text contrast</td><td>1.4.11</td><td>Input borders, gold control edges (<code>--color-accent-border</code>), focus rings, meaningful icons ≥ 3:1.</td></tr>
-        <tr><td>Use of colour</td><td>1.4.1</td><td>Status is colour + icon + words; links are underlined; optional fields say "optional"; verified carries hidden text.</td></tr>
+        <tr><td>Text contrast</td><td>1.4.3</td><td>Body, label and secondary text ≥ 4.5:1 on every surface it sits on, both themes (<code>contrast-pairs.json</code>). Gold is never text. Exceptions: green text on the cream page (light) and avatar initials are 4.07:1.</td></tr>
+        <tr><td>Non-text contrast</td><td>1.4.11</td><td>Focus rings, meaningful icons and gold indicators on light surfaces (<code>--color-accent-border</code>: tab underline, spinner arc, unread dot) ≥ 3:1. Exception in light: input and outline-button edges are ink at 15%, about 1.4:1.</td></tr>
+        <tr><td>Use of colour</td><td>1.4.1</td><td>Status is colour + icon + words; links inside running text are underlined, and standalone links are green and underline on hover; optional fields say "optional"; verified carries hidden text.</td></tr>
         <tr><td>Resize and reflow</td><td>1.4.4, 1.4.10</td><td>rem everywhere; reflow to 320px; only tables and scrollers scroll sideways.</td></tr>
         <tr><td>Text spacing</td><td>1.4.12</td><td>No fixed heights on text containers.</td></tr>
         <tr><td>Images</td><td>1.1.1</td><td>Product photos have alt text naming the item; decorative SVG is <code>aria-hidden</code>; icon-only controls have <code>aria-label</code>.</td></tr>
-        <tr><td>Motion</td><td>2.3.3</td><td>Durations zeroed under reduced motion in tokens.</td></tr>
+        <tr><td>Motion</td><td>2.3.3</td><td>Durations zeroed under reduced motion in tokens; press and zoom scales set to 1.</td></tr>
         <tr><td>Input purpose</td><td>1.3.5</td><td><code>autocomplete</code> on name, e-mail, phone, postal code, password fields.</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="operable"><h2><a href="#operable">Operable</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Requirement</th><th scope="col">SC</th><th scope="col">Rule in Jubilee</th></tr></thead><tbody>
         <tr><td>Keyboard</td><td>2.1.1, 2.1.2</td><td>Everything works with Tab, Enter, Space, Esc and arrows where the APG pattern says so; only modal dialogs trap focus, and Esc releases.</td></tr>
-        <tr><td>Focus visible and appearance</td><td>2.4.7, 2.4.11</td><td>One ring: 2px <code>--color-focus-ring</code>, 2px offset; gold on the brand band and in dark.</td></tr>
+        <tr><td>Focus visible and appearance</td><td>2.4.7, 2.4.11</td><td>One ring: 2px <code>--color-focus-ring</code> (ink in light), 2px offset; gold-400 on the brand band (<code>--color-focus-ring-on-brand</code>) and in dark.</td></tr>
         <tr><td>Focus not obscured</td><td>2.4.11</td><td><code>scroll-padding</code> clears the sticky top bar and tab bar; toasts never cover the focused element.</td></tr>
-        <tr><td>Target size</td><td>2.5.8</td><td>≥ 24px everywhere, 44px for nav, tabs, rows and primary mobile actions.</td></tr>
+        <tr><td>Target size</td><td>2.5.8</td><td>≥ 24px everywhere (<code>--target-min</code>). Visible controls are 36, 40 or 48px tall, and their touch hit area is at least 44px (<code>--target-comfortable</code>) on coarse pointers. Accordion summaries and bottom-sheet menu rows are 44px tall.</td></tr>
         <tr><td>Timing</td><td>2.2.1</td><td>Toasts last ≥ 8s, pause on hover and focus; danger toasts persist.</td></tr>
         <tr><td>Bypass</td><td>2.4.1</td><td>Skip link to <code>#main</code> on every page; landmarks header, nav, main, footer.</td></tr>
         <tr><td>Titles and headings</td><td>2.4.2, 2.4.6</td><td>Unique title per page, one h1, ordered headings.</td></tr>
@@ -142,6 +142,15 @@
         <tr><td>Name, role, value</td><td>4.1.2</td><td>Native elements first; ARIA follows the APG patterns named on each component page.</td></tr>
         <tr><td>Status messages</td><td>4.1.3</td><td>Toasts in <code>role="status"</code> (danger <code>role="alert"</code>); "Saved" and counts in live regions.</td></tr>
       </tbody></table></div>
+    </section>
+    <section class="ds-section" id="exceptions"><h2><a href="#exceptions">Contrast exceptions</a></h2>
+      <p>Three pairings use the design reference's values exactly and fall below WCAG AA. The first two apply to the light theme only; the avatar colours are the same in both themes. They are recorded in <code>tokens/contrast-pairs.json</code> with the ratio they actually reach as their minimum.</p>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Pairing</th><th scope="col">Tokens</th><th scope="col">Ratio</th><th scope="col">AA asks for</th></tr></thead><tbody>
+        <tr><td>Green text on the cream page: links, perk text, "See all"</td><td><code>--color-fg-link</code> on <code>--color-bg-canvas</code></td><td>4.07:1</td><td>4.5:1</td></tr>
+        <tr><td>Input and outline-button edges (ink at 15%)</td><td><code>--color-border-strong</code> on <code>--color-bg-surface</code>, <code>--color-bg-canvas</code></td><td>about 1.4:1</td><td>3:1</td></tr>
+        <tr><td>Avatar initials (cream on green)</td><td><code>--color-avatar-fg</code> on <code>--color-avatar-bg</code></td><td>4.07:1</td><td>4.5:1</td></tr>
+      </tbody></table></div>
+      <p><code>prefers-contrast: more</code> restores AA values: borders and rules become ink-400, muted text becomes the default text colour, and links and accent text become green-700. The avatar colours do not change.</p>
     </section>
     <section class="ds-section" id="focus"><h2><a href="#focus">The focus ring</a></h2>
       <div class="ds-example"><div class="ds-example__canvas">
@@ -183,7 +192,7 @@
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
           <tr><td>24px  WCAG 2.5.8 minimum target</td><td><code>--target-min</code></td><td colspan="2"><span data-token="--target-min"></span></td></tr>
-          <tr><td>44px  nav links, tabs, rows, primary mobile actions</td><td><code>--target-comfortable</code></td><td colspan="2"><span data-token="--target-comfortable"></span></td></tr>
+          <tr><td>44px  touch hit area of buttons, chips, links and tabs on coarse pointers</td><td><code>--target-comfortable</code></td><td colspan="2"><span data-token="--target-comfortable"></span></td></tr>
           <tr><td>—</td><td><code>--focus-ring-width</code></td><td colspan="2"><span data-token="--focus-ring-width"></span></td></tr>
           <tr><td>—</td><td><code>--focus-ring-offset</code></td><td colspan="2"><span data-token="--focus-ring-offset"></span></td></tr>
         </tbody>

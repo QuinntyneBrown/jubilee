@@ -101,16 +101,16 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#breakpoints">Breakpoints</a></li><li><a href="#grid">Columns, gutters, margins</a></li><li><a href="#templates">Page templates</a></li><li><a href="#usage">Usage</a></li><li><a href="#tokens">Tokens</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Mobile first. Base styles target 360px; breakpoints add columns, gutters and margins through tokens, so components read <code>--layout-*</code> instead of writing their own media queries. Queries use <code>min-width</code> in rem (48rem, 64rem) so they follow the reader's font size; custom properties cannot be used inside <code>@media</code>, so values are repeated there by convention.</p>
+      <p>Mobile first. Base styles target 360px; breakpoints add columns, gutters and margins through tokens, so components read <code>--layout-*</code> instead of writing their own media queries. Queries use <code>min-width</code> in rem (40rem, 48rem, 64rem) so they follow the reader's font size; custom properties cannot be used inside <code>@media</code>, so values are repeated there by convention.</p>
     </section>
     <section class="ds-section" id="breakpoints"><h2><a href="#breakpoints">Breakpoints</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Token</th><th scope="col">Width</th><th scope="col">Columns</th><th scope="col">Gutter</th><th scope="col">Margin</th><th scope="col">What changes in Jubilee</th></tr></thead><tbody>
-        <tr><td>(base)</td><td>0–639px</td><td>4</td><td>16px</td><td>16px</td><td>Tab bar at the bottom, dialogs as bottom sheets, 2-column card grid, stacked rows</td></tr>
-        <tr><td><code>--layout-breakpoint-sm</code></td><td>640px</td><td>4</td><td>16px</td><td>16px</td><td>Dialogs centre; toasts dock bottom-right at 24rem; form grids go two-up</td></tr>
-        <tr><td><code>--layout-breakpoint-md</code></td><td>768px</td><td>8</td><td>24px</td><td>32px</td><td>Top-bar links replace the tab bar; 3-column card grid; h1 36px</td></tr>
-        <tr><td><code>--layout-breakpoint-lg</code></td><td>1024px</td><td>12</td><td>32px</td><td>48px</td><td>Search moves into the top bar; split detail layout with sticky aside; 4-column grid; inbox shows list + chat</td></tr>
-        <tr><td><code>--layout-breakpoint-xl</code></td><td>1280px</td><td>12</td><td>32px</td><td>48px</td><td>Content reaches <code>--layout-container-max</code></td></tr>
-        <tr><td><code>--layout-breakpoint-2xl</code></td><td>1536px</td><td>12</td><td>32px</td><td>auto</td><td>Content stays at container max, centred</td></tr>
+        <tr><td>(base)</td><td>0–639px</td><td>4</td><td>16px</td><td>20px</td><td>Tab bar at the bottom, dialogs as bottom sheets, 2-column card grid, stacked rows; h1 28px</td></tr>
+        <tr><td><code>--layout-breakpoint-sm</code></td><td>640px</td><td>4</td><td>24px</td><td>32px</td><td>Dialogs centre; toasts dock bottom-right at 24rem; form grids go two-up and form actions right-align; 3-column card grid; headings step up (h1 36px)</td></tr>
+        <tr><td><code>--layout-breakpoint-md</code></td><td>768px</td><td>8</td><td>24px</td><td>32px</td><td>Top-bar links and search replace the tab bar; detail pages split into two columns; directory groups go two-up; page top padding 40px</td></tr>
+        <tr><td><code>--layout-breakpoint-lg</code></td><td>1024px</td><td>12</td><td>24px</td><td>32px</td><td>4-column card grid; 5-column product grid; directory groups go three-up; sticky aside in the split detail layout; inbox shows list + chat</td></tr>
+        <tr><td><code>--layout-breakpoint-xl</code></td><td>1280px</td><td>12</td><td>24px</td><td>32px</td><td>Content reaches <code>--layout-container-max</code></td></tr>
+        <tr><td><code>--layout-breakpoint-2xl</code></td><td>1536px</td><td>12</td><td>24px</td><td>auto</td><td>Content stays at container max, centred</td></tr>
       </tbody></table></div>
 <div class="ds-bp" aria-hidden="true"><span style="width: min(100%, 22.5rem);">base 360px</span><span style="width: min(100%, 40rem);">sm 640px</span><span style="width: min(100%, 48rem);">md 768px</span><span style="width: min(100%, 64rem);">lg 1024px</span><span style="width: min(100%, 80rem);">xl 1280px</span></div>
     </section>
@@ -118,17 +118,18 @@
       <p>Resize the window: the grid below reads <code>--layout-columns</code>, <code>--layout-gutter</code> and <code>--layout-margin</code> live.</p>
 <div class="ds-grid-demo" aria-label="Live grid with the current columns, gutter and margin" role="img"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span></div>
       <ul>
-        <li><b>Margin</b>: viewport edge to content (<code>--layout-margin</code>).</li>
-        <li><b>Gutter</b>: space between columns (<code>--layout-gutter</code>).</li>
-        <li><b>Container</b>: <code>.container</code> caps at <code>--layout-container-max</code> (1280px); <code>.container--narrow</code> at 42rem for forms.</li>
-        <li>Product grids use fixed counts (2/3/4 via <code>.card-grid</code>); generic grids use <code>.grid--auto</code> (<code>minmax(18rem, 1fr)</code>).</li>
+        <li><b>Margin</b>: viewport edge to content (<code>--layout-margin</code>): 20px, 32px from 640px.</li>
+        <li><b>Gutter</b>: space between columns (<code>--layout-gutter</code>): 16px, 24px from 640px.</li>
+        <li><b>Container</b>: <code>.container</code> caps at <code>--layout-container-max</code> (1280px); <code>.container--narrow</code> at <code>--layout-container-narrow</code> (42rem) for settings and request detail; <code>.container--form</code> at <code>--layout-container-form</code> (72rem) for form pages with a preview column. Sections of running content cap at <code>--layout-container-prose</code> (48rem).</li>
+        <li>Card grids use fixed counts (<code>.card-grid</code>: 2 columns, 3 from 640px, 4 from 1024px; row gap 32px). Directory groups are 1 column, 2 from 768px, 3 from 1024px. The product scroller shows 44%-wide items on phones and becomes a 3-column grid from 640px and 5 columns from 1024px. Page sections sit 56px apart (<code>.section</code>); <code>.section--ruled</code> adds an ink-15% rule and 32px of padding. Generic grids use <code>.grid--auto</code> (<code>minmax(18rem, 1fr)</code>).</li>
       </ul>
     </section>
     <section class="ds-section" id="templates"><h2><a href="#templates">Page templates</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Template</th><th scope="col">Classes</th><th scope="col">Mocks</th></tr></thead><tbody>
         <tr><td>Shell</td><td><code>.topbar--ink</code> + <code>main.page &gt; .container</code> + <code>.footer</code> + <code>.tabbar</code></td><td>browse, category, saved</td></tr>
-        <tr><td>Detail</td><td><code>.split</code> (1.6fr / 1fr) with <code>.split__sticky</code> aside from 1024px</td><td>business, product, request-detail</td></tr>
-        <tr><td>Form / settings</td><td><code>.container--narrow</code> (42rem) with <code>.form</code></td><td>account, preferences, list-business</td></tr>
+        <tr><td>Detail</td><td><code>.split</code> (1fr / 23.75rem from 768px, 1fr / 26.25rem from 1024px) with <code>.split__sticky</code> aside from 1024px</td><td>business, product, request-detail</td></tr>
+        <tr><td>Settings</td><td><code>.container--narrow</code> (42rem) with <code>.form</code></td><td>account, preferences</td></tr>
+        <tr><td>Form with preview</td><td><code>.container--form</code> (72rem) with <code>.split--form</code> (1fr / 20rem from 1024px)</td><td>list-business</td></tr>
         <tr><td>Auth</td><td><code>.auth-layout</code> + <code>.auth-card</code> (26rem) with the wordmark</td><td>sign-in, sign-up, reset-password</td></tr>
         <tr><td>Inbox</td><td><code>.inbox</code>: list only below 1024px, list + chat from 1024px</td><td>messages, conversation</td></tr>
         <tr><td>Status</td><td><code>.status-page</code> + <code>.empty</code> inside the shell</td><td>not-found, server-error, offline</td></tr>
@@ -147,18 +148,20 @@
         <tbody>
           <tr><td>640px  large phones: dialogs centre, toasts dock right</td><td><code>--layout-breakpoint-sm</code></td><td colspan="2"><span data-token="--layout-breakpoint-sm"></span></td></tr>
           <tr><td>768px  tablets: top-bar nav replaces the tab bar</td><td><code>--layout-breakpoint-md</code></td><td colspan="2"><span data-token="--layout-breakpoint-md"></span></td></tr>
-          <tr><td>1024px laptops: search in the top bar, split detail layouts</td><td><code>--layout-breakpoint-lg</code></td><td colspan="2"><span data-token="--layout-breakpoint-lg"></span></td></tr>
+          <tr><td>1024px laptops: 4-column card grid, sticky aside, inbox list + chat</td><td><code>--layout-breakpoint-lg</code></td><td colspan="2"><span data-token="--layout-breakpoint-lg"></span></td></tr>
           <tr><td>1280px desktops: container max</td><td><code>--layout-breakpoint-xl</code></td><td colspan="2"><span data-token="--layout-breakpoint-xl"></span></td></tr>
           <tr><td>1536px wide screens: content stays at container max</td><td><code>--layout-breakpoint-2xl</code></td><td colspan="2"><span data-token="--layout-breakpoint-2xl"></span></td></tr>
           <tr><td>grid columns at the current breakpoint</td><td><code>--layout-columns</code></td><td colspan="2"><span data-token="--layout-columns"></span></td></tr>
-          <tr><td>gap between columns</td><td><code>--layout-gutter</code></td><td colspan="2"><span data-token="--layout-gutter"></span></td></tr>
-          <tr><td>viewport edge to content</td><td><code>--layout-margin</code></td><td colspan="2"><span data-token="--layout-margin"></span></td></tr>
+          <tr><td>gap between columns: 16px, 24px from 640px</td><td><code>--layout-gutter</code></td><td colspan="2"><span data-token="--layout-gutter"></span></td></tr>
+          <tr><td>viewport edge to content: 20px, 32px from 640px</td><td><code>--layout-margin</code></td><td colspan="2"><span data-token="--layout-margin"></span></td></tr>
           <tr><td>1280px</td><td><code>--layout-container-max</code></td><td colspan="2"><span data-token="--layout-container-max"></span></td></tr>
-          <tr><td>672px  forms, settings, request detail</td><td><code>--layout-container-narrow</code></td><td colspan="2"><span data-token="--layout-container-narrow"></span></td></tr>
+          <tr><td>1152px form pages with a preview column</td><td><code>--layout-container-form</code></td><td colspan="2"><span data-token="--layout-container-form"></span></td></tr>
+          <tr><td>768px  sections of running content</td><td><code>--layout-container-prose</code></td><td colspan="2"><span data-token="--layout-container-prose"></span></td></tr>
+          <tr><td>672px  settings, request detail</td><td><code>--layout-container-narrow</code></td><td colspan="2"><span data-token="--layout-container-narrow"></span></td></tr>
           <tr><td>max line length for prose</td><td><code>--layout-measure</code></td><td colspan="2"><span data-token="--layout-measure"></span></td></tr>
           <tr><td>256px</td><td><code>--layout-sidebar-width</code></td><td colspan="2"><span data-token="--layout-sidebar-width"></span></td></tr>
           <tr><td>64px</td><td><code>--layout-topbar-height</code></td><td colspan="2"><span data-token="--layout-topbar-height"></span></td></tr>
-          <tr><td>60px phone tab bar</td><td><code>--layout-tabbar-height</code></td><td colspan="2"><span data-token="--layout-tabbar-height"></span></td></tr>
+          <tr><td>72px phone tab bar</td><td><code>--layout-tabbar-height</code></td><td colspan="2"><span data-token="--layout-tabbar-height"></span></td></tr>
         </tbody>
       </table></div>
     </section>

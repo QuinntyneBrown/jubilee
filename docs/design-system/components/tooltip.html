@@ -114,7 +114,7 @@
           <span class="ds-callout" style="left: 44%; top: 18%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 44%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 46%; top: 70%;" aria-hidden="true">3</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Bubble</b><small><code>.tooltip</code>: <code>--color-bg-inverse</code>, <code>--color-fg-inverse</code> text in <code>--text-caption</code>, <code>--radius-sm</code>, <code>--shadow-2</code>, padding <code>--space-1</code> × <code>--space-2</code>.</small></div></li>
+          <li><div><b>Bubble</b><small><code>.tooltip</code>: <code>--color-bg-inverse</code>, <code>--color-fg-inverse</code> text in <code>--text-caption</code>, 8px <code>--radius-sm</code>, <code>--shadow-2</code>, padding <code>--space-1</code> × <code>--space-2</code>.</small></div></li>
           <li><div><b>Arrow</b><small>A CSS triangle in the bubble colour, <code>--space-1</code> tall.</small></div></li>
           <li><div><b>Trigger</b><small>Any focusable control inside <code>.has-tooltip</code>; the bubble sits <code>--space-2</code> above it.</small></div></li>
         </ol>
@@ -160,7 +160,7 @@
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
         <li>Tooltips need hover or focus; on touch screens they appear only on keyboard focus. Anything a phone user needs must be visible without one.</li>
-        <li>The bubble does not wrap (<code>white-space: nowrap</code>); keep it to a few words so it fits at 320px.</li>
+        <li>The bubble is as wide as its text up to 16rem, and never wider than the viewport minus the page margins; past that it wraps. Keep it to a few words so it stays on one line at 320px.</li>
         <li>Near a screen edge, move the bubble below or to the side rather than letting it clip.</li>
       </ul>
     </section>
@@ -192,7 +192,7 @@
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>Fades in over <code>--duration-fast</code> after a 300ms hover delay and hides at once. Reduced motion zeroes the fade; the delay stays, because it prevents flicker rather than decorating.</p>
+      <p>Fades in over <code>--duration-fast</code> (150ms) after a 300ms hover delay (<code>--duration-slow</code>) and hides at once. Reduced motion zeroes both the fade and the delay through the tokens.</p>
       <h3>Touch</h3>
       <p>The trigger keeps its own target size; the tooltip adds none. Do not rely on long-press to show it.</p>
     </section>
@@ -223,7 +223,7 @@
           <tr><td>Shadow</td><td><code>--shadow-2</code></td><td colspan="2"><span data-token="--shadow-2"></span></td></tr>
           <tr><td>Gap from trigger / arrow</td><td><code>--space-2</code> / <code>--space-1</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-1"></span></td></tr>
           <tr><td>Layer</td><td><code>--z-tooltip</code></td><td colspan="2"><span data-token="--z-tooltip"></span></td></tr>
-          <tr><td>Fade</td><td><code>--duration-fast</code> / <code>--ease-standard</code></td><td colspan="2"><span data-token="--duration-fast"></span> / <span data-token="--ease-standard"></span></td></tr>
+          <tr><td>Fade / easing / show delay</td><td><code>--duration-fast</code> / <code>--ease-standard</code> / <code>--duration-slow</code></td><td colspan="2"><span data-token="--duration-fast"></span> / <span data-token="--ease-standard"></span> / <span data-token="--duration-slow"></span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -252,7 +252,7 @@
         <li><a href="../../mocks/pages/business/default.html">pages/business/default</a> (icon-only save and share buttons)</li>
         <li><a href="../../mocks/pages/browse/default.html">pages/browse/default</a> (top-bar icon buttons)</li>
       </ul>
-      <p>Drift fixed during extraction: the tooltip exists only in the kit CSS and no mock uses it. Its hover delay was a raw <code>300ms</code> and it sets <code>pointer-events: none</code>, which makes it disappear when the pointer moves onto it (WCAG 1.4.13 asks that it stay); both are reported to the CSS owners rather than changed here.</p>
+      <p>Drift fixed during extraction: the tooltip exists only in the kit CSS and no mock uses it. Its hover delay was a raw <code>300ms</code> and is now <code>--duration-slow</code>. The bubble no longer sets <code>pointer-events: none</code>, so it stays while the pointer is over it (WCAG 1.4.13).</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

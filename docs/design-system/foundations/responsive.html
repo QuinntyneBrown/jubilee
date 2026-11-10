@@ -101,27 +101,32 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#behaviours">Behaviour by breakpoint</a></li><li><a href="#touch">Touch and pointer</a></li><li><a href="#testing">Testing matrix</a></li><li><a href="#usage">Usage</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Mobile first at 360px, verified at 360, 768 and 1280px in both themes. Breakpoints change layout tokens and a handful of component rules; type and spacing never scale with the viewport.</p>
+      <p>Mobile first at 360px, verified at 360, 768 and 1280px in both themes. Breakpoints change layout tokens, heading sizes (one step, at 640px) and a handful of component rules; nothing scales fluidly with the viewport.</p>
     </section>
     <section class="ds-section" id="behaviours"><h2><a href="#behaviours">Behaviour by breakpoint</a></h2>
-      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Component</th><th scope="col">Phone (&amp;lt; 768px)</th><th scope="col">Tablet (768px+)</th><th scope="col">Desktop (1024px+)</th></tr></thead><tbody>
-        <tr><td>Top bar</td><td>Wordmark, icon buttons; search behind an icon</td><td>Primary links (Browse, Messages) appear</td><td>Search field inline</td></tr>
-        <tr><td>Tab bar</td><td>Fixed bottom, 4–5 items, safe-area padding</td><td>Hidden</td><td>Hidden</td></tr>
-        <tr><td>Hero</td><td>Search field under the heading; chips scroll horizontally</td><td>Search hidden (top bar has it at lg); chips wrap</td><td>48px heading, more padding</td></tr>
-        <tr><td>Card grid</td><td>2 columns</td><td>3 columns</td><td>4 columns (feature card spans 2×2)</td></tr>
-        <tr><td>Detail layout</td><td>Stacked; full-width primary action</td><td>Stacked</td><td>Split 1.6fr/1fr with sticky aside</td></tr>
-        <tr><td>Dialog</td><td>Bottom sheet, 20px top corners, sticky footer</td><td>Centred panel (from 640px)</td><td>Centred panel</td></tr>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Component</th><th scope="col">Phone (&lt; 768px)</th><th scope="col">Tablet (768px+)</th><th scope="col">Desktop (1024px+)</th></tr></thead><tbody>
+        <tr><td>Top bar</td><td>Wordmark and icon buttons; no search field</td><td>Primary links and the search field appear</td><td>Same; the menu button is hidden</td></tr>
+        <tr><td>Tab bar</td><td>Fixed bottom, 72px, 4–5 items, safe-area padding</td><td>Hidden</td><td>Hidden</td></tr>
+        <tr><td>Hero</td><td>32px heading (48px from 640px); 48px cream search pill under the heading; chips scroll horizontally (wrap from 640px)</td><td>48px heading; search hidden (the top bar has it); chips wrap; more padding</td><td>Same as tablet</td></tr>
+        <tr><td>Headings</td><td>h1 28px, h2 20px, card names 16px; all step up at 640px</td><td>h1 36px, h2 24px, card names 18px</td><td>Same as tablet</td></tr>
+        <tr><td>Card grid</td><td>2 columns (3 from 640px)</td><td>3 columns</td><td>4 columns (feature card spans 2×2)</td></tr>
+        <tr><td>Directory groups</td><td>1 column</td><td>2 columns</td><td>3 columns</td></tr>
+        <tr><td>Product scroller</td><td>Horizontal scroller with 44%-wide items (3-column grid from 640px)</td><td>3-column grid</td><td>5-column grid</td></tr>
+        <tr><td>Detail layout</td><td>Stacked; full-width primary action below 640px; full-bleed hero image</td><td>Split 1fr / 23.75rem; hero image with 24px radius</td><td>Split 1fr / 26.25rem with sticky aside</td></tr>
+        <tr><td>Dialog</td><td>Bottom sheet, 24px top corners, sticky footer</td><td>Centred panel (from 640px)</td><td>Centred panel</td></tr>
         <tr><td>Toast</td><td>Full width above the tab bar</td><td>Bottom-right 24rem (from 640px)</td><td>Bottom-right 24rem</td></tr>
         <tr><td>Form grid</td><td>One column</td><td>Two columns for short related fields (from 640px)</td><td>Two columns</td></tr>
+        <tr><td>Form actions</td><td>Stacked in reverse order, primary on top</td><td>One row, right-aligned (from 640px)</td><td>One row, right-aligned</td></tr>
+        <tr><td>Action bar</td><td>Sticky at the bottom, cream 95% with blur</td><td>Hidden</td><td>Hidden</td></tr>
         <tr><td>Rows / description lists</td><td>Actions wrap under the row; dl stacks term over value</td><td>Inline</td><td>Inline</td></tr>
         <tr><td>Inbox</td><td>List or chat (one at a time)</td><td>List or chat</td><td>List and chat side by side</td></tr>
-        <tr><td>Tabs, chip rows</td><td>Scroll horizontally, never wrap</td><td>Scroll</td><td>Chip rows wrap</td></tr>
+        <tr><td>Tabs, chip rows</td><td>Scroll horizontally, never wrap (chip rows wrap from 640px)</td><td>Tabs scroll; chip rows wrap</td><td>Tabs scroll; chip rows wrap</td></tr>
         <tr><td>Stepper</td><td>Only the current step label shows</td><td>All labels</td><td>All labels</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="touch"><h2><a href="#touch">Touch and pointer</a></h2>
       <ul>
-        <li>Every target is ≥ 24px (2.5.8); nav links, tabs, rows and primary mobile actions are 44px (<code>--target-comfortable</code>).</li>
+        <li>Every target is ≥ 24px (<code>--target-min</code>, 2.5.8). Visible controls are 36, 40 or 48px tall. Under <code>(pointer: coarse)</code>, buttons, chips, nav links, tabs, pagination and standalone links get an invisible hit area at least 44px tall (<code>--target-comfortable</code>); their visible size does not change. Accordion summaries and bottom-sheet menu rows are 44px tall.</li>
         <li><code>(hover: none)</code> reveals hover-only affordances such as table row actions permanently.</li>
         <li>Fixed bottom elements add <code>env(safe-area-inset-bottom)</code>; full-height layouts use <code>100dvh</code>.</li>
         <li>Horizontal scrollers snap (<code>scroll-snap-type: x proximity</code>) and keep a visible next item as an affordance.</li>
@@ -130,15 +135,15 @@
     <section class="ds-section" id="testing"><h2><a href="#testing">Testing matrix</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Viewport</th><th scope="col">Themes</th><th scope="col">Check</th></tr></thead><tbody>
         <tr><td>360×800</td><td>light, dark</td><td>no horizontal page scroll, tab bar clears content, sheets fit</td></tr>
-        <tr><td>768×1024</td><td>light, dark</td><td>top-bar nav replaces tab bar, 3-up grids</td></tr>
-        <tr><td>1280×800</td><td>light, dark</td><td>split layouts, sticky asides, search in top bar</td></tr>
+        <tr><td>768×1024</td><td>light, dark</td><td>top-bar nav and search replace the tab bar, 3-up grids, split detail layout</td></tr>
+        <tr><td>1280×800</td><td>light, dark</td><td>4-up grids, sticky asides, inbox list + chat</td></tr>
         <tr><td>200% and 400% zoom</td><td>light</td><td>reflow to 320px CSS width (1.4.10)</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="usage"><h2><a href="#usage">Usage</a></h2>
       <ul>
         <li>Write <code>min-width</code> queries in rem; add a breakpoint only by adding a token.</li>
-        <li>Hide with <code>.only-mobile</code>, <code>.only-desktop</code> (768px) and <code>.only-narrow</code> (1024px), never by deleting content from the DOM order.</li>
+        <li>Hide with <code>.only-mobile</code>, <code>.only-desktop</code> and <code>.only-narrow</code> (all switch at 768px), never by deleting content from the DOM order.</li>
         <li>See <a href="../foundations/layout.html">Layout</a> for the grid.</li>
       </ul>
     </section>

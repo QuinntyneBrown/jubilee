@@ -103,14 +103,15 @@
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Every Jubilee page is a <code>.container</code> with a <code>.page-header</code>, then sections laid out with these classes. Use them instead of inline flex or grid styles; they read the <a href="../foundations/layout.html">Layout</a> and <a href="../foundations/spacing.html">Spacing</a> tokens, so a change of gutter or margin lands everywhere. See <a href="../patterns/navigation.html">Navigation and page structure</a> for how they compose into page templates.</p>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Primitive</th><th scope="col">Use it for</th><th scope="col">Uses in mocks</th></tr></thead><tbody>
-        <tr><td><code>.container</code>, <code>.container--narrow</code></td><td>Centred page width with side margins; narrow (672px) for forms, settings and request detail.</td><td>257 / 2</td></tr>
+        <tr><td><code>.container</code>, <code>.container--narrow</code>, <code>.container--form</code></td><td>Centred page width (1280px) with side margins; narrow (672px) for settings and request detail; form (1152px) for a form page with a side column.</td><td>257 / 2 / 7</td></tr>
         <tr><td><code>.stack</code> (<code>--sm</code>, <code>--lg</code>)</td><td>Vertical rhythm between siblings: dialog bodies, settings cards, forms.</td><td>38</td></tr>
         <tr><td><code>.cluster</code> (<code>--between</code>, <code>--end</code>)</td><td>A wrapping row of inline things: buttons, badges, meta, avatars with a name.</td><td>526</td></tr>
         <tr><td><code>.grid</code>, <code>.grid--auto</code>, <code>.span-full</code></td><td>The 4/8/12-column grid, and an auto-filling grid of 18rem tracks.</td><td>0 in product mocks</td></tr>
-        <tr><td><code>.split</code> (<code>--even</code>, <code>__sticky</code>)</td><td>Main content and an aside: detail pages, help, request detail.</td><td>135</td></tr>
+        <tr><td><code>.split</code> (<code>--even</code>, <code>--form</code>, <code>__sticky</code>)</td><td>Main content and an aside: detail pages, help, request detail. <code>--form</code> is the form with a narrower side column.</td><td>135 (<code>--form</code> 7)</td></tr>
         <tr><td><code>.card-grid</code> (<code>--3</code>), <code>.feature-grid</code></td><td>Lists of business and product cards: 2, 3, then 4 across.</td><td>81</td></tr>
         <tr><td><code>.page-header</code></td><td>The page's h1, subtitle and page-level actions.</td><td>139</td></tr>
         <tr><td><code>.section-head</code></td><td>A section's h2 and its "See all" link.</td><td>149</td></tr>
+        <tr><td><code>.section</code>, <code>.section--ruled</code></td><td>A page section, 56px below the one before it; <code>--ruled</code> adds an ink-15% rule and 32px of padding above.</td><td>220 / 34</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
@@ -122,8 +123,8 @@
         <ol class="ds-anatomy__list">
           <li><div><b>Page header</b><small><code>.page-header</code>: title block and an action cluster, wrapping, <code>--space-6</code> above and below.</small></div></li>
           <li><div><b>Actions</b><small><code>.cluster</code>: wrapping row, <code>--space-3</code> gap.</small></div></li>
-          <li><div><b>Section head</b><small><code>.section-head</code>: h2 and a link on one baseline, <code>--space-4</code> below.</small></div></li>
-          <li><div><b>Split</b><small><code>.split</code>: one column, then 1.6 : 1 (or even) from 1024px with <code>--space-10</code> between.</small></div></li>
+          <li><div><b>Section head</b><small><code>.section-head</code>: h2 and a 14px semibold link with a chevron on one baseline, <code>--space-5</code> below.</small></div></li>
+          <li><div><b>Split</b><small><code>.split</code>: one column, then main plus a 380px aside from 768px and a 420px aside from 1024px, with <code>--space-10</code> between. <code>--even</code> (shown) is two equal columns from 1024px.</small></div></li>
         </ol>
       </div>
     </section>
@@ -132,7 +133,7 @@
       <div class="ds-example"><div class="ds-example__canvas">
         <div class="ds-grid-demo" style="width: 100%;"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span></div>
       </div>
-        <div class="ds-example__caption"><span>Live: 4 columns below 768px, 8 to 1023px, 12 from 1024px; gutter <code>--layout-gutter</code> (16 / 24 / 32px) and margin <code>--layout-margin</code> (16 / 32 / 48px). Resize the window to watch it change.</span></div>
+        <div class="ds-example__caption"><span>Live: 4 columns below 768px, 8 to 1023px, 12 from 1024px; gutter <code>--layout-gutter</code> (16px, 24px from 640px) and margin <code>--layout-margin</code> (20px, 32px from 640px). Resize the window to watch it change.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="ds-grid-demo" style="width: 100%;"&gt;&lt;span&gt;1&lt;/span&gt;&lt;span&gt;2&lt;/span&gt;&lt;span&gt;3&lt;/span&gt;&lt;span&gt;4&lt;/span&gt;&lt;span&gt;5&lt;/span&gt;&lt;span&gt;6&lt;/span&gt;&lt;span&gt;7&lt;/span&gt;&lt;span&gt;8&lt;/span&gt;&lt;span&gt;9&lt;/span&gt;&lt;span&gt;10&lt;/span&gt;&lt;span&gt;11&lt;/span&gt;&lt;span&gt;12&lt;/span&gt;&lt;/div&gt;</code></pre></details></div>
       <h3>Grid and auto grid</h3>
       <div class="ds-example"><div class="ds-example__canvas">
@@ -150,13 +151,13 @@
       <div class="ds-example"><div class="ds-example__canvas">
         <div class="split" style="width: 100%;"><div class="well" style="font: var(--text-label);">Business details, services, products</div><div class="well" style="font: var(--text-label);">Contact card (sticky from 1024px)</div></div>
       </div>
-        <div class="ds-example__caption"><span>The business page: main and aside, stacked below 1024px. Add <code>.split__sticky</code> to the aside to pin it under the top bar.</span></div>
+        <div class="ds-example__caption"><span>The business page: main and aside, stacked below 768px; the aside is 380px wide from 768px and 420px from 1024px. Add <code>.split__sticky</code> to the aside to pin it under the top bar from 1024px.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="split" style="width: 100%;"&gt;&lt;div class="well" style="font: var(--text-label);"&gt;Business details, services, products&lt;/div&gt;&lt;div class="well" style="font: var(--text-label);"&gt;Contact card (sticky from 1024px)&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
       <h3>Card grid</h3>
       <div class="ds-example"><div class="ds-example__canvas">
         <ul class="card-grid" style="width: 100%;"><li><a class="biz-card" href="../../mocks/pages/business/default.html"><div class="media media--green"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></svg></div><h3 class="biz-card__name">Legacy Financial</h3><p class="biz-card__tagline">Build a Legacy. Protect a Legacy. Leave a Legacy.</p><p class="biz-card__meta"><span class="perk">Free first meeting</span></p></a></li><li><a class="biz-card" href="../../mocks/pages/shop/default.html"><div class="media media--gold"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg></div><h3 class="biz-card__name">Luzandre.com</h3><p class="biz-card__tagline">Unique &amp; custom Christian apparel, artworks &amp; gifts that bring joy</p><p class="biz-card__meta"><span class="perk">Ships across Canada</span></p></a></li><li><a class="biz-card" href="../../mocks/pages/business/default.html"><div class="media media--blue"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9zM14 6l3-3"/></svg></div><h3 class="biz-card__name">WaterWorks Plumbing &amp; Drains</h3><p class="biz-card__tagline">Drains, leaks and water heaters across the east end.</p><p class="biz-card__meta"><span class="perk">Free quote</span></p></a></li><li><a class="biz-card" href="../../mocks/pages/business/default.html"><div class="media media--ink"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg></div><h3 class="biz-card__name">Grace Toronto Church</h3><p class="biz-card__tagline">A church family in the heart of the city.</p><p class="biz-card__meta"><span class="perk">Sunday 10:30 a.m.</span></p></a></li></ul>
       </div>
-        <div class="ds-example__caption"><span>From <em>browse</em>: 2 across on phones, 3 from 768px, 4 from 1024px; row gap larger than column gap so names do not run into the next row.</span></div>
+        <div class="ds-example__caption"><span>From <em>browse</em>: 2 across on phones, 3 from 640px, 4 from 1024px; row gap (32px) larger than column gap so names do not run into the next row.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="card-grid" style="width: 100%;"&gt;&lt;li&gt;&lt;a class="biz-card" href="../../mocks/pages/business/default.html"&gt;&lt;div class="media media--green"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h3 class="biz-card__name"&gt;Legacy Financial&lt;/h3&gt;&lt;p class="biz-card__tagline"&gt;Build a Legacy. Protect a Legacy. Leave a Legacy.&lt;/p&gt;&lt;p class="biz-card__meta"&gt;&lt;span class="perk"&gt;Free first meeting&lt;/span&gt;&lt;/p&gt;&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="biz-card" href="../../mocks/pages/shop/default.html"&gt;&lt;div class="media media--gold"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h3 class="biz-card__name"&gt;Luzandre.com&lt;/h3&gt;&lt;p class="biz-card__tagline"&gt;Unique &amp;amp; custom Christian apparel, artworks &amp;amp; gifts that bring joy&lt;/p&gt;&lt;p class="biz-card__meta"&gt;&lt;span class="perk"&gt;Ships across Canada&lt;/span&gt;&lt;/p&gt;&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="biz-card" href="../../mocks/pages/business/default.html"&gt;&lt;div class="media media--blue"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9zM14 6l3-3"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h3 class="biz-card__name"&gt;WaterWorks Plumbing &amp;amp; Drains&lt;/h3&gt;&lt;p class="biz-card__tagline"&gt;Drains, leaks and water heaters across the east end.&lt;/p&gt;&lt;p class="biz-card__meta"&gt;&lt;span class="perk"&gt;Free quote&lt;/span&gt;&lt;/p&gt;&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="biz-card" href="../../mocks/pages/business/default.html"&gt;&lt;div class="media media--ink"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h3 class="biz-card__name"&gt;Grace Toronto Church&lt;/h3&gt;&lt;p class="biz-card__tagline"&gt;A church family in the heart of the city.&lt;/p&gt;&lt;p class="biz-card__meta"&gt;&lt;span class="perk"&gt;Sunday 10:30 a.m.&lt;/span&gt;&lt;/p&gt;&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
       <h3>Narrow container</h3>
       <div class="ds-example"><div class="ds-example__canvas">
@@ -166,12 +167,12 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="container--narrow" style="width: 100%; padding: 0;"&gt;&lt;div class="well" style="font: var(--text-label);"&gt;Settings column, max 672px (--layout-container-narrow)&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>Spacing variants are the only sizes. Stacks come in three gaps; containers in two widths.</p>
+      <p>Spacing variants are the only sizes. Stacks come in three gaps; containers in three widths.</p>
       <div class="ds-example"><div class="ds-example__canvas">
         <div class="split split--even" style="width: 100%;"><div class="stack stack--sm"><div class="well" style="font: var(--text-label);">stack--sm · 8px</div><div class="well" style="font: var(--text-label);">stack--sm</div></div><div class="stack"><div class="well" style="font: var(--text-label);">stack · 16px</div><div class="well" style="font: var(--text-label);">stack</div></div></div>
         <div class="stack stack--lg" style="width: 100%;"><div class="well" style="font: var(--text-label);">stack--lg · 32px</div><div class="well" style="font: var(--text-label);">stack--lg</div></div>
       </div>
-        <div class="ds-example__caption"><span><code>--space-2</code>, <code>--space-4</code>, <code>--space-8</code>. Containers: <code>--layout-container-max</code> 1280px and <code>--layout-container-narrow</code> 672px.</span></div>
+        <div class="ds-example__caption"><span><code>--space-2</code>, <code>--space-4</code>, <code>--space-8</code>. Containers: <code>--layout-container-max</code> 1280px, <code>--layout-container-form</code> 1152px and <code>--layout-container-narrow</code> 672px.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="split split--even" style="width: 100%;"&gt;&lt;div class="stack stack--sm"&gt;&lt;div class="well" style="font: var(--text-label);"&gt;stack--sm · 8px&lt;/div&gt;&lt;div class="well" style="font: var(--text-label);"&gt;stack--sm&lt;/div&gt;&lt;/div&gt;&lt;div class="stack"&gt;&lt;div class="well" style="font: var(--text-label);"&gt;stack · 16px&lt;/div&gt;&lt;div class="well" style="font: var(--text-label);"&gt;stack&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;div class="stack stack--lg" style="width: 100%;"&gt;&lt;div class="well" style="font: var(--text-label);"&gt;stack--lg · 32px&lt;/div&gt;&lt;div class="well" style="font: var(--text-label);"&gt;stack--lg&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
@@ -180,18 +181,20 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Width</th><th scope="col">Columns</th><th scope="col">Gutter</th><th scope="col">Margin</th><th scope="col">Card grid</th><th scope="col">Split</th></tr></thead><tbody>
-        <tr><td>&lt; 768px</td><td>4</td><td>16px</td><td>16px</td><td>2 across</td><td>stacked</td></tr>
-        <tr><td>768–1023px</td><td>8</td><td>24px</td><td>32px</td><td>3 across</td><td>stacked</td></tr>
-        <tr><td>≥ 1024px</td><td>12</td><td>32px</td><td>48px</td><td>4 across (or 3 with <code>--3</code>)</td><td>1.6 : 1, aside sticky</td></tr>
+        <tr><td>&lt; 640px</td><td>4</td><td>16px</td><td>20px</td><td>2 across</td><td>stacked</td></tr>
+        <tr><td>640–767px</td><td>4</td><td>24px</td><td>32px</td><td>3 across</td><td>stacked</td></tr>
+        <tr><td>768–1023px</td><td>8</td><td>24px</td><td>32px</td><td>3 across</td><td><code>1fr 380px</code> (<code>--even</code> stays stacked)</td></tr>
+        <tr><td>≥ 1024px</td><td>12</td><td>24px</td><td>32px</td><td>4 across (or 3 with <code>--3</code>)</td><td><code>1fr 420px</code>, aside sticky; <code>--form</code> is <code>1fr 320px</code> with a 64px gap</td></tr>
       </tbody></table></div>
       <ul>
+        <li>Sections sit 56px apart (<code>--space-14</code>) at every width. The page has 24px of top padding (40px from 768px) and 48px at the bottom.</li>
         <li>Breakpoints are 640, 768 and 1024px (<code>--layout-breakpoint-sm/md/lg</code>). Media queries use rem (40rem, 48rem, 64rem) so they follow text zoom.</li>
         <li>Every grid child gets <code>min-width: 0</code> so long names wrap instead of pushing the page sideways at 360px.</li>
         <li>Clusters wrap; nothing in a layout primitive scrolls horizontally except the explicit <code>.scroller</code> and <code>.chip-row</code>.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Layout primitives use spacing and layout tokens only, no colour, so they are identical in both themes. The grid demo's tint is documentation chrome.</p>
+      <p>Layout primitives use spacing and layout tokens, so their geometry is identical in both themes. Two parts carry colour: the <code>.section--ruled</code> rule is <code>--color-border-rule</code> (ink 15% in light, cream 20% in dark), and the section-head link is <code>--color-fg-default</code>, turning <code>--color-fg-link</code> on hover. The grid demo's tint is documentation chrome.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -218,7 +221,7 @@
       <h3>Motion</h3>
       <p>None. Layout never animates; reduced motion has nothing to remove.</p>
       <h3>Touch</h3>
-      <p>Cluster and stack gaps (at least <code>--space-2</code>) keep neighbouring 24px targets from touching; the card grid's <code>--space-4</code> column gap does the same for cards.</p>
+      <p>Cluster and stack gaps (at least <code>--space-2</code>) keep neighbouring 24px targets from touching; the card grid's <code>--layout-gutter</code> column gap (16px on phones) does the same for cards.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -239,16 +242,20 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Container width / narrow</td><td><code>--layout-container-max</code> / <code>--layout-container-narrow</code></td><td colspan="2"><span data-token="--layout-container-max"></span> / <span data-token="--layout-container-narrow"></span></td></tr>
+          <tr><td>Container width / narrow / form</td><td><code>--layout-container-max</code> / <code>--layout-container-narrow</code> / <code>--layout-container-form</code></td><td colspan="2"><span data-token="--layout-container-max"></span> / <span data-token="--layout-container-narrow"></span> / <span data-token="--layout-container-form"></span></td></tr>
           <tr><td>Page margin</td><td><code>--layout-margin</code></td><td colspan="2"><span data-token="--layout-margin"></span></td></tr>
           <tr><td>Columns</td><td><code>--layout-columns</code></td><td colspan="2"><span data-token="--layout-columns"></span></td></tr>
           <tr><td>Gutter</td><td><code>--layout-gutter</code></td><td colspan="2"><span data-token="--layout-gutter"></span></td></tr>
           <tr><td>Stack gaps</td><td><code>--space-2</code> / <code>--space-4</code> / <code>--space-8</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-4"></span> / <span data-token="--space-8"></span></td></tr>
           <tr><td>Cluster gap</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
-          <tr><td>Split gap</td><td><code>--space-6</code> / <code>--space-10</code></td><td colspan="2"><span data-token="--space-6"></span> / <span data-token="--space-10"></span></td></tr>
-          <tr><td>Card grid gaps</td><td><code>--space-4</code> / <code>--space-6</code> / <code>--space-8</code></td><td colspan="2"><span data-token="--space-4"></span> / <span data-token="--space-6"></span> / <span data-token="--space-8"></span></td></tr>
+          <tr><td>Split gap stacked / in columns / form</td><td><code>--space-6</code> / <code>--space-10</code> / <code>--space-16</code></td><td colspan="2"><span data-token="--space-6"></span> / <span data-token="--space-10"></span> / <span data-token="--space-16"></span></td></tr>
+          <tr><td>Card grid gaps (row / column)</td><td><code>--space-8</code> / <code>--layout-gutter</code></td><td colspan="2"><span data-token="--space-8"></span> / <span data-token="--layout-gutter"></span></td></tr>
           <tr><td>Page header spacing</td><td><code>--space-6</code></td><td colspan="2"><span data-token="--space-6"></span></td></tr>
-          <tr><td>Section head spacing</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
+          <tr><td>Section head spacing</td><td><code>--space-5</code></td><td colspan="2"><span data-token="--space-5"></span></td></tr>
+          <tr><td>Section spacing</td><td><code>--space-14</code></td><td colspan="2"><span data-token="--space-14"></span></td></tr>
+          <tr><td>Ruled section padding</td><td><code>--space-8</code></td><td colspan="2"><span data-token="--space-8"></span></td></tr>
+          <tr><td>Ruled section rule</td><td><code>--color-border-rule</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-rule" data-swatch></i><span data-token="--color-border-rule"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-rule" data-swatch></i><span data-token="--color-border-rule"></span></span></td></tr>
+          <tr><td>Page padding (top / top from 768px / bottom)</td><td><code>--space-6</code> / <code>--space-10</code> / <code>--space-12</code></td><td colspan="2"><span data-token="--space-6"></span> / <span data-token="--space-10"></span> / <span data-token="--space-12"></span></td></tr>
           <tr><td>Sticky offset</td><td><code>--layout-topbar-height</code></td><td colspan="2"><span data-token="--layout-topbar-height"></span></td></tr>
           <tr><td>Breakpoints</td><td><code>--layout-breakpoint-sm</code> / <code>--layout-breakpoint-md</code> / <code>--layout-breakpoint-lg</code></td><td colspan="2"><span data-token="--layout-breakpoint-sm"></span> / <span data-token="--layout-breakpoint-md"></span> / <span data-token="--layout-breakpoint-lg"></span></td></tr>
         </tbody>
@@ -270,14 +277,15 @@
   &lt;/div&gt;
 &lt;/main&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.container</code> / <code>.container--narrow</code></td><td>Centred max width with page margins / 672px cap.</td></tr>
+        <tr><td><code>.container</code> / <code>.container--narrow</code> / <code>.container--form</code></td><td>Centred max width with page margins / 672px cap / 1152px cap.</td></tr>
         <tr><td><code>.stack</code> <code>--sm</code> <code>--lg</code></td><td>Vertical gap 16 / 8 / 32px.</td></tr>
         <tr><td><code>.cluster</code> <code>--between</code> <code>--end</code></td><td>Wrapping row, 12px gap; justification.</td></tr>
         <tr><td><code>.grid</code> / <code>.grid--auto</code> / <code>.span-full</code></td><td>Column grid / auto-fill tracks / full row.</td></tr>
-        <tr><td><code>.split</code> <code>--even</code> <code>__sticky</code></td><td>Main + aside from 1024px.</td></tr>
+        <tr><td><code>.split</code> <code>--even</code> <code>--form</code> <code>__sticky</code></td><td>Main + aside: <code>1fr 380px</code> from 768px, <code>1fr 420px</code> from 1024px. <code>--even</code>: two equal columns from 1024px. <code>--form</code>: <code>1fr 320px</code> with a 64px gap from 1024px. <code>__sticky</code>: pinned under the top bar from 1024px.</td></tr>
         <tr><td><code>.card-grid</code> <code>--3</code> / <code>.feature-grid</code></td><td>2/3/4-across card lists; featured first item.</td></tr>
         <tr><td><code>.page-header</code> / <code>.section-head</code></td><td>Page title row / section title row.</td></tr>
-        <tr><td><code>.section</code></td><td>Vertical margin between page sections.</td></tr>
+        <tr><td><code>.section</code> / <code>.section--ruled</code></td><td>56px above each section after the first / adds an ink-15% rule and 32px padding above.</td></tr>
+        <tr><td><code>.page</code></td><td>Page padding: 24px top (40px from 768px), 48px bottom.</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>

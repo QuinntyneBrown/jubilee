@@ -116,8 +116,8 @@
           <span class="ds-callout" style="left: 50%; top: 16%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 44%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 50%; top: 62%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 50%; top: 84%;" aria-hidden="true">4</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Icon disc</b><small><code>.empty__icon</code>: 64px disc in <code>--color-accent-subtle</code> with a <code>--icon-size-lg</code> icon in <code>--color-fg-accent</code>; danger tints in the error variant. Decorative.</small></div></li>
-          <li><div><b>Title</b><small><code>.empty__title</code>, <code>--text-h3</code>, an <code>&lt;h2&gt;</code> (or <code>&lt;h1&gt;</code> on an error page).</small></div></li>
+          <li><div><b>Icon disc</b><small><code>.empty__icon</code>: 64px circle in <code>--color-bg-subtle</code> with a 24px (<code>--icon-size-xl</code>) glyph in ink (<code>--color-fg-default</code>); danger tints in the error variant. Decorative.</small></div></li>
+          <li><div><b>Title</b><small><code>.empty__title</code>, <code>--text-h3</code> (20px bold, display font), an <code>&lt;h2&gt;</code> (or <code>&lt;h1&gt;</code> on an error page).</small></div></li>
           <li><div><b>Text</b><small><code>.empty__text</code>, muted, at most 36ch wide.</small></div></li>
           <li><div><b>Actions</b><small><code>.empty__actions</code>: one primary, optionally one secondary.</small></div></li>
         </ol>
@@ -177,7 +177,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>The icon disc uses <code>--color-accent-subtle</code> and <code>--color-fg-accent</code> (warm gold tint in light, deep gold in dark). <code>.empty--error</code> swaps them for <code>--color-danger-bg</code> and <code>--color-danger-icon</code>.</p>
+      <p>The icon circle uses <code>--color-bg-subtle</code> and <code>--color-fg-default</code>: ink at 5% with an ink glyph in light, a raised charcoal with a cream glyph in dark. It is no longer gold. <code>.empty--error</code> swaps them for <code>--color-danger-bg</code> and <code>--color-danger-icon</code>.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -197,21 +197,21 @@
         <div class="ds-pair"><span>Title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Error icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon|--color-danger-bg" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Error icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon|--color-danger-bg" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
       <p>None. The swap from skeleton to empty state is instant.</p>
       <h3>Touch</h3>
-      <p>Actions are medium buttons (44px), <code>--space-3</code> apart.</p>
+      <p>Actions are medium buttons (40px), <code>--space-3</code> apart; on coarse pointers their touch hit area is at least 44px tall (<code>--target-comfortable</code>).</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -233,14 +233,14 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Disc / icon</td><td><code>--color-accent-subtle</code> / <code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
+          <tr><td>Disc / icon</td><td><code>--color-bg-subtle</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
           <tr><td>Error disc / icon</td><td><code>--color-danger-bg</code> / <code>--color-danger-icon</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-icon" data-swatch></i><span data-token="--color-danger-icon"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-icon" data-swatch></i><span data-token="--color-danger-icon"></span></span></td></tr>
           <tr><td>Title / text</td><td><code>--text-h3</code> / <code>--color-fg-muted</code></td><td colspan="2"><span data-token="--text-h3"></span> / <span data-token="--color-fg-muted"></span></td></tr>
           <tr><td>Padding default</td><td><code>--space-12</code> / <code>--space-6</code></td><td colspan="2"><span data-token="--space-12"></span> / <span data-token="--space-6"></span></td></tr>
           <tr><td>Padding compact</td><td><code>--space-8</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-8"></span> / <span data-token="--space-4"></span></td></tr>
           <tr><td>Gap</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
           <tr><td>Disc size</td><td><code>--avatar-size-md</code> / <code>--space-6</code></td><td colspan="2"><span data-token="--avatar-size-md"></span> / <span data-token="--space-6"></span></td></tr>
-          <tr><td>Icon</td><td><code>--icon-size-lg</code></td><td colspan="2"><span data-token="--icon-size-lg"></span></td></tr>
+          <tr><td>Icon size</td><td><code>--icon-size-xl</code></td><td colspan="2"><span data-token="--icon-size-xl"></span></td></tr>
         </tbody>
       </table></div>
     </section>

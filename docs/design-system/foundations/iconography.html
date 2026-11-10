@@ -109,9 +109,9 @@
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <div class="ds-example"><div class="ds-example__canvas">
-<svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>
+<svg class="icon icon--xs" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><svg class="icon icon--xl" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>
       </div>
-        <div class="ds-example__caption"><span><code>.icon--sm</code> 16px · <code>.icon</code> 20px · <code>.icon--lg</code> 24px. Buttons size icons at 1.25em of the label.</span></div></div>
+        <div class="ds-example__caption"><span><code>.icon--xs</code> 14px · <code>.icon--sm</code> 16px · <code>.icon</code> 18px · <code>.icon--lg</code> 20px · <code>.icon--xl</code> 24px. Icons are 16px in default and small buttons and 18px in large and icon-only buttons.</span></div></div>
     </section>
     <section class="ds-section" id="usage"><h2><a href="#usage">Labelling and usage</a></h2>
       <ul>
@@ -119,6 +119,7 @@
         <li>Icon-only controls: the control carries <code>aria-label</code> ("Save Luzandre.com"); the SVG stays hidden.</li>
         <li>Status icons pair with words; an icon alone never carries meaning (1.4.1). The verified tick carries visually hidden "Verified".</li>
         <li>Meaningful icons meet 3:1 against their background (1.4.11); the verified green is checked in <code>contrast-pairs.json</code>.</li>
+        <li>The verified tick is 14px; search, chevrons and the back arrow are 16px; tab-bar, alert, toast and choice-card icons are 20px; the empty-state glyph is 24px.</li>
         <li>Media tiles use the same icons at 28% width with a 1.25 stroke as photo stand-ins; see <a href="../components/media-tile.html">Media tile</a>.</li>
       </ul>
     </section>
@@ -126,9 +127,11 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>16px  inline with captions, verified tick</td><td><code>--icon-size-sm</code></td><td colspan="2"><span data-token="--icon-size-sm"></span></td></tr>
-          <tr><td>20px  default</td><td><code>--icon-size-md</code></td><td colspan="2"><span data-token="--icon-size-md"></span></td></tr>
-          <tr><td>24px  brand mark, empty-state glyph</td><td><code>--icon-size-lg</code></td><td colspan="2"><span data-token="--icon-size-lg"></span></td></tr>
+          <tr><td>14px  verified tick</td><td><code>--icon-size-xs</code></td><td colspan="2"><span data-token="--icon-size-xs"></span></td></tr>
+          <tr><td>16px  search, chevrons, back arrow, remove</td><td><code>--icon-size-sm</code></td><td colspan="2"><span data-token="--icon-size-sm"></span></td></tr>
+          <tr><td>18px  default; icons in large and icon-only buttons</td><td><code>--icon-size-md</code></td><td colspan="2"><span data-token="--icon-size-md"></span></td></tr>
+          <tr><td>20px  tab bar, choice-card icons</td><td><code>--icon-size-lg</code></td><td colspan="2"><span data-token="--icon-size-lg"></span></td></tr>
+          <tr><td>24px  empty-state glyph</td><td><code>--icon-size-xl</code></td><td colspan="2"><span data-token="--icon-size-xl"></span></td></tr>
         </tbody>
       </table></div>
     </section>

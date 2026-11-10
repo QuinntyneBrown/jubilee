@@ -101,21 +101,25 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#scale">Scale</a></li><li><a href="#rules">Inside and between</a></li><li><a href="#sizes">Padding by component size</a></li><li><a href="#usage">Usage</a></li><li><a href="#tokens">Tokens</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>A 4px scale from 0 to 96px. The token number is the multiple of 4 (<code>--space-6</code> = 24px). Every padding, gap and margin in the mocks maps to a step; off-grid values were corrected during extraction (see the drift log in the README).</p>
+      <p>A 4px scale from 0 to 96px. The token number is the multiple of 4 (<code>--space-6</code> = 24px). The half steps <code>--space-0-5</code>, <code>--space-1-5</code> and <code>--space-2-5</code> are 2px, 6px and 10px. Every padding, gap and margin maps to a step, and every step is a value the design reference uses.</p>
     </section>
     <section class="ds-section" id="scale"><h2><a href="#scale">Scale</a></h2>
       <div class="ds-scale">
         <div class="ds-scale__row"><code>--space-0</code><span data-token="--space-0"></span><span class="ds-scale__bar" style="--size: var(--space-0);"></span></div>
         <div class="ds-scale__row"><code>--space-0-5</code><span data-token="--space-0-5"></span><span class="ds-scale__bar" style="--size: var(--space-0-5);"></span></div>
         <div class="ds-scale__row"><code>--space-1</code><span data-token="--space-1"></span><span class="ds-scale__bar" style="--size: var(--space-1);"></span></div>
+        <div class="ds-scale__row"><code>--space-1-5</code><span data-token="--space-1-5"></span><span class="ds-scale__bar" style="--size: var(--space-1-5);"></span></div>
         <div class="ds-scale__row"><code>--space-2</code><span data-token="--space-2"></span><span class="ds-scale__bar" style="--size: var(--space-2);"></span></div>
+        <div class="ds-scale__row"><code>--space-2-5</code><span data-token="--space-2-5"></span><span class="ds-scale__bar" style="--size: var(--space-2-5);"></span></div>
         <div class="ds-scale__row"><code>--space-3</code><span data-token="--space-3"></span><span class="ds-scale__bar" style="--size: var(--space-3);"></span></div>
         <div class="ds-scale__row"><code>--space-4</code><span data-token="--space-4"></span><span class="ds-scale__bar" style="--size: var(--space-4);"></span></div>
         <div class="ds-scale__row"><code>--space-5</code><span data-token="--space-5"></span><span class="ds-scale__bar" style="--size: var(--space-5);"></span></div>
         <div class="ds-scale__row"><code>--space-6</code><span data-token="--space-6"></span><span class="ds-scale__bar" style="--size: var(--space-6);"></span></div>
+        <div class="ds-scale__row"><code>--space-7</code><span data-token="--space-7"></span><span class="ds-scale__bar" style="--size: var(--space-7);"></span></div>
         <div class="ds-scale__row"><code>--space-8</code><span data-token="--space-8"></span><span class="ds-scale__bar" style="--size: var(--space-8);"></span></div>
         <div class="ds-scale__row"><code>--space-10</code><span data-token="--space-10"></span><span class="ds-scale__bar" style="--size: var(--space-10);"></span></div>
         <div class="ds-scale__row"><code>--space-12</code><span data-token="--space-12"></span><span class="ds-scale__bar" style="--size: var(--space-12);"></span></div>
+        <div class="ds-scale__row"><code>--space-14</code><span data-token="--space-14"></span><span class="ds-scale__bar" style="--size: var(--space-14);"></span></div>
         <div class="ds-scale__row"><code>--space-16</code><span data-token="--space-16"></span><span class="ds-scale__bar" style="--size: var(--space-16);"></span></div>
         <div class="ds-scale__row"><code>--space-20</code><span data-token="--space-20"></span><span class="ds-scale__bar" style="--size: var(--space-20);"></span></div>
         <div class="ds-scale__row"><code>--space-24</code><span data-token="--space-24"></span><span class="ds-scale__bar" style="--size: var(--space-24);"></span></div>
@@ -123,16 +127,16 @@
     </section>
     <section class="ds-section" id="rules"><h2><a href="#rules">Inside and between</a></h2>
       <ul>
-        <li><b>Inside</b> a component: ≤ <code>--space-6</code>. Icon to label <code>--space-1</code>–<code>--space-2</code>; label to input <code>--space-1</code>; between buttons <code>--space-3</code>; card and dialog padding <code>--space-6</code>; toast and alert padding <code>--space-4</code>.</li>
-        <li><b>Between</b> components: ≥ <code>--space-6</code>. Form fields <code>--space-4</code>–<code>--space-6</code>; page sections <code>--space-8</code>; directory columns <code>--space-12</code>; page bottom padding <code>--space-16</code> (clears the phone tab bar).</li>
-        <li>Card grids use <code>--space-6</code> rows × <code>--space-4</code> columns on phones and <code>--space-8</code> × <code>--space-6</code> from 768px.</li>
+        <li><b>Inside</b> a component: ≤ <code>--space-6</code>. Icon to label <code>--space-1</code>–<code>--space-2</code>; field help <code>--space-0-5</code> (2px) under its label; label to control <code>--space-2-5</code> (10px); between buttons <code>--space-2</code>–<code>--space-3</code>; card and dialog padding <code>--space-6</code>; toast and alert padding <code>--space-4</code>.</li>
+        <li><b>Between</b> components: ≥ <code>--space-6</code>. Form groups <code>--space-7</code> (28px); page sections <code>--space-14</code> (56px), and a ruled section adds <code>--space-8</code> (32px) of padding under its rule; directory groups <code>--space-10</code>. <code>.page</code> has <code>--space-6</code> (24px) of top padding, <code>--space-10</code> (40px) from 768px, and <code>--space-12</code> (48px) at the bottom.</li>
+        <li>Card grids use a <code>--space-8</code> (32px) row gap and <code>--layout-gutter</code> between columns: 16px, 24px from 640px.</li>
       </ul>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Padding by component size</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Size</th><th scope="col">Height</th><th scope="col">Horizontal padding</th><th scope="col">Font</th><th scope="col">Used by</th></tr></thead><tbody>
-        <tr><td>sm</td><td><code>--control-height-sm</code> 32px</td><td><code>--space-3</code> 12px</td><td><code>--font-size-sm</code></td><td>top-bar buttons, row actions, chips, menu items</td></tr>
-        <tr><td>md</td><td><code>--control-height-md</code> 44px</td><td><code>--space-4</code> 16px</td><td><code>--font-size-md</code></td><td>default buttons, inputs, selects</td></tr>
-        <tr><td>lg</td><td><code>--control-height-lg</code> 48px</td><td><code>--space-6</code> 24px</td><td><code>--font-size-lg</code></td><td>detail-page actions, hero search, auth forms</td></tr>
+        <tr><td>sm</td><td><code>--control-height-sm</code> 36px</td><td><code>--space-4</code> 16px (menu items <code>--space-3</code> 12px)</td><td><code>--font-size-sm</code></td><td>small buttons, chips, top-bar icon buttons, pagination, menu items</td></tr>
+        <tr><td>md</td><td><code>--control-height-md</code> 40px</td><td><code>--space-4</code> 16px</td><td><code>--font-size-sm</code></td><td>default buttons, top-bar search and nav links, tabs, small inputs</td></tr>
+        <tr><td>lg</td><td><code>--control-height-lg</code> 48px</td><td>buttons <code>--space-6</code> 24px (<code>--space-8</code> 32px when primary or danger); inputs <code>--space-4</code> 16px</td><td>buttons <code>--font-size-md</code>; inputs <code>--font-size-read</code></td><td>inputs, selects, large buttons, buttons in form actions, hero search</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="usage"><h2><a href="#usage">Usage</a></h2>
@@ -148,21 +152,25 @@
         <tbody>
           <tr><td>—</td><td><code>--space-0</code></td><td colspan="2"><span data-token="--space-0"></span></td></tr>
           <tr><td>2px  hairline gaps</td><td><code>--space-0-5</code></td><td colspan="2"><span data-token="--space-0-5"></span></td></tr>
-          <tr><td>4px  icon-to-label, label-to-input</td><td><code>--space-1</code></td><td colspan="2"><span data-token="--space-1"></span></td></tr>
-          <tr><td>8px  inside chips, between inline items</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
+          <tr><td>4px  icon-to-label</td><td><code>--space-1</code></td><td colspan="2"><span data-token="--space-1"></span></td></tr>
+          <tr><td>6px  icon-to-text in links, verified tick gap</td><td><code>--space-1-5</code></td><td colspan="2"><span data-token="--space-1-5"></span></td></tr>
+          <tr><td>8px  between chips, between buttons</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
+          <tr><td>10px media-tag padding, label-to-control</td><td><code>--space-2-5</code></td><td colspan="2"><span data-token="--space-2-5"></span></td></tr>
           <tr><td>12px compact padding, between buttons</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
           <tr><td>16px default padding, stack gap</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
           <tr><td>20px timeline rhythm, chip row offset</td><td><code>--space-5</code></td><td colspan="2"><span data-token="--space-5"></span></td></tr>
-          <tr><td>24px card and dialog padding, form gap</td><td><code>--space-6</code></td><td colspan="2"><span data-token="--space-6"></span></td></tr>
-          <tr><td>32px section gap</td><td><code>--space-8</code></td><td colspan="2"><span data-token="--space-8"></span></td></tr>
+          <tr><td>24px card and dialog padding</td><td><code>--space-6</code></td><td colspan="2"><span data-token="--space-6"></span></td></tr>
+          <tr><td>28px between form groups</td><td><code>--space-7</code></td><td colspan="2"><span data-token="--space-7"></span></td></tr>
+          <tr><td>32px card-grid row gap, ruled-section padding</td><td><code>--space-8</code></td><td colspan="2"><span data-token="--space-8"></span></td></tr>
           <tr><td>40px hero padding (desktop), split gap</td><td><code>--space-10</code></td><td colspan="2"><span data-token="--space-10"></span></td></tr>
-          <tr><td>48px empty-state padding, directory column gap</td><td><code>--space-12</code></td><td colspan="2"><span data-token="--space-12"></span></td></tr>
-          <tr><td>64px page bottom padding</td><td><code>--space-16</code></td><td colspan="2"><span data-token="--space-16"></span></td></tr>
+          <tr><td>48px page bottom padding, empty-state padding</td><td><code>--space-12</code></td><td colspan="2"><span data-token="--space-12"></span></td></tr>
+          <tr><td>56px between page sections</td><td><code>--space-14</code></td><td colspan="2"><span data-token="--space-14"></span></td></tr>
+          <tr><td>64px form and preview column gap</td><td><code>--space-16</code></td><td colspan="2"><span data-token="--space-16"></span></td></tr>
           <tr><td>80px</td><td><code>--space-20</code></td><td colspan="2"><span data-token="--space-20"></span></td></tr>
           <tr><td>96px off-screen offset (skip link)</td><td><code>--space-24</code></td><td colspan="2"><span data-token="--space-24"></span></td></tr>
-          <tr><td>32px  small buttons, chips, menu items</td><td><code>--control-height-sm</code></td><td colspan="2"><span data-token="--control-height-sm"></span></td></tr>
-          <tr><td>44px  default buttons and inputs</td><td><code>--control-height-md</code></td><td colspan="2"><span data-token="--control-height-md"></span></td></tr>
-          <tr><td>48px  large buttons, hero search</td><td><code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-lg"></span></td></tr>
+          <tr><td>36px  chips, small buttons, top-bar icon button</td><td><code>--control-height-sm</code></td><td colspan="2"><span data-token="--control-height-sm"></span></td></tr>
+          <tr><td>40px  default buttons, top-bar search and links</td><td><code>--control-height-md</code></td><td colspan="2"><span data-token="--control-height-md"></span></td></tr>
+          <tr><td>48px  inputs, page-level buttons and their icon buttons</td><td><code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-lg"></span></td></tr>
         </tbody>
       </table></div>
     </section>

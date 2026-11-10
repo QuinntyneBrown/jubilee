@@ -116,8 +116,8 @@
           <span class="ds-callout" style="left: 6%; top: 30%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 40%; top: 30%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 50%; top: 72%;" aria-hidden="true">3</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Box</b><small>20px (<code>--icon-size-md</code>) with <code>--radius-xs</code>, strong border; checked fills gold with an ink tick.</small></div></li>
-          <li><div><b>Label</b><small><code>.choice__text</code>: the accessible name; the whole <code>label.choice</code> is clickable and at least 24px tall.</small></div></li>
+          <li><div><b>Box</b><small>16px (<code>--checkbox-size</code>) with <code>--radius-xs</code> (4px) and a hairline <code>--color-fg-subtle</code> edge; checked fills green (<code>--color-success-solid</code>) with a <code>--color-fg-on-success</code> tick, white in light.</small></div></li>
+          <li><div><b>Label</b><small><code>.choice__text</code>, <code>--text-body-sm</code> in <code>--color-fg-secondary</code>: the accessible name; the whole <code>label.choice</code> is clickable and at least 24px tall.</small></div></li>
           <li><div><b>Description</b><small>Optional <code>small</code> in <code>--color-fg-muted</code>.</small></div></li>
         </ol>
       </div>
@@ -140,7 +140,7 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;fieldset&gt;&lt;legend&gt;What needs to change?&lt;/legend&gt;&lt;label class="choice"&gt;&lt;input type="checkbox" id="cb-all" aria-controls="cb-c1 cb-c2 cb-c3" data-state="indeterminate"&gt;&lt;span class="choice__text"&gt;All sections&lt;/span&gt;&lt;/label&gt;&lt;div class="stack stack--sm" style="padding-left: var(--space-8);"&gt;&lt;label class="choice"&gt;&lt;input type="checkbox" id="cb-c1" checked&gt;&lt;span class="choice__text"&gt;Tagline or description&lt;/span&gt;&lt;/label&gt;&lt;label class="choice"&gt;&lt;input type="checkbox" id="cb-c2" checked&gt;&lt;span class="choice__text"&gt;Photos&lt;/span&gt;&lt;/label&gt;&lt;label class="choice"&gt;&lt;input type="checkbox" id="cb-c3"&gt;&lt;span class="choice__text"&gt;Category&lt;/span&gt;&lt;/label&gt;&lt;/div&gt;&lt;/fieldset&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>One size: a 20px box in a row at least 24px tall (<code>--target-min</code>). Do not scale the box; scale the label text with its context.</p>
+      <p>One size: a 16px box in a row at least 24px tall (<code>--target-min</code>). Do not scale the box; scale the label text with its context.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Forced with <code>data-state</code> on the input; real pages use <code>:hover</code>, <code>:focus-visible</code>, <code>checked</code>, <code>disabled</code>, <code>indeterminate</code> and <code>aria-invalid</code>. Active keeps the hover look: the change happens on release.</p>
@@ -159,6 +159,8 @@
         <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><fieldset><legend>Offers</legend><label class="choice"><input type="checkbox" checked><span class="choice__text">Free quote</span></label><label class="choice"><input type="checkbox"><span class="choice__text">Emergency calls</span></label><label class="choice"><input type="checkbox" disabled><span class="choice__text">Open Saturdays</span></label></fieldset></div></div>
       </div>
       <ul>
+        <li><b>Hover</b> darkens the box edge to <code>--color-fg-default</code>.</li>
+        <li><b>Indeterminate</b> fills green like checked and shows a bar instead of a tick.</li>
         <li><b>Invalid</b> thickens the box edge in <code>--color-danger-solid</code>, and the field error under the label says what to do (“Agree to the statement of faith to join.”).</li>
         <li><b>Disabled</b> greys box and label; used while a form submits.</li>
       </ul>
@@ -170,7 +172,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Checked uses <code>--color-accent</code> fill with a <code>--color-accent-border</code> edge and <code>--color-fg-on-accent</code> tick, so the gold reads on cream and on the dark surface. Unchecked uses <code>--color-bg-surface</code> and <code>--color-border-strong</code>.</p>
+      <p>Checked uses a <code>--color-success-solid</code> fill and edge with a <code>--color-fg-on-success</code> tick: green with a white tick in light, a lighter green with an ink tick in dark. It is no longer gold. Unchecked uses <code>--color-bg-surface</code> and a <code>--color-fg-subtle</code> edge.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -187,26 +189,26 @@
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Box edge</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
-        <div class="ds-pair"><span>Box edge on page</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-canvas" data-min="3"></span></div>
-        <div class="ds-pair"><span>Checked edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
-        <div class="ds-pair"><span>Tick on gold</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Box edge</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Box edge on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-canvas" data-min="3"></span></div>
+        <div class="ds-pair"><span>Checked fill on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-solid|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Tick on green</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-success|--color-success-solid" data-min="3"></span></div>
+        <div class="ds-pair"><span>Label</span><span class="ds-pair__ratio" data-contrast="--color-fg-secondary|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Description</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Box edge</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
-        <div class="ds-pair"><span>Box edge on page</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-canvas" data-min="3"></span></div>
-        <div class="ds-pair"><span>Checked edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
-        <div class="ds-pair"><span>Tick on gold</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Box edge</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Box edge on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-canvas" data-min="3"></span></div>
+        <div class="ds-pair"><span>Checked fill on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-solid|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Tick on green</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-success|--color-success-solid" data-min="3"></span></div>
+        <div class="ds-pair"><span>Label</span><span class="ds-pair__ratio" data-contrast="--color-fg-secondary|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Description</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>Fill and edge transition over <code>--duration-fast</code>; reduced motion zeroes it.</p>
+      <p>Fill and edge transition over <code>--duration-fast</code> (150ms); reduced motion zeroes it.</p>
       <h3>Touch</h3>
       <p>The label row is at least 24px (<code>--target-min</code>) and the full label is clickable. In the filters sheet rows are spaced so each is effectively 44px.</p>
     </section>
@@ -229,16 +231,17 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Box fill / edge</td><td><code>--color-bg-surface</code> / <code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr>
-          <tr><td>Hover edge</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
-          <tr><td>Checked fill / edge / tick</td><td><code>--color-accent</code> / <code>--color-accent-border</code> / <code>--color-fg-on-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td></tr>
+          <tr><td>Box fill / edge</td><td><code>--color-bg-surface</code> / <code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
+          <tr><td>Hover edge</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Checked fill and edge / tick</td><td><code>--color-success-solid</code> / <code>--color-fg-on-success</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-success" data-swatch></i><span data-token="--color-fg-on-success"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-success" data-swatch></i><span data-token="--color-fg-on-success"></span></span></td></tr>
+          <tr><td>Label text</td><td><code>--color-fg-secondary</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-secondary" data-swatch></i><span data-token="--color-fg-secondary"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-secondary" data-swatch></i><span data-token="--color-fg-secondary"></span></span></td></tr>
           <tr><td>Invalid edge</td><td><code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
           <tr><td>Disabled fill / edge / label</td><td><code>--color-bg-subtle</code> / <code>--color-border-default</code> / <code>--color-fg-disabled</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span></td></tr>
-          <tr><td>Box size</td><td><code>--icon-size-md</code></td><td colspan="2"><span data-token="--icon-size-md"></span></td></tr>
+          <tr><td>Box size</td><td><code>--checkbox-size</code></td><td colspan="2"><span data-token="--checkbox-size"></span></td></tr>
           <tr><td>Box radius</td><td><code>--radius-xs</code></td><td colspan="2"><span data-token="--radius-xs"></span></td></tr>
           <tr><td>Row height</td><td><code>--target-min</code></td><td colspan="2"><span data-token="--target-min"></span></td></tr>
           <tr><td>Gap</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
-          <tr><td>Transition</td><td><code>--duration-fast</code></td><td colspan="2"><span data-token="--duration-fast"></span></td></tr>
+          <tr><td>Transition</td><td><code>--duration-fast</code> / <code>--ease-standard</code></td><td colspan="2"><span data-token="--duration-fast"></span> / <span data-token="--ease-standard"></span></td></tr>
         </tbody>
       </table></div>
     </section>

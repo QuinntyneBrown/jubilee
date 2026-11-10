@@ -108,8 +108,8 @@
         <li><b>Action chip</b>: a plain <code>&lt;button class="chip"&gt;</code> that does one thing, such as the suggested openers in an empty conversation ("Can we meet by video?").</li>
         <li><b>Choice chip</b>: a <code>&lt;label class="chip"&gt;</code> wrapping a visually hidden radio, for one-of-many choices like size S–2XL on an order request.</li>
         <li><b>Removable chip</b>: a chip with a <code>.remove</code> button, for applied filters that can be dismissed one by one.</li>
-        <li><b>Chip row</b> (<code>.chip-row</code>): a list of chips that scrolls sideways on phones and wraps from 768px. <code>.chip-row--plain</code> drops the top margin.</li>
-        <li><b>Tag</b> (<code>.tag</code>): a static, square-cornered label for credentials and memberships. Not pressable.</li>
+        <li><b>Chip row</b> (<code>.chip-row</code>): a list of chips that scrolls sideways on phones and wraps from 640px. <code>.chip-row--plain</code> drops the top margin.</li>
+        <li><b>Tag</b> (<code>.tag</code>): a static label with 8px corners for credentials and memberships. Not pressable.</li>
       </ul>
     </section>
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
@@ -119,9 +119,9 @@
           <span class="ds-callout" style="left: 30%; top: 50%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 86%; top: 50%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 2%; top: 10%;" aria-hidden="true">3</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Label</b><small><code>--text-label</code>, one to three words, sentence case.</small></div></li>
+          <li><div><b>Label</b><small><code>--text-label</code> (14px medium), one to three words, sentence case.</small></div></li>
           <li><div><b>Remove button (optional)</b><small>A 24px (<code>--target-min</code>) round button with a 16px close icon and an <code>aria-label</code> naming the filter.</small></div></li>
-          <li><div><b>Container</b><small>Pill (<code>--radius-full</code>), 32px tall (<code>--control-height-sm</code>), hairline <code>--chip-border</code>, <code>--space-3</code> padding.</small></div></li>
+          <li><div><b>Container</b><small>Pill (<code>--radius-full</code>), 36px tall (<code>--control-height-sm</code>), <code>--space-4</code> (16px) side padding, filled with <code>--color-bg-subtle</code> (ink 5%). No visible border: <code>--chip-border</code> is transparent.</small></div></li>
         </ol>
       </div>
     </section>
@@ -147,7 +147,7 @@
       <div class="ds-example"><div class="ds-example__canvas">
 <fieldset><legend>Size</legend><div class="cluster" style="gap: var(--space-2);"><label class="chip" style="position: relative;"><input type="radio" name="chip-v" id="chip-v-s" class="visually-hidden">S</label><label class="chip" style="position: relative;" data-state="selected"><input type="radio" name="chip-v" id="chip-v-m" class="visually-hidden" checked>M</label><label class="chip" style="position: relative;"><input type="radio" name="chip-v" id="chip-v-l" class="visually-hidden">L</label><label class="chip" style="position: relative;"><input type="radio" name="chip-v" id="chip-v-xl" class="visually-hidden">XL</label><label class="chip" style="position: relative;"><input type="radio" name="chip-v" id="chip-v-2xl" class="visually-hidden">2XL</label></div></fieldset>
       </div>
-        <div class="ds-example__caption"><span>Size on the Faith heavyweight tee order request: radios in labels. The checked chip is forced with <code>data-state="selected"</code> here; see the drift note.</span></div>
+        <div class="ds-example__caption"><span>Size on the Faith heavyweight tee order request: radios in labels. The checked chip is forced with <code>data-state="selected"</code> here; in product <code>.chip:has(input:checked)</code> gives the same look.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;fieldset&gt;&lt;legend&gt;Size&lt;/legend&gt;&lt;div class="cluster" style="gap: var(--space-2);"&gt;&lt;label class="chip" style="position: relative;"&gt;&lt;input type="radio" name="chip-v" id="chip-v-s" class="visually-hidden"&gt;S&lt;/label&gt;&lt;label class="chip" style="position: relative;" data-state="selected"&gt;&lt;input type="radio" name="chip-v" id="chip-v-m" class="visually-hidden" checked&gt;M&lt;/label&gt;&lt;label class="chip" style="position: relative;"&gt;&lt;input type="radio" name="chip-v" id="chip-v-l" class="visually-hidden"&gt;L&lt;/label&gt;&lt;label class="chip" style="position: relative;"&gt;&lt;input type="radio" name="chip-v" id="chip-v-xl" class="visually-hidden"&gt;XL&lt;/label&gt;&lt;label class="chip" style="position: relative;"&gt;&lt;input type="radio" name="chip-v" id="chip-v-2xl" class="visually-hidden"&gt;2XL&lt;/label&gt;&lt;/div&gt;&lt;/fieldset&gt;</code></pre></details></div>
       <h3>Removable and tags</h3>
       <div class="ds-example"><div class="ds-example__canvas">
@@ -160,7 +160,7 @@
       <div class="ds-example"><div class="ds-example__canvas">
 <button class="chip" type="button" aria-pressed="true">Emergency calls</button><button class="chip chip--sm" type="button" aria-pressed="true">Emergency calls</button><button class="chip" type="button" aria-pressed="false">Free quote</button><button class="chip chip--sm" type="button" aria-pressed="false">Free quote</button>
       </div>
-        <div class="ds-example__caption"><span>Default 32px (<code>--control-height-sm</code>) and small 24px (<code>.chip--sm</code>, <code>--target-min</code>, <code>--font-size-xs</code>). Use small only inside dense cards with 8px gaps.</span></div>
+        <div class="ds-example__caption"><span>Default 36px (<code>--control-height-sm</code>) with 16px side padding and 14px text; small 24px (<code>.chip--sm</code>, <code>--target-min</code>, 10px side padding, <code>--font-size-xs</code>). Use small only inside dense cards with 8px gaps.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;button class="chip" type="button" aria-pressed="true"&gt;Emergency calls&lt;/button&gt;&lt;button class="chip chip--sm" type="button" aria-pressed="true"&gt;Emergency calls&lt;/button&gt;&lt;button class="chip" type="button" aria-pressed="false"&gt;Free quote&lt;/button&gt;&lt;button class="chip chip--sm" type="button" aria-pressed="false"&gt;Free quote&lt;/button&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
@@ -181,25 +181,26 @@
         <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="cluster" role="group" aria-label="Filters"><button class="chip" type="button" aria-pressed="false">Free quote</button><button class="chip" type="button" aria-pressed="true">Emergency calls</button><button class="chip" type="button" aria-pressed="true">Open Saturdays</button><button class="chip" type="button" aria-pressed="false">Serves Scarborough</button></div><span class="tag">CKA® · CFP® · CLU®</span></div></div>
       </div>
       <ul>
-        <li><b>Selected</b> is gold (<code>--color-accent</code>) with ink text in both themes, matching the primary button; the gold edge (<code>--color-accent-border</code>) keeps the pill visible on cream.</li>
+        <li><b>Default</b> is an ink-5% fill (<code>--color-bg-subtle</code>) with no border; <b>hover</b> and <b>active</b> deepen it to <code>--color-bg-subtle-hover</code> (ink 10%).</li>
+        <li><b>Selected</b> is gold (<code>--color-accent</code>) with ink text in both themes, matching the primary button. It has no edge, and hover does not change it.</li>
         <li><b>No results</b>: when the pressed filters return nothing, keep them pressed and offer "Clear filters" in the empty state, as <em>Home &amp; property / no-results</em> does.</li>
-        <li><b>Disabled</b> chips are rare; prefer hiding a filter that cannot apply. Link chips use <code>aria-disabled="true"</code> and drop the <code>href</code>.</li>
+        <li><b>Disabled</b> chips drop to 70% opacity. They are rare; prefer hiding a filter that cannot apply. Link chips use <code>aria-disabled="true"</code> and drop the <code>href</code>.</li>
       </ul>
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li><code>.chip-row</code> scrolls horizontally below 768px (no scrollbar, items keep their width) and wraps from 768px. The row bleeds by <code>--space-1</code> so focus rings are not clipped.</li>
+        <li><code>.chip-row</code> scrolls horizontally below 640px (no scrollbar, items keep their width) and wraps from 640px. The row pads by <code>--space-1</code> so focus rings are not clipped.</li>
         <li>Filter chip groups are desktop only on category pages (<code>.only-desktop</code>); phones get a <em>Filters · 3</em> button that opens the filters dialog, where the count matches the pressed chips.</li>
         <li>Chip labels never wrap or truncate. If a label does not fit at 360px inside a scrolling row, that is fine; inside a wrapping cluster, shorten it.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Chips read four component tokens (<code>--chip-bg</code>, <code>--chip-fg</code>, <code>--chip-border</code>, <code>--chip-bg-hover</code>) that alias semantic tokens. The selected state overrides them to the accent set. Re-skin a chip by overriding the component tokens, not <code>.chip</code>.</p>
+      <p>Chips read four component tokens (<code>--chip-bg</code>, <code>--chip-fg</code>, <code>--chip-border</code>, <code>--chip-bg-hover</code>) that alias semantic tokens. By default the fill is <code>--color-bg-subtle</code>, the hover fill <code>--color-bg-subtle-hover</code> and the border transparent. The selected state sets the fill to gold and keeps the border transparent. On the brand band (<code>.hero</code>, <code>.band</code>) chips are cream 10% with cream-80% labels. Re-skin a chip by overriding the component tokens, not <code>.chip</code>.</p>
       <pre><code>.chip[aria-pressed="true"], .chip[aria-current="page"] {
-  --chip-bg: var(--color-accent); --chip-bg-hover: var(--color-accent-hover);
-  --chip-border: var(--color-accent-border); --chip-fg: var(--color-fg-on-accent);
+  --chip-bg: var(--color-accent); --chip-bg-hover: var(--color-accent);
+  --chip-border: transparent; --chip-fg: var(--color-fg-on-accent);
 }</code></pre>
-      <p>Tags use <code>--color-bg-surface</code>, <code>--color-border-default</code> and <code>--radius-md</code>: square-ish corners tell people they are not pressable.</p>
+      <p>Tags use <code>--color-bg-surface</code>, <code>--color-border-default</code> and <code>--radius-sm</code> (8px): squarer corners and an edge tell people they are not pressable.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -218,28 +219,29 @@
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Label on chip</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Label on hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Chip edge on surface</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Label on chip</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Label on hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle-hover" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Tag label on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Label on selected</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Label on selected hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent-hover" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Selected edge on page</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
+        <div class="ds-pair"><span>Label on brand-band chip</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-strong|--color-bg-on-brand-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Label on brand-band chip (hover)</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-strong|--color-bg-on-brand-subtle-hover" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Focus ring on surface</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Label on chip</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Label on hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Chip edge on surface</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Label on chip</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Label on hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle-hover" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Tag label on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Label on selected</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Label on selected hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent-hover" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Selected edge on page</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
+        <div class="ds-pair"><span>Label on brand-band chip</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-strong|--color-bg-on-brand-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Label on brand-band chip (hover)</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-strong|--color-bg-on-brand-subtle-hover" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Focus ring on surface</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
       </div>
+      <p>Chips have no edge. The ink-5% fill and the gold selected fill are both well under 3:1 against the cream page (gold is about 1.5:1), so a chip is read from its label and shape, and the selected state from the fill change plus <code>aria-pressed</code>, <code>aria-current</code> or the checked radio. This follows the design reference.</p>
       <h3>Motion</h3>
-      <p>Background transitions over <code>--duration-fast</code>; reduced motion makes it instant. The chip row scrolls with the page’s smooth scrolling, which is off under reduced motion.</p>
+      <p>Background and label colour transition over <code>--duration-fast</code> (150ms); reduced motion makes it instant. The chip row scrolls with the page’s smooth scrolling, which is off under reduced motion.</p>
       <h3>Touch</h3>
-      <p>Default chips are 32px with 8px gaps, meeting the 24px target-spacing rule; small chips are 24px and need the same gaps. Remove buttons are 24px. In a scrolling row on phones, chips are spaced <code>--space-2</code>.</p>
+      <p>Default chips are 36px tall, above the 24px minimum target (2.5.8); on coarse pointers each chip gets an invisible touch hit area at least 44px tall (<code>--target-comfortable</code>). Small chips are 24px and need 8px gaps. Remove buttons are 24px. In a scrolling row on phones, chips are spaced <code>--space-2</code>.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -253,7 +255,7 @@
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><div class="cluster" role="group" aria-label="Filters"><button class="chip" type="button" aria-pressed="false">Free quote</button><button class="chip" type="button" aria-pressed="true">Emergency calls</button><button class="chip" type="button" aria-pressed="true">Open Saturdays</button><button class="chip" type="button" aria-pressed="false">Serves Scarborough</button></div></div><figcaption>Filter chips in a labelled group, state in <code>aria-pressed</code>.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div class="cluster"><span class="chip">Free quote</span><span class="chip" data-state="selected">Emergency calls</span></div></div><figcaption>Spans styled as chips: they look pressable but cannot be focused or toggled, and the selected state is invisible to assistive tech.</figcaption></figure>
-        <figure class="ds-do"><div class="ds-example__canvas"><span class="tag">CKA® · CFP® · CLU®</span></div><figcaption>Credentials are tags: square corners, not pressable.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><span class="tag">CKA® · CFP® · CLU®</span></div><figcaption>Credentials are tags: 8px corners and an edge, not pressable.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><button class="chip" type="button">CKA® · CFP® · CLU®</button></div><figcaption>A credential as a chip invites a press that does nothing.</figcaption></figure>
       </div>
     </section>
@@ -261,19 +263,22 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Background / hover</td><td><code>--color-bg-surface</code> / <code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
+          <tr><td>Background / hover</td><td><code>--color-bg-subtle</code> / <code>--color-bg-subtle-hover</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span></td></tr>
           <tr><td>Active background</td><td><code>--color-bg-subtle-hover</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span></td></tr>
-          <tr><td>Label / border</td><td><code>--color-fg-default</code> / <code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr>
-          <tr><td>Selected background / hover</td><td><code>--color-accent</code> / <code>--color-accent-hover</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-hover" data-swatch></i><span data-token="--color-accent-hover"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-hover" data-swatch></i><span data-token="--color-accent-hover"></span></span></td></tr>
-          <tr><td>Selected edge / label</td><td><code>--color-accent-border</code> / <code>--color-fg-on-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td></tr>
+          <tr><td>Label</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Selected background</td><td><code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
+          <tr><td>Selected label</td><td><code>--color-fg-on-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td></tr>
           <tr><td>Height / small height</td><td><code>--control-height-sm</code> / <code>--target-min</code></td><td colspan="2"><span data-token="--control-height-sm"></span> / <span data-token="--target-min"></span></td></tr>
-          <tr><td>Padding / small padding</td><td><code>--space-3</code> / <code>--space-2</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-2"></span></td></tr>
+          <tr><td>Side padding / small side padding</td><td><code>--space-4</code> / <code>--space-2-5</code></td><td colspan="2"><span data-token="--space-4"></span> / <span data-token="--space-2-5"></span></td></tr>
+          <tr><td>Icon-to-label gap</td><td><code>--space-1-5</code></td><td colspan="2"><span data-token="--space-1-5"></span></td></tr>
+          <tr><td>Touch hit area (coarse pointers)</td><td><code>--target-comfortable</code></td><td colspan="2"><span data-token="--target-comfortable"></span></td></tr>
           <tr><td>Gap in a row</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>Label type</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
           <tr><td>Transition</td><td><code>--duration-fast</code> / <code>--ease-standard</code></td><td colspan="2"><span data-token="--duration-fast"></span> / <span data-token="--ease-standard"></span></td></tr>
-          <tr><td>Tag border / radius</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
-          <tr><td>Tag radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
+          <tr><td>Tag border</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Tag radius</td><td><code>--radius-sm</code></td><td colspan="2"><span data-token="--radius-sm"></span></td></tr>
+          <tr><td>Tag type / padding</td><td><code>--text-meta</code> / <code>--space-1-5</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--text-meta"></span> / <span data-token="--space-1-5"></span> / <span data-token="--space-3"></span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -294,9 +299,9 @@
 
 &lt;span class="tag"&gt;CKA® · CFP® · CLU®&lt;/span&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.chip</code></td><td>Base chip on a button, link or label.</td></tr>
+        <tr><td><code>.chip</code></td><td>Base chip on a button, link or label: 36px, ink-5% fill, no border.</td></tr>
         <tr><td><code>.chip--sm</code></td><td>24px chip.</td></tr>
-        <tr><td><code>aria-pressed="true"</code> / <code>aria-current="page"</code> / <code>aria-selected="true"</code></td><td>Selected (gold).</td></tr>
+        <tr><td><code>aria-pressed="true"</code> / <code>aria-current="page"</code> / <code>aria-selected="true"</code></td><td>Selected (gold, no edge).</td></tr>
         <tr><td><code>disabled</code> / <code>aria-disabled="true"</code></td><td>Disabled.</td></tr>
         <tr><td><code>.remove</code></td><td>Remove button inside a chip.</td></tr>
         <tr><td><code>.chip-row</code> <code>.chip-row--plain</code></td><td>Scrolling, then wrapping, list of chips.</td></tr>
@@ -314,7 +319,7 @@
         <li><a href="../../mocks/dialogs/order-request/default.html">dialogs/order-request/default</a> (size choice chips)</li>
         <li><a href="../../mocks/pages/business/default.html">pages/business/default</a> (credential tags)</li>
       </ul>
-      <p>Drift fixed during extraction: the kit’s selected chip was gold-subtle while the brand override made it gold; it is now gold (<code>--color-accent</code>) with ink text everywhere. Choice chips (55 uses) wrap a radio in <code>&lt;label class="chip" style="position: relative"&gt;</code>, but components.css has no <code>:has(input:checked)</code> or <code>:has(input:focus-visible)</code> rule for chips, so the checked size and keyboard focus are invisible in the product; reported for a CSS fix, shown here with <code>data-state</code>. Removable chips are in the kit but in no mock. Filter groups were correctly labelled; the suggested-opener chips had no group label, which is acceptable because they sit under a heading.</p>
+      <p>Drift fixed during extraction: the kit’s selected chip was gold-subtle while the brand override made it gold; it is now gold (<code>--color-accent</code>) with ink text everywhere. Choice chips (55 uses) wrap a radio in <code>&lt;label class="chip" style="position: relative"&gt;</code>. components.css had no <code>:has(input:checked)</code> or <code>:has(input:focus-visible)</code> rule for chips, so the checked size and keyboard focus were invisible; both rules are now there, and <code>.chip:has(input)</code> sets <code>position: relative</code>, so the inline style is no longer needed. Removable chips are in the kit but in no mock. Filter groups were correctly labelled; the suggested-opener chips had no group label, which is acceptable because they sit under a heading.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

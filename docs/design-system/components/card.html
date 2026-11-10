@@ -118,8 +118,8 @@
           <span class="ds-callout" style="left: 8%; top: 8%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 22%; top: 20%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 30%; top: 46%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 30%; top: 80%;" aria-hidden="true">4</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Surface</b><small><code>--color-bg-surface</code>, hairline <code>--color-border-default</code> edge, <code>--radius-lg</code>, <code>--shadow-1</code>.</small></div></li>
-          <li><div><b>Title</b><small><code>.card__title</code> on a real heading (h2 or h3 for the page outline), <code>--text-h4</code>; it names the section via <code>aria-labelledby</code>.</small></div></li>
+          <li><div><b>Surface</b><small><code>--color-bg-surface</code>, hairline <code>--color-border-default</code> edge (ink 10%), <code>--radius-lg</code> (16px), no shadow.</small></div></li>
+          <li><div><b>Title</b><small><code>.card__title</code> on a real heading (h2 or h3 for the page outline), <code>--text-subhead</code> (14px semibold); it names the section via <code>aria-labelledby</code>.</small></div></li>
           <li><div><b>Content</b><small>Anything: a description list, rows, a timeline. Padding <code>--space-6</code> on every side.</small></div></li>
           <li><div><b>Footer (optional)</b><small><code>.card__footer</code>: ruled top edge, <code>--space-4</code> above and inside, actions in a row.</small></div></li>
         </ol>
@@ -160,7 +160,7 @@
         <div class="card-grid" style="width: 100%; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));"><a class="card card--interactive" href="../../mocks/pages/business/default.html" style="display: block; color: inherit; text-decoration: none;"><span class="card__title" style="display: block;">WaterWorks Plumbing &amp; Drains</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">Drains, leaks and water heaters across the east end.</span></a>
         <div class="card card--selected"><span class="card__title" style="display: block;">Discovery meeting</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">30 min · Free</span></div></div>
       </div>
-        <div class="ds-example__caption"><span>One link wraps the whole card; the selected card gets a gold edge. Neither appears in the mocks: choice cards (<code>.choice-card</code>) cover selection in forms.</span></div>
+        <div class="ds-example__caption"><span>One link wraps the whole card; the selected card gets a 2px ink edge. Neither appears in the mocks: choice cards (<code>.choice-card</code>) cover selection in forms.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="card-grid" style="width: 100%; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));"&gt;&lt;a class="card card--interactive" href="../../mocks/pages/business/default.html" style="display: block; color: inherit; text-decoration: none;"&gt;&lt;span class="card__title" style="display: block;"&gt;WaterWorks Plumbing &amp;amp; Drains&lt;/span&gt;&lt;span class="text-muted" style="display: block; margin-top: var(--space-1);"&gt;Drains, leaks and water heaters across the east end.&lt;/span&gt;&lt;/a&gt;
 &lt;div class="card card--selected"&gt;&lt;span class="card__title" style="display: block;"&gt;Discovery meeting&lt;/span&gt;&lt;span class="text-muted" style="display: block; margin-top: var(--space-1);"&gt;30 min · Free&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
@@ -182,7 +182,7 @@
         <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th><th scope="col">Selected</th></tr></thead>
         <tbody>
           <tr><th scope="row">Static</th><td><div class="ds-cell-wide"><section class="card" aria-labelledby="cs-d"><h3 id="cs-d" class="card__title">Details</h3><dl class="dl" style="margin-top: var(--space-4);"><dt>What you need</dt><dd>Kitchen drain is slow and gurgling.</dd><dt>Where</dt><dd>East York, M4C</dd></dl></section></div></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">No hover: a static card is not a target.</span></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">Its links and buttons take focus, not the card.</span></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">Not styled.</span></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">No disabled card; disable the actions inside.</span></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">Not used.</span></td></tr>
-          <tr><th scope="row">Interactive</th><td><div class="ds-cell-wide"><a class="card card--interactive" href="../../mocks/pages/business/default.html" style="display: block; color: inherit; text-decoration: none;"><span class="card__title" style="display: block;">WaterWorks Plumbing &amp; Drains</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">Drains, leaks and water heaters across the east end.</span></a></div></td><td><div class="ds-cell-wide"><a class="card card--interactive" href="../../mocks/pages/business/default.html" data-state="hover" style="display: block; color: inherit; text-decoration: none;"><span class="card__title" style="display: block;">WaterWorks Plumbing &amp; Drains</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">Drains, leaks and water heaters across the east end.</span></a></div></td><td><div class="ds-cell-wide"><a class="card card--interactive" href="../../mocks/pages/business/default.html" data-state="focus" style="display: block; color: inherit; text-decoration: none;"><span class="card__title" style="display: block;">WaterWorks Plumbing &amp; Drains</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">Drains, leaks and water heaters across the east end.</span></a></div></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">No pressed style; the 1px lift drops back on release.</span></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">Remove the link instead of disabling it.</span></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">See selected row.</span></td></tr>
+          <tr><th scope="row">Interactive</th><td><div class="ds-cell-wide"><a class="card card--interactive" href="../../mocks/pages/business/default.html" style="display: block; color: inherit; text-decoration: none;"><span class="card__title" style="display: block;">WaterWorks Plumbing &amp; Drains</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">Drains, leaks and water heaters across the east end.</span></a></div></td><td><div class="ds-cell-wide"><a class="card card--interactive" href="../../mocks/pages/business/default.html" data-state="hover" style="display: block; color: inherit; text-decoration: none;"><span class="card__title" style="display: block;">WaterWorks Plumbing &amp; Drains</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">Drains, leaks and water heaters across the east end.</span></a></div></td><td><div class="ds-cell-wide"><a class="card card--interactive" href="../../mocks/pages/business/default.html" data-state="focus" style="display: block; color: inherit; text-decoration: none;"><span class="card__title" style="display: block;">WaterWorks Plumbing &amp; Drains</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">Drains, leaks and water heaters across the east end.</span></a></div></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">No pressed style.</span></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">Remove the link instead of disabling it.</span></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">See selected row.</span></td></tr>
           <tr><th scope="row">Selected</th><td><div class="ds-cell-wide"><div class="card card--selected"><span class="card__title" style="display: block;">Discovery meeting</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">30 min · Free</span></div></div></td><td><div class="ds-cell-wide"><div class="card card--selected" data-state="hover"><span class="card__title" style="display: block;">Discovery meeting</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">30 min · Free</span></div></div></td><td><div class="ds-cell-wide"><div class="card card--selected" data-state="focus"><span class="card__title" style="display: block;">Discovery meeting</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">30 min · Free</span></div></div></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">Not styled.</span></td><td><span class="text-caption" style="display: block; min-width: calc(var(--space-24) * 1.5);">Not used.</span></td><td><div class="ds-cell-wide"><div class="card" aria-selected="true"><span class="card__title" style="display: block;">Discovery meeting</span><span class="text-muted" style="display: block; margin-top: var(--space-1);">30 min · Free</span></div></div></td></tr>
         </tbody>
       </table></div>
@@ -192,7 +192,8 @@
         <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="stack" style="padding: var(--space-4);"><section class="card" aria-labelledby="card-th-d"><h3 id="card-th-d" class="card__title">Details</h3><dl class="dl" style="margin-top: var(--space-4);"><dt>What you need</dt><dd>Kitchen drain is slow and gurgling.</dd><dt>Where</dt><dd>East York, M4C</dd></dl></section><dl class="dl well"><dt>Customer</dt><dd>Samuel Park</dd><dt>Order</dt><dd>Custom church team tee × 24</dd><dt>Needed by</dt><dd>Fri 27 Nov</dd><dt>Total</dt><dd class="price">$528.00 + tax</dd></dl></div></div></div>
       </div>
       <ul>
-        <li><b>Hover</b> on an interactive card raises it to <code>--shadow-2</code>, strengthens the edge and lifts it 1px.</li>
+        <li><b>Hover</b> on an interactive card only darkens the edge to <code>--color-fg-subtle</code>. The card does not lift and gains no shadow.</li>
+        <li><b>Selected</b> draws a 2px ink edge: the border turns <code>--color-fg-default</code> and a 1px ring in the same colour sits outside it.</li>
         <li><b>Loading</b> cards are drawn with the <a href="../components/skeleton.html">Skeleton</a> shapes in the same card, so the layout does not jump.</li>
         <li><b>Selected</b> uses <code>aria-selected="true"</code> only inside a listbox or grid; elsewhere the selection belongs to a radio inside the card.</li>
       </ul>
@@ -206,8 +207,8 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Cards read only semantic tokens. In dark mode the surface is a warm charcoal one step above the canvas, the hairline edge carries the separation and the shadow is weaker; the well drops one step below the surface.</p>
-      <pre><code>.card { background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); box-shadow: var(--shadow-1); }
+      <p>Cards read only semantic tokens. In dark mode the surface is a warm charcoal one step above the canvas, and the hairline edge carries the separation; there is no shadow in either theme. The well drops one step below the surface.</p>
+      <pre><code>.card { background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); }
 .well { background: var(--color-bg-surface-sunken); }
 .danger-zone { border-color: var(--color-danger-border); }</code></pre>
     </section>
@@ -231,7 +232,7 @@
         <div class="ds-pair"><span>Muted text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text in a well</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-sunken" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Muted text in a well</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-sunken" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Selected edge on page</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
+        <div class="ds-pair"><span>Selected edge on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="3"></span></div>
         <div class="ds-pair"><span>Focus ring on canvas</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
@@ -239,14 +240,14 @@
         <div class="ds-pair"><span>Muted text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text in a well</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-sunken" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Muted text in a well</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-sunken" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Selected edge on page</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
+        <div class="ds-pair"><span>Selected edge on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="3"></span></div>
         <div class="ds-pair"><span>Focus ring on canvas</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>Only the interactive card moves: shadow, edge and a 1px lift over <code>--duration-fast</code>. Reduced motion zeroes the duration and removes the lift.</p>
+      <p>Nothing moves. The interactive card's edge colour changes over <code>--duration-fast</code> (150ms); reduced motion zeroes the duration.</p>
       <h3>Touch</h3>
-      <p>An interactive card is one large target. Actions in a card footer are 44px buttons with <code>--space-3</code> between them.</p>
+      <p>An interactive card is one large target. Actions in a card footer are 40px buttons, with a 44px touch hit area on coarse pointers, and <code>--space-3</code> between them.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -261,7 +262,7 @@
         <figure class="ds-do"><div class="ds-example__canvas"><section class="card" aria-labelledby="dd-c1" style="width: 100%;"><h3 id="dd-c1" class="card__title">Sign-in and security</h3><p class="text-muted">Password changed 14 Oct 2026</p></section></div><figcaption>Width comes from the layout (<code>.container--narrow</code>), and the title is a real heading.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div class="card" style="width: 100%; max-width: 42rem;"><b>Sign-in and security</b><p class="text-muted">Password changed 14 Oct 2026</p></div></div><figcaption>An inline <code>max-width: 42rem</code> (40 times in the mocks) and a bold span for a title. Screen readers cannot jump to it.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><a class="card card--interactive" href="../../mocks/pages/business/default.html" style="display: block; width: 100%; color: inherit; text-decoration: none;"><span class="card__title" style="display: block;">WaterWorks Plumbing &amp; Drains</span><span class="text-muted">Drains and leaks, east end</span></a></div><figcaption>An interactive card is a single link with one name.</figcaption></figure>
-        <figure class="ds-dont"><div class="ds-example__canvas"><div class="card" style="width: 100%;"><div class="card" style="padding: var(--space-4);">Nested card</div></div></div><figcaption>A card inside a card doubles the edge and shadow. Use a <code>.well</code> for an inner panel.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="card" style="width: 100%;"><div class="card" style="padding: var(--space-4);">Nested card</div></div></div><figcaption>A card inside a card doubles the edge. Use a <code>.well</code> for an inner panel.</figcaption></figure>
       </div>
     </section>
     <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
@@ -272,15 +273,14 @@
           <tr><td>Edge</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
           <tr><td>Edge width</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr>
-          <tr><td>Shadow / hover shadow</td><td><code>--shadow-1</code> / <code>--shadow-2</code></td><td colspan="2"><span data-token="--shadow-1"></span> / <span data-token="--shadow-2"></span></td></tr>
-          <tr><td>Hover edge</td><td><code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr>
+          <tr><td>Hover edge</td><td><code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
           <tr><td>Padding / compact</td><td><code>--space-6</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-6"></span> / <span data-token="--space-4"></span></td></tr>
-          <tr><td>Title</td><td><code>--text-h4</code></td><td colspan="2"><span data-token="--text-h4"></span></td></tr>
-          <tr><td>Selected edge</td><td><code>--color-accent-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td></tr>
+          <tr><td>Title</td><td><code>--text-subhead</code></td><td colspan="2"><span data-token="--text-subhead"></span></td></tr>
+          <tr><td>Selected edge (border and 1px ring)</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
           <tr><td>Well background</td><td><code>--color-bg-surface-sunken</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td></tr>
           <tr><td>Well radius / padding</td><td><code>--radius-md</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--radius-md"></span> / <span data-token="--space-4"></span></td></tr>
           <tr><td>Danger zone edge</td><td><code>--color-danger-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-border" data-swatch></i><span data-token="--color-danger-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-border" data-swatch></i><span data-token="--color-danger-border"></span></span></td></tr>
-          <tr><td>Transition</td><td><code>--duration-fast</code></td><td colspan="2"><span data-token="--duration-fast"></span></td></tr>
+          <tr><td>Transition</td><td><code>--duration-fast</code> / <code>--ease-standard</code></td><td colspan="2"><span data-token="--duration-fast"></span> / <span data-token="--ease-standard"></span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -297,13 +297,13 @@
 &lt;dl class="dl well"&gt;…&lt;/dl&gt;
 &lt;section class="card stack danger-zone" aria-labelledby="dz"&gt;…&lt;/section&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.card</code></td><td>Surface, edge, radius, shadow, 24px padding.</td></tr>
-        <tr><td><code>.card__title</code></td><td>Card heading style (<code>--text-h4</code>); put it on a heading element.</td></tr>
+        <tr><td><code>.card</code></td><td>Surface, edge, 16px radius, 24px padding. No shadow.</td></tr>
+        <tr><td><code>.card__title</code></td><td>Card heading style (<code>--text-subhead</code>); put it on a heading element.</td></tr>
         <tr><td><code>.card__header</code></td><td>Title and one action on a row (kit).</td></tr>
         <tr><td><code>.card__footer</code></td><td>Ruled action row.</td></tr>
         <tr><td><code>.card--list</code> / <code>.card--flush</code></td><td>No padding; rows or media run to the edge.</td></tr>
-        <tr><td><code>.card--interactive</code></td><td>Whole card is one link: hover lift (kit).</td></tr>
-        <tr><td><code>.card--selected</code> / <code>aria-selected="true"</code></td><td>Gold selected edge (kit).</td></tr>
+        <tr><td><code>.card--interactive</code></td><td>Whole card is one link: the edge darkens on hover (kit).</td></tr>
+        <tr><td><code>.card--selected</code> / <code>aria-selected="true"</code></td><td>2px ink selected edge (kit).</td></tr>
         <tr><td><code>.well</code></td><td>Sunken inner panel.</td></tr>
         <tr><td><code>.danger-zone</code></td><td>Red edge for the destructive settings group.</td></tr>
         <tr><td><code>data-state="hover|focus|selected"</code></td><td>Documentation only: forces a state.</td></tr>

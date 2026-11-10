@@ -101,7 +101,7 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#shadows">Shadow levels</a></li><li><a href="#surfaces">Surface hierarchy</a></li><li><a href="#z-order">Z-order</a></li><li><a href="#usage">Usage</a></li><li><a href="#tokens">Tokens</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Four shadow levels and a focus shadow. Jubilee is mostly flat: cards sit at level 1 with a hairline border, hover lifts to 2, menus and toasts float at 3, dialogs and sheets at 4.</p>
+      <p>Four shadow levels and a focus shadow. Jubilee is mostly flat: cards have an ink-10% hairline edge and no shadow, at rest or on hover. Level 1 is for small floating controls, tooltips sit at 2, menus and toasts float at 3, dialogs and sheets at 4.</p>
     </section>
     <section class="ds-section" id="shadows"><h2><a href="#shadows">Shadow levels</a></h2>
       <div class="ds-themes">
@@ -109,14 +109,14 @@
         <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="ds-shadow-grid"><div style="--shadow: var(--shadow-1);">--shadow-1</div><div style="--shadow: var(--shadow-2);">--shadow-2</div><div style="--shadow: var(--shadow-3);">--shadow-3</div><div style="--shadow: var(--shadow-4);">--shadow-4</div><div style="--shadow: var(--shadow-focus);">--shadow-focus</div></div></div></div>
       </div>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Level</th><th scope="col">Use</th></tr></thead><tbody>
-        <tr><td>1</td><td>cards, primary button hover, media tag</td></tr>
-        <tr><td>2</td><td>hovered cards and media tiles, tooltips</td></tr>
+        <tr><td>1</td><td>switch knob, save button over card media</td></tr>
+        <tr><td>2</td><td>tooltips</td></tr>
         <tr><td>3</td><td>menus, popovers, toasts, skip link</td></tr>
         <tr><td>4</td><td>dialogs, drawers, bottom sheets</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="surfaces"><h2><a href="#surfaces">Surface hierarchy</a></h2>
-      <p>In light, surfaces are white on cream and shadows carry depth. In dark, shadows are nearly invisible on ink, so each level also lightens its surface: canvas (ink-950) → surface (ink-900) → raised (ink-800). A dialog reads as raised because of its surface colour, not its shadow.</p>
+      <p>In light, surfaces are white on cream; a hairline edge separates cards from the page, and shadows carry depth only for floating layers. The stacks below show the surface colours with shadow levels 1 and 4 for comparison; cards themselves carry no shadow. In dark, shadows are nearly invisible on ink, so each level also lightens its surface: canvas (ink-950) → surface (ink-900) → raised (ink-800). A dialog reads as raised because of its surface colour, not its shadow.</p>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div class="ds-surface-stack" style="width: 100%;"><div style="background: var(--color-bg-surface-sunken);">Sunken</div><div style="background: var(--color-bg-canvas);">Canvas</div><div style="background: var(--color-bg-surface); box-shadow: var(--shadow-1);">Surface · 1</div><div style="background: var(--color-bg-surface-raised); box-shadow: var(--shadow-4);">Raised · 4</div></div></div></div>
         <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="ds-surface-stack" style="width: 100%;"><div style="background: var(--color-bg-surface-sunken);">Sunken</div><div style="background: var(--color-bg-canvas);">Canvas</div><div style="background: var(--color-bg-surface); box-shadow: var(--shadow-1);">Surface · 1</div><div style="background: var(--color-bg-surface-raised); box-shadow: var(--shadow-4);">Raised · 4</div></div></div></div>
@@ -138,7 +138,9 @@
     </section>
     <section class="ds-section" id="usage"><h2><a href="#usage">Usage</a></h2>
       <ul>
-        <li>Pair a shadow with a border on surfaces that sit on cream; shadows alone vanish in dark.</li>
+        <li>Pair a shadow with a border on floating surfaces (menus, popovers); shadows alone vanish in dark.</li>
+        <li>Do not add a shadow to cards, media tiles, media tags or buttons. An interactive card only darkens its edge on hover; a selected card has a 2px ink edge.</li>
+        <li>The tab bar and the sticky action bar are not raised by a shadow: they use <code>--color-bg-surface-glass</code> with an 8px backdrop blur and a hairline top edge.</li>
         <li>Do not stack shadows on nested surfaces; only the outermost floats.</li>
         <li>The modal backdrop is <code>--color-bg-backdrop</code> (ink at 60% light, black at 70% dark).</li>
       </ul>

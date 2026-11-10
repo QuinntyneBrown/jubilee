@@ -116,11 +116,11 @@
           <span class="ds-callout" style="left: 30%; top: 10%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 70%; top: 10%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 40%; top: 32%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 60%; top: 56%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 40%; top: 84%;" aria-hidden="true">5</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Label</b><small><code>.field__label</code>, <code>--text-label</code>, linked with <code>for</code>.</small></div></li>
+          <li><div><b>Label</b><small><code>.field__label</code>, <code>--text-subhead</code> (14px semibold), linked with <code>for</code>.</small></div></li>
           <li><div><b>Marker</b><small><code>.optional</code>: “(required)” or “(optional)” in <code>--color-fg-subtle</code>, regular weight.</small></div></li>
-          <li><div><b>Help</b><small><code>.field__help</code>, <code>--text-body-sm</code>, muted.</small></div></li>
-          <li><div><b>Control</b><small>Input, select or textarea with <code>aria-describedby</code> listing help and error ids.</small></div></li>
-          <li><div><b>Error</b><small><code>.field__error</code> in <code>--color-danger-fg</code> with a warning glyph; the control gets <code>aria-invalid="true"</code>.</small></div></li>
+          <li><div><b>Help</b><small><code>.field__help</code>, <code>--text-body-sm</code>, muted; 2px under the label.</small></div></li>
+          <li><div><b>Control</b><small>Input, select or textarea, 10px under the label or help: 48px tall, 12px radius, ink-15% edge (<code>--color-border-strong</code>). <code>aria-describedby</code> lists the help and error ids.</small></div></li>
+          <li><div><b>Error</b><small><code>.field__error</code> in <code>--color-danger-fg</code> with a warning glyph, 6px under the control; the control gets <code>aria-invalid="true"</code>.</small></div></li>
         </ol>
       </div>
     </section>
@@ -151,11 +151,11 @@
         <div class="ds-example__caption"><span>A fieldset grouping fields under one legend and help.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;fieldset style="width: 100%;"&gt;&lt;legend&gt;Church reference&lt;/legend&gt;&lt;p class="field__help"&gt;A pastor or elder who can confirm you. We contact them privately.&lt;/p&gt;&lt;div class="form-grid form-grid--2" style="margin-top: var(--space-2);"&gt;&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="ff-v5"&gt;Church &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="ff-v5" type="text" value="Grace Toronto Church"&gt;&lt;/div&gt;&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="ff-v6"&gt;Pastor’s e-mail &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="ff-v6" type="text" value="" aria-describedby="ff-v6-err" aria-invalid="true"&gt;&lt;span class="field__error" id="ff-v6-err"&gt;Enter your pastor’s e-mail address&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/fieldset&gt;</code></pre></details></div>
     </section>
-    <section class="ds-section" id="sizes" data-na="The field has no sizes of its own; its control takes the text-field and select sizes and the field&#x27;s width comes from the form layout."><h2><a href="#sizes">Sizes</a></h2>
-      <p class="ds-na">The field has no sizes of its own; its control takes the text-field and select sizes and the field's width comes from the form layout.</p>
+    <section class="ds-section" id="sizes" data-na="The field has no sizes of its own; its control is 48px tall (40px with .input--sm) and the field&#x27;s width comes from the form layout."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">The field has no sizes of its own; its control is 48px tall (40px with .input--sm) and the field's width comes from the form layout.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
-      <p>The field reflects its control. Hover and focus change only the control; invalid adds the error line; disabled greys label text only through the control. Active shows focus.</p>
+      <p>The field reflects its control. Hover and focus change only the control: hover darkens its edge to <code>--color-fg-subtle</code>, focus replaces the edge with a 2px ring in <code>--color-focus-ring</code> (ink in light, gold in dark). Invalid adds the error line and a danger edge. Disabled greys the control; the label keeps its colour. Active shows focus.</p>
       <div class="ds-matrix"><table>
         <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th><th scope="col">Invalid</th></tr></thead>
         <tbody>
@@ -176,7 +176,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Label <code>--color-fg-default</code>, marker <code>--color-fg-subtle</code>, help <code>--color-fg-muted</code>, error <code>--color-danger-fg</code>. All four hold their contrast on canvas, surface and raised surface in both themes.</p>
+      <p>Label <code>--color-fg-default</code>, marker <code>--color-fg-subtle</code>, help <code>--color-fg-muted</code>, error <code>--color-danger-fg</code>. All four hold their contrast on canvas, surface and raised surface in both themes. The control edge is <code>--color-border-strong</code>: ink 15% in light, a solid mid-grey in dark.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -187,7 +187,7 @@
         <tr><td>Click or tap the label</td><td>Focuses the control (or toggles a checkbox).</td></tr>
       </tbody></table></div>
       <h3>Focus</h3>
-      <p>On the control (2px <code>--color-focus-ring</code>). On submit with errors, focus goes to the form's error summary, whose links move focus to each field.</p>
+      <p>On the control: a 2px <code>--color-focus-ring</code> ring drawn on the control's edge, which follows the 12px radius. On submit with errors, focus goes to the form's error summary, whose links move focus to each field.</p>
       <h3>Labelling</h3>
       <p>The label text plus marker is the accessible name; help and error are the description, in that order. <code>required</code> is set on the control as well as the visible marker. Errors are not announced as they appear on blur; they are collected in the summary on submit.</p>
       <h3>Contrast</h3>
@@ -209,10 +209,11 @@
         <div class="ds-pair"><span>Help in dialog</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-raised" data-min="4.5"></span></div>
         </div></div>
       </div>
+      <p>The control edge is not in this list. In light it is ink 15%, about 1.4:1 on the card and below the 3:1 that 1.4.11 asks for; this is a design-reference value, recorded in <code>tokens/contrast-pairs.json</code>. The label above the control and the 2px focus ring identify the field. <code>prefers-contrast: more</code> restores a 3:1 edge.</p>
       <h3>Motion</h3>
-      <p>None. Errors appear without animation so their position never shifts while being read.</p>
+      <p>None on the field. The control's edge changes over <code>--duration-fast</code>. Errors appear without animation so their position never shifts while being read.</p>
       <h3>Touch</h3>
-      <p>The label is a target too, which enlarges every control's hit area.</p>
+      <p>Controls are 48px tall (<code>--control-height-lg</code>). The label is a target too, which enlarges every control's hit area.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -234,13 +235,16 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Label</td><td><code>--text-label</code> / <code>--color-fg-default</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--color-fg-default"></span></td></tr>
+          <tr><td>Label</td><td><code>--text-subhead</code> / <code>--color-fg-default</code></td><td colspan="2"><span data-token="--text-subhead"></span> / <span data-token="--color-fg-default"></span></td></tr>
           <tr><td>Marker</td><td><code>--color-fg-subtle</code> / <code>--font-weight-regular</code></td><td colspan="2"><span data-token="--color-fg-subtle"></span> / <span data-token="--font-weight-regular"></span></td></tr>
           <tr><td>Help</td><td><code>--text-body-sm</code> / <code>--color-fg-muted</code></td><td colspan="2"><span data-token="--text-body-sm"></span> / <span data-token="--color-fg-muted"></span></td></tr>
           <tr><td>Error</td><td><code>--text-body-sm</code> / <code>--color-danger-fg</code></td><td colspan="2"><span data-token="--text-body-sm"></span> / <span data-token="--color-danger-fg"></span></td></tr>
           <tr><td>Counter</td><td><code>--text-caption</code> / <code>--color-fg-subtle</code></td><td colspan="2"><span data-token="--text-caption"></span> / <span data-token="--color-fg-subtle"></span></td></tr>
-          <tr><td>Gap between parts</td><td><code>--space-1</code></td><td colspan="2"><span data-token="--space-1"></span></td></tr>
-          <tr><td>Legend gap</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
+          <tr><td>Label to help</td><td><code>--space-0-5</code></td><td colspan="2"><span data-token="--space-0-5"></span></td></tr>
+          <tr><td>Label or help to control</td><td><code>--space-2-5</code></td><td colspan="2"><span data-token="--space-2-5"></span></td></tr>
+          <tr><td>Control to error, counter or trailing help</td><td><code>--space-1-5</code></td><td colspan="2"><span data-token="--space-1-5"></span></td></tr>
+          <tr><td>Legend type / gap below</td><td><code>--text-subhead</code> / <code>--space-2-5</code></td><td colspan="2"><span data-token="--text-subhead"></span> / <span data-token="--space-2-5"></span></td></tr>
+          <tr><td>Control height / radius / edge</td><td><code>--control-height-lg</code> / <code>--radius-md</code> / <code>--color-border-strong</code></td><td colspan="2"><span data-token="--control-height-lg"></span> / <span data-token="--radius-md"></span> / <span data-token="--color-border-strong"></span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -253,8 +257,8 @@
   &lt;div class="field__counter" id="tagline-count"&gt;124 / 90&lt;/div&gt;
 &lt;/div&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.field</code></td><td>Column wrapper.</td></tr>
-        <tr><td><code>.field__label</code></td><td>Label.</td></tr>
+        <tr><td><code>.field</code></td><td>Column wrapper; sets the gaps between label, help, control, error and counter.</td></tr>
+        <tr><td><code>.field__label</code></td><td>Label, 14px semibold.</td></tr>
         <tr><td><code>.optional</code></td><td>Required/optional marker inside the label.</td></tr>
         <tr><td><code>.field__help</code></td><td>Help.</td></tr>
         <tr><td><code>.field__error</code></td><td>Error with glyph.</td></tr>

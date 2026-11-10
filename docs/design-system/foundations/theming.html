@@ -117,7 +117,7 @@
       <ul>
         <li>The product stores the member's choice (Preferences → Appearance) and sets <code>data-theme</code> on <code>&lt;html&gt;</code> before first paint to avoid a flash.</li>
         <li>Any element can carry <code>data-theme</code>; semantic colour tokens are declared on the theme selector itself, so a region resolves its own values (this site's side-by-side previews rely on it).</li>
-        <li><code>prefers-contrast: more</code> promotes default borders and muted text to the stronger tokens; <code>forced-colors: active</code> hands the focus ring and borders to system colours.</li>
+        <li><code>prefers-contrast: more</code> sets borders and rules to ink-400, muted text to the default text colour, and links and accent text to green-700. This restores AA for the reference-driven exceptions in the light theme (green text on cream at 4.07:1, input and outline-button edges at about 1.4:1); <code>forced-colors: active</code> hands the focus ring and borders to system colours.</li>
       </ul>
     </section>
     <section class="ds-section" id="adding"><h2><a href="#adding">Adding a theme</a></h2>

@@ -104,7 +104,7 @@
       <p>The tab bar is the phone form of the primary navigation in the <a href="../components/top-bar.html">Top bar</a>. It is not a set of <a href="../components/tabs.html">Tabs</a>: each item is a link to a separate page, and the current one carries <code>aria-current="page"</code>. It appears below 768px on every page that has a top bar, and never on auth, error or system pages.</p>
       <ul>
         <li>Four items, always the same four, in the same order: <b>Browse</b>, <b>List</b> (list your business), <b>Messages</b>, <b>You</b> (account).</li>
-        <li>The current item gets a gold pill behind its icon and a semibold label.</li>
+        <li>The current item gets a 48 × 32px gold pill behind its icon and an ink label; the label weight does not change.</li>
         <li>Messages carries an unread <code>.badge--count</code> at the icon's top-right.</li>
       </ul>
     </section>
@@ -115,10 +115,10 @@
           <span class="ds-callout" style="left: 22%; top: 22%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 22%; top: 68%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 64%; top: 10%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 78%; top: 44%;" aria-hidden="true">4</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Indicator pill</b><small>Icon padded <code>--space-1</code> / <code>--space-4</code> in a <code>--radius-full</code> pill, filled <code>--color-accent</code> with an ink icon on the current item.</small></div></li>
-          <li><div><b>Label</b><small>One word, <code>--text-caption</code>; semibold and <code>--color-fg-default</code> when current, <code>--color-fg-muted</code> otherwise.</small></div></li>
+          <li><div><b>Indicator pill</b><small>20px icon (<code>--icon-size-lg</code>) centred in a 48 × 32px <code>--radius-full</code> pill (<code>--tabbar-pill-width</code> × <code>--tabbar-pill-height</code>), filled <code>--color-accent</code> with an ink icon on the current item.</small></div></li>
+          <li><div><b>Label</b><small>One word, 11px medium (<code>--font-size-2xs</code>); <code>--color-fg-default</code> when current, <code>--color-fg-muted</code> otherwise. The weight stays medium.</small></div></li>
           <li><div><b>Count badge</b><small><code>.badge--count</code> positioned at the icon's top-right; the number is hidden from assistive tech and spoken as ", 2 unread".</small></div></li>
-          <li><div><b>Container</b><small><code>.tabbar</code>: fixed to the bottom at <code>--z-sticky</code>, equal columns, surface background, hairline top border, bottom padding for the safe area. Items are <code>--layout-tabbar-height</code> tall.</small></div></li>
+          <li><div><b>Container</b><small><code>.tabbar</code>: fixed to the bottom at <code>--z-sticky</code>, equal columns, cream 95% fill (<code>--color-bg-surface-glass</code>) with an 8px backdrop blur, hairline ink-10% top border, bottom padding for the safe area. The bar is 72px tall (<code>--layout-tabbar-height</code>).</small></div></li>
         </ol>
       </div>
     </section>
@@ -138,11 +138,11 @@
 &lt;div class="ds-frame ds-frame--phone" style="min-height: 0; width: 100%;"&gt;&lt;nav class="tabbar tabbar--static" aria-label="Phone navigation, Messages current" style="display: grid;"&gt;&lt;a class="tabbar__item" href="../../mocks/pages/browse/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M3 12 12 3l9 9M5 10v10h14V10"/&gt;&lt;/svg&gt;Browse&lt;/a&gt;&lt;a class="tabbar__item" href="../../mocks/pages/list-business/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 5v14M5 12h14"/&gt;&lt;/svg&gt;List&lt;/a&gt;&lt;a class="tabbar__item" href="../../mocks/pages/messages/default.html" aria-current="page"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/&gt;&lt;/svg&gt;Messages&lt;/a&gt;&lt;a class="tabbar__item" href="../../mocks/pages/account/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="8" r="4"/&gt;&lt;path d="M4 21a8 8 0 0 1 16 0"/&gt;&lt;/svg&gt;You&lt;/a&gt;&lt;/nav&gt;&lt;/div&gt;
 &lt;div class="ds-frame ds-frame--phone" style="min-height: 0; width: 100%;"&gt;&lt;nav class="tabbar tabbar--static" aria-label="Phone navigation, You current" style="display: grid;"&gt;&lt;a class="tabbar__item" href="../../mocks/pages/browse/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M3 12 12 3l9 9M5 10v10h14V10"/&gt;&lt;/svg&gt;Browse&lt;/a&gt;&lt;a class="tabbar__item" href="../../mocks/pages/list-business/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 5v14M5 12h14"/&gt;&lt;/svg&gt;List&lt;/a&gt;&lt;a class="tabbar__item" href="../../mocks/pages/messages/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/&gt;&lt;/svg&gt;Messages&lt;/a&gt;&lt;a class="tabbar__item" href="../../mocks/pages/account/default.html" aria-current="page"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="8" r="4"/&gt;&lt;path d="M4 21a8 8 0 0 1 16 0"/&gt;&lt;/svg&gt;You&lt;/a&gt;&lt;/nav&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
-    <section class="ds-section" id="sizes" data-na="One size: items are --layout-tabbar-height tall and share the width equally."><h2><a href="#sizes">Sizes</a></h2>
-      <p class="ds-na">One size: items are --layout-tabbar-height tall and share the width equally.</p>
+    <section class="ds-section" id="sizes" data-na="One size: the bar is 72px tall (--layout-tabbar-height) and items share the width equally."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size: the bar is 72px tall (--layout-tabbar-height) and items share the width equally.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
-      <p>Items are links. Hover and focus are forced with <code>data-state</code>; there is no disabled item, because every member can reach all four destinations (signed-out members are sent to sign in).</p>
+      <p>Items are links. Hover turns the label and icon <code>--color-fg-default</code>. Hover and focus are forced with <code>data-state</code>; there is no disabled item, because every member can reach all four destinations (signed-out members are sent to sign in).</p>
       <div class="ds-matrix"><table>
         <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Current</th><th scope="col">Disabled</th></tr></thead>
         <tbody>
@@ -165,7 +165,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Surface, border and label colours flip with the theme. The current pill stays gold with an ink icon in both themes (<code>--color-fg-on-accent</code> on <code>--color-accent</code>), so the selected destination is the brightest thing on the bar in light and dark.</p>
+      <p>The glass fill is cream 95% in light and ink 95% in dark, blurred over the page behind it; border and label colours flip with the theme. The current pill stays gold with an ink icon in both themes (<code>--color-fg-on-accent</code> on <code>--color-accent</code>), so the selected destination is the brightest thing on the bar in light and dark.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -180,24 +180,25 @@
       <h3>Labelling</h3>
       <p>Each item's name is its visible one-word label; icons are <code>aria-hidden</code>. The count is appended as visually hidden text: "Messages, 2 unread". The landmark label differs from the top bar's "Primary".</p>
       <h3>Contrast</h3>
+      <p>The bar is cream at 95% over the cream page, so pairs are measured against <code>--color-bg-canvas</code>.</p>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Inactive label</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Current label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Inactive label on the bar</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current label on the bar</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Icon on current pill</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring on the bar</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Inactive label</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Current label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Inactive label on the bar</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current label on the bar</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Icon on current pill</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring on the bar</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
       <p>No motion: the bar does not animate in, hide on scroll or slide the pill between items.</p>
       <h3>Touch</h3>
-      <p>Each item is at least 90px wide and <code>--layout-tabbar-height</code> tall, well above the 44px comfortable target; items touch edge to edge, so the whole cell is the target.</p>
+      <p>Each item is at least 90px wide and taller than the 44px touch target (<code>--target-comfortable</code>) inside the 72px bar; items touch edge to edge, so the whole cell is the target.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -218,14 +219,14 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Background / top border</td><td><code>--color-bg-surface</code> / <code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Background / top border</td><td><code>--color-bg-surface-glass</code> / <code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-glass" data-swatch></i><span data-token="--color-bg-surface-glass"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-glass" data-swatch></i><span data-token="--color-bg-surface-glass"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
           <tr><td>Label / current label</td><td><code>--color-fg-muted</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
           <tr><td>Current pill / icon</td><td><code>--color-accent</code> / <code>--color-fg-on-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td></tr>
-          <tr><td>Item height</td><td><code>--layout-tabbar-height</code></td><td colspan="2"><span data-token="--layout-tabbar-height"></span></td></tr>
-          <tr><td>Pill padding</td><td><code>--space-1</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-1"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Bar height</td><td><code>--layout-tabbar-height</code></td><td colspan="2"><span data-token="--layout-tabbar-height"></span></td></tr>
+          <tr><td>Pill width / height / icon</td><td><code>--tabbar-pill-width</code> / <code>--tabbar-pill-height</code> / <code>--icon-size-lg</code></td><td colspan="2"><span data-token="--tabbar-pill-width"></span> / <span data-token="--tabbar-pill-height"></span> / <span data-token="--icon-size-lg"></span></td></tr>
           <tr><td>Pill radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
-          <tr><td>Label</td><td><code>--text-caption</code></td><td colspan="2"><span data-token="--text-caption"></span></td></tr>
-          <tr><td>Current weight</td><td><code>--font-weight-semibold</code></td><td colspan="2"><span data-token="--font-weight-semibold"></span></td></tr>
+          <tr><td>Label size / weight</td><td><code>--font-size-2xs</code> / <code>--font-weight-medium</code></td><td colspan="2"><span data-token="--font-size-2xs"></span> / <span data-token="--font-weight-medium"></span></td></tr>
+          <tr><td>Bar padding top / bottom (plus safe area)</td><td><code>--space-1-5</code> / <code>--space-2</code></td><td colspan="2"><span data-token="--space-1-5"></span> / <span data-token="--space-2"></span></td></tr>
           <tr><td>Icon-label gap</td><td><code>--space-0-5</code></td><td colspan="2"><span data-token="--space-0-5"></span></td></tr>
           <tr><td>Stacking</td><td><code>--z-sticky</code></td><td colspan="2"><span data-token="--z-sticky"></span></td></tr>
         </tbody>
@@ -239,9 +240,9 @@
   &lt;a class="tabbar__item" href="/account"&gt;&lt;svg class="icon" aria-hidden="true"&gt;…&lt;/svg&gt;You&lt;/a&gt;
 &lt;/nav&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.tabbar</code></td><td>Fixed bottom bar, equal columns; hidden from 768px.</td></tr>
+        <tr><td><code>.tabbar</code></td><td>Fixed 72px bottom bar, cream 95% with blur, equal columns; hidden from 768px.</td></tr>
         <tr><td><code>.tabbar__item</code></td><td>One destination: icon over label.</td></tr>
-        <tr><td><code>aria-current="page"</code></td><td>Current item: gold pill, semibold label.</td></tr>
+        <tr><td><code>aria-current="page"</code></td><td>Current item: gold pill behind the icon, ink label.</td></tr>
         <tr><td><code>.tabbar--static</code></td><td>Docs and previews: not fixed.</td></tr>
         <tr><td><code>.badge--count</code></td><td>Unread count at the icon corner.</td></tr>
         <tr><td><code>data-state="hover|focus"</code></td><td>Documentation only.</td></tr>

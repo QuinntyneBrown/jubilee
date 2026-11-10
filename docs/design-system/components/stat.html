@@ -117,8 +117,8 @@
           <span class="ds-callout" style="left: 4%; top: 20%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 4%; top: 50%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 4%; top: 80%;" aria-hidden="true">3</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Label</b><small><code>.stat__label</code>: what is counted and over what period, <code>--text-label</code> in <code>--color-fg-muted</code>.</small></div></li>
-          <li><div><b>Value</b><small><code>.stat__value</code>: <code>--text-h2</code> with tabular figures.</small></div></li>
+          <li><div><b>Label</b><small><code>.stat__label</code>: what is counted and over what period, 14px medium <code>--text-label</code> in <code>--color-fg-muted</code>.</small></div></li>
+          <li><div><b>Value</b><small><code>.stat__value</code>: <code>--text-h2</code> (Archivo bold 24px at 110% width, -0.025em tracking) with tabular figures.</small></div></li>
           <li><div><b>Delta</b><small><code>.stat__delta</code>: <code>--text-body-sm</code>; an arrow (hidden from assistive tech) plus words that say the change.</small></div></li>
         </ol>
       </div>
@@ -137,7 +137,7 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="stat-grid"&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Listing views, 7 days&lt;/span&gt;&lt;span class="stat__value"&gt;312&lt;/span&gt;&lt;span class="stat__delta stat__delta--up"&gt;&lt;span aria-hidden="true"&gt;↑&lt;/span&gt; 18% on last week&lt;/span&gt;&lt;/div&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Replies within a day&lt;/span&gt;&lt;span class="stat__value"&gt;71%&lt;/span&gt;&lt;span class="stat__delta stat__delta--down"&gt;&lt;span aria-hidden="true"&gt;↓&lt;/span&gt; 9 points on last week&lt;/span&gt;&lt;/div&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Unanswered messages&lt;/span&gt;&lt;span class="stat__value"&gt;1&lt;/span&gt;&lt;span class="stat__delta"&gt;Reply within a day to keep your badge&lt;/span&gt;&lt;/div&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Saved by members&lt;/span&gt;&lt;span class="stat__value"&gt;28&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>One size. In a <code>.stat-grid</code> the card padding drops to <code>--space-4</code> so four fit across. A stat outside a card (in a sidebar) keeps the same type.</p>
+      <p>One size. In a <code>.stat-grid</code> the card padding drops from 24px to 16px (<code>--space-4</code>) so four fit across. A stat outside a card (in a sidebar) keeps the same type.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Stats are static: no hover, focus, active or disabled. If a stat links to its detail, the whole card is a link and takes the link’s focus ring. Data states:</p>
@@ -162,7 +162,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Only semantic tokens: the card surface, <code>--color-fg-muted</code> labels, the default ink value, <code>--color-success-fg</code> and <code>--color-danger-fg</code> deltas. Dark mode swaps them; both deltas stay at 4.5:1 on the surface.</p>
+      <p>Only semantic tokens: the card surface with its ink-10% edge, 16px radius and no shadow, <code>--color-fg-muted</code> labels, the default ink value, <code>--color-success-fg</code> and <code>--color-danger-fg</code> deltas. Dark mode swaps them; both deltas stay at 4.5:1 on the surface.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>

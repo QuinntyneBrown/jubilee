@@ -116,11 +116,11 @@
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Icon (optional)</b><small><code>.dialog__icon--danger|info|success|warning</code>: 40px circle (<code>--avatar-size-md</code>), status background and icon colour.</small></div></li>
-          <li><div><b>Title</b><small><code>&lt;h2 class="dialog__title"&gt;</code>, <code>--text-h3</code>, referenced by <code>aria-labelledby</code>.</small></div></li>
+          <li><div><b>Title</b><small><code>&lt;h2 class="dialog__title"&gt;</code>, <code>--text-h3</code> (20px bold, display font), referenced by <code>aria-labelledby</code>.</small></div></li>
           <li><div><b>Description</b><small>One muted paragraph referenced by <code>aria-describedby</code>: the consequence, in plain words.</small></div></li>
-          <li><div><b>Close</b><small>Ghost icon button, <code>aria-label="Close"</code>. Escape does the same.</small></div></li>
+          <li><div><b>Close</b><small>40px ghost icon button, <code>aria-label="Close"</code>. Escape does the same.</small></div></li>
           <li><div><b>Footer</b><small><code>.dialog__footer</code>: ruled, sticky, buttons right-aligned, confirm last.</small></div></li>
-          <li><div><b>Backdrop and panel</b><small><code>.backdrop</code> dims the page with <code>--color-bg-backdrop</code>; <code>.dialog__panel</code> is the raised surface (<code>--shadow-4</code>, <code>--radius-lg</code>, sheet corners <code>--radius-xl</code>).</small></div></li>
+          <li><div><b>Backdrop and panel</b><small><code>.backdrop</code> dims the page with <code>--color-bg-backdrop</code>; <code>.dialog__panel</code> is the raised surface (<code>--shadow-4</code>, <code>--radius-lg</code> 16px, sheet corners <code>--radius-xl</code> 24px).</small></div></li>
         </ol>
       </div>
     </section>
@@ -148,7 +148,7 @@
       <div class="ds-example"><div class="ds-example__canvas">
         <div style="width: 100%;"><div class="ds-frame ds-frame--phone" style="min-height: calc(var(--space-24) * 6);"><div class="backdrop"></div><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-v-sheet-title" aria-describedby="dlg-v-sheet-desc" style="place-items: end center; padding: 0;"><div class="dialog__panel" style="border-radius: var(--radius-xl) var(--radius-xl) 0 0;"><div class="dialog__header"><div class="dialog__icon dialog__icon--info" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></div><div style="flex: 1;"><h2 class="dialog__title" id="dlg-v-sheet-title">Book a meeting with Legacy Financial</h2><p id="dlg-v-sheet-desc" class="text-muted" style="margin-top: var(--space-1);">Ask for a time. Trevor confirms it or suggests another; nothing is charged.</p></div><button class="btn btn--ghost btn--icon" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="dialog__body stack"><div class="field"><label class="field__label" for="dlg-v-sheet-how">How</label><select class="select" id="dlg-v-sheet-how"><option selected>Video call</option><option>In person, North York</option></select></div><div class="field"><label class="field__label" for="dlg-v-sheet-date">Day <span class="optional">(required)</span></label><input class="input" id="dlg-v-sheet-date" type="date" value="2026-11-12" required></div><div class="field"><label class="field__label" for="dlg-v-sheet-note">What would you like to talk about? <span class="optional">(optional)</span></label><textarea class="textarea" id="dlg-v-sheet-note" rows="2">I’d like to talk about RRSPs and a giving plan.</textarea></div></div><div class="dialog__footer"><button class="btn" type="button">Cancel</button><button class="btn btn--primary" type="button">Send request</button></div></div></div></div></div>
       </div>
-        <div class="ds-example__caption"><span>Below 640px the dialog pins to the bottom edge, goes full width and rounds only its top corners (<code>--radius-xl</code>). Forced here with inline layout overrides; on a phone it happens by itself.</span></div>
+        <div class="ds-example__caption"><span>Below 640px the dialog pins to the bottom edge, goes full width and rounds only its top corners (<code>--radius-xl</code>, 24px). Forced here with inline layout overrides; on a phone it happens by itself.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="width: 100%;"&gt;&lt;div class="ds-frame ds-frame--phone" style="min-height: calc(var(--space-24) * 6);"&gt;&lt;div class="backdrop"&gt;&lt;/div&gt;&lt;div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-v-sheet-title" aria-describedby="dlg-v-sheet-desc" style="place-items: end center; padding: 0;"&gt;&lt;div class="dialog__panel" style="border-radius: var(--radius-xl) var(--radius-xl) 0 0;"&gt;&lt;div class="dialog__header"&gt;&lt;div class="dialog__icon dialog__icon--info" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="4" y="5" width="16" height="15" rx="2"/&gt;&lt;path d="M8 3v4M16 3v4M4 10h16"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div style="flex: 1;"&gt;&lt;h2 class="dialog__title" id="dlg-v-sheet-title"&gt;Book a meeting with Legacy Financial&lt;/h2&gt;&lt;p id="dlg-v-sheet-desc" class="text-muted" style="margin-top: var(--space-1);"&gt;Ask for a time. Trevor confirms it or suggests another; nothing is charged.&lt;/p&gt;&lt;/div&gt;&lt;button class="btn btn--ghost btn--icon" type="button" aria-label="Close"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;&lt;div class="dialog__body stack"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="dlg-v-sheet-how"&gt;How&lt;/label&gt;&lt;select class="select" id="dlg-v-sheet-how"&gt;&lt;option selected&gt;Video call&lt;/option&gt;&lt;option&gt;In person, North York&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="dlg-v-sheet-date"&gt;Day &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="dlg-v-sheet-date" type="date" value="2026-11-12" required&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="dlg-v-sheet-note"&gt;What would you like to talk about? &lt;span class="optional"&gt;(optional)&lt;/span&gt;&lt;/label&gt;&lt;textarea class="textarea" id="dlg-v-sheet-note" rows="2"&gt;I’d like to talk about RRSPs and a giving plan.&lt;/textarea&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="dialog__footer"&gt;&lt;button class="btn" type="button"&gt;Cancel&lt;/button&gt;&lt;button class="btn btn--primary" type="button"&gt;Send request&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
@@ -195,7 +195,7 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>Below 640px (<code>--layout-breakpoint-sm</code>) the panel is a bottom sheet: full width, top corners <code>--radius-xl</code>, slides up. From 640px it is centred with <code>--space-6</code> around it and scales in.</li>
+        <li>Below 640px (<code>--layout-breakpoint-sm</code>) the panel is a bottom sheet: full width, top corners <code>--radius-xl</code> (24px), slides up. From 640px it is centred with <code>--space-6</code> around it, has <code>--radius-lg</code> (16px) corners and scales in.</li>
         <li>The panel never exceeds the viewport height minus <code>--space-12</code>; the body scrolls and the footer stays sticky at the bottom with its own background.</li>
         <li>Footer buttons wrap when they do not fit; the confirm stays last. On narrow phones two buttons usually sit side by side; three wrap.</li>
         <li>The user menu is a menu anchored to the avatar from 640px and this sheet below it; filters are inline chips from 768px and this sheet below it.</li>
@@ -230,7 +230,7 @@
         <div class="ds-pair"><span>Info icon on its circle</span><span class="ds-pair__ratio" data-contrast="--color-info-icon|--color-info-bg" data-min="3"></span></div>
         <div class="ds-pair"><span>Success icon on its circle</span><span class="ds-pair__ratio" data-contrast="--color-success-icon|--color-success-bg" data-min="3"></span></div>
         <div class="ds-pair"><span>Focus ring on panel</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface-raised" data-min="3"></span></div>
-        <div class="ds-pair"><span>Field edge on panel</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface-raised" data-min="3"></span></div>
+        <div class="ds-pair"><span>Field edge on panel (reference exception, below 3:1)</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface-raised" data-min="1.3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Text on panel</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-raised" data-min="4.5"></span></div>
@@ -242,10 +242,11 @@
         <div class="ds-pair"><span>Field edge on panel</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface-raised" data-min="3"></span></div>
         </div></div>
       </div>
+      <p>Field and secondary-button edges inside the panel are ink at 15% in light, about 1.4:1 and below 3:1. This follows the design reference and is recorded in <code>tokens/contrast-pairs.json</code>; <code>prefers-contrast: more</code> restores 3:1.</p>
       <h3>Motion</h3>
-      <p>The backdrop fades in over <code>--duration-base</code>; the panel slides up (sheet) or scales from 96% (centred) over <code>--duration-slow</code> with <code>--ease-enter</code>. Reduced motion zeroes both through the tokens; the dialog simply appears.</p>
+      <p>The backdrop fades in over <code>--duration-base</code>; the panel slides up (sheet) or scales from 96% (centred) over <code>--duration-slow</code> (300ms) with <code>--ease-enter</code>. Reduced motion zeroes both through the tokens; the dialog simply appears.</p>
       <h3>Touch</h3>
-      <p>Footer buttons are 44px tall with <code>--space-3</code> between them; the close button is a 44px icon button. The sheet's footer sits above the phone's home indicator.</p>
+      <p>Footer buttons are 40px tall with <code>--space-3</code> between them; the close button is a 40px icon button. On coarse pointers each has a touch hit area at least 44px tall (<code>--target-comfortable</code>). The sheet's footer sits above the phone's home indicator.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -294,9 +295,9 @@
   &lt;div class="dialog__panel"&gt;
     &lt;div class="dialog__header"&gt;
       &lt;div class="dialog__icon dialog__icon--danger" aria-hidden="true"&gt;&lt;svg class="icon"&gt;…&lt;/svg&gt;&lt;/div&gt;
-      &lt;div style="flex: 1;"&gt;
+      &lt;div class="dialog__heading"&gt;
         &lt;h2 class="dialog__title" id="dlg-title"&gt;Delete “Morning mug, set of two”?&lt;/h2&gt;
-        &lt;p id="dlg-desc" class="text-muted"&gt;It disappears from your shop now…&lt;/p&gt;
+        &lt;p id="dlg-desc" class="dialog__desc"&gt;It disappears from your shop now…&lt;/p&gt;
       &lt;/div&gt;
       &lt;button class="btn btn--ghost btn--icon" type="button" aria-label="Close"&gt;…&lt;/button&gt;
     &lt;/div&gt;
@@ -312,6 +313,7 @@
         <tr><td><code>.dialog__panel</code></td><td>The surface; medium width (32rem).</td></tr>
         <tr><td><code>.dialog__panel--sm</code> / <code>--lg</code></td><td>24rem / 48rem.</td></tr>
         <tr><td><code>.dialog__header</code> / <code>__title</code> / <code>__body</code> / <code>__footer</code></td><td>Regions; the footer is sticky.</td></tr>
+        <tr><td><code>.dialog__heading</code> / <code>.dialog__desc</code></td><td>Wrapper that lets the title and description fill the header row; muted description <code>--space-1</code> under the title.</td></tr>
         <tr><td><code>.dialog__icon--danger|info|success|warning</code></td><td>Status icon circle.</td></tr>
         <tr><td><code>role="alertdialog"</code></td><td>Destructive confirmations.</td></tr>
         <tr><td><code>aria-busy="true"</code> on the confirm</td><td>Busy state.</td></tr>
@@ -328,7 +330,7 @@
         <li><a href="../../mocks/dialogs/book-meeting/success.html">dialogs/book-meeting/success</a> (success)</li>
         <li><a href="../../mocks/dialogs/sign-in-required/default.html">dialogs/sign-in-required/default</a> (small panel)</li>
       </ul>
-      <p>Drift fixed during extraction: every one of the 71 dialog mocks wrapped the title in <code>&lt;div style="flex: 1;"&gt;</code> and spaced the description with an inline <code>margin-top: var(--space-1)</code>; they are token-only layout tweaks and are kept, with a request for <code>.dialog__heading</code> and <code>.dialog__desc</code> classes. Success dialogs drew a check inside the <em>info</em> icon circle; the system uses <code>.dialog__icon--success</code>. All destructive confirmations used <code>role="dialog"</code>; the system uses <code>alertdialog</code>. Busy mocks disabled Cancel but not Close; the system ignores Close and Escape while busy. <code>.dialog__panel--lg</code> and the success and warning icons were defined but unused.</p>
+      <p>Drift fixed during extraction: every one of the 71 dialog mocks wrapped the title in <code>&lt;div style="flex: 1;"&gt;</code> and spaced the description with an inline <code>margin-top: var(--space-1)</code>; they are token-only layout tweaks and are kept in the examples; <code>.dialog__heading</code> and <code>.dialog__desc</code> now exist in components.css to replace them. Success dialogs drew a check inside the <em>info</em> icon circle; the system uses <code>.dialog__icon--success</code>. All destructive confirmations used <code>role="dialog"</code>; the system uses <code>alertdialog</code>. Busy mocks disabled Cancel but not Close; the system ignores Close and Escape while busy. <code>.dialog__panel--lg</code> and the success and warning icons were defined but unused.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

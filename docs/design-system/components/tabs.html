@@ -115,9 +115,9 @@
           <span class="ds-callout" style="left: 6%; top: 10%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 20%; top: 10%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 8%; top: 28%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 70%; top: 28%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 40%; top: 70%;" aria-hidden="true">5</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Selected tab</b><small>Semibold, <code>--color-fg-default</code>, with a 2px gold indicator (<code>::after</code>, <code>--radius-xs</code> top corners).</small></div></li>
+          <li><div><b>Selected tab</b><small><code>--color-fg-default</code> label at the same medium weight, with a 2px gold indicator (<code>::after</code>) under it.</small></div></li>
           <li><div><b>Count</b><small>Optional <code>.badge</code> with the number of items in that view.</small></div></li>
-          <li><div><b>Indicator</b><small><code>--border-width-thick</code> bar in <code>--color-accent</code> sitting over the list's hairline.</small></div></li>
+          <li><div><b>Indicator</b><small><code>--border-width-thick</code> bar in <code>--color-accent-border</code>, inset 16px each side to match the label, sitting over the list's hairline.</small></div></li>
           <li><div><b>Track</b><small><code>.tabs</code>: flex row, hairline bottom border, horizontal scroll with the scrollbar hidden.</small></div></li>
           <li><div><b>Panel</b><small><code>role="tabpanel"</code>, labelled by the selected tab, focusable when it has no focusable content.</small></div></li>
         </ol>
@@ -143,8 +143,8 @@
         <div class="ds-example__caption"><span>Account uses the same pattern with four sections; Saved current.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;nav class="tabs" aria-label="Account sections" style="width: 100%;"&gt;&lt;a class="tab" href="../../mocks/pages/account/default.html"&gt;Profile&lt;/a&gt;&lt;a class="tab" href="../../mocks/pages/preferences/default.html"&gt;Notification settings&lt;/a&gt;&lt;a class="tab" href="../../mocks/pages/saved/default.html" aria-current="page"&gt;Saved&lt;/a&gt;&lt;a class="tab" href="../../mocks/pages/requests/default.html"&gt;Your requests&lt;/a&gt;&lt;/nav&gt;</code></pre></details></div>
     </section>
-    <section class="ds-section" id="sizes" data-na="One size: tabs are --target-comfortable (44px) tall with --text-label. Dense contexts use a select instead."><h2><a href="#sizes">Sizes</a></h2>
-      <p class="ds-na">One size: tabs are --target-comfortable (44px) tall with --text-label. Dense contexts use a select instead.</p>
+    <section class="ds-section" id="sizes" data-na="One size: tabs are 40px tall (--control-height-md) with 16px side padding and --text-label. Dense contexts use a select instead."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size: tabs are 40px tall (--control-height-md) with 16px side padding and --text-label. Dense contexts use a select instead.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Forced with <code>data-state</code> where no attribute exists; selection uses <code>aria-selected</code> and <code>aria-current</code>, disabled uses the native attribute.</p>
@@ -170,7 +170,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Labels read <code>--color-fg-muted</code> and <code>--color-fg-default</code> and flip with the theme; the indicator stays gold. Counts use the neutral <code>.badge</code>; the open-requests count on page tabs uses the gold <code>.badge--count</code>.</p>
+      <p>Labels read <code>--color-fg-muted</code> and <code>--color-fg-default</code> and flip with the theme; the indicator is <code>--color-accent-border</code>, gold-600 in light and gold-400 in dark. Counts use the neutral <code>.badge</code>; the open-requests count on page tabs uses the gold <code>.badge--count</code>.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -193,6 +193,7 @@
         <div class="ds-pair"><span>Selected label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Unselected label on a card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Count badge text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Indicator</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
@@ -200,13 +201,14 @@
         <div class="ds-pair"><span>Selected label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Unselected label on a card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Count badge text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Indicator</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>The indicator colour transitions over <code>--duration-fast</code>; it does not slide between tabs. Reduced motion zeroes it.</p>
+      <p>The label and indicator colours transition over <code>--duration-fast</code> (150ms); it does not slide between tabs. Reduced motion zeroes it.</p>
       <h3>Touch</h3>
-      <p>Each tab is 44px tall (<code>--target-comfortable</code>) with <code>--space-3</code> padding and <code>--space-1</code> between tabs.</p>
+      <p>Each tab is 40px tall (<code>--control-height-md</code>) with 16px (<code>--space-4</code>) side padding and <code>--space-1</code> between tabs. On coarse pointers an invisible hit area makes each tab at least 44px tall (<code>--target-comfortable</code>).</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -229,14 +231,13 @@
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
           <tr><td>Label / selected label</td><td><code>--color-fg-muted</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
-          <tr><td>Indicator</td><td><code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
+          <tr><td>Indicator</td><td><code>--color-accent-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td></tr>
           <tr><td>Track hairline</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
           <tr><td>Disabled label</td><td><code>--color-fg-disabled</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span></td></tr>
-          <tr><td>Height</td><td><code>--target-comfortable</code></td><td colspan="2"><span data-token="--target-comfortable"></span></td></tr>
-          <tr><td>Padding / gap</td><td><code>--space-3</code> / <code>--space-1</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-1"></span></td></tr>
-          <tr><td>Indicator thickness / radius</td><td><code>--border-width-thick</code> / <code>--radius-xs</code></td><td colspan="2"><span data-token="--border-width-thick"></span> / <span data-token="--radius-xs"></span></td></tr>
+          <tr><td>Height / touch hit area</td><td><code>--control-height-md</code> / <code>--target-comfortable</code></td><td colspan="2"><span data-token="--control-height-md"></span> / <span data-token="--target-comfortable"></span></td></tr>
+          <tr><td>Side padding / gap</td><td><code>--space-4</code> / <code>--space-1</code></td><td colspan="2"><span data-token="--space-4"></span> / <span data-token="--space-1"></span></td></tr>
+          <tr><td>Indicator thickness / inset</td><td><code>--border-width-thick</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--border-width-thick"></span> / <span data-token="--space-4"></span></td></tr>
           <tr><td>Label</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
-          <tr><td>Selected weight</td><td><code>--font-weight-semibold</code></td><td colspan="2"><span data-token="--font-weight-semibold"></span></td></tr>
           <tr><td>Transition</td><td><code>--duration-fast</code></td><td colspan="2"><span data-token="--duration-fast"></span></td></tr>
         </tbody>
       </table></div>
@@ -255,7 +256,7 @@
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.tabs</code></td><td>Track: row, hairline, horizontal scroll.</td></tr>
         <tr><td><code>.tab</code></td><td>One tab (button or link).</td></tr>
-        <tr><td><code>aria-selected="true"</code> / <code>aria-current="page"</code></td><td>Selected look: semibold label, gold indicator.</td></tr>
+        <tr><td><code>aria-selected="true"</code> / <code>aria-current="page"</code></td><td>Selected look: ink label, gold indicator.</td></tr>
         <tr><td><code>disabled</code> / <code>aria-disabled</code></td><td>Disabled in-page tab.</td></tr>
         <tr><td><code>.tab .badge</code></td><td>Count after the label.</td></tr>
         <tr><td><code>data-state="hover|focus|selected|disabled"</code></td><td>Documentation only.</td></tr>
@@ -270,7 +271,7 @@
         <li><a href="../../mocks/pages/my-business/default.html">pages/my-business/default</a> (page tabs)</li>
         <li><a href="../../mocks/pages/account/default.html">pages/account/default</a> (page tabs)</li>
       </ul>
-      <p>Drift fixed during extraction: the indicator radius was a raw 2px (now <code>--radius-xs</code>) and the selected look was a brand override layered after the kit rule (now merged into <code>.tab</code>). In-page tablists on Your requests, incoming requests and the admin queue have no <code>aria-controls</code> and no <code>role="tabpanel"</code>; only search results has a panel, and it is labelled by <code>aria-label</code> instead of the tab, with an inline <code>style="border-top: 0"</code>. The pattern above wires both. The gold indicator is only about 1.6:1 against cream, so selection must also be carried by the semibold, darker label, as it is.</p>
+      <p>Drift fixed during extraction: the indicator had a raw 2px radius (now square) and the selected look was a brand override layered after the kit rule (now merged into <code>.tab</code>). In-page tablists on Your requests, incoming requests and the admin queue have no <code>aria-controls</code> and no <code>role="tabpanel"</code>; only search results has a panel, and it is labelled by <code>aria-label</code> instead of the tab, with an inline <code>style="border-top: 0"</code>. The pattern above wires both. The indicator uses <code>--color-accent-border</code>, which reaches 3:1 against cream and white; the selected label also turns ink.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

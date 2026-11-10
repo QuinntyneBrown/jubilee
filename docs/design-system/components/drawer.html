@@ -114,8 +114,8 @@
           <span class="ds-callout" style="left: 60%; top: 6%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 94%; top: 6%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 60%; top: 40%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 70%; top: 92%;" aria-hidden="true">4</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Header</b><small><code>.drawer__header</code>: <code>&lt;h2 class="drawer__title"&gt;</code> (<code>--text-h4</code>) and a close icon button, ruled below.</small></div></li>
-          <li><div><b>Close</b><small>Ghost icon button with <code>aria-label="Close"</code>.</small></div></li>
+          <li><div><b>Header</b><small><code>.drawer__header</code>: <code>&lt;h2 class="drawer__title"&gt;</code> (<code>--text-h4</code>, 18px bold, display font) and a close icon button, ruled below.</small></div></li>
+          <li><div><b>Close</b><small>40px ghost icon button with <code>aria-label="Close"</code>.</small></div></li>
           <li><div><b>Body</b><small><code>.drawer__body</code>: scrolls, padding <code>--space-6</code>.</small></div></li>
           <li><div><b>Footer (optional)</b><small><code>.drawer__footer</code>: ruled above, actions right-aligned, primary last.</small></div></li>
         </ol>
@@ -179,7 +179,7 @@
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Text on panel</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-raised" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Field edge on panel</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface-raised" data-min="3"></span></div>
+        <div class="ds-pair"><span>Field edge on panel (reference exception, below 3:1)</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface-raised" data-min="1.3"></span></div>
         <div class="ds-pair"><span>Focus ring on panel</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface-raised" data-min="3"></span></div>
         <div class="ds-pair"><span>Primary label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
         </div></div>
@@ -190,10 +190,11 @@
         <div class="ds-pair"><span>Primary label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
         </div></div>
       </div>
+      <p>Field and secondary-button edges on the panel are ink at 15% in light, about 1.4:1 and below 3:1. This follows the design reference and is recorded in <code>tokens/contrast-pairs.json</code>; <code>prefers-contrast: more</code> restores 3:1.</p>
       <h3>Motion</h3>
-      <p>Slides in from its edge over <code>--duration-slow</code> with <code>--ease-enter</code>; reduced motion zeroes it and the drawer appears in place.</p>
+      <p>Slides in from its edge over <code>--duration-slow</code> (300ms) with <code>--ease-enter</code>; reduced motion zeroes it and the drawer appears in place.</p>
       <h3>Touch</h3>
-      <p>Close is a 44px icon button; choices are at least 24px tall with label text widening the target; footer buttons are 44px.</p>
+      <p>Close is a 40px icon button; choices are at least 24px tall with label text widening the target; footer buttons are 40px. On coarse pointers the buttons have a touch hit area at least 44px tall (<code>--target-comfortable</code>).</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>

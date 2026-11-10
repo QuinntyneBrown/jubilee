@@ -115,10 +115,10 @@
           <span class="ds-callout" style="left: 2%; top: 6%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 4%; top: 48%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 14%; top: 6%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 14%; top: 30%;" aria-hidden="true">4</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Dot</b><small>A 24px (<code>--target-min</code>) circle with a 2px edge. Done is success solid with ✓, current is gold, stopped is danger solid with ×, upcoming is outlined. The glyph is <code>aria-hidden</code>.</small></div></li>
+          <li><div><b>Dot</b><small>A 24px (<code>--target-min</code>) circle with a 2px edge. Done is green success solid with a <code>--color-fg-on-success</code> ✓, current is gold with a <code>--color-accent-border</code> edge, stopped is danger solid with ×, upcoming is a surface circle with a <code>--color-border-strong</code> edge. The glyph is <code>aria-hidden</code>.</small></div></li>
           <li><div><b>Connector</b><small>A 2px <code>--color-border-default</code> line from each dot to the next; none after the last step.</small></div></li>
           <li><div><b>Title</b><small><code>.timeline__title</code>: who did what, <code>--text-label</code>. Starts with visually hidden status text ("Done:").</small></div></li>
-          <li><div><b>Meta</b><small><code>.timeline__meta</code>: when it happened or when to expect it, muted <code>--text-body-sm</code>. Omit it rather than leave it empty.</small></div></li>
+          <li><div><b>Meta</b><small><code>.timeline__meta</code>: when it happened or when to expect it, muted 13px <code>--text-meta</code>. Omit it rather than leave it empty.</small></div></li>
         </ol>
       </div>
     </section>
@@ -148,7 +148,7 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ol class="timeline"&gt;&lt;li data-complete&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;✓&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Done: &lt;/span&gt;You submitted Luzandre.com&lt;/div&gt;&lt;div class="timeline__meta"&gt;Today, 9:40 a.m.&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;li aria-current="step"&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Current step: &lt;/span&gt;Pastor Daniel Okoro confirms you&lt;/div&gt;&lt;div class="timeline__meta"&gt;We e-mailed him at Grace Toronto Church just now&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;li&gt;&lt;span class="timeline__dot" aria-hidden="true"&gt;&lt;/span&gt;&lt;div&gt;&lt;div class="timeline__title"&gt;&lt;span class="visually-hidden"&gt;Next: &lt;/span&gt;We review and publish&lt;/div&gt;&lt;div class="timeline__meta"&gt;Within two business days of his answer&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;&lt;/ol&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>One size. The dot is 24px so the ✓ and × glyphs stay legible; steps are spaced <code>--space-5</code>. In a narrow card the text wraps beside the dot.</p>
+      <p>One size. The dot is 24px so the ✓ and × glyphs stay legible; steps are spaced 20px (<code>--space-5</code>). In a narrow card the text wraps beside the dot.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Timeline steps are not interactive, so they have no hover, focus, active or disabled state. Each step has one of four status states, set with real attributes.</p>
@@ -170,12 +170,12 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>The timeline is a single column at every width. On request detail it sits in the right column of <code>.split</code> from 1024px and below the details on phones.</li>
+        <li>The timeline is a single column at every width. On request detail it sits in the right column of <code>.split</code> from 768px and below the details on phones.</li>
         <li>Titles and meta wrap beside the dot; the connector stretches with them.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Dots read status solids (<code>--color-success-solid</code>, <code>--color-danger-solid</code>, <code>--color-accent</code>) with their on-colours, the upcoming dot reads <code>--color-border-strong</code> on <code>--color-bg-surface</code>, and the connector reads <code>--color-border-default</code>. Dark mode swaps them; the current gold keeps its darker <code>--color-accent-border</code> edge.</p>
+      <p>Dots read status solids (<code>--color-success-solid</code>, <code>--color-danger-solid</code>, <code>--color-accent</code>) with their on-colours, the upcoming dot reads <code>--color-border-strong</code> on <code>--color-bg-surface</code>, and the connector reads <code>--color-border-default</code>. Dark mode swaps them. The current dot is the one gold indicator here with a <code>--color-accent-border</code> edge: gold-600 in light, gold-400 in dark.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -189,9 +189,10 @@
       <h3>Labelling</h3>
       <p>Put the timeline under a heading ("Progress"). Titles name the actor: "WaterWorks declined", "You asked". Status is in text, not only in dot colour or glyph.</p>
       <h3>Contrast</h3>
+      <p>In light the upcoming dot edge is ink 15% (about 1.4:1), a reference-driven exception recorded in <code>tokens/contrast-pairs.json</code>; <code>prefers-contrast: more</code> restores 3:1. The status is also in the visually hidden text, so the edge is not the only signal.</p>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Done dot glyph</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-success-solid" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Done dot glyph</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-success|--color-success-solid" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Stopped dot glyph</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-danger|--color-danger-solid" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Current dot edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
         <div class="ds-pair"><span>Upcoming dot edge</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
@@ -199,7 +200,7 @@
         <div class="ds-pair"><span>Meta on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Done dot glyph</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-success-solid" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Done dot glyph</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-success|--color-success-solid" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Stopped dot glyph</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-danger|--color-danger-solid" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Current dot edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
         <div class="ds-pair"><span>Upcoming dot edge</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
@@ -231,7 +232,7 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Done dot / glyph</td><td><code>--color-success-solid</code> / <code>--color-fg-inverse</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-inverse" data-swatch></i><span data-token="--color-fg-inverse"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-inverse" data-swatch></i><span data-token="--color-fg-inverse"></span></span></td></tr>
+          <tr><td>Done dot / glyph</td><td><code>--color-success-solid</code> / <code>--color-fg-on-success</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-success" data-swatch></i><span data-token="--color-fg-on-success"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-success" data-swatch></i><span data-token="--color-fg-on-success"></span></span></td></tr>
           <tr><td>Current dot / edge</td><td><code>--color-accent</code> / <code>--color-accent-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td></tr>
           <tr><td>Stopped dot / glyph</td><td><code>--color-danger-solid</code> / <code>--color-fg-on-danger</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-danger" data-swatch></i><span data-token="--color-fg-on-danger"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-danger" data-swatch></i><span data-token="--color-fg-on-danger"></span></span></td></tr>
           <tr><td>Upcoming dot / edge</td><td><code>--color-bg-surface</code> / <code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr>
@@ -240,7 +241,7 @@
           <tr><td>Dot edge and connector width</td><td><code>--border-width-thick</code></td><td colspan="2"><span data-token="--border-width-thick"></span></td></tr>
           <tr><td>Step spacing</td><td><code>--space-5</code></td><td colspan="2"><span data-token="--space-5"></span></td></tr>
           <tr><td>Gap</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
-          <tr><td>Title / meta type</td><td><code>--text-label</code> / <code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Title / meta type</td><td><code>--text-label</code> / <code>--text-meta</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--text-meta"></span></td></tr>
           <tr><td>Meta colour</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
         </tbody>
       </table></div>

@@ -101,7 +101,7 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#durations">Durations</a></li><li><a href="#easing">Easing</a></li><li><a href="#choreography">Choreography</a></li><li><a href="#accessibility">Reduced motion</a></li><li><a href="#tokens">Tokens</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Motion is short and functional: it shows where something came from (a sheet slides up, a toast rises) and confirms a state change (a switch thumb slides). Nothing animates for decoration, and reduced motion removes all of it through the tokens.</p>
+      <p>Motion is short and functional: it shows where something came from (a sheet slides up, a toast rises) and confirms a state change (a switch thumb slides, a pressed button shrinks slightly). The one flourish is card media, which zooms a little on hover. Otherwise nothing animates for decoration, and reduced motion removes all of it through the tokens.</p>
     </section>
     <section class="ds-section" id="durations"><h2><a href="#durations">Durations</a></h2>
       <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack">
@@ -112,9 +112,9 @@
       </div>
         <div class="ds-example__caption"><span>Each dot travels 6rem using the named duration.</span></div></div>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Token</th><th scope="col">Use</th></tr></thead><tbody>
-        <tr><td>fast 120ms</td><td>hover, colour, border, tooltip fade</td></tr>
-        <tr><td>base 200ms</td><td>menus, toasts, switches, backdrop</td></tr>
-        <tr><td>slow 320ms</td><td>dialogs, sheets, progress fill</td></tr>
+        <tr><td>fast 150ms</td><td>hover, press, colour, border, tooltip fade, menu reveal</td></tr>
+        <tr><td>base 200ms</td><td>toasts, switches, backdrop, accordion marker</td></tr>
+        <tr><td>slow 300ms</td><td>card image zoom, dialogs, sheets, drawers, progress fill</td></tr>
         <tr><td>deliberate 500ms</td><td>page-level transitions</td></tr>
         <tr><td>spin 800ms</td><td>one spinner revolution</td></tr>
         <tr><td>loop 1400ms</td><td>skeleton shimmer, indeterminate bar, pulse</td></tr>
@@ -127,7 +127,7 @@
         <div class="ds-motion-demo" style="--demo-ease: var(--ease-exit); --demo-duration: var(--duration-deliberate);"><button class="btn btn--sm" type="button" data-motion-run>Play --ease-exit</button><span class="dot" aria-hidden="true"></span></div>
         <div class="ds-motion-demo" style="--demo-ease: var(--ease-spring); --demo-duration: var(--duration-deliberate);"><button class="btn btn--sm" type="button" data-motion-run>Play --ease-spring</button><span class="dot" aria-hidden="true"></span></div>
       </div>
-        <div class="ds-example__caption"><span>Same distance and duration, four curves.</span></div></div>
+        <div class="ds-example__caption"><span>Same distance and duration, four tokens. <code>--ease-standard</code> and <code>--ease-enter</code> are the same curve, <code>cubic-bezier(0, 0, 0.2, 1)</code>.</span></div></div>
       <ul>
         <li><b>standard</b> for things that move within the page.</li>
         <li><b>enter</b> (decelerate) for things arriving: dialogs, toasts, menus.</li>
@@ -140,12 +140,15 @@
         <li>Dialogs: backdrop fades (base), panel scales in from 0.96 (slow) on ≥ 640px and slides up as a sheet below.</li>
         <li>Toasts slide up 16px and fade in (base); leaving fades and drops 8px with <code>--ease-exit</code>.</li>
         <li>Menus scale in from their trigger corner (fast).</li>
+        <li>Pressing a button scales it: <code>--press-scale</code> (0.98) for large buttons and buttons in form actions, <code>--press-scale-sm</code> (0.97) for default and small ones. It does not move down.</li>
+        <li>Card media zooms to <code>--zoom-scale</code> (1.03) over <code>--duration-slow</code> on hover. Cards do not lift or gain a shadow, and the name is not underlined.</li>
+        <li>The chevron in a directory row moves 2px right on hover.</li>
         <li>Never animate layout properties (width, height, top) on large surfaces; use opacity, translate and scale.</li>
       </ul>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Reduced motion</a></h2>
       <ul>
-        <li>Under <code>prefers-reduced-motion: reduce</code> the tokens set fast, base, slow and deliberate to 0.01ms, so every transition and reveal becomes instant with no component media queries.</li>
+        <li>Under <code>prefers-reduced-motion: reduce</code> the tokens set fast, base, slow and deliberate to 0.01ms, so every transition and reveal becomes instant with no component media queries. They also set <code>--press-scale</code>, <code>--press-scale-sm</code> and <code>--zoom-scale</code> to 1, so buttons do not shrink and media does not zoom.</li>
         <li>Looping decoration (shimmer, pulse, indeterminate bar) is switched off in <code>components.css</code>, because a near-zero infinite loop would flicker.</li>
         <li><code>--duration-spin</code> is not zeroed: a spinner is status. Nothing flashes more than three times a second (2.3.1).</li>
       </ul>
@@ -155,16 +158,19 @@
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
           <tr><td>—</td><td><code>--duration-instant</code></td><td colspan="2"><span data-token="--duration-instant"></span></td></tr>
-          <tr><td>hover, colour changes, tooltips</td><td><code>--duration-fast</code></td><td colspan="2"><span data-token="--duration-fast"></span></td></tr>
-          <tr><td>menus, toasts, switches</td><td><code>--duration-base</code></td><td colspan="2"><span data-token="--duration-base"></span></td></tr>
-          <tr><td>dialogs, sheets, progress fill</td><td><code>--duration-slow</code></td><td colspan="2"><span data-token="--duration-slow"></span></td></tr>
+          <tr><td>150ms hover, press, colour changes</td><td><code>--duration-fast</code></td><td colspan="2"><span data-token="--duration-fast"></span></td></tr>
+          <tr><td>200ms toasts, switches, backdrop</td><td><code>--duration-base</code></td><td colspan="2"><span data-token="--duration-base"></span></td></tr>
+          <tr><td>300ms image zoom, dialogs, sheets, progress fill</td><td><code>--duration-slow</code></td><td colspan="2"><span data-token="--duration-slow"></span></td></tr>
           <tr><td>page-level transitions</td><td><code>--duration-deliberate</code></td><td colspan="2"><span data-token="--duration-deliberate"></span></td></tr>
           <tr><td>one spinner revolution (status: never zeroed)</td><td><code>--duration-spin</code></td><td colspan="2"><span data-token="--duration-spin"></span></td></tr>
           <tr><td>shimmer, indeterminate bar, pulse cycles</td><td><code>--duration-loop</code></td><td colspan="2"><span data-token="--duration-loop"></span></td></tr>
-          <tr><td>—</td><td><code>--ease-standard</code></td><td colspan="2"><span data-token="--ease-standard"></span></td></tr>
-          <tr><td>—</td><td><code>--ease-enter</code></td><td colspan="2"><span data-token="--ease-enter"></span></td></tr>
+          <tr><td>things that move within the page</td><td><code>--ease-standard</code></td><td colspan="2"><span data-token="--ease-standard"></span></td></tr>
+          <tr><td>things arriving; the same curve as standard</td><td><code>--ease-enter</code></td><td colspan="2"><span data-token="--ease-enter"></span></td></tr>
           <tr><td>—</td><td><code>--ease-exit</code></td><td colspan="2"><span data-token="--ease-exit"></span></td></tr>
-          <tr><td>---------- Semantic: z-order -------------------------------------------</td><td><code>--ease-spring</code></td><td colspan="2"><span data-token="--ease-spring"></span></td></tr>
+          <tr><td>—</td><td><code>--ease-spring</code></td><td colspan="2"><span data-token="--ease-spring"></span></td></tr>
+          <tr><td>large buttons shrink slightly when pressed</td><td><code>--press-scale</code></td><td colspan="2"><span data-token="--press-scale"></span></td></tr>
+          <tr><td>default and small buttons</td><td><code>--press-scale-sm</code></td><td colspan="2"><span data-token="--press-scale-sm"></span></td></tr>
+          <tr><td>card media grows slightly on hover</td><td><code>--zoom-scale</code></td><td colspan="2"><span data-token="--zoom-scale"></span></td></tr>
         </tbody>
       </table></div>
     </section>

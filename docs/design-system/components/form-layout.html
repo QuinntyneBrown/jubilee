@@ -101,9 +101,9 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>A form is a <code>.form</code> (column, <code>--space-6</code> gaps) of <a href="../components/form-field.html">fields</a> and fieldsets, ending in <code>.form-actions</code>. Short related pairs share a row in <code>.form-grid--2</code>. On submit with errors, an error summary appears at the top and takes focus. See the <a href="../patterns/forms.html">Forms</a> pattern for validation timing and flows.</p>
+      <p>A form is a <code>.form</code> (column, <code>--space-7</code> gaps, 28px) of <a href="../components/form-field.html">fields</a> and fieldsets, ending in <code>.form-actions</code>. Short related pairs share a row in <code>.form-grid--2</code>. On submit with errors, an error summary appears at the top and takes focus. See the <a href="../patterns/forms.html">Forms</a> pattern for validation timing and flows.</p>
       <ul>
-        <li><b>Page form</b>: a card on the page, width capped by <code>.container--narrow</code> or a split with a preview (edit listing, list your business).</li>
+        <li><b>Page form</b>: a card on the page, width capped by <code>.container--narrow</code>, or a split with a preview (edit listing; list your business uses <code>.container--form</code> with <code>.split--form</code>).</li>
         <li><b>Dialog form</b>: fields in <code>.dialog__body</code> (<code>.stack</code>), actions in the sticky <code>.dialog__footer</code>; see <a href="../components/dialog.html">Dialog</a>.</li>
         <li><b>Auth form</b>: one column in <code>.auth-card</code>, block primary button.</li>
         <li><b>Auto-save settings</b>: no actions; each control saves and an inline status reports it.</li>
@@ -119,9 +119,9 @@
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Error summary</b><small><code>.alert.alert--danger.form-summary</code>, <code>role="alert"</code>, <code>tabindex="-1"</code>; a 4px danger edge and one link per problem.</small></div></li>
-          <li><div><b>Field stack</b><small><code>.form</code>: fields <code>--space-6</code> apart.</small></div></li>
+          <li><div><b>Field stack</b><small><code>.form</code>: fields and groups <code>--space-7</code> (28px) apart.</small></div></li>
           <li><div><b>Two-column row</b><small><code>.form-grid--2</code> from 640px, gap <code>--space-4</code>.</small></div></li>
-          <li><div><b>Form actions</b><small><code>.form-actions</code>: right-aligned, wraps, status at the start, primary last.</small></div></li>
+          <li><div><b>Form actions</b><small><code>.form-actions</code>: 48px buttons. On phones they stack in reverse, primary on top. From 640px they sit in a right-aligned row, status at the start, primary last.</small></div></li>
         </ol>
       </div>
     </section>
@@ -156,7 +156,8 @@
         <tr><td>Auth card (sign in, sign up)</td><td>26rem (<code>.auth-card</code>)</td><td>1</td></tr>
         <tr><td>Dialog</td><td>32rem (<code>.dialog__panel</code>), 48rem large</td><td>1, pairs from 640px</td></tr>
         <tr><td>Settings and account</td><td><code>--layout-container-narrow</code> (<code>.container--narrow</code>)</td><td>1</td></tr>
-        <tr><td>Edit listing, list your business</td><td><code>.split</code> with a sticky preview</td><td>1, pairs from 640px</td></tr>
+        <tr><td>Edit listing</td><td><code>.split</code> with a sticky preview</td><td>1, pairs from 640px</td></tr>
+        <tr><td>List your business</td><td><code>--layout-container-form</code> (<code>.container--form</code>, 72rem) with <code>.split--form</code>: a 320px side column and a 64px gap from 1024px</td><td>1, pairs from 640px</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
@@ -188,20 +189,20 @@
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
         <li><code>.form-grid--2</code> is one column under 640px and two from 640px (<code>--layout-breakpoint-sm</code>).</li>
-        <li>Form actions wrap; when they do, the status takes its own line and buttons keep primary last. In dialogs on phones the footer stays sticky.</li>
-        <li>The edit-listing preview moves under the form below 1024px.</li>
+        <li>Below 640px form actions stack in reverse order: the primary button is on top, the secondary under it and the status line last. From 640px they form a right-aligned row that wraps, with the status at the start and the primary last. In dialogs on phones the footer stays sticky.</li>
+        <li>The edit-listing preview moves under the form below 768px. It is sticky from 1024px.</li>
         <li>Item lists keep the price and remove button on the row's end; the name wraps.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Layout has no colour of its own. The summary reads the alert tokens (<code>--color-danger-bg</code>, <code>--color-danger-fg</code>, <code>--color-danger-solid</code> edge). The danger zone only swaps the card border to <code>--color-danger-border</code>. Item lists use <code>--color-bg-surface</code> with a strong outer border and default dividers.</p>
+      <p>Layout has no colour of its own. The summary reads the alert tokens (<code>--color-danger-bg</code>, <code>--color-danger-fg</code>, <code>--color-danger-solid</code> edge). The danger zone only swaps the card border to <code>--color-danger-border</code>. Item lists use <code>--color-bg-surface</code> with a <code>--color-border-strong</code> outer edge (ink 15% in light) and default dividers. <code>.form-actions--bordered</code> adds a rule in <code>--color-border-rule</code>.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
       <p>A <code>&lt;form&gt;</code> with <code>novalidate</code> (Jubilee shows its own messages) and an accessible name when there are several on a page. The error summary follows the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/alert/">APG alert pattern</a> and also receives focus. Fieldsets group related fields; the danger zone is a labelled <code>section</code>.</p>
       <h3>Keyboard</h3>
       <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
-        <tr><td><kbd>Tab</kbd></td><td>Through fields in visual order, then the actions (secondary before primary).</td></tr>
+        <tr><td><kbd>Tab</kbd></td><td>Through fields in visual order, then the actions in source order (secondary before primary). On phones the stack is reversed, so focus reaches the lower button first and the primary on top last.</td></tr>
         <tr><td><kbd>Enter</kbd> in a text field</td><td>Submits the form.</td></tr>
         <tr><td><kbd>Enter</kbd> on a summary link</td><td>Moves focus to that field (the link targets the control's id).</td></tr>
         <tr><td><kbd>Esc</kbd> in a dialog form</td><td>Closes the dialog; unsaved text prompts first.</td></tr>
@@ -229,10 +230,11 @@
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
       </div>
+      <p>The item list border fails the 3:1 check in light: it is ink 15% (about 1.4:1), a design-reference value recorded in <code>tokens/contrast-pairs.json</code>. The rows' text and the dividers carry the structure. <code>prefers-contrast: more</code> restores 3:1.</p>
       <h3>Motion</h3>
       <p>The summary appears without animation and the page scrolls to it smoothly unless reduced motion is set (<code>scroll-behavior: auto</code>). The saving dot pulses over <code>--duration-loop</code> and stops under reduced motion.</p>
       <h3>Touch</h3>
-      <p>Actions are 44px buttons with <code>--space-3</code> between them. Item-list remove buttons are 32px with the row's padding around them, keeping 24px spacing.</p>
+      <p>Actions are 48px buttons with <code>--space-3</code> between them. Item-list remove buttons are 36px with the row's 12px padding around them; on coarse pointers their hit area is 44px.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -246,7 +248,7 @@
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><div class="stack" style="width: 100%;"><div class="alert alert--danger form-summary" id="fl-do-summary" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Fix 2 things to continue</div><ul style="margin: 0; padding-left: var(--space-5);"><li><a href="#fl-inv-tagline">Shorten your one-line description to 90 characters</a></li><li><a href="#fl-inv-hours">Enter your hours</a></li></ul></div></div></div></div><figcaption>One summary listing every problem, linked to the fields.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div class="alert alert--danger" style="width: 100%;"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Something went wrong.</div></div></div></div><figcaption>A vague banner: no count, no links, no way to find the problem.</figcaption></figure>
-        <figure class="ds-do"><div class="ds-example__canvas"><div class="form-actions" style="width: 100%;"><button class="btn btn--ghost" type="button">Save draft</button><button class="btn btn--primary" type="submit">Submit for verification</button></div></div><figcaption>Primary last; draft is quieter.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="form-actions" style="width: 100%;"><button class="btn btn--ghost" type="button">Save draft</button><button class="btn btn--primary" type="submit">Submit for verification</button></div></div><figcaption>Primary last in the row, on top when stacked on phones; draft is quieter.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div class="form-actions" style="width: 100%;"><button class="btn btn--primary" type="button" disabled>Submit for verification</button></div></div><figcaption>Disabled submit until the form is valid. Members cannot learn what is missing; keep it enabled and show the summary.</figcaption></figure>
       </div>
     </section>
@@ -254,15 +256,17 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Form gap / grid gap</td><td><code>--space-6</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-6"></span> / <span data-token="--space-4"></span></td></tr>
-          <tr><td>Actions gap / top padding</td><td><code>--space-3</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Form gap / grid gap</td><td><code>--space-7</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-7"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Actions gap / top padding</td><td><code>--space-3</code> / <code>--space-6</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-6"></span></td></tr>
+          <tr><td>Action button height</td><td><code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-lg"></span></td></tr>
+          <tr><td>Bordered actions rule</td><td><code>--color-border-rule</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-rule" data-swatch></i><span data-token="--color-border-rule"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-rule" data-swatch></i><span data-token="--color-border-rule"></span></span></td></tr>
           <tr><td>Summary edge</td><td><code>--border-width-accent</code></td><td colspan="2"><span data-token="--border-width-accent"></span></td></tr>
           <tr><td>Summary fill / text / edge</td><td><code>--color-danger-bg</code> / <code>--color-danger-fg</code> / <code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
           <tr><td>Item list border / dividers</td><td><code>--color-border-strong</code> / <code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
           <tr><td>Item list radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
-          <tr><td>Item row padding</td><td><code>--space-2</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-3"></span></td></tr>
+          <tr><td>Item row padding</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
           <tr><td>Danger-zone border</td><td><code>--color-danger-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-border" data-swatch></i><span data-token="--color-danger-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-border" data-swatch></i><span data-token="--color-danger-border"></span></span></td></tr>
-          <tr><td>Narrow container</td><td><code>--layout-container-narrow</code></td><td colspan="2"><span data-token="--layout-container-narrow"></span></td></tr>
+          <tr><td>Narrow container / form container</td><td><code>--layout-container-narrow</code> / <code>--layout-container-form</code></td><td colspan="2"><span data-token="--layout-container-narrow"></span> / <span data-token="--layout-container-form"></span></td></tr>
           <tr><td>Two-column breakpoint</td><td><code>--layout-breakpoint-sm</code></td><td colspan="2"><span data-token="--layout-breakpoint-sm"></span></td></tr>
         </tbody>
       </table></div>
@@ -283,11 +287,12 @@
   &lt;/div&gt;
 &lt;/form&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.form</code></td><td>Column of fields, <code>--space-6</code> gaps.</td></tr>
+        <tr><td><code>.form</code></td><td>Column of fields, <code>--space-7</code> gaps.</td></tr>
         <tr><td><code>.form-grid</code> / <code>.form-grid--2</code></td><td>Grid; two columns from 640px.</td></tr>
-        <tr><td><code>.form-actions</code></td><td>Right-aligned, wrapping action row.</td></tr>
+        <tr><td><code>.form-actions</code></td><td>Action row with 48px buttons: stacked in reverse on phones, right-aligned and wrapping from 640px.</td></tr>
+        <tr><td><code>.form-actions--bordered</code></td><td>Adds a hairline rule (<code>--color-border-rule</code>) above the actions.</td></tr>
         <tr><td><code>.form-summary</code></td><td>Error-summary modifier for <code>.alert--danger</code>.</td></tr>
-        <tr><td><code>.item-list</code> / <code>.item-list__name</code></td><td>Bordered list of added items.</td></tr>
+        <tr><td><code>.item-list</code> / <code>.item-list__name</code></td><td>Bordered list of added items: 12px radius, 12px row padding.</td></tr>
         <tr><td><code>.danger-zone</code></td><td>Danger border on a card.</td></tr>
         <tr><td><code>.inline-status</code> <code>--success</code> <code>--danger</code></td><td>Status in the actions row.</td></tr>
       </tbody></table></div>
@@ -302,7 +307,7 @@
         <li><a href="../../mocks/dialogs/order-request/default.html">dialogs/order-request/default</a> (item list in a dialog)</li>
         <li><a href="../../mocks/pages/account/default.html">pages/account/default</a> (danger zone)</li>
       </ul>
-      <p>Drift fixed during extraction: the summary's list carried <code>style="margin: 0; padding-left: var(--space-5)"</code> in all 8 summaries; the status in form actions used <code>style="margin-right: auto"</code> 14 times; list-business set <code>style="border-top: 1px solid …"</code> with a raw 1px on its actions in 5 states; item lists and fieldset help had inline <code>margin-top</code>; danger-zone and settings cards used <code>max-width: 42rem</code> inline (now <code>.container--narrow</code>). The kit's <code>.form-summary</code> edge was a raw 4px, now <code>--border-width-accent</code>. Rules for <code>.form-summary ul</code>, <code>.form-actions .inline-status</code> and a bordered actions modifier are proposed so these inline styles can go.</p>
+      <p>Drift fixed during extraction: the summary's list carried <code>style="margin: 0; padding-left: var(--space-5)"</code> in all 8 summaries; the status in form actions used <code>style="margin-right: auto"</code> 14 times; list-business set <code>style="border-top: 1px solid …"</code> with a raw 1px on its actions in 5 states; item lists and fieldset help had inline <code>margin-top</code>; danger-zone and settings cards used <code>max-width: 42rem</code> inline (now <code>.container--narrow</code>). The kit's <code>.form-summary</code> edge was a raw 4px, now <code>--border-width-accent</code>. The kit now has rules for <code>.form-summary ul</code> and <code>.form-actions .inline-status</code> and the <code>.form-actions--bordered</code> modifier, so these inline styles can go.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

@@ -158,7 +158,7 @@
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility: every contrast pair</a></h2>
       <p>Every foreground/background pairing a component relies on is listed in <code>tokens/contrast-pairs.json</code> and checked in both themes by <code>check_contrast.py</code>. Ratios below are computed live in your browser. A minimum of 1 marks a decorative pairing (dividers, scrim) that is documented but exempt.</p>
-      <p>Three pairings follow the design reference exactly and fall below WCAG AA in the light theme. Each is recorded in <code>tokens/contrast-pairs.json</code> with the ratio it actually reaches as its minimum, so a regression still fails.</p>
+      <p>Three pairings follow the design reference exactly and fall below WCAG AA. The first two apply to the light theme only; the avatar colours are the same in both themes. Each is recorded in <code>tokens/contrast-pairs.json</code> with the ratio it actually reaches as its minimum, so a regression still fails.</p>
       <ul>
         <li>Green text on the cream page (<code>--color-fg-link</code> on <code>--color-bg-canvas</code>: links, perk text, "See all") is 4.07:1, below 4.5:1.</li>
         <li>Input and outline-button edges (<code>--color-border-strong</code>) are ink at 15%, about 1.4:1, below 3:1.</li>
