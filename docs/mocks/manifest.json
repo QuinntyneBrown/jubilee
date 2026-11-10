@@ -1,0 +1,944 @@
+{
+  "project": "Jubilee",
+  "screens": [
+    {
+      "id": "welcome",
+      "kind": "page",
+      "title": "Welcome",
+      "route": "/welcome",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The welcome page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The welcome page has no collection that could be empty.",
+        "error": "The welcome page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "sign-in",
+      "kind": "page",
+      "title": "Sign in",
+      "route": "/sign-in",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty."
+      }
+    },
+    {
+      "id": "sign-up",
+      "kind": "page",
+      "title": "Join",
+      "route": "/join",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty."
+      }
+    },
+    {
+      "id": "forgot-password",
+      "kind": "page",
+      "title": "Forgot password",
+      "route": "/forgot-password",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty."
+      }
+    },
+    {
+      "id": "reset-password",
+      "kind": "page",
+      "title": "Reset password",
+      "route": "/reset-password/:token",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success",
+        "expired"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty."
+      }
+    },
+    {
+      "id": "verify-email",
+      "kind": "page",
+      "title": "Verify e-mail",
+      "route": "/verify-email/:token",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "success",
+        "expired"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty."
+      }
+    },
+    {
+      "id": "church-reference",
+      "kind": "page",
+      "title": "Church reference",
+      "route": "/reference/:token",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success",
+        "expired"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty."
+      }
+    },
+    {
+      "id": "statement-of-faith",
+      "kind": "page",
+      "title": "Statement of faith",
+      "route": "/statement-of-faith",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The statement of faith page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The statement of faith page has no collection that could be empty.",
+        "error": "The statement of faith page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "terms",
+      "kind": "page",
+      "title": "Terms of use",
+      "route": "/terms",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The terms of use page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The terms of use page has no collection that could be empty.",
+        "error": "The terms of use page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "privacy",
+      "kind": "page",
+      "title": "Privacy",
+      "route": "/privacy",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The privacy page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The privacy page has no collection that could be empty.",
+        "error": "The privacy page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "help",
+      "kind": "page",
+      "title": "Help",
+      "route": "/help",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The help page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The help page has no collection that could be empty.",
+        "error": "The help page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "not-found",
+      "kind": "page",
+      "title": "Not found",
+      "route": "/404",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The not found page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The not found page has no collection that could be empty.",
+        "error": "The not found page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "forbidden",
+      "kind": "page",
+      "title": "No access",
+      "route": "/403",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The no access page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The no access page has no collection that could be empty.",
+        "error": "The no access page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "server-error",
+      "kind": "page",
+      "title": "Something went wrong",
+      "route": "/500",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The something went wrong page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The something went wrong page has no collection that could be empty.",
+        "error": "The something went wrong page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "offline",
+      "kind": "page",
+      "title": "Offline",
+      "route": "/offline",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The offline page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The offline page has no collection that could be empty.",
+        "error": "The offline page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "session-expired",
+      "kind": "page",
+      "title": "Session expired",
+      "route": "/session-expired",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The session expired page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The session expired page has no collection that could be empty.",
+        "error": "The session expired page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "maintenance",
+      "kind": "page",
+      "title": "Maintenance",
+      "route": "/maintenance",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "The maintenance page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The maintenance page has no collection that could be empty.",
+        "error": "The maintenance page makes no request that could fail; a failed app load shows the server error page."
+      }
+    },
+    {
+      "id": "browse",
+      "kind": "page",
+      "title": "Browse",
+      "route": "/",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "offline",
+        "signed-out",
+        "edge"
+      ]
+    },
+    {
+      "id": "category",
+      "kind": "page",
+      "title": "Category",
+      "route": "/c/:category",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results",
+        "long"
+      ]
+    },
+    {
+      "id": "search",
+      "kind": "page",
+      "title": "Search",
+      "route": "/search?q=",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results"
+      ]
+    },
+    {
+      "id": "business",
+      "kind": "page",
+      "title": "Business",
+      "route": "/b/:slug",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "saved",
+        "owner",
+        "edge"
+      ]
+    },
+    {
+      "id": "shop",
+      "kind": "page",
+      "title": "Shop",
+      "route": "/b/:slug",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "product",
+      "kind": "page",
+      "title": "Product",
+      "route": "/b/:slug/p/:product",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "sold-out"
+      ],
+      "not_applicable": {
+        "empty": "A product page shows one item; it has no collection that could be empty."
+      }
+    },
+    {
+      "id": "saved",
+      "kind": "page",
+      "title": "Saved",
+      "route": "/saved",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "messages",
+      "kind": "page",
+      "title": "Messages",
+      "route": "/messages",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results"
+      ]
+    },
+    {
+      "id": "conversation",
+      "kind": "page",
+      "title": "Conversation",
+      "route": "/messages/:id",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "sending",
+        "failed"
+      ]
+    },
+    {
+      "id": "requests",
+      "kind": "page",
+      "title": "Your requests",
+      "route": "/requests",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results"
+      ]
+    },
+    {
+      "id": "request-detail",
+      "kind": "page",
+      "title": "Request",
+      "route": "/requests/:id",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "confirmed",
+        "declined",
+        "cancelled"
+      ],
+      "not_applicable": {
+        "empty": "A request page shows one request; it has no collection that could be empty."
+      }
+    },
+    {
+      "id": "notifications",
+      "kind": "page",
+      "title": "Notifications",
+      "route": "/notifications",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "read"
+      ]
+    },
+    {
+      "id": "account",
+      "kind": "page",
+      "title": "Account",
+      "route": "/account",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty."
+      }
+    },
+    {
+      "id": "preferences",
+      "kind": "page",
+      "title": "Notification settings",
+      "route": "/account/notifications",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "Settings always have values; there is no empty collection.",
+        "invalid": "Every control is a switch or a select with valid options only."
+      }
+    },
+    {
+      "id": "list-business",
+      "kind": "page",
+      "title": "List your business",
+      "route": "/list",
+      "states": [
+        "default",
+        "services",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success",
+        "draft-saved"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty."
+      }
+    },
+    {
+      "id": "my-business",
+      "kind": "page",
+      "title": "My business",
+      "route": "/my-business",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "pending",
+        "changes-requested"
+      ]
+    },
+    {
+      "id": "edit-listing",
+      "kind": "page",
+      "title": "Edit listing",
+      "route": "/my-business/listing",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty."
+      }
+    },
+    {
+      "id": "my-products",
+      "kind": "page",
+      "title": "Products",
+      "route": "/my-business/products",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "my-services",
+      "kind": "page",
+      "title": "Services",
+      "route": "/my-business/services",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "incoming-requests",
+      "kind": "page",
+      "title": "Incoming requests",
+      "route": "/my-business/requests",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results"
+      ]
+    },
+    {
+      "id": "admin-verifications",
+      "kind": "page",
+      "title": "Verification queue",
+      "route": "/admin/verifications",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results"
+      ]
+    },
+    {
+      "id": "admin-verification",
+      "kind": "page",
+      "title": "Verify listing",
+      "route": "/admin/verifications/:id",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "approved",
+        "changes-requested"
+      ],
+      "not_applicable": {
+        "empty": "A review page shows one listing; it has no collection that could be empty."
+      }
+    },
+    {
+      "id": "book-meeting",
+      "kind": "dialog",
+      "title": "Book a meeting",
+      "opens_from": "business",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed",
+        "success"
+      ]
+    },
+    {
+      "id": "request-quote",
+      "kind": "dialog",
+      "title": "Request a quote",
+      "opens_from": "shop",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed",
+        "success"
+      ]
+    },
+    {
+      "id": "order-request",
+      "kind": "dialog",
+      "title": "Request an item",
+      "opens_from": "product",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed",
+        "success"
+      ]
+    },
+    {
+      "id": "new-message",
+      "kind": "dialog",
+      "title": "New message",
+      "opens_from": "business",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed"
+      ]
+    },
+    {
+      "id": "share-listing",
+      "kind": "dialog",
+      "title": "Share listing",
+      "opens_from": "business",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "busy": "This overlay only navigates or copies; it makes no request.",
+        "invalid": "This overlay has no inputs to validate."
+      }
+    },
+    {
+      "id": "report-listing",
+      "kind": "dialog",
+      "title": "Report listing",
+      "opens_from": "business",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed",
+        "success"
+      ]
+    },
+    {
+      "id": "sign-in-required",
+      "kind": "dialog",
+      "title": "Sign in required",
+      "opens_from": "browse",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "busy": "This overlay only navigates or copies; it makes no request.",
+        "invalid": "This overlay has no inputs to validate."
+      }
+    },
+    {
+      "id": "user-menu",
+      "kind": "dialog",
+      "title": "Account menu",
+      "opens_from": "browse",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "busy": "This overlay only navigates or copies; it makes no request.",
+        "invalid": "This overlay has no inputs to validate."
+      }
+    },
+    {
+      "id": "filters",
+      "kind": "dialog",
+      "title": "Filters",
+      "opens_from": "category",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "busy": "Filters apply in the browser to results already loaded; nothing is sent.",
+        "invalid": "Every control is a checkbox or select with valid options only."
+      }
+    },
+    {
+      "id": "cancel-request",
+      "kind": "dialog",
+      "title": "Cancel request",
+      "opens_from": "request-detail",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
+      "id": "confirm-request",
+      "kind": "dialog",
+      "title": "Confirm request",
+      "opens_from": "incoming-requests",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
+      "id": "decline-request",
+      "kind": "dialog",
+      "title": "Decline request",
+      "opens_from": "incoming-requests",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed"
+      ]
+    },
+    {
+      "id": "product-editor",
+      "kind": "dialog",
+      "title": "Product editor",
+      "opens_from": "my-products",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed",
+        "edit"
+      ]
+    },
+    {
+      "id": "service-editor",
+      "kind": "dialog",
+      "title": "Service editor",
+      "opens_from": "my-services",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed",
+        "edit"
+      ]
+    },
+    {
+      "id": "delete-product",
+      "kind": "dialog",
+      "title": "Delete product",
+      "opens_from": "my-products",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
+      "id": "delete-service",
+      "kind": "dialog",
+      "title": "Delete service",
+      "opens_from": "my-services",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
+      "id": "unpublish-listing",
+      "kind": "dialog",
+      "title": "Pause listing",
+      "opens_from": "my-business",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
+      "id": "approve-listing",
+      "kind": "dialog",
+      "title": "Approve listing",
+      "opens_from": "admin-verification",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
+      "id": "request-changes",
+      "kind": "dialog",
+      "title": "Request changes",
+      "opens_from": "admin-verification",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed"
+      ]
+    },
+    {
+      "id": "sign-out",
+      "kind": "dialog",
+      "title": "Sign out",
+      "opens_from": "account",
+      "states": [
+        "default",
+        "busy"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
+      "id": "delete-account",
+      "kind": "dialog",
+      "title": "Delete account",
+      "opens_from": "account",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed"
+      ]
+    },
+    {
+      "id": "toast",
+      "kind": "notification",
+      "title": "Toast",
+      "opens_from": "browse",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "with-action",
+        "stacked"
+      ]
+    },
+    {
+      "id": "request-toast",
+      "kind": "notification",
+      "title": "Request toast",
+      "opens_from": "requests",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "with-action"
+      ]
+    },
+    {
+      "id": "listing-toast",
+      "kind": "notification",
+      "title": "Listing toast",
+      "opens_from": "my-business",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "with-action"
+      ]
+    },
+    {
+      "id": "message-toast",
+      "kind": "notification",
+      "title": "Message toast",
+      "opens_from": "conversation",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger"
+      ]
+    },
+    {
+      "id": "offline-banner",
+      "kind": "notification",
+      "title": "Connection banner",
+      "opens_from": "browse",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "persistent"
+      ]
+    },
+    {
+      "id": "verification-banner",
+      "kind": "notification",
+      "title": "Verification banner",
+      "opens_from": "my-business",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "persistent"
+      ]
+    },
+    {
+      "id": "verify-email-banner",
+      "kind": "notification",
+      "title": "E-mail banner",
+      "opens_from": "browse",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "persistent"
+      ]
+    }
+  ]
+}
