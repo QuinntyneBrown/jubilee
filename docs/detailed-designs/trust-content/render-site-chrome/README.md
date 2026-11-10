@@ -36,9 +36,13 @@ small navigation read model in the `Jubilee API`.
 - **`TopBar`** — Angular component for the top bar. For a member at 768 px or
   wider it shows the brand, "Browse", "Messages" with badge, "List your
   business" or "My business", and the avatar. From 1024 px it also shows
-  `TopBarSearchBox`. Under 768 px it shows only the brand and the avatar
-  (`L2-164`). The top bar for a visitor is defined by the directory and account
-  features.
+  `TopBarSearchBox`; below 1024 px a search link (label "Search") leads to
+  `/search`. A member also gets the notifications button, with a dot while
+  notifications are unread. Under 768 px the top bar shows only the brand, the
+  search link and the notifications button (`L2-164`); the account is reached
+  from "You" in the tab bar. For a visitor the top bar shows the brand (linked to
+  `/welcome`), "Browse", "Sign in" and the button "Join free", and the tab bar
+  shows "Browse", "Sign in" and "Join" (`L2-022`).
 - **`TopBarSearchBox`** — search input with the placeholder "Plumber, lawyer,
   Bibles…". Submitting navigates to the search page; the search features own the
   query rules.
@@ -65,8 +69,9 @@ small navigation read model in the `Jubilee API`.
   caller's own data.
 - **`GetNavigationSummaryQuery`** and **`GetNavigationSummaryQueryHandler`** —
   return `NavigationSummary`: `UnreadConversationCount`, `OwnsListing`,
-  `NewRequestCount` and the avatar initials. The handler reads the `Cache` first;
-  the cache time to live is `<TO SUPPLY>`.
+  `NewRequestCount` and the avatar initials. Until the messaging, request and
+  onboarding features exist the counts are `0` and `OwnsListing` is false; the
+  handler is not cached, and a cache is added with the first real count.
 - **`EventsHub`** — SignalR hub in `Jubilee.Api`. It sends `BadgeChanged` to the
   member's connections when the messaging or request features write the
   matching outbox message.
@@ -83,7 +88,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-112` | `L1-015` | Every app page shall show the footer "© {year} Jubilee · Toronto's Christian marketplace" with links "Statement of faith", "Help", "Terms" and "Privacy", and a "Skip to content" link as the first focusable element that moves focus to `main`. A member shall see the top bar navigation at 768 px or wider, with the search box from 1024 px, and a fixed tab bar above the device safe area under 768 px, with page space reserved for it. |
-| `L2-164` | `L1-023` | Under 768 px a member page shall show the bottom tab bar and a top bar with only the brand and the avatar; from 768 px to 1023 px the tab bar shall be hidden and the top bar shall show the primary navigation; from 1024 px the top bar shall also show the search box. |
+| `L2-164` | `L1-023` | Under 768 px a member page shall show the bottom tab bar and a top bar with only the brand, the search link and the notifications button; from 768 px to 1023 px the tab bar shall be hidden and the top bar shall show the primary navigation; from 1024 px the top bar shall also show the search box. |
 | `L2-065` | `L1-010` | "Messages" in the top bar and tab bar shall carry a count badge with the number of unread conversations, announced as "{n} unread", shown as "99+" above 99 and updated within 5 seconds while the page is open. |
 
 ## Diagrams

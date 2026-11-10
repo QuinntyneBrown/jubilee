@@ -1,0 +1,5 @@
+node_modules/
+test-results/
+playwright-report/
+# Baselines are rendered from docs/mocks on each run (ADR 0005); they are never committed.
+__baselines__/

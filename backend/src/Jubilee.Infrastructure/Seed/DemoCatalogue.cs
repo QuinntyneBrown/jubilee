@@ -1,0 +1,137 @@
+using Jubilee.Domain;
+using static Jubilee.Domain.AreaServed;
+using static Jubilee.Domain.OfferFilter;
+
+namespace Jubilee.Infrastructure.Seed;
+
+/// <summary>
+/// The demo directory: the catalogue the mocks in <c>docs/mocks</c> show. Names, taglines and
+/// category counts come from the design reference; the listings the mocks do not name, and all
+/// offers, areas and prices, are invented. Within a category the order here is the mock order,
+/// and the seeder makes it the Recommended order.
+/// </summary>
+internal static class DemoCatalogue
+{
+    internal sealed record DemoListing(
+        string Category, string Slug, string Name, string Tagline, string Highlight, OfferFilter Offers, AreaServed Areas);
+
+    internal sealed record DemoHiddenListing(DemoListing Listing, HiddenBecause Because);
+
+    internal enum HiddenBecause
+    {
+        Draft,
+        PendingReference,
+        ChangesRequested,
+        Paused,
+        UnderModerationHold,
+    }
+
+    internal sealed record DemoProduct(
+        string ShopSlug, string Slug, string Name, int PriceCents, bool PerUnit, TileTint Tint, TileIcon Icon);
+
+    private const AreaServed AllOfToronto = Scarborough | NorthYork | EastYork | Etobicoke | Downtown;
+
+    /// <summary>The 47 verified, live businesses.</summary>
+    internal static readonly DemoListing[] PublicListings =
+    [
+        // Shops (3)
+        new("shops", "luzandre", "Luzandre.com", "Unique & custom Christian apparel, artworks & gifts that bring joy", "Ships across Canada", OpenSaturdays, AllOfToronto),
+        new("shops", "christian-bookstores", "Christian Bookstores", "Bibles, devotionals and gifts from Toronto’s Christian booksellers", "Pickup in store", OpenSaturdays, Downtown | NorthYork),
+        new("shops", "flower-creations", "Flower Creations", "Fresh Blooms for Every Occasion", "Same-day delivery", OpenSaturdays | FreeQuote, EastYork | Scarborough),
+
+        // Financial & insurance (3)
+        new("financial-insurance", "legacy-financial", "Legacy Financial", "Build a Legacy. Protect a Legacy. Leave a Legacy.", "Free first meeting", FreeQuote, AllOfToronto),
+        new("financial-insurance", "deeks-insurance", "Deeks Insurance", "We put our heart – and faith – into everything we do as a business.", "Free quote", FreeQuote, Downtown | Etobicoke),
+        new("financial-insurance", "jd-smith-insurance-brokers", "JD Smith Insurance Brokers", "Personal & commercial insurance solutions", "Free quote", FreeQuote, NorthYork | Scarborough),
+
+        // Legal & immigration (6)
+        new("legal-immigration", "kevin-marshall-barrister-solicitor", "Kevin Marshall, Barrister & Solicitor", "Caring for you, so you can take care of what matters", "Free first call", FreeQuote, Downtown | EastYork),
+        new("legal-immigration", "desloges-law-group", "Desloges Law Group", "Helping thousands of people from all over the world obtain legal status and make Canada their home.", "Immigration specialists", FreeQuote, Downtown | NorthYork),
+        new("legal-immigration", "kyl-law-firm", "KYL Law Firm", "Immigration and family matters, handled ethically and efficiently.", "Evening appointments", OpenSaturdays, NorthYork | Scarborough),
+        new("legal-immigration", "law-office-of-denise-badley-castello", "Law Office of Denise Badley-Castello", "Legal Representation You Can Trust", "Free first call", FreeQuote, Etobicoke | Downtown),
+        new("legal-immigration", "covenant-immigration-services", "Covenant Immigration Services", "Study permits, sponsorships and citizenship, one careful step at a time.", "Open Saturdays", OpenSaturdays | FreeQuote, Scarborough | EastYork),
+        new("legal-immigration", "beacon-family-law", "Beacon Family Law", "Steady counsel for families in hard seasons.", "Free first call", FreeQuote, NorthYork | Etobicoke),
+
+        // Home & property (10). The filter mocks rely on these offers and areas: three take
+        // emergency calls, two of those are open Saturdays, none of the three serves Scarborough,
+        // and four offer a free quote in East York.
+        new("home-property", "waterworks-plumbing-drains", "WaterWorks Plumbing & Drains", "Treating Every Customer As Family", "Emergency calls", EmergencyCalls | OpenSaturdays, EastYork | NorthYork | Downtown),
+        new("home-property", "ace-waterproofing", "Ace Waterproofing", "Specializing In Basement Waterproofing", "Free quote", FreeQuote, EastYork | Scarborough),
+        new("home-property", "atera-construction-and-renovation", "Atera Construction and Renovation", "Expert construction on any project", "Free quote", FreeQuote, EastYork | NorthYork),
+        new("home-property", "moores-cleaning-service", "Moore’s Cleaning Service", "Enjoy the Freedom of Clean", "Weekly or one-time", FreeQuote, EastYork | Downtown),
+        new("home-property", "cornerstone-electric", "Cornerstone Electric", "Licensed electricians who show up when they say they will", "Emergency calls", EmergencyCalls | OpenSaturdays, Etobicoke | NorthYork),
+        new("home-property", "shepherds-heating-cooling", "Shepherd’s Heating & Cooling", "Furnaces and air conditioners kept running, winter and summer", "Emergency calls", EmergencyCalls | FreeQuote, Downtown | Etobicoke),
+        new("home-property", "good-ground-landscaping", "Good Ground Landscaping", "Gardens, lawns and snow, cared for all year", "Free quote", FreeQuote, EastYork | Scarborough),
+        new("home-property", "mustard-seed-painting", "Mustard Seed Painting", "Small crew, careful work, clean lines", "Free quote", FreeQuote, NorthYork | Scarborough),
+        new("home-property", "olive-branch-roofing", "Olive Branch Roofing", "Roofs repaired and replaced without the runaround", "Free quote", FreeQuote, Scarborough | Etobicoke),
+        new("home-property", "plumb-line-handyman", "Plumb Line Handyman", "The small jobs done properly", "Free quote", FreeQuote, Downtown | NorthYork),
+
+        // Real estate & living (4)
+        new("real-estate-living", "bob-bush-realty", "Bob Bush Realty", "Find your dream Cottage!", "Free home evaluation", FreeQuote, NorthYork | Etobicoke),
+        new("real-estate-living", "remax-professional-jonathan-bradshaw", "RE/MAX Professional – Jonathan Bradshaw", "Putting people and homes together is my passion!", "Free home evaluation", FreeQuote | OpenSaturdays, Etobicoke | Downtown),
+        new("real-estate-living", "sutton-old-mill-liz-st-louis", "Sutton Old Mill – Liz St Louis", "Building your future one key at a time…", "Open Saturdays", OpenSaturdays, Etobicoke | Downtown),
+        new("real-estate-living", "ccsvillage-lifestyle-community", "CCSVillage Lifestyle Community", "Welcome Home to Faith, Fellowship, and Carefree Living.", "Tours on Saturdays", OpenSaturdays, Scarborough),
+
+        // Health & family (4)
+        new("health-family", "adrianne-sequeira", "Adrianne Sequeira, DMin., RP, RMFT, RN", "Expert therapy and counselling for individuals, couples, and families", "Accepting new clients", FreeQuote, Downtown | EastYork),
+        new("health-family", "break-free-family-centre", "Break Free Family Centre", "“Every mountain top is within reach if you just keep climbing.”", "Accepting new clients", FreeQuote, Scarborough | EastYork),
+        new("health-family", "confident-smiles-implant-denture-solutions", "Confident Smiles Implant Denture Solutions", "Ensuring your smile stays bright.", "Free consultation", FreeQuote | OpenSaturdays, NorthYork),
+        new("health-family", "angelic-treasures-christian-childcare", "Angelic Treasures Christian Childcare", "Christian childcare business opportunity", "Spaces available", FreeQuote, Scarborough | NorthYork),
+
+        // Business & tech (5)
+        new("business-tech", "ccbf-canadian-christian-business-federation", "CCBF Canadian Christian Business Federation", "Connecting your Sunday faith to your Monday work.", "Monthly breakfasts", FreeQuote, AllOfToronto),
+        new("business-tech", "digital-consultants", "Digital Consultants", "Igniting Online Presence", "Free quote", FreeQuote, Downtown | NorthYork),
+        new("business-tech", "east-west-express", "East-West Express", "Operating in Canada since 1991", "Free quote", FreeQuote | OpenSaturdays, AllOfToronto),
+        new("business-tech", "lamont-it-services", "Lamont IT Services", "Your Complete On-site IT Solutions Partner!", "On-site visits", FreeQuote, EastYork | Downtown),
+        new("business-tech", "kingdom-bookkeeping", "Kingdom Bookkeeping", "Tidy books for churches, charities and small businesses.", "Free first meeting", FreeQuote, NorthYork | Etobicoke),
+
+        // Learning (2)
+        new("learning", "talent-can-be-taught", "Talent Can Be Taught", "Learning Music Made Simple.", "First lesson free", OpenSaturdays, NorthYork | Scarborough),
+        new("learning", "the-revelation-centre", "The Revelation Centre", "Discipleship training through empirical theology. Come and see.", "Evening classes", OpenSaturdays, Downtown),
+
+        // Media (7)
+        new("media", "amen-fm-christian-superstation", "Amen FM Christian Superstation", "Radio with a purpose", "Listen live", FreeQuote, AllOfToronto),
+        new("media", "faith-tv", "FAITH TV", "The Nation’s Faith Station", "Watch online", FreeQuote, AllOfToronto),
+        new("media", "joy-radio-cjye", "Joy Radio CJYE", "Discover the life changing power of Joy Radio!", "Listen live", FreeQuote, AllOfToronto),
+        new("media", "joy-tv", "JOY TV", "Faith and Opinion", "Watch online", FreeQuote, AllOfToronto),
+        new("media", "cornerstone-print-design", "Cornerstone Print & Design", "Bulletins, banners and signs for churches and shops.", "Free quote", FreeQuote | OpenSaturdays, EastYork | Scarborough),
+        new("media", "salt-light-video", "Salt & Light Video", "Weddings, baptisms and ministry stories on film.", "Free quote", FreeQuote | OpenSaturdays, Downtown | Etobicoke),
+        new("media", "good-news-podcast-studio", "Good News Podcast Studio", "Record, edit and publish your message.", "Studio by the hour", OpenSaturdays, Downtown),
+
+        // Community (3)
+        new("community", "the-scott-mission", "The Scott Mission", "A Christian Ministry of Mercy and Love.", "Volunteers welcome", OpenSaturdays, Downtown),
+        new("community", "teen-challenge-canada-vehicle-donation", "Teen Challenge Canada – Vehicle Donation", "Donated vehicles change lives!", "Free pickup", FreeQuote, AllOfToronto),
+        new("community", "jesus-in-the-city-parade-and-festival", "Jesus in the City Parade and Festival", "Celebrating our love for God and love for people", "Every September", OpenSaturdays, Downtown),
+    ];
+
+    /// <summary>Listings that are not public, so the demo shows that they never appear (L2-028).</summary>
+    internal static readonly DemoHiddenListing[] HiddenListings =
+    [
+        new(new("shops", "emmaus-road-coffee-roasters", "Emmaus Road Coffee Roasters", "Small-batch coffee roasted in the Junction.", "Ships across Canada", OpenSaturdays, Etobicoke | Downtown), HiddenBecause.Draft),
+        new(new("learning", "narrow-gate-tutoring", "Narrow Gate Tutoring", "Patient math and reading help for grades 1 to 8.", "First lesson free", OpenSaturdays, Scarborough | EastYork), HiddenBecause.PendingReference),
+        new(new("home-property", "living-stone-masonry", "Living Stone Masonry", "Brick, stone and chimney repair.", "Emergency calls", EmergencyCalls | FreeQuote | OpenSaturdays, Scarborough | EastYork), HiddenBecause.ChangesRequested),
+        new(new("shops", "bethel-gift-baskets", "Bethel Gift Baskets", "Gift baskets for new neighbours, new babies and hard days.", "Pickup in store", OpenSaturdays, NorthYork), HiddenBecause.Paused),
+        new(new("health-family", "shiloh-wellness-clinic", "Shiloh Wellness Clinic", "Physiotherapy and massage close to home.", "Accepting new clients", FreeQuote, EastYork | Downtown), HiddenBecause.UnderModerationHold),
+    ];
+
+    /// <summary>"Featured this week", positions 1 to 5.</summary>
+    internal static readonly string[] FeaturedSlugs =
+    [
+        "legacy-financial",
+        "luzandre",
+        "christian-bookstores",
+        "adrianne-sequeira",
+        "waterworks-plumbing-drains",
+    ];
+
+    /// <summary>Products, newest first. The last belongs to a paused shop and never shows.</summary>
+    internal static readonly DemoProduct[] Products =
+    [
+        new("luzandre", "faith-heavyweight-tee-charcoal", "Faith heavyweight tee, charcoal", 3400, false, TileTint.Ink, TileIcon.Shirt),
+        new("luzandre", "gold-cross-stoneware-mug", "Gold cross stoneware mug", 2400, false, TileTint.Gold, TileIcon.Mug),
+        new("luzandre", "custom-church-team-tee", "Custom church team tee (min. 12)", 2200, true, TileTint.Blue, TileIcon.Shirt),
+        new("luzandre", "morning-mug-set-of-two", "Morning mug, set of two", 4200, false, TileTint.Green, TileIcon.Mug),
+        new("christian-bookstores", "leather-journaling-bible-esv", "Leather journaling Bible, ESV", 6400, false, TileTint.Gold, TileIcon.Book),
+        new("bethel-gift-baskets", "welcome-home-basket", "Welcome home basket", 5800, false, TileTint.Green, TileIcon.Bag),
+    ];
+}

@@ -36,7 +36,7 @@ actor -> browser : Open / on a phone 360 px wide
 browser -> shell : Bootstrap the app shell
 shell -> nav : refresh()
 nav -> client : Load session summary
-client -> controller : GET /api/session
+client -> controller : GET /api/me/navigation
 controller -> cache : Read session
 cache --> controller : Session with unread counts
 controller --> client : 200 session summary
@@ -47,7 +47,7 @@ browser --> viewport : Neither matches
 viewport --> shell : TabBar mode
 shell -> tabbar : Render Browse, List, Messages, You (L2-164)
 tabbar -> browser : Pad by env(safe-area-inset-bottom) (L2-163)
-shell -> topbar : Render brand and avatar only (L2-164)
+shell -> topbar : Render brand, search link and notifications only (L2-164)
 shell -> hero : Render heading and hero search
 shell --> actor : Phone navigation
 

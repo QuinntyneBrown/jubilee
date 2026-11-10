@@ -1,2 +1,12 @@
 # Mock screenshots and other generated caches
 .cache/
+
+# .NET build output
+bin/
+obj/
+TestResults/
+*.user
+.vs/
+
+# Node
+node_modules/

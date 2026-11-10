@@ -61,7 +61,7 @@ introduces.
 - **`PublicListingFilter`** — query filter that defines a public listing:
   stage live, not paused, not deleted and not under a moderation hold. Both the
   count and the featured list apply it (L2-028).
-- **`FeaturedSelector`** — domain service. `Select(now, limit)` returns the
+- **`FeaturedSelector`** — application service in `Jubilee.Application`, because it queries the database. `Select(now, limit)` returns the
   public listings of the `FeaturedSlot` rows whose 7-day window contains `now`,
   in slot order, skipping any listing that is no longer public. When no slot is
   current it returns the most recently verified public listings. The welcome
@@ -76,9 +76,20 @@ introduces.
   removes the cached directory entries when a listing is approved, paused,
   resumed, removed or featured.
 
-The destination route of "List your business" for a visitor is `<TO SUPPLY>`.
-A failed load of the welcome data shows the shared load-error state; its error
-reference is `<TO SUPPLY>`.
+"List your business" takes a visitor to `/join?returnUrl=/list`, so that they
+arrive at the listing form once they have an account. The page text does not
+wait for the welcome data: until it arrives, and when the load fails, the hero
+line reads "Shops, advisors, trades and more. Free to join, free to list."
+without the count and "Featured this week" is left out. The page therefore has
+no loading, empty or error state of its own.
+
+Until the outbox of `Jubilee Worker` exists (`operations/run-background-jobs`),
+`DirectoryCacheInvalidationInterceptor` in `Jubilee.Infrastructure` does the
+work of `DirectoryCacheInvalidator`: it removes the cached directory entries
+when `AppDbContext` saves a change to a `Listing`, `Product` or `FeaturedSlot`.
+`IDirectoryReadCache` is built on `IDistributedCache`, in memory unless a Redis
+connection string is configured, and the API also marks the responses
+`Cache-Control: public, max-age=60` (`docs/adr/0003-directory-read-cache.md`).
 
 ## Requirements
 

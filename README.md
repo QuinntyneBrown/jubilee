@@ -13,9 +13,10 @@ business, messages it, books a meeting, asks for a quote or requests a product, 
 confirms or declines. Every listing is confirmed by a pastor or elder before it goes live. Jubilee
 does not take payment; members pay the business directly.
 
-> **Status: design complete, implementation not started.** The requirements, mocks, design system
-> and detailed designs are in `docs/`. No application code exists yet. The
-> [user journeys](docs/journey.md) list what will be built, in order of value to the user.
+> **Status: the first of 26 journeys is implemented.** A visitor can open the welcome page, browse
+> the directory and filter, sort and page through a category. The [user journeys](docs/journey.md)
+> list what is built next, in order of value to the user, and
+> [`docs/estimates/`](docs/estimates/README.md) tracks how far each design is.
 
 ## Table of contents
 
@@ -32,6 +33,7 @@ does not take payment; members pay the business directly.
 ## Features
 
 These are the planned features. Each one is specified in [`docs/specs/L2.md`](docs/specs/L2.md).
+The directory is built; the others follow in the order of the journeys.
 
 - **Directory.** A welcome page, a browse home with featured businesses, and category pages with
   filters, sorting and pagination. Only verified, live listings are public.
@@ -53,8 +55,7 @@ These are the planned features. Each one is specified in [`docs/specs/L2.md`](do
 
 ## Project structure
 
-`docs/` exists today. The other folders are the layout the implementation will follow; it is
-defined in [`AGENTS.md`](AGENTS.md).
+The layout is defined in [`AGENTS.md`](AGENTS.md).
 
 ```
 jubilee/
@@ -70,6 +71,8 @@ jubilee/
 │   ├── mocks/              static HTML mocks of every screen in every state
 │   ├── design-system/      tokens, foundations, components and patterns
 │   ├── detailed-designs/   one design per feature, grouped by subsystem
+│   ├── adr/                architecture decisions
+│   ├── estimates/          effort and percent complete per design
 │   ├── journey.md          the user journeys, with effort estimates
 │   └── prompts/            one implementation prompt per journey
 ├── AGENTS.md               rules for people and coding agents working in this repository
@@ -78,32 +81,67 @@ jubilee/
 
 ## Getting started
 
-There is nothing to build or run yet. You can read the design today:
+You need the [.NET 10 SDK](https://dotnet.microsoft.com/download), [Node.js 22](https://nodejs.org)
+and [PowerShell 7](https://learn.microsoft.com/powershell/) (`pwsh`). SQL Server is needed only
+for the full local stack; the quick start and all the tests run on SQLite.
 
-1. Clone the repository.
+1. Clone the repository and install the frontend and end-to-end dependencies.
 
    ```
    git clone https://github.com/QuinntyneBrown/jubilee.git
+   cd jubilee
+   npm ci --prefix frontend
+   npm ci --prefix e2e
    ```
 
-2. Open `docs/mocks/index.html` in a browser to see every page, dialog and notification. No server
-   or network is needed. Press `t` to switch between the light and dark themes.
-3. Open `docs/design-system/index.html` to see the tokens and components.
+2. Start the API with the demo data. It listens on `http://localhost:5080`, uses SQLite and needs
+   no database server.
 
-Setup and run commands for the backend and frontend will be added here when the first journey is
-implemented.
+   ```
+   pwsh eng/Start-E2eApi.ps1
+   ```
+
+3. In a second terminal, start the app and open `http://localhost:4200`. The development server
+   sends `/api` to the API.
+
+   ```
+   npm start --prefix frontend
+   ```
+
+To run against SQL Server instead, set the connection string `ConnectionStrings:Jubilee` and run
+`pwsh eng/Start-FreshStack.ps1`. It resets the database, applies the migrations, seeds the demo
+data and starts the API and the app. The API never applies migrations by itself; the `jubilee`
+command-line tool does:
+
+```
+dotnet run --project backend/src/Jubilee.Cli -- migrate
+dotnet run --project backend/src/Jubilee.Cli -- seed
+dotnet run --project backend/src/Jubilee.Cli -- reset
+```
+
+The design can be read without running anything: open `docs/mocks/index.html` for every page,
+dialog and notification (press `t` to switch themes) and `docs/design-system/index.html` for the
+tokens and components.
 
 ## Running the tests
-
-No tests exist yet. The implementation will use these commands, as set out in
-[`AGENTS.md`](AGENTS.md):
 
 | What | Command | Where |
 |---|---|---|
 | Backend tests | `pwsh eng/Test-Backend.ps1` | repository root |
 | Frontend lint | `npm run lint` | `frontend/` |
 | Frontend format check | `npm run format:check` | `frontend/` |
-| End-to-end tests | `npx playwright test` | `e2e/` |
+| Design-system copy is current | `npm run design:check` | `frontend/` |
+| End-to-end tests | `npm run baseline` then `npm test` | `e2e/` |
+
+The backend tests need no database server. The end-to-end suite runs in Chromium only; run
+`npx playwright install chromium` in `e2e/` once. It starts the API (through
+`eng/Start-E2eApi.ps1`) and the app by itself, or uses the ones already running.
+
+`npm run baseline` renders the mocks in `docs/mocks` to screenshots, and `npm test` then compares
+the app with them, region by region, along with the behaviour, accessibility and responsive
+specs. The screenshots are not committed: to change how a screen looks, change its mock first.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs all of the above on every pull
+request.
 
 ## Documentation
 
@@ -114,6 +152,8 @@ No tests exist yet. The implementation will use these commands, as set out in
 | [Mocks](docs/mocks/README.md) | 67 screens in 271 states; the source of truth for the UI |
 | [Design system](docs/design-system/README.md) | Tokens, foundations, components and patterns |
 | [Detailed designs](docs/detailed-designs/README.md) | The architecture baseline and one design per feature |
+| [Architecture decisions](docs/adr/README.md) | The decisions that shape the code, one record each |
+| [Estimates](docs/estimates/README.md) | Effort and percent complete for every design |
 | [User journeys](docs/journey.md) | The 26 journeys to implement, with effort estimates |
 | [Implementation prompts](docs/prompts/) | One ready-to-run prompt per journey |
 | [AGENTS.md](AGENTS.md) | Repository layout, architecture rules and the required workflow |

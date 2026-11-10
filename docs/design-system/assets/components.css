@@ -500,6 +500,8 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .topbar--ink .search .input::placeholder, .topbar--ink .search .icon { color: var(--color-fg-on-brand-muted); }
 .topbar--ink .btn--ghost { --btn-fg: var(--color-fg-on-brand); --btn-bg-hover: var(--color-bg-on-brand-subtle); --btn-bg-active: var(--color-border-on-brand); }
 .topbar--ink .btn--icon { position: relative; }
+/* Under 768 px a small button in the top bar is a primary touch control (L2-162). */
+@media (max-width: 47.99rem) { .topbar .btn--sm { min-height: var(--target-comfortable); } }
 .topbar__dot { position: absolute; top: var(--space-2); right: var(--space-2); width: var(--indicator-size); height: var(--indicator-size); border-radius: var(--radius-full); background: var(--color-accent); }
 
 /* ---------- Phone tab bar ---------------------------------------------------- */

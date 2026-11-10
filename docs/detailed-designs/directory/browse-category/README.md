@@ -37,8 +37,9 @@ The feature is a read-only vertical slice from the Angular page to the database.
   has listed here yet" with "List your business" and "Browse other categories",
   the no-results state, and the error state "We couldn't load this category"
   with the reference `JB-CAT-503`. An unknown slug leads to the not-found page.
-- **`FilterChips`** — inline toggle chips shown from 768 px. Each chip is a
-  button with `aria-pressed`. The chips stay visible in the no-results state.
+- **`FilterChips`** — inline toggle chips shown from 768 px: one per offer
+  ("Free quote", "Emergency calls", "Open Saturdays") and one per area, labelled
+  "Serves {area}". Each chip is a button with `aria-pressed`. The chips stay visible in the no-results state.
 - **`FiltersDialog`** — sheet shown below 768 px when "Filters" is pressed. It
   lists "Offers" (Free quote, Emergency calls, Open Saturdays), "Area served"
   (Scarborough, North York, East York, Etobicoke, Downtown), "Sort" and "Clear
@@ -74,11 +75,12 @@ The feature is a read-only vertical slice from the Angular page to the database.
 - **`ListingSortPolicy`** — domain service that maps `ListingSort` to an
   ordering. `NameAscending` orders by `Listing.SortName`, a stored form of the
   name that is case-folded, stripped of accents and stripped of a leading
-  "The". `Newest` orders by `Listing.VerifiedAt` descending. `Recommended`
+  "The". `Newest` orders by `Listing.ApprovedAt`, the date of verification, descending. `Recommended`
   orders by `Listing.RecommendedScore` descending and then by `SortName`.
 - **`Listing.RecommendedScore`** — stored score that combines profile
-  completeness, response time and recency. The weights of the three inputs are
-  `<TO SUPPLY>` and shall be documented with the formula. No input represents
+  completeness, response time and recency. The score is `0.5 × completeness + 0.3 × responsiveness +
+  0.2 × recency`, each input between 0 and 1; the formula is documented in
+  `docs/adr/0004-directory-ordering-rules.md`. No input represents
   payment; paid placement does not exist.
 - **`PageWindow`** — value object with a fixed page size of 16. `Clamp` maps a
   page number below 1 to page 1 and a page number beyond the last page to the
@@ -86,7 +88,17 @@ The feature is a read-only vertical slice from the Angular page to the database.
 - **`FilterSuggestion`** — pair of a filter set and its match count. When
   filters match nothing, the handler counts the matches of each filter set
   obtained by removing one filter, and the page states those counts in the
-  suggestion line.
+  suggestion line, one sentence per removal that would match something:
+  "Without “Serves Scarborough”, 3 businesses match."
+- **Category fact** — the count of live listings in the category that offer
+  emergency calls, shown as "{n} take emergency calls" beside the business
+  count and left out when it is 0.
+
+`DirectoryCacheInvalidationInterceptor` in `Jubilee.Infrastructure` removes the cached directory entries
+when `AppDbContext` saves a change to a `Listing`, `Product` or `FeaturedSlot`.
+`IDirectoryReadCache` is built on `IDistributedCache`, in memory unless a Redis
+connection string is configured, and the API also marks the responses
+`Cache-Control: public, max-age=60` (`docs/adr/0003-directory-read-cache.md`).
 
 ## Requirements
 

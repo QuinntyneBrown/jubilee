@@ -31,9 +31,10 @@ belong to `adapt-navigation` in the responsive design subsystem.
 The slice lives in `Jubilee Web`, with data from `Jubilee API`, photos from
 `Media storage`, and two checks in the CI pipeline.
 
-- **`ui.css`** — the component stylesheet, taken from
-  `docs/mocks/assets/ui.css` and loaded once as a global stylesheet after
-  `tokens.css`. Kit components declare no colours, sizes or spacing of their
+- **`ui.css`** — the component stylesheet, a copy of
+  `docs/design-system/assets/components.css` kept in
+  `frontend/projects/components/src/lib/styles/` and loaded once as a global
+  stylesheet after `tokens.css`. Kit components declare no colours, sizes or spacing of their
   own. A new component is added to `ui.css` and to a mock first, never to a
   page stylesheet.
 - **`Button`** — Angular directive on `button` and `a` elements. It emits
@@ -59,8 +60,12 @@ The slice lives in `Jubilee Web`, with data from `Jubilee API`, photos from
   aspect ratio (`4 / 3`, or `1` for `.media--square` and `.media--thumb`), so
   no image distorts.
 - **`CategoryTileMap`** — Angular service that maps each of the 10 categories
-  to a `CategoryTile` (tint and icon). The mapping follows the mocks; the table
-  of category, tint and icon is `<TO SUPPLY>`.
+  to a `CategoryTile` (tint and icon). The mapping follows the mocks: Shops gold
+  bag "Shop"; Financial & insurance green chart "Financial"; Legal &
+  immigration blue shield "Legal"; Home & property ink wrench "Home"; Real
+  estate & living gold home "Real estate"; Health & family green heart
+  "Health"; Business & tech blue briefcase "Business"; Learning blue book
+  "Learning"; Media ink image "Media"; Community green user "Community".
 - **`VerifiedBadge`** — Angular component that emits `.verified` with the
   check icon and text, so the status is not conveyed by colour alone. It renders
   only for a listing that passed verification.
@@ -81,7 +86,7 @@ The slice lives in `Jubilee Web`, with data from `Jubilee API`, photos from
 - **`VisualRegressionSuite`** — the test suite of `L2-163`. For each screen
   and state in `docs/mocks/manifest.json` it renders the product screen with a
   fixture of the mocks' cast and catalog and compares it with the mock opened
-  with `?chrome=0`. A difference above the threshold (`<TO SUPPLY>`) fails the
+  with `?chrome=0`. A difference above the threshold (`1 %` of the pixels of a region) fails the
   build.
 
 ## Requirements

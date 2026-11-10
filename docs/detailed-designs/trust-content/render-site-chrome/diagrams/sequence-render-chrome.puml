@@ -46,7 +46,7 @@ store --> shell : Summary signal
 shell -> viewport : Read isMedium and isLarge
 viewport --> shell : Breakpoint signals
 alt Under 768 px
-  shell -> top : Show brand and avatar only (L2-164)
+  shell -> top : Show brand, search link and notifications only (L2-164)
   shell -> tab : Show "Browse" and "List" or "Business" and "Messages" and "You" (L2-112)
   shell -> shell : Reserve tab bar height plus safe-area inset
 else 768 px to 1023 px

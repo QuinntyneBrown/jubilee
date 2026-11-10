@@ -1,0 +1,60 @@
+using System.Globalization;
+using System.Threading.RateLimiting;
+using Jubilee.Api.Errors;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
+
+namespace Jubilee.Api.RateLimiting;
+
+/// <summary>Bound from the <c>RateLimits</c> configuration section.</summary>
+public sealed class RateLimitOptions
+{
+    public const string Section = "RateLimits";
+
+    /// <summary>Public directory reads allowed per client IP address per minute.</summary>
+    public int DirectoryReadsPerMinute { get; set; } = 120;
+}
+
+/// <summary>
+/// Abuse protection for the public directory reads: a fixed window per client IP address,
+/// answered with 429 ProblemDetails and <c>Retry-After</c> when exceeded (L2-137).
+/// </summary>
+public static class DirectoryRateLimit
+{
+    public const string Policy = "directory-reads";
+
+    public static IServiceCollection AddJubileeRateLimiting(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<RateLimitOptions>(configuration.GetSection(RateLimitOptions.Section));
+        services.AddRateLimiter(limiter =>
+        {
+            limiter.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            limiter.AddPolicy(Policy, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter(client, _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.DirectoryReadsPerMinute),
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.OnRejected = async (rejected, cancellationToken) =>
+            {
+                var retryAfter = rejected.Lease.TryGetMetadata(MetadataName.RetryAfter, out var wait)
+                    ? wait
+                    : TimeSpan.FromMinutes(1);
+                var seconds = Math.Max(1, (int)Math.Ceiling(retryAfter.TotalSeconds));
+                rejected.HttpContext.Response.Headers.RetryAfter = seconds.ToString(CultureInfo.InvariantCulture);
+                await ProblemWriter.WriteAsync(
+                    rejected.HttpContext,
+                    StatusCodes.Status429TooManyRequests,
+                    "You're doing that a lot.",
+                    $"Try again in {seconds} seconds.",
+                    code: "rate_limited");
+            };
+        });
+        return services;
+    }
+}

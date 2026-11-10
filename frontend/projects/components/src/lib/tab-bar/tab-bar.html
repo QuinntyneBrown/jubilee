@@ -1,0 +1,33 @@
+<a class="tabbar__item" routerLink="/" [attr.aria-current]="current() === 'browse' ? 'page' : null"
+  ><svg jb-icon name="home"></svg>Browse</a
+>
+@if (member(); as member) {
+  @if (member.ownsListing) {
+    <a
+      class="tabbar__item"
+      routerLink="/my-business"
+      [attr.aria-current]="current() === 'business' ? 'page' : null"
+      ><svg jb-icon name="store"></svg>Business</a
+    >
+  } @else {
+    <a class="tabbar__item" routerLink="/list"><svg jb-icon name="plus"></svg>List</a>
+  }
+  <a
+    class="tabbar__item"
+    routerLink="/messages"
+    [attr.aria-current]="current() === 'messages' ? 'page' : null"
+    ><svg jb-icon name="message"></svg>Messages
+    @if (member.unreadConversationCount > 0) {
+      <span jb-unread-badge [count]="member.unreadConversationCount"></span>
+    }
+  </a>
+  <a
+    class="tabbar__item"
+    routerLink="/account"
+    [attr.aria-current]="current() === 'account' ? 'page' : null"
+    ><svg jb-icon name="user"></svg>You</a
+  >
+} @else {
+  <a class="tabbar__item" routerLink="/sign-in"><svg jb-icon name="user"></svg>Sign in</a>
+  <a class="tabbar__item" routerLink="/join"><svg jb-icon name="plus"></svg>Join</a>
+}

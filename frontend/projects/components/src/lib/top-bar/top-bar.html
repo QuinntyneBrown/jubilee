@@ -1,0 +1,69 @@
+<a class="topbar__brand" [routerLink]="member() ? '/' : '/welcome'"
+  ><svg jb-brand-mark></svg>jubilee</a
+>
+<form class="search" role="search" (submit)="submit($event, q.value)">
+  <label class="visually-hidden" for="q">Search businesses and products</label>
+  <svg jb-icon name="search"></svg>
+  <input #q class="input" id="q" type="search" placeholder="Plumber, lawyer, Bibles…" />
+</form>
+<span class="topbar__spacer"></span>
+@if (member(); as member) {
+  <nav class="topbar__nav" aria-label="Primary">
+    <a class="nav-link" routerLink="/" [attr.aria-current]="current() === 'browse' ? 'page' : null"
+      >Browse</a
+    >
+    <a
+      class="nav-link"
+      routerLink="/messages"
+      [attr.aria-current]="current() === 'messages' ? 'page' : null"
+      >Messages
+      @if (member.unreadConversationCount > 0) {
+        <span jb-unread-badge [count]="member.unreadConversationCount"></span>
+      }
+    </a>
+  </nav>
+  @if (member.ownsListing) {
+    <a
+      class="btn btn--primary btn--sm only-desktop"
+      routerLink="/my-business"
+      [attr.aria-current]="current() === 'business' ? 'page' : null"
+      ><svg jb-icon name="store"></svg>My business</a
+    >
+  } @else {
+    <a class="btn btn--primary btn--sm only-desktop" routerLink="/list"
+      ><svg jb-icon name="plus"></svg>List your business</a
+    >
+  }
+  <a class="btn btn--ghost btn--icon only-narrow" routerLink="/search" aria-label="Search"
+    ><svg jb-icon name="search"></svg
+  ></a>
+  <a
+    class="btn btn--ghost btn--icon"
+    routerLink="/notifications"
+    [attr.aria-label]="
+      member.unreadNotificationCount > 0
+        ? 'Notifications, ' + member.unreadNotificationCount + ' unread'
+        : 'Notifications'
+    "
+    ><svg jb-icon name="bell"></svg>
+    @if (member.unreadNotificationCount > 0) {
+      <span class="topbar__dot" aria-hidden="true"></span>
+    }
+  </a>
+  <!-- The initials are decoration; the name of the link is the hidden sentence (WCAG 2.5.3). -->
+  <a class="avatar avatar--sm avatar--brand only-desktop" routerLink="/account"
+    ><span aria-hidden="true">{{ member.initials }}</span
+    ><span class="visually-hidden">Account menu for {{ member.displayName }}</span></a
+  >
+} @else {
+  <nav class="topbar__nav" aria-label="Primary">
+    <a class="nav-link" routerLink="/" [attr.aria-current]="current() === 'browse' ? 'page' : null"
+      >Browse</a
+    >
+    <a class="nav-link" routerLink="/sign-in">Sign in</a>
+  </nav>
+  <a class="btn btn--ghost btn--icon only-narrow" routerLink="/search" aria-label="Search"
+    ><svg jb-icon name="search"></svg
+  ></a>
+  <a class="btn btn--primary btn--sm" routerLink="/join">Join free</a>
+}

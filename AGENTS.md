@@ -10,8 +10,8 @@ parity with the design reference.
 Roles, requirements and the journeys to build are in `docs/specs/L1.md`, `docs/specs/L2.md` and
 `docs/journey.md`. Use the words those documents use in code, docs and UI; do not invent synonyms.
 
-No application code exists yet. The first feature implemented creates the layout below; every
-later feature follows it.
+The first journey (discover businesses) is implemented and created the layout below; every later
+feature follows it. `docs/estimates/` tracks how far each design is.
 
 ## Repository layout
 
@@ -24,6 +24,7 @@ later feature follows it.
 - `docs/specs/` — requirements (`L1.md` high level, `L2.md` detailed with acceptance criteria)
 - `docs/detailed-designs/` — per-feature designs derived from the requirements
 - `docs/adr/` — architecture decisions; read relevant ADRs before changing the areas they cover
+- `docs/estimates/` — effort and percent complete per design
 - `docs/journey.md`, `docs/prompts/` — the user journeys and one implementation prompt per journey
 - `eng/` — local engineering scripts (`Test-Backend.ps1`, `Start-E2eApi.ps1`, `Start-FreshStack.ps1`)
 

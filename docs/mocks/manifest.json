@@ -10,9 +10,9 @@
         "default"
       ],
       "not_applicable": {
-        "loading": "The welcome page is static content delivered with the app shell; nothing is fetched.",
-        "empty": "The welcome page has no collection that could be empty.",
-        "error": "The welcome page makes no request that could fail; a failed app load shows the server error page."
+        "loading": "The welcome text is delivered with the app shell. The live count and \"Featured this week\" arrive after it and simply appear; until then the hero line has no count.",
+        "empty": "The welcome page has no collection that could be empty: with nothing to feature, \"Featured this week\" is left out.",
+        "error": "A failed load of the count and the featured businesses leaves the page as it was before they arrived; a failed app load shows the server error page."
       }
     },
     {
