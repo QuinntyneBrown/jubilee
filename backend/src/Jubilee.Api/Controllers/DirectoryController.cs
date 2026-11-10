@@ -1,3 +1,4 @@
+using Jubilee.Api.Errors;
 using Jubilee.Api.Filters;
 using Jubilee.Application.Directory;
 using MediatR;
@@ -11,6 +12,7 @@ namespace Jubilee.Api.Controllers;
 [Route("api/directory")]
 [AllowAnonymous]
 [PublicDirectoryCache]
+[ErrorReference("JB-DIR-503")]
 public sealed class DirectoryController(ISender sender) : ControllerBase
 {
     [HttpGet("welcome")]

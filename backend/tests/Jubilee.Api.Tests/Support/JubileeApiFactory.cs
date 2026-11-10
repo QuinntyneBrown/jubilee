@@ -10,6 +10,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Time.Testing;
 
 namespace Jubilee.Api.Tests.Support;
@@ -27,6 +28,12 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
 
     /// <summary>The API's clock. Tests advance it; <see cref="Reset"/> puts it back.</summary>
     public FakeTimeProvider Clock => _clock.Current;
+
+    /// <summary>Switch that makes the database unavailable.</summary>
+    public DatabaseOutage Database { get; } = new();
+
+    /// <summary>Everything the API logged.</summary>
+    public CapturedLogs Logs { get; } = new();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -46,6 +53,9 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, _ => { });
             // Authenticate with the test scheme; challenges still go to the API's own scheme.
             services.PostConfigure<AuthenticationOptions>(o => o.DefaultAuthenticateScheme = TestAuthHandler.SchemeName);
+            services.ConfigureDbContext<AppDbContext>(options => options.AddInterceptors(Database));
+            services.AddSingleton<ILoggerProvider>(Logs);
+            services.AddControllers().AddApplicationPart(typeof(FailingController).Assembly);
             ConfigureTestServices(services);
         });
     }
@@ -83,6 +93,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     public async Task Reset()
     {
         _clock.Current = new FakeTimeProvider(ListingMother.Now);
+        Database.Unavailable = false;
+        Logs.Clear();
         await WithDb(async db =>
         {
             await db.FeaturedSlots.ExecuteDeleteAsync();

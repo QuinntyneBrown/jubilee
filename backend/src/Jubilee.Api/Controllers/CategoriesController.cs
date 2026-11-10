@@ -1,3 +1,4 @@
+using Jubilee.Api.Errors;
 using Jubilee.Api.Filters;
 using Jubilee.Application.Directory;
 using MediatR;
@@ -14,6 +15,7 @@ namespace Jubilee.Api.Controllers;
 [Route("api/categories/{slug}/listings")]
 [AllowAnonymous]
 [PublicDirectoryCache]
+[ErrorReference("JB-CAT-503")]
 public sealed class CategoriesController(ISender sender) : ControllerBase
 {
     [HttpGet]
