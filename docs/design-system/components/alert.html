@@ -117,7 +117,7 @@
           <span class="ds-callout" style="left: 4%; top: 20%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 8%; top: 50%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 30%; top: 18%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 30%; top: 48%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 30%; top: 78%;" aria-hidden="true">5</span><span class="ds-callout" style="left: 94%; top: 20%;" aria-hidden="true">6</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Tone icon</b><small><code>--icon-size-md</code> in <code>--alert-icon</code>; aria-hidden, so the title must carry the meaning.</small></div></li>
+          <li><div><b>Tone icon</b><small><code>--icon-size-lg</code> (20px) in <code>--alert-icon</code>; aria-hidden, so the title must carry the meaning.</small></div></li>
           <li><div><b>Accent edge</b><small><code>--border-width-accent</code> on the start side in the tone border colour. Banners use a hairline bottom edge instead.</small></div></li>
           <li><div><b>Title</b><small><code>.alert__title</code>, <code>--text-label</code>. Required on inline alerts; banners use a leading <code>&lt;strong&gt;</code> sentence instead.</small></div></li>
           <li><div><b>Text</b><small>One or two sentences in <code>--alert-fg</code>.</small></div></li>
@@ -252,7 +252,7 @@
       <h3>Motion</h3>
       <p>Alerts and banners appear without animation; the page reflows once. Nothing loops.</p>
       <h3>Touch</h3>
-      <p>Dismiss is 24px (<code>--target-min</code>) with 12px around it; banner action buttons are 32px small buttons spaced <code>--space-4</code> apart.</p>
+      <p>Dismiss is 24px (<code>--target-min</code>) with 12px around it; banner action buttons are 36px small buttons, with a 44px touch hit area on coarse pointers, spaced <code>--space-4</code> apart.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -283,7 +283,7 @@
           <tr><td>Padding / gap</td><td><code>--space-4</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-4"></span> / <span data-token="--space-3"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
           <tr><td>Title</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
-          <tr><td>Icon</td><td><code>--icon-size-md</code></td><td colspan="2"><span data-token="--icon-size-md"></span></td></tr>
+          <tr><td>Icon</td><td><code>--icon-size-lg</code></td><td colspan="2"><span data-token="--icon-size-lg"></span></td></tr>
           <tr><td>Dismiss target</td><td><code>--target-min</code></td><td colspan="2"><span data-token="--target-min"></span></td></tr>
         </tbody>
       </table></div>
@@ -326,7 +326,7 @@
         <li><a href="../../mocks/pages/edit-listing/success.html">pages/edit-listing/success</a> (dismissible success)</li>
         <li><a href="../../mocks/dialogs/cancel-request/failed.html">dialogs/cancel-request/failed</a> (danger in a dialog)</li>
       </ul>
-      <p>Drift fixed during extraction: every banner mock sets <code>style="margin: 0;"</code> on <code>.alert__actions</code> and renders an empty <code>.alert__actions</code> span when there are none; the system omits the empty span and the margin should move into <code>.banner .alert__actions</code>. Lists inside alerts (error summary, changes requested) carry <code>style="margin: 0; padding-left: var(--space-5)"</code> 17 times with no class. <code>.alert .close</code> has a <code>:hover</code> rule but no <code>data-state="hover"</code> hook, unlike the toast. The success offline banner (<em>You’re back online</em>) and info verification banner are dismissible while an equivalent persistent banner is not; these docs set the rule: conditions that still hold are not dismissible.</p>
+      <p>Drift fixed during extraction: every banner mock sets <code>style="margin: 0;"</code> on <code>.alert__actions</code> and renders an empty <code>.alert__actions</code> span when there are none; the system omits the empty span and the margin now lives in <code>.banner .alert__actions</code>. Lists inside alerts (error summary, changes requested) carry <code>style="margin: 0; padding-left: var(--space-5)"</code> 17 times with no class. <code>.alert .close</code> had a <code>:hover</code> rule but no <code>data-state="hover"</code> hook, unlike the toast; the hook is now there. The success offline banner (<em>You’re back online</em>) and info verification banner are dismissible while an equivalent persistent banner is not; these docs set the rule: conditions that still hold are not dismissible.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

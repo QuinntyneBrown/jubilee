@@ -116,7 +116,7 @@
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Label</b><small>Visible <code>&lt;label for&gt;</code>.</small></div></li>
-          <li><div><b>Value</b><small>Selected option text in <code>--text-body</code>; padding leaves <code>--space-10</code> for the chevron.</small></div></li>
+          <li><div><b>Value</b><small>Selected option text in <code>--text-body-md</code> (15px) inside a 48px field with a 12px radius and an ink-15% edge; 16px left padding, and <code>--space-10</code> on the right for the chevron.</small></div></li>
           <li><div><b>Chevron</b><small>Drawn with two gradients in <code>currentColor</code>, so it follows the text colour in both themes and in disabled.</small></div></li>
         </ol>
       </div>
@@ -140,14 +140,14 @@
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <div class="ds-example"><div class="ds-example__canvas">
-        <select class="select input--sm" aria-label="Small select" style="width: auto;"><option>Small · 32px</option></select>
-        <select class="select" aria-label="Medium select" style="width: auto;"><option>Medium · 44px</option></select>
-        <select class="select input--lg" aria-label="Large select" style="width: auto;"><option>Large · 48px</option></select>
+        <select class="select input--sm" aria-label="Small select" style="width: auto;"><option>Small · 40px</option></select>
+        <select class="select" aria-label="Medium select" style="width: auto;"><option>Default · 48px</option></select>
+        <select class="select input--lg" aria-label="Large select" style="width: auto;"><option>Large · 48px, 16px text</option></select>
       </div>
-        <div class="ds-example__caption"><span>The input size modifiers apply: <code>.input--sm</code>, default, <code>.input--lg</code>.</span></div>
-        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;select class="select input--sm" aria-label="Small select" style="width: auto;"&gt;&lt;option&gt;Small · 32px&lt;/option&gt;&lt;/select&gt;
-&lt;select class="select" aria-label="Medium select" style="width: auto;"&gt;&lt;option&gt;Medium · 44px&lt;/option&gt;&lt;/select&gt;
-&lt;select class="select input--lg" aria-label="Large select" style="width: auto;"&gt;&lt;option&gt;Large · 48px&lt;/option&gt;&lt;/select&gt;</code></pre></details></div>
+        <div class="ds-example__caption"><span>The input size modifiers apply: <code>.input--sm</code> (40px, 14px text), default (48px, 15px text), <code>.input--lg</code> (48px, 16px text).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;select class="select input--sm" aria-label="Small select" style="width: auto;"&gt;&lt;option&gt;Small · 40px&lt;/option&gt;&lt;/select&gt;
+&lt;select class="select" aria-label="Medium select" style="width: auto;"&gt;&lt;option&gt;Default · 48px&lt;/option&gt;&lt;/select&gt;
+&lt;select class="select input--lg" aria-label="Large select" style="width: auto;"&gt;&lt;option&gt;Large · 48px, 16px text&lt;/option&gt;&lt;/select&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Forced with <code>data-state</code>. Active shows focus. Open is the platform picker and is not styled. Read-only does not exist for selects; use disabled plus a hidden input, or show the value as text.</p>
@@ -185,10 +185,11 @@
         <tr><td><kbd>Esc</kbd></td><td>Closes the list without changing.</td></tr>
       </tbody></table></div>
       <h3>Focus</h3>
-      <p>Same ring as text fields: 2px <code>--color-focus-ring</code> at zero offset.</p>
+      <p>Same ring as text fields: a 2px <code>--color-focus-ring</code> outline drawn over the edge, which turns transparent.</p>
       <h3>Labelling</h3>
       <p>Visible label with <code>for</code>. Option text is self-contained (“Discovery meeting · 30 min · Free”). A sort select that applies immediately announces the new result count in a polite live region.</p>
       <h3>Contrast</h3>
+      <p>The light-theme edge follows the design reference: ink 15%, about 1.4:1, below the 3:1 of 1.4.11. It is a recorded exception in <code>tokens/contrast-pairs.json</code>; the chevron (ink) and the label still mark the control, and <code>prefers-contrast: more</code> restores a 3:1 edge.</p>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Value</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
@@ -206,9 +207,9 @@
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>Border transition over <code>--duration-fast</code>; the native list's animation belongs to the platform.</p>
+      <p>Border transition over <code>--duration-fast</code> (150ms); the native list's animation belongs to the platform.</p>
       <h3>Touch</h3>
-      <p>44px tall by default; the small sort select is 32px and only appears with 8px clear around it.</p>
+      <p>48px tall by default; the small sort select is 40px. Both clear the 24px minimum target.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -230,12 +231,13 @@
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
           <tr><td>Background / value</td><td><code>--color-bg-surface</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
-          <tr><td>Edge / hover</td><td><code>--color-border-strong</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Edge / hover</td><td><code>--color-border-strong</code> / <code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
           <tr><td>Focus</td><td><code>--color-focus-ring</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td></tr>
           <tr><td>Invalid</td><td><code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
-          <tr><td>Disabled fill / text</td><td><code>--color-bg-subtle</code> / <code>--color-fg-disabled</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span></td></tr>
-          <tr><td>Chevron inset</td><td><code>--space-10</code> / <code>--space-4</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-10"></span> / <span data-token="--space-4"></span> / <span data-token="--space-3"></span></td></tr>
-          <tr><td>Height sm / md / lg</td><td><code>--control-height-sm</code> / <code>--control-height-md</code> / <code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-sm"></span> / <span data-token="--control-height-md"></span> / <span data-token="--control-height-lg"></span></td></tr>
+          <tr><td>Disabled fill / text and chevron</td><td><code>--color-bg-subtle</code> / <code>--color-fg-disabled</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span></td></tr>
+          <tr><td>Chevron: right padding / stroke offsets</td><td><code>--space-10</code> / <code>--space-5</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-10"></span> / <span data-token="--space-5"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Height small / default</td><td><code>--control-height-md</code> / <code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-md"></span> / <span data-token="--control-height-lg"></span></td></tr>
+          <tr><td>Text</td><td><code>--text-body-md</code></td><td colspan="2"><span data-token="--text-body-md"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
         </tbody>
       </table></div>
@@ -250,7 +252,7 @@
 &lt;/div&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.select</code></td><td>Styled native select with chevron.</td></tr>
-        <tr><td><code>.input--sm</code> / <code>.input--lg</code></td><td>Size.</td></tr>
+        <tr><td><code>.input--sm</code> / <code>.input--lg</code></td><td>40px with 14px text / 48px with 16px text.</td></tr>
         <tr><td><code>aria-invalid="true"</code> / <code>disabled</code></td><td>States.</td></tr>
         <tr><td><code>data-state</code></td><td>Documentation only.</td></tr>
       </tbody></table></div>

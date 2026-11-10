@@ -196,7 +196,7 @@
       <h3>Motion</h3>
       <p>None.</p>
       <h3>Touch</h3>
-      <p>Crumbs are inline text at <code>--text-body-sm</code>, so below 24px tall; the <code>--space-2</code> separators on each side keep the 24px spacing exception (2.5.8). Detail pages also offer a back link of 44px for touch.</p>
+      <p>Crumbs are inline text at <code>--text-body-sm</code>, so below 24px tall; the <code>--space-2</code> separators on each side keep the 24px spacing exception (2.5.8). Detail pages also offer a back link; on coarse pointers its touch hit area is 44px tall.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -248,7 +248,7 @@
         <li><a href="../../mocks/pages/help/default.html">pages/help/default</a> (Browse / Help)</li>
         <li><a href="../../mocks/pages/admin-verification/default.html">pages/admin-verification/default</a> (admin detail)</li>
       </ul>
-      <p>Drift fixed during extraction: none in markup: all 46 trails use the same <code>nav</code> + <code>ol</code> + <code>aria-current</code> structure. The CSS had no <code>data-state="hover"</code> hook for crumbs, so the forced hover cell above picks up the generic link hover instead of the breadcrumb's own (noted for a CSS fix).</p>
+      <p>Drift fixed during extraction: none in markup: all 46 trails use the same <code>nav</code> + <code>ol</code> + <code>aria-current</code> structure. The CSS had no <code>data-state="hover"</code> hook for crumbs; <code>.breadcrumb a[data-state="hover"]</code> is now there, so the forced hover cell above shows the breadcrumb's own hover.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

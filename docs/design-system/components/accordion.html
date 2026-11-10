@@ -156,7 +156,7 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>The accordion fills its column. On the Help page it takes the wide side of <code>.split</code> from 1024px and the full width below.</li>
+        <li>The accordion fills its column. On the Help page it takes the wide side of <code>.split</code> from 768px and the full width below.</li>
         <li>Questions wrap; the indicator stays top-right and never shrinks (<code>gap: --space-4</code>).</li>
         <li>Nothing changes at 360px except line length. Do not convert tabs into an accordion on phones without checking that people need only one section at a time.</li>
       </ul>
@@ -260,7 +260,7 @@
       <ul>
         <li><a href="../../mocks/pages/help/default.html">pages/help/default</a> (the FAQ, 5 items, first open)</li>
       </ul>
-      <p>Drift fixed during extraction: the accordion appears on one page only. Its summaries are plain text, not headings, so on the Help page the questions are missing from the heading outline; the system recommends an <code>&lt;h3&gt;</code> inside each summary on long pages. The <code>+</code> indicator is CSS generated content, which some screen readers announce as "plus"; the report to the CSS owners asks for <code>content: "+" / ""</code>. No other drift found.</p>
+      <p>Drift fixed during extraction: the accordion appears on one page only. Its summaries are plain text, not headings, so on the Help page the questions are missing from the heading outline; the system recommends an <code>&lt;h3&gt;</code> inside each summary on long pages. The <code>+</code> indicator is CSS generated content, which some screen readers announce as "plus"; the CSS now gives it empty alternative text with <code>content: "+" / ""</code>. No other drift found.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

@@ -103,8 +103,8 @@
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Use an avatar next to a person’s or business’s name in rows, threads, dialogs and the top bar. It never stands alone as the only name, except as the account menu trigger, where it is a link with an <code>aria-label</code>. For a business’s logo or product image use a <a href="../components/media-tile.html">Media tile</a>.</p>
       <ul>
-        <li><b>Default</b> (<code>.avatar</code>): gold-subtle circle with accent initials, for other people and businesses.</li>
-        <li><b>Brand</b> (<code>.avatar--brand</code>): green solid with inverse semibold initials, reserved for the signed-in member (Joanna Adeyemi, "JA") so "you" is always recognisable.</li>
+        <li><b>Default</b> (<code>.avatar</code>): green circle with cream semibold initials, for every person and business.</li>
+        <li><b>Brand</b> (<code>.avatar--brand</code>): kept on the signed-in member's avatar (Joanna Adeyemi, "JA") in the markup. It reads the same tokens as the default, so it looks the same.</li>
         <li><b>Photo</b>: an <code>&lt;img&gt;</code> inside the circle, cropped with <code>object-fit: cover</code>; falls back to initials when it fails.</li>
         <li><b>Group</b> (<code>.avatar-group</code>): overlapping avatars ringed in the surface colour, for "3 people from Grace Toronto Church".</li>
       </ul>
@@ -116,7 +116,7 @@
           <span class="ds-callout" style="left: 50%; top: 50%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 90%; top: 10%;" aria-hidden="true">2</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Initials or image</b><small>Up to two letters in <code>--text-label</code>, accent on accent-subtle; or an image filling the circle.</small></div></li>
+          <li><div><b>Initials or image</b><small>Up to two letters in <code>--text-caption</code> at semibold (12px), cream on green; or an image filling the circle.</small></div></li>
           <li><div><b>Container</b><small>Circle (<code>--radius-full</code>) at <code>--avatar-size-sm/md/lg</code>, <code>flex: none</code> so it never squashes in a row.</small></div></li>
         </ol>
       </div>
@@ -125,7 +125,7 @@
       <div class="ds-example"><div class="ds-example__canvas">
 <span class="avatar avatar--sm" aria-hidden="true">JA</span><span class="avatar" aria-hidden="true">LF</span><span class="avatar avatar--lg" aria-hidden="true">NL</span><span class="avatar avatar--brand" aria-hidden="true">JA</span>
       </div>
-        <div class="ds-example__caption"><span>Default at three sizes, then the brand variant used for the signed-in member.</span></div>
+        <div class="ds-example__caption"><span>Default at three sizes, then the brand variant used for the signed-in member. It looks the same as the default.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="avatar avatar--sm" aria-hidden="true"&gt;JA&lt;/span&gt;&lt;span class="avatar" aria-hidden="true"&gt;LF&lt;/span&gt;&lt;span class="avatar avatar--lg" aria-hidden="true"&gt;NL&lt;/span&gt;&lt;span class="avatar avatar--brand" aria-hidden="true"&gt;JA&lt;/span&gt;</code></pre></details></div>
       <h3>Group</h3>
       <div class="ds-example"><div class="ds-example__canvas">
@@ -144,7 +144,7 @@
       <div class="ds-example"><div class="ds-example__canvas">
 <span class="avatar avatar--sm" aria-hidden="true">WW</span><span class="avatar" aria-hidden="true">WW</span><span class="avatar avatar--lg" aria-hidden="true">WW</span>
       </div>
-        <div class="ds-example__caption"><span>Small 32px (top bar, dense rows), medium 40px (rows, threads, dialog headers), large 56px (profile headers). Initials scale <code>--font-size-xs</code> / label / <code>--font-size-lg</code>.</span></div>
+        <div class="ds-example__caption"><span>Small 36px (top bar, dense rows), medium 40px (rows, threads, dialog headers), large 56px (profile headers). Initials are <code>--font-size-xs</code> (12px) at small and medium and <code>--font-size-lg</code> (18px) at large.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="avatar avatar--sm" aria-hidden="true"&gt;WW&lt;/span&gt;&lt;span class="avatar" aria-hidden="true"&gt;WW&lt;/span&gt;&lt;span class="avatar avatar--lg" aria-hidden="true"&gt;WW&lt;/span&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
@@ -165,15 +165,15 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>Sizes do not change with the viewport. Rows keep 40px avatars at 360px; the top bar keeps 32px.</li>
+        <li>Sizes do not change with the viewport. Rows keep 40px avatars at 360px; the top bar keeps 36px.</li>
         <li>The account avatar in the top bar is desktop only (<code>.only-desktop</code>); on phones the <em>You</em> tab in the tab bar replaces it.</li>
         <li>Avatars are <code>flex: none</code>: the name beside them wraps or truncates, the circle never shrinks.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Default reads <code>--color-accent-subtle</code> and <code>--color-fg-accent</code>; brand reads <code>--color-success-solid</code> and <code>--color-fg-inverse</code>. Both are re-mapped in dark mode and keep 4.5:1 initials.</p>
-      <pre><code>.avatar { background: var(--color-accent-subtle); color: var(--color-fg-accent); }
-.avatar--brand { background: var(--color-success-solid); color: var(--color-fg-inverse); }</code></pre>
+      <p>Every avatar reads <code>--color-avatar-bg</code> (green) and <code>--color-avatar-fg</code> (cream). Both tokens hold the same values in light and dark. The initials are 4.07:1 on the green, below 4.5:1: this follows the design reference and is recorded in <code>tokens/contrast-pairs.json</code>.</p>
+      <pre><code>.avatar { background: var(--color-avatar-bg); color: var(--color-avatar-fg); }
+.avatar--brand { background: var(--color-avatar-bg); color: var(--color-avatar-fg); }</code></pre>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -190,20 +190,20 @@
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Initials on default</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Initials on brand</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-success-solid" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Initials on green (reference exception, below 4.5:1)</span><span class="ds-pair__ratio" data-contrast="--color-avatar-fg|--color-avatar-bg" data-min="4"></span></div>
+        <div class="ds-pair"><span>Group ring against the avatar</span><span class="ds-pair__ratio" data-contrast="--color-bg-surface|--color-avatar-bg" data-min="3"></span></div>
         <div class="ds-pair"><span>Focus ring on surface</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Initials on default</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Initials on brand</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-success-solid" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Initials on green (reference exception, below 4.5:1)</span><span class="ds-pair__ratio" data-contrast="--color-avatar-fg|--color-avatar-bg" data-min="4"></span></div>
+        <div class="ds-pair"><span>Group ring against the avatar</span><span class="ds-pair__ratio" data-contrast="--color-bg-surface|--color-avatar-bg" data-min="3"></span></div>
         <div class="ds-pair"><span>Focus ring on surface</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
       <p>None. Skeleton avatars shimmer and stop under reduced motion.</p>
       <h3>Touch</h3>
-      <p>The 32px account avatar is above the 24px minimum and sits 16px from its neighbours in the top bar. Use the medium size if an avatar is ever the only target in a row.</p>
+      <p>The 36px account avatar is above the 24px minimum and sits 12px (<code>--space-3</code>) from its neighbours in the top bar. Use the medium size if an avatar is ever the only target in a row.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -216,20 +216,19 @@
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><div class="cluster"><span class="avatar" aria-hidden="true">SP</span><span>Samuel Park</span></div></div><figcaption>Decorative avatar beside the name, hidden from screen readers.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div class="cluster"><span class="avatar">SP</span><span>Samuel Park</span></div></div><figcaption>An unhidden avatar makes readers announce "S P Samuel Park".</figcaption></figure>
-        <figure class="ds-do"><div class="ds-example__canvas"><span class="avatar avatar--brand" aria-hidden="true">JA</span></div><figcaption>Brand green is for the signed-in member only.</figcaption></figure>
-        <figure class="ds-dont"><div class="ds-example__canvas"><span class="avatar avatar--brand" aria-hidden="true">LF</span></div><figcaption>A business in brand green looks like you. Other people and businesses use the default avatar.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><span class="avatar avatar--brand" aria-hidden="true">JA</span></div><figcaption>Every avatar is green with cream initials, the signed-in member included.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><span class="avatar avatar--brand" aria-hidden="true">LF</span></div><figcaption><code>.avatar--brand</code> on a business does nothing: it looks like every other avatar. Do not rely on colour to tell "you" apart; the name beside it does that.</figcaption></figure>
       </div>
     </section>
     <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Default background / initials</td><td><code>--color-accent-subtle</code> / <code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
-          <tr><td>Brand background / initials</td><td><code>--color-success-solid</code> / <code>--color-fg-inverse</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-inverse" data-swatch></i><span data-token="--color-fg-inverse"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-inverse" data-swatch></i><span data-token="--color-fg-inverse"></span></span></td></tr>
+          <tr><td>Background / initials</td><td><code>--color-avatar-bg</code> / <code>--color-avatar-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-avatar-bg" data-swatch></i><span data-token="--color-avatar-bg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-avatar-fg" data-swatch></i><span data-token="--color-avatar-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-avatar-bg" data-swatch></i><span data-token="--color-avatar-bg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-avatar-fg" data-swatch></i><span data-token="--color-avatar-fg"></span></span></td></tr>
           <tr><td>Size sm / md / lg</td><td><code>--avatar-size-sm</code> / <code>--avatar-size-md</code> / <code>--avatar-size-lg</code></td><td colspan="2"><span data-token="--avatar-size-sm"></span> / <span data-token="--avatar-size-md"></span> / <span data-token="--avatar-size-lg"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
-          <tr><td>Initials type</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
-          <tr><td>Brand weight</td><td><code>--font-weight-semibold</code></td><td colspan="2"><span data-token="--font-weight-semibold"></span></td></tr>
+          <tr><td>Initials type</td><td><code>--text-caption</code></td><td colspan="2"><span data-token="--text-caption"></span></td></tr>
+          <tr><td>Initials weight</td><td><code>--font-weight-semibold</code></td><td colspan="2"><span data-token="--font-weight-semibold"></span></td></tr>
           <tr><td>Group ring</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
           <tr><td>Group ring width</td><td><code>--border-width-thick</code></td><td colspan="2"><span data-token="--border-width-thick"></span></td></tr>
           <tr><td>Group overlap</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
@@ -243,9 +242,9 @@
 
 &lt;a class="avatar avatar--sm avatar--brand" href="/account/menu" aria-label="Account menu for Joanna Adeyemi"&gt;JA&lt;/a&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
-        <tr><td><code>.avatar</code></td><td>Base: 40px, initials on accent-subtle.</td></tr>
-        <tr><td><code>.avatar--sm</code> <code>.avatar--lg</code></td><td>32px / 56px.</td></tr>
-        <tr><td><code>.avatar--brand</code></td><td>Signed-in member.</td></tr>
+        <tr><td><code>.avatar</code></td><td>Base: 40px, cream initials on green.</td></tr>
+        <tr><td><code>.avatar--sm</code> <code>.avatar--lg</code></td><td>36px / 56px.</td></tr>
+        <tr><td><code>.avatar--brand</code></td><td>Signed-in member. Same look as the base.</td></tr>
         <tr><td><code>.avatar-group</code></td><td>Overlapping group with surface rings.</td></tr>
         <tr><td><code>.skeleton--avatar</code></td><td>Loading placeholder.</td></tr>
       </tbody></table></div>

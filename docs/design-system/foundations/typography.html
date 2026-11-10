@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Typography — Jubilee design system</title>
-<meta name="description" content="Archivo for headings and the wordmark, Inter for everything else; twelve role shorthands carry size, weight, line height and family together.">
+<meta name="description" content="Archivo at 110% width for headings and the wordmark, Inter for everything else; sixteen role shorthands carry size, weight, line height and family together.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -96,31 +96,36 @@
     <header class="ds-header">
       <p class="ds-kicker">Foundation</p>
       <h1>Typography</h1>
-      <p class="ds-lead">Archivo for headings and the wordmark, Inter for everything else; twelve role shorthands carry size, weight, line height and family together.</p>
-      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Archivo + Inter</span><span class="ds-pill">12 roles</span></div>
+      <p class="ds-lead">Archivo at 110% width for headings and the wordmark, Inter for everything else; sixteen role shorthands carry size, weight, line height and family together.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Archivo + Inter</span><span class="ds-pill">16 roles</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#roles">Type roles</a></li><li><a href="#weights">Weights</a></li><li><a href="#measure">Measure and responsive type</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#usage">Usage</a></li><li><a href="#tokens">Tokens</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Two families. <b>Archivo</b> (display, 600–800) sets headings and the <em>jubilee</em> wordmark with tight tracking; <b>Inter</b> sets everything else. Both fall back to the system UI stack, so the mocks render without web fonts; the product self-hosts both as WOFF2 with <code>font-display: swap</code>.</p>
+      <p>Two families. <b>Archivo</b> sets every display role and the <em>jubilee</em> wordmark at 110% width (<code>--font-variation-display</code>), always bold 700, with <code>--letter-spacing-tight</code> (-0.025em) tracking; the wordmark uses <code>--letter-spacing-tighter</code> (-0.03em). <b>Inter</b> sets everything else. Both load from Google Fonts through an <code>@import</code> at the top of <code>assets/components.css</code> and fall back to system fonts offline.</p>
       <ul>
-        <li>Body text is 16px and never smaller than 12px (captions).</li>
-        <li>Headings use tighter line height (1.2–1.3) and <code>text-wrap: balance</code>; body uses 1.5.</li>
-        <li>Use the twelve <code>--text-*</code> role shorthands, not ad-hoc sizes: <code>font: var(--text-label)</code>.</li>
+        <li>Body text is 16px. The smallest text is 11px (<code>--font-size-2xs</code>), used only for tab-bar labels and count badges.</li>
+        <li>Display roles use tight line heights: 1.05 for the display h1, 1.08 for the page h1, 1.25 for card names and 1.3333 for h2 and h3. Body uses 1.5; taglines use 1.375.</li>
+        <li>Use the sixteen <code>--text-*</code> role shorthands, not ad-hoc sizes: <code>font: var(--text-label)</code>.</li>
+        <li>The <code>font</code> shorthand resets <code>font-variation-settings</code>. When a display role is set inline or in a new rule, add <code>font-variation-settings: var(--font-variation-display)</code> and <code>letter-spacing: var(--letter-spacing-tight)</code> after it.</li>
       </ul>
     </section>
     <section class="ds-section" id="roles"><h2><a href="#roles">Type roles</a></h2>
       <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--flush">
-        <div class="ds-specimen"><div class="ds-specimen__meta">Display<br><code>--text-display</code><br>Hero h1 from 1024px (48px Archivo 800)</div><div class="ds-specimen__sample" style="font: var(--text-display);">Do business with Toronto’s Christian community.</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">H1<br><code>--text-h1</code><br>Page titles (30px phones, 36px from 768px)</div><div class="ds-specimen__sample" style="font: var(--text-h1);">Luzandre.com</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">H2<br><code>--text-h2</code><br>Section titles, dialog groups</div><div class="ds-specimen__sample" style="font: var(--text-h2);">Products and services</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">H3<br><code>--text-h3</code><br>Dialog titles, empty-state titles</div><div class="ds-specimen__sample" style="font: var(--text-h3);">Book a discovery meeting</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">H4<br><code>--text-h4</code><br>Card titles, business names</div><div class="ds-specimen__sample" style="font: var(--text-h4);">Legacy Financial</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">Body large<br><code>--text-body-lg</code><br>Lead paragraphs</div><div class="ds-specimen__sample" style="font: var(--text-body-lg);">47 verified businesses — shops, advisors, trades and more.</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">Body<br><code>--text-body</code><br>Default text, inputs</div><div class="ds-specimen__sample" style="font: var(--text-body);">Naomi will confirm your request within two business days.</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">Body small<br><code>--text-body-sm</code><br>Metadata, table cells, help text</div><div class="ds-specimen__sample" style="font: var(--text-body-sm);">Grace Toronto Church · East York</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">Caption<br><code>--text-caption</code><br>Timestamps, tab-bar labels</div><div class="ds-specimen__sample" style="font: var(--text-caption);">Tue 10 Nov, 9:41 a.m.</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">Label<br><code>--text-label</code><br>Buttons, field labels, nav links</div><div class="ds-specimen__sample" style="font: var(--text-label);">Send request</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta">Overline<br><code>--text-overline</code><br>Badges, group headings (uppercase, wide)</div><div class="ds-specimen__sample" style="font: var(--text-overline); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide);">Verified business</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Display<br><code>--text-display</code><br>Hero h1: Archivo 700, 48px/1.05 (32px below 640px)</div><div class="ds-specimen__sample" style="font: var(--text-display); font-variation-settings: var(--font-variation-display); letter-spacing: var(--letter-spacing-tight);">Do business with Toronto’s Christian community.</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">H1<br><code>--text-h1</code><br>Page titles: 700, 36px/1.08 (28px below 640px)</div><div class="ds-specimen__sample" style="font: var(--text-h1); font-variation-settings: var(--font-variation-display); letter-spacing: var(--letter-spacing-tight);">Luzandre.com</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">H2<br><code>--text-h2</code><br>Section titles: 700, 24px (20px below 640px)</div><div class="ds-specimen__sample" style="font: var(--text-h2); font-variation-settings: var(--font-variation-display); letter-spacing: var(--letter-spacing-tight);">Products and services</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">H3<br><code>--text-h3</code><br>Dialog titles, empty-state titles: 700, 20px</div><div class="ds-specimen__sample" style="font: var(--text-h3); font-variation-settings: var(--font-variation-display); letter-spacing: var(--letter-spacing-tight);">Book a discovery meeting</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">H4<br><code>--text-h4</code><br>Card names: 700, 18px/1.25 (16px below 640px)</div><div class="ds-specimen__sample" style="font: var(--text-h4); font-variation-settings: var(--font-variation-display); letter-spacing: var(--letter-spacing-tight);">Legacy Financial</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Title large<br><code>--text-title-lg</code><br>Featured card name: 700, 30px (24px below 640px)</div><div class="ds-specimen__sample" style="font: var(--text-title-lg); font-variation-settings: var(--font-variation-display); letter-spacing: var(--letter-spacing-tight);">Luzandre.com</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Subhead<br><code>--text-subhead</code><br>Field labels, legends, small section headings, directory group heads, card titles: Inter 600, 14px</div><div class="ds-specimen__sample" style="font: var(--text-subhead);">About</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Body large<br><code>--text-body-lg</code><br>Business tagline: 17px/1.375</div><div class="ds-specimen__sample" style="font: var(--text-body-lg);">47 verified businesses — shops, advisors, trades and more.</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Body<br><code>--text-body</code><br>Default text: 16px/1.5</div><div class="ds-specimen__sample" style="font: var(--text-body);">Naomi will confirm your request within two business days.</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Body medium<br><code>--text-body-md</code><br>Hero sub-line, leads: 15px</div><div class="ds-specimen__sample" style="font: var(--text-body-md);">Shops, advisors and trades run by people from local churches.</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Body small<br><code>--text-body-sm</code><br>Card taglines, table cells, help text: 14px</div><div class="ds-specimen__sample" style="font: var(--text-body-sm);">Grace Toronto Church · East York</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Meta<br><code>--text-meta</code><br>Metadata, counts: 13px</div><div class="ds-specimen__sample" style="font: var(--text-meta);">12 businesses · East York</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Caption<br><code>--text-caption</code><br>Timestamps, small print: 12px</div><div class="ds-specimen__sample" style="font: var(--text-caption);">Tue 10 Nov, 9:41 a.m.</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Label<br><code>--text-label</code><br>Nav links, chips: Inter 500, 14px</div><div class="ds-specimen__sample" style="font: var(--text-label);">Send request</div></div>
+        <div class="ds-specimen"><div class="ds-specimen__meta">Overline<br><code>--text-overline</code><br>Overlines, sidebar and menu group labels (uppercase, wide)</div><div class="ds-specimen__sample" style="font: var(--text-overline); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide);">Verified business</div></div>
         <div class="ds-specimen"><div class="ds-specimen__meta">Code<br><code>--text-code</code><br>Tokens and code</div><div class="ds-specimen__sample" style="font: var(--text-code);">--color-accent</div></div>
       </div></div>
     </section>
@@ -130,23 +135,22 @@
         <div class="ds-specimen"><div class="ds-specimen__meta"><code>--font-weight-medium</code></div><div class="ds-specimen__sample" style="font-weight: var(--font-weight-medium); font-size: var(--font-size-xl);">Faith heavyweight tee — $34</div></div>
         <div class="ds-specimen"><div class="ds-specimen__meta"><code>--font-weight-semibold</code></div><div class="ds-specimen__sample" style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-xl);">Faith heavyweight tee — $34</div></div>
         <div class="ds-specimen"><div class="ds-specimen__meta"><code>--font-weight-bold</code></div><div class="ds-specimen__sample" style="font-weight: var(--font-weight-bold); font-size: var(--font-size-xl);">Faith heavyweight tee — $34</div></div>
-        <div class="ds-specimen"><div class="ds-specimen__meta"><code>--font-weight-extrabold</code></div><div class="ds-specimen__sample" style="font-weight: var(--font-weight-extrabold); font-size: var(--font-size-xl);">Faith heavyweight tee — $34</div></div>
       </div></div>
-      <p>Medium (500) is the label weight; semibold (600) marks the primary button, selected tabs and prices; bold and extrabold belong to Archivo headings.</p>
+      <p>Medium (500) sets nav links, chips and row names. Semibold (600) sets buttons, field labels, subheads and badges. Bold (700) sets every Archivo display role, including prices; nothing is heavier.</p>
     </section>
     <section class="ds-section" id="measure"><h2><a href="#measure">Measure and responsive type</a></h2>
       <ul>
-        <li>Paragraphs cap at <code>--layout-measure</code> (65ch); empty-state text at 36ch; hero headings at 18ch.</li>
-        <li>The h1 steps from <code>--font-size-3xl</code> (30px) on phones to <code>--font-size-4xl</code> (36px) at 768px; the hero h1 reaches <code>--font-size-5xl</code> (48px) at 1024px. Steps, not viewport units, so zoom works.</li>
+        <li>Paragraphs cap at <code>--layout-measure</code> (65ch); empty-state text at 36ch; hero headings at <code>--layout-container-prose</code> (48rem).</li>
+        <li>Heading sizes step once, at 640px (40rem). The h1 goes from <code>--font-size-h1-sm</code> (28px) to <code>--font-size-4xl</code> (36px); the display h1 from <code>--font-size-display-sm</code> (32px) to <code>--font-size-5xl</code> (48px); the h2 from 20px to 24px; card names from 16px to 18px; the featured card name from 24px to 30px. Steps, not viewport units, so zoom works.</li>
         <li>Prices and counts use <code>font-variant-numeric: tabular-nums</code>.</li>
-        <li>Long business names wrap with <code>overflow-wrap: anywhere</code>; taglines clamp to two lines.</li>
+        <li>Long business names wrap with <code>overflow-wrap: anywhere</code>; card names and taglines clamp to two lines.</li>
       </ul>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <ul>
         <li>All sizes are rem, so text scales with browser settings (1.4.4); layouts reflow at 320px.</li>
         <li>Line height 1.5 and paragraph spacing survive the 1.4.12 text-spacing override; nothing has a fixed height that would clip.</li>
-        <li>Uppercase is limited to short overlines and badges with 0.04em tracking; never sentences.</li>
+        <li>Uppercase is limited to short overlines and sidebar and menu group labels, with 0.04em tracking; never sentences. Badges are normal case.</li>
       </ul>
     </section>
     <section class="ds-section" id="usage"><h2><a href="#usage">Usage</a></h2>
@@ -159,42 +163,56 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>—</td><td><code>--font-family-display</code></td><td colspan="2"><span data-token="--font-family-display"></span></td></tr>
+          <tr><td>Archivo, then Inter, then the system UI font</td><td><code>--font-family-display</code></td><td colspan="2"><span data-token="--font-family-display"></span></td></tr>
+          <tr><td>Archivo at 110% width, on every display role</td><td><code>--font-variation-display</code></td><td colspan="2"><span data-token="--font-variation-display"></span></td></tr>
           <tr><td>—</td><td><code>--font-family-sans</code></td><td colspan="2"><span data-token="--font-family-sans"></span></td></tr>
           <tr><td>—</td><td><code>--font-family-mono</code></td><td colspan="2"><span data-token="--font-family-mono"></span></td></tr>
-          <tr><td>12px  captions, badges, tab-bar labels</td><td><code>--font-size-xs</code></td><td colspan="2"><span data-token="--font-size-xs"></span></td></tr>
-          <tr><td>14px  secondary text, labels, table cells</td><td><code>--font-size-sm</code></td><td colspan="2"><span data-token="--font-size-sm"></span></td></tr>
-          <tr><td>16px  body, inputs, buttons</td><td><code>--font-size-md</code></td><td colspan="2"><span data-token="--font-size-md"></span></td></tr>
-          <tr><td>18px  lead paragraph, h4</td><td><code>--font-size-lg</code></td><td colspan="2"><span data-token="--font-size-lg"></span></td></tr>
-          <tr><td>20px  h3, dialog titles</td><td><code>--font-size-xl</code></td><td colspan="2"><span data-token="--font-size-xl"></span></td></tr>
-          <tr><td>24px  h2, wordmark, auth h1</td><td><code>--font-size-2xl</code></td><td colspan="2"><span data-token="--font-size-2xl"></span></td></tr>
-          <tr><td>30px  h1 on phones</td><td><code>--font-size-3xl</code></td><td colspan="2"><span data-token="--font-size-3xl"></span></td></tr>
-          <tr><td>36px  h1 from 768px</td><td><code>--font-size-4xl</code></td><td colspan="2"><span data-token="--font-size-4xl"></span></td></tr>
-          <tr><td>48px  hero h1 from 1024px</td><td><code>--font-size-5xl</code></td><td colspan="2"><span data-token="--font-size-5xl"></span></td></tr>
+          <tr><td>11px  tab-bar labels, count badges</td><td><code>--font-size-2xs</code></td><td colspan="2"><span data-token="--font-size-2xs"></span></td></tr>
+          <tr><td>12px  media tags, avatar initials, badges</td><td><code>--font-size-xs</code></td><td colspan="2"><span data-token="--font-size-xs"></span></td></tr>
+          <tr><td>13px  metadata: perks, verified, row taglines, counts</td><td><code>--font-size-meta</code></td><td colspan="2"><span data-token="--font-size-meta"></span></td></tr>
+          <tr><td>14px  labels, nav links, chips, buttons, help text</td><td><code>--font-size-sm</code></td><td colspan="2"><span data-token="--font-size-sm"></span></td></tr>
+          <tr><td>15px  inputs, leads, row names, product names</td><td><code>--font-size-read</code></td><td colspan="2"><span data-token="--font-size-read"></span></td></tr>
+          <tr><td>16px  body, large buttons</td><td><code>--font-size-md</code></td><td colspan="2"><span data-token="--font-size-md"></span></td></tr>
+          <tr><td>17px  business tagline</td><td><code>--font-size-lead</code></td><td colspan="2"><span data-token="--font-size-lead"></span></td></tr>
+          <tr><td>18px  card names from 640px, prices</td><td><code>--font-size-lg</code></td><td colspan="2"><span data-token="--font-size-lg"></span></td></tr>
+          <tr><td>20px  h3, h2 on phones</td><td><code>--font-size-xl</code></td><td colspan="2"><span data-token="--font-size-xl"></span></td></tr>
+          <tr><td>24px  h2 from 640px, wordmark, featured name on phones</td><td><code>--font-size-2xl</code></td><td colspan="2"><span data-token="--font-size-2xl"></span></td></tr>
+          <tr><td>28px  page h1 on phones</td><td><code>--font-size-h1-sm</code></td><td colspan="2"><span data-token="--font-size-h1-sm"></span></td></tr>
+          <tr><td>30px  featured name from 640px</td><td><code>--font-size-3xl</code></td><td colspan="2"><span data-token="--font-size-3xl"></span></td></tr>
+          <tr><td>32px  display h1 on phones</td><td><code>--font-size-display-sm</code></td><td colspan="2"><span data-token="--font-size-display-sm"></span></td></tr>
+          <tr><td>36px  page h1 from 640px</td><td><code>--font-size-4xl</code></td><td colspan="2"><span data-token="--font-size-4xl"></span></td></tr>
+          <tr><td>48px  display h1 from 640px</td><td><code>--font-size-5xl</code></td><td colspan="2"><span data-token="--font-size-5xl"></span></td></tr>
           <tr><td>—</td><td><code>--font-weight-regular</code></td><td colspan="2"><span data-token="--font-weight-regular"></span></td></tr>
           <tr><td>—</td><td><code>--font-weight-medium</code></td><td colspan="2"><span data-token="--font-weight-medium"></span></td></tr>
           <tr><td>—</td><td><code>--font-weight-semibold</code></td><td colspan="2"><span data-token="--font-weight-semibold"></span></td></tr>
-          <tr><td>—</td><td><code>--font-weight-bold</code></td><td colspan="2"><span data-token="--font-weight-bold"></span></td></tr>
-          <tr><td>—</td><td><code>--font-weight-extrabold</code></td><td colspan="2"><span data-token="--font-weight-extrabold"></span></td></tr>
-          <tr><td>display, h1, h2</td><td><code>--line-height-tight</code></td><td colspan="2"><span data-token="--line-height-tight"></span></td></tr>
-          <tr><td>h3, h4</td><td><code>--line-height-snug</code></td><td colspan="2"><span data-token="--line-height-snug"></span></td></tr>
+          <tr><td>every display role; nothing is heavier</td><td><code>--font-weight-bold</code></td><td colspan="2"><span data-token="--font-weight-bold"></span></td></tr>
+          <tr><td>display h1</td><td><code>--line-height-display</code></td><td colspan="2"><span data-token="--line-height-display"></span></td></tr>
+          <tr><td>page h1</td><td><code>--line-height-h1</code></td><td colspan="2"><span data-token="--line-height-h1"></span></td></tr>
+          <tr><td>card names</td><td><code>--line-height-tight</code></td><td colspan="2"><span data-token="--line-height-tight"></span></td></tr>
+          <tr><td>h2, h3</td><td><code>--line-height-heading</code></td><td colspan="2"><span data-token="--line-height-heading"></span></td></tr>
+          <tr><td>taglines, product names, row names</td><td><code>--line-height-snug</code></td><td colspan="2"><span data-token="--line-height-snug"></span></td></tr>
           <tr><td>body, labels</td><td><code>--line-height-normal</code></td><td colspan="2"><span data-token="--line-height-normal"></span></td></tr>
-          <tr><td>long-form reading (legal pages)</td><td><code>--line-height-relaxed</code></td><td colspan="2"><span data-token="--line-height-relaxed"></span></td></tr>
-          <tr><td>headings, wordmark</td><td><code>--letter-spacing-tight</code></td><td colspan="2"><span data-token="--letter-spacing-tight"></span></td></tr>
+          <tr><td>long-form reading (about, legal pages)</td><td><code>--line-height-relaxed</code></td><td colspan="2"><span data-token="--line-height-relaxed"></span></td></tr>
+          <tr><td>wordmark</td><td><code>--letter-spacing-tighter</code></td><td colspan="2"><span data-token="--letter-spacing-tighter"></span></td></tr>
+          <tr><td>every display role</td><td><code>--letter-spacing-tight</code></td><td colspan="2"><span data-token="--letter-spacing-tight"></span></td></tr>
           <tr><td>—</td><td><code>--letter-spacing-normal</code></td><td colspan="2"><span data-token="--letter-spacing-normal"></span></td></tr>
-          <tr><td>all-caps overlines and badges</td><td><code>--letter-spacing-wide</code></td><td colspan="2"><span data-token="--letter-spacing-wide"></span></td></tr>
+          <tr><td>all-caps overlines</td><td><code>--letter-spacing-wide</code></td><td colspan="2"><span data-token="--letter-spacing-wide"></span></td></tr>
           <tr><td>—</td><td><code>--text-display</code></td><td colspan="2"><span data-token="--text-display"></span></td></tr>
           <tr><td>—</td><td><code>--text-h1</code></td><td colspan="2"><span data-token="--text-h1"></span></td></tr>
           <tr><td>—</td><td><code>--text-h2</code></td><td colspan="2"><span data-token="--text-h2"></span></td></tr>
           <tr><td>—</td><td><code>--text-h3</code></td><td colspan="2"><span data-token="--text-h3"></span></td></tr>
           <tr><td>—</td><td><code>--text-h4</code></td><td colspan="2"><span data-token="--text-h4"></span></td></tr>
+          <tr><td>—</td><td><code>--text-title-lg</code></td><td colspan="2"><span data-token="--text-title-lg"></span></td></tr>
+          <tr><td>—</td><td><code>--text-subhead</code></td><td colspan="2"><span data-token="--text-subhead"></span></td></tr>
           <tr><td>—</td><td><code>--text-body-lg</code></td><td colspan="2"><span data-token="--text-body-lg"></span></td></tr>
           <tr><td>—</td><td><code>--text-body</code></td><td colspan="2"><span data-token="--text-body"></span></td></tr>
+          <tr><td>—</td><td><code>--text-body-md</code></td><td colspan="2"><span data-token="--text-body-md"></span></td></tr>
           <tr><td>—</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>—</td><td><code>--text-meta</code></td><td colspan="2"><span data-token="--text-meta"></span></td></tr>
           <tr><td>—</td><td><code>--text-caption</code></td><td colspan="2"><span data-token="--text-caption"></span></td></tr>
           <tr><td>—</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
           <tr><td>—</td><td><code>--text-overline</code></td><td colspan="2"><span data-token="--text-overline"></span></td></tr>
-          <tr><td>---------- Semantic: spacing (4px base; the number is multiples of 4) --</td><td><code>--text-code</code></td><td colspan="2"><span data-token="--text-code"></span></td></tr>
+          <tr><td>—</td><td><code>--text-code</code></td><td colspan="2"><span data-token="--text-code"></span></td></tr>
         </tbody>
       </table></div>
     </section>

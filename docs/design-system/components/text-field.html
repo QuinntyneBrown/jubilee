@@ -120,7 +120,7 @@
         <ol class="ds-anatomy__list">
           <li><div><b>Label</b><small><code>.field__label</code> with a required/optional marker; see <a href="../components/form-field.html">Form field</a>.</small></div></li>
           <li><div><b>Help</b><small><code>.field__help</code> before the input, linked by <code>aria-describedby</code>.</small></div></li>
-          <li><div><b>Input</b><small><code>.input</code>: 44px, <code>--radius-md</code>, hairline <code>--color-border-strong</code> edge (3:1), surface fill, body text.</small></div></li>
+          <li><div><b>Input</b><small><code>.input</code>: 48px tall, 16px side padding, 12px <code>--radius-md</code>, hairline <code>--color-border-strong</code> edge (ink 15%), surface fill, 15px text.</small></div></li>
           <li><div><b>Counter</b><small><code>.field__counter</code>, right-aligned caption, also in <code>aria-describedby</code>.</small></div></li>
         </ol>
       </div>
@@ -153,16 +153,16 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="tf-link"&gt;Link&lt;/label&gt;&lt;div class="input-group"&gt;&lt;input class="input" id="tf-link" type="text" value="https://jubilee.example/b/legacy-financial" readonly&gt;&lt;button class="btn btn--primary" type="button"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/&gt;&lt;/svg&gt;Copy&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>Medium (44px) is the default everywhere. Small (32px) is for inline toolbars such as Sort; large (48px) for the hero search on phones and the sign-in form.</p>
+      <p>The default is 48px tall with 15px text and is used in every form. Small (40px, 14px text) is for inline toolbars such as Sort. <code>.input--lg</code> keeps the 48px height and sets 16px text.</p>
       <div class="ds-example"><div class="ds-example__canvas">
-        <input class="input input--sm" type="text" aria-label="Small field" value="Small · 32px">
-        <input class="input" type="text" aria-label="Medium field" value="Medium · 44px">
-        <input class="input input--lg" type="text" aria-label="Large field" value="Large · 48px">
+        <input class="input input--sm" type="text" aria-label="Small field" value="Small · 40px">
+        <input class="input" type="text" aria-label="Medium field" value="Default · 48px">
+        <input class="input input--lg" type="text" aria-label="Large field" value="Large · 48px, 16px text">
       </div>
-        <div class="ds-example__caption"><span><code>.input--sm</code> / default / <code>.input--lg</code>; heights from <code>--control-height-*</code>.</span></div>
-        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;input class="input input--sm" type="text" aria-label="Small field" value="Small · 32px"&gt;
-&lt;input class="input" type="text" aria-label="Medium field" value="Medium · 44px"&gt;
-&lt;input class="input input--lg" type="text" aria-label="Large field" value="Large · 48px"&gt;</code></pre></details></div>
+        <div class="ds-example__caption"><span><code>.input--sm</code> / default / <code>.input--lg</code>; heights from <code>--control-height-md</code> (small) and <code>--control-height-lg</code>.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;input class="input input--sm" type="text" aria-label="Small field" value="Small · 40px"&gt;
+&lt;input class="input" type="text" aria-label="Medium field" value="Default · 48px"&gt;
+&lt;input class="input input--lg" type="text" aria-label="Large field" value="Large · 48px, 16px text"&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Forced with <code>data-state</code>; real pages use <code>:hover</code>, <code>:focus-visible</code>, <code>disabled</code>, <code>readonly</code> and <code>aria-invalid="true"</code>. Inputs have no pressed look: pressing places the caret, so Active shows focus.</p>
@@ -181,6 +181,8 @@
         <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="stack" style="width: 100%;"><div class="field"><label class="field__label" for="tf-th-d">E-mail <span class="optional">(required)</span></label><input class="input" id="tf-th-d" type="email" value="joanna.adeyemi@example.com" autocomplete="email"></div><div class="field"><label class="field__label" for="tf-th2-d">Password <span class="optional">(required)</span></label><input class="input" id="tf-th2-d" type="password" value="short" aria-invalid="true" aria-describedby="tf-th2-err-d"><span class="field__error" id="tf-th2-err-d">Use at least 10 characters. This one has 5.</span></div></div></div></div>
       </div>
       <ul>
+        <li><b>Hover</b> darkens the edge to <code>--color-fg-subtle</code>.</li>
+        <li><b>Focus</b> draws a 2px <code>--color-focus-ring</code> ring (ink in light) over the edge and hides the edge itself.</li>
         <li><b>Invalid</b> thickens the border to 2px in <code>--color-danger-solid</code> (border plus inset shadow), so the change is not colour alone, and the field shows its error text.</li>
         <li><b>Read-only</b> is used while a form submits (edit-listing <em>submitting</em>): values stay readable and selectable but cannot change.</li>
         <li><b>Disabled</b> is rare: a field that does not apply is hidden or explained, not greyed out.</li>
@@ -189,15 +191,15 @@
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
         <li>Inputs are fluid (<code>width: 100%</code>) and take their width from the form grid; two-column rows collapse to one under 640px.</li>
-        <li>Font size never drops below 16px on phones so iOS does not zoom on focus (the small size is desktop-only).</li>
-        <li>The top-bar search shows from 1024px; below that the search icon links to the search page, and the phone hero shows a large search instead.</li>
+        <li>Text is 15px (<code>--text-body-md</code>) at every width; the small size is 14px.</li>
+        <li>The top-bar search shows from 768px as a 40px pill; below that the search icon links to the search page, and the phone hero shows a 48px cream pill instead.</li>
         <li>Add-ons keep their width; the input shrinks. Long read-only values scroll inside the input, never overflow.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Each field reads four component tokens set from semantic ones: <code>--field-bg</code>, <code>--field-fg</code>, <code>--field-border</code>, <code>--field-border-hover</code>. On the brand band the top-bar search re-maps them to on-brand tokens and takes the pill radius.</p>
+      <p>Each field reads four component tokens set from semantic ones: <code>--field-bg</code>, <code>--field-fg</code>, <code>--field-border</code>, <code>--field-border-hover</code>. On the brand band the top-bar search is a 40px pill filled cream 10% (<code>--color-bg-on-brand-subtle</code>) with on-brand text and edge tokens.</p>
       <pre><code>.topbar--ink .search .input { background: var(--color-bg-on-brand-subtle); border-color: var(--color-border-on-brand); color: var(--color-fg-on-brand); }</code></pre>
-      <p>In dark, inputs sit on the dark surface with a lighter strong border; placeholder text uses <code>--color-fg-subtle</code>, which holds 4.5:1 in both themes.</p>
+      <p>In light the edge is ink 15%. In dark, inputs sit on the dark surface with a lighter strong border; placeholder text uses <code>--color-fg-subtle</code>, which holds 4.5:1 in both themes.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -211,10 +213,11 @@
         <tr><td><kbd>↑</kbd> <kbd>↓</kbd> in date</td><td>Changes the focused day, month or year segment.</td></tr>
       </tbody></table></div>
       <h3>Focus</h3>
-      <p>A 2px <code>--color-focus-ring</code> outline at zero offset plus a matching border, so the ring hugs the field's <code>--radius-md</code> corners.</p>
+      <p>A 2px <code>--color-focus-ring</code> outline (ink in light, gold in dark) drawn over the edge, which turns transparent, so one ring follows the field's 12px <code>--radius-md</code> corners. The top-bar search uses <code>--color-focus-ring-on-brand</code>.</p>
       <h3>Labelling</h3>
       <p>Every field has a visible <code>&lt;label for&gt;</code>; the search label is visually hidden. Help, error and counter ids go in <code>aria-describedby</code>. Placeholders are examples, never labels. Use <code>autocomplete</code> tokens (<code>email</code>, <code>current-password</code>, <code>new-password</code>, <code>given-name</code>, <code>street-address</code>) for 1.3.5.</p>
       <h3>Contrast</h3>
+      <p>The light-theme edge follows the design reference: ink 15%, about 1.4:1 against the surface, below the 3:1 that 1.4.11 asks for. It is a recorded exception in <code>tokens/contrast-pairs.json</code>. The label above the field, the white fill on the cream page and the 2px focus ring identify the field; <code>prefers-contrast: more</code> restores a 3:1 edge.</p>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Value</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
@@ -236,9 +239,9 @@
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>Border colour and shadow transition over <code>--duration-fast</code>; reduced motion zeroes it.</p>
+      <p>Border colour and shadow transition over <code>--duration-fast</code> (150ms); reduced motion zeroes it.</p>
       <h3>Touch</h3>
-      <p>Medium and large fields are 44px and 48px tall and full width. The Show toggle is a 44px button. Small fields are pointer-only.</p>
+      <p>Default fields are 48px tall and full width; small fields are 40px. The Show toggle stretches to the field's height. All clear the 24px minimum target.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -262,19 +265,19 @@
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
           <tr><td>Background / value</td><td><code>--color-bg-surface</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
-          <tr><td>Border / hover</td><td><code>--color-border-strong</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Border / hover</td><td><code>--color-border-strong</code> / <code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
           <tr><td>Placeholder, search icon</td><td><code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
-          <tr><td>Focus ring and border</td><td><code>--color-focus-ring</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td></tr>
+          <tr><td>Focus ring</td><td><code>--color-focus-ring</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td></tr>
           <tr><td>Invalid border</td><td><code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
           <tr><td>Disabled fill / text / border</td><td><code>--color-bg-subtle</code> / <code>--color-fg-disabled</code> / <code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
           <tr><td>Read-only fill</td><td><code>--color-bg-surface-sunken</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td></tr>
-          <tr><td>Add-on fill / text</td><td><code>--color-bg-subtle</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
-          <tr><td>Height sm / md / lg</td><td><code>--control-height-sm</code> / <code>--control-height-md</code> / <code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-sm"></span> / <span data-token="--control-height-md"></span> / <span data-token="--control-height-lg"></span></td></tr>
-          <tr><td>Padding</td><td><code>--space-2</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-3"></span></td></tr>
-          <tr><td>Search icon inset</td><td><code>--space-10</code></td><td colspan="2"><span data-token="--space-10"></span></td></tr>
+          <tr><td>Add-on fill / text (edge as the input)</td><td><code>--color-bg-subtle</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Height small / default</td><td><code>--control-height-md</code> / <code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-md"></span> / <span data-token="--control-height-lg"></span></td></tr>
+          <tr><td>Padding block / inline</td><td><code>--space-2</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Search text inset / icon inset</td><td><code>--space-10</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-10"></span> / <span data-token="--space-4"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
           <tr><td>Border</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
-          <tr><td>Text</td><td><code>--text-body</code></td><td colspan="2"><span data-token="--text-body"></span></td></tr>
+          <tr><td>Text</td><td><code>--text-body-md</code></td><td colspan="2"><span data-token="--text-body-md"></span></td></tr>
           <tr><td>Transition</td><td><code>--duration-fast</code></td><td colspan="2"><span data-token="--duration-fast"></span></td></tr>
         </tbody>
       </table></div>
@@ -295,7 +298,7 @@
 &lt;/form&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.input</code></td><td>Text field.</td></tr>
-        <tr><td><code>.input--sm</code> / <code>.input--lg</code></td><td>Size.</td></tr>
+        <tr><td><code>.input--sm</code> / <code>.input--lg</code></td><td>40px with 14px text / 48px with 16px text.</td></tr>
         <tr><td><code>.input-group</code></td><td>Joins an input with add-ons or a button.</td></tr>
         <tr><td><code>.input-group .addon</code></td><td>Fixed prefix or suffix (<code>$</code>, <code>CAD</code>).</td></tr>
         <tr><td><code>.search</code></td><td>Search wrapper with leading icon.</td></tr>

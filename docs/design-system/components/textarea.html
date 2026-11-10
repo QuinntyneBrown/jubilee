@@ -116,7 +116,7 @@
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Label</b><small>Visible label with marker.</small></div></li>
-          <li><div><b>Text area</b><small><code>.textarea</code>: same edge, fill and radius as <code>.input</code>; minimum 2.5 × 44px.</small></div></li>
+          <li><div><b>Text area</b><small><code>.textarea</code>: same ink-15% edge, fill, 12px radius and 15px text as <code>.input</code>; minimum 2.5 × 48px (120px).</small></div></li>
           <li><div><b>Resize handle</b><small>Vertical only (<code>resize: vertical</code>).</small></div></li>
           <li><div><b>Counter</b><small><code>.field__counter</code>, linked by <code>aria-describedby</code>.</small></div></li>
         </ol>
@@ -146,7 +146,7 @@
         <textarea class="textarea" rows="3" aria-label="Three rows">3 rows · note, report</textarea>
         <textarea class="textarea" rows="5" aria-label="Five rows">5 rows · first message</textarea>
       </div>
-        <div class="ds-example__caption"><span>The CSS minimum is <code>calc(var(--control-height-md) * 2.5)</code>, about 2 rows.</span></div>
+        <div class="ds-example__caption"><span>The CSS minimum is <code>calc(var(--control-height-lg) * 2.5)</code>, 120px, so short <code>rows</code> values still render at that height.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;textarea class="textarea" rows="2" aria-label="Two rows"&gt;2 rows · address&lt;/textarea&gt;
 &lt;textarea class="textarea" rows="3" aria-label="Three rows"&gt;3 rows · note, report&lt;/textarea&gt;
 &lt;textarea class="textarea" rows="5" aria-label="Five rows"&gt;5 rows · first message&lt;/textarea&gt;</code></pre></details></div>
@@ -181,7 +181,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Reads the same <code>--field-*</code> component tokens as <code>.input</code>; override them on a parent to re-skin both. The composer removes the resize handle and drops the minimum height to <code>--control-height-md</code>.</p>
+      <p>Reads the same <code>--field-*</code> component tokens as <code>.input</code>; override them on a parent to re-skin both. The composer removes the resize handle and drops the minimum height to <code>--control-height-md</code> (40px).</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -192,10 +192,11 @@
         <tr><td><kbd>Enter</kbd></td><td>New line. In the composer, Enter sends and <kbd>Shift</kbd>+<kbd>Enter</kbd> adds a line, stated in the help for first use.</td></tr>
       </tbody></table></div>
       <h3>Focus</h3>
-      <p>Same ring as the text field: 2px <code>--color-focus-ring</code> at zero offset with a matching border.</p>
+      <p>Same ring as the text field: a 2px <code>--color-focus-ring</code> outline drawn over the edge, which turns transparent.</p>
       <h3>Labelling</h3>
       <p>Visible label (hidden only in the composer, where the thread heading gives context). Help, error and counter in <code>aria-describedby</code>. The counter's live updates go to a polite live region at most once a second, not on every keystroke.</p>
       <h3>Contrast</h3>
+      <p>The light-theme edge follows the design reference: ink 15%, about 1.4:1, below the 3:1 of 1.4.11. It is a recorded exception in <code>tokens/contrast-pairs.json</code>; <code>prefers-contrast: more</code> restores a 3:1 edge.</p>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Text</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
@@ -215,9 +216,9 @@
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>Border transition over <code>--duration-fast</code>, zeroed under reduced motion. The composer's growth is instant.</p>
+      <p>Border transition over <code>--duration-fast</code> (150ms), zeroed under reduced motion. The composer's growth is instant.</p>
       <h3>Touch</h3>
-      <p>At least 2.5 × 44px tall; the resize handle is a convenience, never the only way to see the text (the field scrolls).</p>
+      <p>At least 120px tall (40px in the composer); the resize handle is a convenience, never the only way to see the text (the field scrolls).</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -240,13 +241,14 @@
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
           <tr><td>Background / text</td><td><code>--color-bg-surface</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
-          <tr><td>Border / hover</td><td><code>--color-border-strong</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Border / hover</td><td><code>--color-border-strong</code> / <code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
           <tr><td>Placeholder</td><td><code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
           <tr><td>Focus</td><td><code>--color-focus-ring</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td></tr>
           <tr><td>Invalid</td><td><code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
           <tr><td>Read-only</td><td><code>--color-bg-surface-sunken</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td></tr>
-          <tr><td>Minimum height</td><td><code>--control-height-md</code></td><td colspan="2"><span data-token="--control-height-md"></span></td></tr>
-          <tr><td>Padding</td><td><code>--space-2</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-3"></span></td></tr>
+          <tr><td>Minimum height (× 2.5) / composer</td><td><code>--control-height-lg</code> / <code>--control-height-md</code></td><td colspan="2"><span data-token="--control-height-lg"></span> / <span data-token="--control-height-md"></span></td></tr>
+          <tr><td>Padding block / inline</td><td><code>--space-3</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Text</td><td><code>--text-body-md</code></td><td colspan="2"><span data-token="--text-body-md"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
           <tr><td>Counter</td><td><code>--text-caption</code> / <code>--color-fg-subtle</code></td><td colspan="2"><span data-token="--text-caption"></span> / <span data-token="--color-fg-subtle"></span></td></tr>
           <tr><td>Composer padding</td><td><code>--space-3</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
