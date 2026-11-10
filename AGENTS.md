@@ -26,6 +26,8 @@ later feature follows it.
 - `docs/adr/` — architecture decisions; read relevant ADRs before changing the areas they cover
 - `docs/journey.md`, `docs/prompts/` — the user journeys and one implementation prompt per journey
 - `eng/` — local engineering scripts (`Test-Backend.ps1`, `Start-E2eApi.ps1`, `Start-FreshStack.ps1`)
+- `docs/videos/` — narrated videos, one folder each; `tools/` holds the scripts that build them
+  (see `docs/videos/README.md`)
 
 ```
 jubilee/
