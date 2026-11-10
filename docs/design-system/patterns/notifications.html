@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notifications — Jubilee design system</title>
+<meta name="description" content="How Jubilee tells people about things they did not just do: toasts, page banners for account and connection state, the notification centre, count badges and e-mail.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Pattern</p>
+      <h1>Notifications</h1>
+      <p class="ds-lead">Jubilee’s messages run on a request lifecycle: a member asks, a business confirms or declines, Jubilee verifies listings. Each change reaches the right person once, in the channel that fits how urgent and how lasting it is.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Pattern</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Five channels, from most fleeting to most lasting: the <a href="../components/toast.html">Toast</a> (a result or a live event, gone in 8 seconds), the <a href="../components/alert.html">banner</a> (<code>.alert.banner</code>, a condition that holds until it changes: offline, e-mail not confirmed, listing pending or paused), the inline <a href="../components/alert.html">Alert and banner</a> (a fact about this page: a decline reason, a draft saved), the <a href="../components/notification-item.html">notification centre</a> (the record of every event) and the count <a href="../components/badge.html">Badge</a> on the bell, Messages and Requests. E-mail mirrors the centre and is set in Notification settings.</p>
+      <h3>Events and where they go</h3>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Event</th><th scope="col">Who</th><th scope="col">Toast</th><th scope="col">Banner</th><th scope="col">Centre</th><th scope="col">Badge</th></tr></thead><tbody>
+        <tr><td>Request confirmed / declined</td><td>Member</td><td>If on Jubilee</td><td>—</td><td>Yes</td><td>Bell</td></tr>
+        <tr><td>New request</td><td>Business owner</td><td>If on Jubilee</td><td>—</td><td>Yes</td><td>Requests tab, bell</td></tr>
+        <tr><td>New message</td><td>Both</td><td>If not in that conversation</td><td>—</td><td>Yes</td><td>Messages</td></tr>
+        <tr><td>Listing pending, changes requested, verified, paused</td><td>Owner</td><td>On the change</td><td>On My business until resolved</td><td>Yes</td><td>Bell</td></tr>
+        <tr><td>E-mail not confirmed</td><td>Member</td><td>—</td><td>Every page until confirmed</td><td>—</td><td>—</td></tr>
+        <tr><td>Offline / back online / service down</td><td>Everyone</td><td>—</td><td>Top of page while true</td><td>—</td><td>—</td></tr>
+        <tr><td>Saved, cancelled, product added</td><td>The actor</td><td>Yes, with Undo or View</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
+      <ul>
+        <li><b>Toast</b> when the event is timely but not lasting, and the member is already doing something else: "New message from Legacy Financial", "Request cancelled · Undo".</li>
+        <li><b>Banner</b> when a condition limits what the member can do across pages and lasts until something changes. It sits under the top bar, full width, and is dismissible only when the condition is informational (back online, verified and live).</li>
+        <li><b>Inline alert</b> when the fact belongs to the content of one page: the decline reason on the request, "Waiting for your church reference" on My business.</li>
+        <li><b>Notification centre</b> for every event a person might want to find again. Toasts and e-mail point here; nothing appears only in a toast.</li>
+        <li><b>Never</b> a dialog for a notification. Dialogs are for decisions.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
+      <p>A connection banner under the top bar and a stack of three toasts (success with Undo, a live message, an error that stays). The region is a polite live region; the error toast adds <code>role="alert"</code>.</p>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--flush">
+        <div class="ds-frame" style="width: 100%; min-height: 36rem;">
+          <div class="alert banner alert--warning" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/></svg><div class="alert__body"><span><strong>You’re offline.</strong> Showing the directory saved at 8:42 a.m. Messages you write are sent when you reconnect.</span><span class="alert__actions" style="margin: 0;"><button class="btn btn--sm" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button></span></div></div>
+          <div class="toast-region" role="status" aria-live="polite">
+            <div class="toast toast--success"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><div class="toast__body"><div class="toast__title">Saved Legacy Financial</div><div class="toast__text">Find it any time under Saved.</div><button class="toast__action" type="button">Undo</button></div><button class="close" type="button" aria-label="Dismiss"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button><span class="toast__progress" aria-hidden="true"></span></div>
+            <div class="toast toast--info"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><div class="toast__body"><div class="toast__title">New message from Legacy Financial</div><div class="toast__text">“Thursday at 10:00 works. See you then!”</div><button class="toast__action" type="button">Open conversation</button></div><button class="close" type="button" aria-label="Dismiss"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button><span class="toast__progress" aria-hidden="true"></span></div>
+            <div class="toast toast--danger" role="alert"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="toast__body"><div class="toast__title">Couldn’t cancel the request</div><div class="toast__text">It is still open. Check your connection and try again.</div><button class="toast__action" type="button">Try again</button></div><button class="close" type="button" aria-label="Dismiss"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+          </div>
+        </div>
+      </div>
+        <div class="ds-example__caption"><span>At most three toasts; a fourth pushes out the oldest non-error toast. Errors carry no progress bar because they do not time out.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="ds-frame" style="width: 100%; min-height: 36rem;"&gt;
+  &lt;div class="alert banner alert--warning" role="status"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;span&gt;&lt;strong&gt;You’re offline.&lt;/strong&gt; Showing the directory saved at 8:42 a.m. Messages you write are sent when you reconnect.&lt;/span&gt;&lt;span class="alert__actions" style="margin: 0;"&gt;&lt;button class="btn btn--sm" type="button"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/&gt;&lt;/svg&gt;Try again&lt;/button&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="toast-region" role="status" aria-live="polite"&gt;
+    &lt;div class="toast toast--success"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m8 12 3 3 5-6"/&gt;&lt;/svg&gt;&lt;div class="toast__body"&gt;&lt;div class="toast__title"&gt;Saved Legacy Financial&lt;/div&gt;&lt;div class="toast__text"&gt;Find it any time under Saved.&lt;/div&gt;&lt;button class="toast__action" type="button"&gt;Undo&lt;/button&gt;&lt;/div&gt;&lt;button class="close" type="button" aria-label="Dismiss"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;span class="toast__progress" aria-hidden="true"&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="toast toast--info"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/&gt;&lt;/svg&gt;&lt;div class="toast__body"&gt;&lt;div class="toast__title"&gt;New message from Legacy Financial&lt;/div&gt;&lt;div class="toast__text"&gt;“Thursday at 10:00 works. See you then!”&lt;/div&gt;&lt;button class="toast__action" type="button"&gt;Open conversation&lt;/button&gt;&lt;/div&gt;&lt;button class="close" type="button" aria-label="Dismiss"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;span class="toast__progress" aria-hidden="true"&gt;&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="toast toast--danger" role="alert"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v6M12 16h.01"/&gt;&lt;/svg&gt;&lt;div class="toast__body"&gt;&lt;div class="toast__title"&gt;Couldn’t cancel the request&lt;/div&gt;&lt;div class="toast__text"&gt;It is still open. Check your connection and try again.&lt;/div&gt;&lt;button class="toast__action" type="button"&gt;Try again&lt;/button&gt;&lt;/div&gt;&lt;button class="close" type="button" aria-label="Dismiss"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></details></div>
+      <h3>Notification centre</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <ul class="list card card--list" style="width: 100%;">
+          <li><a class="notif notif--unread" href="../../mocks/pages/request-detail/confirmed.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;"><span class="visually-hidden">Unread. </span>Legacy Financial confirmed your meeting</span><span class="notif__meta" style="display: block;">Thu 12 Nov, 10:00 a.m. by video</span><span class="text-caption">9:14 a.m.</span></span></a></li>
+          <li><a class="notif notif--unread" href="../../mocks/pages/conversation/default.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;"><span class="visually-hidden">Unread. </span>New message from WaterWorks Plumbing &amp; Drains</span><span class="notif__meta" style="display: block;">“We can come Saturday morning for the kitchen drain.”</span><span class="text-caption">Yesterday, 6:02 p.m.</span></span></a></li>
+          <li><a class="notif" href="../../mocks/pages/request-detail/confirmed.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;">Christian Bookstores confirmed your order</span><span class="notif__meta" style="display: block;">Leather journaling Bible, ESV · pickup Fri 13 Nov</span><span class="text-caption">Sat 7 Nov</span></span></a></li>
+        </ul>
+      </div>
+        <div class="ds-example__caption"><span>Each item is one link to the thing it is about. Unread items have the accent-subtle background, a bold title and hidden "Unread." text.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="list card card--list" style="width: 100%;"&gt;
+  &lt;li&gt;&lt;a class="notif notif--unread" href="../../mocks/pages/request-detail/confirmed.html"&gt;&lt;span class="notif__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="4" y="5" width="16" height="15" rx="2"/&gt;&lt;path d="M8 3v4M16 3v4M4 10h16"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span class="notif__body"&gt;&lt;span class="notif__title" style="display: block;"&gt;&lt;span class="visually-hidden"&gt;Unread. &lt;/span&gt;Legacy Financial confirmed your meeting&lt;/span&gt;&lt;span class="notif__meta" style="display: block;"&gt;Thu 12 Nov, 10:00 a.m. by video&lt;/span&gt;&lt;span class="text-caption"&gt;9:14 a.m.&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a class="notif notif--unread" href="../../mocks/pages/conversation/default.html"&gt;&lt;span class="notif__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span class="notif__body"&gt;&lt;span class="notif__title" style="display: block;"&gt;&lt;span class="visually-hidden"&gt;Unread. &lt;/span&gt;New message from WaterWorks Plumbing &amp;amp; Drains&lt;/span&gt;&lt;span class="notif__meta" style="display: block;"&gt;“We can come Saturday morning for the kitchen drain.”&lt;/span&gt;&lt;span class="text-caption"&gt;Yesterday, 6:02 p.m.&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a class="notif" href="../../mocks/pages/request-detail/confirmed.html"&gt;&lt;span class="notif__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span class="notif__body"&gt;&lt;span class="notif__title" style="display: block;"&gt;Christian Bookstores confirmed your order&lt;/span&gt;&lt;span class="notif__meta" style="display: block;"&gt;Leather journaling Bible, ESV · pickup Fri 13 Nov&lt;/span&gt;&lt;span class="text-caption"&gt;Sat 7 Nov&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre></details></div>
+      <h3>Banners for the verification flow</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="stack" style="width: 100%;">
+          <div class="alert" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="alert__body"><div class="alert__title">Waiting for your church reference</div><div>We e-mailed Pastor Daniel Okoro at Grace Toronto Church today at 9:40 a.m. Once he answers, we review and publish within two business days.</div><div class="alert__actions"><button type="button" class="btn btn--link btn--sm">Send the request again</button><a href="../../mocks/pages/edit-listing/default.html">Change reference</a></div></div></div>
+          <div class="alert alert--danger" role="alert"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">We couldn’t verify Luzandre.com</div><div>Your reference told us they don’t know you. Name another pastor or elder to try again.</div><div class="alert__actions"><a href="../../mocks/pages/edit-listing/default.html">Change reference</a></div></div></div>
+          <div class="alert alert--success" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><div class="alert__body"><div class="alert__title">Luzandre.com is verified and live</div><div>Members can find you in Shops.</div></div><button class="close" type="button" aria-label="Dismiss"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        </div>
+      </div>
+        <div class="ds-example__caption"><span>Pending (info, not dismissible), not verified (danger, not dismissible), live (success, dismissible). The same messages appear as full-width banners above My business.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="stack" style="width: 100%;"&gt;
+  &lt;div class="alert" role="status"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v5l3 2"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;Waiting for your church reference&lt;/div&gt;&lt;div&gt;We e-mailed Pastor Daniel Okoro at Grace Toronto Church today at 9:40 a.m. Once he answers, we review and publish within two business days.&lt;/div&gt;&lt;div class="alert__actions"&gt;&lt;button type="button" class="btn btn--link btn--sm"&gt;Send the request again&lt;/button&gt;&lt;a href="../../mocks/pages/edit-listing/default.html"&gt;Change reference&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="alert alert--danger" role="alert"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v6M12 16h.01"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;We couldn’t verify Luzandre.com&lt;/div&gt;&lt;div&gt;Your reference told us they don’t know you. Name another pastor or elder to try again.&lt;/div&gt;&lt;div class="alert__actions"&gt;&lt;a href="../../mocks/pages/edit-listing/default.html"&gt;Change reference&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="alert alert--success" role="status"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m8 12 3 3 5-6"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;Luzandre.com is verified and live&lt;/div&gt;&lt;div&gt;Members can find you in Shops.&lt;/div&gt;&lt;/div&gt;&lt;button class="close" type="button" aria-label="Dismiss"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Channel</th><th scope="col">States</th><th scope="col">Mock</th></tr></thead><tbody>
+        <tr><td>Toast</td><td>info, success, warning, danger, with action, stacked, leaving (<code>data-state="leaving"</code>)</td><td><a href="../../mocks/notifications/toast/stacked.html">toast/stacked</a>, <a href="../../mocks/notifications/request-toast/danger.html">request-toast/danger</a></td></tr>
+        <tr><td>Connection banner</td><td>warning (offline, persistent), success (back online, dismissible), danger (service unreachable)</td><td><a href="../../mocks/notifications/offline-banner/persistent.html">offline-banner/persistent</a></td></tr>
+        <tr><td>Verification banner</td><td>info (pending), warning (waiting on reference), danger (could not verify), success (live), persistent (paused)</td><td><a href="../../mocks/notifications/verification-banner/warning.html">verification-banner/warning</a></td></tr>
+        <tr><td>E-mail banner</td><td>persistent (confirm your e-mail), success (confirmed), danger (could not deliver)</td><td><a href="../../mocks/notifications/verify-email-banner/persistent.html">verify-email-banner/persistent</a></td></tr>
+        <tr><td>Centre</td><td>default (3 unread), read, loading, empty ("You’re all caught up"), error</td><td><a href="../../mocks/pages/notifications/default.html">notifications</a>, <a href="../../mocks/pages/notifications/read.html">notifications/read</a></td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Toasts stack bottom-right in a 24rem column from 640px; below it they span the width with 16px margins and sit above the tab bar.</li>
+        <li>Banners are full width under the top bar at every size; below 640px the action wraps under the text, left-aligned.</li>
+        <li>The notification centre is a single column card at every width; the bell icon in the top bar is the only entry on phones (the tab bar has no bell).</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Pattern and roles</h3>
+      <p>The toast region is one persistent <code>role="status" aria-live="polite"</code> container; error toasts and danger banners use <code>role="alert"</code> (<a href="https://www.w3.org/WAI/ARIA/apg/patterns/alert/">APG alert pattern</a>). Toasts are not dialogs and never take focus. The centre is a list of links.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Reaches toast actions and Dismiss in visual order, top to bottom, after the page content that was focused.</td></tr>
+        <tr><td><kbd>Esc</kbd> inside a toast</td><td>Dismisses it.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Activates the toast action (Undo, Open conversation) or opens a notification.</td></tr>
+        <tr><td>Focus or hover on a toast</td><td>Pauses its 8-second timer (WCAG 2.2.1 Timing Adjustable).</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>Nothing moves focus. When a toast with focus inside is dismissed, focus returns to where it was before it entered the region.</p>
+      <h3>Labelling and announcements</h3>
+      <p>Toast titles are announced as written, so they must make sense alone: "Couldn’t cancel the request", not "Error". The bell’s name carries the count ("Notifications, 3 unread"); unread items prepend hidden "Unread.". Dismiss buttons are labelled "Dismiss".</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Toast text</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-bg-inverse" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Danger toast icon</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon-inverse|--color-bg-inverse" data-min="3"></span></div>
+        <div class="ds-pair"><span>Warning banner text</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-warning-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Info banner text</span><span class="ds-pair__ratio" data-contrast="--color-info-fg|--color-info-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Unread item metadata</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Count badge</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Toast text</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-bg-inverse" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Danger toast icon</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon-inverse|--color-bg-inverse" data-min="3"></span></div>
+        <div class="ds-pair"><span>Warning banner text</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-warning-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Info banner text</span><span class="ds-pair__ratio" data-contrast="--color-info-fg|--color-info-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Unread item metadata</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Count badge</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Toasts enter and leave with a fade over <code>--duration-base</code>; reduced motion removes the movement. The progress bar is decorative and does not animate under reduced motion.</p>
+      <h3>Touch</h3>
+      <p>Toast close buttons are 24px minimum (<code>--target-min</code>) with 12px gap from the action; the bell is a 44px icon button.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Lead with the actor and the event: "Legacy Financial confirmed your meeting", "New message from WaterWorks Plumbing &amp; Drains".</li>
+        <li>The second line carries the detail that makes it actionable: the time, the quote, the item and pickup day.</li>
+        <li>Toast titles are four to six words; the toast text one sentence; the action one or two words (Undo, View in shop, Try again).</li>
+        <li>Banners start with the condition in bold, then what it means: "<strong>You’re offline.</strong> Showing the directory saved at 8:42 a.m."</li>
+        <li>Request outcomes use the lifecycle words consistently: requested, confirmed, declined, cancelled, completed. Never "approved" for a request (that word belongs to listings) and never "paid".</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="toast toast--danger" role="alert" style="width: 100%;"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="toast__body"><div class="toast__title">Couldn’t save Legacy Financial</div><div class="toast__text">You’re offline. Reconnect and tap the heart again.</div><button class="toast__action" type="button">Try again</button></div><button class="close" type="button" aria-label="Dismiss"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div></div><figcaption>An error toast names what failed, why, and offers a retry. It stays until dismissed.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="toast toast--danger" style="width: 100%;"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="toast__body"><div class="toast__title">Something went wrong</div></div><span class="toast__progress" aria-hidden="true"></span></div></div><figcaption>A vague error that times out and is announced politely, so it can be missed entirely.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="alert banner" role="status" style="width: 100%;"><div class="alert__body"><span><strong>Confirm your e-mail to message businesses.</strong> We sent a link to joanna.adeyemi@example.com.</span><span class="alert__actions" style="margin: 0;"><button class="btn btn--sm" type="button">Send it again</button></span></div></div></div><figcaption>A lasting limit is a banner with the fix in reach.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="toast" style="position: static; width: 100%;"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><div class="toast__body"><div class="toast__title">Confirm your e-mail</div></div></div></div><figcaption>A toast for a lasting condition disappears in 8 seconds while the limit stays.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/notifications/toast/stacked.html">notifications/toast/stacked</a> (toast stack)</li>
+        <li><a href="../../mocks/notifications/request-toast/danger.html">notifications/request-toast/danger</a> (error toast, no timeout)</li>
+        <li><a href="../../mocks/notifications/offline-banner/persistent.html">notifications/offline-banner/persistent</a> (connection banner)</li>
+        <li><a href="../../mocks/notifications/verification-banner/warning.html">notifications/verification-banner/warning</a> (verification flow on My business)</li>
+        <li><a href="../../mocks/notifications/verify-email-banner/persistent.html">notifications/verify-email-banner/persistent</a> (e-mail banner)</li>
+        <li><a href="../../mocks/pages/notifications/default.html">pages/notifications/default</a> (notification centre)</li>
+      </ul>
+      <p>Drift found: toast body text had 0.9 opacity and toast icons used surface icon tokens that fell to about 1.7–1.9:1 on the cream dark-theme toast; the new <code>--color-*-icon-inverse</code> tokens fix it. Banner actions carry <code>style="margin: 0"</code> inline in every banner mock (a <code>.banner .alert__actions</code> rule would remove it). The e-mail banner’s persistent state has no icon while every other banner has one; the system gives it the info icon. The topbar count dot was 6px and the count badge 22px; both now use <code>--indicator-size</code> (8px) and <code>--badge-height</code> (20px).</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

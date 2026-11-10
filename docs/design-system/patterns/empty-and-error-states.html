@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Empty and error states — Jubilee design system</title>
+<meta name="description" content="How Jubilee fills a screen that has nothing to show: first use, no results, filtered to nothing, failed to load, offline, not found, no access, signed out.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Pattern</p>
+      <h1>Empty and error states</h1>
+      <p class="ds-lead">An empty or broken screen is still a step in someone’s task. Jubilee always says why it is empty, reassures that nothing is lost, and offers the next action.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Pattern</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Every list and every page in the mocks has an empty and an error state. They share one layout, the <a href="../components/empty-state.html">Empty state</a> (<code>.empty</code>: icon, title, text, actions), and differ in icon colour, size and copy. Whole-page failures use the <a href="../components/error-page.html">Error page</a> layout (<code>.status-page</code>) with the same parts.</p>
+      <ul>
+        <li><b>First use</b> (nothing yet): invite the first action. "Book, ask or order to get started."</li>
+        <li><b>No results</b> (search or filter matched nothing): show the query, suggest a correction, offer a wider route.</li>
+        <li><b>Filtered to nothing</b> (a tab with zero items): compact, one way back: "No declined requests · Show all requests".</li>
+        <li><b>Load error</b>: <code>.empty--error</code>, "Nothing is lost", a support code (<code>JB-DIR-503</code>) and <em>Try again</em>.</li>
+        <li><b>Whole-app conditions</b>: not found, no access, something went wrong, offline, session expired and maintenance each have a full page.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Condition</th><th scope="col">Layout</th><th scope="col">Primary action</th><th scope="col">Mock</th></tr></thead><tbody>
+        <tr><td>Collection never had items</td><td><code>.empty</code> in the content area</td><td>Start the thing: Browse businesses, Add a product</td><td><a href="../../mocks/pages/requests/empty.html">requests/empty</a></td></tr>
+        <tr><td>Search matched nothing</td><td><code>.empty</code> below a page header that repeats the query</td><td>The suggested search, then a category</td><td><a href="../../mocks/pages/search/no-results.html">search/no-results</a></td></tr>
+        <tr><td>A tab or filter is empty</td><td><code>.empty--compact</code> under the tabs</td><td>Show all</td><td><a href="../../mocks/pages/requests/no-results.html">requests/no-results</a></td></tr>
+        <tr><td>A region failed to load</td><td><code>.empty--error</code> with <code>role="alert"</code> in place of the region</td><td>Try again</td><td><a href="../../mocks/pages/browse/error.html">browse/error</a></td></tr>
+        <tr><td>Some data is stale because the network dropped</td><td>Warning <a href="../components/alert.html">banner</a>; content stays</td><td>Try again</td><td><a href="../../mocks/pages/browse/offline.html">browse/offline</a></td></tr>
+        <tr><td>Page does not exist / not allowed</td><td><code>.status-page</code> with <code>.empty</code>, h1 is the title</td><td>Back to browse, Search</td><td><a href="../../mocks/pages/not-found/default.html">not-found</a>, <a href="../../mocks/pages/forbidden/default.html">forbidden</a></td></tr>
+        <tr><td>Signed out or offline before anything loaded</td><td>Auth card with <code>.empty</code></td><td>Sign in / Try again</td><td><a href="../../mocks/pages/session-expired/default.html">session-expired</a>, <a href="../../mocks/pages/offline/default.html">offline</a></td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
+      <p>Three empty states side by side: first use, no results with a suggestion, and a load error. Same parts, different jobs.</p>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--canvas">
+        <div class="cluster" style="align-items: stretch; width: 100%;">
+          <div class="card" style="flex: 1 1 18rem;"><div class="empty empty--compact">
+            <div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></div>
+            <h3 class="empty__title">Book, ask or order to get started</h3>
+            <p class="empty__text">When you book a meeting, ask for a quote or request a product, it shows up here with its status.</p>
+            <div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html">Browse businesses</a></div>
+          </div></div>
+          <div class="card" style="flex: 1 1 18rem;"><div class="empty empty--compact">
+            <div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+            <h3 class="empty__title">Nothing matches “plumbre”</h3>
+            <p class="empty__text">Did you mean <a href="../../mocks/pages/search/default.html">plumber</a>? You can also browse Home &amp; property, where trades are listed.</p>
+            <div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/search/default.html">Search “plumber”</a><a class="btn" href="../../mocks/pages/category/default.html">Browse Home &amp; property</a></div>
+          </div></div>
+          <div class="card" style="flex: 1 1 18rem;"><div class="empty empty--compact empty--error" role="alert">
+            <div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg></div>
+            <h3 class="empty__title">We couldn’t load the directory</h3>
+            <p class="empty__text">Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote <code>JB-DIR-503</code>.</p>
+            <div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</a></div>
+          </div></div>
+        </div>
+      </div>
+        <div class="ds-example__caption"><span>Icon in a tinted circle (gold for empty, danger for error), an h2 or h3 title that fits the page outline, at most two sentences, at most two actions.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="cluster" style="align-items: stretch; width: 100%;"&gt;
+  &lt;div class="card" style="flex: 1 1 18rem;"&gt;&lt;div class="empty empty--compact"&gt;
+    &lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="4" y="5" width="16" height="15" rx="2"/&gt;&lt;path d="M8 3v4M16 3v4M4 10h16"/&gt;&lt;/svg&gt;&lt;/div&gt;
+    &lt;h3 class="empty__title"&gt;Book, ask or order to get started&lt;/h3&gt;
+    &lt;p class="empty__text"&gt;When you book a meeting, ask for a quote or request a product, it shows up here with its status.&lt;/p&gt;
+    &lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary" href="../../mocks/pages/browse/default.html"&gt;Browse businesses&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;&lt;/div&gt;
+  &lt;div class="card" style="flex: 1 1 18rem;"&gt;&lt;div class="empty empty--compact"&gt;
+    &lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="11" cy="11" r="7"/&gt;&lt;path d="m20 20-3.5-3.5"/&gt;&lt;/svg&gt;&lt;/div&gt;
+    &lt;h3 class="empty__title"&gt;Nothing matches “plumbre”&lt;/h3&gt;
+    &lt;p class="empty__text"&gt;Did you mean &lt;a href="../../mocks/pages/search/default.html"&gt;plumber&lt;/a&gt;? You can also browse Home &amp;amp; property, where trades are listed.&lt;/p&gt;
+    &lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary" href="../../mocks/pages/search/default.html"&gt;Search “plumber”&lt;/a&gt;&lt;a class="btn" href="../../mocks/pages/category/default.html"&gt;Browse Home &amp;amp; property&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;&lt;/div&gt;
+  &lt;div class="card" style="flex: 1 1 18rem;"&gt;&lt;div class="empty empty--compact empty--error" role="alert"&gt;
+    &lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v6M12 16h.01"/&gt;&lt;/svg&gt;&lt;/div&gt;
+    &lt;h3 class="empty__title"&gt;We couldn’t load the directory&lt;/h3&gt;
+    &lt;p class="empty__text"&gt;Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote &lt;code&gt;JB-DIR-503&lt;/code&gt;.&lt;/p&gt;
+    &lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary" href="../../mocks/pages/browse/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/&gt;&lt;/svg&gt;Try again&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></details></div>
+      <h3>Full page</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="empty" style="width: 100%;">
+          <div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div>
+          <h2 class="empty__title">We can’t find that page</h2>
+          <p class="empty__text">The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.</p>
+          <div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/search/empty.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</a></div>
+        </div>
+      </div>
+        <div class="ds-example__caption"><span>Not found. On the real page the title is the page’s h1, centred in <code>.status-page</code>; the top bar and tab bar stay so the member is never stranded.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="empty" style="width: 100%;"&gt;
+  &lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m15 9-2 4-4 2 2-4z"/&gt;&lt;/svg&gt;&lt;/div&gt;
+  &lt;h2 class="empty__title"&gt;We can’t find that page&lt;/h2&gt;
+  &lt;p class="empty__text"&gt;The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.&lt;/p&gt;
+  &lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary" href="../../mocks/pages/browse/default.html"&gt;Back to browse&lt;/a&gt;&lt;a class="btn" href="../../mocks/pages/search/empty.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="11" cy="11" r="7"/&gt;&lt;path d="m20 20-3.5-3.5"/&gt;&lt;/svg&gt;Search&lt;/a&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>An empty state is itself the state. What varies is which of these a screen can reach, recorded per screen in the mocks manifest (a screen that cannot be empty, like a form, says why).</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Kind</th><th scope="col">Empty</th><th scope="col">Compact</th><th scope="col">Error</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Layout</th><td><div class="empty empty--compact"><div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0"/></svg></div><p class="empty__title">You’re all caught up</p></div></td><td><div class="empty empty--compact"><p class="empty__title">No declined requests</p><button class="btn btn--sm" type="button">Show all requests</button></div></td><td><div class="empty empty--compact empty--error"><div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg></div><p class="empty__title">We couldn’t load messages</p><button class="btn btn--sm btn--primary" type="button">Try again</button></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div class="empty empty--compact"><div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></div><p class="empty__title">Nothing saved yet</p><p class="empty__text">Tap the heart on any business to keep it here.</p></div><div class="empty empty--compact empty--error"><div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg></div><p class="empty__title">We couldn’t load Saved</p></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="empty empty--compact"><div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></div><p class="empty__title">Nothing saved yet</p><p class="empty__text">Tap the heart on any business to keep it here.</p></div><div class="empty empty--compact empty--error"><div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg></div><p class="empty__title">We couldn’t load Saved</p></div></div></div>
+      </div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>The empty layout is centred and its text capped at 36ch at every width, so it reads the same on a phone and a 1280px screen.</li>
+        <li>Actions wrap and centre; on phones two actions stack with the primary first.</li>
+        <li>Inside cards, panels and the inbox list use <code>.empty--compact</code> (32px top and bottom instead of 48px).</li>
+        <li>Full-page states keep the top bar and phone tab bar; <code>.status-page</code> centres in 70% of the viewport height so the message is above the fold on a 360 × 640 phone.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Pattern and roles</h3>
+      <p>An empty state is plain content: a heading, a paragraph and links or buttons. A load error that replaces content after the page rendered carries <code>role="alert"</code> so it is announced (<a href="https://www.w3.org/WAI/ARIA/apg/patterns/alert/">APG alert pattern</a>). Icons are <code>aria-hidden</code>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Reaches the inline suggestion link, then the actions, in reading order.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Follows the action. <em>Try again</em> reloads only the failed region where possible.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>After <em>Try again</em> succeeds, focus goes to the first item of the reloaded region, or stays on the region heading. On a full-page error the h1 is the first thing after the skip link.</p>
+      <h3>Labelling and announcements</h3>
+      <p>The title is a real heading at the right level for the page outline (h1 on a status page, h2 under a page header, h3 inside a card). Support codes are in <code>&lt;code&gt;</code> so they are read character by character.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Title on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Explanation on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Error icon on its tint</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon|--color-danger-bg" data-min="3"></span></div>
+        <div class="ds-pair"><span>Link inside text</span><span class="ds-pair__ratio" data-contrast="--color-fg-link|--color-bg-canvas" data-min="4.5"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Title on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Explanation on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Error icon on its tint</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon|--color-danger-bg" data-min="3"></span></div>
+        <div class="ds-pair"><span>Link inside text</span><span class="ds-pair__ratio" data-contrast="--color-fg-link|--color-bg-canvas" data-min="4.5"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Empty and error states appear without animation; nothing bounces or pulses to draw attention.</p>
+      <h3>Touch</h3>
+      <p>Actions are medium buttons (44px). The inline suggestion link sits in a sentence, so its target is its line height, which the 24px spacing exception covers.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Title: what is true now, in plain words. "We can’t find that page", "Nothing matches “plumbre”", "You’re all caught up". Never "Error 404" or "No data".</li>
+        <li>Text: why, then what to do. Errors start with "Nothing is lost." when that is true, and end with a support code: "If it keeps happening, tell us and quote <code>JB-LST-503</code>."</li>
+        <li>Codes follow <code>JB-</code> + area + status: <code>JB-AUTH-503</code>, <code>JB-REQ-502</code>, <code>JB-DIR-503</code>.</li>
+        <li>Actions are verbs that move forward: "Browse businesses", "Search “plumber”", "Try again". "Back to browse" is the escape, never the only action on a first-use state.</li>
+        <li>No-results repeats the member’s words in curly quotes and offers the correction as a link.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="empty empty--compact"><div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/></svg></div><p class="empty__title">Add your first product</p><p class="empty__text">Members can request products once they’re listed. Start with your best seller.</p><button class="btn btn--primary btn--sm" type="button">Add a product</button></div></div><figcaption>First use invites the first action and says why it matters.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="empty empty--compact"><p class="empty__title">No products</p></div></div><figcaption>A dead end: no reason, no next step.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="empty empty--compact empty--error"><div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg></div><p class="empty__title">We couldn’t load your requests</p><p class="empty__text">Nothing is lost. Try again, or quote <code>JB-REQ-503</code>.</p><button class="btn btn--sm btn--primary" type="button">Try again</button></div></div><figcaption>An error that reassures, gives a way to retry and a code for support.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="empty empty--compact"><div class="empty__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></div><p class="empty__title">No requests yet</p></div></div><figcaption>Showing the empty state when the list failed to load tells Joanna her requests are gone. A failure must look like a failure.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/requests/empty.html">pages/requests/empty</a> (first use)</li>
+        <li><a href="../../mocks/pages/requests/no-results.html">pages/requests/no-results</a> (compact, filtered)</li>
+        <li><a href="../../mocks/pages/search/no-results.html">pages/search/no-results</a> (suggestion)</li>
+        <li><a href="../../mocks/pages/browse/error.html">pages/browse/error</a> (load error with code)</li>
+        <li><a href="../../mocks/pages/not-found/default.html">pages/not-found/default</a> (status page)</li>
+        <li><a href="../../mocks/pages/session-expired/default.html">pages/session-expired/default</a> (auth-card variant)</li>
+      </ul>
+      <p>Drift found: the success view of <em>List your business</em> uses <code>.empty</code> for a positive outcome, which is intended and documented in Feedback and loading. Error titles are sometimes h1 (sign in error, not found) and sometimes h2 (browse error) depending on whether the page header survives; the rule above makes that explicit. Support codes mix 502 and 503 for the same failure (JB-REQ-502 and JB-REQ-503); engineering should pick one status per area.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

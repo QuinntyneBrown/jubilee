@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pagination — Jubilee design system</title>
+<meta name="description" content="Pagination for long category results: a result count, previous/next arrows and numbered pages with the current one in gold.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Navigation</p>
+      <h1>Pagination</h1>
+      <p class="ds-lead">Pagination splits a long list of businesses into pages of 16 and tells the member how far through they are: "Showing 1–16 of 312".</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;nav&gt;</code> + <code>&lt;ul&gt;</code></span><span class="ds-pill">category/long mock</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use pagination on category and search results longer than one page (16 cards). Short lists show everything; message threads and notifications load older items on scroll instead. Only the long category mock paginates today.</p>
+      <ul>
+        <li>A <b>result count</b> on the left (<code>.text-caption</code>) and the <b>pager</b> on the right, in a <code>.cluster--between</code> row.</li>
+        <li>The pager shows previous, the first pages, an ellipsis, the last page and next. The current page is a gold pill with the accent border.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <nav class="cluster cluster--between" aria-label="Pagination" style="width: 100%;"><span class="text-caption">Showing 1–16 of 312</span><ul class="pagination"><li><a aria-disabled="true" aria-label="Previous page">‹</a></li><li><a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 1">1</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 2">2</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 3">3</a></li><li><span aria-hidden="true">…</span></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 20">20</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Next page">›</a></li></ul></nav>
+          <span class="ds-callout" style="left: 8%; top: 50%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 50%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 60%; top: 50%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 82%; top: 50%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 96%; top: 50%;" aria-hidden="true">5</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Result count</b><small><code>.text-caption</code>: "Showing 1–16 of 312".</small></div></li>
+          <li><div><b>Previous</b><small><code>‹</code> labelled "Previous page"; <code>aria-disabled="true"</code> and no <code>href</code> on page 1.</small></div></li>
+          <li><div><b>Current page</b><small><code>aria-current="page"</code>: <code>--color-accent</code> fill, <code>--color-accent-border</code> edge, ink label.</small></div></li>
+          <li><div><b>Ellipsis</b><small><code>&lt;span aria-hidden="true"&gt;…&lt;/span&gt;</code>, not focusable.</small></div></li>
+          <li><div><b>Page link</b><small>32px pill (<code>--control-height-sm</code>, <code>--radius-full</code>), muted label, subtle background on hover.</small></div></li>
+        </ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>One pager. On page 1 previous is disabled; on the last page next is.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+<nav class="cluster cluster--between" aria-label="Pagination" style="width: 100%;"><span class="text-caption">Showing 1–16 of 312</span><ul class="pagination"><li><a aria-disabled="true" aria-label="Previous page">‹</a></li><li><a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 1">1</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 2">2</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 3">3</a></li><li><span aria-hidden="true">…</span></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 20">20</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Next page">›</a></li></ul></nav>
+      </div>
+        <div class="ds-example__caption"><span>First page (<code>pages/category/long</code>).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;nav class="cluster cluster--between" aria-label="Pagination" style="width: 100%;"&gt;&lt;span class="text-caption"&gt;Showing 1–16 of 312&lt;/span&gt;&lt;ul class="pagination"&gt;&lt;li&gt;&lt;a aria-disabled="true" aria-label="Previous page"&gt;‹&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 1"&gt;1&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Page 2"&gt;2&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Page 3"&gt;3&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;span aria-hidden="true"&gt;…&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Page 20"&gt;20&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Next page"&gt;›&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/nav&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+<nav class="cluster cluster--between" aria-label="Pagination, page 2" style="width: 100%;"><span class="text-caption">Showing 17–32 of 312</span><ul class="pagination"><li><a href="../../mocks/pages/category/long.html" aria-label="Previous page">‹</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 1">1</a></li><li><a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 2">2</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 3">3</a></li><li><span aria-hidden="true">…</span></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 20">20</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Next page">›</a></li></ul></nav>
+      </div>
+        <div class="ds-example__caption"><span>Page 2: both arrows live.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;nav class="cluster cluster--between" aria-label="Pagination, page 2" style="width: 100%;"&gt;&lt;span class="text-caption"&gt;Showing 17–32 of 312&lt;/span&gt;&lt;ul class="pagination"&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Previous page"&gt;‹&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Page 1"&gt;1&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 2"&gt;2&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Page 3"&gt;3&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;span aria-hidden="true"&gt;…&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Page 20"&gt;20&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Next page"&gt;›&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/nav&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes" data-na="One size: --control-height-sm (32px) pills. Pagination sits under content and never needs a larger form."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size: --control-height-sm (32px) pills. Pagination sits under content and never needs a larger form.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Forced with <code>data-state</code> where no attribute exists. Current uses <code>aria-current</code>; disabled uses <code>aria-disabled</code> without <code>href</code>.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Current</th><th scope="col">Disabled</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Page link</th><td><ul class="pagination"><li><a href="../../mocks/pages/category/long.html" aria-label="Page 2">2</a></li></ul></td><td><ul class="pagination"><li><a href="../../mocks/pages/category/long.html" data-state="hover" aria-label="Page 2">2</a></li></ul></td><td><ul class="pagination"><li><a href="../../mocks/pages/category/long.html" data-state="focus" aria-label="Page 2">2</a></li></ul></td><td><ul class="pagination"><li><a href="../../mocks/pages/category/long.html" data-state="active" aria-label="Page 2">2</a></li></ul></td><td><ul class="pagination"><li><a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 1">1</a></li></ul></td><td><ul class="pagination"><li><a aria-disabled="true" aria-label="Previous page">‹</a></li></ul></td></tr>
+        </tbody>
+      </table></div>
+      <p>Active has no separate look. <b>Loading</b> the next page replaces the cards with skeletons and keeps the pager in place, with the new current page already marked.</p>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><nav class="cluster cluster--between" aria-label="Pagination, light" style="width: 100%;"><span class="text-caption">Showing 1–16 of 312</span><ul class="pagination"><li><a aria-disabled="true" aria-label="Previous page">‹</a></li><li><a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 1">1</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 2">2</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 3">3</a></li><li><span aria-hidden="true">…</span></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 20">20</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Next page">›</a></li></ul></nav></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><nav class="cluster cluster--between" aria-label="Pagination, dark" style="width: 100%;"><span class="text-caption">Showing 1–16 of 312</span><ul class="pagination"><li><a aria-disabled="true" aria-label="Previous page">‹</a></li><li><a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 1">1</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 2">2</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 3">3</a></li><li><span aria-hidden="true">…</span></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 20">20</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Next page">›</a></li></ul></nav></div></div>
+      </div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>At 360px the count sits above the pager (the cluster wraps) and the pager keeps all seven items in 250px.</li>
+        <li>Never drop to only previous/next: the page count is how members judge a long category.</li>
+        <li>Beyond 7 visible items, collapse middle pages into one ellipsis on each side of the current page.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Muted and subtle tokens flip with the theme; the current page stays gold with an ink label (<code>--color-fg-on-accent</code>) and the darker gold edge (<code>--color-accent-border</code>) that keeps it at 3:1 against the page.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p><code>&lt;nav aria-label="Pagination"&gt;</code> with a list of links; the current page has <code>aria-current="page"</code>. There is no APG pattern for pagination; it follows <a href="https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/">landmark regions</a> and the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/link/">link pattern</a>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Moves through live arrows and page links; the disabled arrow and the ellipsis are skipped.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Loads that page and moves focus to the results heading.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>The shared ring around the pill. After a page loads, focus goes to the results heading, not back to the pager, and the count updates.</p>
+      <h3>Labelling</h3>
+      <p>Arrows are labelled "Previous page" and "Next page"; numbers "Page 2". The count text gives the total.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Page number</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
+        <div class="ds-pair"><span>Hovered page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Page number</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
+        <div class="ds-pair"><span>Hovered page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>None; page changes are instant.</p>
+      <h3>Touch</h3>
+      <p>Pills are 32px, above the 24px minimum, spaced <code>--space-1</code>. They are below the 44px comfortable size; the count and arrows give enough margin that mis-taps are rare, but do not shrink them further.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Count reads "Showing 1–16 of 312" with an en dash, no "results".</li>
+        <li>Arrows are glyphs with labels; never "Prev" or "Next »" text.</li>
+        <li>Never paginate fewer than 17 items.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><ul class="pagination"><li><a aria-disabled="true" aria-label="Previous page">‹</a></li></ul></div><figcaption>A disabled arrow without <code>href</code>: not focusable, not clickable.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><ul class="pagination"><li><a href="../../mocks/pages/category/long.html" aria-disabled="true" aria-label="Previous page">‹</a></li></ul></div><figcaption>The mock keeps <code>href</code> on the disabled arrow. <code>pointer-events: none</code> stops the mouse, but Tab still reaches it and Enter follows it.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><nav class="cluster cluster--between" aria-label="Do example" style="width: 100%;"><span class="text-caption">Showing 1–16 of 312</span><ul class="pagination"><li><a aria-disabled="true" aria-label="Previous page">‹</a></li><li><a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 1">1</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 2">2</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 3">3</a></li><li><span aria-hidden="true">…</span></li><li><a href="../../mocks/pages/category/long.html" aria-label="Page 20">20</a></li><li><a href="../../mocks/pages/category/long.html" aria-label="Next page">›</a></li></ul></nav></div><figcaption>Count plus pager, current page marked.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><ul class="pagination"><li><a href="../../mocks/pages/category/long.html">Prev</a></li><li><a href="../../mocks/pages/category/long.html">Next</a></li></ul></div><figcaption>Previous/next only, with no count or position. Members cannot tell how long the category is.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Page label</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Hover</td><td><code>--color-bg-subtle</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Current</td><td><code>--color-accent</code> / <code>--color-fg-on-accent</code> / <code>--color-accent-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td></tr>
+          <tr><td>Pill size</td><td><code>--control-height-sm</code></td><td colspan="2"><span data-token="--control-height-sm"></span></td></tr>
+          <tr><td>Radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
+          <tr><td>Padding / gap</td><td><code>--space-2</code> / <code>--space-1</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-1"></span></td></tr>
+          <tr><td>Edge</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
+          <tr><td>Type</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;nav class="cluster cluster--between" aria-label="Pagination"&gt;
+  &lt;span class="text-caption"&gt;Showing 1–16 of 312&lt;/span&gt;
+  &lt;ul class="pagination"&gt;
+    &lt;li&gt;&lt;a aria-disabled="true" aria-label="Previous page"&gt;‹&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=1" aria-current="page" aria-label="Page 1"&gt;1&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=2" aria-label="Page 2"&gt;2&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;span aria-hidden="true"&gt;…&lt;/span&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=20" aria-label="Page 20"&gt;20&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="?page=2" aria-label="Next page"&gt;›&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.pagination</code></td><td>The pager list.</td></tr>
+        <tr><td><code>[aria-current="page"]</code></td><td>Current page: gold pill.</td></tr>
+        <tr><td><code>[aria-disabled="true"]</code></td><td>Disabled arrow; omit <code>href</code>.</td></tr>
+        <tr><td><code>data-state="hover"</code></td><td>Documentation only.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/category/long.html">pages/category/long</a> (the only paginated list)</li>
+        <li><a href="../../mocks/pages/category/default.html">pages/category/default</a> (16 results, no pager)</li>
+        <li><a href="../../mocks/pages/search/default.html">pages/search/default</a> (short results, no pager)</li>
+      </ul>
+      <p>Drift fixed during extraction: the mock's stylesheet drew the current page as an accent-subtle square (<code>--radius-md</code>) with a raw 1px border; the system uses the gold pill with <code>--color-accent-border</code> and <code>--border-width-hairline</code>, matching selected chips. The disabled previous arrow keeps its <code>href</code> in the mock (keyboard can still follow it); the system drops the <code>href</code>. Page numbers had no labels; they now read "Page 2".</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

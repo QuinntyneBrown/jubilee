@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forms — Jubilee design system</title>
+<meta name="description" content="How Jubilee builds forms: labels, required markers, help, inline errors with an error summary, sections, saving drafts, submitting and success.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Pattern</p>
+      <h1>Forms</h1>
+      <p class="ds-lead">Every Jubilee form follows one recipe: a visible label for each control, help before the input, an error under it, a summary at the top that links to each error, and one primary action that names what happens next.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Pattern</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Forms appear on every side of Jubilee: joining and signing in, the <em>List your business</em> application, the account and notification settings, and inside dialogs that send a request (<em>Book a meeting</em>, <em>Request a quote</em>, <em>Request an item</em>) or answer one (<em>Decline request</em>). They are built from <a href="../components/form-field.html">Form field</a>, <a href="../components/text-field.html">Text field</a>, <a href="../components/textarea.html">Textarea</a>, <a href="../components/select.html">Select</a>, <a href="../components/checkbox.html">Checkbox</a>, <a href="../components/radio-group.html">Radio group</a> and <a href="../components/switch.html">Switch</a>, laid out with <a href="../components/form-layout.html">Form layout</a>, and finished with <a href="../components/button.html">Button</a>s.</p>
+      <ul>
+        <li><b>Validate on submit, then live.</b> Nothing turns red while a member is still typing. On submit, every problem shows at once: inline under its field and in a summary at the top that receives focus. After that, a fixed field clears its error as soon as it is valid.</li>
+        <li><b>Keep the submit button enabled.</b> Jubilee never disables a submit to signal missing input; pressing it explains what to fix.</li>
+        <li><b>Nothing is lost.</b> Values survive an error, a failed request and a reload. Long forms offer <em>Save draft</em>; the success state says what happens next, not just that it worked.</li>
+        <li><b>No payment fields.</b> Jubilee takes no payment: request forms collect what the business needs to confirm or decline (date, time, quantity, a note), and confirmation copy says the member pays the business directly.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Situation</th><th scope="col">Use</th><th scope="col">Example in the mocks</th></tr></thead><tbody>
+        <tr><td>One to three fields that finish a task in place</td><td>Form inside a <a href="../components/dialog.html">Dialog</a></td><td>Book a meeting, Decline request, Report listing</td></tr>
+        <tr><td>Account entry, recovery and tokens</td><td>Auth card (<code>.auth-layout</code> + <code>.auth-card</code>), block buttons</td><td>Sign in, Join, Forgot password, Reset password</td></tr>
+        <tr><td>Long application with distinct parts</td><td>One page split into <code>&lt;fieldset&gt;</code> sections, <em>Save draft</em> beside the primary</td><td>List your business, Edit listing</td></tr>
+        <tr><td>Settings that apply one by one</td><td>Rows of <a href="../components/switch.html">Switch</a>es that save on change, with an inline status</td><td>Notification settings</td></tr>
+        <tr><td>Settings that apply together</td><td>Card form with a <em>Save changes</em> primary</td><td>Your account</td></tr>
+        <tr><td>Filtering a list</td><td>Not a form: chips on desktop, a <a href="../components/dialog.html">Dialog</a> sheet on phones with a live count on the primary</td><td>Category, Filters sheet</td></tr>
+      </tbody></table></div>
+      <p>Use a <a href="../components/stepper.html">Stepper</a> only if an application is split across screens. <em>List your business</em> is deliberately one page in sections, with a live preview of the card beside it, so the owner sees everything they are committing to before <em>Submit for verification</em>.</p>
+    </section>
+    <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
+      <p>The anatomy of a submitted form with problems: the summary is an <code>alert--danger</code> with <code>.form-summary</code>, <code>role="alert"</code> and <code>tabindex="-1"</code>; each item links to its field. Each field is label, optional help, control, error, in that order.</p>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--canvas">
+        <form class="card stack" style="width: 100%; max-width: 26rem;" novalidate aria-labelledby="fm-title">
+          <h2 id="fm-title" class="card__title">Join Jubilee</h2>
+          <div class="alert alert--danger form-summary" role="alert" id="fm-summary" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Fix 2 things to continue</div><ul class="stack--sm" style="margin: 0; padding-left: var(--space-5);"><li><a href="#fm-email">An account already uses this e-mail</a></li><li><a href="#fm-agree">Agree to the statement of faith to join</a></li></ul></div></div>
+          <div class="form-grid form-grid--2">
+            <div class="field"><label class="field__label" for="fm-first">First name <span class="optional">(required)</span></label><input class="input" id="fm-first" type="text" value="Joanna" autocomplete="given-name" required></div>
+            <div class="field"><label class="field__label" for="fm-last">Last name <span class="optional">(required)</span></label><input class="input" id="fm-last" type="text" value="Adeyemi" autocomplete="family-name" required></div>
+          </div>
+          <div class="field"><label class="field__label" for="fm-email">E-mail <span class="optional">(required)</span></label><input class="input" id="fm-email" type="email" value="joanna.adeyemi@example.com" autocomplete="email" aria-invalid="true" aria-describedby="fm-email-error" required><span class="field__error" id="fm-email-error">An account already uses this e-mail. Sign in instead, or use another address.</span></div>
+          <div class="field"><label class="field__label" for="fm-church">Home church <span class="optional">(optional)</span></label><span class="field__help" id="fm-church-help">Shown to no one. Helps us recommend businesses near you.</span><input class="input" id="fm-church" type="text" value="Grace Toronto Church" aria-describedby="fm-church-help"></div>
+          <div><label class="choice"><input type="checkbox" id="fm-agree" aria-invalid="true" aria-describedby="fm-agree-error"><span class="choice__text">I agree to Jubilee’s statement of faith and terms.</span></label><span class="field__error" id="fm-agree-error">Agree to the statement of faith to join.</span></div>
+          <button class="btn btn--primary btn--block btn--lg" type="submit">Create account</button>
+        </form>
+      </div>
+        <div class="ds-example__caption"><span>Join, after pressing <em>Create account</em>. Focus moves to the summary; each link jumps to its field. Values the member typed are kept.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;form class="card stack" style="width: 100%; max-width: 26rem;" novalidate aria-labelledby="fm-title"&gt;
+  &lt;h2 id="fm-title" class="card__title"&gt;Join Jubilee&lt;/h2&gt;
+  &lt;div class="alert alert--danger form-summary" role="alert" id="fm-summary" tabindex="-1"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v6M12 16h.01"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;Fix 2 things to continue&lt;/div&gt;&lt;ul class="stack--sm" style="margin: 0; padding-left: var(--space-5);"&gt;&lt;li&gt;&lt;a href="#fm-email"&gt;An account already uses this e-mail&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="#fm-agree"&gt;Agree to the statement of faith to join&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="form-grid form-grid--2"&gt;
+    &lt;div class="field"&gt;&lt;label class="field__label" for="fm-first"&gt;First name &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fm-first" type="text" value="Joanna" autocomplete="given-name" required&gt;&lt;/div&gt;
+    &lt;div class="field"&gt;&lt;label class="field__label" for="fm-last"&gt;Last name &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fm-last" type="text" value="Adeyemi" autocomplete="family-name" required&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="field"&gt;&lt;label class="field__label" for="fm-email"&gt;E-mail &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fm-email" type="email" value="joanna.adeyemi@example.com" autocomplete="email" aria-invalid="true" aria-describedby="fm-email-error" required&gt;&lt;span class="field__error" id="fm-email-error"&gt;An account already uses this e-mail. Sign in instead, or use another address.&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="field"&gt;&lt;label class="field__label" for="fm-church"&gt;Home church &lt;span class="optional"&gt;(optional)&lt;/span&gt;&lt;/label&gt;&lt;span class="field__help" id="fm-church-help"&gt;Shown to no one. Helps us recommend businesses near you.&lt;/span&gt;&lt;input class="input" id="fm-church" type="text" value="Grace Toronto Church" aria-describedby="fm-church-help"&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;label class="choice"&gt;&lt;input type="checkbox" id="fm-agree" aria-invalid="true" aria-describedby="fm-agree-error"&gt;&lt;span class="choice__text"&gt;I agree to Jubilee’s statement of faith and terms.&lt;/span&gt;&lt;/label&gt;&lt;span class="field__error" id="fm-agree-error"&gt;Agree to the statement of faith to join.&lt;/span&gt;&lt;/div&gt;
+  &lt;button class="btn btn--primary btn--block btn--lg" type="submit"&gt;Create account&lt;/button&gt;
+&lt;/form&gt;</code></pre></details></div>
+      <h3>Sections and actions</h3>
+      <p>Long forms group fields in <code>&lt;fieldset&gt;</code>s with a <code>&lt;legend&gt;</code> and an explanation in <code>.field__help</code>. The form ends with <code>.form-actions</code>: secondary actions first, the primary last, right-aligned on wide screens.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <form class="form" style="width: 100%;" novalidate aria-label="List your business, excerpt">
+          <fieldset><legend>What do you offer?</legend><div class="choice-cards">
+            <label class="choice-card"><input type="radio" name="fm-offer" id="fm-offer-p" checked><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/></svg></span><span><span class="choice-card__title">Products</span><span class="choice-card__text">A shop or online store: books, apparel, gifts, flowers, furniture.</span></span></label>
+            <label class="choice-card"><input type="radio" name="fm-offer" id="fm-offer-s"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, brokers, lawyers, trades, photographers, speakers, lessons.</span></span></label>
+          </div><p class="field__help" style="margin-top: var(--space-2);">Offer both? Pick the main one now and add the other after you’re verified.</p></fieldset>
+          <fieldset><legend>Church reference</legend><p class="field__help">A pastor or elder who can confirm you. We contact them privately; they never see your listing details.</p>
+            <div class="form-grid form-grid--2" style="margin-top: var(--space-2);">
+              <div class="field"><label class="field__label" for="fm-ref-church">Church <span class="optional">(required)</span></label><input class="input" id="fm-ref-church" type="text" value="Grace Toronto Church" required></div>
+              <div class="field"><label class="field__label" for="fm-ref-email">Pastor’s e-mail <span class="optional">(required)</span></label><input class="input" id="fm-ref-email" type="email" value="daniel.okoro@gracetoronto.example" placeholder="name@church.ca" required></div>
+            </div></fieldset>
+          <div class="form-actions"><button class="btn btn--ghost" type="button">Save draft</button><button class="btn btn--primary btn--lg" type="submit"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg>Submit for verification</button></div>
+        </form>
+      </div>
+        <div class="ds-example__caption"><span>Two sections of <em>List your business</em>: a choice-card radio group and a two-column reference block. <em>Save draft</em> is ghost; the primary names the outcome.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;form class="form" style="width: 100%;" novalidate aria-label="List your business, excerpt"&gt;
+  &lt;fieldset&gt;&lt;legend&gt;What do you offer?&lt;/legend&gt;&lt;div class="choice-cards"&gt;
+    &lt;label class="choice-card"&gt;&lt;input type="radio" name="fm-offer" id="fm-offer-p" checked&gt;&lt;span class="choice-card__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span&gt;&lt;span class="choice-card__title"&gt;Products&lt;/span&gt;&lt;span class="choice-card__text"&gt;A shop or online store: books, apparel, gifts, flowers, furniture.&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;
+    &lt;label class="choice-card"&gt;&lt;input type="radio" name="fm-offer" id="fm-offer-s"&gt;&lt;span class="choice-card__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="3" y="7" width="18" height="13" rx="2"/&gt;&lt;path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span&gt;&lt;span class="choice-card__title"&gt;Services&lt;/span&gt;&lt;span class="choice-card__text"&gt;Advisors, brokers, lawyers, trades, photographers, speakers, lessons.&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;
+  &lt;/div&gt;&lt;p class="field__help" style="margin-top: var(--space-2);"&gt;Offer both? Pick the main one now and add the other after you’re verified.&lt;/p&gt;&lt;/fieldset&gt;
+  &lt;fieldset&gt;&lt;legend&gt;Church reference&lt;/legend&gt;&lt;p class="field__help"&gt;A pastor or elder who can confirm you. We contact them privately; they never see your listing details.&lt;/p&gt;
+    &lt;div class="form-grid form-grid--2" style="margin-top: var(--space-2);"&gt;
+      &lt;div class="field"&gt;&lt;label class="field__label" for="fm-ref-church"&gt;Church &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fm-ref-church" type="text" value="Grace Toronto Church" required&gt;&lt;/div&gt;
+      &lt;div class="field"&gt;&lt;label class="field__label" for="fm-ref-email"&gt;Pastor’s e-mail &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fm-ref-email" type="email" value="daniel.okoro@gracetoronto.example" placeholder="name@church.ca" required&gt;&lt;/div&gt;
+    &lt;/div&gt;&lt;/fieldset&gt;
+  &lt;div class="form-actions"&gt;&lt;button class="btn btn--ghost" type="button"&gt;Save draft&lt;/button&gt;&lt;button class="btn btn--primary btn--lg" type="submit"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12l6 6L20 6"/&gt;&lt;/svg&gt;Submit for verification&lt;/button&gt;&lt;/div&gt;
+&lt;/form&gt;</code></pre></details></div>
+      <h3>Order of parts inside a field</h3>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Element</th><th scope="col">Rule</th></tr></thead><tbody>
+        <tr><td>Label</td><td><code>&lt;label class="field__label" for&gt;</code></td><td>Always visible. Never replaced by a placeholder.</td></tr>
+        <tr><td>Required or optional marker</td><td><code>&lt;span class="optional"&gt;</code> inside the label</td><td>"(required)" or "(optional)" in subtle text; see Content.</td></tr>
+        <tr><td>Help</td><td><code>.field__help</code> with an id</td><td>Between label and control, so it is read before typing. Referenced by <code>aria-describedby</code>.</td></tr>
+        <tr><td>Control</td><td><code>.input</code>, <code>.select</code>, <code>.textarea</code>, <code>.choice</code>, <code>.choice-card</code>, <code>.switch</code></td><td>Carries <code>autocomplete</code> for personal data, <code>required</code>, and <code>aria-invalid="true"</code> when wrong.</td></tr>
+        <tr><td>Error</td><td><code>.field__error</code> with an id</td><td>Directly under the control; added to <code>aria-describedby</code> after the help id.</td></tr>
+        <tr><td>Counter</td><td><code>.field__counter</code></td><td>Under the control for capped text (tagline, 90 characters).</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>A single field moves through these states. The whole form adds a summary when invalid, read-only controls and a busy primary while submitting, and a full success view once done.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Field</th><th scope="col">Default</th><th scope="col">Invalid</th><th scope="col">Submitting</th><th scope="col">Disabled</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Text field</th><td><div class="field" style="min-width: 10rem;"><label class="field__label" for="fs1">Business name</label><input class="input" id="fs1" type="text" value="Luzandre.com"></div></td><td><div class="field" style="min-width: 10rem;"><label class="field__label" for="fs2">Business name</label><input class="input" id="fs2" type="text" value="" aria-describedby="fs2-error" aria-invalid="true"><span class="field__error" id="fs2-error">Enter your business name as customers know it.</span></div></td><td><div class="field" style="min-width: 10rem;"><label class="field__label" for="fs3">Business name</label><input class="input" id="fs3" type="text" value="Luzandre.com" readonly></div></td><td><div class="field" style="min-width: 10rem;"><label class="field__label" for="fs4">Business name</label><input class="input" id="fs4" type="text" value="Luzandre.com" disabled></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Form-level states</h3>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">State</th><th scope="col">What the member sees</th><th scope="col">Mock</th></tr></thead><tbody>
+        <tr><td>Loading</td><td>Skeleton fields; the primary is a <code>.skeleton--btn</code>; a visually hidden <code>role="status"</code> says "Loading…"</td><td><a href="../../mocks/pages/sign-up/loading.html">sign-up/loading</a></td></tr>
+        <tr><td>Invalid</td><td>Summary ("Fix 3 things to continue") with links, inline errors, focus on the summary</td><td><a href="../../mocks/pages/list-business/invalid.html">list-business/invalid</a></td></tr>
+        <tr><td>Submitting</td><td>Controls <code>readonly</code> (radios and checkboxes <code>disabled</code>), primary <code>aria-busy="true"</code>, secondary disabled</td><td><a href="../../mocks/pages/sign-in/submitting.html">sign-in/submitting</a></td></tr>
+        <tr><td>Draft saved</td><td>A dismissible success <a href="../components/alert.html">Alert and banner</a> above the form: "Saved today at 9:36 a.m. … nothing is public until you submit."</td><td><a href="../../mocks/pages/list-business/draft-saved.html">list-business/draft-saved</a></td></tr>
+        <tr><td>Saved in place</td><td><code>.inline-status--success</code> beside the section title: "Saved at 9:33 a.m."</td><td><a href="../../mocks/pages/preferences/success.html">preferences/success</a></td></tr>
+        <tr><td>Success</td><td>The form is replaced by an <a href="../components/empty-state.html">outcome view</a> and a <a href="../components/timeline.html">Timeline</a> of what happens next</td><td><a href="../../mocks/pages/list-business/success.html">list-business/success</a></td></tr>
+        <tr><td>Error (could not load or send)</td><td><code>.empty--error</code> with "Nothing is lost", a support code and <em>Try again</em>; in a dialog, an inline danger alert above the footer</td><td><a href="../../mocks/pages/list-business/error.html">list-business/error</a>, <a href="../../mocks/dialogs/book-meeting/failed.html">book-meeting/failed</a></td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li><code>.form-grid--2</code> pairs short related fields (first and last name, church and pastor’s e-mail, day and how) from 640px (<code>--layout-breakpoint-sm</code>); below it they stack in reading order.</li>
+        <li>Auth forms sit in a 26rem card at every width; their buttons are <code>.btn--block .btn--lg</code> so the target is full width on phones.</li>
+        <li><code>.form-actions</code> wraps; on phones the primary takes its own row and stays last. In a dialog the footer is sticky, so <em>Send request</em> is never scrolled away by the keyboard.</li>
+        <li><em>List your business</em> shows its live card preview in a sticky side column from 1024px and after the form below that.</li>
+        <li>Choice cards are one column below 640px and two above. Inputs are at least 16px text so iOS does not zoom on focus.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Pattern and roles</h3>
+      <p>Native form controls inside a <code>&lt;form novalidate&gt;</code> so Jubilee’s own messages replace the browser bubbles. Radio groups and checkbox groups are <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code>; the switch is <code>&lt;input type="checkbox" role="switch"&gt;</code>. The error summary follows the GOV.UK-style summary built on the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/alert/">APG alert pattern</a>; radio groups follow the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/radio/">APG radio group pattern</a>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves through fields, links in help text and the actions in DOM order (which matches visual order, including in two-column grids).</td></tr>
+        <tr><td><kbd>Arrow keys</kbd></td><td>Move between options of a radio group or choice cards; the selection follows focus.</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>Toggles a checkbox or switch.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Submits from any single-line field. In a textarea it adds a line; the composer in Messages is the only place Enter sends.</td></tr>
+        <tr><td>Activating a summary link</td><td>Moves focus to that field (the link targets the control’s id).</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>After a failed submit, focus moves to the summary (it has <code>tabindex="-1"</code>); after success it moves to the outcome heading. Nothing steals focus while a member types. Fields with errors are never auto-focused one by one.</p>
+      <h3>Labelling and announcements</h3>
+      <p>Every control has a visible <code>&lt;label for&gt;</code>; placeholders are examples only ("name@church.ca"). <code>aria-describedby</code> lists the help id then the error id, so both are read with the label. <code>aria-invalid="true"</code> marks the control; the error text starts with what to do. Personal fields carry <code>autocomplete</code> (<code>given-name</code>, <code>email</code>, <code>new-password</code>) for 1.3.5 and 3.3.7 redundant entry. Busy primaries keep their label and set <code>aria-busy</code>; a visually hidden status announces "Sending your request…".</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Label text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Help text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Error text under a field</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Error text in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface-raised" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Input border</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Summary text</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-danger-bg" data-min="4.5"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Label text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Help text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Error text under a field</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Error text in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface-raised" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Input border</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Summary text</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-danger-bg" data-min="4.5"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Errors appear without animation. The summary does not shake or slide. The busy spinner keeps turning under reduced motion because it is status; everything else (focus ring, border colour) changes over <code>--duration-fast</code>, zeroed under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>Inputs are 44px tall (<code>--control-height-md</code>). Checkbox and radio rows (<code>.choice</code>) are at least 24px with the whole label clickable; choice cards make the whole card the target.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Labels are nouns in sentence case, no colon: "E-mail", "Pastor’s e-mail", "One line on what you do".</li>
+        <li>Mark fields explicitly when a form mixes required and optional fields: "(required)" or "(optional)" on every label, as Join does. A form where every field is required and the purpose is obvious (Sign in, Forgot password) marks nothing.</li>
+        <li>Help says why or how, before the input: "Shown under your name everywhere on Jubilee. 90 characters at most."</li>
+        <li>Errors say what to do, in the member’s terms, with an example when the format matters: "Enter your pastor’s e-mail address, like name@church.ca." Never "Invalid input" or "Field required".</li>
+        <li>The summary title counts: "Fix 2 things to continue". Its items repeat the first sentence of each inline error.</li>
+        <li>The primary names the outcome: "Create account", "Submit for verification", "Send request", "Decline request". Never "Submit" or "OK".</li>
+        <li>See <a href="../patterns/content-and-tone.html">Content and tone</a> for dates, prices and the error formula.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="dd-f1">Pastor’s e-mail <span class="optional">(required)</span></label><input class="input" id="dd-f1" type="email" placeholder="name@church.ca" aria-invalid="true" aria-describedby="dd-f1-error"><span class="field__error" id="dd-f1-error">Enter your pastor’s e-mail address, like name@church.ca.</span></div></div><figcaption>A visible label, an example in the placeholder, and an error that says what to type.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><input class="input" type="email" aria-label="E-mail" placeholder="Pastor’s e-mail (required)" aria-invalid="true"><span class="field__error">Invalid</span></div></div><figcaption>The placeholder is the only label and disappears on typing; "Invalid" gives no way forward and is not tied to the input.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="form-actions" style="width: 100%;"><button class="btn btn--ghost" type="button">Save draft</button><button class="btn btn--primary" type="submit">Submit for verification</button></div></div><figcaption>Submit stays enabled; pressing it shows the summary. Save draft keeps long work safe.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="form-actions" style="width: 100%;"><button class="btn btn--primary" type="submit" disabled>Submit</button></div></div><figcaption>A disabled, generic submit hides why the member cannot continue and what will happen when they do.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/sign-up/invalid.html">pages/sign-up/invalid</a> (summary, inline errors, required and optional markers)</li>
+        <li><a href="../../mocks/pages/list-business/default.html">pages/list-business/default</a> (fieldsets, choice cards, save draft)</li>
+        <li><a href="../../mocks/pages/list-business/success.html">pages/list-business/success</a> (outcome view and timeline)</li>
+        <li><a href="../../mocks/pages/sign-in/submitting.html">pages/sign-in/submitting</a> (read-only fields, busy primary)</li>
+        <li><a href="../../mocks/dialogs/decline-request/invalid.html">dialogs/decline-request/invalid</a> (form in a dialog)</li>
+        <li><a href="../../mocks/pages/preferences/success.html">pages/preferences/success</a> (save on change with inline status)</li>
+      </ul>
+      <p>Drift found: the required marker is a <code>&lt;span class="optional"&gt;</code> that says "(required)" (the class name and the text disagree; the system keeps the class for compatibility and documents it as the label suffix). Join marks both required and optional fields while <em>List your business</em> leaves Category and Store address unmarked; the rule above resolves it. Help text sits before the input everywhere except the password field on Join, where it follows the error. The summary list carries an inline <code>style</code> for its indent on all 8 forms, and the reference grid adds <code>margin-top</code> inline; both are layout-only token tweaks and stay until a <code>.form-summary ul</code> rule exists (suggested in the report).</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

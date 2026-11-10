@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form layout — Jubilee design system</title>
+<meta name="description" content="How fields assemble into forms: the form stack, two-column grid, fieldsets, form actions, the error summary, item lists, the danger zone and the submitting, saved and failed states.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Inputs</p>
+      <h1>Form layout</h1>
+      <p class="ds-lead">Form layout arranges fields into something a member can finish: one column of fields, pairs where they belong together, actions at the end, and one summary that lists every problem.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>.form</code> · <code>.form-grid</code> · <code>.form-actions</code></span><span class="ds-pill">20 forms in the mocks</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>A form is a <code>.form</code> (column, <code>--space-6</code> gaps) of <a href="../components/form-field.html">fields</a> and fieldsets, ending in <code>.form-actions</code>. Short related pairs share a row in <code>.form-grid--2</code>. On submit with errors, an error summary appears at the top and takes focus. See the <a href="../patterns/forms.html">Forms</a> pattern for validation timing and flows.</p>
+      <ul>
+        <li><b>Page form</b>: a card on the page, width capped by <code>.container--narrow</code> or a split with a preview (edit listing, list your business).</li>
+        <li><b>Dialog form</b>: fields in <code>.dialog__body</code> (<code>.stack</code>), actions in the sticky <code>.dialog__footer</code>; see <a href="../components/dialog.html">Dialog</a>.</li>
+        <li><b>Auth form</b>: one column in <code>.auth-card</code>, block primary button.</li>
+        <li><b>Auto-save settings</b>: no actions; each control saves and an inline status reports it.</li>
+        <li><b>Item list</b>: <code>.item-list</code> for things added inside a form (services, order items) with remove buttons and an Add link.</li>
+        <li><b>Danger zone</b>: a <code>.card.danger-zone</code> at the end of account settings for irreversible actions.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <form class="card form" novalidate style="width: 100%;" aria-label="Edit listing (invalid)"><div class="alert alert--danger form-summary" role="alert" id="fl-an-summary" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Fix 2 things to continue</div><ul style="margin: 0; padding-left: var(--space-5);"><li><a href="#fl-an-tagline">Shorten your one-line description to 90 characters</a></li><li><a href="#fl-an-hours">Enter your hours</a></li></ul></div></div><div class="field"><label class="field__label" for="fl-an-name">Business name <span class="optional">(required)</span></label><input class="input" id="fl-an-name" type="text" value="Luzandre.com" required></div><div class="field"><label class="field__label" for="fl-an-tagline">One line on what you do <span class="optional">(required)</span></label><input class="input" id="fl-an-tagline" type="text" value="Unique &amp; custom Christian apparel, artworks &amp; gifts that bring joy to your church, your team, your family and everyone you love" required aria-invalid="true" aria-describedby="fl-an-tagline-err fl-an-tagline-count"><span class="field__error" id="fl-an-tagline-err">Shorten this to 90 characters. It has 124.</span><div class="field__counter" id="fl-an-tagline-count">124 / 90</div></div><div class="form-grid form-grid--2"><div class="field"><label class="field__label" for="fl-an-cat">Category</label><select class="select" id="fl-an-cat"><option selected>Shops</option><option>Media</option></select></div><div class="field"><label class="field__label" for="fl-an-hours">Hours <span class="optional">(required)</span></label><input class="input" id="fl-an-hours" type="text" value="" required aria-invalid="true" aria-describedby="fl-an-hours-err"><span class="field__error" id="fl-an-hours-err">Enter your hours, or “By appointment”.</span></div></div><div class="form-actions"><span class="inline-status" style="margin-right: auto;">Changes are published when you save</span><button class="btn" type="button">Discard changes</button><button class="btn btn--primary" type="submit">Save listing</button></div></form>
+          <span class="ds-callout" style="left: 6%; top: 6%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 6%; top: 34%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 50%; top: 64%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 90%; top: 92%;" aria-hidden="true">4</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Error summary</b><small><code>.alert.alert--danger.form-summary</code>, <code>role="alert"</code>, <code>tabindex="-1"</code>; a 4px danger edge and one link per problem.</small></div></li>
+          <li><div><b>Field stack</b><small><code>.form</code>: fields <code>--space-6</code> apart.</small></div></li>
+          <li><div><b>Two-column row</b><small><code>.form-grid--2</code> from 640px, gap <code>--space-4</code>.</small></div></li>
+          <li><div><b>Form actions</b><small><code>.form-actions</code>: right-aligned, wraps, status at the start, primary last.</small></div></li>
+        </ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <h3>Page form</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--canvas">
+        <form class="card form" novalidate style="width: 100%;" aria-label="Edit listing"><div class="field"><label class="field__label" for="fl-v-name">Business name <span class="optional">(required)</span></label><input class="input" id="fl-v-name" type="text" value="Luzandre.com" required></div><div class="field"><label class="field__label" for="fl-v-tagline">One line on what you do <span class="optional">(required)</span></label><input class="input" id="fl-v-tagline" type="text" value="Unique &amp; custom Christian apparel, artworks &amp; gifts that bring joy" required aria-describedby="fl-v-tagline-count"><div class="field__counter" id="fl-v-tagline-count">66 / 90</div></div><div class="form-grid form-grid--2"><div class="field"><label class="field__label" for="fl-v-cat">Category</label><select class="select" id="fl-v-cat"><option selected>Shops</option><option>Media</option></select></div><div class="field"><label class="field__label" for="fl-v-hours">Hours <span class="optional">(required)</span></label><input class="input" id="fl-v-hours" type="text" value="Mon–Fri 10–6 · Sat by appointment" required></div></div><div class="form-actions"><span class="inline-status" style="margin-right: auto;">Changes are published when you save</span><button class="btn" type="button">Discard changes</button><button class="btn btn--primary" type="submit">Save listing</button></div></form>
+      </div>
+        <div class="ds-example__caption"><span>Edit listing: card form, pair row, counter, actions with a standing status line.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;form class="card form" novalidate style="width: 100%;" aria-label="Edit listing"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-v-name"&gt;Business name &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fl-v-name" type="text" value="Luzandre.com" required&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-v-tagline"&gt;One line on what you do &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fl-v-tagline" type="text" value="Unique &amp;amp; custom Christian apparel, artworks &amp;amp; gifts that bring joy" required aria-describedby="fl-v-tagline-count"&gt;&lt;div class="field__counter" id="fl-v-tagline-count"&gt;66 / 90&lt;/div&gt;&lt;/div&gt;&lt;div class="form-grid form-grid--2"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-v-cat"&gt;Category&lt;/label&gt;&lt;select class="select" id="fl-v-cat"&gt;&lt;option selected&gt;Shops&lt;/option&gt;&lt;option&gt;Media&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-v-hours"&gt;Hours &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fl-v-hours" type="text" value="Mon–Fri 10–6 · Sat by appointment" required&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="form-actions"&gt;&lt;span class="inline-status" style="margin-right: auto;"&gt;Changes are published when you save&lt;/span&gt;&lt;button class="btn" type="button"&gt;Discard changes&lt;/button&gt;&lt;button class="btn btn--primary" type="submit"&gt;Save listing&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;</code></pre></details></div>
+      <h3>Item list</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <fieldset style="width: 100%;"><legend>Services</legend><p class="field__help">Add a few to start. A price is optional; “Ask” is fine.</p><ul class="item-list" style="margin-top: var(--space-2);"><li><span class="item-list__name">Wedding day coverage<br><span class="row__meta">8 hours · two photographers</span></span><span class="price">$2,400</span><button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Wedding day coverage"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></li><li><span class="item-list__name">Baptism or dedication<br><span class="row__meta">90 min</span></span><span class="price">$350</span><button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Baptism or dedication"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></li><li><a class="btn btn--link" href="../../mocks/dialogs/service-editor/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a service</a></li></ul></fieldset>
+      </div>
+        <div class="ds-example__caption"><span>Items added inside a form, each removable by a labelled icon button; Add opens the editor dialog.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;fieldset style="width: 100%;"&gt;&lt;legend&gt;Services&lt;/legend&gt;&lt;p class="field__help"&gt;Add a few to start. A price is optional; “Ask” is fine.&lt;/p&gt;&lt;ul class="item-list" style="margin-top: var(--space-2);"&gt;&lt;li&gt;&lt;span class="item-list__name"&gt;Wedding day coverage&lt;br&gt;&lt;span class="row__meta"&gt;8 hours · two photographers&lt;/span&gt;&lt;/span&gt;&lt;span class="price"&gt;$2,400&lt;/span&gt;&lt;button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Wedding day coverage"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/li&gt;&lt;li&gt;&lt;span class="item-list__name"&gt;Baptism or dedication&lt;br&gt;&lt;span class="row__meta"&gt;90 min&lt;/span&gt;&lt;/span&gt;&lt;span class="price"&gt;$350&lt;/span&gt;&lt;button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Baptism or dedication"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="btn btn--link" href="../../mocks/dialogs/service-editor/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 5v14M5 12h14"/&gt;&lt;/svg&gt;Add a service&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/fieldset&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <ul class="item-list" style="width: 100%;"><li><div class="media media--ink media--thumb"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg></div><span class="item-list__name">Faith heavyweight tee, charcoal<br><span class="row__meta">Size M × 1</span></span><span class="price">$34</span></li></ul>
+      </div>
+        <div class="ds-example__caption"><span>Read-only item list in the order request dialog.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="item-list" style="width: 100%;"&gt;&lt;li&gt;&lt;div class="media media--ink media--thumb"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;span class="item-list__name"&gt;Faith heavyweight tee, charcoal&lt;br&gt;&lt;span class="row__meta"&gt;Size M × 1&lt;/span&gt;&lt;/span&gt;&lt;span class="price"&gt;$34&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
+      <h3>Danger zone</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <section class="card stack danger-zone" style="width: 100%;" aria-labelledby="fl-dz"><h2 id="fl-dz" class="card__title">Delete account</h2><p class="text-muted">Removes your profile, saved list and messages. Open requests are cancelled and the businesses are told.</p><div><a class="btn btn--sm" href="../../mocks/dialogs/delete-account/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>Delete my account</a></div></section>
+      </div>
+        <div class="ds-example__caption"><span>Last section of account settings; danger border, plain secondary button. The red danger button appears only in the confirmation dialog.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;section class="card stack danger-zone" style="width: 100%;" aria-labelledby="fl-dz"&gt;&lt;h2 id="fl-dz" class="card__title"&gt;Delete account&lt;/h2&gt;&lt;p class="text-muted"&gt;Removes your profile, saved list and messages. Open requests are cancelled and the businesses are told.&lt;/p&gt;&lt;div&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/delete-account/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/&gt;&lt;/svg&gt;Delete my account&lt;/a&gt;&lt;/div&gt;&lt;/section&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>Forms take their width from where they sit, never from the fields.</p>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Context</th><th scope="col">Width</th><th scope="col">Columns</th></tr></thead><tbody>
+        <tr><td>Auth card (sign in, sign up)</td><td>26rem (<code>.auth-card</code>)</td><td>1</td></tr>
+        <tr><td>Dialog</td><td>32rem (<code>.dialog__panel</code>), 48rem large</td><td>1, pairs from 640px</td></tr>
+        <tr><td>Settings and account</td><td><code>--layout-container-narrow</code> (<code>.container--narrow</code>)</td><td>1</td></tr>
+        <tr><td>Edit listing, list your business</td><td><code>.split</code> with a sticky preview</td><td>1, pairs from 640px</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Form-level states live in the actions row and the summary. Individual controls keep their own states.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Part</th><th scope="col">Default</th><th scope="col">Submitting</th><th scope="col">Saved</th><th scope="col">Failed</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Form actions</th><td><div class="ds-cell-wide"><div class="form-actions"><span class="inline-status" style="margin-right: auto;">Changes are published when you save</span><button class="btn" type="button">Discard changes</button><button class="btn btn--primary" type="submit">Save listing</button></div></div></td><td><div class="ds-cell-wide"><div class="form-actions"><span class="inline-status" role="status" style="margin-right: auto;"><span class="dot dot--pulse"></span>Saving…</span><button class="btn" type="button" disabled>Discard changes</button><button class="btn btn--primary" type="submit" aria-busy="true">Save listing</button></div></div></td><td><div class="ds-cell-wide"><div class="form-actions"><span class="inline-status inline-status--success" role="status" style="margin-right: auto;"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg>Saved · 10:42 a.m.</span><button class="btn" type="button">Discard changes</button><button class="btn btn--primary" type="submit">Save listing</button></div></div></td><td><div class="ds-cell-wide"><div class="form-actions"><span class="inline-status inline-status--danger" role="status" style="margin-right: auto;"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg>Couldn’t save. Check your connection and try again.</span><button class="btn" type="button">Discard changes</button><button class="btn btn--primary" type="submit">Save listing</button></div></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Invalid</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--canvas">
+        <form class="card form" novalidate style="width: 100%;" aria-label="Edit listing (invalid)"><div class="alert alert--danger form-summary" role="alert" id="fl-inv-summary" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Fix 2 things to continue</div><ul style="margin: 0; padding-left: var(--space-5);"><li><a href="#fl-inv-tagline">Shorten your one-line description to 90 characters</a></li><li><a href="#fl-inv-hours">Enter your hours</a></li></ul></div></div><div class="field"><label class="field__label" for="fl-inv-name">Business name <span class="optional">(required)</span></label><input class="input" id="fl-inv-name" type="text" value="Luzandre.com" required></div><div class="field"><label class="field__label" for="fl-inv-tagline">One line on what you do <span class="optional">(required)</span></label><input class="input" id="fl-inv-tagline" type="text" value="Unique &amp; custom Christian apparel, artworks &amp; gifts that bring joy to your church, your team, your family and everyone you love" required aria-invalid="true" aria-describedby="fl-inv-tagline-err fl-inv-tagline-count"><span class="field__error" id="fl-inv-tagline-err">Shorten this to 90 characters. It has 124.</span><div class="field__counter" id="fl-inv-tagline-count">124 / 90</div></div><div class="form-grid form-grid--2"><div class="field"><label class="field__label" for="fl-inv-cat">Category</label><select class="select" id="fl-inv-cat"><option selected>Shops</option><option>Media</option></select></div><div class="field"><label class="field__label" for="fl-inv-hours">Hours <span class="optional">(required)</span></label><input class="input" id="fl-inv-hours" type="text" value="" required aria-invalid="true" aria-describedby="fl-inv-hours-err"><span class="field__error" id="fl-inv-hours-err">Enter your hours, or “By appointment”.</span></div></div><div class="form-actions"><span class="inline-status" style="margin-right: auto;">Changes are published when you save</span><button class="btn" type="button">Discard changes</button><button class="btn btn--primary" type="submit">Save listing</button></div></form>
+      </div>
+        <div class="ds-example__caption"><span>On submit with errors: the summary appears, takes focus and lists each problem as a link to its field; each field shows its own error.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;form class="card form" novalidate style="width: 100%;" aria-label="Edit listing (invalid)"&gt;&lt;div class="alert alert--danger form-summary" role="alert" id="fl-inv-summary" tabindex="-1"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v6M12 16h.01"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;Fix 2 things to continue&lt;/div&gt;&lt;ul style="margin: 0; padding-left: var(--space-5);"&gt;&lt;li&gt;&lt;a href="#fl-inv-tagline"&gt;Shorten your one-line description to 90 characters&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="#fl-inv-hours"&gt;Enter your hours&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-inv-name"&gt;Business name &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fl-inv-name" type="text" value="Luzandre.com" required&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-inv-tagline"&gt;One line on what you do &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fl-inv-tagline" type="text" value="Unique &amp;amp; custom Christian apparel, artworks &amp;amp; gifts that bring joy to your church, your team, your family and everyone you love" required aria-invalid="true" aria-describedby="fl-inv-tagline-err fl-inv-tagline-count"&gt;&lt;span class="field__error" id="fl-inv-tagline-err"&gt;Shorten this to 90 characters. It has 124.&lt;/span&gt;&lt;div class="field__counter" id="fl-inv-tagline-count"&gt;124 / 90&lt;/div&gt;&lt;/div&gt;&lt;div class="form-grid form-grid--2"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-inv-cat"&gt;Category&lt;/label&gt;&lt;select class="select" id="fl-inv-cat"&gt;&lt;option selected&gt;Shops&lt;/option&gt;&lt;option&gt;Media&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-inv-hours"&gt;Hours &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fl-inv-hours" type="text" value="" required aria-invalid="true" aria-describedby="fl-inv-hours-err"&gt;&lt;span class="field__error" id="fl-inv-hours-err"&gt;Enter your hours, or “By appointment”.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="form-actions"&gt;&lt;span class="inline-status" style="margin-right: auto;"&gt;Changes are published when you save&lt;/span&gt;&lt;button class="btn" type="button"&gt;Discard changes&lt;/button&gt;&lt;button class="btn btn--primary" type="submit"&gt;Save listing&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;</code></pre></details></div>
+      <h3>Submitting</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--canvas">
+        <form class="card form" novalidate style="width: 100%;" aria-label="Edit listing (submitting)"><div class="field"><label class="field__label" for="fl-sub-name">Business name <span class="optional">(required)</span></label><input class="input" id="fl-sub-name" type="text" value="Luzandre.com" required readonly></div><div class="field"><label class="field__label" for="fl-sub-tagline">One line on what you do <span class="optional">(required)</span></label><input class="input" id="fl-sub-tagline" type="text" value="Unique &amp; custom Christian apparel, artworks &amp; gifts that bring joy" required aria-describedby="fl-sub-tagline-count" readonly><div class="field__counter" id="fl-sub-tagline-count">66 / 90</div></div><div class="form-grid form-grid--2"><div class="field"><label class="field__label" for="fl-sub-cat">Category</label><select class="select" id="fl-sub-cat" disabled><option selected>Shops</option><option>Media</option></select></div><div class="field"><label class="field__label" for="fl-sub-hours">Hours <span class="optional">(required)</span></label><input class="input" id="fl-sub-hours" type="text" value="Mon–Fri 10–6 · Sat by appointment" required readonly></div></div><div class="form-actions"><span class="inline-status" role="status" style="margin-right: auto;"><span class="dot dot--pulse"></span>Saving…</span><button class="btn" type="button" disabled>Discard changes</button><button class="btn btn--primary" type="submit" aria-busy="true">Save listing</button></div></form>
+      </div>
+        <div class="ds-example__caption"><span>While saving: inputs are read-only (values stay readable), selects and the secondary button are disabled, the primary shows its spinner with <code>aria-busy</code>, and the status reads “Saving…”.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;form class="card form" novalidate style="width: 100%;" aria-label="Edit listing (submitting)"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-sub-name"&gt;Business name &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fl-sub-name" type="text" value="Luzandre.com" required readonly&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-sub-tagline"&gt;One line on what you do &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fl-sub-tagline" type="text" value="Unique &amp;amp; custom Christian apparel, artworks &amp;amp; gifts that bring joy" required aria-describedby="fl-sub-tagline-count" readonly&gt;&lt;div class="field__counter" id="fl-sub-tagline-count"&gt;66 / 90&lt;/div&gt;&lt;/div&gt;&lt;div class="form-grid form-grid--2"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-sub-cat"&gt;Category&lt;/label&gt;&lt;select class="select" id="fl-sub-cat" disabled&gt;&lt;option selected&gt;Shops&lt;/option&gt;&lt;option&gt;Media&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fl-sub-hours"&gt;Hours &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fl-sub-hours" type="text" value="Mon–Fri 10–6 · Sat by appointment" required readonly&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="form-actions"&gt;&lt;span class="inline-status" role="status" style="margin-right: auto;"&gt;&lt;span class="dot dot--pulse"&gt;&lt;/span&gt;Saving…&lt;/span&gt;&lt;button class="btn" type="button" disabled&gt;Discard changes&lt;/button&gt;&lt;button class="btn btn--primary" type="submit" aria-busy="true"&gt;Save listing&lt;/button&gt;&lt;/div&gt;&lt;/form&gt;</code></pre></details></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div class="stack" style="width: 100%;"><div class="alert alert--danger form-summary" id="fl-th-l-summary" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Fix 2 things to continue</div><ul style="margin: 0; padding-left: var(--space-5);"><li><a href="#fl-inv-tagline">Shorten your one-line description to 90 characters</a></li><li><a href="#fl-inv-hours">Enter your hours</a></li></ul></div></div></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="stack" style="width: 100%;"><div class="alert alert--danger form-summary" id="fl-th-d-summary" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Fix 2 things to continue</div><ul style="margin: 0; padding-left: var(--space-5);"><li><a href="#fl-inv-tagline">Shorten your one-line description to 90 characters</a></li><li><a href="#fl-inv-hours">Enter your hours</a></li></ul></div></div></div></div></div>
+      </div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li><code>.form-grid--2</code> is one column under 640px and two from 640px (<code>--layout-breakpoint-sm</code>).</li>
+        <li>Form actions wrap; when they do, the status takes its own line and buttons keep primary last. In dialogs on phones the footer stays sticky.</li>
+        <li>The edit-listing preview moves under the form below 1024px.</li>
+        <li>Item lists keep the price and remove button on the row's end; the name wraps.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Layout has no colour of its own. The summary reads the alert tokens (<code>--color-danger-bg</code>, <code>--color-danger-fg</code>, <code>--color-danger-solid</code> edge). The danger zone only swaps the card border to <code>--color-danger-border</code>. Item lists use <code>--color-bg-surface</code> with a strong outer border and default dividers.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A <code>&lt;form&gt;</code> with <code>novalidate</code> (Jubilee shows its own messages) and an accessible name when there are several on a page. The error summary follows the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/alert/">APG alert pattern</a> and also receives focus. Fieldsets group related fields; the danger zone is a labelled <code>section</code>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Through fields in visual order, then the actions (secondary before primary).</td></tr>
+        <tr><td><kbd>Enter</kbd> in a text field</td><td>Submits the form.</td></tr>
+        <tr><td><kbd>Enter</kbd> on a summary link</td><td>Moves focus to that field (the link targets the control's id).</td></tr>
+        <tr><td><kbd>Esc</kbd> in a dialog form</td><td>Closes the dialog; unsaved text prompts first.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>On submit with errors, focus moves to the summary (<code>tabindex="-1"</code>), which is announced. After a successful save, focus stays on the primary button and the status is announced. After removing an item from an item list, focus moves to the next item's remove button, or to Add.</p>
+      <h3>Labelling</h3>
+      <p>Summary title counts the problems (“Fix 2 things to continue”); each link repeats the field's error in short. Status lines are <code>role="status"</code>. Remove buttons name the item (“Remove Wedding day coverage”).</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Summary text</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-danger-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Summary icon</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon|--color-danger-bg" data-min="3"></span></div>
+        <div class="ds-pair"><span>Status text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Saved status</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Item list border</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Summary text</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-danger-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Summary icon</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon|--color-danger-bg" data-min="3"></span></div>
+        <div class="ds-pair"><span>Status text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Saved status</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Item list border</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>The summary appears without animation and the page scrolls to it smoothly unless reduced motion is set (<code>scroll-behavior: auto</code>). The saving dot pulses over <code>--duration-loop</code> and stops under reduced motion.</p>
+      <h3>Touch</h3>
+      <p>Actions are 44px buttons with <code>--space-3</code> between them. Item-list remove buttons are 32px with the row's padding around them, keeping 24px spacing.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Summary title: “Fix N things to continue”. Links: the action, not the field name (“Enter your hours”).</li>
+        <li>Primary action names the result: “Save listing”, “Submit for verification”, “Create account”.</li>
+        <li>Standing status explains when changes apply: “Changes are published when you save”.</li>
+        <li>Danger-zone copy says exactly what is lost and who is told.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="stack" style="width: 100%;"><div class="alert alert--danger form-summary" id="fl-do-summary" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Fix 2 things to continue</div><ul style="margin: 0; padding-left: var(--space-5);"><li><a href="#fl-inv-tagline">Shorten your one-line description to 90 characters</a></li><li><a href="#fl-inv-hours">Enter your hours</a></li></ul></div></div></div></div><figcaption>One summary listing every problem, linked to the fields.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="alert alert--danger" style="width: 100%;"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Something went wrong.</div></div></div></div><figcaption>A vague banner: no count, no links, no way to find the problem.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="form-actions" style="width: 100%;"><button class="btn btn--ghost" type="button">Save draft</button><button class="btn btn--primary" type="submit">Submit for verification</button></div></div><figcaption>Primary last; draft is quieter.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="form-actions" style="width: 100%;"><button class="btn btn--primary" type="button" disabled>Submit for verification</button></div></div><figcaption>Disabled submit until the form is valid. Members cannot learn what is missing; keep it enabled and show the summary.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Form gap / grid gap</td><td><code>--space-6</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-6"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Actions gap / top padding</td><td><code>--space-3</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Summary edge</td><td><code>--border-width-accent</code></td><td colspan="2"><span data-token="--border-width-accent"></span></td></tr>
+          <tr><td>Summary fill / text / edge</td><td><code>--color-danger-bg</code> / <code>--color-danger-fg</code> / <code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
+          <tr><td>Item list border / dividers</td><td><code>--color-border-strong</code> / <code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Item list radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
+          <tr><td>Item row padding</td><td><code>--space-2</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-3"></span></td></tr>
+          <tr><td>Danger-zone border</td><td><code>--color-danger-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-border" data-swatch></i><span data-token="--color-danger-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-border" data-swatch></i><span data-token="--color-danger-border"></span></span></td></tr>
+          <tr><td>Narrow container</td><td><code>--layout-container-narrow</code></td><td colspan="2"><span data-token="--layout-container-narrow"></span></td></tr>
+          <tr><td>Two-column breakpoint</td><td><code>--layout-breakpoint-sm</code></td><td colspan="2"><span data-token="--layout-breakpoint-sm"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;form class="card form" novalidate&gt;
+  &lt;div class="alert alert--danger form-summary" role="alert" id="summary" tabindex="-1"&gt;…
+    &lt;ul&gt;&lt;li&gt;&lt;a href="#hours"&gt;Enter your hours&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;div class="field"&gt;…&lt;/div&gt;
+  &lt;div class="form-grid form-grid--2"&gt;
+    &lt;div class="field"&gt;…&lt;/div&gt;&lt;div class="field"&gt;…&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="form-actions"&gt;
+    &lt;span class="inline-status"&gt;Changes are published when you save&lt;/span&gt;
+    &lt;button class="btn" type="button"&gt;Discard changes&lt;/button&gt;
+    &lt;button class="btn btn--primary" type="submit"&gt;Save listing&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.form</code></td><td>Column of fields, <code>--space-6</code> gaps.</td></tr>
+        <tr><td><code>.form-grid</code> / <code>.form-grid--2</code></td><td>Grid; two columns from 640px.</td></tr>
+        <tr><td><code>.form-actions</code></td><td>Right-aligned, wrapping action row.</td></tr>
+        <tr><td><code>.form-summary</code></td><td>Error-summary modifier for <code>.alert--danger</code>.</td></tr>
+        <tr><td><code>.item-list</code> / <code>.item-list__name</code></td><td>Bordered list of added items.</td></tr>
+        <tr><td><code>.danger-zone</code></td><td>Danger border on a card.</td></tr>
+        <tr><td><code>.inline-status</code> <code>--success</code> <code>--danger</code></td><td>Status in the actions row.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/edit-listing/invalid.html">pages/edit-listing/invalid</a> (summary, counter, pair rows)</li>
+        <li><a href="../../mocks/pages/edit-listing/submitting.html">pages/edit-listing/submitting</a> (read-only while saving)</li>
+        <li><a href="../../mocks/pages/list-business/services.html">pages/list-business/services</a> (item list, fieldsets)</li>
+        <li><a href="../../mocks/pages/list-business/submitting.html">pages/list-business/submitting</a> (busy primary)</li>
+        <li><a href="../../mocks/dialogs/order-request/default.html">dialogs/order-request/default</a> (item list in a dialog)</li>
+        <li><a href="../../mocks/pages/account/default.html">pages/account/default</a> (danger zone)</li>
+      </ul>
+      <p>Drift fixed during extraction: the summary's list carried <code>style="margin: 0; padding-left: var(--space-5)"</code> in all 8 summaries; the status in form actions used <code>style="margin-right: auto"</code> 14 times; list-business set <code>style="border-top: 1px solid …"</code> with a raw 1px on its actions in 5 states; item lists and fieldset help had inline <code>margin-top</code>; danger-zone and settings cards used <code>max-width: 42rem</code> inline (now <code>.container--narrow</code>). The kit's <code>.form-summary</code> edge was a raw 4px, now <code>--border-width-accent</code>. Rules for <code>.form-summary ul</code>, <code>.form-actions .inline-status</code> and a bordered actions modifier are proposed so these inline styles can go.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

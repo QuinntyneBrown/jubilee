@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Message thread — Jubilee design system</title>
+<meta name="description" content="The Jubilee inbox: thread rows (read, unread, current), the chat log with bubbles (theirs, mine, sending, failed), in-chat request cards and the composer.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Data display</p>
+      <h1>Message thread</h1>
+      <p class="ds-lead">Messages is where members and businesses talk: a list of threads on the left, the open conversation on the right, and a composer at the bottom. On phones the list and the conversation are two screens.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>.inbox</code> <code>.thread</code> <code>.bubble</code> <code>.composer</code></span><span class="ds-pill">Messages and conversation</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use these parts only for one-to-one conversations between a member and a business. System events (a confirmed booking, a new listing) go to <a href="../components/notification-item.html">notifications</a>; a booking or quote inside a conversation is shown as a <code>.chat__card</code>, a small <a href="../components/card.html">Card</a> that links to the request.</p>
+      <ul>
+        <li><b>Inbox</b> (<code>.inbox</code>): a framed two-pane layout from 1024px (22rem list + chat); below that, <code>.inbox--list</code> shows only the list and <code>.inbox--chat</code> only the conversation.</li>
+        <li><b>Thread</b> (<code>.thread</code>): avatar, name, time and a one-line snippet. <code>.thread--unread</code> bolds it and adds a gold dot; <code>aria-current="page"</code> marks the open one.</li>
+        <li><b>Chat</b> (<code>.chat</code>): a head with back, avatar, name, reply-time hint and a link to the listing; a <code>.chat__log</code> list with day separators; the composer.</li>
+        <li><b>Bubble</b> (<code>.bubble</code>): theirs on the left (subtle surface), <code>.bubble--me</code> on the right (inverse), <code>.bubble--pending</code> while sending and <code>.bubble--failed</code> with Try again and Delete.</li>
+        <li><b>Composer</b> (<code>.composer</code>): a one-row auto-growing textarea and a gold icon Send button.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div style="justify-self: stretch; min-width: 0;"><ul class="list"><li><a class="thread" href="../../mocks/pages/conversation/default.html" aria-current="page"><span class="avatar" aria-hidden="true">LF</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Legacy Financial</span><span class="thread__time">9:14 a.m.</span></span><span class="thread__snippet truncate" style="display: block;">Trevor: Thursday at 10:00 works. See you then!</span></span></a></li><li><a class="thread thread--unread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">WaterWorks Plumbing &amp; Drains</span><span class="thread__time">Yesterday</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span><span class="visually-hidden">Unread. </span>We can come Saturday morning for the kitchen drain.</span></span></a></li></ul></div>
+          <span class="ds-callout" style="left: 4%; top: 25%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 16%; top: 18%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 94%; top: 18%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 16%; top: 36%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 2%; top: 50%;" aria-hidden="true">5</span><span class="ds-callout" style="left: 16%; top: 86%;" aria-hidden="true">6</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Avatar</b><small><code>.avatar</code> with the business initials, <code>aria-hidden</code> (the name follows).</small></div></li>
+          <li><div><b>Name</b><small><code>.thread__name</code>, <code>--text-label</code>, truncated.</small></div></li>
+          <li><div><b>Time</b><small><code>.thread__time</code>, caption, muted: time today, "Yesterday", weekday + date this week, then date.</small></div></li>
+          <li><div><b>Snippet</b><small><code>.thread__snippet</code>, one line, muted, prefixed "You:" when the last message is yours.</small></div></li>
+          <li><div><b>Current row</b><small><code>aria-current="page"</code>: <code>--color-accent-subtle</code> fill.</small></div></li>
+          <li><div><b>Unread</b><small><code>.thread--unread</code>: bold name and snippet in <code>--color-fg-default</code>, an 8px <code>.thread__dot</code> and hidden "Unread.".</small></div></li>
+        </ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>The inbox on a wide screen, with the failed-send state open. Resize below 1024px and the list disappears in favour of the conversation (<code>.inbox--chat</code>).</p>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--flush">
+        <div class="inbox inbox--chat"><div class="inbox__list"><div class="inbox__tools"><form class="search" role="search"><label class="visually-hidden" for="mt-v-q">Search messages</label><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" id="mt-v-q" type="search" placeholder="Search messages"></form></div><ul class="list"><li><a class="thread" href="../../mocks/pages/conversation/default.html" aria-current="page"><span class="avatar" aria-hidden="true">LF</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Legacy Financial</span><span class="thread__time">9:14 a.m.</span></span><span class="thread__snippet truncate" style="display: block;">Trevor: Thursday at 10:00 works. See you then!</span></span></a></li><li><a class="thread thread--unread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">WaterWorks Plumbing &amp; Drains</span><span class="thread__time">Yesterday</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span><span class="visually-hidden">Unread. </span>We can come Saturday morning for the kitchen drain.</span></span></a></li><li><a class="thread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">CB</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Christian Bookstores</span><span class="thread__time">Sat 7 Nov</span></span><span class="thread__snippet truncate" style="display: block;">You: Perfect, I’ll pick it up Friday.</span></span></a></li><li><a class="thread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">FC</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Flower Creations</span><span class="thread__time">28 Oct</span></span><span class="thread__snippet truncate" style="display: block;">Thanks for the lovely review of the arrangement!</span></span></a></li></ul></div><div class="inbox__chat chat"><div class="chat__head"><a class="btn btn--ghost btn--icon" href="../../mocks/pages/messages/default.html" aria-label="Back to messages"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg></a><span class="avatar" aria-hidden="true">LF</span><div style="flex: 1; min-width: 0;"><h2 class="truncate">Legacy Financial</h2><p class="text-caption truncate">Trevor Chew · usually replies within a day</p></div><a class="btn btn--icon" href="../../mocks/pages/business/default.html" aria-label="View Legacy Financial’s listing"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/></svg></a></div><ul class="chat__log" aria-label="Messages"><li class="chat__day">Today · Tue 10 Nov</li><li class="bubble"><span class="visually-hidden">Trevor: </span>Hi Joanna, thanks for reaching out. Happy to talk through RRSPs and a plan for giving.<span class="bubble__meta">8:52 a.m.</span></li><li class="bubble bubble--me"><span class="visually-hidden">You: </span>Thank you! Is Thursday morning possible? Video is easiest for me.<span class="bubble__meta">9:03 a.m.</span></li><li class="chat__card card"><p class="overline">Booking request</p><p class="row__title">Discovery meeting</p><p class="row__meta">Thu 12 Nov, 10:00–10:30 a.m. · Video</p><div class="cluster cluster--between" style="margin-top: var(--space-3);"><span class="badge badge--success">Confirmed</span><a href="../../mocks/pages/request-detail/confirmed.html">View request</a></div></li><li class="bubble"><span class="visually-hidden">Trevor: </span>Thursday at 10:00 works. See you then!<span class="bubble__meta">9:14 a.m.</span></li><li class="bubble bubble--me bubble--failed"><span class="visually-hidden">You: </span>Wonderful. Should I bring last year’s tax return?<span class="bubble__meta" role="alert">Not sent. Check your connection. <button type="button">Try again</button> · <button type="button">Delete</button></span></li></ul><form class="composer"><label class="visually-hidden" for="mt-v-msg">Message Legacy Financial</label><textarea class="textarea" id="mt-v-msg" rows="1" placeholder="Write a message"></textarea><button class="btn btn--primary btn--icon" type="submit" aria-label="Send"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12 20 4l-5 16-3-7z"/></svg></button></form></div></div>
+      </div>
+        <div class="ds-example__caption"><span>Composed from pages/conversation/failed. The list shows current, unread and read threads; the chat shows theirs, mine, a confirmed booking card and a failed message.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="inbox inbox--chat"&gt;&lt;div class="inbox__list"&gt;&lt;div class="inbox__tools"&gt;&lt;form class="search" role="search"&gt;&lt;label class="visually-hidden" for="mt-v-q"&gt;Search messages&lt;/label&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="11" cy="11" r="7"/&gt;&lt;path d="m20 20-3.5-3.5"/&gt;&lt;/svg&gt;&lt;input class="input" id="mt-v-q" type="search" placeholder="Search messages"&gt;&lt;/form&gt;&lt;/div&gt;&lt;ul class="list"&gt;&lt;li&gt;&lt;a class="thread" href="../../mocks/pages/conversation/default.html" aria-current="page"&gt;&lt;span class="avatar" aria-hidden="true"&gt;LF&lt;/span&gt;&lt;span class="thread__body"&gt;&lt;span class="thread__top"&gt;&lt;span class="thread__name truncate"&gt;Legacy Financial&lt;/span&gt;&lt;span class="thread__time"&gt;9:14 a.m.&lt;/span&gt;&lt;/span&gt;&lt;span class="thread__snippet truncate" style="display: block;"&gt;Trevor: Thursday at 10:00 works. See you then!&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="thread thread--unread" href="../../mocks/pages/conversation/default.html"&gt;&lt;span class="avatar" aria-hidden="true"&gt;WW&lt;/span&gt;&lt;span class="thread__body"&gt;&lt;span class="thread__top"&gt;&lt;span class="thread__name truncate"&gt;WaterWorks Plumbing &amp;amp; Drains&lt;/span&gt;&lt;span class="thread__time"&gt;Yesterday&lt;/span&gt;&lt;/span&gt;&lt;span class="thread__snippet truncate" style="display: block;"&gt;&lt;span class="thread__dot" aria-hidden="true"&gt;&lt;/span&gt;&lt;span class="visually-hidden"&gt;Unread. &lt;/span&gt;We can come Saturday morning for the kitchen drain.&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="thread" href="../../mocks/pages/conversation/default.html"&gt;&lt;span class="avatar" aria-hidden="true"&gt;CB&lt;/span&gt;&lt;span class="thread__body"&gt;&lt;span class="thread__top"&gt;&lt;span class="thread__name truncate"&gt;Christian Bookstores&lt;/span&gt;&lt;span class="thread__time"&gt;Sat 7 Nov&lt;/span&gt;&lt;/span&gt;&lt;span class="thread__snippet truncate" style="display: block;"&gt;You: Perfect, I’ll pick it up Friday.&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="thread" href="../../mocks/pages/conversation/default.html"&gt;&lt;span class="avatar" aria-hidden="true"&gt;FC&lt;/span&gt;&lt;span class="thread__body"&gt;&lt;span class="thread__top"&gt;&lt;span class="thread__name truncate"&gt;Flower Creations&lt;/span&gt;&lt;span class="thread__time"&gt;28 Oct&lt;/span&gt;&lt;/span&gt;&lt;span class="thread__snippet truncate" style="display: block;"&gt;Thanks for the lovely review of the arrangement!&lt;/span&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;div class="inbox__chat chat"&gt;&lt;div class="chat__head"&gt;&lt;a class="btn btn--ghost btn--icon" href="../../mocks/pages/messages/default.html" aria-label="Back to messages"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M19 12H5m0 0 6-6m-6 6 6 6"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;span class="avatar" aria-hidden="true"&gt;LF&lt;/span&gt;&lt;div style="flex: 1; min-width: 0;"&gt;&lt;h2 class="truncate"&gt;Legacy Financial&lt;/h2&gt;&lt;p class="text-caption truncate"&gt;Trevor Chew · usually replies within a day&lt;/p&gt;&lt;/div&gt;&lt;a class="btn btn--icon" href="../../mocks/pages/business/default.html" aria-label="View Legacy Financial’s listing"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;/div&gt;&lt;ul class="chat__log" aria-label="Messages"&gt;&lt;li class="chat__day"&gt;Today · Tue 10 Nov&lt;/li&gt;&lt;li class="bubble"&gt;&lt;span class="visually-hidden"&gt;Trevor: &lt;/span&gt;Hi Joanna, thanks for reaching out. Happy to talk through RRSPs and a plan for giving.&lt;span class="bubble__meta"&gt;8:52 a.m.&lt;/span&gt;&lt;/li&gt;&lt;li class="bubble bubble--me"&gt;&lt;span class="visually-hidden"&gt;You: &lt;/span&gt;Thank you! Is Thursday morning possible? Video is easiest for me.&lt;span class="bubble__meta"&gt;9:03 a.m.&lt;/span&gt;&lt;/li&gt;&lt;li class="chat__card card"&gt;&lt;p class="overline"&gt;Booking request&lt;/p&gt;&lt;p class="row__title"&gt;Discovery meeting&lt;/p&gt;&lt;p class="row__meta"&gt;Thu 12 Nov, 10:00–10:30 a.m. · Video&lt;/p&gt;&lt;div class="cluster cluster--between" style="margin-top: var(--space-3);"&gt;&lt;span class="badge badge--success"&gt;Confirmed&lt;/span&gt;&lt;a href="../../mocks/pages/request-detail/confirmed.html"&gt;View request&lt;/a&gt;&lt;/div&gt;&lt;/li&gt;&lt;li class="bubble"&gt;&lt;span class="visually-hidden"&gt;Trevor: &lt;/span&gt;Thursday at 10:00 works. See you then!&lt;span class="bubble__meta"&gt;9:14 a.m.&lt;/span&gt;&lt;/li&gt;&lt;li class="bubble bubble--me bubble--failed"&gt;&lt;span class="visually-hidden"&gt;You: &lt;/span&gt;Wonderful. Should I bring last year’s tax return?&lt;span class="bubble__meta" role="alert"&gt;Not sent. Check your connection. &lt;button type="button"&gt;Try again&lt;/button&gt; · &lt;button type="button"&gt;Delete&lt;/button&gt;&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;form class="composer"&gt;&lt;label class="visually-hidden" for="mt-v-msg"&gt;Message Legacy Financial&lt;/label&gt;&lt;textarea class="textarea" id="mt-v-msg" rows="1" placeholder="Write a message"&gt;&lt;/textarea&gt;&lt;button class="btn btn--primary btn--icon" type="submit" aria-label="Send"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12 20 4l-5 16-3-7z"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/form&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>Bubbles</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--flush">
+        <ul class="chat__log" aria-label="Bubble variants" style="inline-size: 100%;"><li class="bubble"><span class="visually-hidden">Trevor: </span>Hi Joanna, thanks for reaching out.<span class="bubble__meta">8:52 a.m.</span></li><li class="bubble bubble--me"><span class="visually-hidden">You: </span>Is Thursday morning possible?<span class="bubble__meta">9:03 a.m.</span></li><li class="bubble bubble--me bubble--pending"><span class="visually-hidden">You: </span>Should I bring last year’s tax return?<span class="bubble__meta" role="status">Sending…</span></li><li class="bubble bubble--me bubble--failed"><span class="visually-hidden">You: </span>Should I bring last year’s tax return?<span class="bubble__meta" role="alert">Not sent. Check your connection. <button type="button">Try again</button> · <button type="button">Delete</button></span></li></ul>
+      </div>
+        <div class="ds-example__caption"><span>Theirs, mine, sending (70% opacity, "Sending…" in a status region) and failed (danger surface, actions in the meta line).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="chat__log" aria-label="Bubble variants" style="inline-size: 100%;"&gt;&lt;li class="bubble"&gt;&lt;span class="visually-hidden"&gt;Trevor: &lt;/span&gt;Hi Joanna, thanks for reaching out.&lt;span class="bubble__meta"&gt;8:52 a.m.&lt;/span&gt;&lt;/li&gt;&lt;li class="bubble bubble--me"&gt;&lt;span class="visually-hidden"&gt;You: &lt;/span&gt;Is Thursday morning possible?&lt;span class="bubble__meta"&gt;9:03 a.m.&lt;/span&gt;&lt;/li&gt;&lt;li class="bubble bubble--me bubble--pending"&gt;&lt;span class="visually-hidden"&gt;You: &lt;/span&gt;Should I bring last year’s tax return?&lt;span class="bubble__meta" role="status"&gt;Sending…&lt;/span&gt;&lt;/li&gt;&lt;li class="bubble bubble--me bubble--failed"&gt;&lt;span class="visually-hidden"&gt;You: &lt;/span&gt;Should I bring last year’s tax return?&lt;span class="bubble__meta" role="alert"&gt;Not sent. Check your connection. &lt;button type="button"&gt;Try again&lt;/button&gt; · &lt;button type="button"&gt;Delete&lt;/button&gt;&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes" data-na="One size. Thread rows and bubbles grow with their text; bubbles cap at min(32rem, 85%) of the log."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size. Thread rows and bubbles grow with their text; bubbles cap at min(32rem, 85%) of the log.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Thread rows are links: hover fills with <code>--color-bg-subtle</code>, focus draws the ring, and the open thread keeps the gold-subtle fill. Bubbles and the composer have their own states below.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th><th scope="col">Loading</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Read thread</th><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">CB</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Christian Bookstores</span><span class="thread__time">Sat 7 Nov</span></span><span class="thread__snippet truncate" style="display: block;">You: Perfect, I’ll pick it up Friday.</span></span></a></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread" href="../../mocks/pages/conversation/default.html" data-state="hover"><span class="avatar" aria-hidden="true">CB</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Christian Bookstores</span><span class="thread__time">Sat 7 Nov</span></span><span class="thread__snippet truncate" style="display: block;">You: Perfect, I’ll pick it up Friday.</span></span></a></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread" href="../../mocks/pages/conversation/default.html" data-state="focus"><span class="avatar" aria-hidden="true">CB</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Christian Bookstores</span><span class="thread__time">Sat 7 Nov</span></span><span class="thread__snippet truncate" style="display: block;">You: Perfect, I’ll pick it up Friday.</span></span></a></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread" href="../../mocks/pages/conversation/default.html" data-state="active"><span class="avatar" aria-hidden="true">CB</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Christian Bookstores</span><span class="thread__time">Sat 7 Nov</span></span><span class="thread__snippet truncate" style="display: block;">You: Perfect, I’ll pick it up Friday.</span></span></a></div></td><td><span class="text-caption">None. A conversation with a removed business stays readable and its composer explains why.</span></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><div class="thread" aria-hidden="true"><span class="skeleton skeleton--avatar"></span><span class="thread__body"><span class="skeleton skeleton--text skeleton--w50"></span><span class="skeleton skeleton--text"></span></span></div></div></td></tr>
+          <tr><th scope="row">Unread thread</th><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread thread--unread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">WaterWorks Plumbing &amp; Drains</span><span class="thread__time">Yesterday</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span><span class="visually-hidden">Unread. </span>We can come Saturday morning for the kitchen drain.</span></span></a></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread thread--unread" href="../../mocks/pages/conversation/default.html" data-state="hover"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">WaterWorks Plumbing &amp; Drains</span><span class="thread__time">Yesterday</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span><span class="visually-hidden">Unread. </span>We can come Saturday morning for the kitchen drain.</span></span></a></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread thread--unread" href="../../mocks/pages/conversation/default.html" data-state="focus"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">WaterWorks Plumbing &amp; Drains</span><span class="thread__time">Yesterday</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span><span class="visually-hidden">Unread. </span>We can come Saturday morning for the kitchen drain.</span></span></a></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread thread--unread" href="../../mocks/pages/conversation/default.html" data-state="active"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">WaterWorks Plumbing &amp; Drains</span><span class="thread__time">Yesterday</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span><span class="visually-hidden">Unread. </span>We can come Saturday morning for the kitchen drain.</span></span></a></div></td><td><span class="text-caption">None.</span></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><div class="thread" aria-hidden="true"><span class="skeleton skeleton--avatar"></span><span class="thread__body"><span class="skeleton skeleton--text skeleton--w50"></span><span class="skeleton skeleton--text"></span></span></div></div></td></tr>
+          <tr><th scope="row">Current thread</th><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread" href="../../mocks/pages/conversation/default.html" aria-current="page"><span class="avatar" aria-hidden="true">LF</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Legacy Financial</span><span class="thread__time">9:14 a.m.</span></span><span class="thread__snippet truncate" style="display: block;">Trevor: Thursday at 10:00 works. See you then!</span></span></a></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread" href="../../mocks/pages/conversation/default.html" aria-current="page" data-state="hover"><span class="avatar" aria-hidden="true">LF</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Legacy Financial</span><span class="thread__time">9:14 a.m.</span></span><span class="thread__snippet truncate" style="display: block;">Trevor: Thursday at 10:00 works. See you then!</span></span></a></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread" href="../../mocks/pages/conversation/default.html" aria-current="page" data-state="focus"><span class="avatar" aria-hidden="true">LF</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Legacy Financial</span><span class="thread__time">9:14 a.m.</span></span><span class="thread__snippet truncate" style="display: block;">Trevor: Thursday at 10:00 works. See you then!</span></span></a></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><a class="thread" href="../../mocks/pages/conversation/default.html" aria-current="page" data-state="active"><span class="avatar" aria-hidden="true">LF</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Legacy Financial</span><span class="thread__time">9:14 a.m.</span></span><span class="thread__snippet truncate" style="display: block;">Trevor: Thursday at 10:00 works. See you then!</span></span></a></div></td><td><span class="text-caption">None.</span></td><td><span class="text-caption">Not shown: the list loads before a thread can be current.</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Composer</h3>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Part</th><th scope="col">Default</th><th scope="col">Focus</th><th scope="col">Typing</th><th scope="col">Sending</th><th scope="col">Disabled</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Composer</th><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><form class="composer"><label class="visually-hidden" for="mt-c1">Message Legacy Financial</label><textarea class="textarea" id="mt-c1" rows="1" placeholder="Write a message"></textarea><button class="btn btn--primary btn--icon" type="submit" aria-label="Send"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12 20 4l-5 16-3-7z"/></svg></button></form></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><form class="composer"><label class="visually-hidden" for="mt-c2">Message Legacy Financial</label><textarea class="textarea" id="mt-c2" rows="1" placeholder="Write a message" data-state="focus"></textarea><button class="btn btn--primary btn--icon" type="submit" aria-label="Send"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12 20 4l-5 16-3-7z"/></svg></button></form></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><form class="composer"><label class="visually-hidden" for="mt-c3">Message Legacy Financial</label><textarea class="textarea" id="mt-c3" rows="1" placeholder="Write a message">Wonderful. Should I bring last year’s tax return?</textarea><button class="btn btn--primary btn--icon" type="submit" aria-label="Send"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12 20 4l-5 16-3-7z"/></svg></button></form></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><form class="composer"><label class="visually-hidden" for="mt-c4">Message Legacy Financial</label><textarea class="textarea" id="mt-c4" rows="1" placeholder="Write a message"></textarea><button class="btn btn--primary btn--icon" type="submit" aria-label="Send" aria-busy="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12 20 4l-5 16-3-7z"/></svg></button></form></div></td><td><div style="inline-size: min(100%, calc(var(--space-24) * 3));"><form class="composer"><label class="visually-hidden" for="mt-c5">Message Legacy Financial</label><textarea class="textarea" id="mt-c5" rows="1" placeholder="Write a message" disabled></textarea><button class="btn btn--primary btn--icon" type="submit" aria-label="Send" disabled><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12 20 4l-5 16-3-7z"/></svg></button></form></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div style="flex: 1 1 100%; min-width: 0;"><ul class="list"><li><a class="thread" href="../../mocks/pages/conversation/default.html" aria-current="page"><span class="avatar" aria-hidden="true">LF</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Legacy Financial</span><span class="thread__time">9:14 a.m.</span></span><span class="thread__snippet truncate" style="display: block;">Trevor: Thursday at 10:00 works. See you then!</span></span></a></li><li><a class="thread thread--unread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">WaterWorks Plumbing &amp; Drains</span><span class="thread__time">Yesterday</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span><span class="visually-hidden">Unread. </span>We can come Saturday morning for the kitchen drain.</span></span></a></li></ul><ul class="chat__log" aria-label="Messages"><li class="bubble">Thursday at 10:00 works.</li><li class="bubble bubble--me">Thank you!</li><li class="bubble bubble--me bubble--failed">Should I bring last year’s tax return?<span class="bubble__meta">Not sent.</span></li></ul></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div style="flex: 1 1 100%; min-width: 0;"><ul class="list"><li><a class="thread" href="../../mocks/pages/conversation/default.html" aria-current="page"><span class="avatar" aria-hidden="true">LF</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">Legacy Financial</span><span class="thread__time">9:14 a.m.</span></span><span class="thread__snippet truncate" style="display: block;">Trevor: Thursday at 10:00 works. See you then!</span></span></a></li><li><a class="thread thread--unread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">WaterWorks Plumbing &amp; Drains</span><span class="thread__time">Yesterday</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span><span class="visually-hidden">Unread. </span>We can come Saturday morning for the kitchen drain.</span></span></a></li></ul><ul class="chat__log" aria-label="Messages"><li class="bubble">Thursday at 10:00 works.</li><li class="bubble bubble--me">Thank you!</li><li class="bubble bubble--me bubble--failed">Should I bring last year’s tax return?<span class="bubble__meta">Not sent.</span></li></ul></div></div></div>
+      </div>
+      <ul>
+        <li><b>Sending</b>: the message appears at once (optimistic), the composer clears, the Send button sets <code>aria-busy</code>, and "Sending…" is replaced by the time when the server confirms, with no layout shift.</li>
+        <li><b>Failed</b>: the bubble switches to the danger surface and its meta line says what happened and offers <em>Try again</em> and <em>Delete</em>. The alert sits on the meta line, not on the list item.</li>
+        <li><b>Loading</b>: thread skeletons in the list; bubble-shaped skeletons in the log; the composer stays usable. <b>Empty</b> conversation: a compact <a href="../components/empty-state.html">Empty state</a> ("Say hello to Trevor") with suggested-question <a href="../components/chip.html">chips</a>. <b>Error</b>: an error empty state in the chat pane with Try again.</li>
+        <li><b>Disabled</b> composer is reserved for a business that has left Jubilee; a line above it explains, and the thread stays readable.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>From 1024px the inbox is two columns: list 22rem with a hairline right edge, chat the rest. Both panes share the 32rem minimum height.</li>
+        <li>Below 1024px only one pane shows: <code>.inbox--list</code> on Messages, <code>.inbox--chat</code> on a conversation, whose head gains the Back button.</li>
+        <li>Bubbles cap at 85% of the log width on phones and 32rem on desktop; long words and links break (<code>overflow-wrap: anywhere</code>).</li>
+        <li>The composer stays at the bottom of the chat pane; on phones it sits above the tab bar.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Mine uses the inverse pair (<code>--color-bg-inverse</code> / <code>--color-fg-inverse</code>): ink on cream in light, cream on ink in dark, so your messages always have the strongest contrast. Theirs uses <code>--color-bg-subtle</code>. Failed uses the danger surface trio. The current thread and the unread dot use the gold-subtle and gold-edge tokens.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>The thread list is a <code>&lt;ul&gt;</code> of links with <code>aria-current="page"</code> on the open one (<a href="https://www.w3.org/WAI/ARIA/apg/patterns/link/">APG link pattern</a>). The chat log is a labelled <code>&lt;ul aria-label="Messages"&gt;</code>; in product give it <code>role="log"</code> so new incoming messages are announced politely. The composer is a <code>&lt;form&gt;</code> with a labelled textarea and a submit <a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/">button</a>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>List: thread to thread. Chat: Back, View listing, any link or button in the log (View request, Try again, Delete), then the textarea and Send.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>On a thread: opens it. In the textarea: a new line (the textarea grows).</td></tr>
+        <tr><td><kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>Enter</kbd></td><td>Sends from the textarea. The Send button is always there too.</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>Activates Send, Try again and Delete.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>Opening a thread on a phone moves focus to the chat heading. After sending, focus stays in the textarea. After Delete on a failed message, focus moves to the textarea. The shared ring appears on threads, buttons and the textarea.</p>
+      <h3>Labelling</h3>
+      <p>Each bubble starts with a visually hidden sender ("Trevor: ", "You: "). Unread threads add a hidden "Unread." before the snippet; the gold dot is <code>aria-hidden</code>. The textarea is labelled "Message Legacy Financial"; the send button is "Send". The pending meta is a <code>role="status"</code> ("Sending…"), the failed meta a <code>role="alert"</code>.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Their bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>My bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-bg-inverse" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Failed bubble</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-danger-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current thread name</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current thread snippet</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Unread dot on surface</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Snippet and time on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Their bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>My bubble</span><span class="ds-pair__ratio" data-contrast="--color-fg-inverse|--color-bg-inverse" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Failed bubble</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-danger-bg" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current thread name</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Current thread snippet</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Unread dot on surface</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Snippet and time on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>No animation on bubbles; new messages appear in place. The busy Send button shows the spinner (<code>--duration-spin</code>), which keeps turning under reduced motion because it is status.</p>
+      <h3>Touch</h3>
+      <p>Thread rows are at least 64px tall and full width. Send is 44px. Try again and Delete in the failed meta are inline text buttons with a 24px minimum height (<code>--target-min</code>), separated by a dot and space.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Snippets are the last message, one line; prefix "You: " when it is yours, the sender's first name when the business has several people ("Trevor: ").</li>
+        <li>Times: "9:14 a.m." today, "Yesterday", "Sat 7 Nov" this week, "28 Oct" otherwise. Day separators: "Today · Tue 10 Nov".</li>
+        <li>Failure copy says what happened and what to do: "Not sent. Check your connection." Then the actions. Never "Error".</li>
+        <li>The head hint sets expectations in plain words: "usually replies within a day".</li>
+        <li>Placeholder is "Write a message"; it is a hint, not the label.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><ul class="chat__log" aria-label="Messages" style="inline-size: 100%;"><li class="bubble bubble--me bubble--failed"><span class="visually-hidden">You: </span>Should I bring last year’s tax return?<span class="bubble__meta" role="alert">Not sent. Check your connection. <button type="button">Try again</button></span></li></ul></div><figcaption>Put <code>role="alert"</code> on the meta line so the list item stays a list item and only the failure is announced.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><ul class="chat__log" aria-label="Messages" style="inline-size: 100%;"><li class="bubble bubble--me bubble--failed" role="alert">Should I bring last year’s tax return?<span class="bubble__meta">Not sent. <button type="button">Try again</button></span></li></ul></div><figcaption><code>role="alert"</code> on the <code>&lt;li&gt;</code>, as the failed mock does. It replaces the listitem role, breaks the list, and announces the whole message instead of the failure.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div style="inline-size: 100%;"><a class="thread thread--unread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name truncate">WaterWorks Plumbing &amp; Drains</span><span class="thread__time">Yesterday</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span><span class="visually-hidden">Unread. </span>We can come Saturday morning for the kitchen drain.</span></span></a></div></div><figcaption>Unread is bold text, a dot and a hidden "Unread.", three cues at once.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div style="inline-size: 100%;"><a class="thread" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">WW</span><span class="thread__body"><span class="thread__top"><span class="thread__name">WaterWorks Plumbing &amp; Drains</span></span><span class="thread__snippet truncate" style="display: block;"><span class="thread__dot" aria-hidden="true"></span>We can come Saturday morning.</span></span></a></div></div><figcaption>Relying on the dot alone. It is <code>aria-hidden</code> and only 8px; without the bold text and hidden word, unread is invisible to most people.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Inbox frame / divider</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Inbox surface</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
+          <tr><td>Inbox radius</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr>
+          <tr><td>Thread padding</td><td><code>--space-3</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Thread hover / current</td><td><code>--color-bg-subtle</code> / <code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
+          <tr><td>Name / time font</td><td><code>--text-label</code> / <code>--text-caption</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--text-caption"></span></td></tr>
+          <tr><td>Snippet font</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Snippet and time colour</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Unread weight</td><td><code>--font-weight-bold</code></td><td colspan="2"><span data-token="--font-weight-bold"></span></td></tr>
+          <tr><td>Unread dot</td><td><code>--color-accent-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td></tr>
+          <tr><td>Unread dot size</td><td><code>--indicator-size</code></td><td colspan="2"><span data-token="--indicator-size"></span></td></tr>
+          <tr><td>Bubble theirs</td><td><code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
+          <tr><td>Bubble mine</td><td><code>--color-bg-inverse</code> / <code>--color-fg-inverse</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-inverse" data-swatch></i><span data-token="--color-bg-inverse"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-inverse" data-swatch></i><span data-token="--color-fg-inverse"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-inverse" data-swatch></i><span data-token="--color-bg-inverse"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-inverse" data-swatch></i><span data-token="--color-fg-inverse"></span></span></td></tr>
+          <tr><td>Bubble failed</td><td><code>--color-danger-bg</code> / <code>--color-danger-fg</code> / <code>--color-danger-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-border" data-swatch></i><span data-token="--color-danger-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-border" data-swatch></i><span data-token="--color-danger-border"></span></span></td></tr>
+          <tr><td>Bubble radius / padding</td><td><code>--radius-lg</code> / <code>--space-2</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--radius-lg"></span> / <span data-token="--space-2"></span> / <span data-token="--space-3"></span></td></tr>
+          <tr><td>Log gap / padding</td><td><code>--space-3</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Composer height</td><td><code>--control-height-md</code></td><td colspan="2"><span data-token="--control-height-md"></span></td></tr>
+          <tr><td>Meta action target</td><td><code>--target-min</code></td><td colspan="2"><span data-token="--target-min"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="inbox inbox--chat"&gt;
+  &lt;div class="inbox__list"&gt;
+    &lt;ul class="list"&gt;
+      &lt;li&gt;&lt;a class="thread" href="/messages/legacy-financial" aria-current="page"&gt;…&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a class="thread thread--unread" href="/messages/waterworks"&gt;
+        &lt;span class="avatar" aria-hidden="true"&gt;WW&lt;/span&gt;
+        &lt;span class="thread__body"&gt;
+          &lt;span class="thread__top"&gt;&lt;span class="thread__name truncate"&gt;WaterWorks Plumbing &amp;amp; Drains&lt;/span&gt;&lt;span class="thread__time"&gt;Yesterday&lt;/span&gt;&lt;/span&gt;
+          &lt;span class="thread__snippet truncate" style="display: block;"&gt;&lt;span class="thread__dot" aria-hidden="true"&gt;&lt;/span&gt;&lt;span class="visually-hidden"&gt;Unread. &lt;/span&gt;We can come Saturday morning…&lt;/span&gt;
+        &lt;/span&gt;
+      &lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;div class="inbox__chat chat"&gt;
+    &lt;div class="chat__head"&gt;…&lt;h1 class="truncate"&gt;Legacy Financial&lt;/h1&gt;…&lt;/div&gt;
+    &lt;ul class="chat__log" role="log" aria-label="Messages"&gt;
+      &lt;li class="chat__day"&gt;Today · Tue 10 Nov&lt;/li&gt;
+      &lt;li class="bubble"&gt;&lt;span class="visually-hidden"&gt;Trevor: &lt;/span&gt;Thursday at 10:00 works.&lt;span class="bubble__meta"&gt;9:14 a.m.&lt;/span&gt;&lt;/li&gt;
+      &lt;li class="bubble bubble--me bubble--pending"&gt;&lt;span class="visually-hidden"&gt;You: &lt;/span&gt;…&lt;span class="bubble__meta" role="status"&gt;Sending…&lt;/span&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;form class="composer"&gt;
+      &lt;label class="visually-hidden" for="msg"&gt;Message Legacy Financial&lt;/label&gt;
+      &lt;textarea class="textarea" id="msg" rows="1" placeholder="Write a message"&gt;&lt;/textarea&gt;
+      &lt;button class="btn btn--primary btn--icon" type="submit" aria-label="Send"&gt;…&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.inbox</code> <code>--list</code> <code>--chat</code></td><td>Two-pane frame; the modifier picks the pane shown below 1024px.</td></tr>
+        <tr><td><code>.inbox__list</code> <code>__tools</code> <code>__chat</code></td><td>Panes and the search strip.</td></tr>
+        <tr><td><code>.thread</code> <code>--unread</code></td><td>Thread row link; unread emphasis.</td></tr>
+        <tr><td><code>.thread__body</code> <code>__top</code> <code>__name</code> <code>__time</code> <code>__snippet</code> <code>__dot</code></td><td>Row parts.</td></tr>
+        <tr><td><code>aria-current="page"</code></td><td>Open thread.</td></tr>
+        <tr><td><code>.chat</code> <code>__head</code> <code>__log</code> <code>__day</code> <code>__card</code></td><td>Conversation pane, log, separators and in-chat request card.</td></tr>
+        <tr><td><code>.bubble</code> <code>--me</code> <code>--pending</code> <code>--failed</code></td><td>Message bubble and its states.</td></tr>
+        <tr><td><code>.bubble__meta</code></td><td>Time, Sending… or failure text with inline buttons.</td></tr>
+        <tr><td><code>.composer</code></td><td>Textarea + Send row.</td></tr>
+        <tr><td><code>data-state="hover|focus|selected"</code></td><td>Documentation only.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/messages/default.html">pages/messages/default</a> (thread list, unread)</li>
+        <li><a href="../../mocks/pages/conversation/default.html">pages/conversation/default</a> (chat)</li>
+        <li><a href="../../mocks/pages/conversation/sending.html">pages/conversation/sending</a> (pending bubble, busy Send)</li>
+        <li><a href="../../mocks/pages/conversation/failed.html">pages/conversation/failed</a> (failed bubble)</li>
+        <li><a href="../../mocks/pages/conversation/empty.html">pages/conversation/empty</a> (empty conversation)</li>
+        <li><a href="../../mocks/pages/messages/loading.html">pages/messages/loading</a> (thread skeletons)</li>
+      </ul>
+      <p>Drift fixed during extraction: the failed bubble puts <code>role="alert"</code> on the <code>&lt;li&gt;</code>, breaking list semantics; the system moves it to <code>.bubble__meta</code>. The chat log is a plain list with no <code>role="log"</code>, so incoming messages are silent; the system adds it. The unread dot sits inside the snippet, which is a block with <code>.truncate</code>; as an inline <code>span</code> its width and height do not apply, so the dot can collapse — <code>.thread__dot</code> needs <code>display: inline-block</code> (proposed). Snippets carry inline <code>display: block</code> like directory taglines. Loading bubbles use inline widths (60%, 45%…), and the chat head wraps its title in an inline <code>flex: 1; min-width: 0</code> div. <code>.bubble--pending</code> (0.7) and <code>.bubble__meta</code> (0.8) use opacity on text, which lowers contrast below the token pairs; keep the meta short and never put essential text only in a pending bubble.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

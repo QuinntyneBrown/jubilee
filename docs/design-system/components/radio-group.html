@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radio group — Jubilee design system</title>
+<meta name="description" content="Radio groups for exactly one choice: plain radios with descriptions, and the card-style choice cards used to pick what a business offers.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Inputs</p>
+      <h1>Radio group</h1>
+      <p class="ds-lead">A radio group asks for exactly one answer from a short, visible list: how to get an order, what's wrong with a listing, whether a business offers products or services.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>type="radio"</code></span><span class="ds-pill">Choice cards: 57 uses</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use radios when there are two to five mutually exclusive options and members should see them all before choosing. Use a <a href="../components/select.html">Select</a> for longer lists, a <a href="../components/checkbox.html">Checkbox</a> when several can be on, and a <a href="../components/button-group.html">Button group</a> only for view switches that are not form data.</p>
+      <ul>
+        <li><b>Radio list</b>: <code>.choice</code> rows in a fieldset, optionally with a description line (order request: Ship to me / Pick up).</li>
+        <li><b>Choice cards</b>: <code>.choice-cards</code> with <code>.choice-card</code> tiles, icon, title and text, for a decision that shapes the rest of the form (list your business: Products / Services). Two columns from 640px.</li>
+        <li><b>Chip radios</b>: time slots and sizes (book a meeting, product) are radios styled as chips; see drift.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <fieldset><legend>What do you offer? <span class="optional">(required)</span></legend><div class="choice-cards"><label class="choice-card"><input type="radio" name="rg-an" checked><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/></svg></span><span><span class="choice-card__title">Products</span><span class="choice-card__text">A shop or online store: books, apparel, gifts, flowers, furniture.</span></span></label><label class="choice-card"><input type="radio" name="rg-an"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, brokers, lawyers, trades, photographers, speakers, lessons.</span></span></label></div><p class="field__help">Offer both? Pick the main one now and add the other after you’re verified.</p></fieldset>
+          <span class="ds-callout" style="left: 4%; top: 10%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 6%; top: 24%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 60%; top: 17%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 70%; top: 30%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 94%; top: 90%;" aria-hidden="true">5</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Legend</b><small>Names the question; marked required.</small></div></li>
+          <li><div><b>Icon</b><small><code>.choice-card__icon</code>: 40px circle, gold when selected.</small></div></li>
+          <li><div><b>Title</b><small><code>.choice-card__title</code>, label weight.</small></div></li>
+          <li><div><b>Text</b><small><code>.choice-card__text</code>, muted small text.</small></div></li>
+          <li><div><b>Help</b><small>Guidance for the whole group under the cards.</small></div></li>
+        </ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <fieldset><legend>How would you like to get it?</legend><label class="choice"><input type="radio" name="rg-get" checked><span class="choice__text">Ship to me<small>Canada Post, $9 flat · 3–6 business days</small></span></label><label class="choice"><input type="radio" name="rg-get"><span class="choice__text">Pick up in Leslieville<small>Free · Naomi sends the address when it’s ready</small></span></label></fieldset>
+      </div>
+        <div class="ds-example__caption"><span>Radio list with descriptions (order request).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;fieldset&gt;&lt;legend&gt;How would you like to get it?&lt;/legend&gt;&lt;label class="choice"&gt;&lt;input type="radio" name="rg-get" checked&gt;&lt;span class="choice__text"&gt;Ship to me&lt;small&gt;Canada Post, $9 flat · 3–6 business days&lt;/small&gt;&lt;/span&gt;&lt;/label&gt;&lt;label class="choice"&gt;&lt;input type="radio" name="rg-get"&gt;&lt;span class="choice__text"&gt;Pick up in Leslieville&lt;small&gt;Free · Naomi sends the address when it’s ready&lt;/small&gt;&lt;/span&gt;&lt;/label&gt;&lt;/fieldset&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <fieldset><legend>What’s wrong? <span class="optional">(required)</span></legend><label class="choice"><input type="radio" name="rg-why"><span class="choice__text">It isn’t a real business</span></label><label class="choice"><input type="radio" name="rg-why" checked><span class="choice__text">The listing is misleading or out of date</span></label><label class="choice"><input type="radio" name="rg-why"><span class="choice__text">I had a bad experience</span></label><label class="choice"><input type="radio" name="rg-why"><span class="choice__text">Something else</span></label></fieldset>
+      </div>
+        <div class="ds-example__caption"><span>Plain radio list (report listing).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;fieldset&gt;&lt;legend&gt;What’s wrong? &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/legend&gt;&lt;label class="choice"&gt;&lt;input type="radio" name="rg-why"&gt;&lt;span class="choice__text"&gt;It isn’t a real business&lt;/span&gt;&lt;/label&gt;&lt;label class="choice"&gt;&lt;input type="radio" name="rg-why" checked&gt;&lt;span class="choice__text"&gt;The listing is misleading or out of date&lt;/span&gt;&lt;/label&gt;&lt;label class="choice"&gt;&lt;input type="radio" name="rg-why"&gt;&lt;span class="choice__text"&gt;I had a bad experience&lt;/span&gt;&lt;/label&gt;&lt;label class="choice"&gt;&lt;input type="radio" name="rg-why"&gt;&lt;span class="choice__text"&gt;Something else&lt;/span&gt;&lt;/label&gt;&lt;/fieldset&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <fieldset><legend>What do you offer? <span class="optional">(required)</span></legend><div class="choice-cards"><label class="choice-card"><input type="radio" name="rg-v" checked><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/></svg></span><span><span class="choice-card__title">Products</span><span class="choice-card__text">A shop or online store: books, apparel, gifts, flowers, furniture.</span></span></label><label class="choice-card"><input type="radio" name="rg-v"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, brokers, lawyers, trades, photographers, speakers, lessons.</span></span></label></div><p class="field__help">Offer both? Pick the main one now and add the other after you’re verified.</p></fieldset>
+      </div>
+        <div class="ds-example__caption"><span>Choice cards (list your business). The whole card is the radio's hit area; the native input covers it, transparent.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;fieldset&gt;&lt;legend&gt;What do you offer? &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/legend&gt;&lt;div class="choice-cards"&gt;&lt;label class="choice-card"&gt;&lt;input type="radio" name="rg-v" checked&gt;&lt;span class="choice-card__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span&gt;&lt;span class="choice-card__title"&gt;Products&lt;/span&gt;&lt;span class="choice-card__text"&gt;A shop or online store: books, apparel, gifts, flowers, furniture.&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;&lt;label class="choice-card"&gt;&lt;input type="radio" name="rg-v"&gt;&lt;span class="choice-card__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="3" y="7" width="18" height="13" rx="2"/&gt;&lt;path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span&gt;&lt;span class="choice-card__title"&gt;Services&lt;/span&gt;&lt;span class="choice-card__text"&gt;Advisors, brokers, lawyers, trades, photographers, speakers, lessons.&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;&lt;/div&gt;&lt;p class="field__help"&gt;Offer both? Pick the main one now and add the other after you’re verified.&lt;/p&gt;&lt;/fieldset&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>Radios have one size (20px circle, 24px row). Choice cards fill their grid cell; minimum height comes from the content, and both cards in a row match heights.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Forced with <code>data-state</code> (on the input for radios, on the label for cards). Each cell is its own group so selected and unselected can be shown. Active keeps the hover look.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th><th scope="col">Invalid</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Radio</th><td><label class="choice"><input type="radio" name="rg-m-0-0"><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-0-1" data-state="hover"><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-0-2" data-state="focus"><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-0-3" data-state="hover"><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-0-4" disabled><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-0-5" aria-invalid="true"><span class="choice__text">Ship to me</span></label></td></tr>
+          <tr><th scope="row">Radio, selected</th><td><label class="choice"><input type="radio" name="rg-m-1-0" checked><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-1-1" checked data-state="hover"><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-1-2" checked data-state="focus"><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-1-3" checked data-state="hover"><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-1-4" checked disabled><span class="choice__text">Ship to me</span></label></td><td><label class="choice"><input type="radio" name="rg-m-1-5" checked aria-invalid="true"><span class="choice__text">Ship to me</span></label></td></tr>
+          <tr><th scope="row">Choice card</th><td><div class="ds-cell-wide"><label class="choice-card"><input type="radio" name="rg-cc-0-0"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card" data-state="hover"><input type="radio" name="rg-cc-0-1"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card" data-state="focus"><input type="radio" name="rg-cc-0-2"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card" data-state="hover"><input type="radio" name="rg-cc-0-3"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card"><input type="radio" name="rg-cc-0-4" disabled><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card"><input type="radio" name="rg-cc-0-5" aria-invalid="true"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td></tr>
+          <tr><th scope="row">Choice card, selected</th><td><div class="ds-cell-wide"><label class="choice-card"><input type="radio" name="rg-cc-1-0" checked><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card" data-state="hover"><input type="radio" name="rg-cc-1-1" checked><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card" data-state="focus"><input type="radio" name="rg-cc-1-2" checked><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card" data-state="hover"><input type="radio" name="rg-cc-1-3" checked><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card"><input type="radio" name="rg-cc-1-4" checked disabled><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td><td><div class="ds-cell-wide"><label class="choice-card"><input type="radio" name="rg-cc-1-5" checked aria-invalid="true"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, lawyers, trades.</span></span></label></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Invalid group</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <fieldset><legend>What do you offer? <span class="optional">(required)</span></legend><div class="choice-cards"><label class="choice-card"><input type="radio" name="rg-inv" aria-invalid="true" aria-describedby="rg-inv-err"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/></svg></span><span><span class="choice-card__title">Products</span><span class="choice-card__text">A shop or online store: books, apparel, gifts, flowers, furniture.</span></span></label><label class="choice-card"><input type="radio" name="rg-inv" aria-invalid="true" aria-describedby="rg-inv-err"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, brokers, lawyers, trades, photographers, speakers, lessons.</span></span></label></div><span class="field__error" id="rg-inv-err">Choose what you offer.</span></fieldset>
+      </div>
+        <div class="ds-example__caption"><span>Nothing chosen on submit: both cards take the danger edge and the group error says what to do.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;fieldset&gt;&lt;legend&gt;What do you offer? &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/legend&gt;&lt;div class="choice-cards"&gt;&lt;label class="choice-card"&gt;&lt;input type="radio" name="rg-inv" aria-invalid="true" aria-describedby="rg-inv-err"&gt;&lt;span class="choice-card__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span&gt;&lt;span class="choice-card__title"&gt;Products&lt;/span&gt;&lt;span class="choice-card__text"&gt;A shop or online store: books, apparel, gifts, flowers, furniture.&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;&lt;label class="choice-card"&gt;&lt;input type="radio" name="rg-inv" aria-invalid="true" aria-describedby="rg-inv-err"&gt;&lt;span class="choice-card__icon" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="3" y="7" width="18" height="13" rx="2"/&gt;&lt;path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;span&gt;&lt;span class="choice-card__title"&gt;Services&lt;/span&gt;&lt;span class="choice-card__text"&gt;Advisors, brokers, lawyers, trades, photographers, speakers, lessons.&lt;/span&gt;&lt;/span&gt;&lt;/label&gt;&lt;/div&gt;&lt;span class="field__error" id="rg-inv-err"&gt;Choose what you offer.&lt;/span&gt;&lt;/fieldset&gt;</code></pre></details></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><fieldset><legend>What do you offer? <span class="optional">(required)</span></legend><div class="choice-cards"><label class="choice-card"><input type="radio" name="rg-th-l" checked><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/></svg></span><span><span class="choice-card__title">Products</span><span class="choice-card__text">A shop or online store: books, apparel, gifts, flowers, furniture.</span></span></label><label class="choice-card"><input type="radio" name="rg-th-l"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, brokers, lawyers, trades, photographers, speakers, lessons.</span></span></label></div><p class="field__help">Offer both? Pick the main one now and add the other after you’re verified.</p></fieldset></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><fieldset><legend>What do you offer? <span class="optional">(required)</span></legend><div class="choice-cards"><label class="choice-card"><input type="radio" name="rg-th-d" checked><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.4 0A3 3 0 0 0 20 9M10 20v-6h4v6"/></svg></span><span><span class="choice-card__title">Products</span><span class="choice-card__text">A shop or online store: books, apparel, gifts, flowers, furniture.</span></span></label><label class="choice-card"><input type="radio" name="rg-th-d"><span class="choice-card__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span><span><span class="choice-card__title">Services</span><span class="choice-card__text">Advisors, brokers, lawyers, trades, photographers, speakers, lessons.</span></span></label></div><p class="field__help">Offer both? Pick the main one now and add the other after you’re verified.</p></fieldset></div></div>
+      </div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Choice cards stack under 640px and sit two-up from 640px (<code>.choice-cards</code>).</li>
+        <li>Radio lists stay one per line at every width.</li>
+        <li>Chip radios wrap in a cluster with <code>--space-2</code> gaps.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Selected radios fill <code>--color-accent</code> with an ink dot (<code>--indicator-size</code>). A selected choice card gets an ink (<code>--color-fg-default</code>) 2px edge and a gold icon; in dark the edge turns light, so it stays the strongest edge on the page.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Native radios sharing a <code>name</code>, in a <code>&lt;fieldset&gt;</code> whose <code>&lt;legend&gt;</code> names the group. Follows the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/radio/">APG radio group pattern</a> for free.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Moves into the group, landing on the selected radio (or the first), then out of the group.</td></tr>
+        <tr><td><kbd>↓</kbd> / <kbd>→</kbd>, <kbd>↑</kbd> / <kbd>←</kbd></td><td>Move to and select the next / previous radio, wrapping.</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>Selects the focused radio if none is selected.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>Radio: the shared ring around the circle. Choice card: the ring goes on the card (<code>:has(input:focus-visible)</code>) with a 2px offset.</p>
+      <h3>Labelling</h3>
+      <p>Each radio is wrapped by its label; a card's title and text are both inside the label, so the text is part of the name. Group errors use <code>aria-describedby</code> on each radio and <code>aria-invalid</code>.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Radio edge</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Selected dot</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Selected edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Card title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Card text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Focus ring on page</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Radio edge</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Selected dot</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Selected edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Card title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Card text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Focus ring on page</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Fill and edge transition over <code>--duration-fast</code>, zeroed under reduced motion.</p>
+      <h3>Touch</h3>
+      <p>Radio rows are at least 24px; choice cards are at least 72px tall and full width on phones.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Legends ask the question (“How would you like to get it?”).</li>
+        <li>Options are parallel and short; put the cost or consequence in the description.</li>
+        <li>Order options by likelihood or naturally (sizes S → 2XL, times early → late).</li>
+        <li>Select a default only when it is safe; never default a report reason.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><fieldset><legend>How would you like to get it?</legend><label class="choice"><input type="radio" name="rg-do" checked><span class="choice__text">Ship to me<small>$9 flat</small></span></label><label class="choice"><input type="radio" name="rg-do"><span class="choice__text">Pick up in Leslieville<small>Free</small></span></label></fieldset></div><figcaption>Cost in the description, where it helps the choice.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><fieldset><legend>Delivery</legend><label class="choice"><input type="radio" name="rg-dont"><span class="choice__text">Ship to me ($9 flat, Canada Post, 3–6 business days, tracked)</span></label><label class="choice"><input type="radio" name="rg-dont"><span class="choice__text">Pick up</span></label></fieldset></div><figcaption>Everything crammed into the label; options no longer scan as a pair.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><fieldset><legend>What’s wrong?</legend><label class="choice"><input type="radio" name="rg-do2"><span class="choice__text">It isn’t a real business</span></label><label class="choice"><input type="radio" name="rg-do2"><span class="choice__text">Something else</span></label></fieldset></div><figcaption>No default for a report reason.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><fieldset><legend>Time</legend><div class="cluster"><label class="chip" style="position: relative;"><input type="radio" name="rg-dont2" class="visually-hidden" checked>10:00 a.m.</label><label class="chip" style="position: relative;"><input type="radio" name="rg-dont2" class="visually-hidden">1:30 p.m.</label></div></fieldset></div><figcaption>Chip radios with no selected look: the book-meeting mock checks 10:00 a.m. but both chips look the same.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Radio fill / edge</td><td><code>--color-bg-surface</code> / <code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr>
+          <tr><td>Selected fill / edge / dot</td><td><code>--color-accent</code> / <code>--color-accent-border</code> / <code>--color-fg-on-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td></tr>
+          <tr><td>Dot size</td><td><code>--indicator-size</code></td><td colspan="2"><span data-token="--indicator-size"></span></td></tr>
+          <tr><td>Card edge / hover</td><td><code>--color-border-strong</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Selected card edge</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Card radius / padding</td><td><code>--radius-lg</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--radius-lg"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Card icon / selected icon</td><td><code>--color-bg-subtle</code> / <code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
+          <tr><td>Card icon size</td><td><code>--avatar-size-md</code></td><td colspan="2"><span data-token="--avatar-size-md"></span></td></tr>
+          <tr><td>Invalid edge</td><td><code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
+          <tr><td>Card gap</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;What do you offer? &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/legend&gt;
+  &lt;div class="choice-cards"&gt;
+    &lt;label class="choice-card"&gt;
+      &lt;input type="radio" name="offer" value="products" checked&gt;
+      &lt;span class="choice-card__icon" aria-hidden="true"&gt;&lt;svg class="icon"&gt;…&lt;/svg&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;span class="choice-card__title"&gt;Products&lt;/span&gt;&lt;span class="choice-card__text"&gt;A shop or online store…&lt;/span&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    …
+  &lt;/div&gt;
+&lt;/fieldset&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.choice</code> + <code>type="radio"</code></td><td>Radio row.</td></tr>
+        <tr><td><code>.choice-cards</code></td><td>Grid of cards, two-up from 640px.</td></tr>
+        <tr><td><code>.choice-card</code></td><td>Card radio; native input stretched transparent over it.</td></tr>
+        <tr><td><code>.choice-card__icon</code> / <code>__title</code> / <code>__text</code></td><td>Card parts.</td></tr>
+        <tr><td><code>data-state="hover|focus|checked|invalid|disabled"</code> on the card</td><td>Documentation only.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/list-business/default.html">pages/list-business/default</a> (choice cards)</li>
+        <li><a href="../../mocks/pages/list-business/invalid.html">pages/list-business/invalid</a> (choice cards in an invalid form)</li>
+        <li><a href="../../mocks/dialogs/order-request/default.html">dialogs/order-request/default</a> (radios with descriptions)</li>
+        <li><a href="../../mocks/dialogs/report-listing/default.html">dialogs/report-listing/default</a> (report reason)</li>
+        <li><a href="../../mocks/dialogs/book-meeting/default.html">dialogs/book-meeting/default</a> (time-slot chip radios)</li>
+        <li><a href="../../mocks/pages/product/default.html">pages/product/default</a> (size chip radios)</li>
+      </ul>
+      <p>Drift fixed during extraction: time slots and sizes are <code>label.chip</code> elements wrapping a visually hidden radio, each with <code>style="position: relative"</code> (55 times), and the chip CSS has no rule for a checked radio inside it, so the selected slot looks unselected and keyboard focus is invisible. The system documents them as radios and proposes <code>.chip:has(input:checked)</code> and <code>.chip:has(input:focus-visible)</code> rules. The report-listing legend marker used <code>class="optional text-muted"</code>; <code>.optional</code> alone is enough.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

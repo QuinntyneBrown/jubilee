@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text field — Jubilee design system</title>
+<meta name="description" content="Single-line text inputs: text, e-mail, password with a show toggle, search, native date, prefix add-ons and a character counter, in every state.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Inputs</p>
+      <h1>Text field</h1>
+      <p class="ds-lead">A text field takes one line of typed input: a name, an e-mail, a price, a day. It is always inside a form field with a visible label, except the search box, whose label is hidden but present.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;input&gt;</code></span><span class="ds-pill"><code>.input</code> on every form mock</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use a text field for short, free-form values. Use a <a href="../components/textarea.html">Textarea</a> for more than a sentence, a <a href="../components/select.html">Select</a> for a fixed list, and <a href="../components/radio-group.html">radios</a> for two to five visible options. The label, help, error and counter belong to the <a href="../components/form-field.html">Form field</a> around it.</p>
+      <ul>
+        <li><b>Text, e-mail, URL, number</b>: one <code>.input</code> with the right <code>type</code>, <code>autocomplete</code> and <code>inputmode</code>.</li>
+        <li><b>Password</b>: an <code>.input-group</code> with a Show toggle so members can check what they typed.</li>
+        <li><b>Search</b>: <code>.search</code> wraps the input with a leading icon inside a <code>role="search"</code> form.</li>
+        <li><b>Date</b>: the native date picker (book a meeting, request a quote); Jubilee does not ship a custom calendar.</li>
+        <li><b>Prefix add-on</b>: <code>.input-group .addon</code> for a fixed unit such as <code>$</code> on prices.</li>
+        <li><b>Read-only with action</b>: the share dialog's link field with a Copy button.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div class="field" style="width: 100%;"><label class="field__label" for="tf-an">One line on what you do <span class="optional">(required)</span></label><span class="field__help" id="tf-an-help">Shown under your name everywhere on Jubilee. 90 characters at most.</span><input class="input" id="tf-an" type="text" value="Unique &amp; custom Christian apparel, artworks &amp; gifts that bring joy" aria-describedby="tf-an-help tf-an-count"><div class="field__counter" id="tf-an-count">66 / 90</div></div>
+          <span class="ds-callout" style="left: 30%; top: 14%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 40%; top: 34%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 60%; top: 60%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 92%; top: 86%;" aria-hidden="true">4</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Label</b><small><code>.field__label</code> with a required/optional marker; see <a href="../components/form-field.html">Form field</a>.</small></div></li>
+          <li><div><b>Help</b><small><code>.field__help</code> before the input, linked by <code>aria-describedby</code>.</small></div></li>
+          <li><div><b>Input</b><small><code>.input</code>: 44px, <code>--radius-md</code>, hairline <code>--color-border-strong</code> edge (3:1), surface fill, body text.</small></div></li>
+          <li><div><b>Counter</b><small><code>.field__counter</code>, right-aligned caption, also in <code>aria-describedby</code>.</small></div></li>
+        </ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="field" style="width: 100%;"><label class="field__label" for="tf-email">E-mail <span class="optional">(required)</span></label><input class="input" id="tf-email" type="email" value="joanna.adeyemi@example.com" autocomplete="email" required></div>
+      </div>
+        <div class="ds-example__caption"><span>E-mail with <code>autocomplete="email"</code>; the phone keyboard shows @.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="tf-email"&gt;E-mail &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="tf-email" type="email" value="joanna.adeyemi@example.com" autocomplete="email" required&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="field" style="width: 100%;"><label class="field__label" for="tf-pw">Password <span class="optional">(required)</span></label><span class="field__help" id="tf-pw-help">At least 10 characters.</span><div class="input-group"><input class="input" id="tf-pw" type="password" value="longpassword1" autocomplete="new-password" aria-describedby="tf-pw-help" required><button class="btn" type="button" aria-pressed="false" aria-controls="tf-pw" aria-label="Show password"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Show</button></div></div>
+      </div>
+        <div class="ds-example__caption"><span>Password with a Show toggle. Pressing switches the input to <code>type="text"</code>, sets <code>aria-pressed="true"</code> and the label to Hide.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="tf-pw"&gt;Password &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;span class="field__help" id="tf-pw-help"&gt;At least 10 characters.&lt;/span&gt;&lt;div class="input-group"&gt;&lt;input class="input" id="tf-pw" type="password" value="longpassword1" autocomplete="new-password" aria-describedby="tf-pw-help" required&gt;&lt;button class="btn" type="button" aria-pressed="false" aria-controls="tf-pw" aria-label="Show password"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/&gt;&lt;circle cx="12" cy="12" r="3"/&gt;&lt;/svg&gt;Show&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <form class="search" role="search" action="../../mocks/pages/search/default.html" style="width: 100%;"><label class="visually-hidden" for="tf-q">Search businesses and products</label><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" id="tf-q" type="search" value="" placeholder="Plumber, lawyer, Bibles…"></form>
+      </div>
+        <div class="ds-example__caption"><span>Search: leading icon, hidden label, placeholder as an example query (not as the label).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;form class="search" role="search" action="../../mocks/pages/search/default.html" style="width: 100%;"&gt;&lt;label class="visually-hidden" for="tf-q"&gt;Search businesses and products&lt;/label&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="11" cy="11" r="7"/&gt;&lt;path d="m20 20-3.5-3.5"/&gt;&lt;/svg&gt;&lt;input class="input" id="tf-q" type="search" value="" placeholder="Plumber, lawyer, Bibles…"&gt;&lt;/form&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="form-grid form-grid--2" style="width: 100%;"><div class="field"><label class="field__label" for="tf-date">Day <span class="optional">(required)</span></label><input class="input" id="tf-date" type="date" value="2026-11-12" min="2026-11-10" required></div><div class="field"><label class="field__label" for="tf-price">Price <span class="optional">(required)</span></label><div class="input-group"><span class="addon">$</span><input class="input" id="tf-price" type="text" inputmode="decimal" value="185.00" required aria-describedby="tf-price-unit"><span class="addon" id="tf-price-unit">CAD</span></div></div></div>
+      </div>
+        <div class="ds-example__caption"><span>Native date with <code>min</code> set to today (Tue 10 Nov 2026); price with <code>$</code> prefix and CAD suffix add-ons.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="form-grid form-grid--2" style="width: 100%;"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="tf-date"&gt;Day &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="tf-date" type="date" value="2026-11-12" min="2026-11-10" required&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="tf-price"&gt;Price &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;div class="input-group"&gt;&lt;span class="addon"&gt;$&lt;/span&gt;&lt;input class="input" id="tf-price" type="text" inputmode="decimal" value="185.00" required aria-describedby="tf-price-unit"&gt;&lt;span class="addon" id="tf-price-unit"&gt;CAD&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="field" style="width: 100%;"><label class="field__label" for="tf-link">Link</label><div class="input-group"><input class="input" id="tf-link" type="text" value="https://jubilee.example/b/legacy-financial" readonly><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>Copy</button></div></div>
+      </div>
+        <div class="ds-example__caption"><span>Read-only value with an action (share dialog). Read-only fields use the sunken fill and stay focusable.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="tf-link"&gt;Link&lt;/label&gt;&lt;div class="input-group"&gt;&lt;input class="input" id="tf-link" type="text" value="https://jubilee.example/b/legacy-financial" readonly&gt;&lt;button class="btn btn--primary" type="button"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/&gt;&lt;/svg&gt;Copy&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>Medium (44px) is the default everywhere. Small (32px) is for inline toolbars such as Sort; large (48px) for the hero search on phones and the sign-in form.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <input class="input input--sm" type="text" aria-label="Small field" value="Small · 32px">
+        <input class="input" type="text" aria-label="Medium field" value="Medium · 44px">
+        <input class="input input--lg" type="text" aria-label="Large field" value="Large · 48px">
+      </div>
+        <div class="ds-example__caption"><span><code>.input--sm</code> / default / <code>.input--lg</code>; heights from <code>--control-height-*</code>.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;input class="input input--sm" type="text" aria-label="Small field" value="Small · 32px"&gt;
+&lt;input class="input" type="text" aria-label="Medium field" value="Medium · 44px"&gt;
+&lt;input class="input input--lg" type="text" aria-label="Large field" value="Large · 48px"&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Forced with <code>data-state</code>; real pages use <code>:hover</code>, <code>:focus-visible</code>, <code>disabled</code>, <code>readonly</code> and <code>aria-invalid="true"</code>. Inputs have no pressed look: pressing places the caret, so Active shows focus.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th><th scope="col">Read-only</th><th scope="col">Invalid</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Text</th><td><div class="ds-cell-wide"><input class="input" type="text" aria-label="Business name (text default)" value="Luzandre.com"></div></td><td><div class="ds-cell-wide"><input class="input" type="text" aria-label="Business name (text hover)" value="Luzandre.com" data-state="hover"></div></td><td><div class="ds-cell-wide"><input class="input" type="text" aria-label="Business name (text focus)" value="Luzandre.com" data-state="focus"></div></td><td><div class="ds-cell-wide"><input class="input" type="text" aria-label="Business name (text active)" value="Luzandre.com" data-state="focus"></div></td><td><div class="ds-cell-wide"><input class="input" type="text" aria-label="Business name (text disabled)" value="Luzandre.com" disabled></div></td><td><div class="ds-cell-wide"><input class="input" type="text" aria-label="Business name (text read-only)" value="Luzandre.com" readonly></div></td><td><div class="ds-cell-wide"><input class="input" type="text" aria-label="Business name (text invalid)" value="Luzandre.com" aria-invalid="true"></div></td></tr>
+          <tr><th scope="row">Search</th><td><div class="ds-cell-wide"><div class="search"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" type="search" aria-label="Search businesses and products (search default)" value="plumber"></div></div></td><td><div class="ds-cell-wide"><div class="search"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" type="search" aria-label="Search businesses and products (search hover)" value="plumber" data-state="hover"></div></div></td><td><div class="ds-cell-wide"><div class="search"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" type="search" aria-label="Search businesses and products (search focus)" value="plumber" data-state="focus"></div></div></td><td><div class="ds-cell-wide"><div class="search"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" type="search" aria-label="Search businesses and products (search active)" value="plumber" data-state="focus"></div></div></td><td><div class="ds-cell-wide"><div class="search"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" type="search" aria-label="Search businesses and products (search disabled)" value="plumber" disabled></div></div></td><td><div class="ds-cell-wide"><div class="search"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" type="search" aria-label="Search businesses and products (search read-only)" value="plumber" readonly></div></div></td><td><div class="ds-cell-wide"><div class="search"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" type="search" aria-label="Search businesses and products (search invalid)" value="plumber" aria-invalid="true"></div></div></td></tr>
+          <tr><th scope="row">Prefix add-on</th><td><div class="ds-cell-wide"><div class="input-group"><span class="addon">$</span><input class="input" type="text" inputmode="decimal" aria-label="Price in CAD (prefix default)" value="34.00"></div></div></td><td><div class="ds-cell-wide"><div class="input-group"><span class="addon">$</span><input class="input" type="text" inputmode="decimal" aria-label="Price in CAD (prefix hover)" value="34.00" data-state="hover"></div></div></td><td><div class="ds-cell-wide"><div class="input-group"><span class="addon">$</span><input class="input" type="text" inputmode="decimal" aria-label="Price in CAD (prefix focus)" value="34.00" data-state="focus"></div></div></td><td><div class="ds-cell-wide"><div class="input-group"><span class="addon">$</span><input class="input" type="text" inputmode="decimal" aria-label="Price in CAD (prefix active)" value="34.00" data-state="focus"></div></div></td><td><div class="ds-cell-wide"><div class="input-group"><span class="addon">$</span><input class="input" type="text" inputmode="decimal" aria-label="Price in CAD (prefix disabled)" value="34.00" disabled></div></div></td><td><div class="ds-cell-wide"><div class="input-group"><span class="addon">$</span><input class="input" type="text" inputmode="decimal" aria-label="Price in CAD (prefix read-only)" value="34.00" readonly></div></div></td><td><div class="ds-cell-wide"><div class="input-group"><span class="addon">$</span><input class="input" type="text" inputmode="decimal" aria-label="Price in CAD (prefix invalid)" value="34.00" aria-invalid="true"></div></div></td></tr>
+          <tr><th scope="row">Date</th><td><div class="ds-cell-wide"><input class="input" type="date" aria-label="Day (date default)" value="2026-11-12"></div></td><td><div class="ds-cell-wide"><input class="input" type="date" aria-label="Day (date hover)" value="2026-11-12" data-state="hover"></div></td><td><div class="ds-cell-wide"><input class="input" type="date" aria-label="Day (date focus)" value="2026-11-12" data-state="focus"></div></td><td><div class="ds-cell-wide"><input class="input" type="date" aria-label="Day (date active)" value="2026-11-12" data-state="focus"></div></td><td><div class="ds-cell-wide"><input class="input" type="date" aria-label="Day (date disabled)" value="2026-11-12" disabled></div></td><td><div class="ds-cell-wide"><input class="input" type="date" aria-label="Day (date read-only)" value="2026-11-12" readonly></div></td><td><div class="ds-cell-wide"><input class="input" type="date" aria-label="Day (date invalid)" value="2026-11-12" aria-invalid="true"></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div class="stack" style="width: 100%;"><div class="field"><label class="field__label" for="tf-th-l">E-mail <span class="optional">(required)</span></label><input class="input" id="tf-th-l" type="email" value="joanna.adeyemi@example.com" autocomplete="email"></div><div class="field"><label class="field__label" for="tf-th2-l">Password <span class="optional">(required)</span></label><input class="input" id="tf-th2-l" type="password" value="short" aria-invalid="true" aria-describedby="tf-th2-err-l"><span class="field__error" id="tf-th2-err-l">Use at least 10 characters. This one has 5.</span></div></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="stack" style="width: 100%;"><div class="field"><label class="field__label" for="tf-th-d">E-mail <span class="optional">(required)</span></label><input class="input" id="tf-th-d" type="email" value="joanna.adeyemi@example.com" autocomplete="email"></div><div class="field"><label class="field__label" for="tf-th2-d">Password <span class="optional">(required)</span></label><input class="input" id="tf-th2-d" type="password" value="short" aria-invalid="true" aria-describedby="tf-th2-err-d"><span class="field__error" id="tf-th2-err-d">Use at least 10 characters. This one has 5.</span></div></div></div></div>
+      </div>
+      <ul>
+        <li><b>Invalid</b> thickens the border to 2px in <code>--color-danger-solid</code> (border plus inset shadow), so the change is not colour alone, and the field shows its error text.</li>
+        <li><b>Read-only</b> is used while a form submits (edit-listing <em>submitting</em>): values stay readable and selectable but cannot change.</li>
+        <li><b>Disabled</b> is rare: a field that does not apply is hidden or explained, not greyed out.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Inputs are fluid (<code>width: 100%</code>) and take their width from the form grid; two-column rows collapse to one under 640px.</li>
+        <li>Font size never drops below 16px on phones so iOS does not zoom on focus (the small size is desktop-only).</li>
+        <li>The top-bar search shows from 1024px; below that the search icon links to the search page, and the phone hero shows a large search instead.</li>
+        <li>Add-ons keep their width; the input shrinks. Long read-only values scroll inside the input, never overflow.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Each field reads four component tokens set from semantic ones: <code>--field-bg</code>, <code>--field-fg</code>, <code>--field-border</code>, <code>--field-border-hover</code>. On the brand band the top-bar search re-maps them to on-brand tokens and takes the pill radius.</p>
+      <pre><code>.topbar--ink .search .input { background: var(--color-bg-on-brand-subtle); border-color: var(--color-border-on-brand); color: var(--color-fg-on-brand); }</code></pre>
+      <p>In dark, inputs sit on the dark surface with a lighter strong border; placeholder text uses <code>--color-fg-subtle</code>, which holds 4.5:1 in both themes.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Native <code>&lt;input&gt;</code> with the correct <code>type</code>. Search sits in a <code>&lt;form role="search"&gt;</code>. The password toggle is a toggle button (<a href="https://www.w3.org/WAI/ARIA/apg/patterns/button/">APG button pattern</a>) with <code>aria-pressed</code> and <code>aria-controls</code>. Native date inputs keep the browser's accessible picker.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Moves into the field; add-on buttons follow it.</td></tr>
+        <tr><td>Typing, <kbd>←</kbd> <kbd>→</kbd>, <kbd>Home</kbd> <kbd>End</kbd></td><td>Native editing.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Submits the form (search runs the query).</td></tr>
+        <tr><td><kbd>Esc</kbd> in search</td><td>Clears the query (native search behaviour).</td></tr>
+        <tr><td><kbd>↑</kbd> <kbd>↓</kbd> in date</td><td>Changes the focused day, month or year segment.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>A 2px <code>--color-focus-ring</code> outline at zero offset plus a matching border, so the ring hugs the field's <code>--radius-md</code> corners.</p>
+      <h3>Labelling</h3>
+      <p>Every field has a visible <code>&lt;label for&gt;</code>; the search label is visually hidden. Help, error and counter ids go in <code>aria-describedby</code>. Placeholders are examples, never labels. Use <code>autocomplete</code> tokens (<code>email</code>, <code>current-password</code>, <code>new-password</code>, <code>given-name</code>, <code>street-address</code>) for 1.3.5.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Value</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Placeholder</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Border on card</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Border in dialog</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface-raised" data-min="3"></span></div>
+        <div class="ds-pair"><span>Invalid border</span><span class="ds-pair__ratio" data-contrast="--color-danger-solid|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Error text</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Value</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Placeholder</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Border on card</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Border in dialog</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface-raised" data-min="3"></span></div>
+        <div class="ds-pair"><span>Invalid border</span><span class="ds-pair__ratio" data-contrast="--color-danger-solid|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Error text</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Border colour and shadow transition over <code>--duration-fast</code>; reduced motion zeroes it.</p>
+      <h3>Touch</h3>
+      <p>Medium and large fields are 44px and 48px tall and full width. The Show toggle is a 44px button. Small fields are pointer-only.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Labels are short nouns in sentence case: “E-mail”, “Business name”, “Price”. No colon.</li>
+        <li>Mark required and optional fields in words: “(required)”, “(optional)”.</li>
+        <li>Help text says what makes a good answer or a limit: “At least 10 characters.”</li>
+        <li>Placeholders, where used, are examples (“Plumber, lawyer, Bibles…”), never instructions.</li>
+        <li>Use Canadian formats: “$34.00”, dates as “Thu 12 Nov 2026” in text.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="tf-do1">E-mail</label><input class="input" id="tf-do1" type="email" value="" autocomplete="email"></div></div><figcaption>A visible label that stays when the member types.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><input class="input" type="email" placeholder="E-mail" aria-label="E-mail"></div><figcaption>The placeholder as label disappears on the first keystroke and fails contrast for many readers.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="tf-do2">Price <span class="optional">(required)</span></label><div class="input-group"><span class="addon">$</span><input class="input" id="tf-do2" type="text" inputmode="decimal" value="8.00"></div></div></div><figcaption>The unit as an add-on; the value is just the number.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="tf-dont2">Price (CAD)</label><input class="input" id="tf-dont2" type="text" value="$8.00 CAD"></div></div><figcaption>Unit typed into the value. The service-editor mock put the currency in the label and left members to guess whether to type the $.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Background / value</td><td><code>--color-bg-surface</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Border / hover</td><td><code>--color-border-strong</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Placeholder, search icon</td><td><code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr>
+          <tr><td>Focus ring and border</td><td><code>--color-focus-ring</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-focus-ring" data-swatch></i><span data-token="--color-focus-ring"></span></span></td></tr>
+          <tr><td>Invalid border</td><td><code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
+          <tr><td>Disabled fill / text / border</td><td><code>--color-bg-subtle</code> / <code>--color-fg-disabled</code> / <code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-disabled" data-swatch></i><span data-token="--color-fg-disabled"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Read-only fill</td><td><code>--color-bg-surface-sunken</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td></tr>
+          <tr><td>Add-on fill / text</td><td><code>--color-bg-subtle</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Height sm / md / lg</td><td><code>--control-height-sm</code> / <code>--control-height-md</code> / <code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-sm"></span> / <span data-token="--control-height-md"></span> / <span data-token="--control-height-lg"></span></td></tr>
+          <tr><td>Padding</td><td><code>--space-2</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-3"></span></td></tr>
+          <tr><td>Search icon inset</td><td><code>--space-10</code></td><td colspan="2"><span data-token="--space-10"></span></td></tr>
+          <tr><td>Radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
+          <tr><td>Border</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
+          <tr><td>Text</td><td><code>--text-body</code></td><td colspan="2"><span data-token="--text-body"></span></td></tr>
+          <tr><td>Transition</td><td><code>--duration-fast</code></td><td colspan="2"><span data-token="--duration-fast"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="field"&gt;
+  &lt;label class="field__label" for="password"&gt;Password &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;
+  &lt;span class="field__help" id="password-help"&gt;At least 10 characters.&lt;/span&gt;
+  &lt;div class="input-group"&gt;
+    &lt;input class="input" id="password" type="password" autocomplete="new-password" aria-describedby="password-help" required&gt;
+    &lt;button class="btn" type="button" aria-pressed="false" aria-controls="password" aria-label="Show password"&gt;Show&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;form class="search" role="search" action="/search"&gt;
+  &lt;label class="visually-hidden" for="q"&gt;Search businesses and products&lt;/label&gt;
+  &lt;svg class="icon" aria-hidden="true"&gt;…&lt;/svg&gt;&lt;input class="input" id="q" type="search"&gt;
+&lt;/form&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.input</code></td><td>Text field.</td></tr>
+        <tr><td><code>.input--sm</code> / <code>.input--lg</code></td><td>Size.</td></tr>
+        <tr><td><code>.input-group</code></td><td>Joins an input with add-ons or a button.</td></tr>
+        <tr><td><code>.input-group .addon</code></td><td>Fixed prefix or suffix (<code>$</code>, <code>CAD</code>).</td></tr>
+        <tr><td><code>.search</code></td><td>Search wrapper with leading icon.</td></tr>
+        <tr><td><code>aria-invalid="true"</code></td><td>Invalid state.</td></tr>
+        <tr><td><code>readonly</code> / <code>disabled</code></td><td>Read-only (sunken) / disabled.</td></tr>
+        <tr><td><code>data-state="hover|focus|invalid|disabled"</code></td><td>Documentation only.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/sign-up/invalid.html">pages/sign-up/invalid</a> (e-mail, password, invalid)</li>
+        <li><a href="../../mocks/pages/edit-listing/default.html">pages/edit-listing/default</a> (counter, URL)</li>
+        <li><a href="../../mocks/pages/search/default.html">pages/search/default</a> (search)</li>
+        <li><a href="../../mocks/dialogs/book-meeting/default.html">dialogs/book-meeting/default</a> (native date)</li>
+        <li><a href="../../mocks/dialogs/share-listing/default.html">dialogs/share-listing/default</a> (read-only with Copy)</li>
+        <li><a href="../../mocks/dialogs/service-editor/default.html">dialogs/service-editor/default</a> (price)</li>
+      </ul>
+      <p>Drift fixed during extraction: no password field in sign-in, sign-up or reset-password has a show toggle; the system adds one. Price fields put “(CAD)” in the label instead of an add-on, and <code>.input-group .addon</code> was defined but unused. Every input carries an empty <code>placeholder=""</code> (harmless, dropped in the docs). Book-meeting's date has no <code>min</code>, so past days were selectable; the docs set <code>min</code> to today. Raw <code>1px</code> borders and the <code>-1px</code> add-on overlap now use <code>--border-width-hairline</code>.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

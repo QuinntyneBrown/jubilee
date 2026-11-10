@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>List — Jubilee design system</title>
+<meta name="description" content="Lists in Jubilee: the kit list, the service and request rows, and the editable item list. Static, interactive and stacked forms, every state, both themes.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Data display</p>
+      <h1>List</h1>
+      <p class="ds-lead">Lists show a run of similar records one under another: services with a price and a Book button, requests waiting for a reply, items being added to a listing. They are the default way Jubilee shows a collection on a phone.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>&lt;ul&gt;</code></span><span class="ds-pill"><code>.rows</code> in 84 mock files</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use a list when each record is read on its own, top to bottom, with at most one or two actions. Use a <a href="../components/table.html">Table</a> when people compare records across columns, <a href="../components/card.html">cards</a> when a picture leads, and the specialised rows (<a href="../components/directory-row.html">Directory row</a>, <a href="../components/message-thread.html">Message thread</a>, <a href="../components/notification-item.html">Notification item</a>) for those surfaces.</p>
+      <ul>
+        <li><b>Rows</b> (<code>.rows</code> / <code>.row</code>) are Jubilee’s main list: a title, muted meta lines, an optional price and actions, divided by hairlines. Used for services, products, requests and bookings.</li>
+        <li><b>Stacked rows</b> (<code>.row--stack</code>) move the actions onto their own full-width line below 640px. Use them whenever a row has two buttons.</li>
+        <li><b>Free price</b> (<code>.row__price--free</code>) colours "Free" in the success tone; every other price is the default ink.</li>
+        <li><b>Kit list</b> (<code>.list</code> / <code>.list__item</code>) is the generic container. In the mocks <code>.list</code> wraps directory rows and message threads; <code>.list__item</code> is the plain item with an avatar, title and meta.</li>
+        <li><b>Item list</b> (<code>.item-list</code>) is the bordered, compact list inside forms where the person adds and removes entries (services on <em>List your business</em>, line items on an order request).</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+<ul class="rows"><li class="row row--stack"><span class="avatar" aria-hidden="true">SP</span><div class="row__body"><div class="row__title">Custom church team tee × 24</div><div class="row__meta">Order · Samuel Park · 8:15 a.m.</div><div class="row__meta">For Agincourt Community Church youth retreat</div></div><div class="row__actions"><a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Samuel Park">Decline</a><a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Samuel Park">Confirm</a></div></li></ul>
+          <span class="ds-callout" style="left: 3%; top: 40%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 22%; top: 18%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 22%; top: 55%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 80%; top: 40%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 50%; top: 96%;" aria-hidden="true">5</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Leading avatar (optional)</b><small>A 40px <a href="../components/avatar.html">Avatar</a> with initials, <code>aria-hidden</code> because the title already names the person.</small></div></li>
+          <li><div><b>Title</b><small><code>.row__title</code>: semibold <code>--font-size-md</code>, wraps rather than truncates (<code>overflow-wrap: anywhere</code>).</small></div></li>
+          <li><div><b>Meta lines</b><small><code>.row__meta</code>: one or two muted lines in <code>--text-body-sm</code>. Join facts with " · ".</small></div></li>
+          <li><div><b>Actions</b><small><code>.row__actions</code>: small buttons, secondary before primary, each with an <code>aria-label</code> naming the row.</small></div></li>
+          <li><div><b>Divider</b><small>Hairline <code>--color-border-default</code> under each row; <code>.rows</code> adds one on top.</small></div></li>
+        </ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <p>Pick the list by what the person does with each record.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+<ul class="rows"><li class="row"><div class="row__body"><div class="row__title">Discovery meeting</div><div class="row__meta">30 min · In person or video</div></div><span class="row__price row__price--free">Free</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Discovery meeting">Book</a></li><li class="row"><div class="row__body"><div class="row__title">Retirement &amp; RRSP review</div><div class="row__meta">60 min · Bring your statements</div></div><span class="row__price">Ask</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Retirement &amp; RRSP review">Book</a></li><li class="row"><div class="row__body"><div class="row__title">Estate &amp; legacy plan</div><div class="row__meta">Two sessions, written plan</div></div><span class="row__price">Ask</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Estate &amp; legacy plan">Book</a></li></ul>
+      </div>
+        <div class="ds-example__caption"><span>Service rows on Legacy Financial’s page: title, meta, price ("Free" in the success tone, "Ask" in ink) and one Book button.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="rows"&gt;&lt;li class="row"&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Discovery meeting&lt;/div&gt;&lt;div class="row__meta"&gt;30 min · In person or video&lt;/div&gt;&lt;/div&gt;&lt;span class="row__price row__price--free"&gt;Free&lt;/span&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Discovery meeting"&gt;Book&lt;/a&gt;&lt;/li&gt;&lt;li class="row"&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Retirement &amp;amp; RRSP review&lt;/div&gt;&lt;div class="row__meta"&gt;60 min · Bring your statements&lt;/div&gt;&lt;/div&gt;&lt;span class="row__price"&gt;Ask&lt;/span&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Retirement &amp;amp; RRSP review"&gt;Book&lt;/a&gt;&lt;/li&gt;&lt;li class="row"&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Estate &amp;amp; legacy plan&lt;/div&gt;&lt;div class="row__meta"&gt;Two sessions, written plan&lt;/div&gt;&lt;/div&gt;&lt;span class="row__price"&gt;Ask&lt;/span&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Estate &amp;amp; legacy plan"&gt;Book&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
+      <h3>Stacked rows with two actions</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+<ul class="rows"><li class="row row--stack"><span class="avatar" aria-hidden="true">SP</span><div class="row__body"><div class="row__title">Custom church team tee × 24</div><div class="row__meta">Order · Samuel Park · 8:15 a.m.</div><div class="row__meta">Needed by Fri 27 Nov</div></div><div class="row__actions"><a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Samuel Park">Decline</a><a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Samuel Park">Confirm</a></div></li><li class="row row--stack"><span class="avatar" aria-hidden="true">RM</span><div class="row__body"><div class="row__title">Gold cross stoneware mug × 2</div><div class="row__meta">Order · Ruth Mensah · Yesterday</div><div class="row__meta">Pickup in Leslieville</div></div><div class="row__actions"><a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Ruth Mensah">Decline</a><a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Ruth Mensah">Confirm</a></div></li></ul>
+      </div>
+        <div class="ds-example__caption"><span><code>.row--stack</code> on <em>My business</em>: under 640px the Decline / Confirm pair takes a full line and splits it evenly.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="rows"&gt;&lt;li class="row row--stack"&gt;&lt;span class="avatar" aria-hidden="true"&gt;SP&lt;/span&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Custom church team tee × 24&lt;/div&gt;&lt;div class="row__meta"&gt;Order · Samuel Park · 8:15 a.m.&lt;/div&gt;&lt;div class="row__meta"&gt;Needed by Fri 27 Nov&lt;/div&gt;&lt;/div&gt;&lt;div class="row__actions"&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Samuel Park"&gt;Decline&lt;/a&gt;&lt;a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Samuel Park"&gt;Confirm&lt;/a&gt;&lt;/div&gt;&lt;/li&gt;&lt;li class="row row--stack"&gt;&lt;span class="avatar" aria-hidden="true"&gt;RM&lt;/span&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Gold cross stoneware mug × 2&lt;/div&gt;&lt;div class="row__meta"&gt;Order · Ruth Mensah · Yesterday&lt;/div&gt;&lt;div class="row__meta"&gt;Pickup in Leslieville&lt;/div&gt;&lt;/div&gt;&lt;div class="row__actions"&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Ruth Mensah"&gt;Decline&lt;/a&gt;&lt;a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Ruth Mensah"&gt;Confirm&lt;/a&gt;&lt;/div&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
+      <h3>Owner rows with icon actions</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+<ul class="rows"><li class="row row--stack"><div class="row__body"><div class="row__title">Custom design consultation</div><div class="row__meta">30 min · Video</div></div><span class="row__price row__price--free">Free</span><div class="row__actions"><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/service-editor/edit.html" aria-label="Edit Custom design consultation"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/></svg></a><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-service/default.html" aria-label="Delete Custom design consultation"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></a></div></li><li class="row row--stack"><div class="row__body"><div class="row__title">Church merch package</div><div class="row__meta">Tees, mugs and totes for your congregation</div></div><span class="row__price">Ask</span><div class="row__actions"><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/service-editor/edit.html" aria-label="Edit Church merch package"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/></svg></a><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-service/default.html" aria-label="Delete Church merch package"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></a></div></li></ul>
+      </div>
+        <div class="ds-example__caption"><span>Naomi’s services on <em>My services</em>: edit and delete as ghost icon buttons.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="rows"&gt;&lt;li class="row row--stack"&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Custom design consultation&lt;/div&gt;&lt;div class="row__meta"&gt;30 min · Video&lt;/div&gt;&lt;/div&gt;&lt;span class="row__price row__price--free"&gt;Free&lt;/span&gt;&lt;div class="row__actions"&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/service-editor/edit.html" aria-label="Edit Custom design consultation"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-service/default.html" aria-label="Delete Custom design consultation"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;/div&gt;&lt;/li&gt;&lt;li class="row row--stack"&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Church merch package&lt;/div&gt;&lt;div class="row__meta"&gt;Tees, mugs and totes for your congregation&lt;/div&gt;&lt;/div&gt;&lt;span class="row__price"&gt;Ask&lt;/span&gt;&lt;div class="row__actions"&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/service-editor/edit.html" aria-label="Edit Church merch package"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-service/default.html" aria-label="Delete Church merch package"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;/div&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
+      <h3>Kit list</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+<ul class="list card card--list"><li><a class="list__item list__item--interactive" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">LF</span><span class="list__body"><span class="list__title truncate" style="display: block;">Legacy Financial</span><span class="list__meta truncate" style="display: block;">Trevor: Thursday at 10:00 works. See you then!</span></span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li><li><a class="list__item list__item--interactive" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">WW</span><span class="list__body"><span class="list__title truncate" style="display: block;">WaterWorks Plumbing &amp; Drains</span><span class="list__meta truncate" style="display: block;">We can come Saturday morning for the kitchen drain.</span></span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li><li class="list__item"><span class="avatar" aria-hidden="true">GT</span><span class="list__body"><span class="list__title" style="display: block;">Grace Toronto Church</span><span class="list__meta" style="display: block;">Pastor Daniel Okoro · your church reference</span></span></li></ul>
+      </div>
+        <div class="ds-example__caption"><span><code>.list</code> in a <code>.card--list</code>: interactive items are links (<code>.list__item--interactive</code>); the last item is static.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="list card card--list"&gt;&lt;li&gt;&lt;a class="list__item list__item--interactive" href="../../mocks/pages/conversation/default.html"&gt;&lt;span class="avatar" aria-hidden="true"&gt;LF&lt;/span&gt;&lt;span class="list__body"&gt;&lt;span class="list__title truncate" style="display: block;"&gt;Legacy Financial&lt;/span&gt;&lt;span class="list__meta truncate" style="display: block;"&gt;Trevor: Thursday at 10:00 works. See you then!&lt;/span&gt;&lt;/span&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="m9 6 6 6-6 6"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="list__item list__item--interactive" href="../../mocks/pages/conversation/default.html"&gt;&lt;span class="avatar" aria-hidden="true"&gt;WW&lt;/span&gt;&lt;span class="list__body"&gt;&lt;span class="list__title truncate" style="display: block;"&gt;WaterWorks Plumbing &amp;amp; Drains&lt;/span&gt;&lt;span class="list__meta truncate" style="display: block;"&gt;We can come Saturday morning for the kitchen drain.&lt;/span&gt;&lt;/span&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="m9 6 6 6-6 6"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;/li&gt;&lt;li class="list__item"&gt;&lt;span class="avatar" aria-hidden="true"&gt;GT&lt;/span&gt;&lt;span class="list__body"&gt;&lt;span class="list__title" style="display: block;"&gt;Grace Toronto Church&lt;/span&gt;&lt;span class="list__meta" style="display: block;"&gt;Pastor Daniel Okoro · your church reference&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
+      <h3>Item list in a form</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+<ul class="item-list"><li><span class="item-list__name">Wedding day coverage<br><span class="row__meta">8 hours · two photographers</span></span><span class="price">$2,400</span><button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Wedding day coverage"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></li><li><span class="item-list__name">Baptism or dedication<br><span class="row__meta">90 min</span></span><span class="price">$350</span><button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Baptism or dedication"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></li><li><a class="btn btn--link" href="../../mocks/dialogs/service-editor/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a service</a></li></ul>
+      </div>
+        <div class="ds-example__caption"><span><code>.item-list</code> on <em>List your business / services</em>: compact entries with a remove button and an add link last.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="item-list"&gt;&lt;li&gt;&lt;span class="item-list__name"&gt;Wedding day coverage&lt;br&gt;&lt;span class="row__meta"&gt;8 hours · two photographers&lt;/span&gt;&lt;/span&gt;&lt;span class="price"&gt;$2,400&lt;/span&gt;&lt;button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Wedding day coverage"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/li&gt;&lt;li&gt;&lt;span class="item-list__name"&gt;Baptism or dedication&lt;br&gt;&lt;span class="row__meta"&gt;90 min&lt;/span&gt;&lt;/span&gt;&lt;span class="price"&gt;$350&lt;/span&gt;&lt;button class="btn btn--icon btn--ghost btn--sm" type="button" aria-label="Remove Baptism or dedication"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="btn btn--link" href="../../mocks/dialogs/service-editor/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 5v14M5 12h14"/&gt;&lt;/svg&gt;Add a service&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>Rows have one size: <code>--space-4</code> vertical padding, which with a 32px button gives a row of about 64px. Kit list items use <code>--space-3</code> × <code>--space-4</code>; item-list entries are compact (<code>--space-2</code> × <code>--space-3</code>) because they sit inside a form field. Do not add a dense row; use a table when density matters.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Static rows have no states of their own; their buttons do. Interactive list items (links) have default, hover, focus, active and current. Forced here with <code>data-state</code> and <code>aria-current</code>.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Part</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Current</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Interactive item</th><td><ul class="list"><li><a class="list__item list__item--interactive" href="../../mocks/pages/conversation/default.html"><span class="avatar" aria-hidden="true">LF</span><span class="list__body"><span class="list__title truncate" style="display: block;">Legacy Financial</span><span class="list__meta truncate" style="display: block;">Thursday at 10:00 works</span></span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li></ul></td><td><ul class="list"><li><a class="list__item list__item--interactive" href="../../mocks/pages/conversation/default.html" data-state="hover"><span class="avatar" aria-hidden="true">LF</span><span class="list__body"><span class="list__title truncate" style="display: block;">Legacy Financial</span><span class="list__meta truncate" style="display: block;">Thursday at 10:00 works</span></span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li></ul></td><td><ul class="list"><li><a class="list__item list__item--interactive" href="../../mocks/pages/conversation/default.html" data-state="focus"><span class="avatar" aria-hidden="true">LF</span><span class="list__body"><span class="list__title truncate" style="display: block;">Legacy Financial</span><span class="list__meta truncate" style="display: block;">Thursday at 10:00 works</span></span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li></ul></td><td><ul class="list"><li><a class="list__item list__item--interactive" href="../../mocks/pages/conversation/default.html" data-state="hover"><span class="avatar" aria-hidden="true">LF</span><span class="list__body"><span class="list__title truncate" style="display: block;">Legacy Financial</span><span class="list__meta truncate" style="display: block;">Thursday at 10:00 works</span></span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li></ul></td><td><ul class="list"><li><a class="list__item list__item--interactive" href="../../mocks/pages/conversation/default.html" aria-current="page"><span class="avatar" aria-hidden="true">LF</span><span class="list__body"><span class="list__title truncate" style="display: block;">Legacy Financial</span><span class="list__meta truncate" style="display: block;">Thursday at 10:00 works</span></span><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a></li></ul></td></tr>
+          <tr><th scope="row">Row action</th><td><button class="btn btn--sm" type="button">Decline</button></td><td><button class="btn btn--sm" type="button" data-state="hover">Decline</button></td><td><button class="btn btn--sm" type="button" data-state="focus">Decline</button></td><td><button class="btn btn--sm" type="button" data-state="active">Decline</button></td><td><button class="btn btn--sm" type="button" disabled>Decline</button></td></tr>
+        </tbody>
+      </table></div>
+      <p>Active has no separate look on <code>.list__item</code>; it reuses hover. The row-action column shows <em>disabled</em> in place of current, since rows themselves cannot be disabled: disable or remove the action and say why in the meta line.</p>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><ul class="rows"><li class="row"><div class="row__body"><div class="row__title">Discovery meeting</div><div class="row__meta">30 min · In person or video</div></div><span class="row__price row__price--free">Free</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Discovery meeting">Book</a></li><li class="row"><div class="row__body"><div class="row__title">Retirement &amp; RRSP review</div><div class="row__meta">60 min · Bring your statements</div></div><span class="row__price">Ask</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Retirement &amp; RRSP review">Book</a></li><li class="row"><div class="row__body"><div class="row__title">Estate &amp; legacy plan</div><div class="row__meta">Two sessions, written plan</div></div><span class="row__price">Ask</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Estate &amp; legacy plan">Book</a></li></ul></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><ul class="rows"><li class="row"><div class="row__body"><div class="row__title">Discovery meeting</div><div class="row__meta">30 min · In person or video</div></div><span class="row__price row__price--free">Free</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Discovery meeting">Book</a></li><li class="row"><div class="row__body"><div class="row__title">Retirement &amp; RRSP review</div><div class="row__meta">60 min · Bring your statements</div></div><span class="row__price">Ask</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Retirement &amp; RRSP review">Book</a></li><li class="row"><div class="row__body"><div class="row__title">Estate &amp; legacy plan</div><div class="row__meta">Two sessions, written plan</div></div><span class="row__price">Ask</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Estate &amp; legacy plan">Book</a></li></ul></div></div>
+      </div>
+      <ul>
+        <li><b>Loading</b>: skeleton rows (<code>.skeleton--avatar</code>, two <code>.skeleton--text</code>, <code>.skeleton--btn.skeleton--btn-sm</code>) inside <code>.rows</code> with <code>aria-hidden="true"</code>, as <em>My business / loading</em> does.</li>
+        <li><b>Empty</b>: replace the list with an <a href="../components/empty-state.html">Empty state</a> that offers the next step ("Add a service").</li>
+        <li><b>Removing</b> from an item list moves focus to the next item’s remove button, or to "Add a service" when the list is empty.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Rows are single-line flex rows from 640px up. Below 640px <code>.row--stack</code> wraps: the actions take <code>flex-basis: 100%</code> and each button grows to share the line.</li>
+        <li>Titles wrap; meta lines may truncate with <code>.truncate</code> in kit lists and threads, never in service rows where the meta is the duration.</li>
+        <li>Prices never wrap (<code>white-space: nowrap</code>).</li>
+        <li>Item lists keep their compact layout at every width; the remove button stays at the end of the line.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Lists use semantic tokens only: <code>--color-border-default</code> dividers, <code>--color-fg-muted</code> meta, <code>--color-bg-subtle</code> hover, <code>--color-accent-subtle</code> current, <code>--color-success-fg</code> for free prices. Item lists add a <code>--color-border-strong</code> outline because they behave like a form field.</p>
+      <p>Dark mode swaps the tokens; "Free" stays readable at 4.5:1 on both surfaces.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A native <code>&lt;ul&gt;</code> of <code>&lt;li&gt;</code>; screen readers announce the count ("list, 4 items"). Interactive items are links inside the <code>&lt;li&gt;</code>. Do not add <code>role="listbox"</code>: these are navigation and content lists, not selection widgets. The relevant guidance is the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/">APG landmarks</a> and <a href="https://www.w3.org/WAI/ARIA/apg/patterns/link/">link pattern</a>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves to each interactive item or row action in order.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Follows an item link.</td></tr>
+        <tr><td><kbd>Enter</kbd>, <kbd>Space</kbd></td><td>Activates a row action or remove button.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>Interactive items take the shared ring on the whole item. Row actions take the button ring. After a remove, focus moves to the next sensible control; it is never lost to the page.</p>
+      <h3>Labelling</h3>
+      <p>The title is the item’s name. Row actions carry an <code>aria-label</code> naming the row ("Confirm request from Samuel Park", "Remove Baptism or dedication"). Decorative avatars are <code>aria-hidden</code>. A current item uses <code>aria-current="page"</code>.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Title on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Meta on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Free price on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Title on hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Title on current</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Item-list outline</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Title on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Meta on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Free price on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Title on hover</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Title on current</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Item-list outline</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Lists do not animate. Hover background changes are instant.</p>
+      <h3>Touch</h3>
+      <p>Interactive items are at least 44px tall. Row buttons are 32px with 8px between them; stacked rows make them full width on phones. Item-list remove buttons are 32px.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Titles name the thing: "Discovery meeting", "Custom church team tee × 24". Use × for quantities.</li>
+        <li>Meta joins facts with " · ": "Order · Samuel Park · 8:15 a.m.", "30 min · In person or video".</li>
+        <li>Prices: "Free", "Ask" or a CAD figure. Never "$0" or "Contact us".</li>
+        <li>Order lists by what the person needs next: oldest unanswered request first, services in the order the business set.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><ul class="rows"><li class="row row--stack"><span class="avatar" aria-hidden="true">RM</span><div class="row__body"><div class="row__title">Gold cross stoneware mug × 2</div><div class="row__meta">Order · Ruth Mensah</div><div class="row__meta">Pickup in Leslieville</div></div><div class="row__actions"><a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Ruth Mensah">Decline</a><a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Ruth Mensah">Confirm</a></div></li></ul></div><figcaption>Two buttons in a row: use <code>.row--stack</code> so they get a full line on phones.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><ul class="rows"><li class="row"><span class="avatar" aria-hidden="true">RM</span><div class="row__body"><div class="row__title">Gold cross stoneware mug × 2</div><div class="row__meta">Order · Ruth Mensah</div></div><div class="row__actions"><button class="btn btn--sm" type="button">Decline</button><button class="btn btn--sm btn--primary" type="button">Confirm</button></div></li></ul></div><figcaption>A plain row with two buttons squeezes the title to a few characters at 360px, and unnamed "Confirm" buttons repeat down the list.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><ul class="rows"><li class="row"><div class="row__body"><div class="row__title">Discovery meeting</div><div class="row__meta">30 min</div></div><span class="row__price row__price--free">Free</span><a class="btn btn--sm" href="../../mocks/dialogs/book-meeting/default.html" aria-label="Book Discovery meeting">Book</a></li></ul></div><figcaption>"Free" in the success tone, with a Book button named for the row.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><ul class="rows"><li class="row"><div class="row__body"><div class="row__title">Discovery meeting</div><div class="row__meta">30 min</div></div><span class="row__price">$0</span><button class="btn btn--sm" type="button">Book</button></li></ul></div><figcaption>"$0" reads as a mistake. Say "Free" and use <code>.row__price--free</code>.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Divider</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Divider width</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
+          <tr><td>Title / meta</td><td><code>--color-fg-default</code> / <code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Free price</td><td><code>--color-success-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td></tr>
+          <tr><td>Hover / current</td><td><code>--color-bg-subtle</code> / <code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
+          <tr><td>Item-list outline / surface</td><td><code>--color-border-strong</code> / <code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
+          <tr><td>Row padding</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
+          <tr><td>Kit item padding</td><td><code>--space-3</code> / <code>--space-4</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-4"></span></td></tr>
+          <tr><td>Item-list padding</td><td><code>--space-2</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-3"></span></td></tr>
+          <tr><td>Gap</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
+          <tr><td>Title type</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
+          <tr><td>Meta type</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Item-list radius</td><td><code>--radius-md</code></td><td colspan="2"><span data-token="--radius-md"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;ul class="rows"&gt;
+  &lt;li class="row row--stack"&gt;
+    &lt;span class="avatar" aria-hidden="true"&gt;SP&lt;/span&gt;
+    &lt;div class="row__body"&gt;
+      &lt;div class="row__title"&gt;Custom church team tee × 24&lt;/div&gt;
+      &lt;div class="row__meta"&gt;Order · Samuel Park · 8:15 a.m.&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="row__actions"&gt;
+      &lt;a class="btn btn--sm" href="/requests/482/decline" aria-label="Decline request from Samuel Park"&gt;Decline&lt;/a&gt;
+      &lt;a class="btn btn--sm btn--primary" href="/requests/482/confirm" aria-label="Confirm request from Samuel Park"&gt;Confirm&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.rows</code> / <code>.row</code></td><td>Jubilee row list and row.</td></tr>
+        <tr><td><code>.row__body</code> <code>.row__title</code> <code>.row__meta</code></td><td>Text block.</td></tr>
+        <tr><td><code>.row__price</code> <code>.row__price--free</code></td><td>Price; free in the success tone.</td></tr>
+        <tr><td><code>.row__actions</code></td><td>Action group at the end.</td></tr>
+        <tr><td><code>.row--stack</code></td><td>Actions wrap onto a full-width line below 640px.</td></tr>
+        <tr><td><code>.list</code> / <code>.list__item</code></td><td>Kit list and item.</td></tr>
+        <tr><td><code>.list__item--interactive</code></td><td>Link item with hover.</td></tr>
+        <tr><td><code>.list__body</code> <code>.list__title</code> <code>.list__meta</code></td><td>Kit item text.</td></tr>
+        <tr><td><code>.item-list</code> <code>.item-list__name</code></td><td>Bordered compact list inside a form.</td></tr>
+        <tr><td><code>aria-current="page"</code> / <code>data-state</code></td><td>Current item / forced state for docs.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/business/default.html">pages/business/default</a> (service rows with Free and Ask)</li>
+        <li><a href="../../mocks/pages/my-business/default.html">pages/my-business/default</a> (stacked request rows)</li>
+        <li><a href="../../mocks/pages/my-services/default.html">pages/my-services/default</a> (owner rows with icon actions)</li>
+        <li><a href="../../mocks/pages/list-business/services.html">pages/list-business/services</a> (item list)</li>
+        <li><a href="../../mocks/pages/messages/default.html">pages/messages/default</a> (.list of threads)</li>
+        <li><a href="../../mocks/dialogs/user-menu/default.html">dialogs/user-menu/default</a> (.list of directory rows)</li>
+      </ul>
+      <p>Drift fixed during extraction: <code>.list__item</code> is in the kit but no mock uses it; the mocks put <code>.dir-row</code> and <code>.thread</code> inside <code>.list</code>, so those keep their own dividers. Truncated meta lines used inline <code>style="display: block"</code> on spans throughout. The item list was spaced with an inline <code>margin-top</code>. Free prices were consistent (<code>.row__price--free</code>, 58 uses). One known CSS limitation, reported rather than patched: <code>.list__item:last-child</code> removes the divider from every item when the class sits on a link inside an <code>&lt;li&gt;</code> (each link is its own last child), so interactive kit lists lose their dividers; the demos show this.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>
