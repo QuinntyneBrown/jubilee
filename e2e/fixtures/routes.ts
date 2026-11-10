@@ -19,13 +19,21 @@ export type StubName =
   | 'business-loading'
   | 'business-error'
   | 'business-empty'
-  | 'business-edge';
+  | 'business-edge'
+  | 'shop-loading'
+  | 'shop-error'
+  | 'shop-empty';
 
 export interface ScreenRoute {
   app: string;
   mock: string;
   who: Who;
   stub?: StubName;
+  /**
+   * Opens this path first and follows its link to `app`, for a state that depends on what the
+   * app learnt from the list it was opened from.
+   */
+  via?: string;
 }
 
 export const routes = {
@@ -114,6 +122,27 @@ export const routes = {
     mock: 'pages/business/edge.html',
     who: 'member',
     stub: 'business-edge',
+  },
+  shop: { app: '/b/luzandre', mock: 'pages/shop/default.html', who: 'member' },
+  'shop.loading': {
+    app: '/b/luzandre',
+    mock: 'pages/shop/loading.html',
+    who: 'member',
+    stub: 'shop-loading',
+    via: '/c/shops',
+  },
+  'shop.error': {
+    app: '/b/luzandre',
+    mock: 'pages/shop/error.html',
+    who: 'member',
+    stub: 'shop-error',
+    via: '/c/shops',
+  },
+  'shop.empty': {
+    app: '/b/luzandre',
+    mock: 'pages/shop/empty.html',
+    who: 'member',
+    stub: 'shop-empty',
   },
   'not-found': { app: '/no-such-page', mock: 'pages/not-found/default.html', who: 'member' },
 } as const satisfies Record<string, ScreenRoute>;

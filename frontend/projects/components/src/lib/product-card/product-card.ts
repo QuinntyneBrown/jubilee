@@ -27,10 +27,14 @@ export interface ProductCardView {
       [icon]="product().tile.icon"
     ></div>
     <h3 class="biz-card__name">{{ product().name }}</h3>
-    <p class="biz-card__tagline">{{ product().shopName }}</p>
+    @if (showShop()) {
+      <p class="biz-card__tagline">{{ product().shopName }}</p>
+    }
     <p class="price">{{ product().priceCents | jbPrice: product().perUnit }}</p>
   `,
 })
 export class ProductCard {
   readonly product = input.required<ProductCardView>();
+  /** False on the shop's own pages, where the shop's name goes without saying. */
+  readonly showShop = input(true);
 }

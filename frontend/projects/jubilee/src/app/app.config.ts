@@ -5,7 +5,7 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import {
   DIRECTORY_API,
   LISTINGS_API,
@@ -24,7 +24,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(),
-    provideRouter(routes),
+    // "Shop products" scrolls to the products (L2-034 AC1).
+    provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     { provide: SESSION_API, useClass: HttpSessionApi },
     { provide: NAVIGATION_API, useClass: HttpNavigationApi },
     { provide: DIRECTORY_API, useClass: HttpDirectoryApi },

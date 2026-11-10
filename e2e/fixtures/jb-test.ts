@@ -29,6 +29,11 @@ export class Jb {
     }
     await this.signInAs(options.who ?? route.who, options.navigation);
     if (route.stub) await applyStub(this.page, route.stub);
+    if ('via' in route && route.via) {
+      await this.goto(route.via, options.theme, options.now);
+      await this.page.locator(`main a[href="${route.app}"]`).first().click();
+      return;
+    }
     await this.goto(route.app, options.theme, options.now);
   }
 

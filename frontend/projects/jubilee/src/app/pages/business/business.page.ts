@@ -12,14 +12,17 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LISTINGS_API, ListingPage, ReplyTimeBand } from 'api';
 import {
   BusinessCard,
+  CountPipe,
   EmptyState,
   Icon,
   MediaTile,
+  ProductCard,
   ServiceRow,
   VerifiedBusinessLabel,
   categoryTile,
 } from 'components';
 import { Subscription } from 'rxjs';
+import { ListingKindHints } from '../../services/listing-kind-hints';
 import { LoadState, errorReference } from '../../services/load-state';
 
 const REPLIES: Record<ReplyTimeBand, string> = {
@@ -49,9 +52,11 @@ interface DetailRow {
   imports: [
     RouterLink,
     BusinessCard,
+    CountPipe,
     EmptyState,
     Icon,
     MediaTile,
+    ProductCard,
     ServiceRow,
     VerifiedBusinessLabel,
   ],
@@ -64,10 +69,21 @@ export class BusinessPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly title = inject(Title);
+  private readonly hints = inject(ListingKindHints);
   private request?: Subscription;
   private slug = '';
 
   protected readonly state = signal<LoadState<ListingPage>>({ status: 'loading' });
+  private readonly slugValue = signal('');
+  protected readonly placeholders = [1, 2, 3, 4];
+
+  /** What the page calls the listing: a shop, or a business. Known before it loads when the
+   * listing was reached from a list (L2-034 AC4). */
+  protected readonly thing = computed(() => {
+    const state = this.state();
+    const kind = state.status === 'loaded' ? state.value.kind : this.hints.kindOf(this.slugValue());
+    return kind === 'shop' ? 'shop' : 'business';
+  });
 
   protected readonly tile = computed(() => {
     const state = this.state();
@@ -93,6 +109,7 @@ export class BusinessPage {
   constructor() {
     const params = this.route.paramMap.subscribe((map) => {
       this.slug = map.get('slug') ?? '';
+      this.slugValue.set(this.slug);
       this.load();
     });
     inject(DestroyRef).onDestroy(() => {
@@ -106,6 +123,8 @@ export class BusinessPage {
     this.state.set({ status: 'loading' });
     this.request = this.api.getListing(this.slug).subscribe({
       next: (listing) => {
+        this.hints.remember(listing.slug, listing.kind);
+        this.hints.rememberCategory(listing.related, listing.category.slug);
         this.state.set({ status: 'loaded', value: listing });
         this.title.setTitle(`${listing.name} · Jubilee`);
       },

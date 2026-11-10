@@ -6,6 +6,7 @@ import type { StubName } from './routes';
 const home = '**/api/directory/home';
 const categoryListings = '**/api/categories/*/listings?*';
 const legacyFinancial = '**/api/listings/legacy-financial';
+const luzandre = '**/api/listings/luzandre';
 
 /** The ProblemDetails the API sends when a directory read cannot be served (L2-118). */
 function unavailable(reference: string) {
@@ -102,6 +103,16 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return patchListing(page, legacyFinancial, (listing) => ({
         ...listing,
         ...listingFromMock('edge'),
+      }));
+    case 'shop-loading':
+      return page.route(luzandre, pending);
+    case 'shop-error':
+      return page.route(luzandre, (route) => route.fulfill(unavailable('JB-BIZ-503')));
+    case 'shop-empty':
+      return patchListing(page, luzandre, (listing) => ({
+        ...listing,
+        products: [],
+        productCount: 0,
       }));
     case 'category-not-found':
       return page.route(categoryListings, (route) =>

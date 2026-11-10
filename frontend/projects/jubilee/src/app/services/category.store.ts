@@ -13,6 +13,7 @@ import {
   parseCategoryQuery,
 } from 'api';
 import { Subscription } from 'rxjs';
+import { ListingKindHints } from './listing-kind-hints';
 import { LoadState, errorReference } from './load-state';
 
 /** One applied filter: its group and its value. */
@@ -31,6 +32,7 @@ export class CategoryStore {
   private readonly api = inject(DIRECTORY_API);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly hints = inject(ListingKindHints);
   private request?: Subscription;
   private slug = '';
 
@@ -73,6 +75,7 @@ export class CategoryStore {
     this.request = this.api.getCategory(this.slug, query).subscribe({
       next: (value) => {
         this.updating.set(false);
+        this.hints.rememberCategory(value.businesses, value.category.slug);
         this.currentState.set({ status: 'loaded', value });
         // The server replaces an out-of-range page with the nearest valid one (L2-026).
         if (value.page !== query.page) this.navigate({ ...query, page: value.page }, true);

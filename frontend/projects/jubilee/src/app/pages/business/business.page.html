@@ -2,8 +2,8 @@
 <a class="back-link" routerLink="/"><svg jb-icon name="arrow-left"></svg>Back to browse</a>
 @switch (current.status) {
   @case ('loading') {
-    <h1 class="visually-hidden">Loading this business</h1>
-    <p class="visually-hidden" role="status">Loading this business…</p>
+    <h1 class="visually-hidden">Loading this {{ thing() }}</h1>
+    <p class="visually-hidden" role="status">Loading this {{ thing() }}…</p>
     <div class="split" aria-hidden="true">
       <div><span class="skeleton skeleton--media"></span></div>
       <div class="stack">
@@ -19,24 +19,39 @@
     </div>
     <section class="section">
       <span class="skeleton skeleton--title"></span>
-      <ul class="rows" aria-hidden="true">
-        @for (placeholder of [1, 2, 3, 4]; track placeholder) {
-          <li class="row">
-            <div class="row__body">
-              <span class="skeleton skeleton--text skeleton--w50"></span>
-              <span class="skeleton skeleton--text skeleton--w70"></span>
-            </div>
-            <span class="skeleton skeleton--btn" style="width: 5rem"></span>
-          </li>
-        }
-      </ul>
+      @if (thing() === 'shop') {
+        <div style="margin-top: var(--space-4)">
+          <ul class="card-grid" aria-hidden="true">
+            @for (placeholder of placeholders; track placeholder) {
+              <li class="biz-card">
+                <span class="skeleton skeleton--square"></span>
+                <span class="skeleton skeleton--text skeleton--w70"></span>
+                <span class="skeleton skeleton--text"></span>
+                <span class="skeleton skeleton--text skeleton--w50"></span>
+              </li>
+            }
+          </ul>
+        </div>
+      } @else {
+        <ul class="rows" aria-hidden="true">
+          @for (placeholder of placeholders; track placeholder) {
+            <li class="row">
+              <div class="row__body">
+                <span class="skeleton skeleton--text skeleton--w50"></span>
+                <span class="skeleton skeleton--text skeleton--w70"></span>
+              </div>
+              <span class="skeleton skeleton--btn" style="width: 5rem"></span>
+            </li>
+          }
+        </ul>
+      }
     </section>
   }
   @case ('error') {
     <div
       jb-empty-state
       icon="alert"
-      heading="We couldn’t load this business"
+      [heading]="'We couldn’t load this ' + thing()"
       [level]="1"
       [error]="true"
     >
@@ -51,7 +66,9 @@
   }
   @case ('loaded') {
     @let listing = current.value;
+    @let isShop = listing.kind === 'shop';
     @let hasServices = listing.services.length > 0;
+    @let hasProducts = listing.products.length > 0;
     <div class="split" style="margin-top: var(--space-2)">
       <div>
         @if (tile(); as media) {
@@ -75,7 +92,11 @@
           </div>
         }
         <div class="detail-head__actions">
-          @if (hasServices) {
+          @if (isShop && hasProducts) {
+            <a class="btn btn--primary btn--lg" [routerLink]="[]" fragment="products"
+              ><svg jb-icon name="bag"></svg>Shop products</a
+            >
+          } @else if (!isShop && hasServices) {
             <a class="btn btn--primary btn--lg" [routerLink]="link('book')"
               ><svg jb-icon name="calendar"></svg>Book a meeting</a
             >
@@ -116,34 +137,79 @@
     </div>
     <div class="split">
       <div>
-        <section class="section" aria-labelledby="svc">
-          <div class="section-head"><h2 id="svc">Services</h2></div>
-          @if (hasServices) {
-            <ul class="rows">
-              @for (service of listing.services; track service.id) {
-                <li
-                  jb-service-row
-                  [service]="service"
-                  [actionLink]="link(service.action === 'book' ? 'book' : 'quote')"
-                ></li>
+        @if (isShop) {
+          <section class="section" aria-labelledby="products">
+            <div class="section-head">
+              <h2 id="products">Products</h2>
+              @if (hasProducts) {
+                <span class="text-caption"
+                  >{{ listing.productCount | jbCount }}
+                  {{ listing.productCount === 1 ? 'product' : 'products' }}</span
+                >
               }
-            </ul>
-          } @else {
-            <div
-              jb-empty-state
-              icon="calendar"
-              heading="No services listed yet"
-              [level]="3"
-              [compact]="true"
-            >
-              {{ listing.name }} is new on Jubilee and hasn’t added services. You can still message
-              them to ask what they offer.
-              <a slot="actions" class="btn btn--primary" [routerLink]="link('message')"
-                ><svg jb-icon name="message"></svg>Send a message</a
-              >
             </div>
+            @if (hasProducts) {
+              <ul class="card-grid card-grid--3">
+                @for (product of listing.products; track product.slug) {
+                  <li>
+                    <a
+                      jb-product-card
+                      [product]="product"
+                      [showShop]="false"
+                      [routerLink]="['/b', listing.slug, 'p', product.slug]"
+                    ></a>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <div jb-empty-state icon="bag" heading="No products yet" [level]="3" [compact]="true">
+                {{ listing.name }} is setting up shop. Message them to ask what’s coming.
+                <a slot="actions" class="btn btn--primary" [routerLink]="link('message')"
+                  ><svg jb-icon name="message"></svg>Send a message</a
+                >
+              </div>
+            }
+          </section>
+          @if (hasServices) {
+            <section class="section" aria-labelledby="custom">
+              <div class="section-head"><h2 id="custom">Custom work</h2></div>
+              <ul class="rows">
+                @for (service of listing.services; track service.id) {
+                  <li jb-service-row [service]="service" [actionLink]="link('quote')"></li>
+                }
+              </ul>
+            </section>
           }
-        </section>
+        } @else {
+          <section class="section" aria-labelledby="svc">
+            <div class="section-head"><h2 id="svc">Services</h2></div>
+            @if (hasServices) {
+              <ul class="rows">
+                @for (service of listing.services; track service.id) {
+                  <li
+                    jb-service-row
+                    [service]="service"
+                    [actionLink]="link(service.action === 'book' ? 'book' : 'quote')"
+                  ></li>
+                }
+              </ul>
+            } @else {
+              <div
+                jb-empty-state
+                icon="calendar"
+                heading="No services listed yet"
+                [level]="3"
+                [compact]="true"
+              >
+                {{ listing.name }} is new on Jubilee and hasn’t added services. You can still
+                message them to ask what they offer.
+                <a slot="actions" class="btn btn--primary" [routerLink]="link('message')"
+                  ><svg jb-icon name="message"></svg>Send a message</a
+                >
+              </div>
+            }
+          </section>
+        }
         @if (listing.about) {
           <section class="section" aria-labelledby="about">
             <h2 id="about">About</h2>

@@ -34,5 +34,9 @@ export const screens: {
   { key: 'business.error', screen: (page) => new BusinessPage(page) },
   { key: 'business.empty', screen: (page) => new BusinessPage(page) },
   { key: 'business.edge', screen: (page) => new BusinessPage(page) },
+  { key: 'shop', screen: (page) => new BusinessPage(page) },
+  { key: 'shop.loading', screen: (page) => new BusinessPage(page) },
+  { key: 'shop.error', screen: (page) => new BusinessPage(page) },
+  { key: 'shop.empty', screen: (page) => new BusinessPage(page) },
   { key: 'not-found', screen: (page) => new NotFoundPage(page) },
 ];

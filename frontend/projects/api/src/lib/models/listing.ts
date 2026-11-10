@@ -1,4 +1,4 @@
-import { BusinessCard, CategoryLink } from './directory';
+import { BusinessCard, CategoryLink, ProductCard } from './directory';
 
 /** Main offer of a listing; it picks the layout of the listing page. */
 export type ListingKind = 'services' | 'shop';
@@ -49,5 +49,8 @@ export interface ListingPage {
   coverPhoto: null;
   details: ListingDetails;
   services: ServiceRow[];
+  /** Every product of the shop; at most 50 are listed. */
+  productCount: number;
+  products: ProductCard[];
   related: BusinessCard[];
 }

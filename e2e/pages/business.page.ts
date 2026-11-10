@@ -18,6 +18,21 @@ export class ServiceRow {
   }
 }
 
+/** One product card (`a.product-card`). */
+export class ProductCardPart {
+  readonly name: Locator;
+  readonly shopName: Locator;
+  readonly price: Locator;
+  readonly badge: Locator;
+
+  constructor(readonly root: Locator) {
+    this.name = root.locator('.biz-card__name');
+    this.shopName = root.locator('.biz-card__tagline');
+    this.price = root.locator('.price');
+    this.badge = root.locator('.media__tag');
+  }
+}
+
 /** The listing page at /b/:slug, in its service business and shop layouts. */
 export class BusinessPage extends ShellPage implements Screen {
   readonly backLink: Locator;
@@ -41,6 +56,10 @@ export class BusinessPage extends ShellPage implements Screen {
   readonly serviceRows: Locator;
   readonly servicesEmpty: Locator;
   readonly about: Locator;
+  readonly products: Locator;
+  readonly productCount: Locator;
+  readonly productCards: Locator;
+  readonly productsEmpty: Locator;
   readonly details: Locator;
   readonly detailTerms: Locator;
   readonly detailValues: Locator;
@@ -78,6 +97,10 @@ export class BusinessPage extends ShellPage implements Screen {
     this.serviceRows = this.services.locator('li.row');
     this.servicesEmpty = this.services.locator('.empty');
     this.about = this.main.getByRole('region', { name: 'About' });
+    this.products = this.main.getByRole('region', { name: 'Products' });
+    this.productCount = this.products.locator('.section-head .text-caption');
+    this.productCards = this.products.locator('a.product-card');
+    this.productsEmpty = this.products.locator('.empty');
     this.details = this.main.getByRole('complementary', { name: 'Details' });
     this.detailTerms = this.details.locator('dt');
     this.detailValues = this.details.locator('dd');
@@ -95,6 +118,10 @@ export class BusinessPage extends ShellPage implements Screen {
 
   serviceRow(index: number): ServiceRow {
     return new ServiceRow(this.serviceRows.nth(index));
+  }
+
+  productCard(index: number): ProductCardPart {
+    return new ProductCardPart(this.productCards.nth(index));
   }
 
   relatedCard(index: number): BusinessCard {
