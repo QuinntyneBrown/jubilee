@@ -15,7 +15,7 @@ The slice uses two local terms.
 
 A draft is a `Listing` like any other; the stage sets it apart. `ListingStage`
 has the values `Draft`, `WaitingOnReference`, `ReadyToReview`,
-`NeedsADecision`, `ChangesRequested`, `Live`, `Paused` and `Declined`. Nothing
+`NeedsDecision`, `ChangesRequested`, `Live`, `Paused` and `Declined`. Nothing
 in a draft is public, and a draft save does not apply the required-field rules
 that submission applies. An unconfirmed member may save a draft; only
 submission is blocked (L2-005).

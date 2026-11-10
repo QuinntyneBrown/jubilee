@@ -70,6 +70,10 @@ class UtcDateTimeConverter {
   +ConvertFromProvider(value: DateTime): DateTime
 }
 
+class JubileeDbContext {
+  #ConfigureConventions(builder: ModelConfigurationBuilder): void
+}
+
 class TorontoTimeZone {
   +ToLocal(utc: DateTime): DateTime
   +ResolveLocal(local: DateTime): DateTime
@@ -89,5 +93,5 @@ EmailFormatter ..> TorontoTimeZone : uses
 EmailFormatter ..> IClock : reads now
 EmailFormatter ..> Money : formats
 EmailFormatter ..> MoneyStyle : takes
-UtcDateTimeConverter ..> IClock : same UTC basis
+JubileeDbContext ..> UtcDateTimeConverter : registers for each DateTime
 @enduml

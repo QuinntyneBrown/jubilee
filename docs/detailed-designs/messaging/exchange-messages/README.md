@@ -55,7 +55,8 @@ The feature is a vertical slice from the conversation page to the database and
   and one `OutgoingMessage` per pending send with a `SendStatus` of `Sending`,
   `WaitingToSend`, `Sent` or `Failed`. A failed item shows "Not sent. Check your
   connection." with "Try again" and "Delete". `retry` resends with the stored
-  `idempotencyKey`.
+  `idempotencyKey`. `EventsHub` pushes `message.created` to both
+  participants and the store appends the message without a reload.
 - **`PhotoAttachmentService`** — Angular service. It accepts JPG and PNG files.
   A photo larger than `5 MB` is shrunk on the device to `5 MB` or less, with the
   warning toast "Photo is large. Shrinking it to 5 MB before sending." A file of
@@ -95,8 +96,6 @@ The feature is a vertical slice from the conversation page to the database and
   return date no notice is shown. The owner route is
   `PUT /api/listings/{id}/away`; the screen on which an owner sets the period is
   `<TO SUPPLY>`.
-- **`EventsHub`** — pushes `message.created` to both participants; the store
-  appends the message without a reload.
 
 ## Requirements
 

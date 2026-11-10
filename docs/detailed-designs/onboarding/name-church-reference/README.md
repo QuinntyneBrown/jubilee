@@ -21,7 +21,7 @@ The reference e-mail address is used only to send that listing's request and
 reminders (L2-146).
 
 The reference and the agreement are stored on a `Listing`. `ListingStage` has
-the values `Draft`, `WaitingOnReference`, `ReadyToReview`, `NeedsADecision`,
+the values `Draft`, `WaitingOnReference`, `ReadyToReview`, `NeedsDecision`,
 `ChangesRequested`, `Live`, `Paused` and `Declined`; this feature runs while
 the listing is in `Draft`.
 

@@ -27,9 +27,16 @@ enum ReportActionKind {
   RemoveListing
 }
 enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
   Live
+  Paused
   OnHold
   Removed
+  Declined
 }
 class Report {
   +Guid Id

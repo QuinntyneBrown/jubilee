@@ -16,12 +16,15 @@ title Class structure — View welcome page
 
 enum ListingStage {
   Draft
-  PendingReference
+  WaitingOnReference
   ReadyToReview
   NeedsDecision
   ChangesRequested
   Live
   Paused
+  OnHold
+  Removed
+  Declined
 }
 
 class Listing {

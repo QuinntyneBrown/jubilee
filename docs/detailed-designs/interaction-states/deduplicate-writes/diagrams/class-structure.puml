@@ -1,0 +1,99 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Deduplicate writes
+
+enum IdempotencyState {
+  InProgress
+  Completed
+}
+
+enum ReservationResult {
+  Reserved
+  InProgress
+  Completed
+  FingerprintMismatch
+}
+
+class IdempotencyRecord {
+  +string Key
+  +Guid Scope
+  +string RequestHash
+  +IdempotencyState State
+  +int StatusCode
+  +string ResponseBody
+  +Guid? ResourceId
+  +DateTime CreatedAtUtc
+  +DateTime ExpiresAtUtc
+  +Complete(statusCode: int, body: string, resourceId: Guid): void
+}
+
+interface IIdempotencyStore {
+  +TryReserveAsync(scope: Guid, key: string, requestHash: string): Task<Reservation>
+  +CompleteAsync(record: IdempotencyRecord): Task
+  +ReleaseAsync(scope: Guid, key: string): Task
+}
+
+class Reservation {
+  +ReservationResult Result
+  +IdempotencyRecord Existing
+}
+
+class RedisIdempotencyStore {
+  +TimeSpan Retention = 24 hours
+}
+
+class IdempotencyMiddleware {
+  +InvokeAsync(context: HttpContext, next: RequestDelegate): Task
+  -ComputeRequestHash(request: HttpRequest): string
+  -ReplayAsync(context: HttpContext, record: IdempotencyRecord): Task
+}
+
+class RequiresIdempotencyKeyAttribute {
+}
+
+class BookMeetingCommand {
+  +Guid MemberId
+  +Guid ListingId
+  +DateTime StartsAtUtc
+  +string IdempotencyKey
+}
+
+class BookMeetingCommandHandler {
+  +Handle(command: BookMeetingCommand, ct: CancellationToken): Task<RequestDto>
+}
+
+class Request {
+  +Guid Id
+  +RequestType Type
+  +RequestStatus Status
+  +DateTime CreatedAtUtc
+}
+
+class IdempotencyKeyFactory {
+  +create(): string
+}
+
+IdempotencyRecord --> IdempotencyState : has
+IdempotencyMiddleware --> IIdempotencyStore : uses
+IdempotencyMiddleware ..> RequiresIdempotencyKeyAttribute : acts on endpoints with
+IIdempotencyStore <|.. RedisIdempotencyStore
+IIdempotencyStore ..> Reservation : returns
+Reservation --> ReservationResult : has
+Reservation "1" --> "0..1" IdempotencyRecord : existing
+BookMeetingCommandHandler ..> BookMeetingCommand : handles
+BookMeetingCommandHandler --> Request : creates
+BookMeetingCommandHandler --> IdempotencyRecord : inserts with the resource
+IdempotencyRecord "1" --> "0..1" Request : created
+IdempotencyKeyFactory ..> BookMeetingCommand : key travels in
+@enduml

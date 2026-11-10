@@ -17,9 +17,9 @@ The slice uses four local terms.
 - **slug** — unique URL segment generated from the business name, such as `luzandre-com`
 - **listing flag** — marker on a listing that draws the verification team's attention on the review screen
 
-A listing on `/list` holds the stage `Draft`. `ListingStage` has eight values:
-`Draft`, `WaitingOnReference`, `ReadyToReview`, `NeedsADecision`,
-`ChangesRequested`, `Live`, `Paused` and `Declined`. Nothing entered here is
+A listing on `/list` holds the stage `Draft`. `ListingStage` has ten values:
+`Draft`, `WaitingOnReference`, `ReadyToReview`, `NeedsDecision`,
+`ChangesRequested`, `Live`, `Paused`, `OnHold`, `Removed` and `Declined`. Nothing entered here is
 public until the verification team approves the listing. Naming the church
 reference, saving the draft and submitting are separate features of the
 `onboarding` subsystem.

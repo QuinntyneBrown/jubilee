@@ -16,10 +16,16 @@ enum MemberRole {
   Admin
 }
 enum ListingStage {
+  Draft
   WaitingOnReference
   ReadyToReview
   NeedsDecision
   ChangesRequested
+  Live
+  Paused
+  OnHold
+  Removed
+  Declined
 }
 enum QueueFilter {
   ReadyToReview

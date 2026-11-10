@@ -81,7 +81,6 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-131` | `L1-018` | In lists, a time today shall show the time, yesterday shall show "Yesterday", a time within the last 7 days shall show the weekday and date, and an older time shall show the date, with the year added when it is not the current year. Money shall show whole dollars without cents, totals in dialogs with cents, and per-unit prices with "ea"; all times shall be stored in UTC and displayed in America/Toronto with daylight saving changes handled correctly. |
-| `L2-126` | `L1-018` | For each rule enforced in the browser, the server shall enforce the same rule and return the same message code. |
 
 ## Diagrams
 

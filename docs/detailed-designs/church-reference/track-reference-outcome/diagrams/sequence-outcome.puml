@@ -44,9 +44,9 @@ handler -> entity : ApplyReferenceOutcome(kind)
 alt "I know her and can vouch for her"
   entity --> handler : Stage ReadyToReview and reference Confirmed (L2-083)
 else "I know her, but I can't vouch for her business"
-  entity --> handler : Stage NeedsADecision and reference CantVouch (L2-083)
+  entity --> handler : Stage NeedsDecision and reference CantVouch (L2-083)
 else "I don't know this person"
-  entity --> handler : Stage NeedsADecision and reference DoesntKnow and not published (L2-083)
+  entity --> handler : Stage NeedsDecision and reference DoesntKnow and not published (L2-083)
 end
 handler -> db : Save listing and ListingStageChanged outbox message
 db --> handler : Commit result
@@ -67,7 +67,7 @@ alt Banner ReferenceAnswered
   page --> actor : Show "Your church reference answered. We're reviewing {business} now"
 else Banner ReferenceDoesNotKnow
   page --> actor : Show the danger banner "We couldn't verify {business}." with "Change reference"
-else Stage NeedsADecision after a can't-vouch answer
+else Stage NeedsDecision after a can't-vouch answer
   page --> actor : Keep the pending state without the answer
 end
 @enduml

@@ -15,10 +15,10 @@ The slice uses three local terms.
 - **silent reference** — church reference that has not answered 7 days after the request
 - **verification banner** — banner on My business that tells the owner where verification stands and which actions are open
 
-`ListingStage` has eight values: `Draft`, `WaitingOnReference`,
-`ReadyToReview`, `NeedsADecision`, `ChangesRequested`, `Live`, `Paused` and
+`ListingStage` has ten values: `Draft`, `WaitingOnReference`,
+`ReadyToReview`, `NeedsDecision`, `ChangesRequested`, `Live`, `Paused`, `OnHold`, `Removed` and
 `Declined`. This feature moves a listing out of `WaitingOnReference` to
-`ReadyToReview` or `NeedsADecision`, and back to `WaitingOnReference` when the
+`ReadyToReview` or `NeedsDecision`, and back to `WaitingOnReference` when the
 owner names a different reference.
 
 The owner learns the outcome and never the answer. The reference's answer text
@@ -36,9 +36,9 @@ with a scheduled job in `Jubilee Worker`.
 - **`ReferenceOutcomePolicy`** — domain rule that maps the answer.
   `KnowsAndVouches` ("I know her and can vouch for her") gives stage
   `ReadyToReview` and reference status `Confirmed`. `KnowsCannotVouch` ("I know
-  her, but I can't vouch for her business") gives `NeedsADecision` and
+  her, but I can't vouch for her business") gives `NeedsDecision` and
   `CantVouch`. `DoesNotKnow` ("I don't know this person") gives
-  `NeedsADecision` and `DoesntKnow`, and the listing is not published.
+  `NeedsDecision` and `DoesntKnow`, and the listing is not published.
 - **`Listing`** — domain entity. `ApplyReferenceOutcome` accepts an outcome
   only in `WaitingOnReference`. `ChangeReference` replaces the
   `ChurchReference` and returns the listing to `WaitingOnReference`.

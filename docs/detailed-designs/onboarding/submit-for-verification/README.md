@@ -14,10 +14,10 @@ The slice uses three local terms.
 - **listing stage** — position of a listing in its lifecycle, one value of `ListingStage`
 - **listing switcher** — control at the top of My business that lists each listing of the owner
 
-`ListingStage` has eight values: `Draft`, `WaitingOnReference`
+`ListingStage` has ten values: `Draft`, `WaitingOnReference`
 ("Waiting on reference"), `ReadyToReview` ("Ready to review"),
-`NeedsADecision` ("Needs a decision"), `ChangesRequested` ("Changes
-requested"), `Live`, `Paused` and `Declined`. A submitted listing shows the
+`NeedsDecision` ("Needs a decision"), `ChangesRequested` ("Changes
+requested"), `Live`, `Paused`, `OnHold`, `Removed` and `Declined`. A submitted listing shows the
 mark "Pending verification" to its owner until it is `Live`.
 
 Submission is a create request and carries an idempotency key, so a double

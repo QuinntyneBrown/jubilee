@@ -21,6 +21,9 @@ enum ListingStage {
   ChangesRequested
   Live
   Paused
+  OnHold
+  Removed
+  Declined
 }
 
 class Listing {

@@ -17,10 +17,12 @@ enum ListingStage {
   Draft
   WaitingOnReference
   ReadyToReview
-  NeedsADecision
+  NeedsDecision
   ChangesRequested
   Live
   Paused
+  OnHold
+  Removed
   Declined
 }
 

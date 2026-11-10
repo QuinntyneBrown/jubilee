@@ -11,11 +11,15 @@ skinparam class {
 }
 title Class structure — Review and approve a listing
 enum ListingStage {
+  Draft
   WaitingOnReference
   ReadyToReview
   NeedsDecision
   ChangesRequested
   Live
+  Paused
+  OnHold
+  Removed
   Declined
 }
 enum ChecklistItem {

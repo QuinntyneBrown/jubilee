@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Deduplicate writes
+
+Person(member, "Member", "Sends messages and bookings and quote and order requests and reports")
+Person(owner, "Owner", "Sends messages and submits a listing for verification")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Creates exactly one resource per intended create")
+
+Rel(member, jubilee, "Creates resources in")
+Rel(owner, jubilee, "Creates resources in")
+@enduml
