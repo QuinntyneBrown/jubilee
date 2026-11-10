@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Request an item
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "OrderRequestDialog", "Angular dialog", "Collects delivery choice and shipping address")
+  Component(est, "OrderEstimate", "Signal view model", "Recomputes item and shipping and estimated total")
+  Component(client, "RequestsApi", "Typed HTTP client", "Calls the order request endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes /api/requests endpoints")
+  Component(idem, "IdempotencyMiddleware", "ASP.NET Core middleware", "Returns the original result for a repeated key")
+  Component(handler, "RequestItemCommandHandler", "MediatR handler", "Checks stock and creates the order request")
+  Component(pricing, "OrderPricingService", "Domain service", "Recomputes prices and totals from stored data")
+  Component(product, "Product", "Domain entity", "Holds options and prices and stock")
+  Component(entity, "Request", "Domain entity", "Owns the request lifecycle")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Dispatches notification and mail and real-time event")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Products and requests and outbox")
+ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
+
+Rel(dialog, est, "Displays")
+Rel(dialog, client, "Loads defaults and sends through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, idem, "Runs behind")
+Rel(idem, cache, "Reads and writes keys")
+Rel(ctrl, handler, "Sends RequestItemCommand")
+Rel(handler, product, "Reads stock from")
+Rel(handler, pricing, "Prices with")
+Rel(pricing, product, "Reads prices from")
+Rel(handler, entity, "Creates")
+Rel(handler, db, "Persists request and outbox", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+@enduml

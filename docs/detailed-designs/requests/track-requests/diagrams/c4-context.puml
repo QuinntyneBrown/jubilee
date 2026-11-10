@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Track requests
+
+Person(member, "Member", "Follows bookings and quotes and orders")
+Person(owner, "Owner", "Confirms or declines or fulfils requests")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the reminder mail")
+
+Rel(member, jubilee, "Views requests and their progress using", "HTTPS")
+Rel(jubilee, owner, "Reminds once about an unanswered request")
+Rel(jubilee, email, "Sends mail via")
+Rel(email, owner, "Delivers mail to")
+@enduml

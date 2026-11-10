@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Handle incoming requests
+
+Person(owner, "Owner", "Sees and answers requests sent to the business")
+Person(member, "Member", "Sends requests and sees the Replies fast badge")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the new request mail")
+
+Rel(owner, jubilee, "Views incoming requests using", "HTTPS")
+Rel(member, jubilee, "Sends requests and views listings using", "HTTPS")
+Rel(jubilee, email, "Sends mail via")
+Rel(email, owner, "Delivers mail to")
+@enduml

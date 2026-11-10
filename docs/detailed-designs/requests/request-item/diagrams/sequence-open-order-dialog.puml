@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — open the dialog and estimate the total
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ProductPage" as page
+  participant "OrderRequestDialog" as dialog
+  participant "OrderEstimate" as est
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetOrderDefaultsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Request this item" with option and quantity
+page -> dialog : Open with product, option and quantity
+dialog -> client : getOrderDefaults(productId)
+client -> controller : GET /api/requests/orders/defaults?productId=
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send GetOrderDefaultsQuery
+handler -> db : Load delivery methods, threshold and the member's last address
+db --> handler : Stored data
+handler --> controller : OrderDefaultsDto
+controller --> client : 200 OK
+client --> dialog : Delivery methods, threshold, last address
+dialog --> actor : Show summary and delivery methods (L2-046)
+actor -> dialog : Choose "Ship to me" or "Pick up", or change quantity
+alt "Ship to me"
+  dialog -> dialog : Show "Shipping address" prefilled from the last address
+else "Pick up"
+  dialog -> dialog : Hide the address field and omit it from the request
+end
+dialog -> est : Recompute(option, quantity, delivery method)
+est -> est : Apply free shipping at or above the shop's threshold (L2-046)
+est --> dialog : Item, Shipping, Estimated total
+dialog --> actor : Show "Estimated total {amount} + tax"
+@enduml

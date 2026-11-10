@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Confirm a request
+
+Person(owner, "Owner", "Confirms a new request")
+Person(member, "Member", "Is told the request is confirmed")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the confirmation mail")
+
+Rel(owner, jubilee, "Confirms a request and may undo using", "HTTPS")
+Rel(jubilee, member, "Notifies of the confirmation")
+Rel(jubilee, email, "Sends mail via")
+Rel(email, member, "Delivers mail to")
+@enduml

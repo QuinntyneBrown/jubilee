@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — list requests
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestsPage" as page
+  participant "RequestsStore" as store
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ListRequestsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /requests
+page -> store : load(tab All)
+store -> client : list(tab, no cursor)
+client -> controller : GET /api/requests?tab=all
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send ListRequestsQuery for the caller
+handler -> db : Count per tab and read 20 rows, open first by soonest date, then closed newest first (L2-047)
+db --> handler : Rows and counts
+handler --> controller : RequestListPage
+controller --> client : 200 OK
+client --> store : Items, counts, next cursor
+store --> page : List state
+alt no requests at all
+  page --> actor : Show "Book, ask or order to get started" with "Browse businesses"
+else chosen tab has no rows
+  page --> actor : Show the tab message with "Show all requests"
+else rows exist
+  page --> actor : Show summary line, tabs with counts and rows with status badges (L2-043 labels)
+  opt more than 20 requests
+    actor -> page : Press "Show more"
+    page -> store : loadNext()
+    store -> client : list(tab, next cursor)
+    client -> controller : GET /api/requests?tab=all&cursor=
+    controller -> handler : Send ListRequestsQuery
+    handler -> db : Read the next 20 rows
+    db --> handler : Rows
+    handler --> controller : RequestListPage
+    controller --> client : 200 OK
+    client --> store : Next items
+    store --> page : Appended rows
+    page --> actor : Show 20 more rows
+  end
+end
+@enduml

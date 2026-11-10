@@ -1,0 +1,115 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Book a meeting
+
+enum RequestType {
+  Booking
+  Quote
+  Order
+}
+
+enum RequestStatus {
+  New
+  Confirmed
+  Declined
+  Cancelled
+  Completed
+}
+
+class Request {
+  +Guid Id
+  +RequestType Type
+  +RequestStatus Status
+  +Guid MemberId
+  +Guid ListingId
+  +Guid ConversationId
+  +DeclineReason? DeclineReason
+  +string? DeclineMessage
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? NudgedAt
+  +Confirm(actorId: Guid, now: DateTimeOffset): void
+  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
+  +Cancel(actorId: Guid, now: DateTimeOffset): void
+  +Complete(actorId: Guid?, now: DateTimeOffset): void
+  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
+  +MarkNudged(now: DateTimeOffset): void
+}
+
+class RequestTransition {
+  +Guid Id
+  +RequestStatus? From
+  +RequestStatus To
+  +Guid? ActorId
+  +DateTimeOffset OccurredAt
+  +DateTimeOffset? UndoableUntil
+}
+
+Request "1" *-- "1..*" RequestTransition : records
+Request --> RequestType : has
+Request --> RequestStatus : has
+
+enum MeetingMode {
+  Video
+  InPerson
+}
+
+class BookingDetails {
+  +Guid ServiceId
+  +DateTimeOffset StartsAt
+  +DateTimeOffset EndsAt
+  +MeetingMode Mode
+  +string? Location
+  +string? Note
+}
+
+class BookMeetingCommand {
+  +Guid ListingId
+  +Guid ServiceId
+  +DateOnly Day
+  +TimeOnly StartTime
+  +MeetingMode Mode
+  +string? Note
+}
+
+class BookMeetingCommandValidator {
+  +Validate(command: BookMeetingCommand): ValidationResult
+}
+
+class BookMeetingCommandHandler {
+  +Handle(command: BookMeetingCommand): Task<RequestCreatedResult>
+}
+
+interface IAvailabilityService {
+  +GetSlots(listingId: Guid, serviceId: Guid, day: DateOnly): Task<IReadOnlyList<TimeSlot>>
+  +IsOffered(listingId: Guid, serviceId: Guid, startsAt: DateTimeOffset): Task<bool>
+}
+
+class TimeSlot {
+  +TimeOnly Start
+  +TimeOnly End
+}
+
+class CalendarFileBuilder {
+  +Build(request: Request, businessName: string, requestUrl: Uri): string
+}
+
+Request "1" *-- "0..1" BookingDetails : owns
+BookingDetails --> MeetingMode : has
+BookMeetingCommandHandler ..> BookMeetingCommand : handles
+BookMeetingCommandValidator ..> BookMeetingCommand : validates
+BookMeetingCommandHandler ..> IAvailabilityService : checks slot
+BookMeetingCommandHandler --> Request : creates
+IAvailabilityService ..> TimeSlot : returns
+CalendarFileBuilder ..> Request : reads
+@enduml

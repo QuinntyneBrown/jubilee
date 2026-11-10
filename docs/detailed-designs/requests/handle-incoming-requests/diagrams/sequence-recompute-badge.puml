@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — recompute the badge
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Worker" #D1FADF
+  participant "ResponseTimeBadgeJob" as job
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ResponseTimeCalculator" as calc
+  participant "ResponseTimeStat" as stat
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessCard" as card
+end box
+actor "Member" as member
+job -> job : Start at least hourly, at most once per schedule across instances (L2-182)
+job -> db : Read live listings
+db --> job : Listings
+loop each listing
+  job -> calc : Compute(listingId, now)
+  calc -> db : Read first responses to requests and messages in the last 30 days
+  db --> calc : Response times
+  calc -> calc : Take the median and the count
+  alt median under 24 hours and at least 3 responses
+    calc -> stat : RepliesFast = true (L2-054)
+  else median 24 hours or more, or fewer than 3 responses
+    calc -> stat : RepliesFast = false (L2-054)
+  end
+  stat --> calc : Stat
+  calc --> job : ResponseTimeStat
+end
+job -> db : Save stats and record the last success
+db --> job : Commit result
+member -> card : View a listing
+card --> member : Show "Replies fast" badge when RepliesFast is true
+@enduml

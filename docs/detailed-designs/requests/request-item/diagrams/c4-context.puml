@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Request an item
+
+Person(member, "Member", "Asks a shop for a product")
+Person(owner, "Owner", "Receives the order request")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the new request mail")
+
+Rel(member, jubilee, "Sends an order request using", "HTTPS")
+Rel(jubilee, owner, "Shows the incoming request and notifies")
+Rel(jubilee, email, "Sends mail via")
+Rel(email, owner, "Delivers mail to")
+@enduml

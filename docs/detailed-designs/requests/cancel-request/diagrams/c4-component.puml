@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Cancel a request
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "RequestDetailPage", "Angular page", "Offers Cancel request on an open request")
+  Component(dialog, "CancelRequestDialog", "Angular dialog", "Confirms the cancel and shows the short-notice line")
+  Component(toast, "ToastService", "Angular service", "Shows the success toast with Undo for 8 seconds")
+  Component(client, "RequestsApi", "Typed HTTP client", "Calls the cancel and undo endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes /api/requests endpoints")
+  Component(cancel, "CancelRequestCommandHandler", "MediatR handler", "Applies the cancel transition")
+  Component(undo, "UndoCancelRequestCommandHandler", "MediatR handler", "Restores the previous status")
+  Component(entity, "Request", "Domain entity", "Owns the request lifecycle")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Tells the business of the cancel or its withdrawal")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Requests and conversations and outbox")
+
+Rel(page, dialog, "Opens")
+Rel(dialog, client, "Cancels through")
+Rel(dialog, toast, "Shows success toast with")
+Rel(toast, client, "Undoes through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, cancel, "Sends CancelRequestCommand")
+Rel(ctrl, undo, "Sends UndoCancelRequestCommand")
+Rel(cancel, entity, "Calls Cancel on")
+Rel(undo, entity, "Calls UndoLastTransition on")
+Rel(cancel, db, "Persists", "EF Core")
+Rel(undo, db, "Persists", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+@enduml

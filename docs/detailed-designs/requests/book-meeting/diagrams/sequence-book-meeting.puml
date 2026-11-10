@@ -1,0 +1,75 @@
+@startuml
+title UML sequence behaviour — send a booking request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BookMeetingDialog" as dialog
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "BookMeetingCommandHandler" as handler
+  participant "IAvailabilityService" as avail
+  participant "Request" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as outbox
+end box
+actor "Owner" as owner
+actor -> dialog : Choose a day
+dialog -> client : getAvailability(listingId, serviceId, day)
+client -> controller : GET /api/listings/{listingId}/availability
+controller -> avail : Compute slots (L2-044 day rule: not past, not closed, within 180 days)
+avail --> controller : Slots
+controller --> client : 200 slots
+client --> dialog : Slots
+actor -> dialog : Choose a time and press "Send request"
+dialog -> dialog : Validate day and time (L2-044)
+dialog -> client : bookMeeting(command, idempotency key)
+client -> controller : POST /api/requests/bookings
+controller -> controller : Authenticate, apply L2-005 confirmed-member policy, check L2-132 idempotency key
+alt unconfirmed member
+  controller --> client : 403 EMAIL_UNCONFIRMED
+  client --> dialog : Blocked
+else confirmed member
+  controller -> handler : Send BookMeetingCommand
+  handler -> avail : IsOffered(slot)
+  avail --> handler : Offered or not
+  alt slot no longer offered or invalid field
+    handler --> controller : Validation failure
+    controller --> client : 422 with per-field codes
+    client --> dialog : Field errors
+    dialog --> actor : Show "Choose a time."
+  else slot offered
+    handler -> entity : Create booking with status New (L2-043)
+    entity --> handler : Request and first RequestTransition
+    handler -> db : Save request, conversation card and outbox messages in one unit of work
+    db --> handler : Commit result
+    handler --> controller : RequestCreatedResult
+    controller --> client : 201 Created
+    client --> dialog : Request ID
+    dialog --> actor : Show "Request sent to {business}." with "Close" and "View request"
+    outbox -> db : Read pending outbox messages
+    db --> outbox : Messages
+    outbox --> owner : In-app notification, real-time event and e-mail (L2-044)
+  end
+end
+@enduml

@@ -1,0 +1,61 @@
+@startuml
+title UML sequence behaviour — load incoming requests
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "IncomingRequestsPage" as page
+  participant "IncomingRequestsStore" as store
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IncomingRequestsController" as controller
+  participant "ListingOwnerPolicy" as policy
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ListIncomingRequestsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /my-business/requests
+page -> store : load(tab New)
+store -> client : listIncoming(tab)
+client -> controller : GET /api/my-business/requests?tab=new
+controller -> controller : Authenticate the session cookie
+controller -> policy : Is the caller the owner or a co-owner of the listing (L2-133)
+policy --> controller : Allowed or refused
+alt caller is not the owner or a co-owner
+  controller --> client : 403 ProblemDetails (L2-051)
+  client --> store : Forbidden
+  store --> page : Forbidden
+  page --> actor : Show the forbidden page
+else caller owns the listing
+  controller -> handler : Send ListIncomingRequestsQuery
+  handler -> db : Count per tab and read rows newest first; Declined limited to 90 days
+  db --> handler : Rows and counts
+  handler --> controller : IncomingRequestsPageDto
+  controller --> client : 200 OK
+  client --> store : Rows and counts
+  store --> page : List state
+  alt no requests at all
+    page --> actor : Show "No requests yet." with "Share your listing"
+  else chosen tab is empty
+    page --> actor : Show the tab message, for Declined with "Show new requests"
+  else rows exist
+    page --> actor : Show "{n} new" summary, tabs with counts and rows with "Decline" and "Confirm" (L2-051)
+  end
+end
+@enduml
