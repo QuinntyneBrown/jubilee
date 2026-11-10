@@ -45,7 +45,17 @@ public sealed record ProductCardDto(
     string ShopName,
     int PriceCents,
     bool PerUnit,
-    ProductTileDto Tile);
+    ProductTileDto Tile)
+{
+    public static ProductCardDto From(Product product, Listing shop) => new(
+        product.Slug,
+        shop.Slug,
+        product.Name,
+        shop.Name,
+        product.PriceCents,
+        product.IsPerUnit,
+        new ProductTileDto(WireValues.Of(product.TileTint), WireValues.Of(product.TileIcon)));
+}
 
 /// <summary>The compact one-line entry inside a category group (L2-027 AC3).</summary>
 public sealed record DirectoryRowDto(string Slug, string Name, string Tagline, bool Verified)

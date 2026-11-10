@@ -170,6 +170,23 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
     }
 
     [Fact]
+    public async Task The_demo_luzandre_page_is_the_shop_mock()
+    {
+        var json = await factory.GetJson("/api/listings/luzandre");
+
+        Assert.Equal("shop", json.GetProperty("kind").GetString());
+        Assert.Equal(4, json.GetProperty("productCount").GetInt32());
+        Assert.Equal(
+            ["faith-heavyweight-tee-charcoal", "gold-cross-stoneware-mug", "custom-church-team-tee", "morning-mug-set-of-two"],
+            json.GetProperty("products").Slugs());
+        Assert.Equal(
+            ["Custom design consultation", "Church merch package"],
+            json.GetProperty("services").EnumerateArray().Select(s => s.GetProperty("name").GetString()));
+        Assert.Equal("few-hours", json.GetProperty("details").GetProperty("replies").GetString());
+        Assert.Equal(["christian-bookstores", "flower-creations"], json.GetProperty("related").Slugs());
+    }
+
+    [Fact]
     public async Task The_demo_legacy_financial_page_is_the_business_mock()
     {
         var json = await factory.GetJson("/api/listings/legacy-financial");

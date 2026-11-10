@@ -18,6 +18,9 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
     /// <summary>"More in {category}" shows at most this many other businesses (L2-040).</summary>
     public const int RelatedCount = 2;
 
+    /// <summary>A shop page lists at most this many products; the count covers them all (L2-153 AC3).</summary>
+    public const int MaxProducts = 50;
+
     public async Task<ListingPageDto> Handle(GetListingPageQuery request, CancellationToken cancellationToken)
     {
         var slug = request.Slug.Trim().ToLowerInvariant();
@@ -45,6 +48,14 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
         var services = await db.Services.AsNoTracking()
             .Where(s => s.ListingId == listing.Id)
             .OrderBy(s => s.Position)
+            .ToListAsync(cancellationToken);
+
+        var shopProducts = db.Products.AsNoTracking().Where(p => p.ListingId == listing.Id && !p.IsDeleted);
+        var productCount = await shopProducts.CountAsync(cancellationToken);
+        var products = await shopProducts
+            .OrderByDescending(p => p.CreatedAt)
+            .ThenBy(p => p.Slug)
+            .Take(MaxProducts)
             .ToListAsync(cancellationToken);
 
         var related = await ListingSortPolicy
@@ -75,6 +86,8 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
                 listing.CreatedAt,
                 WireValues.Of(listing.ReplyTimeBand)),
             [.. services.Select(ServiceRowDto.From)],
+            productCount,
+            [.. products.Select(p => ProductCardDto.From(p, listing))],
             [.. related.Select(BusinessCardDto.From)]);
     }
 

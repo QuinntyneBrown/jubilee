@@ -54,4 +54,6 @@ public sealed record ListingPageDto(
     string? CoverPhoto,
     ListingDetailsDto Details,
     IReadOnlyList<ServiceRowDto> Services,
+    int ProductCount,
+    IReadOnlyList<ProductCardDto> Products,
     IReadOnlyList<BusinessCardDto> Related);
