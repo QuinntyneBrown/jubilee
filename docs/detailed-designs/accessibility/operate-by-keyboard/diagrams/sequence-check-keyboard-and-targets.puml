@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour — Check keyboard operation and target size in CI
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+box "Delivery — CI pipeline" #E0F2FE
+  participant "CI pipeline" as pipeline
+  participant "Template lint" as lint
+  participant "keyboard.spec" as keyboard
+  participant "target-size.spec" as target
+end box
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Jubilee Web build" as app
+end box
+pipeline -> lint : Lint the Angular templates
+lint -> lint : Reject click handlers on non-interactive elements and positive tabindex
+lint --> pipeline : Passed or failed
+pipeline -> keyboard : Run for each screen in the mock manifest
+keyboard -> app : Press Tab until focus returns to the start
+app --> keyboard : Focused element and bounding box at each step
+keyboard -> keyboard : Assert Skip to content is first and order follows visual order (L2-158)
+keyboard -> keyboard : Assert the focus indicator is visible and not under the top bar, tab bar or a toast (L2-158)
+keyboard --> pipeline : Passed or failed
+pipeline -> target : Run at each viewport with touch emulation
+target -> app : Read the box of each interactive element
+app --> target : Widths and heights in CSS px
+target -> target : Assert each target is at least 24 × 24 CSS px (L2-162)
+target -> target : Assert primary controls on touch are at least 44 × 44 CSS px (L2-162)
+target --> pipeline : Passed or failed
+alt any check failed
+  pipeline -> pipeline : Fail the build and name the screen and element
+else all checks passed
+  pipeline -> pipeline : Continue to the next stage
+end
+@enduml

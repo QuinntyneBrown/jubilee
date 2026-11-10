@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Read the inbox
+
+Person(member, "Member", "Reads the inbox")
+Person(owner, "Owner", "Reads business conversations")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Messages page with list and search and mute")
+  Container(api, "Jubilee API", "ASP.NET Core", "Conversation list and mute endpoints and real-time hub")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and participants and messages")
+  ContainerDb(cache, "Cache", "Redis", "Sessions")
+}
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "GET /api/conversations and PUT or DELETE mute", "JSON/HTTPS")
+Rel(api, web, "Pushes message events", "WebSocket or server-sent events")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Checks session", "Redis protocol")
+@enduml

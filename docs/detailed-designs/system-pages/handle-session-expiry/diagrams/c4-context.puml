@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Handle session expiry
+Person(member, "Member", "Is signed out while a form or message is unsent")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(google, "Google Identity", "OpenID Connect sign-in for members who use Google")
+
+Rel(member, jubilee, "Is signed out by and signs in again to", "HTTPS")
+Rel(jubilee, google, "Delegates sign-in to when chosen", "OpenID Connect")
+@enduml

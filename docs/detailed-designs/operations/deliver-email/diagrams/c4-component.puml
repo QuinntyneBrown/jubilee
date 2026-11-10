@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Deliver e-mail
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(banner, "EmailUndeliverableBanner", "Angular component", "Shows the danger banner with Change e-mail")
+  Component(session, "SessionService", "Angular service", "Holds the e-mail deliverability of the member")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(hook, "EmailWebhooksController", "ASP.NET Core controller", "Receives POST /api/webhooks/email")
+  Component(sig, "WebhookSignatureVerifier", "Infrastructure service", "Verifies the provider signature")
+  Component(handler, "RecordEmailEventCommandHandler", "MediatR handler", "Marks an address undeliverable")
+  Component(hub, "EventsHub", "SignalR hub", "Pushes the deliverability change")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "SendEmailJob", "Hosted job", "Sends due deliveries and schedules retries")
+  Component(guard, "DeliverabilityGuard", "Application service", "Suppresses non-security e-mail to undeliverable addresses")
+  Component(renderer, "EmailTemplateRenderer", "Application service", "Renders HTML and plain-text parts")
+  Component(sender, "ProviderEmailSender", "IEmailSender adapter", "Calls the provider send API")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "EmailDelivery and SuppressedAddress and outbox")
+System_Ext(provider, "E-mail provider", "Transactional e-mail")
+
+Rel(job, db, "Reads due EmailDelivery rows from", "EF Core")
+Rel(job, guard, "Checks")
+Rel(guard, db, "Reads SuppressedAddress from", "EF Core")
+Rel(job, renderer, "Renders with")
+Rel(job, sender, "Sends through")
+Rel(sender, provider, "Calls send API of", "HTTPS")
+Rel(provider, hook, "Posts events to", "HTTPS")
+Rel(hook, sig, "Verifies with")
+Rel(hook, handler, "Sends RecordEmailEventCommand")
+Rel(handler, db, "Persists", "EF Core")
+Rel(hub, session, "Pushes event to", "WebSocket")
+Rel(session, banner, "Supplies state to")
+@enduml

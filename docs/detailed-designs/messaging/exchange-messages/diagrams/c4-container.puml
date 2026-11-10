@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Exchange messages
+
+Person(member, "Member", "Reads and sends messages")
+Person(owner, "Owner", "Replies and sets away status")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Conversation page with timeline and composer")
+  Container(sw, "Jubilee service worker", "Angular service worker", "Queues outgoing messages while offline")
+  Container(api, "Jubilee API", "ASP.NET Core", "Conversation and message and attachment endpoints and real-time hub")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches message events from the outbox")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and messages and attachments and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and idempotency keys")
+  ContainerDb(media, "Media storage", "Object storage + CDN", "Message photos behind signed URLs")
+}
+System_Ext(scanner, "Malware scanner", "Scans uploaded photos")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, sw, "Hands queued messages to")
+Rel(web, api, "Calls /api/conversations", "JSON/HTTPS")
+Rel(sw, api, "Sends queued messages", "JSON/HTTPS")
+Rel(api, web, "Pushes new messages", "WebSocket or server-sent events")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Checks session and idempotency key", "Redis protocol")
+Rel(api, media, "Stores photos and signs URLs", "HTTPS")
+Rel(api, scanner, "Scans uploads")
+Rel(worker, db, "Reads outbox", "EF Core")
+Rel(worker, api, "Publishes real-time events through the hub backplane", "Redis protocol")
+Rel(web, media, "Fetches photos by signed URL", "HTTPS")
+@enduml

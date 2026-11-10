@@ -1,0 +1,93 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Format dates and money
+
+enum MoneyStyle {
+  Plain
+  Total
+  PerUnit
+}
+
+enum ListDateForm {
+  TimeToday
+  Yesterday
+  WeekdayAndDate
+  Date
+  DateAndYear
+}
+
+class ListDatePipe {
+  +transform(instantUtc: string): string
+  -formFor(instant: Date, now: Date): ListDateForm
+}
+
+class MoneyPipe {
+  +transform(cents: number, style: MoneyStyle): string
+}
+
+class TorontoTime {
+  +timeZone: string = "America/Toronto"
+  +calendarDay(instant: Date): TorontoDay
+  +formatTime(instant: Date): string
+  +toUtc(day: string, time: string): Date
+}
+
+class TorontoDay {
+  +year: number
+  +month: number
+  +day: number
+  +weekday: string
+}
+
+class ClockService {
+  +now(): Date
+}
+
+class Money <<value object>> {
+  +long Cents
+  +string Currency
+  +Add(other: Money): Money
+  +Multiply(quantity: int): Money
+}
+
+interface IClock {
+  +DateTime UtcNow
+}
+
+class UtcDateTimeConverter {
+  +ConvertToProvider(value: DateTime): DateTime
+  +ConvertFromProvider(value: DateTime): DateTime
+}
+
+class TorontoTimeZone {
+  +ToLocal(utc: DateTime): DateTime
+  +ResolveLocal(local: DateTime): DateTime
+}
+
+class EmailFormatter {
+  +ListDate(utc: DateTime): string
+  +Money(amount: Money, style: MoneyStyle): string
+}
+
+ListDatePipe ..> TorontoTime : uses
+ListDatePipe ..> ClockService : reads now
+ListDatePipe ..> ListDateForm : selects
+TorontoTime ..> TorontoDay : returns
+MoneyPipe ..> MoneyStyle : takes
+EmailFormatter ..> TorontoTimeZone : uses
+EmailFormatter ..> IClock : reads now
+EmailFormatter ..> Money : formats
+EmailFormatter ..> MoneyStyle : takes
+UtcDateTimeConverter ..> IClock : same UTC basis
+@enduml

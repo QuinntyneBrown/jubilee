@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show the verified mark
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(card, "BusinessCard", "Angular component", "Shows one listing in a list")
+  Component(page, "BusinessPage and ShopPage", "Angular pages", "Show one public listing")
+  Component(mark, "VerifiedMark", "Angular component", "Success colour with icon and text Verified")
+  Component(label, "VerifiedBusinessLabel", "Angular component", "Verified Christian business link to Help")
+  Component(client, "ListingsApi", "Typed HTTP client", "Reads listing read models")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Exposes public listing endpoints")
+  Component(listq, "GetCategoryListingsQueryHandler", "MediatR handler", "Projects ListingCardDto")
+  Component(pageq, "GetPublicListingQueryHandler", "MediatR handler", "Projects ListingPageDto")
+  Component(spec, "VerifiedListingSpecification", "Query specification", "Stage is Live and ApprovedAt is set")
+  Component(listing, "Listing", "Domain entity", "Derives IsVerified")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+
+Rel(card, mark, "Passes Verified to")
+Rel(page, label, "Passes Verified to")
+Rel(card, client, "Receives ListingCardDto from")
+Rel(page, client, "Loads ListingPageDto through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, listq, "Sends GetCategoryListingsQuery")
+Rel(ctrl, pageq, "Sends GetPublicListingQuery")
+Rel(listq, spec, "Projects Verified with")
+Rel(pageq, spec, "Projects Verified with")
+Rel(listing, spec, "Shares the rule with")
+Rel(listq, db, "Reads", "EF Core")
+Rel(pageq, db, "Reads", "EF Core")
+@enduml

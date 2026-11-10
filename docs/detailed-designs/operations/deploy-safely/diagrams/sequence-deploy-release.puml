@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Deploy a merged change to production
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "On-call engineer" as actor
+box "Delivery — CI pipeline" #E0F2FE
+  participant "ReleaseGate" as gate
+  participant "DeployJob" as deploy
+  participant "MigrationRunner" as migrator
+end box
+box "Environment — Staging" #ECFDF3
+  participant "Staging slot" as staging
+end box
+box "Environment — Production" #D1FADF
+  participant "Idle slot" as idle
+  participant "Hosting load balancer" as lb
+  database "Jubilee database" as db
+end box
+actor -> gate : Merge change to main
+gate -> gate : Run unit, integration and acceptance tests
+gate -> gate : Run accessibility scans, budgets and security scans
+gate -> gate : Run MigrationCompatibilityCheck (L2-178)
+alt a gate job fails
+  gate --> actor : Stop pipeline and report the failing job
+else each gate job passes
+  gate -> deploy : Release artifact
+  deploy -> staging : Deploy and seed synthetic data
+  staging --> deploy : Smoke tests pass
+  deploy -> actor : Request production approval
+  actor --> deploy : Approve
+  deploy -> migrator : ApplyAsync(Expand)
+  migrator -> db : Apply backward-compatible migrations
+  db --> migrator : Applied
+  migrator --> deploy : Done
+  deploy -> idle : Deploy release to the idle slot
+  deploy -> idle : GET /health/ready and smoke tests
+  idle --> deploy : Ready
+  deploy -> lb : Switch traffic to the idle slot
+  lb --> deploy : Switched with no downtime
+  deploy --> actor : Release active and previous slot kept warm
+end
+@enduml

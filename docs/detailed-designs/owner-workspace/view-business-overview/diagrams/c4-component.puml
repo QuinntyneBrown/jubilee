@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View the business overview
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(shell, "OwnerWorkspaceShell", "Angular layout component", "Header and tabs with aria-current")
+  Component(page, "MyBusinessOverviewPage", "Angular page", "Renders the view for the listing stage")
+  Component(guard, "OwnerGuard", "Route guard", "Protects /my-business routes")
+  Component(store, "OwnerWorkspaceStore", "Signal store", "Holds workspace summary and overview")
+  Component(client, "OwnerWorkspaceApi", "Typed HTTP client", "Calls the owner workspace endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "OwnerWorkspaceController", "ASP.NET Core controller", "Exposes /api/owner endpoints")
+  Component(policy, "ListingOwnerPolicy", "Authorization policy", "Returns 403 unless the caller owns the listing")
+  Component(wsq, "GetOwnerWorkspaceQueryHandler", "MediatR handler", "Returns listing stage and stage detail")
+  Component(ovq, "GetBusinessOverviewQueryHandler", "MediatR handler", "Builds statistics and summaries")
+  Component(rec, "ListingViewRecorder", "Application service", "Counts views with L2-085 exclusions")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+ContainerDb(cache, "Cache", "Redis", "30 minute view keys")
+
+Rel(guard, store, "Reads workspace summary")
+Rel(shell, store, "Reads header and tab state")
+Rel(page, store, "Reads overview")
+Rel(store, client, "Loads through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, policy, "Applies")
+Rel(ctrl, wsq, "Sends GetOwnerWorkspaceQuery")
+Rel(ctrl, ovq, "Sends GetBusinessOverviewQuery")
+Rel(wsq, db, "Reads", "EF Core")
+Rel(ovq, db, "Reads", "EF Core")
+Rel(rec, cache, "Sets view key if absent")
+Rel(rec, db, "Increments ListingViewDaily", "EF Core")
+@enduml

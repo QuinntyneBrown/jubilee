@@ -1,0 +1,101 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Confirm in dialogs
+
+enum DialogSize {
+  Standard
+  Large
+}
+
+class DialogService {
+  -stack: DialogRef[]
+  +open(component: Type<T>, input: object, size: DialogSize): DialogRef
+}
+
+class DialogRef {
+  +opener: HTMLElement
+  +busy: Signal<boolean>
+  +close(result: unknown): void
+  +afterClosed(): Promise<unknown>
+}
+
+class DialogShell {
+  +size: DialogSize
+  +titleId: string
+  +busy: boolean
+  +requestClose(): void
+  -onEscape(): void
+  -onOutsidePress(): void
+}
+
+class ConfirmDialogConfig {
+  +title: string
+  +consequence: string
+  +safeLabel: string
+  +confirmLabel: string
+  +irreversible: boolean
+  +onConfirm: () => Promise<void>
+}
+
+class ConfirmDialog {
+  +config: ConfirmDialogConfig
+  +focusSafeChoice(): void
+  +confirm(): Promise<void>
+}
+
+class DirtyTracker {
+  +snapshot(values: object): void
+  +hasUnsavedInput(): boolean
+}
+
+class UndoAction {
+  +label: string = "Undo"
+  +windowSeconds: number = 8
+  +run: () => Promise<void>
+}
+
+class ToastService {
+  +success(message: string, undo: UndoAction): void
+}
+
+class CancelRequestCommand {
+  +Guid RequestId
+  +Guid MemberId
+}
+
+class CancelRequestCommandHandler {
+  +Handle(command: CancelRequestCommand, ct: CancellationToken): Task<RequestDto>
+}
+
+class Request {
+  +Guid Id
+  +RequestStatus Status
+  +RequestStatus? PreviousStatus
+  +DateTime? CancelledAtUtc
+  +Cancel(now: DateTime): void
+  +UndoCancel(now: DateTime): void
+}
+
+DialogService "1" *-- "*" DialogRef : stacks
+DialogService ..> DialogShell : creates
+DialogShell --> DialogSize : has
+DialogShell --> DialogRef : controls
+DialogShell ..> DirtyTracker : asks before close
+ConfirmDialog --> ConfirmDialogConfig : driven by
+DialogShell "1" o-- "0..1" ConfirmDialog : hosts
+ToastService ..> UndoAction : shows
+ConfirmDialog ..> CancelRequestCommand : confirm sends
+CancelRequestCommandHandler ..> CancelRequestCommand : handles
+CancelRequestCommandHandler --> Request : loads / mutates
+@enduml

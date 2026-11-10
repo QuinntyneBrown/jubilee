@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Open the download link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "AuthGuard" as guard
+  participant "DataDownloadPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "DataExportsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DownloadDataExportQueryHandler" as handler
+  participant "DataExport" as export
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IExportStore" as store
+  database "Jubilee database" as db
+end box
+actor -> guard : Open the e-mailed link
+alt Not signed in
+  guard --> actor : Send to sign-in and return to the same link afterwards
+else Signed in
+  guard --> page : Activate
+  page -> page : Read the token and remove it from the address bar
+  page -> client : downloadDataExport(token)
+  client -> controller : GET /api/account/data-exports/{token}
+  controller -> controller : Authenticate session
+  controller -> handler : Send DownloadDataExportQuery
+  handler -> db : Load LinkToken by SHA-256 hash and its DataExport
+  db --> handler : LinkToken and DataExport or none
+  handler -> export : IsDownloadableBy(session member and now)
+  export --> handler : Allowed or refused
+  alt Token unknown or older than 7 days or issued to another member (L2-018)
+    handler --> controller : Not found
+    controller --> client : 404 ProblemDetails and the attempt is logged (L2-133)
+    client --> page : Not available
+    page --> actor : Show that the link no longer works
+  else Same member within 7 days
+    handler -> store : OpenAsync(storage key)
+    store --> handler : Archive stream
+    handler --> controller : Stream
+    controller --> client : 200 application/json attachment with no-store
+    client --> page : File
+    page --> actor : Save the JSON archive
+  end
+end
+@enduml

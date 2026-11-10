@@ -1,0 +1,36 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Apply design tokens
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(tokens, "tokens.css", "Stylesheet", "Primitive and semantic custom properties for both themes")
+  Component(fonts, "fonts.css", "Stylesheet", "Archivo and Inter WOFF2 subsets with font-display swap and metric fallbacks")
+  Component(boot, "ThemeBootScript", "Inline script in index.html", "Sets data-theme on html before first paint")
+  Component(theme, "ThemeService", "Angular service", "Holds the preference and applies it without reload")
+  Component(menu, "UserMenu theme control", "Angular component", "Light, Dark and System choices in the account menu")
+  Component(account, "AccountApi", "Typed HTTP client", "PUT /api/account/theme")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AccountController", "ASP.NET Core controller", "Exposes the theme preference endpoint")
+  Component(handler, "SetThemePreferenceCommandHandler", "MediatR handler", "Saves the preference on the Member")
+}
+Container_Boundary(pipeline, "CI pipeline") {
+  Component(lint, "TokenLint", "Style lint rule set", "Fails on raw colour values and pixel spacing outside tokens")
+  Component(contrast, "ContrastCheck", "Build step", "Checks each text and background token pair in both themes")
+  Component(shift, "FontShiftCheck", "Build step", "Fails when the font swap shifts layout by more than 0.02")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Member.ThemePreference")
+
+Rel(boot, tokens, "Selects the theme block of")
+Rel(menu, theme, "Calls setPreference")
+Rel(theme, tokens, "Switches data-theme for")
+Rel(theme, account, "Saves the preference through")
+Rel(account, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends SetThemePreferenceCommand")
+Rel(handler, db, "Persists", "EF Core")
+Rel(fonts, tokens, "Supplies the faces named by")
+Rel(lint, tokens, "Reads the allowed token names from")
+Rel(contrast, tokens, "Reads colour pairs from")
+Rel(shift, fonts, "Measures")
+@enduml

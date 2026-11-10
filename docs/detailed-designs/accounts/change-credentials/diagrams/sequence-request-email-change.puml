@@ -1,0 +1,78 @@
+@startuml
+title UML sequence behaviour — Request an e-mail change
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ChangeEmailDialog" as dialog
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RequestEmailChangeCommandHandler" as handler
+  participant "IPasswordHasher" as hasher
+  participant "LinkToken" as token
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+participant "E-mail provider" as email
+actor -> dialog : Enter new address and current password
+dialog -> client : requestEmailChange(newEmail, currentPassword)
+client -> controller : POST /api/account/email-change
+controller -> controller : Authenticate session and check CSRF token
+controller -> handler : Send RequestEmailChangeCommand
+handler -> db : Load Member of the session
+db --> handler : Member
+handler -> hasher : Verify current password
+hasher --> handler : Match or no match
+alt Current password wrong
+  handler --> controller : CURRENT_PASSWORD_INCORRECT
+  controller --> client : 422 ProblemDetails
+  client --> dialog : Field error
+  dialog --> actor : Show the message under the password field
+else Address belongs to another account (L2-014)
+  handler -> db : Look up the new address
+  db --> handler : Found
+  handler --> controller : EMAIL_IN_USE
+  controller --> client : 422 ProblemDetails
+  client --> dialog : Field error
+  dialog --> actor : Show "An account already uses this e-mail."
+else Address free
+  handler -> token : Create with purpose ChangeEmail and 24-hour expiry (L2-140)
+  token --> handler : Token value and SHA-256 hash
+  handler -> db : Save LinkToken and 2 outbox messages in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Accepted
+  controller --> client : 202 Accepted
+  client --> dialog : Link sent
+  dialog --> actor : Tell the member to open the link sent to the new address
+  job -> db : Read undispatched outbox messages
+  db --> job : Confirmation link and notice
+  job -> email : Send link to the new address
+  email --> job : Accepted
+  job -> email : Send notice to the old address
+  email --> job : Accepted
+  job -> db : Mark messages dispatched
+  db --> job : Commit result
+end
+@enduml

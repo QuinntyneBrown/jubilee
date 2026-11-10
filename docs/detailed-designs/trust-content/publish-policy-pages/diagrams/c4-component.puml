@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Publish policy pages
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(pages, "StatementOfFaithPage TermsPage PrivacyPage", "Angular pages", "Render sections and Last updated date")
+  Component(help, "HelpPage", "Angular page", "Renders questions and opens the anchored one")
+  Component(disc, "HelpDisclosure", "Angular component", "Button with aria-expanded and an anchor")
+  Component(layout, "PolicyPageLayout", "Angular layout component", "Heading sections and date line")
+  Component(client, "ContentApi", "Typed HTTP client", "Calls /api/content")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ContentController", "ASP.NET Core controller", "Anonymous read and admin publish")
+  Component(read, "GetPublishedContentQueryHandler", "MediatR handler", "Returns the published version")
+  Component(pub, "PublishContentVersionCommandHandler", "MediatR handler", "Appends and publishes a version")
+  Component(doc, "ContentDocument", "Domain entity", "Owns the version history")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+ContainerDb(cache, "Cache", "Redis", "Published content")
+
+Rel(pages, layout, "Render inside")
+Rel(help, layout, "Renders inside")
+Rel(help, disc, "Renders one per question")
+Rel(pages, client, "Load through")
+Rel(help, client, "Loads through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, read, "Sends GetPublishedContentQuery")
+Rel(ctrl, pub, "Sends PublishContentVersionCommand")
+Rel(read, cache, "Reads and fills")
+Rel(read, db, "Reads on cache miss", "EF Core")
+Rel(pub, doc, "Calls Publish")
+Rel(pub, db, "Appends version", "EF Core")
+Rel(pub, cache, "Removes cached entry")
+@enduml

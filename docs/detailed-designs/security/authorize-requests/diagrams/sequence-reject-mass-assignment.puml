@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Reject fields the caller may not set
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionAuthenticationMiddleware" as auth
+  participant "StrictRequestBinder" as binder
+  participant "RequestsController" as controller
+  participant "ProblemDetailsMiddleware" as problem
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AuthorizationBehavior" as behavior
+  participant "UpdateRequestNoteCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+user -> client : Send crafted update with note and status
+client -> auth : PATCH /api/requests/{id}
+auth -> auth : Resolve session to ICurrentCaller
+auth -> binder : Bind body to UpdateRequestNoteRequest
+alt Body names a field outside the request record (status)
+  binder --> problem : Unknown field status
+  problem --> client : 400 ProblemDetails (L2-133 no mass assignment)
+  note over handler, db : No command is built. Nothing is changed.
+else Body holds only allowed fields
+  binder --> controller : UpdateRequestNoteRequest
+  controller -> controller : Apply L2-133 role check (MemberOnly)
+  controller -> behavior : Send UpdateRequestNoteCommand
+  behavior -> behavior : Apply L2-133 object-level check
+  behavior -> handler : Handle command
+  handler -> db : Save changes in one unit of work
+  db --> handler : Commit result
+  handler --> behavior : Typed result
+  behavior --> controller : Typed result
+  controller --> client : 204 No Content
+end
+client --> user : Result
+@enduml

@@ -1,0 +1,113 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Choose notification settings
+
+
+enum EmailCategory {
+  NewMessages
+  RequestUpdates
+  MeetingReminders
+  NewBusinesses
+  TipsForOwners
+  Security
+}
+
+enum EmailFrequency {
+  AsItHappens
+  DailySummary
+}
+
+enum EmailDelivery {
+  Immediate
+  Summary
+  Suppressed
+}
+
+class NotificationPreferences {
+  +Guid MemberId
+  +bool NewMessages
+  +bool RequestUpdates
+  +bool MeetingReminders
+  +bool NewBusinesses
+  +bool TipsForOwners
+  +EmailFrequency Frequency
+  +DateTime UpdatedAt
+  +{static} CreateDefault(memberId: Guid): NotificationPreferences
+  +Set(category: EmailCategory, enabled: bool, now: DateTime): void
+  +SetFrequency(frequency: EmailFrequency, now: DateTime): void
+  +IsEnabled(category: EmailCategory): bool
+}
+
+class ConsentRecord {
+  +Guid MemberId
+  +EmailCategory Category
+  +bool Granted
+  +string Method
+  +DateTime RecordedAt
+}
+
+class EmailDeliveryPolicy {
+  +Decide(preferences: NotificationPreferences, category: EmailCategory): EmailDelivery
+}
+
+class SummaryItem {
+  +Guid Id
+  +Guid MemberId
+  +EmailCategory Category
+  +string Payload
+  +DateTime OccurredAt
+}
+
+class UpdateNotificationPreferenceCommand {
+  +EmailCategory? Category
+  +bool? Enabled
+  +EmailFrequency? Frequency
+}
+
+class UpdateNotificationPreferenceCommandHandler {
+  +Handle(command: UpdateNotificationPreferenceCommand): Task<NotificationPreferencesDto>
+}
+
+class NotificationPreferencesDto {
+  +bool NewMessages
+  +bool RequestUpdates
+  +bool MeetingReminders
+  +bool NewBusinesses
+  +bool TipsForOwners
+  +EmailFrequency Frequency
+  +DateTime UpdatedAt
+}
+
+class DailySummaryJob {
+  +RunAsync(scheduledFor: DateTimeOffset): Task
+}
+
+class Member {
+  +Guid Id
+  +string Email
+}
+
+UpdateNotificationPreferenceCommandHandler ..> UpdateNotificationPreferenceCommand : handles
+UpdateNotificationPreferenceCommandHandler --> NotificationPreferences : loads / mutates
+UpdateNotificationPreferenceCommandHandler ..> NotificationPreferencesDto : returns
+Member "1" *-- "1" NotificationPreferences
+NotificationPreferences --> EmailFrequency : has
+NotificationPreferences "1" --> "*" ConsentRecord : records
+EmailDeliveryPolicy ..> NotificationPreferences : reads
+EmailDeliveryPolicy ..> EmailCategory : takes
+EmailDeliveryPolicy ..> EmailDelivery : returns
+SummaryItem --> EmailCategory : has
+Member "1" --> "*" SummaryItem : awaits
+DailySummaryJob ..> SummaryItem : gathers / deletes
+@enduml

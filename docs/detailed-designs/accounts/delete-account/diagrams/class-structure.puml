@@ -1,0 +1,117 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Delete account
+
+
+enum MemberStatus {
+  Active
+  Deleted
+  Erased
+}
+
+enum RequestStatus {
+  New
+  Confirmed
+  Declined
+  Cancelled
+  Completed
+}
+
+class Member {
+  +Guid Id
+  +string FirstName
+  +string LastName
+  +string Email
+  +MemberStatus Status
+  +DateTime? DeletedAt
+  +DateTime? EraseAfter
+  +Delete(now: DateTime): void
+  +Erase(now: DateTime): void
+}
+
+class Request {
+  +Guid Id
+  +Guid MemberId
+  +Guid ListingId
+  +RequestStatus Status
+  +bool IsOpen
+  +CancelForAccountDeletion(now: DateTime): void
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +bool IsPublic
+  +Unpublish(now: DateTime): void
+}
+
+class Message {
+  +Guid Id
+  +Guid ConversationId
+  +Guid? SenderId
+  +string Body
+  +string SenderDisplayName
+}
+
+class AuditEntry {
+  +Guid Id
+  +Guid ActorId
+  +string Action
+  +string Target
+  +DateTime OccurredAt
+  +string? Reason
+}
+
+class DeleteAccountCommand {
+  +string Confirmation
+}
+
+class DeleteAccountCommandValidator {
+  +Validate(command: DeleteAccountCommand): ValidationResult
+}
+
+class DeleteAccountCommandHandler {
+  +Handle(command: DeleteAccountCommand): Task<Result>
+}
+
+class DeletionImpactDto {
+  +string FullName
+  +string Email
+  +int ConversationCount
+  +int OpenRequestCount
+}
+
+class AccountErasureJob {
+  +RunAsync(now: DateTime): Task
+}
+
+interface ISessionStore {
+  +EndAll(memberId: Guid): Task
+}
+
+DeleteAccountCommandHandler ..> DeleteAccountCommand : handles
+DeleteAccountCommandValidator ..> DeleteAccountCommand : validates
+DeleteAccountCommandHandler --> Member : deletes
+DeleteAccountCommandHandler --> Request : cancels open
+DeleteAccountCommandHandler --> Listing : unpublishes
+DeleteAccountCommandHandler --> AuditEntry : writes
+DeleteAccountCommandHandler ..> ISessionStore : uses
+AccountErasureJob --> Member : erases
+AccountErasureJob ..> Message : keeps as Former member
+Member --> MemberStatus : has
+Request --> RequestStatus : has
+Member "1" --> "*" Request : sent
+Member "1" --> "*" Listing : owns
+Member "0..1" <-- "*" Message : sender
+@enduml

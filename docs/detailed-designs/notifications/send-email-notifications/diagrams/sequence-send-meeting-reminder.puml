@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Send a meeting reminder
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ConfirmRequestCommandHandler" as confirm
+  participant "CancelRequestCommandHandler" as cancel
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "MeetingReminderJob" as job
+  participant "OutboxDispatcherJob" as outbox
+  participant "NotificationProjector" as notify
+  participant "EmailNotificationHandler" as planner
+end box
+actor "Member and Owner" as people
+confirm -> confirm : Compute reminder time as start minus 1 hour (L2-069)
+alt start is less than 1 hour away
+  confirm -> db : Save confirmation and MeetingReminder due now (L2-069)
+else start is 1 hour or more away
+  confirm -> db : Save confirmation and MeetingReminder due 1 hour before start
+end
+db --> confirm : Commit result
+opt booking is cancelled before the reminder time
+  cancel -> db : Save cancellation and delete the unsent MeetingReminder (L2-069)
+  db --> cancel : Commit result
+end
+job -> db : Read MeetingReminder rows that are due and unsent
+db --> job : Due reminders for confirmed bookings
+job -> db : Set SentAt and write MeetingReminderDue outbox row in one transaction
+db --> job : Commit result
+outbox -> db : Read outbox row
+db --> outbox : MeetingReminderDue
+outbox -> notify : Handle(event)
+notify -> db : Insert notification "Your meeting starts in 1 hour" for member and owner
+db --> notify : Commit result
+notify --> people : Real-time event and toast when online (L2-069)
+outbox -> planner : Handle(event)
+planner -> db : Load NotificationPreferences of each recipient
+db --> planner : Preferences
+opt "Meeting reminders" is on
+  planner -> db : Create PendingEmail due immediately even with a daily summary (L2-016)
+  db --> planner : Commit result
+  planner --> people : E-mail through EmailDispatchJob
+end
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Apply design tokens
+
+Person(member, "Member", "Chooses Light, Dark or System")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "tokens.css, the theme boot script, ThemeService and the self-hosted fonts")
+  Container(api, "Jubilee API", "ASP.NET Core", "Stores the theme preference in the account")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Member with ThemePreference")
+  Container(media, "Media storage", "Object storage + CDN", "Serves fingerprinted WOFF2 font subsets and stylesheets")
+}
+System_Ext(ci, "CI pipeline", "Token lint and contrast and font shift checks. Vendor <TO SUPPLY>")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Reads and saves the theme preference", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(web, media, "Loads fonts and stylesheets from", "HTTPS")
+Rel(ci, web, "Lints and measures")
+@enduml

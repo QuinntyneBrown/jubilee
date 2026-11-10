@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Enforce data visibility
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "IncomingRequestsPage", "Angular page", "Shows the request with phone and area label only")
+  Component(analytics, "AnalyticsService", "Angular service", "Sends typed events from a fixed allow-list")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "BusinessRequestsController", "ASP.NET Core controller", "Declares the Business response audience")
+  Component(admin, "AdminReportsController", "ASP.NET Core controller", "Declares the Verifier response audience")
+  Component(modifier, "AudienceJsonModifier", "JSON contract modifier", "Omits personal data the audience may not see")
+  Component(handler, "GetIncomingRequestQueryHandler", "MediatR handler", "Projects the request for the receiving business")
+  Component(staff, "StaffAccessAuditBehavior", "MediatR pipeline behaviour", "Records staff access with its reason")
+  Component(area, "PostalArea", "Domain value object", "Reduces a postal code to neighbourhood and first three characters")
+  Component(audit, "IAuditLog", "Application service", "Appends audit entries")
+  Component(events, "AnalyticsEventValidator", "FluentValidation validator", "Rejects events with unknown properties")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Members, requests and audit entries")
+
+Rel(page, ctrl, "Gets the request from", "JSON/HTTPS")
+Rel(analytics, events, "Posts events checked by", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetIncomingRequestQuery")
+Rel(ctrl, modifier, "Serialises the result through")
+Rel(admin, staff, "Sends staff queries through")
+Rel(admin, modifier, "Serialises the result through")
+Rel(handler, area, "Builds the area label with")
+Rel(handler, db, "Reads", "EF Core")
+Rel(staff, audit, "Appends StaffViewedPersonalData to")
+Rel(audit, db, "Inserts", "EF Core")
+@enduml

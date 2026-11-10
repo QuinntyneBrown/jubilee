@@ -1,0 +1,30 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Validate input
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "BusinessPage template", "Angular template", "Shows user text through interpolation")
+  Component(link, "ExternalLinkDirective", "Angular directive", "Adds rel noopener noreferrer nofollow. Allows http and https only")
+  Component(lint, "NoRawHtmlRule", "Lint rule", "Fails the build on raw HTML insertion")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(json, "StrictJsonOptions", "JSON configuration", "Rejects unknown fields with 400")
+  Component(validation, "ValidationBehavior", "MediatR pipeline behaviour", "Runs the validator. Returns 422 with per-field codes")
+  Component(validators, "Validators + TextRules", "FluentValidation", "Type and length and format and allowed values per field")
+  Component(url, "WebsiteUrl", "Domain value object", "Accepts only http and https")
+  Component(csp, "ContentSecurityPolicyBuilder", "Header builder", "Scripts from own origin with nonce or hash. frame-ancestors none")
+  Component(ctx, "JubileeDbContext", "EF Core context", "Bound parameters only")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Stored text")
+
+Rel(page, json, "Sends input to", "JSON/HTTPS")
+Rel(json, validation, "Passes typed request to")
+Rel(validation, validators, "Runs")
+Rel(validators, url, "Parses website address with")
+Rel(validation, ctx, "Valid request reaches handler and")
+Rel(ctx, db, "Runs parameterised queries on")
+Rel(csp, page, "Restricts scripts of", "CSP header")
+Rel(page, link, "Renders website link with")
+Rel(lint, page, "Checks at build time")
+@enduml

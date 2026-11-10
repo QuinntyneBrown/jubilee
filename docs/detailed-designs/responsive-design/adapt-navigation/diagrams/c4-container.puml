@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Adapt navigation
+
+Person(member, "Member", "Uses the app on a phone, tablet or desktop")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "AppShell with TopBar, TabBar and the routed page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Session and unread counts for the navigation badges")
+  ContainerDb(cache, "Cache", "Redis", "Sessions")
+}
+System_Ext(ci, "CI pipeline", "Visual regression and overflow checks. Vendor <TO SUPPLY>")
+System_Ext(baselines, "Baseline store", "Approved screenshots per screen, state, width and theme. Location <TO SUPPLY>")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Reads session and unread counts", "JSON/HTTPS")
+Rel(api, cache, "Reads session", "RESP")
+Rel(ci, web, "Renders at five widths in two themes", "Headless browser")
+Rel(ci, baselines, "Compares screenshots with")
+@enduml

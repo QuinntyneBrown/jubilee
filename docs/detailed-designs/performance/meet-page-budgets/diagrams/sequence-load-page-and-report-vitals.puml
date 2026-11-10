@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Load a page on a repeat visit and report Web Vitals
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Jubilee service worker" as sw
+  participant "CategoryPage" as page
+  participant "ResponsiveImage" as image
+  participant "WebVitalsReporter" as vitals
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+  participant "TelemetryController" as telemetry
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetCategoryListingsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+participant "Media storage" as media
+participant "Observability platform" as obs
+
+actor -> sw : Open /c/:category on a repeat visit
+sw --> page : Serve cached app shell (L2-151 first content under 1 s)
+page -> vitals : start(Category)
+page -> client : Request page 1
+client -> controller : GET /api/categories/{category}/listings?page=1&pageSize=24
+controller -> handler : Send GetCategoryListingsQuery
+handler -> handler : Cap pageSize at 50 (L2-153)
+handler -> db : Read one page
+db --> handler : Rows and total count
+handler --> controller : PagedResult
+controller --> client : 200 with one page
+client --> page : Listings
+loop each card
+  page -> image : Render with photoId, width, height
+  alt first image above the fold
+    image -> media : Request rendition with fetchpriority high (L2-155)
+  else below the fold
+    image -> media : Request rendition when near viewport, loading lazy (L2-155)
+  end
+  media --> image : WebP or JPEG rendition with immutable cache header
+end
+page --> actor : Page rendered without layout shift
+actor -> page : Leave the page or hide the tab
+page -> vitals : flush()
+vitals -> telemetry : POST /api/telemetry/web-vitals (beacon)
+telemetry -> obs : Export LCP, INP and CLS samples (L2-151)
+obs --> telemetry : Accepted
+telemetry --> vitals : 202 Accepted
+@enduml

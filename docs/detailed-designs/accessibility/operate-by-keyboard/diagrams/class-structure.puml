@@ -1,0 +1,90 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Operate by keyboard
+
+class RouteFocusService {
+  -Router router
+  -LiveAnnouncer announcer
+  +start(): void
+  -onNavigationEnd(event: NavigationEnd): void
+  -focusHeading(): void
+}
+
+class JubileeTitleStrategy {
+  +updateTitle(snapshot: RouterStateSnapshot): void
+  +currentTitle(): string
+}
+
+class LiveAnnouncer {
+  +announce(message: string, politeness: Politeness): void
+}
+
+class SkipLink {
+  +string target = "main"
+  +activate(): void
+}
+
+class RovingFocusDirective {
+  +Orientation orientation
+  +boolean wrap
+  -number activeIndex
+  +onKeydown(event: KeyboardEvent): void
+  +setActive(index: number): void
+}
+
+enum Orientation {
+  Horizontal
+  Vertical
+}
+
+class Tabs {
+  +string label
+  +number selectedIndex
+  +select(index: number): void
+}
+
+class Menu {
+  +boolean open
+  +openMenu(): void
+  +close(returnFocus: boolean): void
+}
+
+class FilterChip {
+  +string label
+  +boolean pressed
+  +toggle(): void
+}
+
+class TargetSizeSpec {
+  +number minimum = 24
+  +number touchMinimum = 44
+  +measure(page: Page): TargetViolation[]
+}
+
+class KeyboardSpec {
+  +tabThrough(page: Page): FocusStep[]
+  +assertVisualOrder(steps: FocusStep[]): void
+  +assertNotObscured(steps: FocusStep[]): void
+}
+
+RouteFocusService --> JubileeTitleStrategy : reads title
+RouteFocusService --> LiveAnnouncer : announces title
+Tabs "1" *-- "1" RovingFocusDirective : hosts
+Menu "1" *-- "1" RovingFocusDirective : hosts
+RovingFocusDirective --> Orientation : has
+KeyboardSpec ..> SkipLink : checks first stop
+KeyboardSpec ..> Tabs : drives
+KeyboardSpec ..> Menu : drives
+TargetSizeSpec ..> FilterChip : measures
+@enduml

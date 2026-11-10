@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show error pages
+Container_Boundary(web, "Jubilee Web") {
+  Component(nf, "NotFoundPage", "Angular page", "Shows the not found copy with Back to browse and Search")
+  Component(fb, "ForbiddenPage", "Angular page", "Shows the forbidden copy with Ask for access")
+  Component(se, "ServerErrorPage", "Angular page", "Shows the server error copy and Reference JB-500-code")
+  Component(les, "LoadErrorState", "Angular component", "Shows a failed section with its reference and Try again")
+  Component(interceptor, "ErrorInterceptor", "HTTP interceptor", "Maps ProblemDetails to pages and load-error states")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(shell, "PageShellEndpoint", "ASP.NET Core endpoint", "Serves the application shell with 200 or 404 or 403 or a redirect")
+  Component(slug, "ListingSlugResolver", "Application service", "Finds current slugs and renamed slugs")
+  Component(corr, "CorrelationIdMiddleware", "Middleware", "Assigns the correlation ID of each request")
+  Component(pd, "ProblemDetailsMiddleware", "Middleware", "Turns failures into RFC 9457 responses without internals")
+  Component(ref, "ErrorReferenceFactory", "Application service", "Builds JB-AREA-NNN and JB-500-code references")
+  Component(help, "HelpController", "ASP.NET Core controller", "Exposes POST /api/help/access-requests")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Slugs and access requests")
+System_Ext(observability, "Observability platform", "Searchable logs")
+
+Rel(interceptor, nf, "Routes 404 to")
+Rel(interceptor, fb, "Routes 403 to")
+Rel(interceptor, se, "Routes 500 to")
+Rel(interceptor, les, "Passes the reference to")
+Rel(fb, help, "Posts an access request to", "JSON/HTTPS")
+Rel(interceptor, pd, "Receives ProblemDetails from", "JSON/HTTPS")
+Rel(shell, slug, "Resolves listing slugs through")
+Rel(slug, db, "Reads", "EF Core")
+Rel(pd, ref, "Asks for a reference")
+Rel(pd, corr, "Reads the correlation ID from")
+Rel(pd, observability, "Logs reference and correlation ID to")
+Rel(help, db, "Writes the access request", "EF Core")
+@enduml

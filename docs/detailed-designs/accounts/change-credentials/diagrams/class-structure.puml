@@ -1,0 +1,111 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Change credentials
+
+
+enum LinkTokenPurpose {
+  ConfirmEmail
+  ResetPassword
+  ChangeEmail
+  ChurchReference
+  DataDownload
+}
+
+class Member {
+  +Guid Id
+  +string Email
+  +bool EmailConfirmed
+  +string? PasswordHash
+  +DateTime? PasswordChangedAt
+  +bool HasPassword
+  +ChangeEmail(newEmail: string, now: DateTime): void
+  +SetPassword(hash: string, now: DateTime): void
+}
+
+class LinkToken {
+  +Guid Id
+  +Guid MemberId
+  +LinkTokenPurpose Purpose
+  +string TokenHash
+  +string? TargetEmail
+  +DateTime ExpiresAt
+  +DateTime? UsedAt
+  +IsUsable(now: DateTime): bool
+  +MarkUsed(now: DateTime): void
+}
+
+class RequestEmailChangeCommand {
+  +string NewEmail
+  +string CurrentPassword
+}
+
+class ConfirmEmailChangeCommand {
+  +string Token
+}
+
+class ChangePasswordCommand {
+  +string? CurrentPassword
+  +string NewPassword
+  +string RepeatPassword
+}
+
+class RequestEmailChangeCommandHandler {
+  +Handle(command: RequestEmailChangeCommand): Task<Result>
+}
+
+class ConfirmEmailChangeCommandHandler {
+  +Handle(command: ConfirmEmailChangeCommand): Task<Result>
+}
+
+class ChangePasswordCommandHandler {
+  +Handle(command: ChangePasswordCommand): Task<Result>
+}
+
+interface IPasswordHasher {
+  +Hash(password: string): string
+  +Verify(password: string, hash: string): bool
+}
+
+interface IBreachedPasswordChecker {
+  +IsBreached(password: string): Task<bool>
+}
+
+interface ISessionStore {
+  +EndAllExcept(memberId: Guid, sessionId: string): Task
+}
+
+class OutboxMessage {
+  +Guid Id
+  +string Type
+  +string Payload
+  +DateTime CreatedAt
+  +DateTime? DispatchedAt
+}
+
+RequestEmailChangeCommandHandler ..> RequestEmailChangeCommand : handles
+ConfirmEmailChangeCommandHandler ..> ConfirmEmailChangeCommand : handles
+ChangePasswordCommandHandler ..> ChangePasswordCommand : handles
+RequestEmailChangeCommandHandler --> LinkToken : creates
+RequestEmailChangeCommandHandler ..> IPasswordHasher : verifies with
+RequestEmailChangeCommandHandler --> OutboxMessage : writes 2
+ConfirmEmailChangeCommandHandler --> LinkToken : loads / marks used
+ConfirmEmailChangeCommandHandler --> Member : mutates
+ChangePasswordCommandHandler --> Member : mutates
+ChangePasswordCommandHandler ..> IPasswordHasher : uses
+ChangePasswordCommandHandler ..> IBreachedPasswordChecker : uses
+ChangePasswordCommandHandler ..> ISessionStore : uses
+ChangePasswordCommandHandler --> OutboxMessage : writes 1
+Member "1" *-- "*" LinkToken
+LinkToken --> LinkTokenPurpose : has
+@enduml

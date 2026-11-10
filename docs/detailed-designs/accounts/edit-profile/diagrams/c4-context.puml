@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Edit profile
+
+
+Person(member, "Member", "Signed-in account holder who keeps a profile")
+Person(owner, "Owner", "Member who owns a listing and receives requests")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(member, jubilee, "Opens the account menu and edits the profile at /account")
+Rel(jubilee, owner, "Shows the member's phone only on a request the member sends")
+@enduml

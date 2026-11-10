@@ -1,0 +1,81 @@
+@startuml
+title UML sequence behaviour — Load the browse home
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Member or Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BrowseHomePage" as page
+  participant "DirectoryStore" as store
+  participant "DirectoryApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "DirectoryController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetBrowseHomeQueryHandler" as handler
+  participant "FeaturedSelector" as selector
+  participant "DirectoryGrouping" as grouping
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IDirectoryReadCache" as cache
+  database "Jubilee database" as db
+end box
+actor -> page : Open /
+alt Signed-in member
+  page --> actor : Show "Morning" or "Afternoon" or "Evening" with the first name by Toronto time (L2-021)
+else Visitor
+  page --> actor : Show "New here?" with "Join free" and no greeting (L2-022)
+end
+page -> store : load()
+store -> client : getHome()
+client -> controller : GET /api/directory/home
+controller -> handler : Send GetBrowseHomeQuery
+handler -> cache : Get the directory entry
+alt Entry younger than 60 s (L2-156)
+  cache --> handler : BrowseHomeDto
+else No entry
+  cache --> handler : Miss
+  handler -> db : Load public listings through PublicListingFilter (L2-028)
+  db --> handler : Verified live listings
+  handler -> selector : Select(now and 5)
+  selector --> handler : Featured slots or most recently verified (L2-106)
+  handler -> db : Load 5 shop products of public shops
+  db --> handler : Products
+  handler -> grouping : Group by category
+  grouping --> handler : Groups with count and first four and HasMore. Empty categories omitted
+  handler -> cache : Set the directory entry for 60 s
+  cache --> handler : Stored
+end
+alt Directory built
+  handler --> controller : BrowseHomeDto
+  controller --> client : 200 BrowseHomeDto
+  client --> store : Directory
+  alt Total count is 0
+    store --> page : Empty state
+    page --> actor : Show "No businesses are listed yet" with "List your business"
+  else At least one public listing
+    store --> page : Loaded state
+    page --> actor : Show chips and featured and shop products and grouped directory (L2-027)
+  end
+else Database or cache unavailable
+  handler --> controller : Failure
+  controller --> client : 503 ProblemDetails with JB-DIR-503 (L2-118)
+  client --> store : Error
+  store --> page : Error state
+  page --> actor : Keep top bar and tab bar. Show "We couldn't load the directory" with "Try again" and "Open messages"
+end
+@enduml

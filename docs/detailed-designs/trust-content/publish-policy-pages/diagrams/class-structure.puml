@@ -1,0 +1,95 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Publish policy pages
+
+enum ContentSlug {
+  StatementOfFaith
+  Terms
+  Privacy
+  Help
+}
+
+class ContentDocument {
+  +Guid Id
+  +ContentSlug Slug
+  +int PublishedVersionNumber
+  +Publish(sections: IReadOnlyList<ContentSection>, publishedBy: Guid, now: DateTimeOffset): ContentVersion
+  +Published(): ContentVersion
+}
+
+class ContentVersion {
+  +Guid Id
+  +int Number
+  +string Introduction
+  +DateTimeOffset PublishedAt
+  +Guid PublishedBy
+}
+
+class ContentSection {
+  +int SortOrder
+  +string Anchor
+  +string Heading
+  +string Body
+}
+
+class PolicyDocumentDto {
+  +string Slug
+  +int VersionNumber
+  +DateTimeOffset PublishedAt
+  +string Introduction
+  +IReadOnlyList<ContentSection> Sections
+}
+
+class GetPublishedContentQueryHandler {
+  +Handle(query: GetPublishedContentQuery): Task<PolicyDocumentDto>
+}
+
+class PublishContentVersionCommand {
+  +ContentSlug Slug
+  +string Introduction
+  +IReadOnlyList<ContentSection> Sections
+}
+
+class PublishContentVersionCommandHandler {
+  +Handle(command: PublishContentVersionCommand): Task<Result<int>>
+}
+
+class TermsAcceptance {
+  +Guid Id
+  +Guid MemberId
+  +int TermsVersionNumber
+  +bool ConfirmedAdult
+  +DateTimeOffset AcceptedAt
+}
+
+interface ITermsVersionProvider {
+  +CurrentAsync(): Task<int>
+}
+
+class Member {
+  +Guid Id
+  +string Email
+}
+
+ContentDocument --> ContentSlug : identified by
+ContentDocument "1" *-- "1..*" ContentVersion : keeps all
+ContentVersion "1" *-- "1..*" ContentSection
+GetPublishedContentQueryHandler ..> ContentDocument : reads
+GetPublishedContentQueryHandler ..> PolicyDocumentDto : returns
+PublishContentVersionCommandHandler ..> PublishContentVersionCommand : handles
+PublishContentVersionCommandHandler --> ContentDocument : publishes
+Member "1" --> "1..*" TermsAcceptance : agreed
+TermsAcceptance ..> ContentVersion : references terms version
+ITermsVersionProvider ..> ContentDocument : reads published number
+@enduml

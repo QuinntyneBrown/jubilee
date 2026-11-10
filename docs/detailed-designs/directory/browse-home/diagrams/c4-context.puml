@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Browse home
+
+
+Person(visitor, "Visitor", "Anyone not signed in")
+Person(member, "Member", "Signed-in account holder")
+Person(owner, "Owner", "Member whose listing appears while it is public")
+Person(verifier, "Verification team member", "Sets Featured this week")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Browses the directory with join prompts at /")
+Rel(member, jubilee, "Browses the directory with a greeting at /")
+Rel(owner, jubilee, "Pauses or resumes a listing in")
+Rel(verifier, jubilee, "Chooses featured businesses in")
+@enduml

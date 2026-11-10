@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse offline
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(browse, "BrowsePage", "Angular page", "Renders the cached directory under the persistent offline banner")
+  Component(offline, "OfflinePage", "Angular page", "Shown for a page that is not cached. Reloads the original page on reconnect")
+  Component(navh, "OfflineNavigationHandler", "Angular router error handler", "Replaces a failed route with OfflinePage and keeps the URL")
+  Component(store, "BrowseStore", "Signal store", "Loads the browse home and exposes fromCache and savedAt")
+  Component(dapi, "DirectoryApi", "Typed HTTP client", "GET /api/directory/home")
+  Component(conn, "ConnectionService", "Angular service", "Exposes the connection state as a signal")
+  Component(banner, "ConnectionBanner", "Shared UI", "Persistent offline banner with Try again")
+  Component(dir, "RequiresConnectionDirective", "Angular directive", "Disables search and save and request controls offline")
+  Component(snap, "OfflineSnapshotStore", "IndexedDB store", "Records when each cached resource was saved")
+  Component(cleaner, "OfflineDataCleaner", "Angular service", "Deletes cached personal data on sign-out")
+}
+Container(sw, "Jubilee service worker", "Angular service worker", "app-shell asset group. browse-home and conversations data groups")
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "DirectoryController", "ASP.NET Core controller", "Exposes GET /api/directory/home")
+  Component(handler, "GetBrowseHomeQueryHandler", "MediatR handler", "Builds the BrowseHomeDto")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings and categories")
+
+Rel(browse, store, "Reads directory state from")
+Rel(browse, banner, "Shows saved time through")
+Rel(browse, dir, "Applies to server-dependent controls")
+Rel(store, dapi, "Loads browse home through")
+Rel(store, snap, "Stamps and reads savedAt")
+Rel(store, conn, "Reads isOffline from")
+Rel(dir, conn, "Reads isOffline from")
+Rel(navh, offline, "Renders with returnUrl")
+Rel(offline, conn, "Waits for reconnect on")
+Rel(cleaner, snap, "Clears")
+Rel(cleaner, sw, "Deletes conversations caches of", "Cache Storage")
+Rel(dapi, sw, "Requests through", "Fetch")
+Rel(sw, ctrl, "Forwards when online", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetBrowseHomeQuery")
+Rel(handler, db, "Reads", "EF Core")
+@enduml

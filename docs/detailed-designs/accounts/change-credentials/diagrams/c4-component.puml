@@ -1,0 +1,48 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Change credentials
+
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(emailDlg, "ChangeEmailDialog", "Angular dialog", "New address and current password")
+  Component(pwDlg, "ChangePasswordDialog", "Angular dialog", "Change password or Set a password")
+  Component(confirm, "ConfirmEmailChangePage", "Angular page", "Opens the confirmation link")
+  Component(client, "AccountApi", "Typed HTTP client", "Credential calls")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AccountController", "ASP.NET Core controller", "email-change and password endpoints")
+  Component(reqH, "RequestEmailChangeCommandHandler", "MediatR handler", "Issues the 24-hour link")
+  Component(confH, "ConfirmEmailChangeCommandHandler", "MediatR handler", "Replaces the address")
+  Component(pwH, "ChangePasswordCommandHandler", "MediatR handler", "Sets the password and ends other sessions")
+  Component(hasher, "IPasswordHasher", "Application service", "Argon2id hashing and verification")
+  Component(checker, "IBreachedPasswordChecker", "Application service", "k-anonymity range query")
+  Component(sessions, "ISessionStore", "Application service", "EndAllExcept")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Sends queued e-mail")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Member and LinkToken and OutboxMessage")
+ContainerDb(cache, "Cache", "Redis", "Sessions")
+System_Ext(breach, "Breached-password service", "Range query")
+System_Ext(email, "E-mail provider", "Vendor <TO SUPPLY>")
+
+Rel(emailDlg, client, "requestEmailChange")
+Rel(pwDlg, client, "changePassword")
+Rel(confirm, client, "confirmEmailChange")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, reqH, "Sends RequestEmailChangeCommand")
+Rel(ctrl, confH, "Sends ConfirmEmailChangeCommand")
+Rel(ctrl, pwH, "Sends ChangePasswordCommand")
+Rel(reqH, hasher, "Verifies current password")
+Rel(pwH, hasher, "Verifies and hashes")
+Rel(pwH, checker, "Checks new password")
+Rel(pwH, sessions, "Ends other sessions")
+Rel(reqH, db, "Saves LinkToken and outbox", "EF Core")
+Rel(confH, db, "Saves Member", "EF Core")
+Rel(pwH, db, "Saves Member and outbox", "EF Core")
+Rel(sessions, cache, "Deletes sessions")
+Rel(checker, breach, "Queries", "HTTPS")
+Rel(outbox, db, "Reads outbox", "EF Core")
+Rel(outbox, email, "Sends", "HTTPS")
+@enduml

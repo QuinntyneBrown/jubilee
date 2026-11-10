@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Show a list date and a price
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestsPage" as page
+  participant "ListDatePipe" as datepipe
+  participant "TorontoTime" as toronto
+  participant "MoneyPipe" as moneypipe
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ListRequestsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "UtcDateTimeConverter" as conv
+  database "Jubilee database" as db
+end box
+actor -> page : Open /requests
+page -> client : list()
+client -> controller : GET /api/requests
+controller -> handler : Send ListRequestsQuery
+handler -> db : Read requests
+db --> conv : datetime2 values
+conv --> handler : DateTime marked as UTC (L2-131)
+handler --> controller : DTOs with createdAtUtc and priceCents
+controller --> client : 200 OK, instants as ISO 8601 with Z
+client --> page : Typed result
+page -> datepipe : transform(createdAtUtc)
+datepipe -> toronto : calendarDay(instant) and calendarDay(now)
+toronto --> datepipe : Days in America/Toronto (L2-131)
+alt Same Toronto day
+  datepipe --> page : "9:14 a.m."
+else Previous day
+  datepipe --> page : "Yesterday"
+else 2 to 7 days back
+  datepipe --> page : "Sat 7 Nov"
+else Older, same year
+  datepipe --> page : "28 Oct"
+else Older, another year
+  datepipe --> page : Date with the year
+end
+page -> moneypipe : transform(priceCents, Plain)
+moneypipe --> page : "$34" for a whole-dollar amount (L2-131)
+page --> actor : Show the list with dates and prices
+@enduml

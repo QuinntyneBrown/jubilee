@@ -1,0 +1,82 @@
+@startuml
+title UML sequence behaviour — Serve a category page from the edge and invalidate it
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+actor "Owner" as owner
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "CategoryPage" as page
+  participant "ListingsApi" as client
+end box
+participant "Edge cache" as edge
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+  participant "EdgeCacheFilter" as filter
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetCategoryListingsQueryHandler" as handler
+  participant "PauseListingCommandHandler" as pause
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "Cache" as cache
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+  participant "EdgeCachePurgeHandler" as purger
+end box
+
+actor -> page : Open /c/:category
+page -> client : Request page 1
+client -> edge : GET /api/categories/{category}/listings (no session cookie)
+alt cached within the last 60 seconds
+  edge --> client : 200 from the edge (L2-156)
+else cache miss
+  edge -> controller : Forward request
+  controller -> handler : Send GetCategoryListingsQuery
+  handler -> cache : Get read cache entry
+  alt entry missing
+    cache --> handler : Miss
+    handler -> db : Read one page with a no-tracking projection
+    db --> handler : Rows
+    handler -> cache : Store entry with a short time to live
+  else entry present
+    cache --> handler : Cached page
+  end
+  handler --> controller : PagedResult
+  controller -> filter : Result executing
+  filter -> filter : Set Cache-Control public s-maxage=60 and cache tags for a visitor (L2-156)
+  filter --> controller : Headers set
+  controller --> edge : 200 within the L2-152 read target
+  edge --> client : 200 and store for up to 60 seconds
+end
+client --> page : Listings
+page --> actor : Category page
+
+owner -> pause : Pause the listing (PauseListingCommand)
+pause -> db : Save listing and OutboxMessage ListingStateChanged in one transaction
+db --> pause : Committed
+pause --> owner : Listing paused
+job -> db : Read undispatched outbox messages
+db --> job : ListingStateChanged
+job -> purger : Handle ListingStateChanged
+purger -> cache : Remove read cache entries of the category and directory
+cache --> purger : Removed
+purger -> edge : Purge tags of the listing and its category (L2-156)
+edge --> purger : Purged
+purger --> job : Done
+job -> db : Mark message dispatched
+db --> job : Saved
+@enduml

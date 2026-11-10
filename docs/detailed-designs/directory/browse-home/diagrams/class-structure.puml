@@ -1,0 +1,115 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Browse home
+
+
+enum ListingStage {
+  Draft
+  PendingReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Paused
+}
+
+class Listing {
+  +Guid Id
+  +string Slug
+  +string Name
+  +string Tagline
+  +string? Highlight
+  +Guid CategoryId
+  +ListingStage Stage
+  +DateTime? VerifiedAt
+  +bool IsOnHold
+  +bool IsDeleted
+  +IsPublic(): bool
+}
+
+class FeaturedSlot {
+  +Guid ListingId
+  +int Position
+  +DateOnly StartsOn
+  +IsCurrent(today: DateOnly): bool
+}
+
+class FeaturedSelector {
+  +Select(now: DateTime, limit: int): IReadOnlyList<Listing>
+}
+
+class DirectoryGrouping {
+  +const int GroupSize = 4
+  +Group(listings: IEnumerable<Listing>, categories: IEnumerable<Category>): IReadOnlyList<CategoryGroupDto>
+}
+
+class GetBrowseHomeQueryHandler {
+  +Handle(query: GetBrowseHomeQuery): Task<BrowseHomeDto>
+}
+
+class BrowseHomeDto {
+  +int TotalBusinessCount
+  +IReadOnlyList<BusinessCardDto> Featured
+  +IReadOnlyList<ProductCardDto> ShopProducts
+  +IReadOnlyList<CategoryGroupDto> Groups
+}
+
+class BusinessCardDto {
+  +string Slug
+  +string Name
+  +string Tagline
+  +string CategoryLabel
+  +string? Highlight
+  +string? CoverPhotoUrl
+  +bool Verified
+}
+
+class ProductCardDto {
+  +string ShopSlug
+  +string ProductSlug
+  +string Name
+  +string ShopName
+  +decimal Price
+  +bool PerUnit
+  +string? PhotoUrl
+}
+
+class CategoryGroupDto {
+  +string CategorySlug
+  +string CategoryName
+  +int Count
+  +bool HasMore
+  +IReadOnlyList<DirectoryRowDto> Businesses
+}
+
+class DirectoryRowDto {
+  +string Slug
+  +string Name
+  +string Tagline
+  +bool Verified
+}
+
+GetBrowseHomeQueryHandler ..> BrowseHomeDto : returns
+GetBrowseHomeQueryHandler ..> FeaturedSelector : uses
+GetBrowseHomeQueryHandler ..> DirectoryGrouping : uses
+BrowseHomeDto "1" *-- "0..5" BusinessCardDto
+BrowseHomeDto "1" *-- "0..5" ProductCardDto
+BrowseHomeDto "1" *-- "0..10" CategoryGroupDto
+CategoryGroupDto "1" *-- "1..4" DirectoryRowDto
+DirectoryGrouping ..> CategoryGroupDto : builds
+DirectoryGrouping ..> Listing : reads
+FeaturedSelector --> FeaturedSlot : reads
+FeaturedSlot "*" --> "1" Listing : features
+Listing --> ListingStage : has
+@enduml

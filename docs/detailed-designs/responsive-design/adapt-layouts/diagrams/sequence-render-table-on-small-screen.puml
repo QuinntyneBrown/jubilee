@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Render the products table on a small screen
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+participant "Browser" as browser
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyProductsPage" as page
+  participant "ResponsiveTableDirective" as table
+  participant "ViewportService" as viewport
+  participant "ProductsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ProductsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetMyProductsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> browser : Open /my-business/products at 360 px
+browser -> page : Activate route
+page -> client : Load products
+client -> controller : GET /api/my-business/products
+controller -> controller : Authenticate and apply the owner policy
+controller -> handler : Send GetMyProductsQuery
+handler -> db : Read one page of products
+db --> handler : Products
+handler --> controller : PagedResult
+controller --> client : 200 products
+client --> page : Products
+page -> table : Render rows inside .table-wrap
+table -> table : labelCells(): copy each column heading into data-label
+table -> viewport : isBelow(768)
+viewport --> table : true
+alt under 768 px
+  table -> browser : Set data-layout=stacked: each row is a card with labelled values (L2-167)
+else 768 px or wider
+  table -> browser : Keep the table layout inside its own scroll region (L2-167)
+end
+browser -> browser : Apply (hover: none): row actions stay visible (L2-167)
+browser -> browser : Under 640 px row action buttons take the full width (L2-165)
+page --> actor : Products as stacked cards with no horizontal page scroll
+
+actor -> browser : Rotate to 800 px
+browser -> viewport : change event on (min-width: 48rem)
+viewport --> table : false
+table -> browser : Remove data-layout=stacked
+page --> actor : Products as a table
+@enduml

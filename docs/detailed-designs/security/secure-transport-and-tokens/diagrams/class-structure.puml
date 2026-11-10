@@ -1,0 +1,100 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Secure transport and tokens
+
+enum LinkTokenPurpose {
+  EmailConfirmation
+  PasswordReset
+  EmailChange
+  ChurchReference
+  DataDownload
+}
+
+enum TokenRedemption {
+  Valid
+  Expired
+  AlreadyUsed
+  Revoked
+  Unknown
+}
+
+class LinkToken {
+  +Guid Id
+  +byte[] TokenHash
+  +LinkTokenPurpose Purpose
+  +Guid? MemberId
+  +Guid? ListingId
+  +string BoundEmail
+  +bool SingleUse
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? UsedAt
+  +DateTimeOffset? RevokedAt
+  +Check(now: DateTimeOffset): TokenRedemption
+  +MarkUsed(now: DateTimeOffset): void
+  +Revoke(now: DateTimeOffset): void
+}
+
+class LinkTokenLifetimes <<static>> {
+  +EmailConfirmation = 24 hours
+  +PasswordReset = 60 minutes
+  +EmailChange = 24 hours
+  +ChurchReference = 14 days
+  +DataDownload = 7 days
+  +For(purpose: LinkTokenPurpose): TimeSpan
+}
+
+interface ILinkTokenService {
+  +IssueAsync(purpose: LinkTokenPurpose, subject: TokenSubject): Task<string>
+  +RedeemAsync(purpose: LinkTokenPurpose, token: string): Task<RedeemedToken>
+  +RevokeOutstandingAsync(purpose: LinkTokenPurpose, subject: TokenSubject): Task
+}
+
+class TokenSubject {
+  +Guid? MemberId
+  +Guid? ListingId
+  +string Email
+}
+
+class RedeemedToken {
+  +TokenRedemption Result
+  +TokenSubject Subject
+}
+
+class SecurityHeadersOptions {
+  +string StrictTransportSecurity
+  +string ReferrerPolicy
+  +string PermissionsPolicy
+  +string ContentSecurityPolicy
+  +IReadOnlyList<string> TokenRoutes
+}
+
+class SecurityHeadersMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+}
+
+class TokenRedactionEnricher {
+  +Redact(path: string): string
+}
+
+ILinkTokenService ..> LinkToken : creates / checks
+ILinkTokenService ..> RedeemedToken : returns
+ILinkTokenService ..> LinkTokenLifetimes : reads
+ILinkTokenService ..> TokenSubject : binds
+LinkToken --> "1" LinkTokenPurpose : has
+LinkToken ..> TokenRedemption : returns
+RedeemedToken --> TokenRedemption : has
+RedeemedToken --> "0..1" TokenSubject : names
+SecurityHeadersMiddleware --> "1" SecurityHeadersOptions : reads
+TokenRedactionEnricher ..> SecurityHeadersOptions : reads token routes
+@enduml

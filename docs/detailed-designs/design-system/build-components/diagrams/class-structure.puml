@@ -1,0 +1,112 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Build components
+
+enum ButtonVariant {
+  Primary
+  Default
+  Ghost
+  Danger
+  Link
+}
+
+enum MediaTint {
+  Neutral
+  Ink
+  Gold
+  Green
+  Blue
+}
+
+enum MediaShape {
+  Landscape
+  Square
+  Thumb
+}
+
+class Button {
+  +variant: ButtonVariant
+  +size: string
+  +busy: boolean
+  +pressed: boolean | null
+  +hostClass(): string
+}
+
+class ListingSummary {
+  +slug: string
+  +name: string
+  +tagline: string
+  +categorySlug: string
+  +verified: boolean
+  +coverPhoto: PhotoRef | null
+}
+
+class PhotoRef {
+  +photoId: string
+  +alt: string
+  +width: number
+  +height: number
+}
+
+class BusinessCard {
+  +listing: ListingSummary
+  +priority: boolean
+}
+
+class MediaTile {
+  +photo: PhotoRef | null
+  +categorySlug: string
+  +shape: MediaShape
+  +tag: string
+  +hasPhoto(): boolean
+  +hostClass(): string
+}
+
+class CategoryTile {
+  +categorySlug: string
+  +tint: MediaTint
+  +icon: string
+}
+
+class CategoryTileMap {
+  +tileFor(categorySlug: string): CategoryTile
+}
+
+class VerifiedBadge {
+  +label: string
+}
+
+class ClassNameAudit {
+  +definedClasses(uiCssPath: string): Set<string>
+  +check(templatePaths: string[]): AuditFinding[]
+}
+
+class AuditFinding {
+  +file: string
+  +line: number
+  +className: string
+  +reason: string
+}
+
+Button --> ButtonVariant : has
+BusinessCard --> ListingSummary : shows
+BusinessCard *-- MediaTile
+BusinessCard *-- "0..1" VerifiedBadge
+ListingSummary "1" o-- "0..1" PhotoRef : cover
+MediaTile --> MediaShape : has
+MediaTile ..> CategoryTileMap : asks
+CategoryTileMap "1" --> "*" CategoryTile : holds
+CategoryTile --> MediaTint : has
+ClassNameAudit ..> AuditFinding : reports
+@enduml

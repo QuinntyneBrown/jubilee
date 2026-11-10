@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Run background jobs
+
+Container_Boundary(api, "Jubilee API") {
+  Component(ops, "JobsOperationsController", "ASP.NET Core controller", "Lists job states and replays dead letters")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(scheduler, "JobScheduler", "Hosted service", "Finds due occurrences of each JobDefinition")
+  Component(schedule, "TorontoSchedule", "Domain service", "Computes occurrences in America/Toronto")
+  Component(claimer, "JobRunClaimer", "Infrastructure service", "Inserts the unique JobRun row")
+  Component(runner, "JobRunner", "Application service", "Runs a job with retry and dead-lettering")
+  Component(reminder, "MeetingReminderJob", "IJob", "Sends reminders 1 hour before a meeting")
+  Component(others, "Other scheduled jobs", "IJob", "Daily summary and reference reminder and retention and statistics and badge jobs")
+  Component(metrics, "JubileeMetrics", "OpenTelemetry meter", "Queue age and dead-letter count")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "JobRun and JobState and DeadLetterEntry")
+System_Ext(obs, "Observability platform", "Alerts on-call")
+
+Rel(scheduler, schedule, "Asks for due occurrences")
+Rel(scheduler, claimer, "Claims each occurrence through")
+Rel(claimer, db, "Inserts JobRun into", "EF Core")
+Rel(scheduler, runner, "Hands claimed run to")
+Rel(runner, reminder, "Executes")
+Rel(runner, others, "Executes")
+Rel(reminder, db, "Reads bookings and writes outbox in", "EF Core")
+Rel(runner, db, "Records success or retry or dead letter in", "EF Core")
+Rel(runner, metrics, "Counts outcomes in")
+Rel(metrics, obs, "Exports to", "OTLP")
+Rel(ops, db, "Reads states and re-queues runs in", "EF Core")
+@enduml

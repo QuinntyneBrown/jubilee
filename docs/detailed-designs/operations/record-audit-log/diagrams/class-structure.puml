@@ -1,0 +1,103 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Record audit log
+
+class AuditEntry {
+  +Guid Id
+  +Guid ActorId
+  +MemberRole ActorRole
+  +AuditAction Action
+  +string TargetType
+  +string TargetId
+  +DateTimeOffset OccurredAt
+  +string? BeforeJson
+  +string? AfterJson
+  +string Reason
+  +string CorrelationId
+}
+
+enum AuditAction {
+  VerificationDecision
+  ReportResolution
+  ListingHold
+  ListingRemoval
+  RoleChange
+  PersonalDataAccess
+  AccountDeletion
+  FeaturedSelection
+}
+
+class AuditEntryDraft {
+  +AuditAction Action
+  +string TargetType
+  +string TargetId
+  +object? Before
+  +object? After
+  +string Reason
+}
+
+interface IAuditLog {
+  +Record(draft: AuditEntryDraft): void
+}
+
+class AuditLog {
+  -JubileeDbContext db
+  -IClock clock
+  -ICurrentUser currentUser
+  +Record(draft: AuditEntryDraft): void
+}
+
+interface IAuditedCommand {
+  +AuditAction Action
+}
+
+class AuditBehavior {
+  +Handle(request: IAuditedCommand, next: RequestHandlerDelegate): Task<Result>
+}
+
+class AppendOnlyInterceptor {
+  +SavingChangesAsync(eventData: DbContextEventData): ValueTask
+}
+
+class SearchAuditLogQuery {
+  +Guid? ActorId
+  +string? TargetType
+  +string? TargetId
+  +DateTimeOffset? From
+  +DateTimeOffset? To
+  +string? Cursor
+  +int PageSize
+}
+
+class SearchAuditLogQueryHandler {
+  +Handle(query: SearchAuditLogQuery): Task<AuditEntryPage>
+}
+
+class AuditEntryPage {
+  +IReadOnlyList<AuditEntry> Items
+  +string? NextCursor
+}
+
+IAuditLog <|.. AuditLog
+IAuditLog ..> AuditEntryDraft : accepts
+AuditLog ..> AuditEntry : creates
+AuditEntry --> AuditAction : has
+AuditEntryDraft --> AuditAction : has
+AuditBehavior ..> IAuditedCommand : wraps
+AuditBehavior ..> IAuditLog : checks
+AppendOnlyInterceptor ..> AuditEntry : protects
+SearchAuditLogQueryHandler ..> SearchAuditLogQuery : handles
+SearchAuditLogQueryHandler ..> AuditEntryPage : returns
+AuditEntryPage "1" o-- "0..50" AuditEntry
+@enduml

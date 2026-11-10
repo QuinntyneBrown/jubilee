@@ -1,0 +1,70 @@
+@startuml
+title UML sequence behaviour — Open a conversation on a phone
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+participant "Browser" as browser
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "InboxLayout" as inbox
+  participant "ViewportService" as viewport
+  participant "ConversationPage" as page
+  participant "KeyboardInsetDirective" as keyboard
+  participant "MessagesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetConversationQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> browser : Tap a thread in /messages
+browser -> inbox : Navigate to /messages/:id
+inbox -> viewport : isBelow(1024)
+viewport --> inbox : true
+alt under 1024 px
+  inbox -> inbox : Set .inbox--chat: show the conversation only (L2-166)
+  inbox -> page : Render with a back control to /messages
+else 1024 px or wider
+  inbox -> inbox : Show the 22rem list and the conversation side by side (L2-166)
+  inbox -> page : Render without a back control
+end
+page -> client : Load conversation
+client -> controller : GET /api/conversations/{id}
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send GetConversationQuery
+handler -> db : Read conversation and latest messages
+db --> handler : Conversation
+handler --> controller : Typed result
+controller --> client : 200 conversation
+client --> page : Messages
+page -> page : scrollLatestIntoView()
+page --> actor : Conversation with composer
+
+actor -> browser : Focus the composer
+browser -> keyboard : visualViewport resize (on-screen keyboard opens)
+keyboard -> keyboard : Compute keyboard inset from window and visual viewport heights
+keyboard -> page : Raise the composer by the inset (L2-166)
+page -> page : scrollLatestIntoView() (L2-166)
+page --> actor : Composer above the keyboard and latest message visible
+
+actor -> page : Press the back control
+page -> inbox : backToList()
+inbox -> inbox : Navigate to /messages and set .inbox--list (L2-166)
+inbox --> actor : Thread list only
+@enduml

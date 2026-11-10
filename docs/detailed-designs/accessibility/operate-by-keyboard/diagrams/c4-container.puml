@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Operate by keyboard
+
+Person(member, "Member", "Operates Jubilee with a keyboard or by touch")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Focus management and keyboard patterns and target sizes")
+  Container(api, "Jubilee API", "ASP.NET Core", "Supplies the page data that completes a navigation")
+}
+System_Ext(ci, "CI pipeline", "Lint rules and browser tests for keyboard operation")
+
+Rel(member, web, "Operates with keyboard or touch", "HTTPS")
+Rel(web, api, "Loads page data from", "JSON/HTTPS")
+Rel(ci, web, "Builds and tests")
+@enduml

@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Unsubscribe from an e-mail
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+participant "Mail client" as mail
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "UnsubscribePage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "UnsubscribeController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SetEmailConsentCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+alt one-click unsubscribe from the mail client (RFC 8058)
+  actor -> mail : Press unsubscribe in the mail client
+  mail -> controller : POST /api/email/unsubscribe/{token} with List-Unsubscribe=One-Click
+else unsubscribe link in the e-mail footer
+  actor -> page : Open /unsubscribe/:token without signing in
+  page -> controller : POST /api/email/unsubscribe/{token}
+end
+controller -> db : Find LinkToken by SHA-256 hash with purpose Unsubscribe
+alt token is unknown
+  db --> controller : No token
+  controller --> page : 404 ProblemDetails
+else token is valid
+  db --> controller : Member and category
+  controller -> handler : Send SetEmailConsentCommand disabled with the method used
+  handler -> db : Turn the category off and append ConsentRecord Withdrawn (L2-149)
+  db --> handler : Committed
+  handler --> controller : Withdrawn
+  controller --> page : 200 category unsubscribed
+  page --> actor : Confirm the unsubscribe
+end
+@enduml

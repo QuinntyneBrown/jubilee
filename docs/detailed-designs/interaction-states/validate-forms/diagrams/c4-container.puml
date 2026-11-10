@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Validate forms
+
+Person(member, "Member", "Submits a page form or a dialog form")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Runs browser rules. Presents invalid and busy and failed states")
+  Container(api, "Jubilee API", "ASP.NET Core", "Enforces the same rules. Returns 422 with per-field codes")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Written only after validation passes")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Submits forms to", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml

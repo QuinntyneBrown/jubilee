@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Validate forms
+
+Person(visitor, "Visitor", "Fills in the join form")
+Person(member, "Member", "Fills in request dialogs and profile forms")
+Person(owner, "Owner", "Fills in listing and product and service forms")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Validates each form in the browser and again on the server with one pattern")
+
+Rel(visitor, jubilee, "Submits forms to")
+Rel(member, jubilee, "Submits forms and dialogs to")
+Rel(owner, jubilee, "Submits forms and dialogs to")
+@enduml

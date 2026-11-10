@@ -1,0 +1,72 @@
+@startuml
+title UML sequence behaviour — Upload a photo
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "PhotoPicker" as picker
+  participant "MediaApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "MediaController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "UploadPhotoCommandHandler" as handler
+  participant "ImageInspector" as inspector
+  participant "ImageReencoder" as reencoder
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "ObjectStorageMediaStore" as store
+  participant "MalwareScannerClient" as scan
+  database "Jubilee database" as db
+end box
+participant "Malware scanner" as scanner
+user -> picker : Choose a photo
+picker -> picker : Early check of type and size
+picker -> client : upload(file, use)
+client -> controller : POST /api/media/photos
+controller -> controller : Authenticate, verify anti-CSRF token, cap body at 5 MB
+controller -> handler : Send UploadPhotoCommand
+handler -> inspector : Inspect magic bytes, size and header dimensions (L2-138)
+inspector --> handler : ImageInfo or rejection
+alt Not JPEG or PNG, over 5 MB, or over 8,000 pixels on a side
+  handler --> controller : UploadRejection
+  controller --> client : 422 with per-field code. Nothing stored (L2-138)
+else Inspection passed
+  handler -> reencoder : Decode and re-encode without metadata (L2-138)
+  reencoder --> handler : New image bytes
+  handler -> store : PutQuarantineAsync(random key, bytes, format)
+  store --> handler : Stored in private container
+  handler -> scan : ScanAsync(key)
+  scan -> scanner : Scan object
+  scanner --> scan : Verdict
+  scan --> handler : Clean or not
+  alt Infected, scan error or timeout
+    handler -> store : DeleteAsync(key)
+    store --> handler : Deleted
+    handler --> controller : UploadRejection FailedScan
+    controller --> client : 422 with per-field code. Never served (L2-138)
+  else Clean
+    handler -> store : PublishAsync(key) with fixed Content-Type
+    store --> handler : Published on the media domain
+    handler -> db : Save MediaObject with status Published
+    db --> handler : Commit result
+    handler --> controller : MediaObject
+    controller --> client : 201 Created with media id and URL
+  end
+end
+client --> picker : Result
+picker --> user : Show the photo or "Use a JPG or PNG under 5 MB."
+@enduml

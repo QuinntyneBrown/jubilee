@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Report a conversation and block the other side
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member or Owner" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ReportConversationDialog" as dialog
+  participant "MessagesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IdempotencyMiddleware" as idem
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ReportConversationCommandHandler" as handler
+  participant "Conversation" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+actor "Verification team member" as verifier
+member -> dialog : Choose "Report conversation" and submit
+dialog -> client : reportConversation(id, reason, details, blockOtherSide, key)
+client -> idem : POST /api/conversations/{id}/reports with Idempotency-Key
+idem -> idem : Look up key (L2-132)
+idem -> controller : Forward new request
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send ReportConversationCommand
+handler -> db : Load conversation for a participant (L2-133)
+alt caller is not a participant
+  db --> handler : No row
+  handler --> controller : Not found
+  controller --> client : 404 ProblemDetails
+else participant
+  db --> handler : Conversation
+  handler -> handler : Create Report with the conversation attached (L2-063)
+  opt blockOtherSide is true
+    handler -> entity : Block(reporterId, now) (L2-063)
+    entity --> handler : ConversationBlock added
+  end
+  handler -> db : Save report and block and outbox row in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Report ID
+  controller --> idem : 201 Created
+  idem --> client : Response stored under the key
+  client --> dialog : Report sent
+  dialog --> member : Confirm the report
+  job -> db : Read ReportCreated outbox row
+  db --> job : Outbox row
+  job --> verifier : Notify of the new report (L2-105)
+end
+@enduml

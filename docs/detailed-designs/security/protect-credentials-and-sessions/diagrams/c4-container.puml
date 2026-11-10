@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Protect credentials and sessions
+
+Person(member, "Member", "Signs in and changes a password")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Holds the anti-CSRF token in memory. Stores no session token")
+  Container(api, "Jubilee API", "ASP.NET Core", "Hashes passwords. Issues sessions. Checks anti-CSRF tokens and CORS")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members with Argon2id password hashes. Link tokens")
+  ContainerDb(cache, "Cache", "Redis", "Sessions keyed by the hash of the identifier")
+}
+System_Ext(breach, "Breached-password service", "k-anonymity range query")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls with session cookie and X-CSRF-Token", "JSON/HTTPS")
+Rel(api, db, "Reads and writes password hashes in", "EF Core")
+Rel(api, cache, "Creates and revokes sessions in", "Redis protocol")
+Rel(api, breach, "Queries hash prefix at", "HTTPS")
+@enduml

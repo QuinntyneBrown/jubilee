@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Answer requests during maintenance
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Browser" as browser
+  participant "MaintenanceInterceptor" as interceptor
+  participant "MaintenancePage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "MaintenanceMiddleware" as mw
+  participant "Rest of the pipeline" as next
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "MaintenanceState" as state
+end box
+actor -> browser : Request any page
+browser -> mw : GET page URL
+mw -> state : Current
+state --> mw : MaintenanceOptions
+alt maintenance mode is on
+  mw -> mw : Compute Retry-After from the back-by time (L2-117)
+  mw --> browser : 503 with Retry-After and the static maintenance page
+  browser --> actor : Show "Jubilee is being updated." with the back-by time and "Check again"
+else maintenance mode is off
+  mw -> next : Next
+  next --> mw : Response
+  mw --> browser : Response
+  browser --> actor : Show the page
+end
+opt the application is already open when the switch turns on
+  actor -> browser : Use the open application
+  browser -> interceptor : HTTP request
+  interceptor -> mw : API call
+  mw --> interceptor : 503 ProblemDetails with code MAINTENANCE, backBy and Retry-After
+  interceptor -> page : Navigate with the back-by time
+  page --> actor : Show "We're back by {time} Eastern on {day}. Nothing you've sent is lost."
+  actor -> page : Press "Check again"
+  page -> mw : Reload the page the member left
+  mw --> page : 503 again, or the page once the switch is off
+end
+@enduml

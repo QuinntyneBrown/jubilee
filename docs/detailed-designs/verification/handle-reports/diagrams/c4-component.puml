@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Handle reports
+Container_Boundary(web, "Jubilee Web") {
+  Component(list, "AdminReportsPage", "Angular page", "Lists reports with status and overdue mark")
+  Component(detail, "AdminReportPage", "Angular page", "Shows one report and its five actions")
+  Component(dialog, "ReportActionDialog", "Angular dialog", "Collects the resolution note and any message text")
+  Component(client, "AdminApi", "Typed HTTP client", "Calls the /api/admin/reports endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AdminReportsController", "ASP.NET Core controller", "Exposes list and detail and action endpoints")
+  Component(lh, "GetReportsQueryHandler", "MediatR handler", "Lists reports and marks overdue ones")
+  Component(oh, "OpenReportCommandHandler", "MediatR handler", "Moves a report to in review and audits the access")
+  Component(ah, "ApplyReportActionCommandHandler", "MediatR handler", "Applies one action with its resolution note")
+  Component(report, "Report", "Domain entity", "Owns the report status machine")
+  Component(listing, "Listing", "Domain entity", "Owns the hold and remove transitions")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Notifies verifiers and owner and updates search and cache")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Reports and listings and audit and outbox")
+
+Rel(list, client, "Loads reports through")
+Rel(detail, client, "Opens a report through")
+Rel(detail, dialog, "Opens")
+Rel(dialog, client, "Applies an action through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, lh, "Sends GetReportsQuery")
+Rel(ctrl, oh, "Sends OpenReportCommand")
+Rel(ctrl, ah, "Sends ApplyReportActionCommand")
+Rel(oh, report, "Calls StartReview on")
+Rel(ah, report, "Records the action on")
+Rel(ah, listing, "Calls PlaceOnHold or Remove on")
+Rel(lh, db, "Reads", "EF Core")
+Rel(ah, db, "Saves report and listing and audit and outbox", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+@enduml

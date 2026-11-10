@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Enforce data visibility
+
+Person(owner, "Owner", "Reads requests sent to the business")
+Person(verifier, "Verification team member", "Reviews listings and reports")
+Person(engineer, "On-call engineer", "Requests time-limited database access")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Renders only the fields the API returns for the caller")
+  Container(api, "Jubilee API", "ASP.NET Core", "Projects audience-limited responses and records staff access")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members, requests and the append-only audit log")
+}
+System_Ext(observability, "Observability platform", "Analytics and logs - vendor TO SUPPLY")
+System_Ext(broker, "Privileged access broker", "Just-in-time database grants - vendor TO SUPPLY")
+
+Rel(owner, web, "Uses", "HTTPS")
+Rel(verifier, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core over TLS")
+Rel(api, observability, "Forwards allow-listed analytics events to", "HTTPS")
+Rel(engineer, broker, "Requests access with a reason from")
+Rel(broker, db, "Issues a time-limited logged credential for")
+@enduml

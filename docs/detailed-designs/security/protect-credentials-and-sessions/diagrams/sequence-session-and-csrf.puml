@@ -1,0 +1,70 @@
+@startuml
+title UML sequence behaviour — Sign in and send a state-changing request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SignInPage" as page
+  participant "SessionService" as session
+  participant "CsrfInterceptor" as interceptor
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "CorsPolicy" as cors
+  participant "SessionAuthenticationMiddleware" as auth
+  participant "CsrfMiddleware" as csrf
+  participant "SessionController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SignInCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "RedisSessionStore" as store
+  database "Cache" as cache
+end box
+user -> page : Submit e-mail and password
+page -> session : signIn(credentials)
+session -> controller : POST /api/session
+controller -> handler : Send SignInCommand
+handler -> handler : Verify password hash
+handler -> store : CreateAsync(member, keepSignedIn)
+store -> store : Draw new random identifier (L2-135, L2-010)
+store -> cache : Store Session under SHA-256 of identifier
+cache --> store : Stored
+store --> handler : Session identifier
+handler --> controller : Signed in
+controller --> session : 200 with anti-CSRF token. Set-Cookie __Host-jubilee-session Secure HttpOnly SameSite=Lax Path=/
+session -> session : Keep token in memory only (L2-135)
+session --> page : Signed in
+page --> user : Return to origin page
+user -> page : Later: press a button that changes state
+page -> interceptor : Outgoing POST
+interceptor -> cors : POST with cookie and X-CSRF-Token
+alt Origin not on the allowlist
+  cors --> interceptor : No CORS headers. Browser blocks the call (L2-135)
+else Origin allowed
+  cors -> auth : Request
+  auth -> store : FindAsync(identifier)
+  store --> auth : Session
+  auth -> csrf : Identified request
+  alt Token missing or not bound to this session
+    csrf --> interceptor : 403 ProblemDetails (L2-135)
+  else Token valid
+    csrf -> controller : Verified request
+    controller --> interceptor : Endpoint response
+  end
+end
+interceptor --> page : Result
+page --> user : Show result
+@enduml

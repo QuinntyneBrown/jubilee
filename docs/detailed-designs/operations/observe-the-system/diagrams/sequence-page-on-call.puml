@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Page the on-call engineer
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestLoggingMiddleware" as reqlog
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "JubileeMetrics" as metrics
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "JobQueueMetricsJob" as job
+end box
+participant "Observability platform" as obs
+actor "On-call engineer" as oncall
+reqlog -> metrics : RecordRequest(route, status, durationMs)
+metrics --> reqlog : Done
+job -> metrics : SetJobQueue(depth, oldestAge)
+metrics --> job : Done
+metrics -> obs : Export metric series
+obs --> metrics : Accepted
+obs -> obs : Evaluate L2-176 alert rules
+alt 5xx rate above 1 % for 5 minutes
+  obs -> oncall : Page high-error-rate
+else p95 latency above twice its target for 10 minutes
+  obs -> oncall : Page high-latency
+else e-mail bounce rate above 5 % in 1 hour
+  obs -> oncall : Page high-bounce-rate
+else oldest queued job older than 5 minutes
+  obs -> oncall : Page job-queue-stalled
+else no rule fires
+  obs -> obs : Update dashboards only
+end
+oncall -> obs : Open dashboard and search logs by correlation ID
+obs --> oncall : Matching log lines and trace
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Build components
+
+Person(member, "Member", "Uses screens built from the component kit")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Component kit that emits the BEM classes and state attributes of ui.css")
+  Container(api, "Jubilee API", "ASP.NET Core", "Returns listings and products with their photos and category")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings, products, photos, categories")
+  Container(media, "Media storage", "Object storage + CDN", "Photo renditions")
+}
+System_Ext(ci, "CI pipeline", "Visual regression against the mocks and the class name audit. Vendor <TO SUPPLY>")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Loads listings and products", "JSON/HTTPS")
+Rel(api, db, "Reads", "EF Core")
+Rel(web, media, "Loads photos from", "HTTPS")
+Rel(ci, web, "Renders and compares with docs/mocks")
+@enduml

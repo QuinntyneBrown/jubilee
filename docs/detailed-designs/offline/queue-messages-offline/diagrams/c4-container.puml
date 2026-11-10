@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Queue messages offline
+
+Person(member, "Member", "Writes a message while offline")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Conversation page and outgoing queue and connection banner")
+  Container(sw, "Jubilee service worker", "Angular service worker", "Drains the outgoing queue on Background Sync when no page is open")
+  Container(api, "Jubilee API", "ASP.NET Core", "Accepts messages under /api and enforces idempotency keys")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox to the real-time hub")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and messages and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Idempotency keys kept for 24 hours")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, sw, "Registers sync tag jubilee-outbox with")
+Rel(web, api, "Posts queued messages to", "JSON/HTTPS")
+Rel(sw, api, "Posts queued messages to", "JSON/HTTPS")
+Rel(api, cache, "Reads and writes idempotency keys in")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Reads outbox from", "EF Core")
+@enduml

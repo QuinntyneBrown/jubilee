@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Show user-supplied text
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Browser" as browser
+  participant "BusinessPage" as page
+  participant "ExternalLinkDirective" as link
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SecurityHeadersMiddleware" as headers
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetListingQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+user -> browser : Open /b/:slug
+browser -> headers : Request page
+headers -> headers : Build CSP with nonce or hashes and frame-ancestors 'none' (L2-136)
+headers --> browser : Application shell with Content-Security-Policy
+browser -> page : Start page
+page -> client : getListing(slug)
+client -> controller : GET /api/listings/{slug}
+controller -> handler : Send GetListingQuery
+handler -> db : Parameterised SELECT (L2-136)
+db --> handler : Listing with tagline <script>alert(1)</script>
+handler --> controller : Listing
+controller --> client : 200 JSON. Text returned as stored
+client --> page : Listing
+page -> page : Bind tagline by interpolation. Angular HTML-encodes it (L2-136)
+page -> link : Bind website URL
+link -> link : Allow http or https. Set rel="noopener noreferrer nofollow" (L2-136)
+link --> page : Safe anchor
+page --> browser : Rendered DOM
+opt Injected script reaches the DOM by another route
+  browser -> browser : CSP blocks inline script without nonce or hash
+end
+browser --> user : Tagline appears as text. No script runs
+@enduml

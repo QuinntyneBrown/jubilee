@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Give or withdraw consent in notification settings
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "NotificationSettingsPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "NotificationPreferencesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SetEmailConsentCommandHandler" as handler
+  participant "NotificationPreferences" as prefs
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Turn the New businesses switch on or off
+page -> page : Show Saving… on that row
+page -> client : Save the category
+client -> controller : PUT /api/account/notification-preferences/{category}
+controller -> controller : Authenticate the session and check the CSRF token
+controller -> handler : Send SetEmailConsentCommand with method SettingsSwitch
+handler -> db : Load the member's NotificationPreferences
+db --> handler : Current preferences
+handler -> prefs : Set(category, enabled)
+prefs --> handler : Changed
+opt the value changed
+  handler -> handler : Create ConsentRecord with action, method and time (L2-149)
+end
+handler -> db : Save preference and ConsentRecord in one unit of work
+alt save succeeds
+  db --> handler : Committed
+  handler --> controller : Saved at time
+  controller --> client : 200 with savedAt
+  client --> page : Saved result
+  page --> actor : Show Saved at {time} on the row
+else save fails
+  db --> handler : Failure
+  handler --> controller : Error
+  controller --> client : 503 ProblemDetails JB-PREF-503
+  client --> page : Error result
+  page --> actor : Return the switch and show an error toast with Try again
+end
+@enduml

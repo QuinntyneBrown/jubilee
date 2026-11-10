@@ -1,0 +1,96 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Observe the system
+
+class CorrelationId <<value object>> {
+  +string Value
+  +{static} New(): CorrelationId
+}
+
+interface ICorrelationContext {
+  +CorrelationId Current
+  +Begin(id: CorrelationId): IDisposable
+}
+
+class CorrelationIdMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+}
+
+class CorrelationDelegatingHandler {
+  #SendAsync(request: HttpRequestMessage): Task<HttpResponseMessage>
+}
+
+class RequestLogEntry {
+  +DateTimeOffset Time
+  +LogLevel Level
+  +string Service
+  +string CorrelationId
+  +string Route
+  +int Status
+  +double DurationMs
+  +string? ErrorReference
+}
+
+class LogRedactor {
+  +Redact(entry: RequestLogEntry): RequestLogEntry
+  +MaskEmail(address: string): string
+}
+
+class ErrorReference <<value object>> {
+  +string Area
+  +int Code
+  +CorrelationId CorrelationId
+  +ToString(): string
+}
+
+class JubileeMetrics {
+  +RecordRequest(route: string, status: int, durationMs: double): void
+  +SetRealtimeConnections(count: int): void
+  +SetJobQueue(depth: int, oldestAge: TimeSpan): void
+  +RecordEmail(outcome: EmailOutcome): void
+  +RecordBusinessEvent(kind: BusinessEventKind): void
+}
+
+enum BusinessEventKind {
+  NewMember
+  ListingSubmitted
+  RequestSent
+}
+
+class AlertRule {
+  +string Name
+  +string Condition
+  +TimeSpan Window
+  +string Route
+}
+
+class ClientErrorReport {
+  +string Message
+  +string Stack
+  +string ReleaseVersion
+  +string CorrelationId
+  +string Route
+}
+
+CorrelationIdMiddleware ..> ICorrelationContext : begins
+CorrelationIdMiddleware ..> CorrelationId : creates
+CorrelationDelegatingHandler ..> ICorrelationContext : reads
+ICorrelationContext --> "1" CorrelationId : holds
+LogRedactor ..> RequestLogEntry : cleans
+ErrorReference --> "1" CorrelationId : maps to
+RequestLogEntry ..> ErrorReference : records
+JubileeMetrics ..> BusinessEventKind : counts
+AlertRule ..> JubileeMetrics : evaluates series of
+ClientErrorReport ..> CorrelationId : carries
+@enduml

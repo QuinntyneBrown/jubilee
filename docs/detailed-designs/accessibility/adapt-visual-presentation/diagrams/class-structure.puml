@@ -1,0 +1,98 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Adapt visual presentation
+
+enum Theme {
+  Light
+  Dark
+  System
+}
+
+class ThemeService {
+  +Signal<Theme> preference
+  +Signal<Theme> resolved
+  +set(theme: Theme): void
+  -apply(theme: Theme): void
+}
+
+class MotionService {
+  +Signal<boolean> reduced
+  +duration(token: string): number
+  +scrollBehavior(): ScrollBehavior
+}
+
+class ContrastPair {
+  +string foreground
+  +string background
+  +ContrastKind kind
+  +requiredRatio(): number
+}
+
+enum ContrastKind {
+  NormalText
+  LargeText
+  UiComponent
+}
+
+class ContrastCheck {
+  +ContrastPair[] pairs
+  +run(theme: Theme): ContrastFailure[]
+  -ratio(foreground: string, background: string): number
+}
+
+class ContrastFailure {
+  +ContrastPair pair
+  +Theme theme
+  +number ratio
+}
+
+class StatusBadge {
+  +StatusKind kind
+  +string label
+  +string icon
+}
+
+enum StatusKind {
+  Verified
+  Unread
+  Error
+  SoldOut
+}
+
+class TableRegion {
+  +string label
+  +boolean scrollable
+}
+
+class ReflowSpec {
+  +number[] widths = 640, 320
+  +assertNoHorizontalScroll(page: Page): void
+}
+
+class TextSpacingSpec {
+  +number lineHeight = 1.5
+  +number letterSpacingEm = 0.12
+  +assertNoClippedText(page: Page): void
+}
+
+ThemeService --> Theme : resolves
+ContrastCheck "1" o-- "*" ContrastPair : checks
+ContrastCheck ..> ContrastFailure : reports
+ContrastCheck ..> Theme : runs per
+ContrastPair --> ContrastKind : has
+ContrastFailure --> ContrastPair : for
+StatusBadge --> StatusKind : shows
+ReflowSpec ..> TableRegion : exempts
+TextSpacingSpec ..> StatusBadge : checks
+@enduml

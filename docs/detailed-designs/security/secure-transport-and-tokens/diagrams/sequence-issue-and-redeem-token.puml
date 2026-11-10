@@ -1,0 +1,77 @@
+@startuml
+title UML sequence behaviour — Issue and redeem a link token
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ResetPasswordPage" as page
+  participant "TokenRouteScrubber" as scrubber
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+  participant "TokenRedactionEnricher" as redactor
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ILinkTokenService" as service
+  participant "LinkToken" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+participant "E-mail provider" as email
+== Issue ==
+controller -> service : IssueAsync(PasswordReset, member)
+service -> service : Draw 256 random bits. Compute SHA-256 (L2-140)
+service -> entity : Create with purpose and expiry of 60 minutes
+entity --> service : LinkToken
+service -> db : Save hash and outbox e-mail in one unit of work
+db --> service : Commit result
+service --> controller : Done. Plain token exists only in the outbox e-mail
+job -> db : Read outbox
+db --> job : Reset e-mail
+job -> email : Send link /reset-password/:token
+email --> user : E-mail with link
+== Redeem ==
+user -> page : Open the link
+page -> scrubber : Read token from the route
+scrubber -> scrubber : Keep in memory. Replace history entry without the token (L2-140)
+scrubber --> page : Token
+user -> page : Submit a new password
+page -> client : resetPassword(token, password)
+client -> controller : POST /api/account/password-reset
+controller -> redactor : Log request
+redactor --> controller : Entry written with token redacted (L2-140)
+controller -> service : RedeemAsync(PasswordReset, token)
+service -> db : Find LinkToken by SHA-256 of token and purpose
+db --> service : LinkToken or none
+service -> entity : Check(now)
+entity --> service : TokenRedemption
+alt Valid
+  service -> entity : MarkUsed(now) for single use (L2-140)
+  service -> db : Save
+  db --> service : Commit result
+  service --> controller : Valid with subject
+  controller --> client : 204 after the password change
+else Expired, AlreadyUsed, Revoked or Unknown
+  service --> controller : Not valid
+  controller --> client : 410 ProblemDetails
+end
+client --> page : Result
+page --> user : Confirmation or "This link has expired. Reset links work once, for 60 minutes."
+@enduml

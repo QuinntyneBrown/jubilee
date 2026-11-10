@@ -1,0 +1,96 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Assure security
+
+enum SecurityEventType {
+  SignInSucceeded
+  SignInFailed
+  Lockout
+  PasswordChanged
+  PasswordReset
+  EmailChanged
+  GoogleLinked
+  RoleChanged
+  AuthorizationDenied
+  RateLimitTripped
+  AccountDeleted
+}
+
+class SecurityEvent {
+  +Guid Id
+  +SecurityEventType Type
+  +DateTimeOffset OccurredAt
+  +Guid? ActorId
+  +string IpAddress
+  +string Outcome
+  +string CorrelationId
+}
+
+interface ISecurityEventLog {
+  +RecordAsync(securityEvent: SecurityEvent): Task
+}
+
+class SecurityEventLogger {
+  +RecordAsync(securityEvent: SecurityEvent): Task
+}
+
+class SecurityAlertRule {
+  +SecurityEventType Type
+  +int Threshold
+  +TimeSpan Window
+  +IsBreached(count: int): bool
+}
+
+class SecurityAlertJob {
+  +IReadOnlyList<SecurityAlertRule> Rules
+  +ExecuteAsync(stoppingToken: CancellationToken): Task
+}
+
+class SessionSummary {
+  +string SessionRef
+  +string Device
+  +string ApproximateLocation
+  +DateTimeOffset LastActiveAt
+  +bool IsCurrent
+}
+
+class SessionsController {
+  +List(): Task<IReadOnlyList<SessionSummary>>
+  +End(sessionRef: string): Task<IActionResult>
+}
+
+interface ISecretProvider {
+  +GetAsync(name: string): Task<string>
+}
+
+class AuditEntry {
+  +Guid ActorId
+  +string Action
+  +string Target
+  +DateTimeOffset At
+  +string Before
+  +string After
+  +string Reason
+}
+
+ISecurityEventLog <|.. SecurityEventLogger
+ISecurityEventLog ..> SecurityEvent : records
+SecurityEvent --> "1" SecurityEventType : has
+SecurityAlertJob "1" *-- "1..*" SecurityAlertRule : applies
+SecurityAlertRule --> SecurityEventType : watches
+SecurityAlertJob ..> SecurityEvent : counts
+SessionsController ..> SessionSummary : returns
+SecurityEventLogger ..> ISecretProvider : reads sink key
+SecurityEvent ..> AuditEntry : RoleChanged also writes
+@enduml

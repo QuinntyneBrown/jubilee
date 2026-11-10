@@ -1,0 +1,107 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — View welcome page
+
+
+enum ListingStage {
+  Draft
+  PendingReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Paused
+}
+
+class Listing {
+  +Guid Id
+  +string Slug
+  +string Name
+  +string Tagline
+  +string? Highlight
+  +Guid CategoryId
+  +ListingStage Stage
+  +DateTime? VerifiedAt
+  +bool IsOnHold
+  +bool IsDeleted
+  +IsPublic(): bool
+}
+
+class Category {
+  +Guid Id
+  +string Slug
+  +string Name
+  +string ShortLabel
+  +int SortOrder
+}
+
+class FeaturedSlot {
+  +Guid Id
+  +Guid ListingId
+  +int Position
+  +DateOnly StartsOn
+  +IsCurrent(today: DateOnly): bool
+}
+
+class FeaturedSelector {
+  +Select(now: DateTime, limit: int): IReadOnlyList<Listing>
+}
+
+class PublicListingFilter {
+  +Apply(query: IQueryable<Listing>): IQueryable<Listing>
+}
+
+interface IDirectoryReadCache {
+  +GetOrSetAsync<T>(key: string, timeToLive: TimeSpan, build: Func<Task<T>>): Task<T>
+  +RemoveAsync(key: string): Task
+}
+
+class GetWelcomeQueryHandler {
+  +Handle(query: GetWelcomeQuery): Task<WelcomeDto>
+}
+
+class WelcomeDto {
+  +int LiveBusinessCount
+  +IReadOnlyList<CategoryLinkDto> Categories
+  +IReadOnlyList<BusinessCardDto> Featured
+}
+
+class CategoryLinkDto {
+  +string Slug
+  +string Name
+}
+
+class BusinessCardDto {
+  +string Slug
+  +string Name
+  +string Tagline
+  +string CategoryLabel
+  +string? Highlight
+  +string? CoverPhotoUrl
+  +bool Verified
+}
+
+GetWelcomeQueryHandler ..> WelcomeDto : returns
+GetWelcomeQueryHandler ..> IDirectoryReadCache : uses
+GetWelcomeQueryHandler ..> PublicListingFilter : counts with
+GetWelcomeQueryHandler ..> FeaturedSelector : uses
+WelcomeDto "1" *-- "10" CategoryLinkDto
+WelcomeDto "1" *-- "0..4" BusinessCardDto
+FeaturedSelector --> FeaturedSlot : reads
+FeaturedSelector ..> PublicListingFilter : applies
+FeaturedSlot "*" --> "1" Listing : features
+Listing "*" --> "1" Category : in
+Listing --> ListingStage : has
+PublicListingFilter ..> Listing : filters
+@enduml

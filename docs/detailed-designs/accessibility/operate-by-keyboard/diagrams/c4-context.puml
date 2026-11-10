@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Operate by keyboard
+
+Person(member, "Member", "Operates Jubilee with a keyboard or by touch")
+Person(visitor, "Visitor", "Operates public pages with a keyboard or by touch")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(at, "Assistive technology", "Screen reader or switch device that follows focus")
+System_Ext(ci, "CI pipeline", "Runs keyboard and target-size tests on each change")
+
+Rel(member, jubilee, "Navigates and activates controls in")
+Rel(visitor, jubilee, "Navigates and activates controls in")
+Rel(jubilee, at, "Exposes focus and roles and titles to")
+Rel(ci, jubilee, "Tabs through and measures each screen of")
+@enduml

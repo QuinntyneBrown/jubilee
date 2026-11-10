@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show toasts and banners
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(tsvc, "ToastService", "Angular service", "Queue of at most three toasts with eviction and timers")
+  Component(thost, "ToastHost", "Angular component", "Toast region with polite and assertive live regions")
+  Component(toast, "Toast", "Angular component", "One toast with tone and action and dismiss button")
+  Component(bsvc, "BannerService", "Angular service", "Maps conditions to banners per page")
+  Component(bhost, "BannerHost", "Angular component", "Banner region with a polite live region")
+  Component(banner, "Banner", "Angular component", "One banner with actions and optional dismiss")
+  Component(session, "SessionService", "Angular service", "Signed-in member and e-mail confirmation state")
+  Component(conn, "ConnectionService", "Angular service", "Online and offline and slow connection state")
+  Component(rt, "RealtimeClient", "Angular service", "Receives events for the signed-in user")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(hub, "EventsHub", "SignalR hub", "Pushes notification and listing and account events")
+  Component(sess, "SessionController", "ASP.NET Core controller", "Exposes GET /api/session")
+}
+
+Rel(tsvc, thost, "Publishes toast list to")
+Rel(thost, toast, "Renders up to three")
+Rel(bsvc, bhost, "Publishes banner list to")
+Rel(bhost, banner, "Renders")
+Rel(session, bsvc, "Reports e-mail confirmation state to")
+Rel(conn, bsvc, "Reports connection state to")
+Rel(rt, tsvc, "Raises event toasts through")
+Rel(rt, bsvc, "Reports listing and account events to")
+Rel(hub, rt, "Pushes events", "WebSocket or server-sent events")
+Rel(session, sess, "Reads session", "JSON/HTTPS")
+@enduml

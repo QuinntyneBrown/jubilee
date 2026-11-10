@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Review and approve a listing
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "VerificationReviewPage", "Angular page", "Shows owner and reference panels and checklist and preview")
+  Component(check, "ReviewChecklist", "Angular component", "Saves each tick as it changes")
+  Component(dialog, "ApproveListingDialog", "Angular dialog", "Confirms approval and collects the note for unticked items")
+  Component(client, "AdminApi", "Typed HTTP client", "Calls the /api/admin/verifications endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AdminVerificationsController", "ASP.NET Core controller", "Exposes review and checklist and approve endpoints")
+  Component(qh, "GetListingReviewQueryHandler", "MediatR handler", "Assembles the review view and audits the access")
+  Component(th, "SetChecklistItemCommandHandler", "MediatR handler", "Stores a tick with reviewer and time")
+  Component(ah, "ApproveListingCommandHandler", "MediatR handler", "Applies the approval in one unit of work")
+  Component(listing, "Listing", "Domain entity", "Owns the stage machine and the single-decision rule")
+  Component(hub, "EventsHub", "SignalR hub", "Pushes verification.decided to other reviewers")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Sends e-mail and notification and index update")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings and reviews and audit and outbox")
+
+Rel(page, check, "Hosts")
+Rel(page, dialog, "Opens")
+Rel(page, client, "Loads the review through")
+Rel(check, client, "Saves ticks through")
+Rel(dialog, client, "Approves through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, qh, "Sends GetListingReviewQuery")
+Rel(ctrl, th, "Sends SetChecklistItemCommand")
+Rel(ctrl, ah, "Sends ApproveListingCommand")
+Rel(ah, listing, "Calls Approve on")
+Rel(ah, db, "Saves listing and audit and outbox", "EF Core")
+Rel(qh, db, "Reads", "EF Core")
+Rel(th, db, "Writes", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+Rel(outbox, hub, "Publishes verification.decided through")
+Rel(hub, page, "Pushes the decision to", "WebSocket")
+@enduml

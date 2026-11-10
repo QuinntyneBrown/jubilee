@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Render the verified mark on a card
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "CategoryPage" as page
+  participant "BusinessCard" as card
+  participant "VerifiedMark" as mark
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetCategoryListingsQueryHandler" as handler
+  participant "VerifiedListingSpecification" as spec
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /c/:category
+page -> client : Load category listings
+client -> controller : GET /api/categories/{category}/listings
+controller -> handler : Send GetCategoryListingsQuery
+handler -> spec : Get the verified expression (L2-111)
+spec --> handler : Stage is Live and ApprovedAt is set
+handler -> db : Query live listings and project Verified (L2-028)
+db --> handler : ListingCardDto rows
+handler --> controller : Paged result
+controller --> client : 200 listings
+client --> page : Cards
+page -> card : Render one card per listing
+alt Verified is true
+  card -> mark : Render with verified true
+  mark --> card : Success colour with icon and text "Verified" (L2-111)
+else Verified is false
+  card -> mark : Render with verified false
+  mark --> card : Nothing rendered
+end
+card --> page : Card
+page --> actor : Show the cards
+@enduml

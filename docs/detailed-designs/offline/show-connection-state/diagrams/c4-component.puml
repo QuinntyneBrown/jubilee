@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show connection state
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(banner, "ConnectionBanner", "Shared UI", "Renders one banner variant per connection state")
+  Component(conn, "ConnectionService", "Angular service", "Owns the connection state machine")
+  Component(backoff, "BackoffSchedule", "TypeScript class", "Waits 5 s then doubles to at most 60 s")
+  Component(probe, "ReachabilityProbe", "Angular service", "Asks whether the API answers")
+  Component(latency, "LatencyMonitor", "HTTP interceptor", "Mean request time over a rolling 30 s window")
+  Component(slow, "SlowRequestInterceptor", "HTTP interceptor", "Toast after 5 s. Retries for up to 60 s")
+  Component(toast, "ToastService", "Angular service", "Shows the warning toast")
+  Component(rt, "RealtimeClient", "Angular service", "Reports drops of the persistent connection")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(health, "HealthController", "ASP.NET Core controller", "GET /api/health/ping returns 204")
+  Component(hub, "EventsHub", "SignalR hub", "Persistent connection per signed-in page")
+}
+System_Ext(status, "Status page", "Public service status")
+
+Rel(banner, conn, "Reads state and countdown from")
+Rel(banner, status, "Links to", "HTTPS")
+Rel(conn, backoff, "Gets next delay from")
+Rel(conn, probe, "Runs")
+Rel(latency, conn, "Reports slow mean to")
+Rel(rt, conn, "Reports dropped connection to")
+Rel(slow, conn, "Reports network failure to")
+Rel(slow, toast, "Raises warning through")
+Rel(probe, health, "Calls", "JSON/HTTPS")
+Rel(rt, hub, "Connects to", "WebSocket or SSE")
+@enduml

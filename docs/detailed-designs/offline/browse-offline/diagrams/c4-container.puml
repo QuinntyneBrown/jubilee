@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Browse offline
+
+Person(member, "Member", "Browses the directory with or without a connection")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Browse home and offline page. Disables server-dependent controls offline")
+  Container(sw, "Jubilee service worker", "Angular service worker", "Caches the app shell and the browse home data and the last 20 opened conversations")
+  Container(api, "Jubilee API", "ASP.NET Core", "Serves the browse home and conversations as JSON under /api")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and categories and conversations")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, sw, "Sends every request through", "Fetch")
+Rel(sw, api, "Forwards requests when online", "JSON/HTTPS")
+Rel(api, db, "Reads", "EF Core")
+@enduml

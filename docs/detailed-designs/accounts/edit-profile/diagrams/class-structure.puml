@@ -1,0 +1,117 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Edit profile
+
+
+enum Pronouns {
+  NotSet
+  SheHer
+  HeHim
+  TheyThem
+}
+
+enum MemberRole {
+  Member
+  Verifier
+  Admin
+}
+
+class Member {
+  +Guid Id
+  +string FirstName
+  +string LastName
+  +string Email
+  +PhoneNumber? Phone
+  +PostalCode? PostalCode
+  +string? HomeChurch
+  +Pronouns Pronouns
+  +MemberRole Role
+  +DateTime JoinedAt
+  +DateTime? ProfileSavedAt
+  +UpdateProfile(firstName: string, lastName: string, phone: PhoneNumber?, postalCode: PostalCode?, homeChurch: string?, pronouns: Pronouns, now: DateTime): void
+}
+
+class PhoneNumber <<value object>> {
+  +string Digits
+  +{static} TryParse(input: string): PhoneNumber?
+  +ToDisplay(): string
+}
+
+class PostalCode <<value object>> {
+  +string Value
+  +{static} TryParse(input: string): PostalCode?
+}
+
+class Request {
+  +Guid Id
+  +Guid MemberId
+  +string? ContactPhone
+  +DateTime CreatedAt
+}
+
+class UpdateProfileCommand {
+  +string FirstName
+  +string LastName
+  +string? Phone
+  +string? PostalCode
+  +string? HomeChurch
+  +Pronouns Pronouns
+}
+
+class UpdateProfileCommandValidator {
+  +Validate(command: UpdateProfileCommand): ValidationResult
+}
+
+class UpdateProfileCommandHandler {
+  +Handle(command: UpdateProfileCommand): Task<AccountDto>
+}
+
+class GetAccountQueryHandler {
+  +Handle(query: GetAccountQuery): Task<AccountDto>
+}
+
+class AccountDto {
+  +string FirstName
+  +string LastName
+  +string Email
+  +bool EmailConfirmed
+  +string? Phone
+  +string? PostalCode
+  +string? HomeChurch
+  +Pronouns Pronouns
+  +DateTime JoinedAt
+  +DateTime? ProfileSavedAt
+}
+
+class SessionMember <<TypeScript>> {
+  +initials: string
+  +fullName: string
+  +email: string
+  +role: MemberRole
+  +ownsListing: boolean
+}
+
+UpdateProfileCommandHandler ..> UpdateProfileCommand : handles
+UpdateProfileCommandValidator ..> UpdateProfileCommand : validates
+UpdateProfileCommandHandler --> Member : loads / mutates
+UpdateProfileCommandHandler ..> AccountDto : returns
+GetAccountQueryHandler ..> AccountDto : returns
+GetAccountQueryHandler --> Member : reads
+Member *-- "0..1" PhoneNumber
+Member *-- "0..1" PostalCode
+Member --> Pronouns : has
+Member --> MemberRole : has
+Member "1" <-- "*" Request : sent by
+SessionMember ..> MemberRole : shows links by
+@enduml

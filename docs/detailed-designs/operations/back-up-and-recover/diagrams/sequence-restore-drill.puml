@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Run the quarterly restore drill
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "On-call engineer" as actor
+box "Delivery — CI pipeline" #E0F2FE
+  participant "restore-drill job" as drill
+  participant "RestoreVerifier" as verifier
+end box
+participant "Hosting backup service" as backup
+database "Isolated restore instance" as iso
+box "Backend — Jubilee API" #D1FADF
+  participant "OperationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RecordRestoreDrillCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> drill : Start drill or quarterly schedule fires
+drill -> drill : Note start time
+drill -> backup : Restore latest point in time from the second-region copy
+backup -> iso : Create instance from backup
+iso --> backup : Online
+backup --> drill : Restore complete
+drill -> verifier : VerifyAsync(connection)
+verifier -> iso : Read schema version, row counts, newest row time
+iso --> verifier : Values
+verifier --> drill : Findings
+drill -> drill : Compare duration with 4 hours and data age with 5 minutes (L2-177)
+drill -> controller : POST /api/ops/restore-drills
+controller -> controller : Authenticate pipeline identity (L2-133)
+controller -> handler : Send RecordRestoreDrillCommand
+handler -> db : Save RestoreDrillRecord
+db --> handler : Commit result
+handler --> controller : Record identifier
+controller --> drill : 201 Created
+drill -> backup : Delete isolated instance
+backup --> drill : Deleted
+alt outcome Passed
+  drill --> actor : Report pass with duration
+else outcome Failed
+  drill --> actor : Fail the job and report findings
+end
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Edit a listing
+
+Person(owner, "Owner", "Member who owns a business listing")
+Person(verifier, "Verification team member", "Re-checks a changed name or category")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(scanner, "Malware scanner", "Scans uploaded photos")
+
+Rel(owner, jubilee, "Edits listing details and photos using", "HTTPS")
+Rel(jubilee, verifier, "Notifies of a name or category change")
+Rel(jubilee, scanner, "Submits each uploaded photo to")
+@enduml

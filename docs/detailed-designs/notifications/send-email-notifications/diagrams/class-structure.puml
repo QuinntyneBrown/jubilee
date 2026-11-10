@@ -1,0 +1,98 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Send e-mail notifications
+
+class EmailPolicy <<domain service>> {
+  +Decide(event: EmailEvent, preferences: NotificationPreferences, isReading: bool): EmailDecision
+}
+enum EmailDecision {
+  SendNow
+  AddToDailySummary
+  Skip
+}
+enum EmailCategory {
+  NewMessages
+  RequestUpdates
+  MeetingReminders
+  NewBusinesses
+  OwnerTips
+  Security
+  Transactional
+}
+enum EmailFrequency {
+  AsItHappens
+  DailySummary
+}
+class NotificationPreferences {
+  +Guid MemberId
+  +bool NewMessages
+  +bool RequestUpdates
+  +bool MeetingReminders
+  +bool NewBusinesses
+  +bool OwnerTips
+  +EmailFrequency Frequency
+  +IsOn(category: EmailCategory): bool
+  +TurnOff(category: EmailCategory): void
+}
+class PendingEmail {
+  +Guid Id
+  +Guid RecipientMemberId
+  +EmailCategory Category
+  +string BatchKey
+  +DateTimeOffset DueAt
+  +DateTimeOffset? SentAt
+  +Append(item: EmailItem): void
+}
+class EmailItem {
+  +Guid NotificationId
+  +string Title
+  +string Detail
+}
+class EmailMessage {
+  +string To
+  +string Subject
+  +string HtmlBody
+  +string ListUnsubscribe
+  +string ListUnsubscribePost
+}
+interface IEmailSender {
+  +SendAsync(message: EmailMessage): Task
+}
+class MeetingReminder {
+  +Guid RequestId
+  +DateTimeOffset DueAt
+  +DateTimeOffset? SentAt
+  +{static} For(start: DateTimeOffset, now: DateTimeOffset): MeetingReminder
+}
+class MeetingReminderJob {
+  +ExecuteAsync(token: CancellationToken): Task
+}
+class LinkToken {
+  +string TokenHash
+  +LinkTokenPurpose Purpose
+  +Guid MemberId
+  +EmailCategory Category
+}
+
+EmailPolicy ..> NotificationPreferences : reads
+EmailPolicy ..> EmailDecision : returns
+NotificationPreferences --> EmailFrequency : has
+NotificationPreferences ..> EmailCategory : switches
+PendingEmail --> EmailCategory : has
+PendingEmail "1" *-- "1..*" EmailItem : combines
+IEmailSender ..> EmailMessage : sends
+EmailMessage ..> LinkToken : carries unsubscribe
+MeetingReminderJob "1" --> "*" MeetingReminder : processes due
+LinkToken --> EmailCategory : turns off
+@enduml

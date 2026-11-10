@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Search the audit log
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Admin" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "AuditLogPage" as page
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AuditEntriesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SearchAuditLogQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Filter by actor, target or date range
+page -> client : searchAuditEntries(filter, cursor)
+client -> controller : GET /api/admin/audit-entries
+controller -> controller : Authenticate the session
+alt caller holds the Admin role
+  controller -> handler : Send SearchAuditLogQuery
+  handler -> handler : Cap page size at 50
+  handler -> db : Seek on the matching index, newest first
+  db --> handler : Page of entries
+  handler --> controller : AuditEntryPage
+  controller --> client : 200 JSON within 2 seconds (L2-180)
+  client --> page : Entries and next cursor
+  page --> actor : Show actor, action, target, time, values and reason
+else caller lacks the Admin role
+  controller --> client : 403 ProblemDetails (L2-133)
+  client --> page : Forbidden
+  page --> actor : Show the forbidden page
+end
+@enduml

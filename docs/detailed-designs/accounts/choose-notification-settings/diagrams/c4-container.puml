@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Choose notification settings
+
+
+Person(member, "Member", "Chooses notification settings")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Notification settings page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Notification preference endpoints")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and the daily summary job")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Preferences and summary items and outbox")
+}
+System_Ext(email, "E-mail provider", "Transactional e-mail. Vendor <TO SUPPLY>")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "GET and PATCH /api/account/notification-preferences", "JSON/HTTPS")
+Rel(api, db, "Reads and writes preferences", "EF Core")
+Rel(worker, db, "Reads preferences and outbox", "EF Core")
+Rel(worker, email, "Sends e-mail", "HTTPS")
+@enduml

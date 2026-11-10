@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Check viewport coverage in CI
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Developer" as actor
+box "Delivery — CI pipeline" #E0F2FE
+  participant "Pipeline" as pipeline
+  participant "VisualRegressionSuite" as suite
+  participant "OverflowCheck" as overflow
+  participant "ReachabilityCheck" as reach
+end box
+box "Frontend — Jubilee Web (test build)" #D1FADF
+  participant "Headless browser" as browser
+  participant "Jubilee Web with fixture data" as web
+end box
+participant "Baseline store" as baselines
+
+actor -> pipeline : Open a pull request
+pipeline -> suite : Run
+suite -> suite : Read docs/mocks/manifest.json into ViewportCase list
+loop each screen, state, width (360, 576, 768, 992, 1280 px) and theme (light, dark)
+  suite -> browser : Set viewport and theme
+  browser -> web : Open the screen in the given state
+  web --> browser : Rendered page
+  suite -> overflow : Check the page
+  overflow -> browser : Compare scrollWidth with clientWidth and test box overlap
+  browser --> overflow : Measurements
+  overflow --> suite : No horizontal overflow and no overlap (L2-163)
+  suite -> browser : Take screenshot
+  browser --> suite : PNG
+  suite -> baselines : Load the approved baseline
+  baselines --> suite : Baseline PNG
+  suite -> suite : Compute pixel difference
+end
+suite -> reach : Compare functions at 1280 px with 360 px
+reach --> suite : Each function at XL has a route at XS (L2-163)
+alt a difference above threshold, an overflow or an unreachable function
+  suite --> pipeline : Fail with diff images (L2-163)
+  pipeline --> actor : Build failed
+else all cases pass
+  suite --> pipeline : Pass
+  pipeline --> actor : Checks passed
+end
+@enduml

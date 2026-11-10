@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Fail to load and try again
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "LoadRegion" as region
+  participant "LoadErrorState" as err
+  participant "RequestsStore" as store
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "CorrelationIdMiddleware" as corr
+  participant "ProblemDetailsMiddleware" as pd
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+participant "Observability platform" as obs
+store -> client : list(filter)
+client -> corr : GET /api/requests
+corr -> corr : Assign correlation ID
+corr -> pd : Pass request
+pd -> controller : Pass request
+controller -> db : Read requests
+db --> controller : Database unavailable
+controller --> pd : Exception
+pd -> pd : Map area REQ and service unavailable to JB-REQ-503 (L2-118)
+pd -> obs : Log reference, correlation ID and exception
+pd --> client : 503 ProblemDetails with reference and correlationId
+client --> store : HttpErrorResponse
+store -> store : ErrorReferenceResolver.resolve(response, "REQ")
+store --> region : LoadState error
+region -> err : Render inside the region, keep top bar, tab bar and footer (L2-125)
+err --> actor : "We couldn't load your requests. ... quote JB-REQ-503." with "Try again" and "Back to browse"
+actor -> err : Press "Try again"
+err -> store : reload() for this region only (L2-125)
+store -> client : list(filter)
+client -> corr : GET /api/requests
+corr -> pd : Pass request
+pd -> controller : Pass request
+controller -> db : Read requests
+db --> controller : Rows
+controller --> client : 200 OK
+client --> store : Typed result
+store --> region : LoadState loaded
+region -> region : Move focus to the region's heading (L2-125)
+region --> actor : Show the requests
+@enduml

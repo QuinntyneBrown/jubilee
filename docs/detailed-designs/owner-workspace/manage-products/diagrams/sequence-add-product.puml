@@ -1,0 +1,77 @@
+@startuml
+title UML sequence behaviour — Add a product
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyProductsPage" as page
+  participant "ProductEditorDialog" as dialog
+  participant "ProductsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IdempotencyMiddleware" as idem
+  participant "OwnerProductsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AddProductCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Add product"
+page -> dialog : Open "Add a product"
+actor -> dialog : Fill fields and press "Add product"
+dialog -> dialog : Validate name and price and stock (L2-091)
+alt Invalid in the browser
+  dialog --> actor : Show "Enter a name for the product." under the field (L2-126)
+else Valid in the browser
+  dialog -> client : Build typed request with idempotency key
+  client -> idem : POST /api/owner/listings/{listingId}/products
+  idem -> idem : Look up Idempotency-Key (L2-132)
+  alt Key seen within 24 hours
+    idem --> client : Original response
+  else New key
+    idem -> controller : Pass request
+    controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
+    controller -> handler : Send AddProductCommand
+    handler -> handler : Validate price 0.01 to 100,000.00 and stock 0 to 9,999 (L2-091)
+    handler -> db : Load listing with products
+    db --> handler : Listing
+    handler -> entity : AddProduct with 100 product limit (L2-089)
+    alt Limit reached or field invalid
+      entity --> handler : Rule violated
+      handler --> controller : PRODUCT_LIMIT_REACHED or field codes
+      controller --> client : 422 ProblemDetails
+    else Accepted
+      entity --> handler : Product with PriceCents
+      handler -> db : Save product and ProductChanged outbox message
+      db --> handler : Commit result
+      handler --> controller : ProductDto
+      controller --> idem : 201 product
+      idem --> client : 201 product
+    end
+  end
+  client --> dialog : Result
+  alt Saved
+    dialog --> page : Close with product
+    page --> actor : Toast "Product added. “{name}” is live in your shop." with "View in shop"
+  else Limit reached
+    dialog --> actor : Show "You can list up to 100 products."
+  else Save failed
+    dialog --> actor : Show "We couldn't save the product." and keep input (L2-128)
+  end
+end
+@enduml

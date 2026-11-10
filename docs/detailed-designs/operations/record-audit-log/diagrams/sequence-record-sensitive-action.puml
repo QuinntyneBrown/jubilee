@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Record a sensitive action
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Verification team member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Admin page" as page
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminMembersController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AuditBehavior" as behavior
+  participant "ChangeMemberRoleCommandHandler" as handler
+  participant "Member" as entity
+  participant "AuditLog" as audit
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "AppendOnlyInterceptor" as interceptor
+  database "Jubilee database" as db
+end box
+actor -> page : Change a role and enter the reason
+page -> client : changeRole(memberId, role, reason)
+client -> controller : PUT /api/admin/members/{id}/role
+controller -> controller : Authenticate and require Admin role (L2-133)
+controller -> behavior : Send ChangeMemberRoleCommand
+behavior -> handler : Handle
+handler -> db : Load member
+db --> handler : Current state
+handler -> entity : ChangeRole(role)
+entity --> handler : Before and after values
+handler -> audit : Record draft with before, after, reason (L2-180)
+audit -> audit : Add actor, time, correlation ID
+audit --> handler : AuditEntry added to unit of work
+handler -> interceptor : Save changes in one unit of work
+interceptor -> interceptor : Reject Modified or Deleted AuditEntry (L2-180)
+interceptor -> db : Update member and insert AuditEntry
+db --> interceptor : Commit result
+interceptor --> handler : Saved
+handler --> behavior : Result
+alt entry recorded
+  behavior --> controller : Result
+  controller --> client : 204 No Content
+  client --> page : Done
+  page --> actor : Show the new role
+else handler recorded no entry
+  behavior --> controller : Failure and transaction rolled back
+  controller --> client : 500 ProblemDetails
+  client --> page : Error
+  page --> actor : Show the error with its reference
+end
+@enduml

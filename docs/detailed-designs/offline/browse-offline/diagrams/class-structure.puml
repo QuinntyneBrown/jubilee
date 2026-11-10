@@ -1,0 +1,96 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Browse offline
+
+enum ConnectionState {
+  Online
+  Offline
+  Reconnecting
+  ServiceUnreachable
+  Slow
+}
+
+class ConnectionService {
+  +state: Signal<ConnectionState>
+  +isOffline(): boolean
+  +retryNow(): void
+}
+
+class BrowseStore {
+  +home: Signal<BrowseHomeDto>
+  +fromCache: Signal<boolean>
+  +savedAt: Signal<Date>
+  +load(): Promise<void>
+  +reload(): Promise<void>
+}
+
+class BrowseHomeDto {
+  +featuredBusinesses: BusinessCardDto[]
+  +featuredProducts: ProductCardDto[]
+  +categories: CategoryDto[]
+  +verifiedBusinessCount: number
+}
+
+class SnapshotStamp {
+  +resourceKey: string
+  +savedAt: Date
+}
+
+class OfflineSnapshotStore {
+  +stamp(resourceKey: string, savedAt: Date): Promise<void>
+  +read(resourceKey: string): Promise<SnapshotStamp>
+  +clear(): Promise<void>
+}
+
+class BrowsePage {
+  +showOfflineBanner(savedAt: Date): void
+  +tryAgain(): void
+}
+
+class OfflinePage {
+  +returnUrl: string
+  +tryAgain(): void
+  +openMessages(): void
+}
+
+class OfflineNavigationHandler {
+  +handle(error: unknown, attemptedUrl: string): void
+}
+
+class RequiresConnectionDirective {
+  +explanationId: string
+  +onStateChange(state: ConnectionState): void
+}
+
+class OfflineDataCleaner {
+  +clearPersonalData(): Promise<void>
+}
+
+class GetBrowseHomeQueryHandler {
+  +Handle(query: GetBrowseHomeQuery, ct: CancellationToken): Task<BrowseHomeDto>
+}
+
+ConnectionService --> ConnectionState : exposes
+BrowsePage --> BrowseStore : reads
+BrowseStore "1" --> "0..1" BrowseHomeDto : holds
+BrowseStore ..> OfflineSnapshotStore : stamps / reads
+BrowseStore ..> ConnectionService : reads
+OfflineSnapshotStore "1" *-- "*" SnapshotStamp : stores
+OfflineNavigationHandler ..> OfflinePage : renders
+OfflineNavigationHandler ..> ConnectionService : reads
+OfflinePage ..> ConnectionService : waits for Online
+RequiresConnectionDirective ..> ConnectionService : reads
+OfflineDataCleaner ..> OfflineSnapshotStore : clears
+GetBrowseHomeQueryHandler ..> BrowseHomeDto : returns
+@enduml

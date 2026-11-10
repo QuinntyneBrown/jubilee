@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Adapt navigation
+
+Person(visitor, "Visitor", "Browses on a phone, tablet or desktop without signing in")
+Person(member, "Member", "Moves between Browse, List, Messages and the account on any viewport")
+Person(owner, "Owner", "Reaches the owner workspace on any viewport")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Shows a bottom tab bar under 768 px and a top bar with navigation from 768 px")
+System_Ext(ci, "CI pipeline", "Runs visual regression at 360, 576, 768, 992 and 1280 px in both themes. Vendor <TO SUPPLY>")
+
+Rel(visitor, jubilee, "Navigates", "HTTPS")
+Rel(member, jubilee, "Navigates", "HTTPS")
+Rel(owner, jubilee, "Navigates", "HTTPS")
+Rel(ci, jubilee, "Renders every screen and state of", "Headless browser")
+@enduml

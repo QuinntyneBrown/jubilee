@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Pause and resume a listing
+
+Person(owner, "Owner", "Pauses and resumes a listing")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Pause dialog and paused banner")
+  Container(api, "Jubilee API", "ASP.NET Core", "Pause and resume endpoints and stage rules")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and search indexing")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listing stage and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Public read caches of at most 60 seconds")
+  ContainerDb(search, "Search index", "<TO SUPPLY>", "Full-text search over live listings")
+}
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Posts pause and resume", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Removes the listing's cached entries", "Redis protocol")
+Rel(worker, db, "Reads outbox", "EF Core")
+Rel(worker, search, "Removes or adds the listing")
+@enduml

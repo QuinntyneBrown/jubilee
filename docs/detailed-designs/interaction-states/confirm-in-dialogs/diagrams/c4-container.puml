@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Confirm in dialogs
+
+Person(member, "Member", "Cancels an open request")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Dialog shell and confirmation dialogs and undo toast")
+  Container(api, "Jubilee API", "ASP.NET Core", "Cancel and undo endpoints under /api/requests")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox to notify the business")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Requests and outbox")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Sends the confirmed action to", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Reads outbox from", "EF Core")
+@enduml

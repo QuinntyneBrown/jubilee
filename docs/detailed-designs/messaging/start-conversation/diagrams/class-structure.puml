@@ -1,0 +1,84 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Start a conversation
+
+class NewMessageDialog <<Angular dialog>> {
+  +listing: ListingSummary
+  +text: FormControl<string>
+  +state: DialogState
+  -idempotencyKey: string
+  +send(): void
+  +remaining(): number
+}
+enum DialogState {
+  Default
+  Invalid
+  Busy
+  Failed
+}
+class MessagesApi <<Angular service>> {
+  +startConversation(listingId: string, text: string, key: string): Observable<StartConversationResult>
+}
+class ConversationsController {
+  +Start(request: StartConversationRequest): Task<IActionResult>
+}
+class StartConversationCommand {
+  +Guid MemberId
+  +Guid ListingId
+  +string Text
+}
+class StartConversationCommandValidator {
+  +const int MaxLength = 4000
+  +Validate(command: StartConversationCommand): ValidationResult
+}
+class StartConversationCommandHandler {
+  +Handle(command: StartConversationCommand): Task<StartConversationResult>
+}
+class StartConversationResult {
+  +Guid ConversationId
+  +Guid MessageId
+  +bool Created
+}
+class Conversation {
+  +Guid Id
+  +Guid MemberId
+  +Guid ListingId
+  +DateTimeOffset LastActivityAt
+  +{static} Start(memberId: Guid, listingId: Guid): Conversation
+  +AddMessage(senderId: Guid, text: string, now: DateTimeOffset): Message
+}
+class Message {
+  +Guid Id
+  +Guid SenderMemberId
+  +string Text
+  +DateTimeOffset SentAt
+}
+class OutboxMessage {
+  +Guid Id
+  +string Type
+  +string Payload
+  +DateTimeOffset CreatedAt
+}
+
+NewMessageDialog --> DialogState : has
+NewMessageDialog ..> MessagesApi : calls
+MessagesApi ..> ConversationsController : POST /api/conversations
+ConversationsController ..> StartConversationCommand : sends
+StartConversationCommandValidator ..> StartConversationCommand : validates
+StartConversationCommandHandler ..> StartConversationCommand : handles
+StartConversationCommandHandler ..> StartConversationResult : returns
+StartConversationCommandHandler --> Conversation : finds or creates
+StartConversationCommandHandler ..> OutboxMessage : writes MessageSent
+Conversation "1" *-- "1..*" Message : contains
+@enduml

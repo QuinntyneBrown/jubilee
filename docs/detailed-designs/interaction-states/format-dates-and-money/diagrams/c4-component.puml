@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Format dates and money
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "MessagesPage and OrderRequestDialog", "Angular page and dialog", "Example consumers of the pipes")
+  Component(datepipe, "ListDatePipe", "Angular pipe", "Time or Yesterday or weekday and date or date")
+  Component(moneypipe, "MoneyPipe", "Angular pipe", "Plain or Total or PerUnit style")
+  Component(toronto, "TorontoTime", "Angular service", "America/Toronto calendar and wall-clock conversion")
+  Component(clock, "ClockService", "Angular service", "Current instant")
+  Component(client, "MessagesApi and RequestsApi", "Typed HTTP clients", "Carry UTC instants and cents")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(json, "UtcJsonConverter", "System.Text.Json converter", "ISO 8601 with Z. Rejects instants without offset")
+  Component(ctrl, "Controllers", "ASP.NET Core controllers", "Return DTOs with instants and cents")
+  Component(iclock, "IClock", "Application service", "UtcNow for handlers and entities")
+  Component(efconv, "UtcDateTimeConverter", "EF Core value converter", "Writes and reads DateTime as UTC")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(fmt, "EmailFormatter", "Application service", "Applies the list date and money rules in e-mail")
+  Component(tz, "TorontoTimeZone", "Infrastructure service", "UTC to America/Toronto with daylight saving")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "UTC datetime2 and integer cents")
+
+Rel(page, datepipe, "Formats times with")
+Rel(page, moneypipe, "Formats amounts with")
+Rel(page, client, "Loads data through")
+Rel(datepipe, toronto, "Gets Toronto calendar day from")
+Rel(datepipe, clock, "Gets now from")
+Rel(client, json, "Exchanges JSON with", "JSON/HTTPS")
+Rel(json, ctrl, "Binds and serializes for")
+Rel(ctrl, iclock, "Handlers read time from")
+Rel(ctrl, efconv, "Handlers persist through")
+Rel(efconv, db, "Reads and writes", "EF Core")
+Rel(fmt, tz, "Converts instants with")
+Rel(fmt, db, "Reads instants and cents from", "EF Core")
+@enduml

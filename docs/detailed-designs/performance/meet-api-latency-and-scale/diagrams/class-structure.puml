@@ -1,0 +1,104 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Meet API latency and scale
+
+enum EndpointClass {
+  Read
+  Write
+  Search
+}
+
+class LatencyTarget {
+  +EndpointClass Class
+  +TimeSpan P95
+  +TimeSpan? P99
+}
+
+class RequestMetricsMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+  -Record(route: string, cls: EndpointClass, elapsed: TimeSpan): void
+}
+
+class RequestTimeoutMiddleware {
+  +{static} TimeSpan Limit = 10 s
+  +InvokeAsync(context: HttpContext): Task
+}
+
+class EdgeCacheFilter {
+  +{static} int SharedMaxAgeSeconds = 60
+  +OnResultExecuting(context: ResultExecutingContext): void
+  -IsVisitor(request: HttpRequest): bool
+}
+
+interface IReadCache {
+  +GetOrSetAsync<T>(key: string, ttl: TimeSpan, load: Func<Task<T>>): Task<T>
+  +RemoveAsync(key: string): Task
+}
+
+interface IEdgeCache {
+  +PurgeAsync(tags: IReadOnlyList<string>, ct: CancellationToken): Task
+}
+
+class ListingStateChanged {
+  +Guid ListingId
+  +string Slug
+  +string CategorySlug
+  +ListingStage From
+  +ListingStage To
+}
+
+class OutboxMessage {
+  +Guid Id
+  +string Type
+  +string Payload
+  +DateTimeOffset OccurredAt
+  +DateTimeOffset? DispatchedAt
+}
+
+class EdgeCachePurgeHandler {
+  +Handle(evt: ListingStateChanged, ct: CancellationToken): Task
+}
+
+class LoadTestScenario {
+  +int Businesses = 10000
+  +int Members = 200000
+  +int RequestsPerSecond = 500
+  +int ReadPercent = 80
+  +TimeSpan Duration = 30 min
+  +int RealtimeConnections = 5000
+}
+
+class PerformanceGate {
+  +IReadOnlyList<LatencyTarget> Targets
+  +decimal MaxErrorRatePercent = 0.1
+  +Evaluate(report: LoadTestReport): bool
+}
+
+class LoadTestReport {
+  +IDictionary<EndpointClass, TimeSpan> P95
+  +IDictionary<EndpointClass, TimeSpan> P99
+  +decimal ErrorRatePercent
+  +decimal RealtimeWithin2sPercent
+}
+
+LatencyTarget --> EndpointClass : for
+RequestMetricsMiddleware ..> EndpointClass : tags with
+PerformanceGate "1" o-- "3" LatencyTarget : checks
+PerformanceGate ..> LoadTestReport : evaluates
+LoadTestReport ..> LoadTestScenario : produced by
+EdgeCachePurgeHandler ..> ListingStateChanged : handles
+EdgeCachePurgeHandler --> IEdgeCache : calls
+EdgeCachePurgeHandler --> IReadCache : evicts
+OutboxMessage ..> ListingStateChanged : carries
+@enduml

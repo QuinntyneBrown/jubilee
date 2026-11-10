@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Enforce page budgets in CI
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Developer" as actor
+box "Delivery — CI pipeline" #E0F2FE
+  participant "Pipeline" as pipeline
+  participant "Angular production build" as build
+  participant "BundleBudgetCheck" as budget
+  participant "LighthouseCheck" as lighthouse
+end box
+box "Frontend — Jubilee Web (preview deployment)" #D1FADF
+  participant "Jubilee Web" as web
+end box
+
+actor -> pipeline : Merge a change to the main branch
+pipeline -> build : Build Jubilee Web
+build --> pipeline : Output files and bundle statistics
+pipeline -> budget : Check the initial route bundle
+budget -> budget : Sum compressed JavaScript and CSS of the first route
+alt JavaScript above 170 KB or CSS above 50 KB (L2-153)
+  budget --> pipeline : Fail with the file sizes that exceed the budget
+  pipeline --> actor : Build failed
+else within budget
+  budget -> budget : Assert /my-business and /admin chunks are not in the initial bundle (L2-153)
+  budget --> pipeline : Pass
+  pipeline -> web : Deploy preview with seeded data
+  web --> pipeline : Preview URL
+  pipeline -> lighthouse : Audit browse, business and product pages
+  lighthouse -> web : Load each page with Moto G Power and slow 4G emulation
+  web --> lighthouse : Page and assets
+  alt performance score below 90 (L2-151)
+    lighthouse --> pipeline : Fail with the report
+    pipeline --> actor : Build failed
+  else score at least 90
+    lighthouse --> pipeline : Pass with the report
+    pipeline --> actor : Checks passed
+  end
+end
+@enduml

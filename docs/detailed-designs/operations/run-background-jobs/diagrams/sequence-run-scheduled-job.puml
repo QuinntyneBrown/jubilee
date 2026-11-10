@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Run a scheduled job once across instances
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Worker (instance A)" #D1FADF
+  participant "JobScheduler A" as schedA
+  participant "JobRunner" as runner
+  participant "MeetingReminderJob" as job
+end box
+box "Backend — Jubilee Worker (instance B)" #D1FADF
+  participant "JobScheduler B" as schedB
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "TorontoSchedule" as schedule
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+schedA -> schedule : OccurrencesBetween(cron, lastTick, now)
+schedule -> schedule : Compute in America/Toronto across daylight saving (L2-182)
+schedule --> schedA : Due occurrence
+schedB -> schedule : OccurrencesBetween(cron, lastTick, now)
+schedule --> schedB : Same due occurrence
+schedA -> db : Insert JobRun (JobName, ScheduledFor)
+db --> schedA : Inserted
+schedB -> db : Insert JobRun (JobName, ScheduledFor)
+db --> schedB : Unique key violation
+schedB -> schedB : Skip occurrence: at most once per schedule (L2-182)
+schedA -> runner : RunAsync(run)
+runner -> job : ExecuteAsync(context)
+job -> db : Load confirmed bookings due with no reminder mark
+db --> job : Bookings
+job -> db : Set reminder mark and write outbox messages in one unit of work
+db --> job : Commit result
+job --> runner : Completed
+runner -> db : Mark JobRun Succeeded and set JobState.LastSuccessAt
+db --> runner : Commit result
+runner --> schedA : Done
+@enduml

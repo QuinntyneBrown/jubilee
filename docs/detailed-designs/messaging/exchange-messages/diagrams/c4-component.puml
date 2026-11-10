@@ -1,0 +1,43 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Exchange messages
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ConversationPage", "Angular page", "Route /messages/:id with header and timeline and composer")
+  Component(timeline, "MessageTimeline", "Angular component", "Day separators and messages and request cards and delivery status")
+  Component(composer, "MessageComposer", "Angular component", "Text entry with Enter to send and photo attach")
+  Component(photo, "PhotoAttachmentService", "Angular service", "Checks type and shrinks photos to 5 MB")
+  Component(store, "ConversationStore", "Signal store", "Messages and pending sends and read state")
+  Component(client, "MessagesApi", "Typed HTTP client", "Calls message and attachment endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ConversationsController", "ASP.NET Core controller", "Exposes /api/conversations/{id} and its messages and read and attachments")
+  Component(get, "GetConversationQueryHandler", "MediatR handler", "Returns header and a page of 50 messages")
+  Component(send, "SendMessageCommandHandler", "MediatR handler", "Adds a message for a participant")
+  Component(read, "MarkConversationReadCommandHandler", "MediatR handler", "Advances the reader's position")
+  Component(upload, "UploadMessagePhotoCommandHandler", "MediatR handler", "Validates and re-encodes and stores a photo")
+  Component(conv, "Conversation", "Domain entity", "Owns participants and messages and timeline rules")
+  Component(hub, "EventsHub", "SignalR hub", "Pushes message.created to participants")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and messages and outbox")
+ContainerDb(media, "Media storage", "Object storage + CDN", "Message photos")
+
+Rel(page, timeline, "Renders")
+Rel(page, composer, "Hosts")
+Rel(composer, photo, "Prepares attachments with")
+Rel(composer, store, "Queues outgoing message in")
+Rel(timeline, store, "Reads messages from")
+Rel(store, client, "Loads and sends through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(hub, store, "Pushes message.created", "WebSocket or server-sent events")
+Rel(ctrl, get, "Sends GetConversationQuery")
+Rel(ctrl, send, "Sends SendMessageCommand")
+Rel(ctrl, read, "Sends MarkConversationReadCommand")
+Rel(ctrl, upload, "Sends UploadMessagePhotoCommand")
+Rel(send, conv, "Loads and mutates")
+Rel(read, conv, "Loads and mutates")
+Rel(get, db, "Queries", "EF Core")
+Rel(send, db, "Persists with outbox row", "EF Core")
+Rel(upload, media, "Stores re-encoded photo", "HTTPS")
+@enduml

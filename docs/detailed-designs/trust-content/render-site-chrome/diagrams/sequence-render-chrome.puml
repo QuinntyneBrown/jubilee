@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — Render the chrome for a member
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "AppShell" as shell
+  participant "TopBar" as top
+  participant "TabBar" as tab
+  participant "ViewportService" as viewport
+  participant "NavigationStore" as store
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "NavigationController" as controller
+  participant "EventsHub" as hub
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetNavigationSummaryQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> shell : Open any app page
+shell -> shell : Render SkipLink then TopBar then main then SiteFooter (L2-112)
+shell -> store : Load navigation summary
+store -> controller : GET /api/me/navigation
+controller -> controller : Authenticate session cookie
+controller -> handler : Send GetNavigationSummaryQuery
+handler -> db : Count unread conversations and check listing ownership
+db --> handler : Counts
+handler --> controller : NavigationSummary
+controller --> store : 200 summary
+store --> shell : Summary signal
+shell -> viewport : Read isMedium and isLarge
+viewport --> shell : Breakpoint signals
+alt Under 768 px
+  shell -> top : Show brand and avatar only (L2-164)
+  shell -> tab : Show "Browse" and "List" or "Business" and "Messages" and "You" (L2-112)
+  shell -> shell : Reserve tab bar height plus safe-area inset
+else 768 px to 1023 px
+  shell -> top : Show brand and navigation and avatar (L2-112)
+else 1024 px or wider
+  shell -> top : Also show the search box "Plumber, lawyer, Bibles…" (L2-112)
+end
+top --> actor : Top bar with "Messages" badge
+shell --> actor : Footer with "Statement of faith" "Help" "Terms" "Privacy"
+hub -> store : BadgeChanged with the new unread count
+store -> top : Update badge signal (L2-065)
+store -> tab : Update badge signal (L2-065)
+top --> actor : Badge shows the new count
+@enduml

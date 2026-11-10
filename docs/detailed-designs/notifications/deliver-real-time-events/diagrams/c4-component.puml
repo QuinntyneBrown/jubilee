@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Deliver real-time events
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(rt, "RealtimeClient", "Angular service", "Connection lifecycle and last event ID and duplicate filter")
+  Component(session, "SessionService", "Angular service", "Starts and stops the connection with the session")
+  Component(stores, "Feature stores", "Signal stores", "MessagesStore and NotificationsStore and BadgeStore and RequestsStore")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(auth, "SessionAuthenticationMiddleware", "ASP.NET Core middleware", "Authenticates the session cookie at connect")
+  Component(hub, "EventsHub", "SignalR hub", "Adds each connection to its member group and replays missed events")
+  Component(log, "IEventLog", "Application service", "Per-member ordered event log")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Reads undispatched outbox rows")
+  Component(pub, "RealtimePublisher", "Infrastructure adapter", "Assigns event IDs and appends and publishes")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Outbox")
+ContainerDb(cache, "Cache", "Redis", "Event log and backplane")
+
+Rel(session, rt, "Starts and stops")
+Rel(rt, stores, "Dispatches events by type to")
+Rel(rt, auth, "Connects to /api/events", "WebSocket or server-sent events")
+Rel(auth, hub, "Passes authenticated connection to")
+Rel(hub, rt, "Pushes events", "WebSocket or server-sent events")
+Rel(hub, log, "Reads events after the last event ID from")
+Rel(log, cache, "Reads", "Redis protocol")
+Rel(outbox, db, "Reads outbox", "EF Core")
+Rel(outbox, pub, "Publishes through")
+Rel(pub, cache, "Appends to event log and publishes to backplane", "Redis protocol")
+Rel(cache, hub, "Delivers backplane messages to")
+@enduml

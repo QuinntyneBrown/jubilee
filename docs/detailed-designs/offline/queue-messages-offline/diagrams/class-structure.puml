@@ -1,0 +1,107 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Queue messages offline
+
+enum QueuedMessageState {
+  WaitingToSend
+  Sending
+  Sent
+  NotSent
+}
+
+class QueuedMessage {
+  +id: string
+  +conversationId: string
+  +body: string
+  +idempotencyKey: string
+  +sequence: number
+  +queuedAt: Date
+  +state: QueuedMessageState
+}
+
+class OutgoingMessageQueue {
+  +enqueue(message: QueuedMessage): Promise<void>
+  +nextWaiting(): Promise<QueuedMessage>
+  +markSent(id: string): Promise<void>
+  +markNotSent(id: string): Promise<void>
+  +retry(id: string): Promise<void>
+  +remove(id: string): Promise<void>
+}
+
+class QueueDrainer {
+  +drain(): Promise<number>
+}
+
+class QueueExpiryMonitor {
+  +maxAgeHours: number = 24
+  +sweep(now: Date): Promise<void>
+}
+
+class ConversationStore {
+  +thread: Signal<ThreadItem[]>
+  +send(body: string): Promise<void>
+  +retry(id: string): Promise<void>
+  +delete(id: string): Promise<void>
+}
+
+class IdempotencyKeyFactory {
+  +create(): string
+}
+
+class SendMessageCommand {
+  +Guid ConversationId
+  +Guid SenderId
+  +string Body
+  +string IdempotencyKey
+}
+
+class SendMessageCommandHandler {
+  +Handle(command: SendMessageCommand, ct: CancellationToken): Task<MessageDto>
+}
+
+class Conversation {
+  +Guid Id
+  +Guid MemberId
+  +Guid ListingId
+  +AddMessage(senderId: Guid, body: string, sentAt: DateTime): Message
+}
+
+class Message {
+  +Guid Id
+  +Guid ConversationId
+  +Guid SenderId
+  +string Body
+  +DateTime SentAtUtc
+}
+
+class IdempotencyRecord {
+  +string Key
+  +Guid MemberId
+  +int StatusCode
+  +string ResponseBody
+  +DateTime ExpiresAtUtc
+}
+
+OutgoingMessageQueue "1" *-- "*" QueuedMessage : stores
+QueuedMessage --> QueuedMessageState : has
+ConversationStore ..> IdempotencyKeyFactory : gets key
+ConversationStore ..> OutgoingMessageQueue : enqueues
+QueueDrainer ..> OutgoingMessageQueue : reads / marks
+QueueExpiryMonitor ..> OutgoingMessageQueue : marks NotSent
+QueueDrainer ..> SendMessageCommand : posts as request
+SendMessageCommandHandler ..> SendMessageCommand : handles
+SendMessageCommandHandler --> Conversation : loads / mutates
+Conversation "1" *-- "*" Message : contains
+IdempotencyRecord "1" --> "1" Message : replays result for
+@enduml

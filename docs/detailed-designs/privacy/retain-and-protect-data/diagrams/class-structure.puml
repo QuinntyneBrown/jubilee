@@ -1,0 +1,96 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Retain and protect data
+
+interface IRetentionRule {
+  +string Name
+  +ApplyAsync(now: DateTimeOffset, ct: CancellationToken): Task<int>
+}
+
+class RetentionJob {
+  -IReadOnlyList<IRetentionRule> rules
+  +RunAsync(ct: CancellationToken): Task
+}
+
+class DeclinedRequestRetentionRule {
+  +TimeSpan Age = 90 days
+}
+
+class NotificationRetentionRule {
+  +TimeSpan Age = 90 days
+}
+
+class ReportRetentionRule {
+  +TimeSpan Age = 2 years
+}
+
+class LogRetentionRule {
+  +TimeSpan ApplicationLogs = 30 days
+  +TimeSpan SecurityLogs = 1 year
+}
+
+class RetentionRun {
+  +Guid Id
+  +string RuleName
+  +DateOnly ScheduleDate
+  +int DeletedCount
+  +RetentionRunStatus Status
+  +DateTimeOffset CompletedAt
+}
+
+enum RetentionRunStatus {
+  Succeeded
+  Failed
+}
+
+class Request {
+  +Guid Id
+  +RequestStatus Status
+  +DateTimeOffset? DeclinedAt
+  +DateTimeOffset? RedactedAt
+  +string ContactPhone
+  +string Details
+  +RedactPersonalDetails(now: DateTimeOffset): void
+}
+
+class Notification {
+  +Guid Id
+  +Guid MemberId
+  +DateTimeOffset CreatedAt
+}
+
+class Report {
+  +Guid Id
+  +Guid? ReporterId
+  +string ReporterNote
+  +DateTimeOffset? ResolvedAt
+  +RemoveReporterDetails(): void
+}
+
+class DataProtectionStartupCheck {
+  +StartAsync(ct: CancellationToken): Task
+  -RequireTls(connection: string): void
+}
+
+RetentionJob "1" o-- "*" IRetentionRule : runs
+RetentionJob ..> RetentionRun : records
+RetentionRun --> RetentionRunStatus : has
+IRetentionRule <|.. DeclinedRequestRetentionRule
+IRetentionRule <|.. NotificationRetentionRule
+IRetentionRule <|.. ReportRetentionRule
+IRetentionRule <|.. LogRetentionRule
+DeclinedRequestRetentionRule ..> Request : redacts
+NotificationRetentionRule ..> Notification : deletes
+ReportRetentionRule ..> Report : redacts
+@enduml

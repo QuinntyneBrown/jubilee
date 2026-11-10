@@ -1,0 +1,79 @@
+@startuml
+title UML sequence behaviour — Load and read notifications
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "NotificationsPage" as page
+  participant "NotificationsStore" as store
+  participant "NotificationsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "NotificationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ListNotificationsQueryHandler" as list
+  participant "MarkNotificationsReadCommandHandler" as mark
+  participant "Notification" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+member -> page : Open /notifications
+page -> store : load()
+store -> client : list()
+client -> controller : GET /api/notifications
+controller -> controller : Authenticate and apply endpoint policy
+controller -> list : Send ListNotificationsQuery
+list -> db : Select caller's notifications created within 90 days newest first (L2-064)
+db --> list : Rows
+list --> controller : NotificationListDto
+controller --> client : 200 OK
+client --> store : Items and unread count
+alt no notifications
+  page --> member : Show "No notifications yet." with "Browse businesses"
+else notifications exist
+  page --> member : Show "3 unread" and items marked "Unread."
+end
+opt member presses an item
+  member -> page : Press item
+  page -> store : open(id)
+  store -> client : markRead(id)
+  client -> controller : POST /api/notifications/{id}/read
+  controller -> mark : Send MarkNotificationsReadCommand
+  mark -> db : Load notification owned by the caller (L2-133)
+  db --> mark : Notification
+  mark -> entity : MarkRead(now)
+  entity --> mark : ReadAt set
+  mark -> db : Save changes
+  db --> mark : Commit result
+  mark --> controller : Done
+  controller --> client : 204 No Content
+  page --> member : Navigate to the request or conversation or listing (L2-064)
+end
+opt member presses "Mark all as read"
+  member -> page : Press "Mark all as read"
+  page -> store : markAllRead()
+  store -> client : markAllRead()
+  client -> controller : POST /api/notifications/read-all
+  controller -> mark : Send MarkNotificationsReadCommand without an ID
+  mark -> db : Set ReadAt on every unread notification of the caller
+  db --> mark : Commit result
+  mark --> controller : Done
+  controller --> client : 204 No Content
+  client --> store : All read
+  store --> page : Remove unread styling and count (L2-064)
+end
+@enduml

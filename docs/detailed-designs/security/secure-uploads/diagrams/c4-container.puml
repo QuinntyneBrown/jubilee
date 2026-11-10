@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Secure uploads
+
+Person(owner, "Owner", "Uploads and views photos")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Photo picker with early type and size check")
+  Container(api, "Jubilee API", "ASP.NET Core", "Inspects magic bytes. Re-encodes. Stores. Requests the scan")
+  ContainerDb(db, "Jubilee database", "SQL Server", "MediaObject records with status")
+  ContainerDb(media, "Media storage", "Object storage + CDN", "Private quarantine container and public container on a cookieless domain")
+}
+System_Ext(scanner, "Malware scanner", "Scans quarantine objects")
+
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Posts photo to", "multipart/HTTPS")
+Rel(api, media, "Writes quarantine and published objects to", "HTTPS")
+Rel(api, scanner, "Requests scan from", "HTTPS")
+Rel(api, db, "Records MediaObject in", "EF Core")
+Rel(owner, media, "Fetches published photo from", "HTTPS without cookies")
+@enduml

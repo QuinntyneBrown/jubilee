@@ -1,0 +1,89 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Show the verified mark
+
+enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Paused
+}
+
+class Listing {
+  +Guid Id
+  +string Name
+  +ListingStage Stage
+  +DateTimeOffset? ApprovedAt
+  +Guid? ApprovedBy
+  +bool IsVerified
+  +Approve(verifierId: Guid, now: DateTimeOffset): void
+}
+
+class VerifiedListingSpecification {
+  +ToExpression(): Expression<Func<Listing, bool>>
+  +IsSatisfiedBy(listing: Listing): bool
+}
+
+class ListingCardDto {
+  +Guid Id
+  +string Slug
+  +string Name
+  +string Tagline
+  +bool Verified
+}
+
+class ListingPageDto {
+  +Guid Id
+  +string Slug
+  +string Name
+  +string CategoryName
+  +bool Verified
+}
+
+class GetCategoryListingsQueryHandler {
+  +Handle(query: GetCategoryListingsQuery): Task<PagedResult<ListingCardDto>>
+}
+
+class GetPublicListingQueryHandler {
+  +Handle(query: GetPublicListingQuery): Task<ListingPageDto>
+}
+
+class VerifiedMark <<Angular component>> {
+  +verified: boolean
+  +label: string = "Verified"
+}
+
+class VerifiedBusinessLabel <<Angular component>> {
+  +verified: boolean
+  +categoryName: string
+  +helpLink: string = "/help#how-does-a-business-get-verified"
+}
+
+class BusinessCard <<Angular component>> {
+  +listing: ListingCardDto
+}
+
+Listing --> ListingStage : has
+Listing ..> VerifiedListingSpecification : IsVerified uses
+GetCategoryListingsQueryHandler ..> VerifiedListingSpecification : projects with
+GetPublicListingQueryHandler ..> VerifiedListingSpecification : projects with
+GetCategoryListingsQueryHandler ..> ListingCardDto : returns
+GetPublicListingQueryHandler ..> ListingPageDto : returns
+BusinessCard --> ListingCardDto : shows
+BusinessCard *-- "0..1" VerifiedMark
+VerifiedBusinessLabel ..> ListingPageDto : reads Verified
+@enduml

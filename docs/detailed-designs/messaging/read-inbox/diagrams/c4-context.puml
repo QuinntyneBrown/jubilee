@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Read the inbox
+
+Person(member, "Member", "Reads and searches personal conversations")
+Person(owner, "Owner", "Reads conversations addressed to an owned business")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(member, jubilee, "Lists and searches and mutes conversations using")
+Rel(owner, jubilee, "Lists business and personal conversations using")
+@enduml

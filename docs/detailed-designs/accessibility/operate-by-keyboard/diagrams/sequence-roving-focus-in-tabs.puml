@@ -1,0 +1,40 @@
+@startuml
+title UML sequence behaviour — Move through tabs with roving focus
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Tabs" as tabs
+  participant "RovingFocusDirective" as roving
+  participant "Tab panel" as panel
+end box
+actor -> tabs : Tab into the tab list
+tabs -> roving : Focus enters
+roving --> actor : Focus the selected tab, the only one with tabindex 0 (L2-158)
+actor -> roving : Press Right Arrow
+roving -> roving : Move activeIndex to the next tab and wrap at the end
+roving -> tabs : setActive(index)
+tabs -> tabs : Set tabindex 0 and aria-selected true on the new tab and -1 on the others
+tabs -> panel : Show the panel named by aria-controls
+panel --> tabs : Shown
+tabs --> actor : Focus ring on the new tab
+alt Home or End
+  actor -> roving : Press Home or End
+  roving --> actor : Focus the first or last tab
+else Tab
+  actor -> tabs : Press Tab
+  tabs --> actor : Focus leaves the tab list for the tab panel
+end
+@enduml

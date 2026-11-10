@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Announce to screen readers
+
+Person(member, "Member", "Uses Jubilee with a screen reader")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Document structure and live regions and text alternatives")
+  Container(api, "Jubilee API", "ASP.NET Core", "Returns results and pushes real-time events that are announced")
+}
+System_Ext(at, "Screen reader", "NVDA or VoiceOver or TalkBack")
+System_Ext(ci, "CI pipeline", "axe-core scan and structure tests")
+
+Rel(member, at, "Listens and navigates with")
+Rel(at, web, "Reads the accessibility tree of")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, web, "Pushes message and notification events to", "WebSocket")
+Rel(ci, web, "Builds and scans")
+@enduml

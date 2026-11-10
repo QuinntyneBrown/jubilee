@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Show toasts and banners
+
+Person(member, "Member", "Sees toasts and banners")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Toast region and banner region on every page")
+  Container(sw, "Jubilee service worker", "Angular service worker", "Reports queued messages sent after reconnect")
+  Container(api, "Jubilee API", "ASP.NET Core", "Session state and listing state and real-time hub")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Member and listing state")
+}
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Reads session and listing state", "JSON/HTTPS")
+Rel(api, web, "Pushes events that raise toasts and change banners", "WebSocket or server-sent events")
+Rel(sw, web, "Reports queue results to")
+Rel(api, db, "Reads", "EF Core")
+@enduml

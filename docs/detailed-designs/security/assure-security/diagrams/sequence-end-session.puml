@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — End a session
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SignInSecuritySection" as section
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetSessionsQueryHandler" as query
+  participant "EndSessionCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "RedisSessionStore" as store
+  participant "SecurityEventLogger" as seclog
+end box
+user -> section : Open "Sign-in and security"
+section -> client : getSessions()
+client -> controller : GET /api/account/sessions
+controller -> controller : Authenticate and apply MemberOnly policy
+controller -> query : Send GetSessionsQuery
+query -> store : List sessions of the caller
+store --> query : Sessions
+query --> controller : SessionSummary list
+controller --> client : 200 with device, approximate location, last active (L2-143)
+client --> section : Sessions
+section --> user : Show active sessions
+user -> section : End one session
+section -> client : endSession(sessionRef)
+client -> controller : DELETE /api/account/sessions/{id}
+controller -> handler : Send EndSessionCommand
+handler -> store : Find session by reference
+store --> handler : Session or none
+alt Session belongs to the caller
+  handler -> store : Revoke session (L2-143)
+  store --> handler : Ended
+  handler --> controller : Success
+  controller --> client : 204 No Content
+else Session of another member or unknown (L2-133)
+  handler -> seclog : Record AuthorizationDenied
+  seclog --> handler : Recorded
+  handler --> controller : NotFound
+  controller --> client : 404 ProblemDetails
+end
+client --> section : Result
+section --> user : Remove the session from the list
+@enduml

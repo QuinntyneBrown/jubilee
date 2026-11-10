@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Fall back to a database name search
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SearchPage" as page
+  participant "SearchApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SearchController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SearchQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "ResilientSearchIndex" as resilient
+  participant "DatabaseNameSearch" as names
+  database "Jubilee database" as db
+end box
+participant "Search index" as index
+actor -> page : Search for plumber
+page -> client : search(q)
+client -> controller : GET /api/search?q=plumber
+controller -> handler : Send SearchQuery
+handler -> resilient : SearchAsync
+alt search index available
+  resilient -> index : Full-text query
+  index --> resilient : Hits with match explanations
+  resilient --> handler : SearchResultPage Degraded = false
+else search index unavailable or circuit open
+  resilient -> index : Full-text query
+  index --> resilient : Error or timeout
+  resilient -> names : Apply L2-181 fallback
+  names -> db : Match query against listing names
+  db --> names : Listings
+  names --> resilient : Hits without match explanations
+  resilient --> handler : SearchResultPage Degraded = true
+end
+handler --> controller : SearchResultPage
+controller --> client : 200 JSON
+client --> page : Typed result
+page --> actor : Show results and omit match explanations when degraded
+@enduml

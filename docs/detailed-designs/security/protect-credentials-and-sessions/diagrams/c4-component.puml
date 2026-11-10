@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Protect credentials and sessions
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(session, "SessionService", "Angular service", "Keeps the anti-CSRF token in memory only")
+  Component(interceptor, "CsrfInterceptor", "Angular HTTP interceptor", "Adds X-CSRF-Token to state-changing calls")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(cors, "CorsPolicy", "ASP.NET Core CORS", "Origin allowlist. No wildcard with credentials")
+  Component(auth, "SessionAuthenticationMiddleware", "ASP.NET Core middleware", "Loads the Session named by the cookie")
+  Component(csrf, "CsrfMiddleware + CsrfTokenService", "ASP.NET Core middleware", "Rejects POST PUT PATCH DELETE without a valid token")
+  Component(handler, "ChangePasswordCommandHandler", "MediatR handler", "Sets the password and ends other sessions")
+  Component(policy, "PasswordPolicy", "Domain rule", "10 to 128 characters. No composition rules")
+  Component(checker, "IBreachedPasswordChecker", "Application service", "k-anonymity range query")
+  Component(hasher, "IPasswordHasher", "Application service", "Argon2id with unique salt")
+  Component(store, "ISessionStore + SessionCookie", "Application service", "Opaque identifiers in a __Host- cookie")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Password hashes and link tokens")
+ContainerDb(cache, "Cache", "Redis", "Sessions")
+System_Ext(breach, "Breached-password service", "Leaked password ranges")
+
+Rel(session, interceptor, "Supplies token to")
+Rel(interceptor, cors, "Sends calls through", "JSON/HTTPS")
+Rel(cors, auth, "Passes allowed origin to")
+Rel(auth, store, "Loads session through")
+Rel(auth, csrf, "Passes identified request to")
+Rel(csrf, handler, "Passes verified request to")
+Rel(handler, policy, "Applies")
+Rel(handler, checker, "Checks new password with")
+Rel(handler, hasher, "Hashes with")
+Rel(handler, store, "Revokes other sessions through")
+Rel(handler, db, "Saves hash and revokes reset tokens in", "EF Core")
+Rel(store, cache, "Reads and writes")
+Rel(checker, breach, "Queries", "HTTPS")
+@enduml

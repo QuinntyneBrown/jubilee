@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Visitor presses a personal action
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessCard" as card
+  participant "SignInPromptService" as prompt
+  participant "SignInRequiredDialog" as dialog
+  participant "SessionService" as session
+  participant "BrowseHomePage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SavedItemsController" as controller
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> card : Press the save heart
+card -> session : Read the signed-in state
+session --> card : Not signed in
+card -> prompt : requireAccount(save action and current path)
+prompt -> dialog : Open (L2-022)
+dialog --> actor : Offer "Sign in" and "Join free"
+alt Visitor closes the dialog
+  actor -> dialog : Escape
+  dialog --> card : Closed and focus returns to the heart
+else Visitor signs in or joins
+  actor -> dialog : Choose "Sign in"
+  dialog -> session : Start sign-in with a same-origin return path (L2-012)
+  session --> page : Signed in and returned to /
+  page -> prompt : Resume the pending action
+  prompt -> controller : POST /api/saved-items
+  controller -> db : Save the item for the member
+  db --> controller : Commit result
+  controller --> prompt : 201 Created
+  prompt --> page : Saved
+  page --> actor : Show the greeting and the filled heart
+end
+@enduml

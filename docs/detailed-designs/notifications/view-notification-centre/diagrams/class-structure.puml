@@ -1,0 +1,97 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — View the notification centre
+
+class NotificationsStore <<signal store>> {
+  +items: Signal<NotificationDto[]>
+  +unread: Signal<number>
+  +load(): void
+  +open(id: string): void
+  +markAllRead(): void
+  +applyEvent(event: RealtimeEvent): void
+}
+class BadgeStore <<signal store>> {
+  +unreadConversations: Signal<number>
+  +newRequests: Signal<number>
+  +refresh(): void
+  +label(count: number): string
+}
+class NotificationsController {
+  +List(): Task<IActionResult>
+  +MarkRead(id: Guid): Task<IActionResult>
+  +MarkAllRead(): Task<IActionResult>
+  +Badges(): Task<IActionResult>
+}
+class ListNotificationsQueryHandler {
+  +const int WindowDays = 90
+  +Handle(query: ListNotificationsQuery): Task<NotificationListDto>
+}
+class MarkNotificationsReadCommand {
+  +Guid MemberId
+  +Guid? NotificationId
+}
+class BadgeCounts {
+  +int UnreadConversations
+  +int NewRequests
+  +int UnreadNotifications
+}
+class Notification {
+  +Guid Id
+  +Guid RecipientMemberId
+  +NotificationType Type
+  +string Title
+  +string Detail
+  +NotificationTarget Target
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? ReadAt
+  +MarkRead(now: DateTimeOffset): void
+}
+class NotificationTarget <<value object>> {
+  +TargetKind Kind
+  +Guid TargetId
+}
+enum TargetKind {
+  Request
+  Conversation
+  Listing
+}
+enum NotificationType {
+  RequestCreated
+  RequestConfirmed
+  RequestDeclined
+  RequestCancelled
+  NewMessage
+  ListingVerified
+  ChangesRequested
+  ReferenceAnswered
+  EmailConfirmed
+  ProductBackInStock
+  NewBusinessInCategory
+  MeetingReminder
+}
+class NotificationProjector {
+  +Handle(message: OutboxMessage): Task
+}
+
+NotificationsStore ..> NotificationsController : calls through NotificationsApi
+BadgeStore ..> NotificationsController : GET /api/badges
+NotificationsController ..> ListNotificationsQueryHandler : sends query
+NotificationsController ..> MarkNotificationsReadCommand : sends
+NotificationsController ..> BadgeCounts : returns
+ListNotificationsQueryHandler "1" --> "*" Notification : reads
+NotificationProjector "1" --> "*" Notification : creates
+Notification --> NotificationType : has
+Notification "1" *-- "1" NotificationTarget : opens
+NotificationTarget --> TargetKind : has
+@enduml

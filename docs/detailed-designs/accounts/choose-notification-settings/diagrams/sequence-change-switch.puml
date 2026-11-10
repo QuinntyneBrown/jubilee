@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Change one switch
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "PreferenceSwitchRow" as row
+  participant "PreferencesStore" as store
+  participant "AccountApi" as client
+  participant "ToastService" as toast
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "NotificationPreferencesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "UpdateNotificationPreferenceCommandHandler" as handler
+  participant "NotificationPreferences" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> row : Turn "New businesses" off
+row -> store : set(NewBusinesses, false)
+store --> row : Optimistic value and saving state
+row --> actor : Show "Saving…" on this row only (L2-016)
+store -> client : setNotificationPreference(NewBusinesses, false)
+client -> controller : PATCH /api/account/notification-preferences
+controller -> controller : Authenticate session and check CSRF token (L2-133)
+controller -> handler : Send UpdateNotificationPreferenceCommand
+handler -> db : Load NotificationPreferences of the session member
+db --> handler : NotificationPreferences
+handler -> entity : Set(NewBusinesses, false)
+entity --> handler : Value changed and consent withdrawal recorded (L2-149)
+handler -> db : Save changes in one unit of work
+alt Save succeeds
+  db --> handler : Commit result
+  handler --> controller : NotificationPreferencesDto
+  controller --> client : 200 NotificationPreferencesDto
+  client --> store : Saved settings
+  store --> row : Saved state with time
+  row --> actor : Show "Saved at {time}"
+else Save fails or the connection drops
+  db --> handler : Failure
+  handler --> controller : Error
+  controller --> client : ProblemDetails with error reference
+  client --> store : Failure
+  store --> row : Previous value
+  row --> actor : Return the switch to its previous position
+  store -> toast : Error toast with "Try again"
+  toast --> actor : Show the toast
+end
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage services
+
+Person(owner, "Owner", "Member who owns a business listing")
+Person(member, "Member", "Books a time or asks for a quote")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(owner, jubilee, "Adds edits deletes and reorders services using", "HTTPS")
+Rel(member, jubilee, "Sees service changes on the public listing in", "HTTPS")
+@enduml

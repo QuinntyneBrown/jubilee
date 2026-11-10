@@ -1,0 +1,36 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Render the site chrome
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(shell, "AppShell", "Angular layout component", "Composes the chrome around main")
+  Component(skip, "SkipLink", "Angular component", "First focusable element - targets main")
+  Component(top, "TopBar", "Angular component", "Brand navigation search box and avatar")
+  Component(tab, "TabBar", "Angular component", "Fixed bottom navigation under 768 px")
+  Component(footer, "SiteFooter", "Angular component", "Copyright line and four trust links")
+  Component(viewport, "ViewportService", "Angular service", "Signals for 768 px and 1024 px")
+  Component(store, "NavigationStore", "Signal store", "Unread count and owner flag")
+  Component(rt, "RealtimeClient", "Angular service", "Receives BadgeChanged events")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "NavigationController", "ASP.NET Core controller", "Exposes GET /api/me/navigation")
+  Component(handler, "GetNavigationSummaryQueryHandler", "MediatR handler", "Builds NavigationSummary")
+  Component(hub, "EventsHub", "SignalR hub", "Sends BadgeChanged to the member")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+
+Rel(shell, skip, "Renders first")
+Rel(shell, top, "Renders")
+Rel(shell, tab, "Renders under 768 px")
+Rel(shell, footer, "Renders")
+Rel(top, viewport, "Reads breakpoints")
+Rel(tab, viewport, "Reads breakpoints")
+Rel(top, store, "Reads badge and owner flag")
+Rel(tab, store, "Reads badge and owner flag")
+Rel(store, ctrl, "Loads summary through NavigationApi", "JSON/HTTPS")
+Rel(rt, store, "Applies BadgeChanged to")
+Rel(hub, rt, "Pushes events", "WebSocket")
+Rel(ctrl, handler, "Sends GetNavigationSummaryQuery")
+Rel(handler, db, "Reads counts", "EF Core")
+@enduml

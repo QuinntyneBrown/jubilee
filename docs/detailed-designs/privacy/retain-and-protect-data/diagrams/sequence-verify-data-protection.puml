@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Verify encryption, residency and TLS at deploy and start
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+box "Delivery — CI pipeline" #E0F2FE
+  participant "Deploy pipeline" as pipeline
+  participant "InfrastructurePolicyCheck" as policy
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "DataProtectionStartupCheck" as startup
+  participant "DataProtectionHealthCheck" as health
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+pipeline -> policy : Evaluate the infrastructure definition
+policy -> policy : Require AES-256 at rest with managed keys on databases, object storage and backups (L2-147)
+policy -> policy : Require a Canadian region on every resource that stores personal data (L2-147)
+policy -> policy : Require TLS on every service and database endpoint (L2-147)
+alt a resource violates a rule
+  policy --> pipeline : Failed with the resource name
+  pipeline -> pipeline : Stop the deployment
+else all resources comply
+  policy --> pipeline : Passed
+  pipeline -> startup : Start the new instance
+  startup -> startup : Reject connection strings without encryption (L2-147)
+  startup -> db : Open a TLS connection and validate the certificate
+  db --> startup : Encrypted session
+  startup -> cache : Open a TLS connection
+  cache --> startup : Encrypted session
+  startup --> pipeline : Instance started
+  pipeline -> health : GET /health/ready
+  health -> db : Read the database encryption state and algorithm
+  db --> health : Encrypted with AES-256
+  health --> pipeline : Healthy
+  pipeline -> pipeline : Route traffic to the new instance
+end
+@enduml

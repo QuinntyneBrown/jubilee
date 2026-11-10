@@ -1,0 +1,61 @@
+@startuml
+title UML sequence behaviour — Retry a failed job and dead-letter it
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Worker" #D1FADF
+  participant "JobScheduler" as scheduler
+  participant "JobRunner" as runner
+  participant "DailySummaryJob" as job
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "JobRun" as run
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "JubileeMetrics" as metrics
+  database "Jubilee database" as db
+end box
+participant "Observability platform" as obs
+actor "On-call engineer" as oncall
+scheduler -> db : Read claimed runs and runs due for retry
+db --> scheduler : JobRun
+scheduler -> runner : RunAsync(run)
+runner -> job : ExecuteAsync(context)
+alt job succeeds
+  job --> runner : Completed
+  runner -> run : MarkSucceeded
+  run --> runner : Status Succeeded
+  runner -> db : Save JobRun and JobState.LastSuccessAt
+  db --> runner : Commit result
+else job throws and retries remain
+  job --> runner : Exception
+  runner -> run : MarkFailed(error, now, backOff)
+  run -> run : Apply L2-182 rule: up to 5 retries with back-off
+  run --> runner : Status Retrying with NextAttemptAt
+  runner -> db : Save JobRun
+  db --> runner : Commit result
+else job throws after the fifth retry
+  job --> runner : Exception
+  runner -> run : MarkFailed(error, now, backOff)
+  run --> runner : Status DeadLettered
+  runner -> db : Save JobRun and DeadLetterEntry
+  db --> runner : Commit result
+  runner -> metrics : Count dead letter
+  metrics -> obs : Export jobs_dead_lettered_total
+  obs -> oncall : Alert job-dead-lettered (L2-182)
+  oncall -> obs : Read the error by correlation ID
+  obs --> oncall : Log lines
+end
+runner --> scheduler : Done
+@enduml

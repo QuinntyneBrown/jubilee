@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Check tokens and fonts in CI
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Developer" as actor
+box "Delivery — CI pipeline" #E0F2FE
+  participant "Pipeline" as pipeline
+  participant "TokenLint" as lint
+  participant "ContrastCheck" as contrast
+  participant "FontShiftCheck" as shift
+end box
+box "Frontend — Jubilee Web (test build)" #D1FADF
+  participant "Stylesheets" as styles
+  participant "Headless browser" as browser
+end box
+
+actor -> pipeline : Open a pull request that changes styles
+pipeline -> lint : Lint every stylesheet and component style
+lint -> styles : Read declarations outside tokens.css
+styles --> lint : Property and value pairs
+lint -> lint : Flag hex, rgb, hsl and named colours and px spacing, radius, shadow, z-index and duration literals (L2-169)
+alt a raw value found
+  lint --> pipeline : Fail with file, line and suggested token
+  pipeline --> actor : Build failed
+else only var(--token) references
+  lint --> pipeline : Pass
+  pipeline -> contrast : Check both themes
+  contrast -> styles : Resolve each foreground and background token pair for light and dark
+  styles --> contrast : Colour values
+  contrast -> contrast : Require 4.5:1 for normal text and 3:1 for large text and UI components (L2-170 and L2-160)
+  contrast --> pipeline : Pass or fail with the failing pairs
+  pipeline -> shift : Measure the font swap
+  shift -> browser : Load pages with web fonts delayed
+  browser --> shift : Layout shift attributed to the swap
+  shift -> shift : Require a shift of at most 0.02 (L2-172)
+  shift --> pipeline : Pass or fail with the measured shift
+  pipeline --> actor : Check results
+end
+@enduml

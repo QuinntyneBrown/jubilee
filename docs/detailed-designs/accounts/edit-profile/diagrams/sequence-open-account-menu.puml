@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Open the account menu
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "TopBar" as bar
+  participant "AccountMenu" as menu
+  participant "SessionService" as session
+  participant "Router" as router
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionController" as controller
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+end box
+session -> controller : GET /api/session at application start
+controller -> cache : Resolve the session cookie
+cache --> controller : Session and member
+controller --> session : SessionMember (name, e-mail, role, ownsListing)
+actor -> bar : Press the avatar
+bar -> menu : Open (L2-019)
+menu -> session : Read SessionMember
+session --> menu : Initials, full name, e-mail, role
+menu -> menu : Build links: "My business" for an owner, "Verification queue" for a verifier
+alt Viewport 640 px or wider
+  menu --> actor : Show the menu anchored under the avatar
+  actor -> menu : Arrow keys move between items
+else Viewport narrower than 640 px
+  menu --> actor : Show the menu as a bottom sheet
+end
+alt Member chooses "Your account"
+  actor -> menu : Activate the link
+  menu -> router : Navigate to /account
+  router --> actor : Show AccountPage
+else Member presses Escape
+  actor -> menu : Escape
+  menu --> bar : Close and return focus to the avatar
+  bar --> actor : Avatar focused
+end
+@enduml

@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Deliver an event to an open page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Command handler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+  participant "RealtimePublisher" as pub
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "EventsHub" as hub
+end box
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RealtimeClient" as rt
+  participant "Feature store" as store
+end box
+actor "Member" as member
+handler -> db : Save state change and OutboxMessage in one transaction
+db --> handler : Commit result
+job -> db : Read undispatched outbox rows
+db --> job : Outbox rows
+job -> pub : PublishAsync(memberId, type, payload)
+pub -> cache : Append to the member's event log and take the next event ID
+cache --> pub : Event ID
+pub -> cache : Publish to the backplane channel of group member:{memberId}
+cache --> pub : Accepted
+pub --> job : Done
+job -> db : Mark outbox row dispatched
+db --> job : Commit result
+cache -> hub : Backplane message
+hub -> hub : Select only connections of the addressed member (L2-070)
+hub -> rt : RealtimeEvent within 2 seconds at the 95th percentile (L2-070)
+rt -> rt : Drop an event ID already seen and store the last event ID
+rt -> store : Dispatch by event type
+store --> member : Updated page without reload
+@enduml

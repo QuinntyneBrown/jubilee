@@ -1,0 +1,98 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Request changes
+enum ListingStage {
+  WaitingOnReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Declined
+}
+enum ChangeArea {
+  TaglineOrDescription
+  Photos
+  Category
+  ChurchReference
+}
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingStage Stage
+  +DateTimeOffset SubmittedAt
+  +RequestChanges(areas: ChangeArea[], message: string, verifier: Member, now: DateTimeOffset): ChangeRequest
+  +Resubmit(now: DateTimeOffset): ListingStage
+  +Decline(reason: string, verifier: Member, now: DateTimeOffset): void
+}
+class ChangeRequest {
+  +Guid Id
+  +IReadOnlyList<ChangeArea> Areas
+  +string Message
+  +Guid RequestedBy
+  +DateTimeOffset RequestedAt
+  +DateTimeOffset? AnsweredAt
+  +ListingSnapshot Snapshot
+  +RequiresNewReference(): bool
+}
+class ListingSnapshot {
+  +string Name
+  +string Tagline
+  +string Description
+  +string Category
+  +IReadOnlyList<Guid> PhotoIds
+  +string ReferenceEmailHash
+  +ChangedFields(current: Listing): IReadOnlyList<string>
+}
+class ChurchReference {
+  +string Church
+  +string PastorEmail
+  +DateTimeOffset? DeleteAfter
+  +StartDeletionClock(decidedAt: DateTimeOffset): void
+}
+class RequestChangesCommand {
+  +Guid ListingId
+  +ChangeArea[] Areas
+  +string Message
+}
+class RequestChangesCommandValidator {
+  +Validate(command: RequestChangesCommand): ValidationResult
+}
+class RequestChangesCommandHandler {
+  +Handle(command: RequestChangesCommand): Task<Result>
+}
+class ResubmitListingCommand {
+  +Guid ListingId
+}
+class ResubmitListingCommandHandler {
+  +Handle(command: ResubmitListingCommand): Task<Result>
+}
+class DeclineListingCommand {
+  +Guid ListingId
+  +string Reason
+}
+class DeclineListingCommandHandler {
+  +Handle(command: DeclineListingCommand): Task<Result>
+}
+
+RequestChangesCommandHandler ..> RequestChangesCommand : handles
+RequestChangesCommandValidator ..> RequestChangesCommand : validates
+ResubmitListingCommandHandler ..> ResubmitListingCommand : handles
+DeclineListingCommandHandler ..> DeclineListingCommand : handles
+RequestChangesCommandHandler --> Listing : loads / mutates
+ResubmitListingCommandHandler --> Listing : loads / mutates
+DeclineListingCommandHandler --> Listing : loads / mutates
+Listing "1" *-- "*" ChangeRequest
+Listing "1" *-- "0..1" ChurchReference
+ChangeRequest "1" *-- "1" ListingSnapshot
+ChangeRequest --> "1..4" ChangeArea
+Listing --> ListingStage
+@enduml

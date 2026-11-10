@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Deploy safely
+
+Container_Boundary(ci, "Delivery pipeline") {
+  Component(gate, "ReleaseGate", "Pipeline stage", "Requires each test and scan and budget job to pass")
+  Component(compat, "MigrationCompatibilityCheck", "Pipeline job", "Runs the previous release tests against the new schema")
+  Component(migrator, "MigrationRunner", ".NET console tool", "Applies expand migrations before the switch")
+  Component(deploy, "DeployJob", "Pipeline job", "Deploys the idle slot and smoke-tests and switches")
+  Component(rollback, "RollbackJob", "Pipeline job", "Switches traffic back to the previous slot")
+}
+Container_Boundary(web, "Jubilee Web") {
+  Component(flagsvc, "FeatureFlagService", "Angular service", "Loads the flags of the current user")
+  Component(directive, "FeatureFlagDirective", "Angular structural directive", "Renders content only when a flag is on")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(flagctrl, "FeatureFlagsController", "ASP.NET Core controller", "Serves and updates flags")
+  Component(eval, "FeatureFlagEvaluator", "IFeatureFlags implementation", "Applies environment and percentage rules")
+  Component(health, "HealthEndpoints", "ASP.NET Core health checks", "Readiness for the switch")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Schema and FeatureFlag rows")
+ContainerDb(cache, "Cache", "Redis", "Flag rules")
+System_Ext(lb, "Hosting load balancer", "Active slot")
+
+Rel(gate, compat, "Includes")
+Rel(gate, deploy, "Releases to")
+Rel(deploy, migrator, "Runs")
+Rel(migrator, db, "Applies expand migrations to")
+Rel(deploy, health, "Waits for readiness of", "HTTPS")
+Rel(deploy, lb, "Switches active slot on")
+Rel(rollback, lb, "Switches back on")
+Rel(directive, flagsvc, "Asks")
+Rel(flagsvc, flagctrl, "Calls GET /api/feature-flags", "JSON/HTTPS")
+Rel(flagctrl, eval, "Evaluates through")
+Rel(eval, cache, "Reads rules from")
+Rel(eval, db, "Loads rules from", "EF Core")
+@enduml

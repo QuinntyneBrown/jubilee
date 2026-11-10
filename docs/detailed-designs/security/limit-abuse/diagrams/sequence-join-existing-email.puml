@@ -1,0 +1,73 @@
+@startuml
+title UML sequence behaviour — Join with an e-mail that already has an account
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "JoinPage" as page
+  participant "BotChallengeWidget" as widget
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RateLimitMiddleware" as limiter
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "JoinCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "BotChallengeClient" as verifier
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+participant "Bot challenge provider" as bot
+participant "E-mail provider" as email
+user -> page : Submit the join form
+page -> widget : Request challenge token
+widget -> bot : Run invisible challenge (L2-137)
+bot --> widget : Challenge token
+widget --> page : Token
+page -> client : join(details, token)
+client -> limiter : POST /api/account/join
+limiter -> limiter : Apply policy Join: 5 per IP per hour (L2-137)
+alt Over the join limit
+  limiter --> client : 429 with Retry-After. Nothing revealed (L2-141)
+else Within the limit
+  limiter -> controller : Pass request
+  controller -> verifier : VerifyAsync(token, ip)
+  verifier -> bot : Verify token
+  bot --> verifier : Verdict
+  verifier --> controller : Passed or failed
+  alt Challenge failed
+    controller --> client : 403 ProblemDetails. Nothing revealed (L2-141)
+  else Challenge passed
+    controller -> handler : Send JoinCommand
+    handler -> db : Look up e-mail
+    db --> handler : Account exists
+    handler -> db : Write JoinAttemptNotice to outbox. Create no account
+    db --> handler : Commit result
+    handler --> controller : Field error for e-mail
+    controller --> client : 422 with per-field code (L2-002)
+    job -> db : Read outbox
+    db --> job : JoinAttemptNotice
+    job -> email : Tell the account holder someone tried to join (L2-141)
+    email --> job : Accepted
+  end
+end
+client --> page : Result
+page --> user : "An account already uses this e-mail. Sign in instead, or use another address."
+@enduml

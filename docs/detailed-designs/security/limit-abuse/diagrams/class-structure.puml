@@ -1,0 +1,96 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Limit abuse
+
+enum RateLimitKeyKind {
+  IpAddress
+  Member
+  Email
+}
+
+class RateLimitPolicy {
+  +string Name
+  +RateLimitKeyKind KeyKind
+  +int Limit
+  +TimeSpan Window
+  +bool SuppressInsteadOfReject
+}
+
+class RateLimitKey {
+  +string PolicyName
+  +string Subject
+  +ToCacheKey(): string
+}
+
+enum RateLimitOutcome {
+  Allowed
+  Rejected
+  Suppressed
+}
+
+class RateLimitDecision {
+  +RateLimitOutcome Outcome
+  +int RetryAfterSeconds
+}
+
+interface IRateLimitStore {
+  +HitAsync(key: RateLimitKey, policy: RateLimitPolicy): Task<RateLimitDecision>
+}
+
+class RateLimitMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+}
+
+interface IBotChallengeVerifier {
+  +VerifyAsync(token: string, ipAddress: string): Task<bool>
+}
+
+class Member {
+  +Guid Id
+  +MessagingRestriction Restriction
+  +SuspendNewConversations(now: DateTimeOffset): void
+  +LiftRestriction(reviewerId: Guid): void
+}
+
+class MessagingRestriction {
+  +bool NewConversationsSuspended
+  +DateTimeOffset? SuspendedAt
+  +bool PendingReview
+}
+
+class Report {
+  +Guid Id
+  +Guid ReportedMemberId
+  +Guid ReportingListingId
+  +string Reason
+  +DateTimeOffset CreatedAt
+}
+
+class SpamSuspensionPolicy {
+  +int DistinctBusinesses = 3
+  +TimeSpan Window = 7 days
+  +ShouldSuspend(reports: IReadOnlyList<Report>, now: DateTimeOffset): bool
+}
+
+RateLimitMiddleware ..> RateLimitPolicy : reads
+RateLimitMiddleware ..> IRateLimitStore : asks
+RateLimitMiddleware ..> RateLimitKey : builds
+IRateLimitStore ..> RateLimitDecision : returns
+RateLimitDecision --> RateLimitOutcome : has
+RateLimitPolicy --> RateLimitKeyKind : keyed by
+Member "1" *-- "1" MessagingRestriction : owns
+Report "*" --> "1" Member : reports
+SpamSuspensionPolicy ..> Report : counts
+SpamSuspensionPolicy ..> Member : suspends
+@enduml

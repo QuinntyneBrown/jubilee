@@ -1,0 +1,96 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Deploy safely
+
+class FeatureFlag {
+  +string Key
+  +string Description
+  +IReadOnlyList<FlagRule> Rules
+  +SetRule(environment: DeploymentEnvironment, enabled: bool, percentage: int): void
+}
+
+class FlagRule {
+  +DeploymentEnvironment Environment
+  +bool Enabled
+  +int RolloutPercentage
+}
+
+enum DeploymentEnvironment {
+  Development
+  Staging
+  Production
+}
+
+interface IFeatureFlags {
+  +IsEnabledAsync(key: string, context: EvaluationContext): Task<bool>
+  +GetAllAsync(context: EvaluationContext): Task<IReadOnlyDictionary<string, bool>>
+}
+
+class FeatureFlagEvaluator {
+  +IsEnabledAsync(key: string, context: EvaluationContext): Task<bool>
+  -Bucket(key: string, subjectId: string): int
+}
+
+class EvaluationContext {
+  +DeploymentEnvironment Environment
+  +string SubjectId
+}
+
+class Release {
+  +string Version
+  +string CommitSha
+  +DeploymentSlot Slot
+  +ReleaseStatus Status
+  +DateTimeOffset DeployedAt
+}
+
+enum DeploymentSlot {
+  Blue
+  Green
+}
+
+enum ReleaseStatus {
+  Staged
+  Active
+  Previous
+  RolledBack
+}
+
+class MigrationStep {
+  +string Name
+  +MigrationPhase Phase
+  +string ContractsAfterRelease
+}
+
+enum MigrationPhase {
+  Expand
+  Contract
+}
+
+class MigrationRunner {
+  +ApplyAsync(phase: MigrationPhase): Task<int>
+}
+
+FeatureFlag "1" *-- "1..3" FlagRule
+FlagRule --> DeploymentEnvironment : for
+IFeatureFlags <|.. FeatureFlagEvaluator
+FeatureFlagEvaluator ..> FeatureFlag : reads
+FeatureFlagEvaluator ..> EvaluationContext : uses
+EvaluationContext --> DeploymentEnvironment : in
+Release --> DeploymentSlot : occupies
+Release --> ReleaseStatus : has
+Release "1" o-- "*" MigrationStep : ships
+MigrationStep --> MigrationPhase : has
+MigrationRunner ..> MigrationStep : applies
+@enduml

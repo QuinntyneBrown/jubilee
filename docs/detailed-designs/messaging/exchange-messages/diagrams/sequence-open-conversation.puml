@@ -1,0 +1,77 @@
+@startuml
+title UML sequence behaviour — Open a conversation
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConversationPage" as page
+  participant "ConversationStore" as store
+  participant "MessagesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ConversationsController" as controller
+  participant "EventsHub" as hub
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetConversationQueryHandler" as handler
+  participant "MarkConversationReadCommandHandler" as reader
+  participant "Conversation" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+member -> page : Open /messages/:id
+page -> store : load(id)
+store -> client : getConversation(id)
+client -> controller : GET /api/conversations/{id}
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send GetConversationQuery
+handler -> db : Load conversation for a participant (L2-133)
+alt caller is not a participant
+  db --> handler : No row
+  handler --> controller : Not found
+  controller --> client : 404 ProblemDetails (L2-057)
+  client --> page : Not found
+else participant
+  db --> handler : Header and latest 50 messages and away period
+  handler --> controller : ConversationDto
+  controller --> client : 200 OK
+  client --> store : Header and items
+  store --> page : Timeline grouped by day
+  opt owner away period is active
+    page --> member : Toast "{Owner} is away until {day}." (L2-062)
+  end
+  store -> client : markRead(id)
+  client -> controller : POST /api/conversations/{id}/read
+  controller -> reader : Send MarkConversationReadCommand
+  reader -> entity : MarkRead(memberId) (L2-057)
+  entity --> reader : Read position advanced
+  reader -> db : Save changes and outbox badge event
+  db --> reader : Commit result
+  reader --> controller : Done
+  controller --> client : 204 No Content
+  opt member scrolls to the top with more than 50 messages
+    page -> store : loadOlder()
+    store -> client : getMessages(id, before)
+    client -> controller : GET /api/conversations/{id}/messages?before={sequence}&limit=50
+    controller --> client : Older page
+    client --> store : Prepend and keep scroll position (L2-057)
+  end
+  opt reply arrives while open
+    hub -> store : message.created
+    store --> page : Append within 2 seconds and announce politely (L2-057)
+  end
+end
+@enduml

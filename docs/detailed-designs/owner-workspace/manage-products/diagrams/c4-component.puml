@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage products
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "MyProductsPage", "Angular page", "Product table with reorder controls")
+  Component(editor, "ProductEditorDialog", "Angular dialog", "Adds or edits one product")
+  Component(del, "DeleteProductDialog", "Angular dialog", "Confirms a delete")
+  Component(client, "ProductsApi", "Typed HTTP client", "Calls the owner product endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "OwnerProductsController", "ASP.NET Core controller", "Exposes /api/owner/listings/{id}/products")
+  Component(idem, "IdempotencyMiddleware", "ASP.NET Core middleware", "Replays the result of a repeated key")
+  Component(save, "AddProductCommandHandler and UpdateProductCommandHandler", "MediatR handlers", "Validate and save a product")
+  Component(remove, "DeleteProductCommandHandler", "MediatR handler", "Soft-deletes a product")
+  Component(reorder, "ReorderProductsCommandHandler", "MediatR handler", "Rewrites the sort order")
+  Component(listing, "Listing", "Domain aggregate", "Owns products and the 100 product limit")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
+
+Rel(page, editor, "Opens")
+Rel(page, del, "Opens")
+Rel(page, client, "Lists and reorders through")
+Rel(editor, client, "Saves through")
+Rel(del, client, "Deletes through")
+Rel(client, idem, "Calls", "JSON/HTTPS")
+Rel(idem, ctrl, "Passes new requests to")
+Rel(idem, cache, "Reads and writes keys")
+Rel(ctrl, save, "Sends AddProductCommand or UpdateProductCommand")
+Rel(ctrl, remove, "Sends DeleteProductCommand")
+Rel(ctrl, reorder, "Sends ReorderProductsCommand")
+Rel(save, listing, "Calls AddProduct")
+Rel(remove, listing, "Calls RemoveProduct")
+Rel(reorder, listing, "Calls ReorderProducts")
+Rel(save, db, "Saves product and outbox", "EF Core")
+Rel(remove, db, "Saves", "EF Core")
+Rel(reorder, db, "Saves", "EF Core")
+@enduml

@@ -1,0 +1,70 @@
+@startuml
+title UML sequence behaviour — Attach a photo
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MessageComposer" as composer
+  participant "PhotoAttachmentService" as photo
+  participant "MessagesApi" as client
+  participant "ToastService" as toast
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "UploadMessagePhotoCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IMediaStore" as store
+  database "Jubilee database" as db
+end box
+participant "Malware scanner" as scanner
+member -> composer : Choose a photo
+composer -> photo : prepare(file)
+alt not a JPG or PNG
+  photo --> composer : Rejected
+  composer -> toast : Error toast "Photo couldn't be attached. Use a JPG or PNG under 5 MB." (L2-060)
+else larger than 5 MB
+  photo -> toast : Warning toast "Photo is large. Shrinking it to 5 MB before sending."
+  photo -> photo : Shrink on the device to 5 MB or less
+  alt cannot be shrunk
+    photo --> composer : Rejected
+    composer -> toast : Error toast "Photo couldn't be attached. Use a JPG or PNG under 5 MB."
+  else shrunk
+    photo --> composer : Blob of 5 MB or less
+  end
+else JPG or PNG up to 5 MB
+  photo --> composer : Blob
+end
+opt photo accepted
+  composer -> client : uploadPhoto(conversationId, blob)
+  client -> controller : POST /api/conversations/{id}/attachments
+  controller -> controller : Authenticate and apply endpoint policy
+  controller -> handler : Send UploadMessagePhotoCommand
+  handler -> handler : Check magic bytes and size and pixels then re-encode and strip metadata (L2-138)
+  handler -> scanner : Scan image
+  scanner --> handler : Clean
+  handler -> store : Save under a random name
+  store --> handler : Storage key
+  handler -> db : Save MessageAttachment
+  db --> handler : Commit result
+  handler --> controller : Attachment ID
+  controller --> client : 201 Created
+  client --> composer : Attachment ID for the next send
+  composer --> member : Show thumbnail in the composer
+end
+note over client, store : A participant later reads the photo through GET /api/conversations/{id}/attachments/{attachmentId}\nwhich returns a signed URL valid for 5 minutes (L2-060)
+@enduml

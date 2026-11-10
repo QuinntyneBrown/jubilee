@@ -1,0 +1,33 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Meet page budgets
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(routes, "app.routes.ts", "Angular router configuration", "Loads the owner workspace and admin areas with loadChildren")
+  Component(image, "ResponsiveImage", "Angular component", "Renders picture with srcset, width, height, lazy loading and fetchpriority")
+  Component(urls, "ImageUrlBuilder", "Angular service", "Builds 320, 640 and 1280 px rendition URLs in WebP and JPEG")
+  Component(vitals, "WebVitalsReporter", "Angular service", "Observes LCP, INP and CLS per page type and sends one beacon per page view")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(telemetry, "TelemetryController", "ASP.NET Core controller", "Accepts POST /api/telemetry/web-vitals")
+  Component(pagereq, "PageRequest", "Query value object", "Caps pageSize at 50 for every list query")
+  Component(sink, "IWebVitalsSink", "Application service", "Forwards samples to the Observability platform")
+}
+Container_Boundary(pipeline, "CI pipeline") {
+  Component(budget, "BundleBudgetCheck", "Build step", "Fails the build above 170 KB JavaScript or 50 KB CSS compressed")
+  Component(lighthouse, "LighthouseCheck", "Build step", "Fails the build below a performance score of 90")
+}
+Container(sw, "Jubilee service worker", "Angular service worker", "Prefetches and serves the app shell")
+Container(media, "Media storage", "Object storage + CDN", "Immutable cache headers for fingerprinted files")
+System_Ext(obs, "Observability platform", "Web Vitals percentiles. Vendor <TO SUPPLY>")
+
+Rel(image, urls, "Asks for rendition URLs")
+Rel(image, media, "Loads renditions from", "HTTPS")
+Rel(vitals, telemetry, "Sends beacon to", "JSON/HTTPS")
+Rel(telemetry, sink, "Passes validated samples to")
+Rel(sink, obs, "Exports to", "HTTPS")
+Rel(routes, sw, "Lazy chunks are cached by")
+Rel(budget, routes, "Measures the initial route bundle of")
+Rel(lighthouse, image, "Audits pages that render")
+@enduml

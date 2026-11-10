@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Download data
+
+
+Person(member, "Member", "Account holder who asks for a copy of their data")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the download link. Vendor <TO SUPPLY>")
+
+Rel(member, jubilee, "Requests the archive and opens the download link in")
+Rel(jubilee, email, "Sends the 7-day download link via")
+Rel(email, member, "Delivers e-mail to")
+@enduml

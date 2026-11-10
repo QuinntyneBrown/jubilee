@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Edit profile
+
+
+Person(member, "Member", "Signed-in account holder")
+Container_Boundary(web, "Jubilee Web") {
+  Component(menu, "AccountMenu", "Angular component", "Links by role. Anchored menu from 640 px and bottom sheet below")
+  Component(session, "SessionService", "Angular service", "Holds the signed-in SessionMember")
+  Component(page, "AccountPage", "Angular page", "Route /account with ProfileForm and save state")
+  Component(guard, "UnsavedChangesGuard", "Angular route guard", "Confirms leaving with unsaved changes")
+  Component(client, "AccountApi", "Typed HTTP client", "getAccount and saveProfile")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AccountController", "ASP.NET Core controller", "GET /api/account and PUT /api/account/profile")
+  Component(query, "GetAccountQueryHandler", "MediatR handler", "Returns the AccountDto")
+  Component(handler, "UpdateProfileCommandHandler", "MediatR handler", "Applies the profile change")
+  Component(validator, "UpdateProfileCommandValidator", "FluentValidation validator", "Phone and postal code rules")
+  Component(entity, "Member", "Domain entity", "Owns the profile fields")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Members")
+
+Rel(member, menu, "Presses the avatar")
+Rel(member, page, "Edits and saves")
+Rel(menu, session, "Reads name and role")
+Rel(page, session, "Refreshes after a save")
+Rel(guard, page, "Checks for unsaved changes")
+Rel(page, client, "Loads and saves")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, query, "Sends GetAccountQuery")
+Rel(ctrl, handler, "Sends UpdateProfileCommand")
+Rel(handler, validator, "Validated by")
+Rel(handler, entity, "Calls UpdateProfile")
+Rel(query, db, "Reads", "EF Core")
+Rel(handler, db, "Saves", "EF Core")
+@enduml

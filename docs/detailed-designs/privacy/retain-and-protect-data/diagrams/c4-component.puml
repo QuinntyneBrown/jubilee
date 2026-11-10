@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Retain and protect data
+
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "RetentionJob", "Hosted scheduled job", "Runs each retention rule once a day")
+  Component(declined, "DeclinedRequestRetentionRule", "Retention rule", "Redacts requests declined 90 days ago")
+  Component(notif, "NotificationRetentionRule", "Retention rule", "Deletes notifications 90 days old")
+  Component(report, "ReportRetentionRule", "Retention rule", "Removes reporter details 2 years after resolution")
+  Component(logs, "LogRetentionRule", "Retention rule", "Confirms the 30-day and 1-year log policies")
+  Component(lock, "JobLock", "Redis lock", "Allows one run per schedule across instances")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(startup, "DataProtectionStartupCheck", "Hosted startup check", "Requires TLS on every store connection")
+  Component(health, "DataProtectionHealthCheck", "Health check", "Reports encryption at rest and region")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Requests and notifications and reports and retention runs")
+ContainerDb(cache, "Cache", "Redis", "Job locks")
+System_Ext(observability, "Observability platform", "Log streams with retention policies")
+
+Rel(job, lock, "Acquires")
+Rel(lock, cache, "Sets a key with expiry in", "TLS")
+Rel(job, declined, "Runs")
+Rel(job, notif, "Runs")
+Rel(job, report, "Runs")
+Rel(job, logs, "Runs")
+Rel(declined, db, "Redacts", "EF Core")
+Rel(notif, db, "Deletes", "EF Core")
+Rel(report, db, "Redacts", "EF Core")
+Rel(logs, observability, "Reads retention policies from", "HTTPS")
+Rel(job, db, "Inserts RetentionRun counts in", "EF Core")
+Rel(startup, db, "Validates the connection to", "TLS")
+Rel(health, db, "Reads the encryption state of", "TLS")
+@enduml

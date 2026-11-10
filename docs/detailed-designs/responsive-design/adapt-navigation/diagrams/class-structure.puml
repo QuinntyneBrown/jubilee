@@ -1,0 +1,100 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Adapt navigation
+
+enum Breakpoint {
+  XS
+  SM
+  MD
+  LG
+  XL
+}
+
+enum NavigationMode {
+  TabBar
+  TopNavigation
+  TopNavigationWithSearch
+}
+
+class ViewportService {
+  +breakpoint: Signal<Breakpoint>
+  +mode: Signal<NavigationMode>
+  -medium: MediaQueryList
+  -wide: MediaQueryList
+  +isBelow(minWidthPx: number): boolean
+}
+
+class NavigationItem {
+  +label: string
+  +route: string
+  +icon: string
+  +badgeCount: number
+  +inTabBar: boolean
+  +inTopBar: boolean
+}
+
+class NavigationStore {
+  +items: Signal<NavigationItem[]>
+  +unreadMessages: Signal<number>
+  +unreadNotifications: Signal<number>
+  +refresh(): void
+}
+
+class AppShell {
+  +showTabBar: Signal<boolean>
+  +isMemberPage: Signal<boolean>
+}
+
+class TopBar {
+  +mode: Signal<NavigationMode>
+  +submitSearch(query: string): void
+  +openAccountMenu(): void
+}
+
+class TabBar {
+  +items: Signal<NavigationItem[]>
+  +currentRoute: Signal<string>
+}
+
+class BrowseHero {
+  +greeting: string
+  +submitSearch(query: string): void
+}
+
+class ViewportCase {
+  +screenId: string
+  +state: string
+  +widthPx: number
+  +theme: string
+}
+
+class VisualRegressionSuite {
+  +widths: number[] = 360, 576, 768, 992, 1280
+  +themes: string[] = light, dark
+  +cases(manifestPath: string): ViewportCase[]
+  +compare(c: ViewportCase): number
+  +assertNoOverflow(c: ViewportCase): void
+}
+
+ViewportService --> Breakpoint : publishes
+ViewportService --> NavigationMode : derives
+AppShell --> ViewportService : reads
+AppShell *-- TopBar
+AppShell *-- TabBar
+TopBar --> NavigationStore : reads
+TabBar --> NavigationStore : reads
+NavigationStore "1" o-- "*" NavigationItem
+BrowseHero ..> ViewportService : reads
+VisualRegressionSuite "1" --> "*" ViewportCase : generates
+@enduml

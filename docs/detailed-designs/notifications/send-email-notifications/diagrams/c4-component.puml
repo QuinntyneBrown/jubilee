@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Send e-mail notifications
+
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Hands outbox events to handlers")
+  Component(planner, "EmailNotificationHandler", "Outbox event handler", "Applies the e-mail policy and schedules pending e-mail")
+  Component(policy, "EmailPolicy", "Domain service", "Decides send or skip or summary per event and recipient")
+  Component(dispatch, "EmailDispatchJob", "Hosted job", "Sends due pending e-mail and combines message e-mail")
+  Component(summary, "DailySummaryJob", "Hosted job", "Sends one summary at 7:00 a.m. Toronto time")
+  Component(reminder, "MeetingReminderJob", "Hosted job", "Raises reminders 1 hour before confirmed bookings")
+  Component(sender, "IEmailSender", "Infrastructure adapter", "Builds headers and submits to the provider")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(unsub, "UnsubscribeController", "ASP.NET Core controller", "Exposes POST /api/email/unsubscribe/{token}")
+  Component(presence, "PresenceTracker", "Application service", "Records which conversation a connection has open")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Preferences and pending e-mail and reminders")
+ContainerDb(cache, "Cache", "Redis", "Presence keys")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+
+Rel(outbox, planner, "Dispatches events to")
+Rel(planner, policy, "Asks for a decision")
+Rel(planner, cache, "Reads presence", "Redis protocol")
+Rel(planner, db, "Writes PendingEmail", "EF Core")
+Rel(dispatch, db, "Reads due PendingEmail", "EF Core")
+Rel(summary, db, "Reads summary items", "EF Core")
+Rel(reminder, db, "Reads due MeetingReminder rows", "EF Core")
+Rel(dispatch, sender, "Sends through")
+Rel(summary, sender, "Sends through")
+Rel(sender, email, "Submits e-mail")
+Rel(unsub, db, "Turns the category off", "EF Core")
+Rel(presence, cache, "Writes presence", "Redis protocol")
+@enduml

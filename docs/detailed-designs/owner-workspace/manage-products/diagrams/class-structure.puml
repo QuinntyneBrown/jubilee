@@ -1,0 +1,108 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Manage products
+
+enum ProductStatus {
+  Listed
+  SoldOut
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +int MaxProducts = 100
+  +AddProduct(details: ProductDetails): Product
+  +RemoveProduct(productId: Guid, now: DateTimeOffset): void
+  +ReorderProducts(productIds: IReadOnlyList<Guid>): void
+}
+
+class Product {
+  +Guid Id
+  +string Name
+  +int PriceCents
+  +int? Stock
+  +string? Description
+  +int MinimumOrderQuantity
+  +int SortOrder
+  +Guid? PhotoId
+  +DateTimeOffset? DeletedAt
+  +bool IsSoldOut
+  +ProductStatus Status
+  +Update(details: ProductDetails): void
+}
+
+class ProductOption {
+  +string Name
+  +int SortOrder
+}
+
+class ProductDetails {
+  +string Name
+  +int PriceCents
+  +int? Stock
+  +string? Description
+  +int MinimumOrderQuantity
+  +IReadOnlyList<string> Options
+}
+
+class AddProductCommand {
+  +Guid ListingId
+  +string Name
+  +string Price
+  +string Stock
+  +string? Description
+  +int MinimumOrderQuantity
+  +IReadOnlyList<string> Options
+}
+
+class ProductCommandValidator {
+  +decimal PriceMin = 0.01
+  +decimal PriceMax = 100000.00
+  +int StockMax = 9999
+  +int OptionsMax = 10
+  +int MinimumQuantityMax = 999
+  +Validate(command: AddProductCommand): ValidationResult
+}
+
+class AddProductCommandHandler {
+  +Handle(command: AddProductCommand): Task<Result<ProductDto>>
+}
+
+class DeleteProductCommandHandler {
+  +Handle(command: DeleteProductCommand): Task<Result>
+}
+
+class ReorderProductsCommandHandler {
+  +Handle(command: ReorderProductsCommand): Task<Result>
+}
+
+class ProductRow {
+  +Guid Id
+  +string Name
+  +int PriceCents
+  +ProductStatus Status
+  +int RequestCount
+}
+
+Listing "1" *-- "0..100" Product
+Product "1" *-- "0..10" ProductOption
+Product --> ProductStatus : derives
+ProductCommandValidator ..> AddProductCommand : validates
+AddProductCommandHandler ..> AddProductCommand : handles
+AddProductCommandHandler --> Listing : adds product
+AddProductCommandHandler ..> ProductDetails : builds
+DeleteProductCommandHandler --> Listing : removes product
+ReorderProductsCommandHandler --> Listing : reorders
+ProductRow ..> Product : projects
+@enduml

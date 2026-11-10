@@ -1,0 +1,78 @@
+@startuml
+title UML sequence behaviour — Delete the account
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "DeleteAccountDialog" as dialog
+  participant "AccountApi" as client
+  participant "SessionService" as session
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeleteAccountCommandHandler" as handler
+  participant "Member" as entity
+  participant "Request" as request
+  participant "Listing" as listing
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "ISessionStore" as sessions
+  database "Jubilee database" as db
+end box
+actor -> dialog : Press "Delete my account"
+dialog -> client : getDeletionImpact()
+client -> controller : GET /api/account/deletion-impact
+controller --> client : DeletionImpactDto
+client --> dialog : Name and e-mail and counts
+dialog --> actor : Show consequences with live counts. Focus "Keep my account" (L2-129)
+actor -> dialog : Type the confirmation and press "Delete account"
+alt Field is not exactly DELETE
+  dialog --> actor : Show "Type DELETE in capital letters to confirm."
+else Field is DELETE
+  dialog -> client : deleteAccount("DELETE")
+  client -> controller : POST /api/account/deletion
+  controller -> controller : Authenticate session and check CSRF token and validate confirmation
+  controller -> handler : Send DeleteAccountCommand
+  handler -> db : Load Member and open requests and owned listings
+  db --> handler : Current state
+  handler -> entity : Delete(now) (L2-017)
+  entity --> handler : Status Deleted and EraseAfter in 30 days
+  handler -> request : CancelForAccountDeletion() on each open request
+  request --> handler : Status cancelled
+  handler -> listing : Unpublish() on each owned listing
+  listing --> handler : Not public
+  handler -> db : Save changes and AuditEntry and outbox messages in one unit of work (L2-180)
+  alt Commit succeeds
+    db --> handler : Commit result
+    handler -> sessions : EndAll(member)
+    sessions --> handler : Every session ended
+    handler --> controller : Deleted
+    controller --> client : 204 No Content
+    client --> dialog : Deleted
+    dialog -> session : Clear signed-in state
+    session --> actor : Navigate to /welcome and show the confirmation toast
+  else Commit fails
+    db --> handler : Failure and rollback
+    handler --> controller : Error
+    controller --> client : ProblemDetails with error reference
+    client --> dialog : Failed
+    dialog --> actor : Show "We couldn't delete your account. Nothing was removed." and keep the typed value (L2-128)
+  end
+end
+@enduml

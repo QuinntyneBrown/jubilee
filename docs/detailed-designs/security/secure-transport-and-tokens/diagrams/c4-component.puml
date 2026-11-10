@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Secure transport and tokens
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ResetPasswordPage", "Angular page", "Example token page at /reset-password/:token")
+  Component(scrubber, "TokenRouteScrubber", "Angular service", "Keeps the token in memory. Rewrites the history entry")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(redirect, "HttpsRedirectionMiddleware", "ASP.NET Core middleware", "Redirects plain HTTP to HTTPS")
+  Component(headers, "SecurityHeadersMiddleware", "ASP.NET Core middleware", "HSTS and nosniff and Referrer-Policy and Permissions-Policy and CSP")
+  Component(tokenpolicy, "TokenPageHeaderPolicy", "Header policy", "Referrer-Policy no-referrer on token routes")
+  Component(redactor, "TokenRedactionEnricher", "Logging component", "Replaces token values with a redaction marker")
+  Component(service, "ILinkTokenService", "Application service", "Issues 256-bit tokens. Redeems by SHA-256 hash")
+  Component(entity, "LinkToken", "Domain entity", "Purpose and expiry and single use")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "OutboxDispatcherJob", "Hosted job", "Sends the e-mail with the plain token")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Token hashes and outbox")
+
+Rel(page, scrubber, "Reads token through")
+Rel(page, redirect, "Calls", "JSON/HTTPS")
+Rel(redirect, headers, "Passes HTTPS request to")
+Rel(headers, tokenpolicy, "Asks for referrer policy")
+Rel(headers, redactor, "Request is logged through")
+Rel(headers, service, "Request reaches handler and")
+Rel(service, entity, "Creates and checks")
+Rel(service, db, "Stores hash in", "EF Core")
+Rel(job, db, "Reads outbox from", "EF Core")
+@enduml

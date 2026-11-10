@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Recover from a failed send
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "NewMessageDialog" as dialog
+  participant "MessagesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IdempotencyMiddleware" as idem
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "StartConversationCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+member -> dialog : Press "Send message"
+dialog -> client : startConversation(listingId, text, key)
+client -x idem : Request lost or response lost
+client --> dialog : Network error
+dialog --> member : Show "We couldn't send that." and keep the text (L2-055)
+member -> dialog : Press "Send message" again
+dialog -> client : startConversation with the same key
+client -> idem : POST /api/conversations with Idempotency-Key
+idem -> cache : Look up key (L2-132)
+alt first attempt reached the server
+  cache --> idem : Stored response
+  idem --> client : Original 201 response
+else first attempt never arrived
+  cache --> idem : No record
+  idem -> controller : Forward new request
+  controller -> handler : Send StartConversationCommand
+  handler -> db : Save conversation and message and outbox row
+  db --> handler : Commit result
+  handler --> controller : StartConversationResult
+  controller --> idem : 201 Created
+  idem -> cache : Store response for 24 hours
+  cache --> idem : Stored
+  idem --> client : 201 Created
+end
+client --> dialog : Conversation ID
+dialog --> member : Close dialog and show toast
+@enduml

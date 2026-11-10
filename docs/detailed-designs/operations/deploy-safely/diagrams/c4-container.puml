@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Deploy safely
+
+Person(oncall, "On-call engineer", "Approves deploys and sets flags")
+System_Ext(pipeline, "Delivery pipeline", "Gates and deploy jobs")
+System_Ext(lb, "Hosting load balancer", "Routes to the active slot")
+System_Boundary(jubilee, "Jubilee production environment") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Reads feature flags and hides unreleased features")
+  Container(api, "Jubilee API", "ASP.NET Core", "Blue and green slots. Evaluates feature flags")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Blue and green slots")
+  ContainerDb(db, "Jubilee database", "SQL Server", "One schema shared by both slots")
+  ContainerDb(cache, "Cache", "Redis", "Short-lived copy of flag rules")
+}
+Rel(oncall, pipeline, "Approves production deploy in")
+Rel(pipeline, db, "Runs expand migrations on", "EF Core migrations")
+Rel(pipeline, api, "Deploys idle slot and runs smoke tests on", "HTTPS")
+Rel(pipeline, worker, "Deploys idle slot of")
+Rel(pipeline, web, "Publishes versioned bundles of")
+Rel(pipeline, lb, "Switches active slot on")
+Rel(lb, api, "Routes to active slot of", "HTTPS")
+Rel(web, api, "Reads flags from", "JSON/HTTPS")
+Rel(oncall, api, "Sets flags through", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Caches flag rules in", "Redis protocol")
+Rel(worker, db, "Reads and writes", "EF Core")
+@enduml

@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Feature businesses
+Container_Boundary(web, "Jubilee Web") {
+  Component(admin, "FeaturedBusinessesPage", "Angular page", "Picks up to five live listings and a start date")
+  Component(strip, "FeaturedStrip", "Angular component", "Renders Featured this week on welcome and browse pages")
+  Component(aclient, "AdminApi", "Typed HTTP client", "Calls /api/admin/featured-weeks")
+  Component(dclient, "DirectoryApi", "Typed HTTP client", "Calls GET /api/featured")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(actrl, "AdminFeaturedController", "ASP.NET Core controller", "Exposes PUT /api/admin/featured-weeks/startDate")
+  Component(dctrl, "DirectoryController", "ASP.NET Core controller", "Exposes GET /api/featured")
+  Component(sh, "SetFeaturedWeekCommandHandler", "MediatR handler", "Stores the week and its slots with an audit entry")
+  Component(val, "SetFeaturedWeekCommandValidator", "FluentValidation validator", "Enforces at most five distinct live listings")
+  Component(qh, "GetFeaturedListingsQueryHandler", "MediatR handler", "Returns the current slots that are still live")
+  Component(week, "FeaturedWeek", "Domain entity", "Owns the 7-day window and the slot limit")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Featured weeks and listings")
+ContainerDb(cache, "Cache", "Redis", "Current featured list")
+
+Rel(admin, aclient, "Saves the selection through")
+Rel(strip, dclient, "Loads featured businesses through")
+Rel(aclient, actrl, "Calls", "JSON/HTTPS")
+Rel(dclient, dctrl, "Calls", "JSON/HTTPS")
+Rel(actrl, sh, "Sends SetFeaturedWeekCommand")
+Rel(sh, val, "Is preceded by")
+Rel(sh, week, "Creates or replaces")
+Rel(sh, db, "Saves week and audit entry", "EF Core")
+Rel(sh, cache, "Invalidates")
+Rel(dctrl, qh, "Sends GetFeaturedListingsQuery")
+Rel(qh, cache, "Reads and fills")
+Rel(qh, db, "Reads slots joined to live listings", "EF Core")
+@enduml

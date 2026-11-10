@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Reorder products
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyProductsPage" as page
+  participant "ReorderControls" as controls
+  participant "ProductsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "OwnerProductsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ReorderProductsCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> controls : Drag a row or press move up or move down
+controls -> page : Emit the new order
+page --> actor : Show rows in the new order
+actor -> page : Save the order
+page -> client : Build typed request with all product IDs in order
+client -> controller : PUT /api/owner/listings/{listingId}/products/order
+controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
+controller -> handler : Send ReorderProductsCommand
+handler -> db : Load listing with products
+db --> handler : Listing
+handler -> entity : ReorderProducts (L2-090)
+alt IDs do not match the listing's products
+  entity --> handler : Rule violated
+  handler --> controller : Validation failure
+  controller --> client : 422 ProblemDetails
+  client --> page : Refusal
+  page --> actor : Reload the list
+else IDs match
+  entity --> handler : SortOrder rewritten
+  handler -> db : Save in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Success
+  controller --> client : 204 No Content
+  client --> page : Saved
+  page --> actor : Keep the new order - the public shop shows it
+end
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Manage e-mail consent
+
+Person(member, "Member", "Opts in to or out of promotional e-mail")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Notification settings and unsubscribe pages")
+  Container(api, "Jubilee API", "ASP.NET Core", "Saves preferences and consent records")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Builds the opted-in audience and sends promotional e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Notification preferences and consent records and outbox")
+}
+System_Ext(email, "E-mail provider", "Transactional e-mail provider - vendor TO SUPPLY")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core over TLS")
+Rel(worker, db, "Reads the audience and rechecks consent in", "EF Core over TLS")
+Rel(worker, email, "Sends e-mail via", "HTTPS")
+Rel(email, api, "Posts one-click unsubscribe to", "HTTPS")
+@enduml

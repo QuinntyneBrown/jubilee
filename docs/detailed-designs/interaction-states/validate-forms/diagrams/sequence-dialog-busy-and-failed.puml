@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Submit a dialog and recover from failure
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BookMeetingDialog" as dialog
+  participant "FormController" as form
+  participant "SubmitController" as submit
+  participant "DialogErrorAlert" as alert
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "BookMeetingCommandHandler" as handler
+end box
+actor -> dialog : Press the primary button
+dialog -> form : validate()
+alt Browser rules fail
+  form --> dialog : Errors
+  dialog -> dialog : Show messages under the fields, no summary (L2-126)
+  dialog --> actor : Focus on the first invalid field
+else Browser rules pass
+  form -> submit : submit(send)
+  submit -> submit : State Submitting, start 10-second timer (L2-127)
+  submit --> dialog : Fields read-only, spinner with aria-busy, cancel disabled
+  actor -> dialog : Press the primary button again
+  dialog -> submit : submit(send)
+  submit --> dialog : Ignored, nothing sent (L2-127)
+  submit -> client : bookMeeting(request, idempotencyKey)
+  client -> controller : POST /api/requests/bookings
+  alt Response within 10 seconds
+    controller -> handler : Send BookMeetingCommand
+    handler --> controller : Request created
+    controller --> client : 201 Created
+    client --> submit : Typed result
+    submit --> dialog : State Succeeded
+    dialog --> actor : Show the success state
+  else Connection lost or 10 seconds pass
+    client --> submit : Network error or abort
+    submit --> dialog : State Failed with reason
+    dialog -> alert : Show at the top of the dialog, keep all input (L2-128)
+    alert --> actor : "Your connection dropped before it reached us. Nothing was sent and what you typed is still here. Try again."
+    actor -> dialog : Press the primary button
+    dialog -> submit : submit(send) with the same idempotency key (L2-132)
+    submit -> client : bookMeeting(request, idempotencyKey)
+    client -> controller : POST /api/requests/bookings
+    controller --> client : 201 Created
+    client --> submit : Typed result
+    submit --> dialog : State Succeeded
+    dialog --> actor : Show the success state
+  end
+end
+@enduml

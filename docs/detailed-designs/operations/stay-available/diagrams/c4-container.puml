@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Stay available
+
+Person(member, "Member", "Searches the directory")
+Person(oncall, "On-call engineer", "Schedules maintenance")
+System_Ext(lb, "Hosting load balancer", "Routes traffic to ready instances")
+System_Ext(status, "Status page", "Public notices. Vendor to supply")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Search page and degraded-result display")
+  Container(api, "Jubilee API", "ASP.NET Core", "Health endpoints and search with database fallback")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Health endpoints and outbox dispatch and availability report")
+  ContainerDb(db, "Jubilee database", "SQL Server", "System of record and outbox and name search")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and counters and idempotency keys")
+  ContainerDb(search, "Search index", "Technology to supply", "Full-text search")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(oncall, api, "Calls operations endpoints of", "JSON/HTTPS")
+Rel(lb, api, "Probes /health/live and /health/ready", "HTTPS")
+Rel(lb, worker, "Probes /health/live and /health/ready", "HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Reads and writes", "Redis protocol")
+Rel(api, search, "Queries", "HTTPS")
+Rel(worker, db, "Reads outbox from", "EF Core")
+Rel(worker, status, "Publishes maintenance notices to", "HTTPS")
+@enduml

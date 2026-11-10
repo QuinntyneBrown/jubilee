@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Check contrast, reflow, forced colours and text spacing in CI
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+box "Delivery — CI pipeline" #E0F2FE
+  participant "CI pipeline" as pipeline
+  participant "contrast-check" as contrast
+  participant "Style lint" as lint
+  participant "Adaptation specs" as specs
+end box
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "tokens.css" as tokens
+  participant "Jubilee Web build" as app
+end box
+pipeline -> contrast : Run for the light and dark themes
+contrast -> tokens : Resolve each declared foreground and background pair
+tokens --> contrast : Colour values
+contrast -> contrast : Require 4.5:1 for normal text and 3:1 for large text and UI components (L2-160)
+contrast --> pipeline : Failures by pair and theme
+pipeline -> lint : Lint the stylesheets
+lint -> lint : Reject the gold accent tokens as a text colour (L2-160)
+lint --> pipeline : Passed or failed
+pipeline -> specs : Run for each screen in the mock manifest
+specs -> app : Render at 640 and 320 CSS px wide (200 % and 400 % zoom at 1280 px)
+app --> specs : Layout
+specs -> specs : Assert no horizontal page scroll except inside table regions (L2-161)
+specs -> app : Emulate forced colours
+app --> specs : Computed styles
+specs -> specs : Assert borders on buttons, inputs, cards and chips and Highlight on primary buttons (L2-161)
+specs -> app : Inject line height 1.5 and letter spacing 0.12 em
+app --> specs : Layout
+specs -> specs : Assert no clipped text (L2-161)
+specs -> app : Emulate prefers-reduced-motion: reduce
+app --> specs : Computed animation and transition durations
+specs -> specs : Assert none, or a fade under 100 ms (L2-161)
+specs --> pipeline : Passed or failed
+alt any check failed
+  pipeline -> pipeline : Fail the build and name the pair or screen
+else all checks passed
+  pipeline -> pipeline : Continue to the next stage
+end
+@enduml

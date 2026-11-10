@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Download data
+
+
+Person(member, "Member", "Requests and downloads the archive")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Account page and download page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Data export endpoints under /api/account/data-exports")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Builds archives and deletes expired files")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Member data and exports and link tokens")
+  ContainerDb(storage, "Media storage", "Object storage", "Private export area not served by the CDN")
+}
+System_Ext(email, "E-mail provider", "Transactional e-mail. Vendor <TO SUPPLY>")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "POST and GET data-exports", "JSON/HTTPS")
+Rel(api, db, "Records the export and checks the token", "EF Core")
+Rel(api, storage, "Reads the archive to stream it")
+Rel(worker, db, "Reads the member's data", "EF Core")
+Rel(worker, storage, "Writes and deletes archives")
+Rel(worker, email, "Sends the link", "HTTPS")
+@enduml

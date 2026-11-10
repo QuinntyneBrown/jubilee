@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Back up and recover
+
+Person(oncall, "On-call engineer", "Runs restores")
+System_Ext(backup, "Hosting backup service", "Point-in-time backups and second-region copies")
+System_Ext(pipeline, "Delivery pipeline", "Runs the restore drill")
+System_Ext(obs, "Observability platform", "Alerts")
+System_Boundary(jubilee, "Jubilee") {
+  Container(api, "Jubilee API", "ASP.NET Core", "Operations endpoints for drill records and file versions")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Verifies backup state on a schedule")
+  ContainerDb(db, "Jubilee database", "SQL Server", "System of record with point-in-time recovery")
+  ContainerDb(media, "Media storage", "Object storage + CDN", "Uploaded photos with 30 days of versions")
+}
+Rel(oncall, pipeline, "Starts restore or drill in")
+Rel(oncall, api, "Restores a file version through", "JSON/HTTPS")
+Rel(pipeline, backup, "Requests point-in-time restore from")
+Rel(backup, db, "Backs up")
+Rel(pipeline, api, "Posts drill record to", "JSON/HTTPS")
+Rel(api, db, "Stores drill records in", "EF Core")
+Rel(api, media, "Lists and restores versions in", "HTTPS")
+Rel(worker, backup, "Reads backup state from", "HTTPS")
+Rel(worker, media, "Reads versioning policy from", "HTTPS")
+Rel(worker, obs, "Exports backup metrics to", "OTLP")
+@enduml

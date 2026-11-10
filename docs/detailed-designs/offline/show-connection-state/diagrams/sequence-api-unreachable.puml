@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Detect an unreachable API
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConnectionBanner" as banner
+  participant "SlowRequestInterceptor" as slow
+  participant "ConnectionService" as conn
+  participant "ReachabilityProbe" as probe
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "Jubilee API" as api
+  participant "HealthController" as health
+end box
+participant "Status page" as status
+slow -> api : API request
+api --> slow : Network error or 503 Service Unavailable
+slow -> conn : reportNetworkFailure()
+conn -> conn : navigator.onLine is true
+conn -> probe : check()
+probe -> health : GET /api/health/ping
+alt API does not answer
+  health --> probe : Network error or 502, 503, 504
+  probe --> conn : ServiceUnreachable
+  conn -> conn : Set state ServiceUnreachable, schedule next probe with back-off
+  conn --> banner : ServiceUnreachable
+  banner --> actor : "We can't reach Jubilee. This is on our side." with "Check status" (L2-121)
+  opt Member presses "Check status"
+    actor -> banner : Press "Check status"
+    banner -> status : Open in a new tab
+    status --> actor : Current service status
+  end
+else API answers
+  health --> probe : 204 No Content
+  probe --> conn : Reachable
+  conn -> conn : Keep state Online
+  conn --> banner : Online
+  banner --> actor : No banner
+end
+@enduml

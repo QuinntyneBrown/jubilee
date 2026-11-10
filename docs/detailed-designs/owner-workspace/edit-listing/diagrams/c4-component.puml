@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Edit a listing
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "EditListingPage", "Angular page", "Form with error summary and live preview")
+  Component(photos, "ListingPhotosEditor", "Angular component", "Add reorder and describe photos")
+  Component(client, "ListingsApi", "Typed HTTP client", "Calls the owner listing endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "OwnerListingController", "ASP.NET Core controller", "Exposes /api/owner/listings endpoints")
+  Component(validator, "UpdateListingCommandValidator", "FluentValidation validator", "Field rules and codes")
+  Component(update, "UpdateListingCommandHandler", "MediatR handler", "Saves details with a version check")
+  Component(addphoto, "AddListingPhotoCommandHandler", "MediatR handler", "Inspects and stores an upload")
+  Component(listing, "Listing", "Domain entity", "Owns details and photo rules")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "PhotoProcessingJob", "Hosted job", "Scans re-encodes and resizes photos")
+  Component(outbox, "OutboxDispatcher", "Hosted job", "Indexes the listing and notifies the verification team")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+ContainerDb(media, "Media storage", "Object storage + CDN", "Photo files")
+
+Rel(page, client, "Loads and saves through")
+Rel(photos, client, "Uploads and reorders through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, update, "Sends UpdateListingCommand")
+Rel(ctrl, addphoto, "Sends AddListingPhotoCommand")
+Rel(update, validator, "Validated by")
+Rel(update, listing, "Calls UpdateDetails")
+Rel(addphoto, listing, "Calls AddPhoto")
+Rel(update, db, "Saves listing and outbox", "EF Core")
+Rel(addphoto, media, "Stores original")
+Rel(addphoto, db, "Saves photo row", "EF Core")
+Rel(job, media, "Writes renditions")
+Rel(job, db, "Marks photo Ready or Rejected", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+@enduml

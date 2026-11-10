@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Create a notification from an event
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Command handler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+  participant "NotificationProjector" as proj
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "EventsHub" as hub
+end box
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RealtimeClient" as rt
+  participant "NotificationsStore" as store
+  participant "ToastService" as toast
+end box
+actor "Member" as member
+handler -> db : Save state change and OutboxMessage in one transaction
+db --> handler : Commit result
+job -> db : Read undispatched outbox rows
+db --> job : Outbox rows
+job -> proj : Handle(message)
+proj -> proj : Resolve recipients for the event type (L2-064)
+proj -> db : Insert one Notification per recipient
+db --> proj : Commit result
+proj -> cache : Publish notification.created and badge.changed for each recipient
+cache --> proj : Accepted
+proj --> job : Done
+job -> db : Mark outbox row dispatched
+db --> job : Commit result
+cache -> hub : Deliver to the recipient's group
+hub -> rt : notification.created (L2-070)
+rt -> store : applyEvent(event)
+store -> toast : Show event toast
+toast --> member : Toast and updated unread count
+@enduml

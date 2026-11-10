@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Meet API latency and scale
+
+Person(visitor, "Visitor", "Requests public directory pages")
+Person(member, "Member", "Reads and writes")
+System_Ext(edge, "Edge cache", "Caches visitor directory and category responses for up to 60 seconds. Vendor <TO SUPPLY>")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Calls the API and holds one real-time connection")
+  Container(api, "Jubilee API", "ASP.NET Core", "Stateless instances behind a load balancer. Measures and bounds server time")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox: e-mail, search indexing, edge purge, real-time events")
+  ContainerDb(db, "Jubilee database", "SQL Server", "System of record and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Sessions, short-lived read caches, real-time backplane")
+  ContainerDb(search, "Search index", "<TO SUPPLY>", "Full-text search over businesses, services and products")
+}
+System_Ext(obs, "Observability platform", "Latency percentiles and alerts. Vendor <TO SUPPLY>")
+
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, edge, "Requests /api through", "JSON/HTTPS")
+Rel(edge, api, "Forwards cache misses and all member requests to", "HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Reads sessions and read caches", "RESP")
+Rel(api, search, "Queries", "HTTPS")
+Rel(worker, db, "Reads outbox messages", "EF Core")
+Rel(worker, search, "Indexes changed listings", "HTTPS")
+Rel(worker, edge, "Purges changed listings", "HTTPS")
+Rel(worker, cache, "Publishes real-time events", "RESP")
+Rel(api, obs, "Sends request metrics", "HTTPS")
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Adapt visual presentation
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(tokens, "tokens.css", "Design tokens", "Colour and duration and target tokens for both themes")
+  Component(theme, "ThemeService", "Angular service", "Applies the light or dark theme to html")
+  Component(motion, "MotionService", "Angular service", "Exposes the reduced-motion preference")
+  Component(forced, "forced-colors.css", "Global styles", "System colours and borders in forced-colours mode")
+  Component(status, "StatusBadge", "Angular component", "Status as text or icon as well as colour")
+  Component(button, "Button", "Angular component", "Gold control with ink text and darker edge")
+  Component(table, "TableRegion", "Angular component", "Scrolls a table inside its own region")
+  Component(dialog, "DialogShell", "Angular component", "Dialog animation that honours reduced motion")
+}
+System_Ext(ci, "CI pipeline", "contrast-check and style lint and reflow.spec and forced-colors.spec and text-spacing.spec")
+
+Rel(theme, tokens, "Selects the token set of")
+Rel(motion, tokens, "Mirrors the duration tokens of")
+Rel(dialog, motion, "Reads the preference from")
+Rel(button, tokens, "Uses accent and ink tokens from")
+Rel(status, tokens, "Uses status tokens from")
+Rel(forced, button, "Restyles")
+Rel(ci, tokens, "Computes contrast of each pair in")
+Rel(ci, table, "Checks reflow around")
+Rel(ci, forced, "Emulates forced colours against")
+@enduml

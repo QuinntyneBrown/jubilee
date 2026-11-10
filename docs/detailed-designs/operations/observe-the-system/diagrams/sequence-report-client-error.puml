@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour — Report a browser error
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestDetailPage" as page
+  participant "GlobalErrorHandler" as errh
+  participant "ClientErrorReporter" as reporter
+  participant "TraceInterceptor" as trace
+end box
+participant "Observability platform" as obs
+actor -> page : Use the page
+page -> errh : Unhandled error
+errh -> reporter : report(error)
+reporter -> trace : Read last X-Request-Id
+trace --> reporter : Correlation ID
+reporter -> reporter : Build ClientErrorReport with release version
+reporter -> reporter : Apply L2-176 scrub: remove personal data
+reporter -> obs : Send ClientErrorReport to the error tracker
+alt accepted
+  obs --> reporter : 202
+else error tracker unreachable
+  obs --> reporter : Network failure
+  reporter -> reporter : Drop the report without retry loop
+end
+reporter --> errh : Done
+errh --> page : Continue
+page --> actor : Page stays usable
+@enduml

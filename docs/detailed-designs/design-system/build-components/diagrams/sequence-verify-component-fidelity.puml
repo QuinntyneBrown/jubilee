@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Verify component fidelity in CI
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Developer" as actor
+box "Delivery — CI pipeline" #E0F2FE
+  participant "Pipeline" as pipeline
+  participant "ClassNameAudit" as audit
+  participant "VisualRegressionSuite" as suite
+end box
+box "Frontend — Jubilee Web (test build)" #D1FADF
+  participant "Headless browser" as browser
+  participant "Jubilee Web with fixture data" as web
+end box
+participant "docs/mocks" as mocks
+
+actor -> pipeline : Open a pull request
+pipeline -> audit : Audit templates and styles
+audit -> mocks : Read the classes and state selectors defined in assets/ui.css
+mocks --> audit : Defined classes
+audit -> audit : Check every class in a template is defined in ui.css (L2-171)
+audit -> audit : Check no page stylesheet restyles .topbar, .btn, .media or .verified (L2-171)
+alt unknown class or per-page override
+  audit --> pipeline : Fail with file, line and class
+  pipeline --> actor : Build failed
+else clean
+  audit --> pipeline : Pass
+  pipeline -> suite : Run
+  suite -> mocks : Read manifest.json screens and states
+  mocks --> suite : Screens and states
+  loop each screen and state
+    suite -> browser : Open the mock with ?chrome=0
+    browser --> suite : Mock screenshot
+    suite -> browser : Open the product screen in the same state
+    browser -> web : Render with the cast and catalog fixture
+    web --> browser : Rendered page
+    browser --> suite : Product screenshot
+    suite -> suite : Compare layout, copy and state (L2-171 by the tests of L2-163)
+  end
+  alt a difference above threshold
+    suite --> pipeline : Fail with diff images
+    pipeline --> actor : Build failed
+  else all match
+    suite --> pipeline : Pass
+    pipeline --> actor : Checks passed
+  end
+end
+@enduml

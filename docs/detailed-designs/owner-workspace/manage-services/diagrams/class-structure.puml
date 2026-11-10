@@ -1,0 +1,110 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Manage services
+
+enum ServicePricing {
+  Free
+  FixedPrice
+  AskForQuote
+}
+
+enum MemberAction {
+  BookATime
+  AskForQuote
+}
+
+enum MeetingModes <<flags>> {
+  Video
+  InPerson
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +string Hours
+  +int MaxServices = 50
+  +AddService(details: ServiceDetails): Service
+  +RemoveService(serviceId: Guid, now: DateTimeOffset): void
+  +ReorderServices(serviceIds: IReadOnlyList<Guid>): void
+}
+
+class Service {
+  +Guid Id
+  +string Name
+  +string? Detail
+  +ServicePricing Pricing
+  +int? PriceCents
+  +MemberAction MemberAction
+  +int? DurationMinutes
+  +MeetingModes? Modes
+  +string? Place
+  +int SortOrder
+  +DateTimeOffset? DeletedAt
+  +Update(details: ServiceDetails): void
+  +PriceLabel(): string
+}
+
+class ServiceDetails {
+  +string Name
+  +string? Detail
+  +ServicePricing Pricing
+  +int? PriceCents
+  +MemberAction MemberAction
+  +int? DurationMinutes
+  +MeetingModes? Modes
+  +string? Place
+}
+
+class AddServiceCommand {
+  +Guid ListingId
+  +string Name
+  +string? Detail
+  +ServicePricing Pricing
+  +string? Price
+  +MemberAction MemberAction
+  +int? DurationMinutes
+  +MeetingModes? Modes
+  +string? Place
+}
+
+class ServiceCommandValidator {
+  +int DetailMax = 60
+  +int DurationMin = 15
+  +int DurationMax = 480
+  +Validate(command: AddServiceCommand): ValidationResult
+}
+
+class AddServiceCommandHandler {
+  +Handle(command: AddServiceCommand): Task<Result<ServiceDto>>
+}
+
+class DeleteServiceCommandHandler {
+  +Handle(command: DeleteServiceCommand): Task<Result>
+}
+
+class ReorderServicesCommandHandler {
+  +Handle(command: ReorderServicesCommand): Task<Result>
+}
+
+Listing "1" *-- "0..50" Service
+Service --> ServicePricing : has
+Service --> MemberAction : has
+Service --> MeetingModes : offers
+ServiceCommandValidator ..> AddServiceCommand : validates
+AddServiceCommandHandler ..> AddServiceCommand : handles
+AddServiceCommandHandler ..> ServiceDetails : builds
+AddServiceCommandHandler --> Listing : adds service
+DeleteServiceCommandHandler --> Listing : removes service
+ReorderServicesCommandHandler --> Listing : reorders
+@enduml

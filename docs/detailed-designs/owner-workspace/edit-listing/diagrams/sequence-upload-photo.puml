@@ -1,0 +1,71 @@
+@startuml
+title UML sequence behaviour — Upload a listing photo
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ListingPhotosEditor" as page
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "OwnerListingController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AddListingPhotoCommandHandler" as handler
+  participant "ImageInspector" as inspector
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IMediaStore" as media
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "PhotoProcessingJob" as job
+end box
+participant "Malware scanner" as scanner
+actor -> page : Add a photo and optional alt text
+page -> client : Build multipart request
+client -> controller : POST /api/owner/listings/{listingId}/photos
+controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
+controller -> handler : Send AddListingPhotoCommand
+handler -> db : Load listing with photos
+db --> handler : Listing
+handler -> inspector : Check magic bytes and 5 MB limit (L2-088 and L2-138)
+inspector --> handler : ImageInspection
+handler -> entity : AddPhoto with 6 photo limit (L2-088)
+alt Seventh photo or file over 5 MB or not a real JPG or PNG
+  entity --> handler : Rule violated
+  handler --> controller : PHOTO_LIMIT_REACHED or PHOTO_TOO_LARGE or PHOTO_NOT_IMAGE
+  controller --> client : 422 ProblemDetails
+  client --> page : Refusal
+  page --> actor : Show the message naming the rule
+else Accepted
+  entity --> handler : Photo added with status Processing
+  handler -> media : Store original under a random name
+  media --> handler : Storage key
+  handler -> db : Save photo row and outbox message in one unit of work
+  db --> handler : Commit result
+  handler --> controller : ListingPhotoDto
+  controller --> client : 201 photo
+  client --> page : Photo
+  page --> actor : Show the photo with default alt text "{business} photo {n}"
+  job -> scanner : Scan original
+  scanner --> job : Clean or infected
+  job -> media : Re-encode and strip metadata and write 320 640 1280 px in WebP and JPEG (L2-088)
+  media --> job : Rendition URLs
+  job -> db : Mark photo Ready or Rejected
+  db --> job : Commit result
+end
+@enduml

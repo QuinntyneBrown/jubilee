@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Record audit log
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "AuditLogPage", "Angular page", "Filters by actor and target and date range")
+  Component(adminapi, "AdminApi", "Typed HTTP client", "Calls GET /api/admin/audit-entries")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AuditEntriesController", "ASP.NET Core controller", "Read-only search endpoint for the Admin role")
+  Component(query, "SearchAuditLogQueryHandler", "MediatR handler", "Runs the indexed and paged search")
+  Component(cmd, "ChangeMemberRoleCommandHandler", "MediatR handler", "Example of a sensitive action")
+  Component(behavior, "AuditBehavior", "MediatR pipeline behaviour", "Fails an audited command that recorded no entry")
+  Component(log, "AuditLog", "IAuditLog implementation", "Adds an AuditEntry to the unit of work")
+  Component(interceptor, "AppendOnlyInterceptor", "EF Core SaveChanges interceptor", "Rejects update and delete of AuditEntry")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "AuditEntries with INSERT and SELECT rights only")
+
+Rel(page, adminapi, "Requests a page of entries from")
+Rel(adminapi, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, query, "Sends SearchAuditLogQuery")
+Rel(query, db, "Selects by index", "EF Core")
+Rel(behavior, cmd, "Wraps")
+Rel(cmd, log, "Records through")
+Rel(log, interceptor, "Saves through")
+Rel(interceptor, db, "Inserts", "EF Core")
+@enduml

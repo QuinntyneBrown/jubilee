@@ -1,0 +1,112 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Validate forms
+
+enum FormPresentation {
+  Page
+  Dialog
+}
+
+enum SubmitState {
+  Idle
+  Submitting
+  Succeeded
+  Failed
+}
+
+enum FailureReason {
+  ConnectionLost
+  TimedOut
+  ServerError
+}
+
+class FieldError {
+  +field: string
+  +code: string
+  +message: string
+}
+
+class FormController {
+  +presentation: FormPresentation
+  +errors: Signal<FieldError[]>
+  +validate(): boolean
+  +applyServerErrors(errors: FieldError[]): void
+  +focusAfterErrors(): void
+  -clearPasswordFields(): void
+}
+
+class SubmitController {
+  +state: Signal<SubmitState>
+  +failure: Signal<FailureReason>
+  +timeoutSeconds: number = 10
+  +submit(send: () => Observable<T>): Promise<T>
+}
+
+class ValidationMessageCatalog {
+  +messageFor(code: string, params: object): string
+}
+
+class ErrorSummary {
+  +errors: FieldError[]
+  +title(): string
+  +focus(): void
+}
+
+class FormField {
+  +label: string
+  +required: boolean
+  +error: FieldError
+  +describedById: string
+}
+
+class "ValidationBehavior<TRequest, TResponse>" as ValidationBehavior {
+  +Handle(request: TRequest, next: RequestHandlerDelegate<TResponse>, ct: CancellationToken): Task<TResponse>
+}
+
+class BookMeetingCommandValidator {
+  +BookMeetingCommandValidator(clock: IClock)
+  +Validate(command: BookMeetingCommand): ValidationResult
+}
+
+class ValidationProblemDetails {
+  +int Status = 422
+  +string Reference
+  +string CorrelationId
+  +IReadOnlyList<FieldErrorDto> Errors
+}
+
+class FieldErrorDto {
+  +string Field
+  +string Code
+}
+
+class ValidationCodes <<static>> {
+  +{static} string Required
+  +{static} string PasswordTooShort
+  +{static} string EmailInUse
+}
+
+FormController --> FormPresentation : has
+FormController "1" *-- "*" FieldError : holds
+FormController ..> ValidationMessageCatalog : reads copy
+FormController ..> SubmitController : submits through
+SubmitController --> SubmitState : has
+SubmitController --> FailureReason : reports
+ErrorSummary "1" o-- "*" FieldError : lists
+FormField "1" o-- "0..1" FieldError : shows
+ValidationBehavior ..> BookMeetingCommandValidator : runs
+BookMeetingCommandValidator ..> ValidationCodes : uses
+ValidationProblemDetails "1" *-- "*" FieldErrorDto : carries
+FormController ..> ValidationProblemDetails : maps to FieldError
+@enduml

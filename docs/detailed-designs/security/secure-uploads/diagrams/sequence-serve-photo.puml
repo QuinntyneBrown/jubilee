@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Serve a published photo
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Browser" as browser
+  participant "BusinessPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "CDN on the media domain" as cdn
+  database "Media storage public container" as media
+end box
+user -> browser : Open /b/:slug
+browser -> page : Start page
+page -> controller : GET /api/listings/{slug}
+controller --> page : Listing with photo URLs of Published media only
+page --> browser : img elements pointing at the media domain
+browser -> cdn : GET /{random key}.jpg without Jubilee cookies (L2-138)
+alt Object cached at the CDN
+  cdn --> browser : 200 image
+else Not cached
+  cdn -> media : Fetch object
+  alt Key names a published object
+    media --> cdn : Object with stored Content-Type
+    cdn --> browser : 200 with Content-Type image/jpeg and X-Content-Type-Options nosniff (L2-138)
+  else Key unknown, quarantined or rejected
+    media --> cdn : Not found
+    cdn --> browser : 404. No public URL reaches quarantine (L2-138)
+  end
+end
+browser --> user : Show the photo
+@enduml

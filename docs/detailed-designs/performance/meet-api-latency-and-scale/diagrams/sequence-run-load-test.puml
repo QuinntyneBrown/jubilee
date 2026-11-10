@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Run the load test before a release
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "On-call engineer" as actor
+box "Delivery — CI pipeline" #E0F2FE
+  participant "Pipeline" as pipeline
+  participant "LoadTestSeeder" as seeder
+  participant "Load test runner" as runner
+  participant "PerformanceGate" as gate
+end box
+box "Backend — production-like environment" #D1FADF
+  participant "Jubilee API instances" as api
+  participant "EventsHub" as hub
+  participant "Autoscaler" as scaler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+participant "Observability platform" as obs
+
+actor -> pipeline : Start the load test stage
+pipeline -> seeder : Seed synthetic data
+seeder -> db : Insert 10,000 businesses, 200,000 members and 100,000 products
+db --> seeder : Seeded
+seeder --> pipeline : Ready
+pipeline -> runner : Run LoadTestScenario for 30 minutes
+runner -> hub : Open 5,000 real-time connections
+hub --> runner : Connected
+loop 30 minutes at 500 requests per second (80 % reads)
+  runner -> api : Mixed read, write and search requests
+  api -> db : Queries and commands
+  db --> api : Results
+  api --> runner : Responses
+  api -> obs : Request metrics
+  opt load rises above the scale-out threshold
+    scaler -> api : Add a stateless instance without manual action (L2-154)
+    api --> scaler : Instance ready
+  end
+  hub --> runner : Published events with send timestamps
+end
+runner --> pipeline : LoadTestReport
+pipeline -> gate : Evaluate report
+gate -> gate : Check L2-152 targets: reads 200 ms p95 and 500 ms p99, writes 300 ms p95
+gate -> gate : Check search 300 ms p95 (L2-156) and error rate below 0.1 % (L2-154)
+gate -> gate : Check 95 % of real-time events delivered within 2 seconds (L2-154)
+alt every threshold met
+  gate --> pipeline : Pass
+  pipeline --> actor : Report attached and stage passed
+else a threshold missed
+  gate --> pipeline : Fail with the failed thresholds
+  pipeline --> actor : Stage failed and release blocked
+end
+@enduml

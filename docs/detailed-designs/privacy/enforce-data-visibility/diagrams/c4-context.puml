@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Enforce data visibility
+
+Person(member, "Member", "Sends requests and messages to businesses")
+Person(owner, "Owner", "Reads requests sent to the business")
+Person(visitor, "Visitor", "Reads public pages without an account")
+Person(verifier, "Verification team member", "Reviews listings and reports")
+Person(engineer, "On-call engineer", "Requests time-limited database access")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(observability, "Observability platform", "Receives analytics events without personal data")
+System_Ext(broker, "Privileged access broker", "Grants just-in-time database access - vendor TO SUPPLY")
+
+Rel(member, jubilee, "Shares phone on a request using")
+Rel(owner, jubilee, "Reads the audience-limited request using")
+Rel(visitor, jubilee, "Reads public business details using")
+Rel(verifier, jubilee, "Views personal data with a recorded reason using")
+Rel(engineer, broker, "Requests a time-limited grant from")
+Rel(broker, jubilee, "Opens a logged database session to")
+Rel(jubilee, observability, "Sends typed analytics events to", "HTTPS")
+@enduml

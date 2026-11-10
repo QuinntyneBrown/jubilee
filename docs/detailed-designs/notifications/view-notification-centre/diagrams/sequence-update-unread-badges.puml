@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — Update unread badges
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member or Owner" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "UnreadBadge" as badge
+  participant "BadgeStore" as badges
+  participant "NotificationsApi" as client
+  participant "RealtimeClient" as rt
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "NotificationsController" as controller
+  participant "EventsHub" as hub
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetBadgeCountsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+member -> badge : Open any signed-in page
+badge -> badges : refresh()
+badges -> client : getBadges()
+client -> controller : GET /api/badges
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send GetBadgeCountsQuery
+handler -> db : Count unread conversations for the caller (L2-065)
+db --> handler : Count
+opt caller owns a listing
+  handler -> db : Count requests with status new for owned listings (L2-065)
+  db --> handler : Count
+end
+handler --> controller : BadgeCounts
+controller --> client : 200 OK
+client --> badges : Counts
+badges --> badge : Label with "99+" above 99 (L2-065)
+badge --> member : Badge announced as "{n} unread"
+opt counts change on another device
+  hub -> rt : badge.changed
+  rt -> badges : applyEvent(event)
+  badges --> badge : New label within 5 seconds (L2-065)
+end
+opt real-time connection is re-established
+  rt -> badges : refresh()
+  badges -> client : getBadges()
+  client -> controller : GET /api/badges
+  controller --> client : 200 OK
+  client --> badges : Counts
+end
+@enduml

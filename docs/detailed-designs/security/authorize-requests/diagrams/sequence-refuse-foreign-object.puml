@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Refuse access to an object the caller does not own
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestDetailPage" as page
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionAuthenticationMiddleware" as auth
+  participant "RequestsController" as controller
+  participant "ProblemDetailsMiddleware" as problem
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AuthorizationBehavior" as behavior
+  participant "RequestAccessAuthorizer" as authorizer
+  participant "GetRequestQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "ISecurityEventLog" as seclog
+  database "Jubilee database" as db
+end box
+user -> page : Open /requests/:id of another member
+page -> client : getRequest(id)
+client -> auth : GET /api/requests/{id}
+auth -> auth : Resolve session to ICurrentCaller
+auth -> controller : Identified request
+controller -> controller : Apply L2-133 role check (MemberOnly)
+controller -> behavior : Send GetRequestQuery
+behavior -> authorizer : AuthorizeAsync(query, caller)
+authorizer -> db : Load sender and listing owner of the request
+db --> authorizer : Owner identifiers
+alt Caller is the sender or the listing owner
+  authorizer --> behavior : Allowed
+  behavior -> handler : Handle query
+  handler --> behavior : Request details
+  behavior --> controller : Typed result
+  controller --> client : 200 with request
+else Member-private object of someone else (L2-133)
+  authorizer --> behavior : NotFound
+  behavior -> seclog : Record AuthorizationDenied (L2-143)
+  seclog --> behavior : Recorded
+  behavior --> problem : Denial
+  problem --> client : 404 ProblemDetails, same body as a missing object
+else Owner API for a listing the caller does not own (L2-133)
+  authorizer --> behavior : Forbidden
+  behavior -> seclog : Record AuthorizationDenied (L2-143)
+  seclog --> behavior : Recorded
+  behavior --> problem : Denial
+  problem --> client : 403 ProblemDetails
+end
+client --> page : Result or error
+page --> user : Show request, not-found page or /forbidden
+@enduml

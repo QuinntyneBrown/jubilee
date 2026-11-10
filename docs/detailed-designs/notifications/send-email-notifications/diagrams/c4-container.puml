@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Send e-mail notifications
+
+Person(member, "Member", "Receives e-mail and unsubscribes")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Reports the open conversation over the real-time connection")
+  Container(api, "Jubilee API", "ASP.NET Core", "One-click unsubscribe endpoint and presence tracking")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Decides and batches and sends e-mail and runs reminder and summary jobs")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Preferences and pending e-mail and reminders and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Presence of members in open conversations")
+}
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Reports open conversation", "WebSocket or server-sent events")
+Rel(api, cache, "Writes presence", "Redis protocol")
+Rel(api, db, "Updates preferences on unsubscribe", "EF Core")
+Rel(worker, db, "Reads outbox and preferences and writes pending e-mail", "EF Core")
+Rel(worker, cache, "Reads presence", "Redis protocol")
+Rel(worker, email, "Sends e-mail")
+Rel(email, member, "Delivers e-mail")
+Rel(email, api, "Mail client posts one-click unsubscribe", "HTTPS")
+@enduml

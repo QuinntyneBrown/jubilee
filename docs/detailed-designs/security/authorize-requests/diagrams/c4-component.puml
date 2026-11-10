@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Authorize requests
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(guards, "AuthGuard / OwnerGuard / VerifierGuard", "Angular route guards", "Redirect a caller who lacks the role. Convenience only")
+  Component(forbidden, "ForbiddenPage", "Angular page", "Page at /forbidden for a 403 answer")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(auth, "SessionAuthenticationMiddleware", "ASP.NET Core middleware", "Resolves the session cookie to ICurrentCaller")
+  Component(binder, "StrictRequestBinder", "JSON binding configuration", "Rejects bodies with fields the caller may not set")
+  Component(policy, "EndpointPolicy + DenyByDefaultPolicy", "Authorization policies", "Role check per endpoint. No policy means refuse")
+  Component(behavior, "AuthorizationBehavior", "MediatR pipeline behaviour", "Runs the object-level check before the handler")
+  Component(authorizer, "IResourceAuthorizer", "Application service", "Compares the caller with the owner of one object")
+  Component(seclog, "ISecurityEventLog", "Application service", "Records each 403 or 404 on an owned object")
+  Component(problem, "ProblemDetailsMiddleware", "ASP.NET Core middleware", "Maps a denial to 404 or 403 or 400")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Owned objects")
+ContainerDb(cache, "Cache", "Redis", "Sessions")
+
+Rel(guards, auth, "Route calls pass through", "JSON/HTTPS")
+Rel(auth, cache, "Reads session from")
+Rel(auth, binder, "Passes identified request to")
+Rel(binder, policy, "Passes bound request to")
+Rel(policy, behavior, "Sends command or query through")
+Rel(behavior, authorizer, "Asks for AccessDecision")
+Rel(authorizer, db, "Loads owner of the object", "EF Core")
+Rel(behavior, seclog, "Reports denial to")
+Rel(behavior, problem, "Raises denial to")
+Rel(problem, forbidden, "403 response leads to")
+@enduml

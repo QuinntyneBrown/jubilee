@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Observe the system
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(trace, "TraceInterceptor", "Angular HTTP interceptor", "Adds traceparent and reads X-Request-Id")
+  Component(errh, "GlobalErrorHandler", "Angular ErrorHandler", "Catches unhandled browser errors")
+  Component(reporter, "ClientErrorReporter", "Angular service", "Scrubs and sends client error reports")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(corr, "CorrelationIdMiddleware", "ASP.NET Core middleware", "Assigns the correlation ID and sets X-Request-Id")
+  Component(reqlog, "RequestLoggingMiddleware", "ASP.NET Core middleware", "Writes one JSON log line per request")
+  Component(redactor, "LogRedactor", "Logging enricher", "Removes secrets and masks e-mail addresses")
+  Component(problem, "ProblemDetailsMiddleware", "ASP.NET Core middleware", "Issues the error reference with the correlation ID")
+  Component(metrics, "JubileeMetrics", "OpenTelemetry meter", "Counts requests and connections and business events")
+  Component(sampler, "ErrorAwareSampler", "OpenTelemetry sampler", "Keeps 10 % of traces and each error trace")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(scope, "JobCorrelationScope", "Job filter", "Restores the correlation ID of an outbox message")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Outbox messages carry the correlation ID")
+System_Ext(obs, "Observability platform", "Logs and traces and metrics and alert rules and error tracker")
+
+Rel(trace, corr, "Sends requests through", "JSON/HTTPS")
+Rel(errh, reporter, "Passes errors to")
+Rel(reporter, obs, "Sends ClientErrorReport to", "HTTPS")
+Rel(corr, reqlog, "Opens the log scope for")
+Rel(reqlog, redactor, "Writes entries through")
+Rel(problem, redactor, "Logs error reference through")
+Rel(redactor, obs, "Ships JSON log lines to", "OTLP")
+Rel(metrics, obs, "Exports metrics to", "OTLP")
+Rel(sampler, obs, "Exports sampled traces to", "OTLP")
+Rel(corr, db, "Stamps outbox messages in")
+Rel(scope, db, "Reads the correlation ID from")
+Rel(scope, redactor, "Writes job log lines through")
+@enduml

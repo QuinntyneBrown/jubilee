@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — View the notification centre
+
+Person(member, "Member", "Reads notifications")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Notifications page and unread badges")
+  Container(api, "Jubilee API", "ASP.NET Core", "Notification and badge endpoints and real-time hub")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Creates notifications from outbox events")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Notifications and read positions and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and hub backplane")
+}
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls /api/notifications and /api/badges", "JSON/HTTPS")
+Rel(api, web, "Pushes notification and badge events", "WebSocket or server-sent events")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Checks session", "Redis protocol")
+Rel(worker, db, "Reads outbox and writes notifications", "EF Core")
+Rel(worker, cache, "Publishes real-time events", "Redis protocol")
+@enduml

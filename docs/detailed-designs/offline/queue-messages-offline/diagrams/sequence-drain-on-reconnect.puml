@@ -1,0 +1,70 @@
+@startuml
+title UML sequence behaviour — Send queued messages on reconnect
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConnectionBanner" as banner
+  participant "ConnectionService" as conn
+  participant "QueueDrainer" as drainer
+  participant "OutgoingMessageQueue" as queue
+  participant "MessagesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IdempotencyMiddleware" as idem
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SendMessageCommandHandler" as handler
+  participant "Conversation" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+conn -> drainer : state becomes Online
+drainer -> drainer : Acquire Web Lock jubilee-outbox
+loop Each waiting message in sequence order (L2-120)
+  drainer -> queue : nextWaiting()
+  queue --> drainer : QueuedMessage
+  drainer -> client : send(conversationId, body, idempotencyKey)
+  client -> idem : POST /api/conversations/{conversationId}/messages
+  idem -> cache : Look up Idempotency-Key (L2-132)
+  alt Key not seen in the last 24 hours
+    cache --> idem : No record
+    idem -> controller : Pass request
+    controller -> controller : Authenticate and apply participant policy
+    controller -> handler : Send SendMessageCommand
+    handler -> db : Load conversation
+    db --> handler : Conversation
+    handler -> entity : AddMessage(senderId, body, sentAt)
+    entity --> handler : Message
+    handler -> db : Save message and outbox entry in one unit of work
+    db --> handler : Commit result
+    handler --> controller : MessageDto
+    controller --> idem : 201 Created
+    idem -> cache : Store response under the key for 24 hours
+    cache --> idem : Stored
+  else Key already completed
+    cache --> idem : Stored response
+  end
+  idem --> client : 201 Created with the original result
+  client --> drainer : MessageDto
+  drainer -> queue : markSent(id)
+  queue --> drainer : Updated
+end
+drainer -> banner : showBackOnline(sentCount)
+banner --> actor : "You're back online. {n} saved message(s) was/were sent." (L2-120)
+@enduml

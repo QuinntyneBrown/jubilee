@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Clear cached personal data on sign-out
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SignOutDialog" as dialog
+  participant "SessionService" as session
+  participant "OfflineDataCleaner" as cleaner
+  participant "OfflineSnapshotStore" as snap
+end box
+box "Frontend — Jubilee service worker" #E0F2FE
+  participant "Cache Storage" as caches
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionsController" as controller
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as redis
+end box
+actor -> dialog : Confirm sign out
+dialog -> session : signOut()
+session -> controller : DELETE /api/session
+controller -> redis : Remove the session
+redis --> controller : Removed
+controller --> session : 204 No Content
+session -> cleaner : clearPersonalData() (L2-119)
+cleaner -> caches : Delete conversations data-group caches
+caches --> cleaner : Deleted
+cleaner -> snap : clear()
+snap --> cleaner : jubilee-offline database emptied
+cleaner -> cleaner : Empty the outgoing message queue
+cleaner --> session : Personal data cleared
+session --> dialog : Signed out
+dialog --> actor : Show the signed-out welcome page
+@enduml

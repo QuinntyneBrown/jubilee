@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Secure uploads
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(picker, "PhotoPicker", "Angular component", "Early type and size check with inline error")
+  Component(client, "MediaApi", "Typed HTTP client", "Posts one file to /api/media/photos")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(controller, "MediaController", "ASP.NET Core controller", "Caps the body at 5 MB. Requires a member")
+  Component(handler, "UploadPhotoCommandHandler", "MediatR handler", "Runs every check in order. Stops at the first failure")
+  Component(inspector, "ImageInspector", "Application service", "Magic bytes and header dimensions")
+  Component(reencoder, "ImageReencoder", "Application service", "Decodes and writes a new image without metadata")
+  Component(scan, "IMalwareScanner", "Application service", "Scans the quarantine object. Fails closed")
+  Component(store, "IMediaStore", "Application service", "Random names. Quarantine then publish")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "MediaObject records")
+ContainerDb(media, "Media storage", "Object storage + CDN", "Quarantine and public containers")
+System_Ext(scanner, "Malware scanner", "Scan service")
+
+Rel(picker, client, "Hands file to")
+Rel(client, controller, "Posts", "multipart/HTTPS")
+Rel(controller, handler, "Sends UploadPhotoCommand")
+Rel(handler, inspector, "1. Inspects with")
+Rel(handler, reencoder, "2. Re-encodes with")
+Rel(handler, store, "3. Stores and 5. publishes through")
+Rel(handler, scan, "4. Scans through")
+Rel(handler, db, "Saves MediaObject in", "EF Core")
+Rel(store, media, "Writes objects to", "HTTPS")
+Rel(scan, scanner, "Calls", "HTTPS")
+@enduml
