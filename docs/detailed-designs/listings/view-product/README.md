@@ -39,8 +39,11 @@ background path for stock alerts.
   button. Pressing the button without a chosen size shows "Choose a size." on
   the size group and does not open the dialog. Quantity accepts whole numbers
   from 1 to the stock available for the chosen option, or to 99 when stock is
-  not tracked. A quantity under the minimum order quantity shows "This item has
-  a minimum of 12." with the product's own minimum.
+  not tracked; before an option is chosen, the largest stock of the options
+  bounds it. Any other value shows "Choose a number from 1 to {max}." on the
+  quantity (`pages/product/invalid.html`). A quantity under the minimum order
+  quantity shows "This item has a minimum of 12." with the product's own
+  minimum. The API gives each option's `maxQuantity`, never the stock itself.
 - **`BackInStockButton`** — button "Tell me when it's back", shown in place of
   "Request this item" when the product is sold out. In that state the page shows
   a "Sold out" badge, "Sold out in every size" ("Sold out" for a product without

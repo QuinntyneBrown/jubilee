@@ -337,7 +337,8 @@
         "loading",
         "error",
         "sold-out",
-        "alert-requested"
+        "alert-requested",
+        "invalid"
       ],
       "not_applicable": {
         "empty": "A product page shows one item; it has no collection that could be empty."
