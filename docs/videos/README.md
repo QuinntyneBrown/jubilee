@@ -37,7 +37,10 @@ node tools/video-build/build.mjs docs/videos/NN-topic                       # mp
   (`onnx-community/Kokoro-82M-v1.0-ONNX`) into `.cache/kokoro` and run locally. Free, no key.
   `--voice` or `KOKORO_VOICE` picks another voice; `pronunciations.json` holds spoken replacements.
 - **Music.** `music.mp3` in the folder, or `--music <file>`. It plays at full level through the
-  music-only intro and outro and is ducked under the narration.
+  music-only intro and outro and is ducked under the narration. The builder measures the track and
+  sets its level, so a quiet or a loud track mixes the same. Set `data-bpm` to the track's tempo
+  and `data-music-start` to a downbeat in it, and the beat pulses land on the beat.
+  `tools/video-audio/placeholder_music.py` synthesizes a stand-in groove until a track is chosen.
 - **Captions** are off by default: the MP4 has none, `captions.vtt` is a sidecar, and the deck has a
   Captions button (or press `c`, or open `slides.html?captions=1`). `--burn-captions` burns them in.
 - The builder needs Node with Playwright (Chromium) and ffmpeg with libx264 (`FFMPEG_PATH` overrides).
@@ -50,7 +53,8 @@ by frame. The background is a WebGL fragment shader; confetti and the wipe betwe
 on a 2D canvas.
 
 On `<body>`: `data-intro` and `data-outro` (seconds of music before and after the narration),
-`data-bpm` (the music's tempo, for beat pulses) and `data-audio`.
+`data-bpm` (the music's tempo, for beat pulses), `data-music-start` (seconds into the track where
+the video begins; the beat pulses count from there, so make it a downbeat) and `data-audio`.
 
 On a `<section>`: `data-cue`, the first words of the sentence in `script.md` that starts the scene.
 The first section has no cue and covers the intro.

@@ -43,8 +43,8 @@ Screenshots are taken from `docs/mocks` by `build.mjs --shots` (list in [shots.j
 
 | Time | Segment | Content |
 |---|---|---|
-| 00:00-00:02 | Intro | Music only, full level. Logo and wordmark. |
-| 00:02-00:06 | Hello Toronto | "Toronto! Meet Jubilee" over the welcome page. |
+| 00:00-00:02 | Intro | Music only, full level: the last bar before the groove. Logo and wordmark. |
+| 00:02-00:06 | Hello Toronto | The groove drops. "Toronto! Meet Jubilee" over the welcome page. |
 | 00:06-00:12 | The directory | 47 counts up; the ten categories pop in. |
 | 00:12-00:17 | Trust | Business and shop profiles; the Verified stamp lands. |
 | 00:17-00:21 | Ask, book or order | Four phones drop in, one per action. |
@@ -64,10 +64,12 @@ node tools/video-build/build.mjs docs/videos/01-jubilee-pitch
 
 ## Pitfalls
 
-- **The music is a stand-in.** `music.mp3` is a synthesized soca-style groove from
-  `tools/video-audio/placeholder_music.py`, not a Pixabay track: Pixabay's site refuses automated
-  downloads. Download a soca track from Pixabay Music, save it as `music.mp3` here (or pass
-  `--music`), set `data-bpm` in `slides.html` to its tempo, and rebuild.
+- **The deck is cut to this track.** `music.mp3` is "En La Playa - Trinidad and Tobago Soca" by
+  JuliusH from Pixabay Music (Pixabay Content License), 120 BPM. `data-music-start="14.765"` starts
+  the video on the last bar of the track's intro, so the groove drops on "Toronto!" at 0:02, the
+  track lifts on "Join free today" at 0:34 and the cannons in the last scene fire on the downbeat.
+  A different track needs its own `data-bpm` and `data-music-start`; Pixabay's download button is
+  behind a captcha, so download the file by hand.
 - Captions are off by default; see [the videos README](../README.md).
 - The facts on screen (47 businesses, ten categories, the cast) come from `docs/mocks/README.md`.
   If the mocks change, re-run `--shots` and check the script.
@@ -75,4 +77,4 @@ node tools/video-build/build.mjs docs/videos/01-jubilee-pitch
 ## References
 
 - Kokoro-82M ONNX on Hugging Face: `onnx-community/Kokoro-82M-v1.0-ONNX`
-- Pixabay Music: pixabay.com/music
+- The track: pixabay.com/music/world-en-la-playa-trinidad-and-tobago-soca-4662/

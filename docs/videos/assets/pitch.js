@@ -98,7 +98,8 @@
   const cuts = sections.slice(1).map((s) => s.start);
   const bursts = cuts.map((t, i) => ({ t, n: 70, seed: i + 1 }));
   const last = sections[sections.length - 1];
-  for (let t = last.start + 0.9, i = 0; t < DURATION - 1; t += (60 / BPM) * 4, i++) bursts.push({ t, n: 150, seed: 50 + i });
+  const BAR = (60 / BPM) * 4; // the last scene fires a cannon on every downbeat
+  for (let t = Math.ceil((last.start + 0.9) / BAR) * BAR, i = 0; t < DURATION - 1; t += BAR, i++) bursts.push({ t, n: 150, seed: 50 + i });
   bursts.push({ t: 0.25, n: 110, seed: 99 });
   bursts.forEach((b) => {
     const r = rand(b.seed * 7919);
@@ -198,7 +199,7 @@
 
   const ready = Promise.all([document.fonts.ready, ...$('img').map((img) => img.decode().catch(() => errors.push(`image failed to load: ${img.getAttribute('src')}`)))])
     .then(() => document.fonts.load('800 80px Archivo')).then(() => render(0));
-  window.PITCH = { ready, errors, duration: DURATION, intro: INTRO, outro: OUTRO, sentences,
+  window.PITCH = { ready, errors, duration: DURATION, intro: INTRO, outro: OUTRO, musicStart: +body.dataset.musicStart || 0, sentences,
     schedule: sections.map((s) => ({ id: s.el.id, start: s.start, end: s.end })), seek: render };
   if (RENDER) { body.classList.add('render'); return; }
 

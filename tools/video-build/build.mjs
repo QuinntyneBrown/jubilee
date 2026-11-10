@@ -20,7 +20,8 @@ import { pathToFileURL } from 'node:url';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
 const FPS = 30;
-const MUSIC_FULL = 0.8, MUSIC_UNDER = 0.16;
+const MUSIC_LUFS = -13; // loudness of the music on its own, in the intro and outro
+const MUSIC_UNDER = 0.22; // the fraction of that level left under the narration
 
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
@@ -73,12 +74,19 @@ try {
       // Audio: music at full level for the intro and outro, ducked under the narration, faded at the end.
       const music = option('--music') ?? ['music.mp3', 'music.wav', 'music.m4a', 'music.ogg'].map((f) => path.join(folder, f)).find(fs.existsSync);
       if (!music) throw new Error('no music file: pass --music <file> or add music.mp3 to the folder');
-      const { intro, duration } = pitch, voiceEnd = duration - pitch.outro;
-      const level = `${MUSIC_UNDER}+${MUSIC_FULL - MUSIC_UNDER}*(1-clip((t-${intro - 0.35})/0.5,0,1)+clip((t-${voiceEnd - 0.1})/0.6,0,1))`;
+      const { intro, duration, musicStart } = pitch, voiceEnd = duration - pitch.outro;
+      // The stretch of the track the video plays: from data-music-start, looping if the track is short.
+      const excerpt = `aresample=44100,atrim=${musicStart}:${musicStart + duration},asetpts=PTS-STARTPTS`;
+      const measured = spawnSync(FFMPEG, ['-hide_banner', '-nostats', '-stream_loop', '-1', '-i', music, '-af', `${excerpt},ebur128=framelog=quiet`, '-f', 'null', '-'], { encoding: 'utf8' });
+      const lufs = +[...measured.stderr.matchAll(/I:\s+(-?[\d.]+) LUFS/g)].pop()?.[1];
+      if (!Number.isFinite(lufs)) throw new Error(`could not measure the loudness of ${music}`);
+      const gain = 10 ** ((MUSIC_LUFS - lufs) / 20);
+      console.log(`music ${path.basename(music)} from ${musicStart} s: ${lufs} LUFS, gain ${gain.toFixed(2)}`);
+      const level = `${gain}*(${MUSIC_UNDER}+${1 - MUSIC_UNDER}*(1-clip((t-${intro - 0.35})/0.5,0,1)+clip((t-${voiceEnd - 0.1})/0.6,0,1)))`;
       const mp3 = path.join(folder, `${name}.mp3`);
       run(FFMPEG, ['-y', '-loglevel', 'error', '-i', path.join(folder, 'narration.wav'), '-stream_loop', '-1', '-i', music, '-filter_complex',
         `[0:a]aresample=44100,adelay=${intro * 1000}:all=1,volume=1.5[v];` +
-        `[1:a]aresample=44100,atrim=0:${duration},volume='${level}':eval=frame,afade=t=out:st=${duration - 0.9}:d=0.9[m];` +
+        `[1:a]${excerpt},volume='${level}':eval=frame,afade=t=out:st=${duration - 0.9}:d=0.9[m];` +
         `[v][m]amix=inputs=2:duration=longest:normalize=0,alimiter=limit=0.95,atrim=0:${duration}[a]`,
         '-map', '[a]', '-ac', '2', '-b:a', '192k', mp3]);
 
