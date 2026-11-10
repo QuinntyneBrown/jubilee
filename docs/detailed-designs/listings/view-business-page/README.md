@@ -44,16 +44,25 @@ scheduled job.
   amount, or "Ask") and an action ("Book" or "Ask"). The action opens the
   booking or quote dialog for that service. Every service is listed; names and
   credential tags wrap and are not truncated. With no services the area reads
-  "No services listed yet" with "Send a message".
+  "No services listed yet" with "Send a message", and "Send a message" takes
+  the place of "Book a meeting".
+- **Actions of later journeys** — "Book a meeting", "Book", "Ask", "Message",
+  "Send a message", "Share", "Report this listing" and "Edit listing" are links
+  to the routes of the features that own them (`/b/:slug/book`,
+  `/b/:slug/quote`, `/b/:slug/message`, `/b/:slug/share`, `/b/:slug/report`,
+  `/my-business/edit`). Until those features are built the links reach the
+  not-found page, and the save heart is shown but has no effect (ADR 0007).
 - **`ShopView`** — layout for a shop listing. It shows "Products" with the
-  count and one `ProductCard` per product, a "Sold out" badge on each sold-out
+  count and one `ProductCard` per product (without the shop's name), a "Sold out" badge on each sold-out
   product, and "Custom work" listing the shop's services with "Ask". With no
   products it reads "No products yet. {Name} is setting up shop." with "Send a
   message".
 - **`DetailsList`** — definition list of the details. A services listing shows
   Where, Hours, Languages, On Jubilee since and Replies. A shop shows Where,
-  Delivery, Made to order, On Jubilee since and Replies. The Replies row is
-  omitted when the API returns no reply text.
+  Delivery, Made to order, On Jubilee since and Replies. "On Jubilee since" is
+  the month the listing was created. A row whose value the owner has not given
+  is omitted, and the Replies row is omitted when the API returns no reply
+  text.
 - **`RelatedBusinesses`** — section "More in {category}" with up to two
   `BusinessCard` components and a "See all" link to `/c/:category`. The section
   is omitted when the API returns no related listing.
@@ -65,8 +74,11 @@ scheduled job.
 - **`ListingsApi`** — typed Angular HTTP client for `GET /api/listings/{slug}`
   and `POST /api/listings/{slug}/views`.
 - **`ListingsController`** — ASP.NET Core controller in `Jubilee.Api`. Both
-  endpoints accept anonymous callers and read the session when one exists. A
-  load failure returns 503 `ProblemDetails` with `JB-BIZ-503`.
+  endpoints accept anonymous callers, read the session when one exists and are
+  rate limited per client address. A load failure returns 503 `ProblemDetails`
+  with `JB-BIZ-503`. A visitor's answer may be cached publicly for 60 seconds;
+  a signed-in caller's answer is never stored. The page lists every service and
+  at most 50 products, with the shop's product count (`L2-153`).
 - **`GetListingPageQuery`** and **`GetListingPageQueryHandler`** — MediatR
   query and handler. The handler loads the `Listing` with its `Service` and
   `Product` rows, evaluates `ListingVisibilityPolicy`, selects the related
@@ -77,21 +89,30 @@ scheduled job.
   listing is public. A listing that is not live resolves to not found, except
   for its owner and the verification team, who receive a preview with the stage.
   The server decides the viewer relation from the session, never from the
-  client.
+  client: the owner is the member whose subject is `Listing.OwnerId`, and the
+  verification team holds the `verifier` role (ADR 0007). The page for such a
+  preview is built with the owner workspace and the review queue; this
+  feature serves its data.
 - **Related listings selection** — query for up to two other live listings in
-  the same category, excluding the current listing. The order in which the two
-  are chosen is `<TO SUPPLY>`.
+  the same category, excluding the current listing. The two are the first in
+  the category's Recommended order (`ListingSortPolicy`, ADR 0004), so the
+  section agrees with the category page that "See all" opens.
 - **`ReplyTimeBand`** and **`ResponseTimeBadgeJob`** — enumeration on `Listing`
   and the hosted job in `Jubilee.Worker` that maintains it. The job computes
   the median first-reply time of each business over the last 90 days: under
   6 hours gives "Usually within a few hours", under 24 hours gives "Usually
   within a day", otherwise "Usually within a few days". With fewer than
-  3 replies the band is `None`. The job schedule is `<TO SUPPLY>`.
+  3 replies the band is `None`. The job runs hourly. Until messaging records
+  replies (journey 6), the band is derived from the stored
+  `Listing.MedianResponseMinutes`, which is null for every listing without
+  enough replies, and the job itself is built with messaging (ADR 0007).
 - **`RecordListingViewCommand`** and **`ListingView`** — command sent after the
   page renders, and the row that it inserts. The handler skips the insert when
   the viewer owns the listing, so the owner's visits do not appear in the
   owner's statistics. It also skips a repeat view by the same visitor within
-  30 minutes and views by known bots.
+  30 minutes and views by known bots. A visitor is the member's subject, or a
+  one-way hash of the client address and user agent for a caller without a
+  session; no address is stored.
 
 ## Requirements
 
