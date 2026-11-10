@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data tables and lists — Jubilee design system</title>
+<meta name="description" content="How Jubilee shows collections: card grids for discovery, rows for requests, lists for inbox and notifications, tables for owner and admin data; with sorting, row actions, status badges, loading, empty and paging.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Pattern</p>
+      <h1>Data tables and lists</h1>
+      <p class="ds-lead">Jubilee shows a collection in the shape of the decision people make with it: browse by picture, act on a request, scan a queue. The shape decides the component; the states are shared.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Pattern</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Four collection shapes cover every list in the mocks. <a href="../components/business-card.html">Card grids</a> (<code>.card-grid</code> of <code>.biz-card</code>/<code>.product-card</code>) for browsing; <b>rows</b> (<code>.rows</code>/<code>.row</code>, see <a href="../components/list.html">List</a>) for requests where each item carries a status and actions; <b>lists</b> for the inbox (<a href="../components/message-thread.html">Message thread</a>) and notifications (<a href="../components/notification-item.html">Notification item</a>); and the <a href="../components/table.html">Table</a> for owners and the verification team comparing several attributes. <a href="../components/directory-row.html">Directory row</a>s list the directory by category.</p>
+      <ul>
+        <li><b>Status is a badge with a word</b>: Confirmed, Awaiting reply, Declined, Completed, Sold out, Listed. Colour backs it up, never replaces it.</li>
+        <li><b>Actions name their row</b>: "Confirm request from Samuel Park", "Edit Gold cross stoneware mug".</li>
+        <li><b>Counts are visible</b>: in tabs ("New 3"), in the subtitle ("3 new · reply within a day") and in the pagination range.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Data</th><th scope="col">Shape</th><th scope="col">Why</th><th scope="col">Mock</th></tr></thead><tbody>
+        <tr><td>Businesses and products to discover</td><td>Card grid</td><td>People choose by picture, name and tagline</td><td><a href="../../mocks/pages/browse/default.html">browse</a>, <a href="../../mocks/pages/shop/default.html">shop</a></td></tr>
+        <tr><td>A member’s requests; a business’s incoming requests</td><td>Rows with status badge or actions</td><td>One decision per item: open it, confirm or decline</td><td><a href="../../mocks/pages/requests/default.html">requests</a>, <a href="../../mocks/pages/incoming-requests/default.html">incoming-requests</a></td></tr>
+        <tr><td>Conversations and notifications</td><td>List of whole-item links</td><td>Read and open; unread is the only state</td><td><a href="../../mocks/pages/messages/default.html">messages</a>, <a href="../../mocks/pages/notifications/default.html">notifications</a></td></tr>
+        <tr><td>Products or services an owner manages; the verification queue</td><td>Table</td><td>Compare price, status and counts across items; sort</td><td><a href="../../mocks/pages/my-products/default.html">my-products</a>, <a href="../../mocks/pages/admin-verifications/default.html">admin-verifications</a></td></tr>
+        <tr><td>Key facts about one thing</td><td><a href="../components/description-list.html">Description list</a> (<code>.dl</code>)</td><td>Label and value pairs, not a collection</td><td><a href="../../mocks/pages/request-detail/default.html">request-detail</a></td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
+      <p>A table with a hidden caption, numeric columns right-aligned with tabular figures, a sortable column with <code>aria-sort</code>, status badges and labelled icon actions.</p>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="table-wrap" style="width: 100%; position: relative;"><table class="table">
+          <caption class="visually-hidden">Your products</caption>
+          <thead><tr><th scope="col">Product</th><th scope="col" class="num">Price</th><th scope="col">Status</th><th scope="col" class="num" aria-sort="descending"><button type="button">Requests</button></th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+          <tbody>
+            <tr><td><div class="cluster" style="flex-wrap: nowrap;"><div class="media media--ink media--thumb"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg></div><span>Faith heavyweight tee, charcoal</span></div></td><td class="num">$34</td><td><span class="badge badge--warning">Sold out</span></td><td class="num">41</td><td><div class="cluster cluster--end" style="flex-wrap: nowrap; gap: var(--space-1);"><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/product-editor/edit.html" aria-label="Edit Faith heavyweight tee, charcoal"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/></svg></a><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-product/default.html" aria-label="Delete Faith heavyweight tee, charcoal"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></a></div></td></tr>
+            <tr><td><div class="cluster" style="flex-wrap: nowrap;"><div class="media media--gold media--thumb"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4zM16 10h2a2 2 0 0 1 0 5h-2M8 4v1M12 4v1"/></svg></div><span>Gold cross stoneware mug</span></div></td><td class="num">$24</td><td><span class="badge badge--success">Listed</span></td><td class="num">26</td><td><div class="cluster cluster--end" style="flex-wrap: nowrap; gap: var(--space-1);"><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/product-editor/edit.html" aria-label="Edit Gold cross stoneware mug"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/></svg></a><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-product/default.html" aria-label="Delete Gold cross stoneware mug"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></a></div></td></tr>
+            <tr><td><div class="cluster" style="flex-wrap: nowrap;"><div class="media media--blue media--thumb"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg></div><span>Custom church team tee (min. 12)</span></div></td><td class="num">$22 ea</td><td><span class="badge badge--success">Listed</span></td><td class="num">12</td><td><div class="cluster cluster--end" style="flex-wrap: nowrap; gap: var(--space-1);"><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/product-editor/edit.html" aria-label="Edit Custom church team tee"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/></svg></a><a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-product/default.html" aria-label="Delete Custom church team tee"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></a></div></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+        <div class="ds-example__caption"><span>Naomi’s products. On touch screens row actions are always visible; with a mouse they appear on row hover or focus.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="table-wrap" style="width: 100%; position: relative;"&gt;&lt;table class="table"&gt;
+  &lt;caption class="visually-hidden"&gt;Your products&lt;/caption&gt;
+  &lt;thead&gt;&lt;tr&gt;&lt;th scope="col"&gt;Product&lt;/th&gt;&lt;th scope="col" class="num"&gt;Price&lt;/th&gt;&lt;th scope="col"&gt;Status&lt;/th&gt;&lt;th scope="col" class="num" aria-sort="descending"&gt;&lt;button type="button"&gt;Requests&lt;/button&gt;&lt;/th&gt;&lt;th scope="col"&gt;&lt;span class="visually-hidden"&gt;Actions&lt;/span&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;div class="cluster" style="flex-wrap: nowrap;"&gt;&lt;div class="media media--ink media--thumb"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;span&gt;Faith heavyweight tee, charcoal&lt;/span&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="num"&gt;$34&lt;/td&gt;&lt;td&gt;&lt;span class="badge badge--warning"&gt;Sold out&lt;/span&gt;&lt;/td&gt;&lt;td class="num"&gt;41&lt;/td&gt;&lt;td&gt;&lt;div class="cluster cluster--end" style="flex-wrap: nowrap; gap: var(--space-1);"&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/product-editor/edit.html" aria-label="Edit Faith heavyweight tee, charcoal"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-product/default.html" aria-label="Delete Faith heavyweight tee, charcoal"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;div class="cluster" style="flex-wrap: nowrap;"&gt;&lt;div class="media media--gold media--thumb"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4zM16 10h2a2 2 0 0 1 0 5h-2M8 4v1M12 4v1"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;span&gt;Gold cross stoneware mug&lt;/span&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="num"&gt;$24&lt;/td&gt;&lt;td&gt;&lt;span class="badge badge--success"&gt;Listed&lt;/span&gt;&lt;/td&gt;&lt;td class="num"&gt;26&lt;/td&gt;&lt;td&gt;&lt;div class="cluster cluster--end" style="flex-wrap: nowrap; gap: var(--space-1);"&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/product-editor/edit.html" aria-label="Edit Gold cross stoneware mug"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-product/default.html" aria-label="Delete Gold cross stoneware mug"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;&lt;div class="cluster" style="flex-wrap: nowrap;"&gt;&lt;div class="media media--blue media--thumb"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;span&gt;Custom church team tee (min. 12)&lt;/span&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="num"&gt;$22 ea&lt;/td&gt;&lt;td&gt;&lt;span class="badge badge--success"&gt;Listed&lt;/span&gt;&lt;/td&gt;&lt;td class="num"&gt;12&lt;/td&gt;&lt;td&gt;&lt;div class="cluster cluster--end" style="flex-wrap: nowrap; gap: var(--space-1);"&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/product-editor/edit.html" aria-label="Edit Custom church team tee"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;a class="btn btn--icon btn--ghost btn--sm" href="../../mocks/dialogs/delete-product/default.html" aria-label="Delete Custom church team tee"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>Rows with actions</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <ul class="rows" style="width: 100%;">
+          <li class="row row--stack"><span class="avatar" aria-hidden="true">SP</span><div class="row__body"><div class="row__title">Custom church team tee × 24</div><div class="row__meta">Order · Samuel Park · 8:15 a.m.</div><div class="row__meta">For Agincourt Community Church youth retreat · needed by Fri 27 Nov</div></div><div class="row__actions"><a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Samuel Park">Decline</a><a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Samuel Park">Confirm</a></div></li>
+          <li class="row row--stack"><span class="avatar" aria-hidden="true">RM</span><div class="row__body"><div class="row__title">Gold cross stoneware mug × 2</div><div class="row__meta">Order · Ruth Mensah · Yesterday</div><div class="row__meta">Pickup in Leslieville</div></div><div class="row__actions"><a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Ruth Mensah">Decline</a><a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Ruth Mensah">Confirm</a></div></li>
+          <li class="row row--stack"><span class="avatar" aria-hidden="true">JA</span><div class="row__body"><div class="row__title"><a href="../../mocks/pages/request-detail/confirmed.html">Discovery meeting</a></div><div class="row__meta">Booking · Legacy Financial</div><div class="row__meta">Thu 12 Nov, 10:00 a.m. · Video</div></div><span class="badge badge--success">Confirmed</span></li>
+        </ul>
+      </div>
+        <div class="ds-example__caption"><span>Incoming requests for Luzandre.com, then one of Joanna’s requests. <code>.row--stack</code> puts actions on their own full-width row below 640px.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="rows" style="width: 100%;"&gt;
+  &lt;li class="row row--stack"&gt;&lt;span class="avatar" aria-hidden="true"&gt;SP&lt;/span&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Custom church team tee × 24&lt;/div&gt;&lt;div class="row__meta"&gt;Order · Samuel Park · 8:15 a.m.&lt;/div&gt;&lt;div class="row__meta"&gt;For Agincourt Community Church youth retreat · needed by Fri 27 Nov&lt;/div&gt;&lt;/div&gt;&lt;div class="row__actions"&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Samuel Park"&gt;Decline&lt;/a&gt;&lt;a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Samuel Park"&gt;Confirm&lt;/a&gt;&lt;/div&gt;&lt;/li&gt;
+  &lt;li class="row row--stack"&gt;&lt;span class="avatar" aria-hidden="true"&gt;RM&lt;/span&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;Gold cross stoneware mug × 2&lt;/div&gt;&lt;div class="row__meta"&gt;Order · Ruth Mensah · Yesterday&lt;/div&gt;&lt;div class="row__meta"&gt;Pickup in Leslieville&lt;/div&gt;&lt;/div&gt;&lt;div class="row__actions"&gt;&lt;a class="btn btn--sm" href="../../mocks/dialogs/decline-request/default.html" aria-label="Decline request from Ruth Mensah"&gt;Decline&lt;/a&gt;&lt;a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Ruth Mensah"&gt;Confirm&lt;/a&gt;&lt;/div&gt;&lt;/li&gt;
+  &lt;li class="row row--stack"&gt;&lt;span class="avatar" aria-hidden="true"&gt;JA&lt;/span&gt;&lt;div class="row__body"&gt;&lt;div class="row__title"&gt;&lt;a href="../../mocks/pages/request-detail/confirmed.html"&gt;Discovery meeting&lt;/a&gt;&lt;/div&gt;&lt;div class="row__meta"&gt;Booking · Legacy Financial&lt;/div&gt;&lt;div class="row__meta"&gt;Thu 12 Nov, 10:00 a.m. · Video&lt;/div&gt;&lt;/div&gt;&lt;span class="badge badge--success"&gt;Confirmed&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">State</th><th scope="col">Collection shows</th><th scope="col">Mock</th></tr></thead><tbody>
+        <tr><td>Loading</td><td>Skeletons in the item’s shape (rows: avatar + two lines + button), <code>aria-hidden</code>, plus a hidden status</td><td><a href="../../mocks/pages/requests/loading.html">requests/loading</a></td></tr>
+        <tr><td>Empty (first use)</td><td><a href="../components/empty-state.html">Empty state</a> with the first action</td><td><a href="../../mocks/pages/my-products/empty.html">my-products/empty</a></td></tr>
+        <tr><td>Filtered to nothing</td><td>Compact empty under the filter with "Show all"</td><td><a href="../../mocks/pages/incoming-requests/no-results.html">incoming-requests/no-results</a></td></tr>
+        <tr><td>Error</td><td><code>.empty--error</code> replaces the collection; the header and filters stay</td><td><a href="../../mocks/pages/my-products/error.html">my-products/error</a></td></tr>
+        <tr><td>Long</td><td>Pagination with the range in words; 16 cards a page</td><td><a href="../../mocks/pages/category/long.html">category/long</a></td></tr>
+        <tr><td>Sorted</td><td><code>aria-sort</code> on the header, arrow after its label; one sorted column at a time</td><td><a href="../../mocks/pages/admin-verifications/default.html">admin-verifications</a></td></tr>
+        <tr><td>Unread / new</td><td>Accent-subtle background and bold title, plus hidden "Unread." text</td><td><a href="../../mocks/pages/notifications/default.html">notifications</a></td></tr>
+        <tr><td>Selected</td><td><code>aria-selected="true"</code> or <code>aria-current</code>: accent-subtle background (open conversation)</td><td><a href="../../mocks/pages/conversation/default.html">conversation</a></td></tr>
+      </tbody></table></div>
+      <h3>Row states</h3>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Item</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Selected</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">List item</th><td><ul class="list"><li class="list__item">Legacy Financial</li></ul></td><td><ul class="list"><li class="list__item list__item--interactive" data-state="hover">Legacy Financial</li></ul></td><td><ul class="list"><li class="list__item" aria-current="page">Legacy Financial</li></ul></td></tr>
+        </tbody>
+      </table></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="table-wrap" style="width: 100%; position: relative;"><table class="table"><caption class="visually-hidden">Verification queue row states</caption>
+          <thead><tr><th scope="col">Business</th><th scope="col">Owner</th><th scope="col">Row state</th></tr></thead>
+          <tbody><tr><td>Luzandre.com</td><td>Naomi Laurent</td><td>Default</td></tr><tr data-state="hover"><td>Laurent Photography</td><td>Naomi Laurent</td><td>Hover</td></tr><tr aria-selected="true"><td>Park Insurance Brokers</td><td>Samuel Park</td><td>Selected</td></tr></tbody>
+        </table></div>
+      </div>
+        <div class="ds-example__caption"><span>Table rows: hover is the subtle background, selected the accent-subtle background.</span></div></div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Card grids are two columns on phones and up to four from 1024px (<code>.card-grid</code>, gap <code>--space-6</code>/<code>--space-4</code>).</li>
+        <li>Tables scroll horizontally inside <code>.table-wrap</code>; the first column holds the name so it is visible first. Keep tables to five columns; the verification queue’s six is the maximum.</li>
+        <li>Rows stack below 640px (<code>.row--stack</code>): actions move under the body and share the width.</li>
+        <li>The inbox is a list and a conversation side by side from 768px; on phones the list is the page and a conversation opens on its own with a back link.</li>
+        <li>Filter tabs scroll horizontally; their counts never wrap under the label.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Pattern and roles</h3>
+      <p>Tables are native <code>&lt;table&gt;</code> with <code>&lt;caption&gt;</code> and <code>scope="col"</code>; sortable headers contain a button and carry <code>aria-sort</code> (<a href="https://www.w3.org/WAI/ARIA/apg/patterns/table/">APG table pattern</a>). Rows and lists are <code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code> so screen readers announce the count. Only use <code>role="grid"</code> if cells become editable; none are today.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Moves through links and buttons in each row, row by row. Rows themselves are not focusable.</td></tr>
+        <tr><td><kbd>Enter</kbd> on a sort header</td><td>Toggles ascending/descending; the new order is announced through <code>aria-sort</code>.</td></tr>
+        <tr><td><kbd>Enter</kbd> on a list item</td><td>Opens it (the whole notification or thread is one link).</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>After a row is removed (delete, decline), focus moves to the next row’s first control, or to the list heading if it was the last. After paging, focus moves to the first new item or the results heading.</p>
+      <h3>Labelling and announcements</h3>
+      <p>Icon actions name the row ("Delete Faith heavyweight tee, charcoal"); the actions column header is visually hidden text "Actions". Unread items prepend visually hidden "Unread.". Count badges in tabs are read with the tab name ("New 3").</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Header text on sunken header</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-sunken" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Cell text</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Hovered row text</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Selected row text</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Unread row metadata</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Success badge</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-success-bg" data-min="4.5"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Header text on sunken header</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-sunken" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Cell text</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Hovered row text</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Selected row text</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Unread row metadata</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Success badge</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-success-bg" data-min="4.5"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Row hover and the appearance of row actions transition over <code>--duration-fast</code>; skeleton shimmer stops under reduced motion.</p>
+      <h3>Touch</h3>
+      <p>Row actions are small buttons (32px) spaced 8px apart; on phones stacked row actions grow to the full row width. Whole-item links (threads, notifications) are at least 64px tall.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Row titles are the thing requested, as the member wrote it or as the catalogue names it: "Kitchen drain is slow and gurgling", "Custom church team tee × 24".</li>
+        <li>Metadata order: kind · counterpart · time. "Order · Samuel Park · 8:15 a.m." Then the second line of detail.</li>
+        <li>Status words are past participles or short phrases, never codes: Confirmed, Declined, Cancelled, Awaiting reply, Ready to review.</li>
+        <li>Column headers are nouns in sentence case. Numbers right-aligned; prices with $ and no decimals unless cents exist.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><span class="badge badge--success">Confirmed</span><span class="badge badge--warning">Awaiting reply</span><span class="badge badge--danger">Declined</span></div><figcaption>Status in words, with colour as a second cue.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><span class="dot" style="color: var(--color-success-solid);" aria-hidden="true"></span><span class="dot" style="color: var(--color-warning-solid);" aria-hidden="true"></span><span class="dot" style="color: var(--color-danger-solid);" aria-hidden="true"></span></div><figcaption>Coloured dots alone fail 1.4.1 Use of Color and mean nothing to a screen reader.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><a class="btn btn--sm btn--primary" href="../../mocks/dialogs/confirm-request/default.html" aria-label="Confirm request from Samuel Park">Confirm</a></div><figcaption>Repeated row actions name their row in the accessible name.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="table-wrap" style="width: 100%; position: relative;"><table class="table"><caption class="visually-hidden">Bad example</caption><tbody><tr><td>Faith heavyweight tee</td><td>$34</td><td>41</td><td>Listed</td><td>Shops</td><td>Online</td><td>Jun 2026</td></tr></tbody></table></div></div><figcaption>A wide table with no headers on a phone. Use rows, or keep to five labelled columns.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/my-products/default.html">pages/my-products/default</a> (table with row actions)</li>
+        <li><a href="../../mocks/pages/admin-verifications/default.html">pages/admin-verifications/default</a> (sortable queue)</li>
+        <li><a href="../../mocks/pages/incoming-requests/default.html">pages/incoming-requests/default</a> (rows with actions)</li>
+        <li><a href="../../mocks/pages/requests/default.html">pages/requests/default</a> (rows with status)</li>
+        <li><a href="../../mocks/pages/notifications/default.html">pages/notifications/default</a> (unread list)</li>
+        <li><a href="../../mocks/pages/category/long.html">pages/category/long</a> (pagination)</li>
+      </ul>
+      <p>Drift found: table cells use <code>style="flex-wrap: nowrap"</code> on clusters and a raw <code>gap</code> inline for row actions; kept as token layout tweaks. Notification titles and thread snippets set <code>style="display: block"</code> inline 50+ times because they are spans inside a link; a <code>.notif__title</code>/<code>.thread__snippet</code> display rule would remove it. Request skeleton buttons used inline widths (now <code>.skeleton--btn-sm</code>). Only one table in the mocks is sortable.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

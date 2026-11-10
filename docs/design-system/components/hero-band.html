@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero band — Jubilee design system</title>
+<meta name="description" content="The ink brand surfaces of Jubilee: the browse and welcome hero (greeting, headline, search, category chips), the Join free CTA band, and the detail-page head.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Data display</p>
+      <h1>Hero band</h1>
+      <p class="ds-lead">The hero is the ink band at the top of browse and welcome that greets the member, says what Jubilee is and gets them to a category in one tap. The CTA band is its small sibling inside a page. The detail head is the plain-surface heading block of a business or product page.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>.hero</code> <code>.band</code> <code>.detail-head</code></span><span class="ds-pill">Brand surface</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use the hero once per page, only on browse (signed in or out) and welcome. Use the band for a single call to action inside a page ("New here? Join free" for signed-out visitors). Use the detail head at the top of every business, shop and product page. Everywhere else a page starts with a plain page header (see <a href="../components/top-bar.html">Top bar</a> and <a href="../patterns/navigation.html">Navigation and page structure</a>).</p>
+      <ul>
+        <li><b>Hero</b> (<code>.hero</code>): full-bleed <code>--color-bg-brand</code>; greeting line, headline (the page's <code>h1</code> in product; an <code>h2</code> here because this page has its own), a count line, a phone-only search and a <code>.chip-row</code> of categories. The welcome variant swaps the search for Join free and Browse businesses.</li>
+        <li><b>Band</b> (<code>.band</code>): a rounded ink block with a heading, one line of copy and one primary button.</li>
+        <li><b>Detail head</b> (<code>.detail-head</code>): a kicker (verified check + category link), the name, the owner, the pitch, credential tags, the action row (primary + icon buttons) and the perk.</li>
+      </ul>
+      <p>On the ink surfaces chips, ghost buttons, inputs and the focus ring re-map to on-brand tokens; gold stays gold.</p>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div style="justify-self: stretch; min-width: 0;"><section class="hero" aria-labelledby="hb-anat-h"><div class="container"><p class="hero__greeting">Morning, Joanna</p><h2 id="hb-anat-h">Do business with Toronto’s Christian community.</h2><p class="hero__sub">47 verified businesses — shops, advisors, trades and more.</p><form class="search" role="search" action="../../mocks/pages/search/default.html"><label class="visually-hidden" for="hb-anat-q">Search businesses and products</label><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" id="hb-anat-q" type="search" placeholder="Plumber, lawyer, Bibles…"></form><ul class="chip-row"><li><a class="chip" href="../../mocks/pages/browse/default.html" aria-current="page">All</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Shops</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Financial &amp; insurance</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Legal &amp; immigration</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Home &amp; property</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Health &amp; family</a></li></ul></div></section></div>
+          <span class="ds-callout" style="left: 4%; top: 12%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 4%; top: 30%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 4%; top: 50%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 4%; top: 65%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 4%; top: 85%;" aria-hidden="true">5</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Greeting</b><small><code>.hero__greeting</code>: "Morning, Joanna" signed in; "Toronto’s Christian marketplace" signed out. <code>--text-body-sm</code>, on-brand muted.</small></div></li>
+          <li><div><b>Headline</b><small><code>h1</code> (<code>h2</code> in these docs), max 18ch, 5xl from 1024px.</small></div></li>
+          <li><div><b>Sub</b><small><code>.hero__sub</code>: the live count of verified businesses.</small></div></li>
+          <li><div><b>Search (phone only)</b><small><code>.search</code> in a <code>role="search"</code> form, 48px pill input; hidden from 768px where the top bar has search.</small></div></li>
+          <li><div><b>Category chips</b><small><code>.chip-row</code> of links; the current one is gold with <code>aria-current="page"</code>. Scrolls sideways on phones, wraps from 768px.</small></div></li>
+        </ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <h3>Hero, signed in</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--flush">
+        <section class="hero" aria-labelledby="hb-v1-h"><div class="container"><p class="hero__greeting">Morning, Joanna</p><h2 id="hb-v1-h">Do business with Toronto’s Christian community.</h2><p class="hero__sub">47 verified businesses — shops, advisors, trades and more.</p><form class="search" role="search" action="../../mocks/pages/search/default.html"><label class="visually-hidden" for="hb-v1-q">Search businesses and products</label><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="input" id="hb-v1-q" type="search" placeholder="Plumber, lawyer, Bibles…"></form><ul class="chip-row"><li><a class="chip" href="../../mocks/pages/browse/default.html" aria-current="page">All</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Shops</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Financial &amp; insurance</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Legal &amp; immigration</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Home &amp; property</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Health &amp; family</a></li></ul></div></section>
+      </div>
+        <div class="ds-example__caption"><span>Browse, signed in. The search shows only below 768px; resize the window to see it.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;section class="hero" aria-labelledby="hb-v1-h"&gt;&lt;div class="container"&gt;&lt;p class="hero__greeting"&gt;Morning, Joanna&lt;/p&gt;&lt;h2 id="hb-v1-h"&gt;Do business with Toronto’s Christian community.&lt;/h2&gt;&lt;p class="hero__sub"&gt;47 verified businesses — shops, advisors, trades and more.&lt;/p&gt;&lt;form class="search" role="search" action="../../mocks/pages/search/default.html"&gt;&lt;label class="visually-hidden" for="hb-v1-q"&gt;Search businesses and products&lt;/label&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="11" cy="11" r="7"/&gt;&lt;path d="m20 20-3.5-3.5"/&gt;&lt;/svg&gt;&lt;input class="input" id="hb-v1-q" type="search" placeholder="Plumber, lawyer, Bibles…"&gt;&lt;/form&gt;&lt;ul class="chip-row"&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/browse/default.html" aria-current="page"&gt;All&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Shops&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Financial &amp;amp; insurance&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Legal &amp;amp; immigration&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Home &amp;amp; property&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Health &amp;amp; family&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;/section&gt;</code></pre></details></div>
+      <h3>Hero, welcome</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--flush">
+        <section class="hero" aria-labelledby="hb-v2-h"><div class="container"><p class="hero__greeting">Toronto’s Christian marketplace</p><h2 id="hb-v2-h">Do business with Toronto’s Christian community.</h2><p class="hero__sub">47 verified businesses — shops, advisors, trades and more. Free to join, free to list.</p><div class="cluster" style="margin-top: var(--space-6);"><a class="btn btn--primary btn--lg" href="../../mocks/pages/sign-up/default.html">Join free</a><a class="btn btn--ghost btn--lg" href="../../mocks/pages/browse/signed-out.html">Browse businesses</a></div><ul class="chip-row"><li><a class="chip" href="../../mocks/pages/category/default.html">Shops</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Financial &amp; insurance</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Legal &amp; immigration</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Home &amp; property</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Health &amp; family</a></li></ul></div></section>
+      </div>
+        <div class="ds-example__caption"><span>Welcome: primary Join free and ghost Browse businesses at 48px; no chip is current.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;section class="hero" aria-labelledby="hb-v2-h"&gt;&lt;div class="container"&gt;&lt;p class="hero__greeting"&gt;Toronto’s Christian marketplace&lt;/p&gt;&lt;h2 id="hb-v2-h"&gt;Do business with Toronto’s Christian community.&lt;/h2&gt;&lt;p class="hero__sub"&gt;47 verified businesses — shops, advisors, trades and more. Free to join, free to list.&lt;/p&gt;&lt;div class="cluster" style="margin-top: var(--space-6);"&gt;&lt;a class="btn btn--primary btn--lg" href="../../mocks/pages/sign-up/default.html"&gt;Join free&lt;/a&gt;&lt;a class="btn btn--ghost btn--lg" href="../../mocks/pages/browse/signed-out.html"&gt;Browse businesses&lt;/a&gt;&lt;/div&gt;&lt;ul class="chip-row"&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Shops&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Financial &amp;amp; insurance&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Legal &amp;amp; immigration&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Home &amp;amp; property&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a class="chip" href="../../mocks/pages/category/default.html"&gt;Health &amp;amp; family&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;/section&gt;</code></pre></details></div>
+      <h3>CTA band</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack">
+        <div class="band"><div><h2>New here?</h2><p>Join free to message businesses, book meetings and save favourites.</p></div><a class="btn btn--primary" href="../../mocks/pages/sign-up/default.html">Join free</a></div>
+      </div>
+        <div class="ds-example__caption"><span>Signed-out browse and the sign-in-required page: one heading, one line, one gold button.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="band"&gt;&lt;div&gt;&lt;h2&gt;New here?&lt;/h2&gt;&lt;p&gt;Join free to message businesses, book meetings and save favourites.&lt;/p&gt;&lt;/div&gt;&lt;a class="btn btn--primary" href="../../mocks/pages/sign-up/default.html"&gt;Join free&lt;/a&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>Detail head</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--stack">
+        <div style="inline-size: min(100%, calc(var(--space-24) * 5));"><div class="detail-head"><p class="detail-head__kicker"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Verified Christian business · <a href="../../mocks/pages/category/default.html">Financial &amp; insurance</a></p><h2>Legacy Financial</h2><p><strong>Trevor Chew, CKA®, CFP®, CLU®</strong></p><p class="lead">Build a Legacy. Protect a Legacy. Leave a Legacy.</p><div class="cluster"><span class="tag">CKA® · CFP® · CLU®</span></div><div class="detail-head__actions"><a class="btn btn--primary btn--lg" href="../../mocks/dialogs/book-meeting/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>Book a meeting</a><a class="btn btn--icon btn--lg" href="../../mocks/dialogs/new-message/default.html" aria-label="Message Legacy Financial"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></a><button class="btn btn--icon btn--lg" type="button" aria-label="Save Legacy Financial" aria-pressed="false"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button><a class="btn btn--icon btn--lg" href="../../mocks/dialogs/share-listing/default.html" aria-label="Share Legacy Financial"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m0-12L8 7m4-4 4 4M5 13v6h14v-6"/></svg></a></div><p class="perk">Free first meeting</p></div></div>
+      </div>
+        <div class="ds-example__caption"><span>Business page head. On product pages the kicker reads "Sold by Luzandre.com · Verified" and the price follows the name.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="inline-size: min(100%, calc(var(--space-24) * 5));"&gt;&lt;div class="detail-head"&gt;&lt;p class="detail-head__kicker"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m8 12 3 3 5-6"/&gt;&lt;/svg&gt;Verified Christian business · &lt;a href="../../mocks/pages/category/default.html"&gt;Financial &amp;amp; insurance&lt;/a&gt;&lt;/p&gt;&lt;h2&gt;Legacy Financial&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Trevor Chew, CKA®, CFP®, CLU®&lt;/strong&gt;&lt;/p&gt;&lt;p class="lead"&gt;Build a Legacy. Protect a Legacy. Leave a Legacy.&lt;/p&gt;&lt;div class="cluster"&gt;&lt;span class="tag"&gt;CKA® · CFP® · CLU®&lt;/span&gt;&lt;/div&gt;&lt;div class="detail-head__actions"&gt;&lt;a class="btn btn--primary btn--lg" href="../../mocks/dialogs/book-meeting/default.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="4" y="5" width="16" height="15" rx="2"/&gt;&lt;path d="M8 3v4M16 3v4M4 10h16"/&gt;&lt;/svg&gt;Book a meeting&lt;/a&gt;&lt;a class="btn btn--icon btn--lg" href="../../mocks/dialogs/new-message/default.html" aria-label="Message Legacy Financial"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;button class="btn btn--icon btn--lg" type="button" aria-label="Save Legacy Financial" aria-pressed="false"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;a class="btn btn--icon btn--lg" href="../../mocks/dialogs/share-listing/default.html" aria-label="Share Legacy Financial"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 3v12m0-12L8 7m4-4 4 4M5 13v6h14v-6"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;/div&gt;&lt;p class="perk"&gt;Free first meeting&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes" data-na="No size scale. The hero padding grows from --space-6/--space-8 to --space-10 at 1024px; the band and detail head have one size."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">No size scale. The hero padding grows from --space-6/--space-8 to --space-10 at 1024px; the band and detail head have one size.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>The surfaces are static; their controls carry the states. On the ink band chips use the on-brand subtle fill, hover deepens it, and the current chip turns gold. Real <code>:focus-visible</code> on the band uses <code>--color-focus-ring-on-brand</code> (gold in light, so it reads on ink).</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Control on hero</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th><th scope="col">Current</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Category chip</th><td><a class="chip" href="../../mocks/pages/category/default.html">Shops</a></td><td><a class="chip" href="../../mocks/pages/category/default.html" data-state="hover">Shops</a></td><td><a class="chip" href="../../mocks/pages/category/default.html" data-state="focus">Shops</a></td><td><a class="chip" href="../../mocks/pages/category/default.html" data-state="active">Shops</a></td><td><a class="chip" href="../../mocks/pages/category/default.html" data-state="disabled">Shops</a></td><td><a class="chip" href="../../mocks/pages/browse/default.html" aria-current="page">All</a></td></tr>
+          <tr><th scope="row">Ghost button</th><td><button class="btn btn--ghost" type="button">Browse businesses</button></td><td><button class="btn btn--ghost" type="button" data-state="hover">Browse businesses</button></td><td><button class="btn btn--ghost" type="button" data-state="focus">Browse businesses</button></td><td><button class="btn btn--ghost" type="button" data-state="active">Browse businesses</button></td><td><button class="btn btn--ghost" type="button" disabled>Browse businesses</button></td><td><span class="text-caption">—</span></td></tr>
+          <tr><th scope="row">Primary button</th><td><button class="btn btn--primary" type="button">Join free</button></td><td><button class="btn btn--primary" type="button" data-state="hover">Join free</button></td><td><button class="btn btn--primary" type="button" data-state="focus">Join free</button></td><td><button class="btn btn--primary" type="button" data-state="active">Join free</button></td><td><button class="btn btn--primary" type="button" disabled>Join free</button></td><td><button class="btn btn--primary" type="button" aria-busy="true">Join free</button></td></tr>
+        </tbody>
+      </table></div>
+      <p>The last primary cell is the loading state (<code>aria-busy</code>). Forced <code>data-state="focus"</code> draws the default ring colour, not the on-brand one, because the brand re-map is written for <code>:focus-visible</code> only; Tab into the hero above to see the real gold ring.</p>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div style="flex: 1 1 100%; min-width: 0;"><div style="padding: var(--space-4);"><div class="band"><div><h2>New here?</h2><p>Join free to message businesses, book meetings and save favourites.</p></div><a class="btn btn--primary" href="../../mocks/pages/sign-up/default.html">Join free</a></div></div><section class="hero" aria-labelledby="hb-th1-h"><div class="container"><p class="hero__greeting">Morning, Joanna</p><h2 id="hb-th1-h">Do business with Toronto’s Christian community.</h2><p class="hero__sub">47 verified businesses — shops, advisors, trades and more.</p><ul class="chip-row"><li><a class="chip" href="../../mocks/pages/browse/default.html" aria-current="page">All</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Shops</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Financial &amp; insurance</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Legal &amp; immigration</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Home &amp; property</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Health &amp; family</a></li></ul></div></section></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div style="flex: 1 1 100%; min-width: 0;"><div style="padding: var(--space-4);"><div class="band"><div><h2>New here?</h2><p>Join free to message businesses, book meetings and save favourites.</p></div><a class="btn btn--primary" href="../../mocks/pages/sign-up/default.html">Join free</a></div></div><section class="hero" aria-labelledby="hb-th2-h"><div class="container"><p class="hero__greeting">Morning, Joanna</p><h2 id="hb-th2-h">Do business with Toronto’s Christian community.</h2><p class="hero__sub">47 verified businesses — shops, advisors, trades and more.</p><ul class="chip-row"><li><a class="chip" href="../../mocks/pages/browse/default.html" aria-current="page">All</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Shops</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Financial &amp; insurance</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Legal &amp; immigration</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Home &amp; property</a></li><li><a class="chip" href="../../mocks/pages/category/default.html">Health &amp; family</a></li></ul></div></section></div></div></div>
+      </div>
+      <ul>
+        <li><b>Loading</b> (pages/browse/loading): the hero renders immediately with the sub line "Loading the directory…"; only the content below it skeletons.</li>
+        <li><b>Offline and error</b>: the hero stays; the banner or error state goes below it, never inside the band.</li>
+        <li><b>Signed out</b>: greeting becomes "Toronto’s Christian marketplace" and a CTA band appears further down.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Hero: full bleed at every width; the content sits in <code>.container</code> with <code>--layout-margin</code> (16/32/48px). Padding is 24/32px on phones and 40/40px from 1024px, where the headline grows to <code>--font-size-5xl</code>.</li>
+        <li>The hero search is phone and small-tablet only (hidden from 768px); from 1024px the top bar shows its search, and between 768px and 1023px the top bar's search icon opens it.</li>
+        <li>The chip row scrolls sideways under 768px (no scrollbar, chips never wrap their labels) and wraps from 768px.</li>
+        <li>Band: wraps its copy above the button when narrow; the button never stretches.</li>
+        <li>Detail head: below 640px the primary action takes the full row and the icon buttons drop to the next row.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The hero and band use the brand group: <code>--color-bg-brand</code>, <code>--color-fg-on-brand</code>, <code>--color-fg-on-brand-muted</code>, <code>--color-bg-on-brand-subtle</code>, <code>--color-border-on-brand</code> and <code>--color-focus-ring-on-brand</code>. Ink stays ink in dark mode, so the band reads as the same brand moment in both themes.</p>
+      <pre><code>/* Chips and ghost buttons re-map on the band */
+.hero .chip, .band .chip { --chip-bg: var(--color-bg-on-brand-subtle); --chip-border: var(--color-border-on-brand); --chip-fg: var(--color-fg-on-brand); }
+.hero .btn--ghost { --btn-fg: var(--color-fg-on-brand); --btn-border: var(--color-border-on-brand); --btn-bg-hover: var(--color-bg-on-brand-subtle); }</code></pre>
+      <p>The detail head sits on the canvas and uses ordinary tokens; its kicker check is <code>--color-success-icon</code>.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>The hero is a <code>&lt;section&gt;</code> labelled by its heading, which is the page's <code>h1</code>. The search is a <code>&lt;form role="search"&gt;</code> landmark (see <a href="https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/">APG landmark regions</a>). Category chips are links in a list with <code>aria-current="page"</code> on the current one (<a href="https://www.w3.org/WAI/ARIA/apg/patterns/link/">APG link pattern</a>).</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Search field, then each category chip in order, then the page. The chip row scrolls the focused chip into view.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>In search: submits to search results. On a chip or a CTA: follows it.</td></tr>
+        <tr><td><kbd>Esc</kbd> in search</td><td>Clears the field (native <code>type="search"</code>).</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>Inside <code>.hero</code> and <code>.band</code> the focus ring switches to <code>--color-focus-ring-on-brand</code>, which is above 3:1 on ink and on the on-brand subtle chip fill. The chip row pads by <code>--space-1</code> so rings are not clipped.</p>
+      <h3>Labelling</h3>
+      <p>The greeting is plain text, not a heading. The search has a visually hidden label "Search businesses and products"; the placeholder gives examples. Detail-head icon buttons name their object: "Message Legacy Financial", "Save Legacy Financial" (<code>aria-pressed</code>), "Share Legacy Financial".</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Headline on ink</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand|--color-bg-brand" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Greeting and sub on ink</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-muted|--color-bg-brand" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Chip label on its fill</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand|--color-bg-on-brand-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Chip edge on ink</span><span class="ds-pair__ratio" data-contrast="--color-border-on-brand|--color-bg-brand" data-min="3"></span></div>
+        <div class="ds-pair"><span>Current chip label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Gold on ink</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-bg-brand" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring on ink</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring-on-brand|--color-bg-brand" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring on chip fill</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring-on-brand|--color-bg-on-brand-subtle" data-min="3"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Headline on ink</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand|--color-bg-brand" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Greeting and sub on ink</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand-muted|--color-bg-brand" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Chip label on its fill</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-brand|--color-bg-on-brand-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Chip edge on ink</span><span class="ds-pair__ratio" data-contrast="--color-border-on-brand|--color-bg-brand" data-min="3"></span></div>
+        <div class="ds-pair"><span>Current chip label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Gold on ink</span><span class="ds-pair__ratio" data-contrast="--color-accent|--color-bg-brand" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring on ink</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring-on-brand|--color-bg-brand" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring on chip fill</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring-on-brand|--color-bg-on-brand-subtle" data-min="3"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>None on the surfaces. Chip and button transitions use <code>--duration-fast</code>, which reduced motion zeroes.</p>
+      <h3>Touch</h3>
+      <p>Chips on the band are 44px tall (<code>--control-height-md</code>) with 8px gaps; the hero search is 48px; the welcome CTAs are 48px; detail-head actions are 48px.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Greeting: time of day and first name ("Morning, Joanna", "Evening, Joanna"); signed out, the tagline "Toronto’s Christian marketplace".</li>
+        <li>Headline: one sentence that says what Jubilee is for: "Do business with Toronto’s Christian community." Do not change it per campaign.</li>
+        <li>Sub: a live, honest count: "47 verified businesses — shops, advisors, trades and more." Never round up.</li>
+        <li>Band: a two-word question or statement as the heading ("New here?"), one line of benefit, one verb-phrase button ("Join free").</li>
+        <li>Detail head kicker: "Verified Christian business · Category"; the name exactly as verified; the pitch in the owner's words.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="band"><div><h2>New here?</h2><p>Join free to message businesses, book meetings and save favourites.</p></div><a class="btn btn--primary" href="../../mocks/pages/sign-up/default.html">Join free</a></div></div><figcaption>One heading, one line and one gold button on the band.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="band"><div><h2>New here?</h2><p>Join free to message businesses.</p></div><div class="cluster"><a class="btn btn--primary" href="../../mocks/pages/sign-up/default.html">Join free</a><a class="btn btn--primary" href="../../mocks/pages/list-business/default.html">List your business</a></div></div></div><figcaption>Two gold buttons on the band. The band is one call to action; listing a business has its own entry in the top bar.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div style="inline-size: 100%;"><div class="detail-head"><p class="detail-head__kicker"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Verified Christian business · <a href="../../mocks/pages/category/default.html">Financial &amp; insurance</a></p><h2>Legacy Financial</h2><p><strong>Trevor Chew, CKA®, CFP®, CLU®</strong></p><p class="lead">Build a Legacy. Protect a Legacy. Leave a Legacy.</p><div class="cluster"><span class="tag">CKA® · CFP® · CLU®</span></div><div class="detail-head__actions"><a class="btn btn--primary btn--lg" href="../../mocks/dialogs/book-meeting/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>Book a meeting</a><a class="btn btn--icon btn--lg" href="../../mocks/dialogs/new-message/default.html" aria-label="Message Legacy Financial"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></a><button class="btn btn--icon btn--lg" type="button" aria-label="Save Legacy Financial" aria-pressed="false"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button><a class="btn btn--icon btn--lg" href="../../mocks/dialogs/share-listing/default.html" aria-label="Share Legacy Financial"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m0-12L8 7m4-4 4 4M5 13v6h14v-6"/></svg></a></div><p class="perk">Free first meeting</p></div></div></div><figcaption>Name the object in each icon button's label and keep one primary action.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="detail-head__actions"><a class="btn btn--primary btn--lg" href="../../mocks/dialogs/book-meeting/default.html">Book a meeting</a><a class="btn btn--icon btn--lg" href="../../mocks/dialogs/new-message/default.html" aria-label="Message" style="width: var(--control-height-lg);"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></a><button class="btn btn--icon btn--lg" type="button" aria-label="Save" style="width: var(--control-height-lg);"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button></div></div><figcaption>Bare "Message" and "Save" labels plus inline widths, as the business mocks have. <code>.btn--icon.btn--lg</code> already sets the 48px width, and the label should say what is saved.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Hero and band surface</td><td><code>--color-bg-brand</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-brand" data-swatch></i><span data-token="--color-bg-brand"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-brand" data-swatch></i><span data-token="--color-bg-brand"></span></span></td></tr>
+          <tr><td>Headline</td><td><code>--color-fg-on-brand</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-brand" data-swatch></i><span data-token="--color-fg-on-brand"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-brand" data-swatch></i><span data-token="--color-fg-on-brand"></span></span></td></tr>
+          <tr><td>Greeting and sub</td><td><code>--color-fg-on-brand-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-brand-muted" data-swatch></i><span data-token="--color-fg-on-brand-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-brand-muted" data-swatch></i><span data-token="--color-fg-on-brand-muted"></span></span></td></tr>
+          <tr><td>Chip fill / edge</td><td><code>--color-bg-on-brand-subtle</code> / <code>--color-border-on-brand</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-on-brand-subtle" data-swatch></i><span data-token="--color-bg-on-brand-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-on-brand" data-swatch></i><span data-token="--color-border-on-brand"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-on-brand-subtle" data-swatch></i><span data-token="--color-bg-on-brand-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-on-brand" data-swatch></i><span data-token="--color-border-on-brand"></span></span></td></tr>
+          <tr><td>Current chip</td><td><code>--color-accent</code> / <code>--color-fg-on-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td></tr>
+          <tr><td>Focus ring on brand</td><td><code>--color-focus-ring-on-brand</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-focus-ring-on-brand" data-swatch></i><span data-token="--color-focus-ring-on-brand"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-focus-ring-on-brand" data-swatch></i><span data-token="--color-focus-ring-on-brand"></span></span></td></tr>
+          <tr><td>Hero padding phone (top / bottom)</td><td><code>--space-6</code> / <code>--space-8</code></td><td colspan="2"><span data-token="--space-6"></span> / <span data-token="--space-8"></span></td></tr>
+          <tr><td>Hero padding desktop</td><td><code>--space-10</code></td><td colspan="2"><span data-token="--space-10"></span></td></tr>
+          <tr><td>Headline size desktop</td><td><code>--font-size-5xl</code></td><td colspan="2"><span data-token="--font-size-5xl"></span></td></tr>
+          <tr><td>Greeting font</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Search height</td><td><code>--control-height-lg</code></td><td colspan="2"><span data-token="--control-height-lg"></span></td></tr>
+          <tr><td>Chip height on band</td><td><code>--control-height-md</code></td><td colspan="2"><span data-token="--control-height-md"></span></td></tr>
+          <tr><td>Chip row gap / top margin</td><td><code>--space-2</code> / <code>--space-5</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-5"></span></td></tr>
+          <tr><td>Band radius</td><td><code>--radius-xl</code></td><td colspan="2"><span data-token="--radius-xl"></span></td></tr>
+          <tr><td>Band padding</td><td><code>--space-8</code> / <code>--space-6</code></td><td colspan="2"><span data-token="--space-8"></span> / <span data-token="--space-6"></span></td></tr>
+          <tr><td>Detail head gap</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
+          <tr><td>Detail kicker check</td><td><code>--color-success-icon</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-icon" data-swatch></i><span data-token="--color-success-icon"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-icon" data-swatch></i><span data-token="--color-success-icon"></span></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;section class="hero" aria-labelledby="hero-title"&gt;
+  &lt;div class="container"&gt;
+    &lt;p class="hero__greeting"&gt;Morning, Joanna&lt;/p&gt;
+    &lt;h1 id="hero-title"&gt;Do business with Toronto’s Christian community.&lt;/h1&gt;
+    &lt;p class="hero__sub"&gt;47 verified businesses — shops, advisors, trades and more.&lt;/p&gt;
+    &lt;form class="search" role="search" action="/search"&gt;
+      &lt;label class="visually-hidden" for="hq"&gt;Search businesses and products&lt;/label&gt;
+      &lt;svg class="icon" aria-hidden="true"&gt;…&lt;/svg&gt;
+      &lt;input class="input" id="hq" type="search" placeholder="Plumber, lawyer, Bibles…"&gt;
+    &lt;/form&gt;
+    &lt;ul class="chip-row"&gt;
+      &lt;li&gt;&lt;a class="chip" href="/" aria-current="page"&gt;All&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a class="chip" href="/c/shops"&gt;Shops&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;div class="band"&gt;
+  &lt;div&gt;&lt;h2&gt;New here?&lt;/h2&gt;&lt;p&gt;Join free to message businesses, book meetings and save favourites.&lt;/p&gt;&lt;/div&gt;
+  &lt;a class="btn btn--primary" href="/sign-up"&gt;Join free&lt;/a&gt;
+&lt;/div&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.hero</code></td><td>Full-bleed ink band; re-maps chips, ghost buttons, search and focus ring.</td></tr>
+        <tr><td><code>.hero__greeting</code> <code>__sub</code></td><td>Greeting line and count line.</td></tr>
+        <tr><td><code>.chip-row</code> <code>--plain</code></td><td>Chip list: scrolls on phones, wraps from 768px; <code>--plain</code> drops the top margin.</td></tr>
+        <tr><td><code>.band</code></td><td>Rounded ink CTA block.</td></tr>
+        <tr><td><code>.detail-head</code> <code>__kicker</code> <code>__actions</code></td><td>Detail-page heading column, kicker line and action row.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/browse/default.html">pages/browse/default</a> (hero signed in)</li>
+        <li><a href="../../mocks/pages/browse/signed-out.html">pages/browse/signed-out</a> (hero signed out, CTA band)</li>
+        <li><a href="../../mocks/pages/welcome/default.html">pages/welcome/default</a> (welcome hero)</li>
+        <li><a href="../../mocks/pages/business/default.html">pages/business/default</a> (detail head)</li>
+        <li><a href="../../mocks/pages/product/default.html">pages/product/default</a> (product detail head)</li>
+        <li><a href="../../mocks/pages/browse/loading.html">pages/browse/loading</a> (hero while loading)</li>
+      </ul>
+      <p>Drift fixed during extraction: the band is spaced with inline <code>style="margin-top: var(--space-6)"</code> and the welcome CTAs with <code>style="margin-top: var(--space-6)"</code>; both belong to the layout around them. Detail-head icon buttons repeat <code>style="width: var(--control-height-lg)"</code> (13 times) although <code>.btn--icon.btn--lg</code> sets it, and their labels are bare ("Message", "Save", "Share"). The product price uses inline <code>font-size: var(--font-size-2xl)</code>. The hero headline styles are written for <code>.hero h1</code> only. <code>.band .btn--ghost</code> has no on-brand re-map (only <code>.hero</code> and <code>.topbar--ink</code> do), and the on-brand focus colour is set for <code>:focus-visible</code> only, so forced <code>data-state="focus"</code> previews on the band show the default ring.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

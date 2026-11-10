@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Error page — Jubilee design system</title>
+<meta name="description" content="Full-page error and status screens in Jubilee: not found, forbidden, server error, offline, maintenance and session expired, built from the status page and empty state.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Feedback</p>
+      <h1>Error page</h1>
+      <p class="ds-lead">When a whole page cannot be shown, Jubilee says why in plain words, reassures that nothing is lost, and offers the one way forward. Six screens share one shape: an empty state centred in a status page.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>.status-page</code> + <code>.empty</code></span><span class="ds-pill">6 status mocks</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use an error page when the route itself fails. For a region that fails to load inside a working page, use an <a href="../components/empty-state.html">Empty state</a> with <code>.empty--error</code>; for a lasting condition while the page still works (slow or offline with a cache), use a <a href="../components/alert.html">banner</a>.</p>
+      <ul>
+        <li><b>In-app</b> (404 not found, 403 forbidden): inside the normal top bar, footer and tab bar, so the person can navigate away. <code>main.container.page &gt; .status-page &gt; .empty</code>.</li>
+        <li><b>Bare</b> (500 server error, offline, maintenance, session expired): the app shell may be unavailable, so the page uses the auth layout: logo, then the empty state in an <code>.auth-card</code>. <code>main.auth-layout &gt; .auth-card.card &gt; .empty</code>.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+          <div style="width: 100%; max-width: 26rem;"><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><h2 class="empty__title">Something went wrong on our side</h2><p class="empty__text">Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and quote the reference below.</p><div class="empty__actions"><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/help/default.html">Get help</a></div></div><p class="text-caption">Reference <code>JB-500-7F3K</code></p></div></div>
+          <span class="ds-callout" style="left: 50%; top: 12%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 34%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 50%; top: 52%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 50%; top: 74%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 50%; top: 92%;" aria-hidden="true">5</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Icon disc</b><small>Names the kind of failure at a glance: compass (lost), lock, warning, wifi-off, gear, clock.</small></div></li>
+          <li><div><b>Title</b><small><code>&lt;h1 class="empty__title"&gt;</code> on the real page: what happened.</small></div></li>
+          <li><div><b>Reassurance</b><small><code>.empty__text</code>: what is safe and what to do.</small></div></li>
+          <li><div><b>Actions</b><small>One primary way forward, optionally one way out.</small></div></li>
+          <li><div><b>Reference</b><small>Server errors only: <code>.text-caption</code> with a code to quote to support.</small></div></li>
+        </ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <h3>In-app: not found and forbidden</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--canvas ds-example__canvas--stack">
+        <div class="status-page" style="min-height: auto; width: 100%;"><div class="card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div><h2 class="empty__title">We can’t find that page</h2><p class="empty__text">The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.</p><div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/search/empty.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</a></div></div></div></div>
+        <div class="status-page" style="min-height: auto; width: 100%;"><div class="card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><h2 class="empty__title">You don’t have access to this page</h2><p class="empty__text">This area is for the owner of the listing or the Jubilee verification team. If you think you should see it, ask us.</p><div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/help/default.html">Ask for access</a></div></div></div></div>
+      </div>
+        <div class="ds-example__caption"><span>On the real page these sit in <code>.status-page</code> (70dvh, centred) under the top bar, without a card. Shown on cards here to separate them.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="status-page" style="min-height: auto; width: 100%;"&gt;&lt;div class="card"&gt;&lt;div class="empty"&gt;&lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m15 9-2 4-4 2 2-4z"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h2 class="empty__title"&gt;We can’t find that page&lt;/h2&gt;&lt;p class="empty__text"&gt;The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.&lt;/p&gt;&lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary" href="../../mocks/pages/browse/default.html"&gt;Back to browse&lt;/a&gt;&lt;a class="btn" href="../../mocks/pages/search/empty.html"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="11" cy="11" r="7"/&gt;&lt;path d="m20 20-3.5-3.5"/&gt;&lt;/svg&gt;Search&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="status-page" style="min-height: auto; width: 100%;"&gt;&lt;div class="card"&gt;&lt;div class="empty"&gt;&lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;rect x="5" y="11" width="14" height="9" rx="2"/&gt;&lt;path d="M8 11V8a4 4 0 0 1 8 0v3"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h2 class="empty__title"&gt;You don’t have access to this page&lt;/h2&gt;&lt;p class="empty__text"&gt;This area is for the owner of the listing or the Jubilee verification team. If you think you should see it, ask us.&lt;/p&gt;&lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary" href="../../mocks/pages/browse/default.html"&gt;Back to browse&lt;/a&gt;&lt;a class="btn" href="../../mocks/pages/help/default.html"&gt;Ask for access&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>Bare: server error, offline, maintenance, session expired</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--canvas ds-example__canvas--stack">
+        <div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><h2 class="empty__title">Something went wrong on our side</h2><p class="empty__text">Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and quote the reference below.</p><div class="empty__actions"><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/help/default.html">Get help</a></div></div><p class="text-caption">Reference <code>JB-500-7F3K</code></p></div>
+        <div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/></svg></div><h2 class="empty__title">You’re offline</h2><p class="empty__text">Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you’re back.</p><div class="empty__actions"><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/messages/default.html">Open messages</a></div></div></div>
+        <div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></div><h2 class="empty__title">Jubilee is being updated</h2><p class="empty__text">We’re back by 6:00 a.m. Eastern on Wednesday 11 November. Nothing you’ve sent is lost.</p><div class="empty__actions"><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Check again</button></div></div></div>
+        <div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h2 class="empty__title">You’ve been signed out</h2><p class="empty__text">For your safety we sign you out after 30 days, or when your password changes. Sign in to pick up where you left off; drafts are kept.</p><div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/sign-in/default.html">Sign in</a></div></div></div>
+      </div>
+        <div class="ds-example__caption"><span>Auth layout cards. Server error adds a reference code; maintenance gives the time it ends; session expired keeps drafts.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="auth-card card"&gt;&lt;div class="empty"&gt;&lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h2 class="empty__title"&gt;Something went wrong on our side&lt;/h2&gt;&lt;p class="empty__text"&gt;Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and quote the reference below.&lt;/p&gt;&lt;div class="empty__actions"&gt;&lt;button class="btn btn--primary" type="button"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/&gt;&lt;/svg&gt;Try again&lt;/button&gt;&lt;a class="btn" href="../../mocks/pages/help/default.html"&gt;Get help&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;p class="text-caption"&gt;Reference &lt;code&gt;JB-500-7F3K&lt;/code&gt;&lt;/p&gt;&lt;/div&gt;
+&lt;div class="auth-card card"&gt;&lt;div class="empty"&gt;&lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h2 class="empty__title"&gt;You’re offline&lt;/h2&gt;&lt;p class="empty__text"&gt;Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you’re back.&lt;/p&gt;&lt;div class="empty__actions"&gt;&lt;button class="btn btn--primary" type="button"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/&gt;&lt;/svg&gt;Try again&lt;/button&gt;&lt;a class="btn" href="../../mocks/pages/messages/default.html"&gt;Open messages&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="auth-card card"&gt;&lt;div class="empty"&gt;&lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="3"/&gt;&lt;path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h2 class="empty__title"&gt;Jubilee is being updated&lt;/h2&gt;&lt;p class="empty__text"&gt;We’re back by 6:00 a.m. Eastern on Wednesday 11 November. Nothing you’ve sent is lost.&lt;/p&gt;&lt;div class="empty__actions"&gt;&lt;button class="btn btn--primary" type="button"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/&gt;&lt;/svg&gt;Check again&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="auth-card card"&gt;&lt;div class="empty"&gt;&lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v5l3 2"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h2 class="empty__title"&gt;You’ve been signed out&lt;/h2&gt;&lt;p class="empty__text"&gt;For your safety we sign you out after 30 days, or when your password changes. Sign in to pick up where you left off; drafts are kept.&lt;/p&gt;&lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary" href="../../mocks/pages/sign-in/default.html"&gt;Sign in&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>In a page frame</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--flush">
+        <div class="ds-frame" style="width: 100%;"><main class="auth-layout" style="min-height: 22rem;"><a class="auth-brand" href="../../mocks/pages/welcome/default.html"><svg class="icon brand-mark" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4v9a4 4 0 0 0 8 0V4M12 2v6M9.5 5h5"/></svg>jubilee</a><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/></svg></div><h2 class="empty__title">You’re offline</h2><p class="empty__text">Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you’re back.</p><div class="empty__actions"><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/messages/default.html">Open messages</a></div></div></div></main></div>
+      </div>
+        <div class="ds-example__caption"><span>The offline page as it renders: logo, card, nothing else to fail.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="ds-frame" style="width: 100%;"&gt;&lt;main class="auth-layout" style="min-height: 22rem;"&gt;&lt;a class="auth-brand" href="../../mocks/pages/welcome/default.html"&gt;&lt;svg class="icon brand-mark" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M8 4v9a4 4 0 0 0 8 0V4M12 2v6M9.5 5h5"/&gt;&lt;/svg&gt;jubilee&lt;/a&gt;&lt;div class="auth-card card"&gt;&lt;div class="empty"&gt;&lt;div class="empty__icon" aria-hidden="true"&gt;&lt;svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;h2 class="empty__title"&gt;You’re offline&lt;/h2&gt;&lt;p class="empty__text"&gt;Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you’re back.&lt;/p&gt;&lt;div class="empty__actions"&gt;&lt;button class="btn btn--primary" type="button"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/&gt;&lt;/svg&gt;Try again&lt;/button&gt;&lt;a class="btn" href="../../mocks/pages/messages/default.html"&gt;Open messages&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/main&gt;&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes" data-na="One size. The status page fills 70% of the viewport height; the bare variant uses the 26rem auth card."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size. The status page fills 70% of the viewport height; the bare variant uses the 26rem auth card.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>The page is static; its primary action takes the <a href="../components/button.html">Button</a> states, and Try again shows loading while it re-requests.</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Page</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Loading</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Not found</th><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div><h2 class="empty__title">We can’t find that page</h2><p class="empty__text">The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.</p><div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/search/empty.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</a></div></div></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div><h2 class="empty__title">We can’t find that page</h2><p class="empty__text">The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.</p><div class="empty__actions"><a class="btn btn--primary" data-state="hover" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/search/empty.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</a></div></div></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div><h2 class="empty__title">We can’t find that page</h2><p class="empty__text">The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.</p><div class="empty__actions"><a class="btn btn--primary" data-state="focus" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/search/empty.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</a></div></div></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div><h2 class="empty__title">We can’t find that page</h2><p class="empty__text">The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.</p><div class="empty__actions"><a class="btn btn--primary" data-state="active" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/search/empty.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</a></div></div></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div><h2 class="empty__title">We can’t find that page</h2><p class="empty__text">The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.</p><div class="empty__actions"><a class="btn btn--primary" aria-busy="true" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/search/empty.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</a></div></div></div></td></tr>
+          <tr><th scope="row">Server error</th><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><h2 class="empty__title">Something went wrong on our side</h2><p class="empty__text">Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and quote the reference below.</p><div class="empty__actions"><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/help/default.html">Get help</a></div></div><p class="text-caption">Reference <code>JB-500-7F3K</code></p></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><h2 class="empty__title">Something went wrong on our side</h2><p class="empty__text">Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and quote the reference below.</p><div class="empty__actions"><button class="btn btn--primary" data-state="hover" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/help/default.html">Get help</a></div></div><p class="text-caption">Reference <code>JB-500-7F3K</code></p></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><h2 class="empty__title">Something went wrong on our side</h2><p class="empty__text">Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and quote the reference below.</p><div class="empty__actions"><button class="btn btn--primary" data-state="focus" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/help/default.html">Get help</a></div></div><p class="text-caption">Reference <code>JB-500-7F3K</code></p></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><h2 class="empty__title">Something went wrong on our side</h2><p class="empty__text">Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and quote the reference below.</p><div class="empty__actions"><button class="btn btn--primary" data-state="active" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/help/default.html">Get help</a></div></div><p class="text-caption">Reference <code>JB-500-7F3K</code></p></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><h2 class="empty__title">Something went wrong on our side</h2><p class="empty__text">Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and quote the reference below.</p><div class="empty__actions"><button class="btn btn--primary" aria-busy="true" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/help/default.html">Get help</a></div></div><p class="text-caption">Reference <code>JB-500-7F3K</code></p></div></td></tr>
+          <tr><th scope="row">Offline</th><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/></svg></div><h2 class="empty__title">You’re offline</h2><p class="empty__text">Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you’re back.</p><div class="empty__actions"><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/messages/default.html">Open messages</a></div></div></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/></svg></div><h2 class="empty__title">You’re offline</h2><p class="empty__text">Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you’re back.</p><div class="empty__actions"><button class="btn btn--primary" data-state="hover" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/messages/default.html">Open messages</a></div></div></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/></svg></div><h2 class="empty__title">You’re offline</h2><p class="empty__text">Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you’re back.</p><div class="empty__actions"><button class="btn btn--primary" data-state="focus" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/messages/default.html">Open messages</a></div></div></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/></svg></div><h2 class="empty__title">You’re offline</h2><p class="empty__text">Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you’re back.</p><div class="empty__actions"><button class="btn btn--primary" data-state="active" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/messages/default.html">Open messages</a></div></div></div></td><td><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3l18 18M5 12a10 10 0 0 1 4-2.5M19 12a10 10 0 0 0-5-3M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/></svg></div><h2 class="empty__title">You’re offline</h2><p class="empty__text">Jubilee needs a connection to load this page. Messages you already opened are still readable, and anything you send is kept and delivered when you’re back.</p><div class="empty__actions"><button class="btn btn--primary" aria-busy="true" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/messages/default.html">Open messages</a></div></div></div></td></tr>
+        </tbody>
+      </table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div class="ds-example__canvas ds-example__canvas--canvas"><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div><h2 class="empty__title">We can’t find that page</h2><p class="empty__text">The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.</p><div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/search/empty.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</a></div></div></div></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="ds-example__canvas ds-example__canvas--canvas"><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 4-4 2 2-4z"/></svg></div><h2 class="empty__title">We can’t find that page</h2><p class="empty__text">The link may be old, or the listing may have been removed. Search for the business by name, or start from browse.</p><div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html">Back to browse</a><a class="btn" href="../../mocks/pages/search/empty.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</a></div></div></div></div></div></div>
+      </div>
+      <ul>
+        <li><b>Offline</b> retries automatically when the browser fires <code>online</code>, and Try again re-requests now.</li>
+        <li><b>Maintenance</b> rechecks every minute; the time is the real end time, not "soon".</li>
+        <li><b>Session expired</b> returns to the requested page after sign-in, with drafts restored.</li>
+        <li>Disabled does not occur: every error page has at least one working action.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Centred at every width. At 360px the auth card fills the width minus <code>--layout-margin</code>; actions wrap to two centred rows.</li>
+        <li>In-app error pages keep the phone tab bar, so Browse, Messages and You stay one tap away.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>No component tokens of its own: the page uses <code>--color-bg-canvas</code>, the card <code>--color-bg-surface</code> and the empty state's disc tokens. Error pages keep the gold disc rather than the danger one: they are a dead end, not an alarm.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A normal page: one <code>&lt;h1&gt;</code> (the empty title), a <code>&lt;main&gt;</code> landmark and a <code>&lt;title&gt;</code> that starts with the error ("Page not found · Jubilee"). Serve the right HTTP status (404, 403, 500, 503). No live region is needed because it is a page load. See the <a href="https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/">APG landmark regions practice</a>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Skip link, then (in-app) the top bar, then the actions.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Activates the focused action.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>Focus starts at the top of the document like any page. If an error page replaces content client-side, move focus to its <code>&lt;h1&gt;</code>.</p>
+      <h3>Labelling</h3>
+      <p>The heading says what happened; the icon is decorative. The reference code is plain text that can be selected and copied.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Title on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Text on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Primary label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Title on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Text on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Primary label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>None.</p>
+      <h3>Touch</h3>
+      <p>Actions are medium buttons (44px) spaced <code>--space-3</code>.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Say what happened in the person's terms: "We can’t find that page", "You’ve been signed out". Not "404" or "Unauthorized".</li>
+        <li>Take the blame when it is ours: "Something went wrong on our side".</li>
+        <li>Reassure with specifics: "Your messages and requests are safe", "drafts are kept", "back by 6:00 a.m. Eastern on Wednesday 11 November".</li>
+        <li>One primary action that fixes it (Try again, Sign in), one that leaves (Back to browse, Get help).</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></div><h2 class="empty__title">Jubilee is being updated</h2><p class="empty__text">We’re back by 6:00 a.m. Eastern on Wednesday 11 November. Nothing you’ve sent is lost.</p><div class="empty__actions"><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Check again</button></div></div></div></div><figcaption>A real end time and a reassurance.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg></div><h2 class="empty__title">Down for maintenance</h2><p class="empty__text">We’ll be back soon.</p><div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html">OK</a></div></div></div></div><figcaption>"Soon" and "OK" tell the person nothing.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><h2 class="empty__title">Something went wrong on our side</h2><p class="empty__text">Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and quote the reference below.</p><div class="empty__actions"><button class="btn btn--primary" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Try again</button><a class="btn" href="../../mocks/pages/help/default.html">Get help</a></div></div><p class="text-caption">Reference <code>JB-500-7F3K</code></p></div></div><figcaption>Try again retries the same request; a reference code to quote.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><h2 class="empty__title">Error 500</h2><p class="empty__text">Internal server error.</p><div class="empty__actions"><a class="btn btn--primary" href="../../mocks/pages/browse/default.html">Try again</a></div></div></div></div><figcaption>A status code as the message, and a Try again that silently goes to browse, as the 500 and offline mocks do.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Page / card</td><td><code>--color-bg-canvas</code> / <code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-canvas" data-swatch></i><span data-token="--color-bg-canvas"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-canvas" data-swatch></i><span data-token="--color-bg-canvas"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
+          <tr><td>Disc / icon</td><td><code>--color-accent-subtle</code> / <code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
+          <tr><td>Title / text</td><td><code>--text-h3</code> / <code>--color-fg-muted</code></td><td colspan="2"><span data-token="--text-h3"></span> / <span data-token="--color-fg-muted"></span></td></tr>
+          <tr><td>Reference</td><td><code>--text-caption</code></td><td colspan="2"><span data-token="--text-caption"></span></td></tr>
+          <tr><td>Page side margin</td><td><code>--layout-margin</code></td><td colspan="2"><span data-token="--layout-margin"></span></td></tr>
+          <tr><td>Empty padding</td><td><code>--space-12</code> / <code>--space-6</code></td><td colspan="2"><span data-token="--space-12"></span> / <span data-token="--space-6"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;!-- in-app: 404, 403 --&gt;
+&lt;main id="main" class="container page"&gt;
+  &lt;div class="status-page"&gt;
+    &lt;div class="empty"&gt;
+      &lt;div class="empty__icon" aria-hidden="true"&gt;…&lt;/div&gt;
+      &lt;h1 class="empty__title"&gt;We can’t find that page&lt;/h1&gt;
+      &lt;p class="empty__text"&gt;The link may be old, or the listing may have been removed.&lt;/p&gt;
+      &lt;div class="empty__actions"&gt;&lt;a class="btn btn--primary" href="/browse"&gt;Back to browse&lt;/a&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/main&gt;
+
+&lt;!-- bare: 500, offline, maintenance, session expired --&gt;
+&lt;main id="main" class="auth-layout"&gt;
+  &lt;a class="auth-brand" href="/"&gt;…jubilee&lt;/a&gt;
+  &lt;div class="auth-card card"&gt;&lt;div class="empty"&gt;…&lt;/div&gt;&lt;p class="text-caption"&gt;Reference &lt;code&gt;JB-500-7F3K&lt;/code&gt;&lt;/p&gt;&lt;/div&gt;
+&lt;/main&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.status-page</code></td><td>70dvh grid that centres its child; in-app variant.</td></tr>
+        <tr><td><code>.auth-layout</code> <code>.auth-card</code></td><td>Bare variant layout.</td></tr>
+        <tr><td><code>.empty</code> and parts</td><td>The message; see empty state.</td></tr>
+        <tr><td><code>h1.empty__title</code></td><td>The page heading.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/not-found/default.html">pages/not-found/default</a> (in-app)</li>
+        <li><a href="../../mocks/pages/forbidden/default.html">pages/forbidden/default</a> (in-app)</li>
+        <li><a href="../../mocks/pages/server-error/default.html">pages/server-error/default</a> (bare, reference code)</li>
+        <li><a href="../../mocks/pages/offline/default.html">pages/offline/default</a> (bare)</li>
+        <li><a href="../../mocks/pages/maintenance/default.html">pages/maintenance/default</a> (bare, end time)</li>
+        <li><a href="../../mocks/pages/session-expired/default.html">pages/session-expired/default</a> (bare, sign in)</li>
+      </ul>
+      <p>Drift fixed during extraction: Try again on the server-error and offline pages, and Check again on maintenance, are links to <code>browse/default.html</code> rather than buttons that retry the request; the system makes them <code>&lt;button&gt;</code>s. The two layouts (in-app <code>.status-page</code> vs bare <code>.auth-layout</code>) were not documented; the split is now a rule: use the bare layout when the app shell itself may be unavailable. <code>.status-page</code> uses a raw <code>70dvh</code>.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

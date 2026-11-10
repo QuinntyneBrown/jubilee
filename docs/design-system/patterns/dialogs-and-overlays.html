@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dialogs and overlays — Jubilee design system</title>
+<meta name="description" content="When Jubilee interrupts with a dialog, sheet, menu, drawer, popover or tooltip, and how each is built, focused, dismissed and worded.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Pattern</p>
+      <h1>Dialogs and overlays</h1>
+      <p class="ds-lead">An overlay borrows the member’s attention. Jubilee uses one only to finish a small task in place or to confirm something that is hard to undo, and always gives the attention back where it was.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Pattern</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>The mocks hold 21 dialogs. They fall into four kinds, all built on the <a href="../components/dialog.html">Dialog</a>: <b>request</b> dialogs that send something to a business (Book a meeting, Request a quote, Request an item, New message), <b>answer</b> dialogs for a business owner (Confirm request, Decline request), <b>editors</b> (Product editor, Service editor) and <b>confirmations</b> (Cancel request, Delete product, Pause listing, Sign out, Delete account, Approve listing, Request changes). Lighter overlays are the <a href="../components/menu.html">Menu</a>, <a href="../components/drawer.html">Drawer</a>, <a href="../components/popover.html">Popover</a> and <a href="../components/tooltip.html">Tooltip</a>.</p>
+      <ul>
+        <li><b>One question per dialog.</b> The title is that question or task: "Decline Samuel’s order?", "Book a meeting with Legacy Financial".</li>
+        <li><b>The footer is always the same:</b> the safe action first, the committing action last and named for what it does.</li>
+        <li><b>Danger is earned.</b> The red button appears only in confirmations of loss; Delete account also asks the member to type DELETE.</li>
+        <li><b>Below 640px a dialog is a bottom sheet</b> with the same parts; the user menu and filters become sheets too.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Need</th><th scope="col">Use</th><th scope="col">Example</th></tr></thead><tbody>
+        <tr><td>Collect a few details and send</td><td><a href="../components/dialog.html">Dialog</a> with a form body</td><td>Book a meeting, Request a quote</td></tr>
+        <tr><td>Confirm an action that is hard to undo</td><td>Confirmation dialog with a danger or primary commit</td><td>Cancel request, Delete product, Sign out</td></tr>
+        <tr><td>Ask a guest to join before acting</td><td>Small dialog (<code>.dialog__panel--sm</code>) with two links</td><td>Sign in required: "Join to message Legacy Financial"</td></tr>
+        <tr><td>Several actions from one trigger</td><td><a href="../components/menu.html">Menu</a> anchored to the trigger; sheet on phones</td><td>Account menu</td></tr>
+        <tr><td>Filters on a phone</td><td>Dialog sheet with a live count on the primary</td><td>Filters: "Show 4 businesses"</td></tr>
+        <tr><td>Long secondary content beside the page</td><td><a href="../components/drawer.html">Drawer</a></td><td>Not used in the current mocks; reserved for admin review notes</td></tr>
+        <tr><td>Explain a control or term</td><td><a href="../components/tooltip.html">Tooltip</a> for a short label, <a href="../components/popover.html">Popover</a> for a sentence with a link</td><td>Not used in the current mocks</td></tr>
+        <tr><td>Tell the member something happened</td><td>Not an overlay: use a <a href="../components/toast.html">Toast</a> or <a href="../components/alert.html">Alert and banner</a></td><td>Request cancelled</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
+      <p>A dialog has a header (optional status icon, title, description, close), a body and a sticky footer. The description is referenced by <code>aria-describedby</code>; the panel sits on a backdrop.</p>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--flush">
+        <div class="ds-frame" style="width: 100%; min-height: 42rem;"><div class="backdrop"></div>
+          <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-desc">
+            <div class="dialog__panel">
+              <div class="dialog__header"><div class="dialog__icon dialog__icon--danger" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/></svg></div><div style="flex: 1;"><h2 class="dialog__title" id="dlg-title">Decline Samuel’s order?</h2><p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1);">A kind, clear reason keeps the door open. Samuel can reply in Messages.</p></div><button class="btn btn--ghost btn--icon" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+              <div class="dialog__body stack">
+                <div class="field"><label class="field__label" for="dlg-why">Reason</label><select class="select" id="dlg-why"><option selected>Can’t meet the date</option><option>Out of stock</option><option>Outside what I offer</option><option>Something else</option></select></div>
+                <div class="field"><label class="field__label" for="dlg-msg">Message to Samuel <span class="optional">(required)</span></label><span class="field__help" id="dlg-msg-help">Shown to the customer with your decline.</span><textarea class="textarea" id="dlg-msg" rows="3" aria-describedby="dlg-msg-help dlg-msg-error" aria-invalid="true" required></textarea><span class="field__error" id="dlg-msg-error">Write a short note so Samuel knows why and what to do next.</span></div>
+              </div>
+              <div class="dialog__footer"><button class="btn" type="button">Keep request</button><button class="btn btn--danger" type="button">Decline request</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="ds-example__caption"><span>Decline request, submitted without a message. Danger icon for a loss-of-business action; <em>Keep request</em> is the safe default; the error appears inline as in any form.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="ds-frame" style="width: 100%; min-height: 42rem;"&gt;&lt;div class="backdrop"&gt;&lt;/div&gt;
+  &lt;div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-desc"&gt;
+    &lt;div class="dialog__panel"&gt;
+      &lt;div class="dialog__header"&gt;&lt;div class="dialog__icon dialog__icon--danger" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 4 2.5 20h19zM12 10v4M12 17h.01"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div style="flex: 1;"&gt;&lt;h2 class="dialog__title" id="dlg-title"&gt;Decline Samuel’s order?&lt;/h2&gt;&lt;p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1);"&gt;A kind, clear reason keeps the door open. Samuel can reply in Messages.&lt;/p&gt;&lt;/div&gt;&lt;button class="btn btn--ghost btn--icon" type="button" aria-label="Close"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;
+      &lt;div class="dialog__body stack"&gt;
+        &lt;div class="field"&gt;&lt;label class="field__label" for="dlg-why"&gt;Reason&lt;/label&gt;&lt;select class="select" id="dlg-why"&gt;&lt;option selected&gt;Can’t meet the date&lt;/option&gt;&lt;option&gt;Out of stock&lt;/option&gt;&lt;option&gt;Outside what I offer&lt;/option&gt;&lt;option&gt;Something else&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+        &lt;div class="field"&gt;&lt;label class="field__label" for="dlg-msg"&gt;Message to Samuel &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;span class="field__help" id="dlg-msg-help"&gt;Shown to the customer with your decline.&lt;/span&gt;&lt;textarea class="textarea" id="dlg-msg" rows="3" aria-describedby="dlg-msg-help dlg-msg-error" aria-invalid="true" required&gt;&lt;/textarea&gt;&lt;span class="field__error" id="dlg-msg-error"&gt;Write a short note so Samuel knows why and what to do next.&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="dialog__footer"&gt;&lt;button class="btn" type="button"&gt;Keep request&lt;/button&gt;&lt;button class="btn btn--danger" type="button"&gt;Decline request&lt;/button&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></details></div>
+      <h3>Confirm while busy</h3>
+      <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--flush">
+        <div class="ds-frame" style="width: 100%; min-height: 38rem;"><div class="backdrop"></div>
+          <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg2-title" aria-describedby="dlg2-desc">
+            <div class="dialog__panel">
+              <div class="dialog__header"><div class="dialog__icon dialog__icon--info" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></div><div style="flex: 1;"><h2 class="dialog__title" id="dlg2-title">Confirm Samuel’s order?</h2><p id="dlg2-desc" class="text-muted" style="margin-top: var(--space-1);">Only confirm if you can deliver 24 tees by Fri 27 Nov.</p></div><button class="btn btn--ghost btn--icon" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+              <div class="dialog__body stack"><dl class="dl well"><dt>Customer</dt><dd>Samuel Park</dd><dt>Order</dt><dd>Custom church team tee × 24</dd><dt>Total</dt><dd class="price">$528 + tax</dd></dl><p class="text-muted">Samuel is told you’ve confirmed and that you’ll message him about payment and pickup.</p></div>
+              <div class="dialog__footer"><button class="btn" type="button" disabled>Not yet</button><button class="btn btn--primary" type="button" aria-busy="true">Confirm order</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="ds-example__caption"><span>Confirm request while sending: the commit is busy, the safe action is disabled, the facts being confirmed sit in a well.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="ds-frame" style="width: 100%; min-height: 38rem;"&gt;&lt;div class="backdrop"&gt;&lt;/div&gt;
+  &lt;div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg2-title" aria-describedby="dlg2-desc"&gt;
+    &lt;div class="dialog__panel"&gt;
+      &lt;div class="dialog__header"&gt;&lt;div class="dialog__icon dialog__icon--info" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m8 12 3 3 5-6"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div style="flex: 1;"&gt;&lt;h2 class="dialog__title" id="dlg2-title"&gt;Confirm Samuel’s order?&lt;/h2&gt;&lt;p id="dlg2-desc" class="text-muted" style="margin-top: var(--space-1);"&gt;Only confirm if you can deliver 24 tees by Fri 27 Nov.&lt;/p&gt;&lt;/div&gt;&lt;button class="btn btn--ghost btn--icon" type="button" aria-label="Close"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;
+      &lt;div class="dialog__body stack"&gt;&lt;dl class="dl well"&gt;&lt;dt&gt;Customer&lt;/dt&gt;&lt;dd&gt;Samuel Park&lt;/dd&gt;&lt;dt&gt;Order&lt;/dt&gt;&lt;dd&gt;Custom church team tee × 24&lt;/dd&gt;&lt;dt&gt;Total&lt;/dt&gt;&lt;dd class="price"&gt;$528 + tax&lt;/dd&gt;&lt;/dl&gt;&lt;p class="text-muted"&gt;Samuel is told you’ve confirmed and that you’ll message him about payment and pickup.&lt;/p&gt;&lt;/div&gt;
+      &lt;div class="dialog__footer"&gt;&lt;button class="btn" type="button" disabled&gt;Not yet&lt;/button&gt;&lt;button class="btn btn--primary" type="button" aria-busy="true"&gt;Confirm order&lt;/button&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre></details></div>
+      <h3>Anatomy rules</h3>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Rule</th></tr></thead><tbody>
+        <tr><td>Icon</td><td><code>.dialog__icon--info</code> for requests and neutral confirmations, <code>--danger</code> for loss, <code>--success</code> for a done state. Decorative: <code>aria-hidden</code>.</td></tr>
+        <tr><td>Title</td><td><code>&lt;h2 class="dialog__title"&gt;</code> with an id used by <code>aria-labelledby</code>. A question for confirmations, a task for forms.</td></tr>
+        <tr><td>Description</td><td>One or two sentences of consequence, id used by <code>aria-describedby</code>.</td></tr>
+        <tr><td>Close</td><td>Ghost icon button, <code>aria-label="Close"</code>, top right. Same effect as Esc and the safe action.</td></tr>
+        <tr><td>Footer</td><td><code>.dialog__footer</code>: safe action (secondary) then commit (primary or danger). Sticky on scroll.</td></tr>
+        <tr><td>Size</td><td>Default 32rem; <code>--sm</code> 24rem for two-button prompts and menus; <code>--lg</code> 48rem for the product and service editors.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">State</th><th scope="col">Behaviour</th><th scope="col">Mock</th></tr></thead><tbody>
+        <tr><td>Default</td><td>Focus on the first field, or on the safe action in a confirmation</td><td><a href="../../mocks/dialogs/book-meeting/default.html">book-meeting/default</a></td></tr>
+        <tr><td>Invalid</td><td>Inline errors in the body; focus to the first invalid field (dialogs have too few fields for a summary)</td><td><a href="../../mocks/dialogs/decline-request/invalid.html">decline-request/invalid</a></td></tr>
+        <tr><td>Busy</td><td>Commit <code>aria-busy</code>; safe action, close and fields disabled or read-only; Esc ignored</td><td><a href="../../mocks/dialogs/sign-out/busy.html">sign-out/busy</a></td></tr>
+        <tr><td>Failed</td><td>Danger <a href="../components/alert.html">Alert and banner</a> at the top of the body, values kept, commit relabelled <em>Try again</em>, focus on the safe action</td><td><a href="../../mocks/dialogs/cancel-request/failed.html">cancel-request/failed</a></td></tr>
+        <tr><td>Success</td><td>The dialog becomes the outcome: new title, what happens next, <em>Close</em> and a primary link (<em>View request</em>) that has focus</td><td><a href="../../mocks/dialogs/book-meeting/success.html">book-meeting/success</a></td></tr>
+        <tr><td>Edit</td><td>Editor opens prefilled; title says Edit, commit says Save changes</td><td><a href="../../mocks/dialogs/product-editor/edit.html">product-editor/edit</a></td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>Below 640px (<code>--layout-breakpoint-sm</code>) <code>.dialog</code> aligns its panel to the bottom edge, rounds only the top corners and slides up; from 640px it centres and scales in.</li>
+        <li>The panel is capped at the viewport height minus <code>--space-12</code> and scrolls inside; the footer stays visible (sticky) so the commit is never off screen with the keyboard open.</li>
+        <li>The account menu is a sheet on phones and an anchored menu from 640px; Filters is a sheet below 768px and inline chips above.</li>
+        <li>Footer buttons wrap and the commit stays last; on a 360px sheet two medium buttons fit on one row.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Pattern and roles</h3>
+      <p>Dialogs follow the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/">APG modal dialog pattern</a>: <code>role="dialog"</code>, <code>aria-modal="true"</code>, <code>aria-labelledby</code> to the title, <code>aria-describedby</code> to the description. The page behind is <code>inert</code>. Menus follow the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/">APG menu button pattern</a>; tooltips the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/">APG tooltip pattern</a>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Cycle inside the dialog only (focus trap).</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Closes the dialog as the safe action would (<code>data-dismiss-on-escape</code>), except while busy. In a menu, closes the menu.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Activates the focused button; in a single-field dialog it submits.</td></tr>
+        <tr><td><kbd>↑</kbd> <kbd>↓</kbd> in a menu</td><td>Move between items; <kbd>Home</kbd>/<kbd>End</kbd> jump; typing a letter jumps to the item.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>On open, focus goes to the first field in a form dialog, to the safe action in a destructive confirmation ("Keep request", "Keep my account") and to the primary in a success view (<code>autofocus</code> in the mocks). On close, focus returns to the control that opened it, or to the row that replaced it if that control is gone.</p>
+      <h3>Labelling and announcements</h3>
+      <p>The title names the object ("Cancel your quote request to WaterWorks?"); the close button is "Close"; danger commits name the loss ("Delete account"). The backdrop is not a control and has no label.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Text in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-raised" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Description in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-raised" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Input border in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface-raised" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface-raised" data-min="3"></span></div>
+        <div class="ds-pair"><span>Danger icon on its tint</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon|--color-danger-bg" data-min="3"></span></div>
+        <div class="ds-pair"><span>Primary edge in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface-raised" data-min="3"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Text in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-raised" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Description in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-raised" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Input border in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface-raised" data-min="3"></span></div>
+        <div class="ds-pair"><span>Focus ring in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface-raised" data-min="3"></span></div>
+        <div class="ds-pair"><span>Danger icon on its tint</span><span class="ds-pair__ratio" data-contrast="--color-danger-icon|--color-danger-bg" data-min="3"></span></div>
+        <div class="ds-pair"><span>Primary edge in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface-raised" data-min="3"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Backdrop fades and the panel scales or slides in over <code>--duration-base</code> with <code>--ease-enter</code>; under reduced motion durations are zero and the dialog simply appears.</p>
+      <h3>Touch</h3>
+      <p>Close and footer buttons are 44px. A bottom sheet keeps its footer above the home indicator (<code>env(safe-area-inset-bottom)</code>). Menu items in the account sheet are 44px tall.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Confirmation titles are questions with the object: "Delete Faith heavyweight tee, charcoal?", "Sign out of Jubilee?".</li>
+        <li>The description states the consequence and who is told: "WaterWorks Plumbing &amp; Drains is told straight away. You can ask again later."</li>
+        <li>The safe action says what is kept: "Keep request", "Keep my account", "Stay signed in", "Not yet". Use "Cancel" only when nothing is being kept.</li>
+        <li>Request dialogs remind that nothing is paid on Jubilee: "Ask for a time. Trevor confirms it or suggests another; nothing is charged."</li>
+        <li>Irreversible actions list what goes, as bullets, and end with "This can’t be undone."</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="dialog__footer" style="position: static; width: 100%; border-top: 0;"><button class="btn" type="button">Keep request</button><button class="btn btn--danger" type="button">Cancel request</button></div></div><figcaption>The safe action is named for what it keeps and comes first; the destructive one names the loss.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="dialog__footer" style="position: static; width: 100%; border-top: 0;"><button class="btn btn--danger" type="button">Yes</button><button class="btn" type="button">No</button></div></div><figcaption>"Yes" and "No" force the member to re-read the title, and the order is reversed.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="cluster"><button class="btn btn--icon" type="button" aria-label="Delete Gold cross stoneware mug"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></button><span class="text-muted">opens a confirmation</span></div></div><figcaption>Deleting a product opens a confirmation that names it; deleting from a toast-undoable list (Saved) does not need one.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="card stack" style="width: 100%;"><p class="row__title">Request sent!</p><button class="btn btn--primary btn--sm" type="button">OK</button></div></div><figcaption>A dialog just to say something worked. Use the success view inside the dialog that sent it, or a toast.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/dialogs/decline-request/invalid.html">dialogs/decline-request/invalid</a> (form dialog, danger)</li>
+        <li><a href="../../mocks/dialogs/confirm-request/default.html">dialogs/confirm-request/default</a> (confirmation with a well)</li>
+        <li><a href="../../mocks/dialogs/cancel-request/failed.html">dialogs/cancel-request/failed</a> (failed state)</li>
+        <li><a href="../../mocks/dialogs/book-meeting/success.html">dialogs/book-meeting/success</a> (success view)</li>
+        <li><a href="../../mocks/dialogs/delete-account/invalid.html">dialogs/delete-account/invalid</a> (type to confirm)</li>
+        <li><a href="../../mocks/dialogs/user-menu/default.html">dialogs/user-menu/default</a> (menu as sheet)</li>
+      </ul>
+      <p>Drift found: every dialog wraps its title in <code>&lt;div style="flex: 1;"&gt;</code> and gives the description <code>style="margin-top: var(--space-1)"</code> inline (68 dialogs); a <code>.dialog__heading</code> rule would remove both (suggested in the report). Time chips in Book a meeting are <code>&lt;label class="chip" style="position: relative"&gt;</code> around visually hidden radios; the system documents them as a radio group styled as chips. Menu items in the user-menu sheet set <code>min-height</code> inline to reach 44px. The menu, drawer, popover and tooltip components exist in the kit but no mock renders them open.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

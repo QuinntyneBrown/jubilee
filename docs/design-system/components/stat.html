@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stat — Jubilee design system</title>
+<meta name="description" content="Stats show one headline number with a label and a change: listing views, open requests, saved by members. Up, down and neutral deltas, the stat grid, loading, both themes.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Data display</p>
+      <h1>Stat</h1>
+      <p class="ds-lead">A stat is one number that matters to a business owner this week, with what it counts and how it moved: 312 listing views, up 18% on last week. Stats sit at the top of My business in a grid of four.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;div class="card stat"&gt;</code></span><span class="ds-pill"><code>.stat-grid</code> in 12 mocks</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use stats for two to four headline numbers at the top of a dashboard. Each answers "how am I doing?" at a glance and links to the detail when there is one. For a breakdown use a <a href="../components/table.html">Table</a>; for progress towards a goal use a <a href="../components/progress-bar.html">Progress bar</a>.</p>
+      <ul>
+        <li><b>Stat</b> (<code>.stat</code>): label, value, optional delta. Usually inside a <code>.card</code>.</li>
+        <li><b>Delta up</b> (<code>.stat__delta--up</code>): success colour, for a change the owner wants.</li>
+        <li><b>Delta down</b> (<code>.stat__delta--down</code>): danger colour, for a change that needs attention.</li>
+        <li><b>Neutral note</b> (<code>.stat__delta</code>): muted text that advises rather than measures ("Reply within a day to keep your badge").</li>
+        <li><b>Stat grid</b> (<code>.stat-grid</code>): two columns on phones, four from 1024px.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure">
+<div class="card stat"><span class="stat__label">Listing views, 7 days</span><span class="stat__value">312</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 18% on last week</span></div>
+          <span class="ds-callout" style="left: 4%; top: 20%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 4%; top: 50%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 4%; top: 80%;" aria-hidden="true">3</span>
+        </figure>
+        <ol class="ds-anatomy__list">
+          <li><div><b>Label</b><small><code>.stat__label</code>: what is counted and over what period, <code>--text-label</code> in <code>--color-fg-muted</code>.</small></div></li>
+          <li><div><b>Value</b><small><code>.stat__value</code>: <code>--text-h2</code> with tabular figures.</small></div></li>
+          <li><div><b>Delta</b><small><code>.stat__delta</code>: <code>--text-body-sm</code>; an arrow (hidden from assistive tech) plus words that say the change.</small></div></li>
+        </ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas">
+<div class="stat-grid"><div class="card stat"><span class="stat__label">Listing views, 7 days</span><span class="stat__value">312</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 18% on last week</span></div><div class="card stat"><span class="stat__label">Open requests</span><span class="stat__value">3</span><span class="stat__delta">2 new since yesterday</span></div><div class="card stat"><span class="stat__label">Unanswered messages</span><span class="stat__value">1</span><span class="stat__delta">Reply within a day to keep your badge</span></div><div class="card stat"><span class="stat__label">Saved by members</span><span class="stat__value">28</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 4 this week</span></div></div>
+      </div>
+        <div class="ds-example__caption"><span><em>My business</em> for Luzandre.com: four stats in a <code>.stat-grid</code>.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="stat-grid"&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Listing views, 7 days&lt;/span&gt;&lt;span class="stat__value"&gt;312&lt;/span&gt;&lt;span class="stat__delta stat__delta--up"&gt;&lt;span aria-hidden="true"&gt;↑&lt;/span&gt; 18% on last week&lt;/span&gt;&lt;/div&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Open requests&lt;/span&gt;&lt;span class="stat__value"&gt;3&lt;/span&gt;&lt;span class="stat__delta"&gt;2 new since yesterday&lt;/span&gt;&lt;/div&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Unanswered messages&lt;/span&gt;&lt;span class="stat__value"&gt;1&lt;/span&gt;&lt;span class="stat__delta"&gt;Reply within a day to keep your badge&lt;/span&gt;&lt;/div&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Saved by members&lt;/span&gt;&lt;span class="stat__value"&gt;28&lt;/span&gt;&lt;span class="stat__delta stat__delta--up"&gt;&lt;span aria-hidden="true"&gt;↑&lt;/span&gt; 4 this week&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>Deltas</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+<div class="stat-grid"><div class="card stat"><span class="stat__label">Listing views, 7 days</span><span class="stat__value">312</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 18% on last week</span></div><div class="card stat"><span class="stat__label">Replies within a day</span><span class="stat__value">71%</span><span class="stat__delta stat__delta--down"><span aria-hidden="true">↓</span> 9 points on last week</span></div><div class="card stat"><span class="stat__label">Unanswered messages</span><span class="stat__value">1</span><span class="stat__delta">Reply within a day to keep your badge</span></div><div class="card stat"><span class="stat__label">Saved by members</span><span class="stat__value">28</span></div></div>
+      </div>
+        <div class="ds-example__caption"><span>Up (success), down (danger), neutral advice, and no delta.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="stat-grid"&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Listing views, 7 days&lt;/span&gt;&lt;span class="stat__value"&gt;312&lt;/span&gt;&lt;span class="stat__delta stat__delta--up"&gt;&lt;span aria-hidden="true"&gt;↑&lt;/span&gt; 18% on last week&lt;/span&gt;&lt;/div&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Replies within a day&lt;/span&gt;&lt;span class="stat__value"&gt;71%&lt;/span&gt;&lt;span class="stat__delta stat__delta--down"&gt;&lt;span aria-hidden="true"&gt;↓&lt;/span&gt; 9 points on last week&lt;/span&gt;&lt;/div&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Unanswered messages&lt;/span&gt;&lt;span class="stat__value"&gt;1&lt;/span&gt;&lt;span class="stat__delta"&gt;Reply within a day to keep your badge&lt;/span&gt;&lt;/div&gt;&lt;div class="card stat"&gt;&lt;span class="stat__label"&gt;Saved by members&lt;/span&gt;&lt;span class="stat__value"&gt;28&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <p>One size. In a <code>.stat-grid</code> the card padding drops to <code>--space-4</code> so four fit across. A stat outside a card (in a sidebar) keeps the same type.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Stats are static: no hover, focus, active or disabled. If a stat links to its detail, the whole card is a link and takes the link’s focus ring. Data states:</p>
+      <div class="ds-matrix"><table>
+        <thead><tr><th scope="col">Component</th><th scope="col">Loaded</th><th scope="col">Loading</th><th scope="col">No data yet</th><th scope="col">Error</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Stat</th><td><div class="card stat"><span class="stat__label">Listing views, 7 days</span><span class="stat__value">312</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 18% on last week</span></div></td><td><div class="card" aria-hidden="true"><span class="skeleton skeleton--text skeleton--w50"></span><span class="skeleton skeleton--title"></span></div></td><td><div class="card stat"><span class="stat__label">Listing views, 7 days</span><span class="stat__value">0</span><span class="stat__delta">Your listing goes live after review</span></div></td><td><div class="card stat"><span class="stat__label">Listing views, 7 days</span><span class="stat__value">—</span><span class="stat__delta stat__delta--down">Couldn’t load. Refresh to try again</span></div></td></tr>
+        </tbody>
+      </table></div>
+      <p>Loading mirrors <em>My business / loading</em>: skeleton label and value, <code>aria-hidden</code>. A new listing shows 0 with a note, never a blank. An error replaces the value with a dash and says what to do.</p>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div class="stat-grid"><div class="card stat"><span class="stat__label">Listing views, 7 days</span><span class="stat__value">312</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 18% on last week</span></div><div class="card stat"><span class="stat__label">Open requests</span><span class="stat__value">3</span><span class="stat__delta">2 new since yesterday</span></div><div class="card stat"><span class="stat__label">Unanswered messages</span><span class="stat__value">1</span><span class="stat__delta">Reply within a day to keep your badge</span></div><div class="card stat"><span class="stat__label">Saved by members</span><span class="stat__value">28</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 4 this week</span></div></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div class="stat-grid"><div class="card stat"><span class="stat__label">Listing views, 7 days</span><span class="stat__value">312</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 18% on last week</span></div><div class="card stat"><span class="stat__label">Open requests</span><span class="stat__value">3</span><span class="stat__delta">2 new since yesterday</span></div><div class="card stat"><span class="stat__label">Unanswered messages</span><span class="stat__value">1</span><span class="stat__delta">Reply within a day to keep your badge</span></div><div class="card stat"><span class="stat__label">Saved by members</span><span class="stat__value">28</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 4 this week</span></div></div></div></div>
+      </div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li><code>.stat-grid</code>: two columns from 360px, four from 1024px (<code>--layout-breakpoint-lg</code>).</li>
+        <li>Labels wrap to two lines at 360px; keep them under about 24 characters. Values never wrap.</li>
+        <li>Four stats is the maximum; on phones an odd count leaves a gap, so use two or four.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Only semantic tokens: the card surface, <code>--color-fg-muted</code> labels, the default ink value, <code>--color-success-fg</code> and <code>--color-danger-fg</code> deltas. Dark mode swaps them; both deltas stay at 4.5:1 on the surface.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Plain text in a card; no role. A grid of stats can be a <code>&lt;ul&gt;</code> if order matters, or a <code>&lt;section&gt;</code> with a heading. There is no APG widget; when a stat updates live, announce it through a polite <code>role="status"</code> region (<a href="https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/">APG landmark regions</a>).</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
+        <tr><td><kbd>Tab</kbd></td><td>Reaches a stat only when its card is a link.</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Follows that link.</td></tr>
+      </tbody></table></div>
+      <h3>Focus</h3>
+      <p>Linked stat cards take the shared focus ring around the card.</p>
+      <h3>Labelling</h3>
+      <p>Reading order is label, value, delta ("Listing views, 7 days, 312, 18% on last week"). Arrows are <code>aria-hidden</code> and the words carry the direction ("up 18%" or "down 9 points"), so colour and arrow are never the only signal.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Label on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Value on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Delta up on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Delta down on surface</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface" data-min="4.5"></span></div>
+        </div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
+        <div class="ds-pair"><span>Label on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Value on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Delta up on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Delta down on surface</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-bg-surface" data-min="4.5"></span></div>
+        </div></div>
+      </div>
+      <h3>Motion</h3>
+      <p>Values do not count up. Skeletons shimmer and stop under reduced motion.</p>
+      <h3>Touch</h3>
+      <p>Not interactive unless linked; a linked stat card is far larger than 44px.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>Labels name the measure and the period: "Listing views, 7 days", "Open requests", "Saved by members".</li>
+        <li>Deltas compare to a named period and use words: "18% on last week", "4 this week", "2 new since yesterday".</li>
+        <li>Round values a person can act on: 312, not 312.4; percentages without decimals.</li>
+        <li>A neutral note gives a next step ("Reply within a day to keep your badge"), not a judgement.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont">
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="card stat"><span class="stat__label">Listing views, 7 days</span><span class="stat__value">312</span><span class="stat__delta stat__delta--up"><span aria-hidden="true">↑</span> 18% on last week</span></div></div><figcaption>Arrow hidden from assistive tech; the words say what changed.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="card stat"><span class="stat__label">Views</span><span class="stat__value">312</span><span class="stat__delta stat__delta--up">↑ 18%</span></div></div><figcaption>No period on the label, no comparison in the delta, and the arrow is read as "upwards arrow". The mocks’ deltas put a bare ↑ in the text.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="card stat"><span class="stat__label">Open requests</span><span class="stat__value">3</span><span class="stat__delta">2 new since yesterday</span></div></div><figcaption>A count of new items is information, so it stays neutral.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="card stat"><span class="stat__label">Open requests</span><span class="stat__value">3</span><span class="stat__delta stat__delta--up">2 new since yesterday</span></div></div><figcaption>Success green on a count that is not a trend implies a judgement the number does not make.</figcaption></figure>
+      </div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody>
+          <tr><td>Label</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
+          <tr><td>Value</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Delta up / down</td><td><code>--color-success-fg</code> / <code>--color-danger-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span></td></tr>
+          <tr><td>Label type</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
+          <tr><td>Value type</td><td><code>--text-h2</code></td><td colspan="2"><span data-token="--text-h2"></span></td></tr>
+          <tr><td>Delta type</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Stack gap</td><td><code>--space-1</code></td><td colspan="2"><span data-token="--space-1"></span></td></tr>
+          <tr><td>Grid gap / card padding</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
+          <tr><td>Card surface / border</td><td><code>--color-bg-surface</code> / <code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
+          <tr><td>Card radius</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="stat-grid"&gt;
+  &lt;div class="card stat"&gt;
+    &lt;span class="stat__label"&gt;Listing views, 7 days&lt;/span&gt;
+    &lt;span class="stat__value"&gt;312&lt;/span&gt;
+    &lt;span class="stat__delta stat__delta--up"&gt;&lt;span aria-hidden="true"&gt;↑&lt;/span&gt; 18% on last week&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
+        <tr><td><code>.stat</code></td><td>Column of label, value, delta.</td></tr>
+        <tr><td><code>.stat__label</code> <code>.stat__value</code> <code>.stat__delta</code></td><td>Parts.</td></tr>
+        <tr><td><code>.stat__delta--up</code> <code>.stat__delta--down</code></td><td>Success / danger delta.</td></tr>
+        <tr><td><code>.stat-grid</code></td><td>Two, then four, columns; tightens card padding.</td></tr>
+      </tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul>
+        <li><a href="../../mocks/pages/my-business/default.html">pages/my-business/default</a> (four stats)</li>
+        <li><a href="../../mocks/pages/my-business/loading.html">pages/my-business/loading</a> (skeleton stats)</li>
+        <li><a href="../../mocks/pages/my-business/pending.html">pages/my-business/pending</a> (stats before review)</li>
+        <li><a href="../../mocks/pages/my-business/changes-requested.html">pages/my-business/changes-requested</a> (stats with changes requested)</li>
+      </ul>
+      <p>Drift fixed during extraction: deltas put a literal ↑ in the text, which screen readers read as "upwards arrow"; the docs wrap it in <code>aria-hidden</code>. "2 new since yesterday" used <code>.stat__delta--up</code>, colouring a count as a trend; it should be neutral. <code>.stat__delta--down</code> is defined but appears in no mock, and no mock shows an error or zero state for a stat.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>
