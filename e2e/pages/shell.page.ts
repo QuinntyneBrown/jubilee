@@ -76,6 +76,38 @@ export class ShellPage {
     );
   }
 
+  /**
+   * The primary controls on screen (buttons, chips, tab bar items, list rows) that are smaller
+   * than the given size in either direction, as "label widthxheight" (L2-162).
+   */
+  async primaryControlsSmallerThan(size: number): Promise<string[]> {
+    return this.page.evaluate((min) => {
+      const controls = document.querySelectorAll<HTMLElement>(
+        '.btn, .chip, .tabbar__item, .dir-row',
+      );
+      return [...controls]
+        .map((el) => ({ el, box: el.getBoundingClientRect() }))
+        .filter(({ box }) => box.width > 0 && box.height > 0)
+        .filter(({ box }) => box.width < min || box.height < min)
+        .map(
+          ({ el, box }) =>
+            `${(el.getAttribute('aria-label') ?? el.textContent ?? '').trim()} ${Math.round(box.width)}x${Math.round(box.height)}`,
+        );
+    }, size);
+  }
+
+  /** Links and buttons on screen that are smaller than 24 px in both directions (WCAG 2.5.8). */
+  async targetsSmallerThanMinimum(): Promise<string[]> {
+    return this.page.evaluate(() =>
+      // A box inside a label is reached through the label, which is the target.
+      [...document.querySelectorAll<HTMLElement>('a[href], button, select, input:not(label input)')]
+        .map((el) => ({ el, box: el.getBoundingClientRect() }))
+        .filter(({ box }) => box.width > 0 && box.height > 0)
+        .filter(({ box }) => box.width < 24 && box.height < 24)
+        .map(({ el, box }) => `${el.textContent?.trim()} ${box.width}x${box.height}`),
+    );
+  }
+
   async pressTab(): Promise<void> {
     await this.page.keyboard.press('Tab');
   }

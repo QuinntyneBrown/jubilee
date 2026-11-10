@@ -50,11 +50,10 @@
       <span class="topbar__dot" aria-hidden="true"></span>
     }
   </a>
-  <a
-    class="avatar avatar--sm avatar--brand only-desktop"
-    routerLink="/account"
-    [attr.aria-label]="'Account menu for ' + member.displayName"
-    >{{ member.initials }}</a
+  <!-- The initials are decoration; the name of the link is the hidden sentence (WCAG 2.5.3). -->
+  <a class="avatar avatar--sm avatar--brand only-desktop" routerLink="/account"
+    ><span aria-hidden="true">{{ member.initials }}</span
+    ><span class="visually-hidden">Account menu for {{ member.displayName }}</span></a
   >
 } @else {
   <nav class="topbar__nav" aria-label="Primary">

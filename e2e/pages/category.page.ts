@@ -105,6 +105,10 @@ export class CategoryFiltersScreen extends CategoryPage {
     await super.ready();
     if (!(await this.filters.panel.isVisible())) await this.openFilters();
     await this.filters.show.getByText(/\d/).waitFor();
+    // The sheet slides in; measure and capture it at rest.
+    await this.filters.panel.evaluate((panel) =>
+      Promise.all(panel.getAnimations().map((animation) => animation.finished)),
+    );
   }
 
   override regions(): Region[] {

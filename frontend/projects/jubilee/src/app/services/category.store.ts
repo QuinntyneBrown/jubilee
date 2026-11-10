@@ -37,13 +37,19 @@ export class CategoryStore {
   private readonly currentQuery = signal<CategoryQuery>(parseCategoryQuery(new URLSearchParams()));
   private readonly currentState = signal<CategoryState>({ status: 'loading' });
   private readonly lastAdded = signal<AppliedFilter | null>(null);
+  private readonly updating = signal(false);
 
   readonly query = this.currentQuery.asReadonly();
   readonly state = this.currentState.asReadonly();
+  /** True while results are on their way. */
+  readonly busy = this.updating.asReadonly();
 
   /** Loads what the URL asks for. Called for every change of the slug or the query string. */
   open(slug: string, params: { get(name: string): string | null }): void {
-    if (slug !== this.slug) this.lastAdded.set(null);
+    if (slug !== this.slug) {
+      this.lastAdded.set(null);
+      this.currentState.set({ status: 'loading' });
+    }
     this.slug = slug;
     const query = parseCategoryQuery(params);
     // A query string that says the same thing another way (a page below 1, a value outside
@@ -60,19 +66,25 @@ export class CategoryStore {
   load(): void {
     const query = this.currentQuery();
     this.request?.unsubscribe();
-    this.currentState.set({ status: 'loading' });
+    // A change of filter, sort or page keeps the results on screen until the new ones arrive,
+    // so the control that was pressed stays in place and keeps the focus.
+    if (this.currentState().status !== 'loaded') this.currentState.set({ status: 'loading' });
+    this.updating.set(true);
     this.request = this.api.getCategory(this.slug, query).subscribe({
       next: (value) => {
+        this.updating.set(false);
         this.currentState.set({ status: 'loaded', value });
         // The server replaces an out-of-range page with the nearest valid one (L2-026).
         if (value.page !== query.page) this.navigate({ ...query, page: value.page }, true);
       },
-      error: (error: unknown) =>
+      error: (error: unknown) => {
+        this.updating.set(false);
         this.currentState.set(
           error instanceof HttpErrorResponse && error.status === 404
             ? { status: 'not-found' }
             : { status: 'error', reference: errorReference(error, 'JB-CAT-503') },
-        ),
+        );
+      },
     });
   }
 

@@ -90,7 +90,7 @@
           }
         </div>
       } @else {
-        <ul class="card-grid">
+        <ul class="card-grid" [attr.aria-busy]="store.busy()">
           @for (business of page.businesses; track business.slug) {
             <li>
               <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>

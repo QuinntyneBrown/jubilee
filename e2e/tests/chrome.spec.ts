@@ -87,7 +87,7 @@ test.describe('member navigation by viewport (L2-112, L2-164)', () => {
     await expect(shell.topBarLink(/^Messages/)).toBeVisible();
     await expect(shell.topBarLink('List your business')).toBeVisible();
     await expect(shell.avatar).toBeVisible();
-    await expect(shell.avatar).toHaveText('JA');
+    await expect(shell.avatar).toContainText('JA');
     await expect(shell.avatar).toHaveAccessibleName('Account menu for Joanna Adeyemi');
     // Search is reached by the link, not a box
     await expect(shell.searchBox).toBeHidden();
