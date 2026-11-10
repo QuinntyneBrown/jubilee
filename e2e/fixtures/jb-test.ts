@@ -12,6 +12,8 @@ export interface OpenOptions {
   who?: Who;
   /** Overrides the navigation summary a member gets (app only). */
   navigation?: Partial<NavigationSummary>;
+  /** The time the device clock shows (app only); the mocks' "today", 9:00 a.m., by default. */
+  now?: Date;
 }
 
 /** Opens screens by route key against the app, or against the mocks when JB_BASELINE=1. */
@@ -27,12 +29,12 @@ export class Jb {
     }
     await this.signInAs(options.who ?? route.who, options.navigation);
     if (route.stub) await applyStub(this.page, route.stub);
-    await this.goto(route.app, options.theme);
+    await this.goto(route.app, options.theme, options.now);
   }
 
   /** Opens an app path as it is, against the real API unless stubs were installed first. */
-  async goto(path: string, theme: Theme = 'light'): Promise<void> {
-    await this.page.clock.setFixedTime(mockNow);
+  async goto(path: string, theme: Theme = 'light', now: Date = mockNow): Promise<void> {
+    await this.page.clock.setFixedTime(now);
     await this.page.addInitScript((value) => {
       localStorage.setItem('jubilee-theme', value);
     }, theme);

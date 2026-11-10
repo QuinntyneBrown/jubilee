@@ -89,7 +89,7 @@ The feature is a read-only vertical slice from the Angular page to the database.
   filters match nothing, the handler counts the matches of each filter set
   obtained by removing one filter, and the page states those counts in the
   suggestion line, one sentence per removal that would match something:
-  "Without “Serves Scarborough”, 2 businesses match."
+  "Without “Serves Scarborough”, 3 businesses match."
 - **Category fact** — the count of live listings in the category that offer
   emergency calls, shown as "{n} take emergency calls" beside the business
   count and left out when it is 0.

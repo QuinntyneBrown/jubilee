@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
- * "Skip to content": the first focusable element of every page (L2-112). Activating it moves
+ * `<a jb-skip-link>Skip to content</a>`: the first focusable element of every page (L2-112). Activating it moves
  * focus to `main`, which must be focusable (`<main id="main" tabindex="-1">`).
  */
 @Component({
@@ -12,7 +12,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     href: '#main',
     '(click)': 'skip($event)',
   },
-  template: `Skip to content`,
+  template: `<ng-content />`,
 })
 export class SkipLink {
   protected skip(event: Event): void {

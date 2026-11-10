@@ -32,6 +32,12 @@ module.exports = defineConfig([
   {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
-    rules: {},
+    rules: {
+      // A card or row component renders the content of its anchor from this input.
+      '@angular-eslint/template/elements-content': [
+        'error',
+        { allowList: ['business', 'product'] },
+      ],
+    },
   },
 ]);

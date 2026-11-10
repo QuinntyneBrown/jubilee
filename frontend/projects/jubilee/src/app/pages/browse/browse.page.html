@@ -1,0 +1,176 @@
+@let state = store.state();
+<section class="hero">
+  <div class="container">
+    <p class="hero__greeting">{{ greeting() }}</p>
+    <h1>Do business with Toronto’s Christian community.</h1>
+    <p class="hero__sub">
+      @switch (state.status) {
+        @case ('loading') {
+          Loading the directory…
+        }
+        @case ('error') {
+          Shops, advisors, trades and more.
+        }
+        @case ('loaded') {
+          @if (state.value.liveBusinessCount > 0) {
+            {{ state.value.liveBusinessCount | jbCount }} verified businesses — shops, advisors,
+            trades and more.
+          } @else {
+            The first verified businesses are on their way.
+          }
+        }
+      }
+    </p>
+    <form class="search" role="search" (submit)="search($event, hq.value)">
+      <label class="visually-hidden" for="hq">Search businesses and products</label>
+      <svg jb-icon name="search"></svg>
+      <input #hq class="input" id="hq" type="search" placeholder="Plumber, lawyer, Bibles…" />
+    </form>
+    <ul class="chip-row">
+      <li><a class="chip" routerLink="/" aria-current="page">All</a></li>
+      @for (category of categories; track category.slug) {
+        <li>
+          <a class="chip" [routerLink]="['/c', category.slug]">{{ category.name }}</a>
+        </li>
+      }
+    </ul>
+  </div>
+</section>
+<div class="container page">
+  @switch (state.status) {
+    @case ('loading') {
+      <p class="visually-hidden" role="status">Loading the directory…</p>
+      <section class="section">
+        <span class="skeleton skeleton--title"></span>
+        <div style="margin-top: var(--space-4)"><ul jb-card-grid-skeleton [count]="4"></ul></div>
+      </section>
+      <section class="section">
+        <span class="skeleton skeleton--title"></span>
+        <ul class="rows" aria-hidden="true">
+          @for (row of skeletonRows; track row) {
+            <li class="row">
+              <div class="row__body">
+                <span class="skeleton skeleton--text skeleton--w50"></span>
+                <span class="skeleton skeleton--text skeleton--w70"></span>
+              </div>
+              <span class="skeleton skeleton--btn" style="width: 5rem"></span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+    @case ('error') {
+      <div jb-empty-state icon="alert" heading="We couldn’t load the directory" [error]="true">
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>{{ state.reference }}</code
+        >.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="store.load()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        @if (member()) {
+          <a slot="actions" class="btn" routerLink="/messages">Open messages</a>
+        }
+        @if (!member()) {
+          <a slot="actions" class="btn" routerLink="/sign-in">Sign in</a>
+        }
+      </div>
+    }
+    @case ('loaded') {
+      @let directory = state.value;
+      @if (directory.liveBusinessCount === 0) {
+        <div jb-empty-state icon="store" heading="No businesses are listed yet">
+          Jubilee has just opened in Toronto. Be the first: list your business free and you’re live
+          once your pastor confirms you.
+          <a slot="actions" class="btn btn--primary" routerLink="/list"
+            ><svg jb-icon name="plus"></svg>List your business</a
+          >
+        </div>
+      } @else {
+        @if (!member()) {
+          <div class="band" style="margin-top: var(--space-6)">
+            <div>
+              <h2>New here?</h2>
+              <p>Join free to message businesses, book meetings and save favourites.</p>
+            </div>
+            <a class="btn btn--primary" routerLink="/join">Join free</a>
+          </div>
+        }
+        @if (directory.featured.length) {
+          <section class="section" aria-labelledby="feat">
+            <div class="section-head"><h2 id="feat">Featured this week</h2></div>
+            <ul class="card-grid feature-grid">
+              @for (business of directory.featured; track business.slug) {
+                <li>
+                  <a
+                    jb-business-card
+                    [business]="business"
+                    [routerLink]="['/b', business.slug]"
+                  ></a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+        @if (directory.products.length) {
+          <section class="section" aria-labelledby="shops">
+            <div class="section-head">
+              <h2 id="shops">From the shops</h2>
+              <a [routerLink]="['/c', 'shops']">All shops</a>
+            </div>
+            <ul class="scroller">
+              @for (
+                product of directory.products;
+                track product.businessSlug + '/' + product.slug
+              ) {
+                <li>
+                  <a
+                    jb-product-card
+                    [product]="product"
+                    [routerLink]="['/b', product.businessSlug, 'p', product.slug]"
+                  ></a>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+        <section class="section" aria-labelledby="all">
+          <div class="section-head">
+            <h2 id="all">All {{ directory.liveBusinessCount | jbCount }} businesses</h2>
+          </div>
+          <div class="dir-groups">
+            @for (group of directory.groups; track group.slug) {
+              <section class="dir-group" [attr.aria-labelledby]="'g-' + group.slug">
+                <div class="dir-group__head">
+                  <h3 [id]="'g-' + group.slug">{{ group.name }}</h3>
+                  <span class="dir-group__count"
+                    ><span aria-hidden="true">{{ group.count | jbCount }}</span
+                    ><span class="visually-hidden"
+                      >{{ group.count | jbCount }}
+                      {{ group.count === 1 ? 'business' : 'businesses' }}</span
+                    ></span
+                  >
+                </div>
+                <ul class="list">
+                  @for (business of group.businesses; track business.slug) {
+                    <li>
+                      <a
+                        jb-directory-row
+                        [business]="business"
+                        [routerLink]="['/b', business.slug]"
+                      ></a>
+                    </li>
+                  }
+                </ul>
+                @if (group.hasMore) {
+                  <a class="dir-more" [routerLink]="['/c', group.slug]"
+                    >See all {{ group.count | jbCount }}</a
+                  >
+                }
+              </section>
+            }
+          </div>
+        </section>
+      }
+    }
+  }
+</div>

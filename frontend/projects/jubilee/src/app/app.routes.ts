@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { ChromeSection } from 'components';
+import { welcomeRedirectGuard } from './guards/welcome-redirect.guard';
 
 /**
  * Route data drives the shell: `shell` picks the chrome (`app` with top bar, footer and tab
@@ -15,6 +16,20 @@ export interface JbRouteData {
 const data = (value: JbRouteData): JbRouteData => value;
 
 export const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/browse/browse.page').then((m) => m.BrowsePage),
+    data: data({ shell: 'app', page: 'browse', section: 'browse' }),
+    title: 'Browse · Jubilee',
+  },
+  {
+    path: 'welcome',
+    loadComponent: () => import('./pages/welcome/welcome.page').then((m) => m.WelcomePage),
+    canActivate: [welcomeRedirectGuard],
+    data: data({ shell: 'app', page: 'welcome' }),
+    title: 'Jubilee · Toronto’s Christian marketplace',
+  },
   {
     path: '**',
     loadComponent: () => import('./pages/not-found/not-found.page').then((m) => m.NotFoundPage),
