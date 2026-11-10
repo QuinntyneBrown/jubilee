@@ -61,7 +61,7 @@ introduces.
 - **`PublicListingFilter`** — query filter that defines a public listing:
   stage live, not paused, not deleted and not under a moderation hold. Both the
   count and the featured list apply it (L2-028).
-- **`FeaturedSelector`** — domain service. `Select(now, limit)` returns the
+- **`FeaturedSelector`** — application service in `Jubilee.Application`, because it queries the database. `Select(now, limit)` returns the
   public listings of the `FeaturedSlot` rows whose 7-day window contains `now`,
   in slot order, skipping any listing that is no longer public. When no slot is
   current it returns the most recently verified public listings. The welcome

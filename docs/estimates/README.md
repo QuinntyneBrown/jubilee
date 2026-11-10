@@ -1,0 +1,36 @@
+# Estimates
+
+- Overall effort: 363 days
+- Complete: 6%
+
+| Subsystem | Effort | Complete |
+|---|---|---|
+| [directory](directory.md) | 17 days | 65% |
+| [trust-content](trust-content.md) | 11 days | 43% |
+| [responsive-design](responsive-design.md) | 6 days | 40% |
+| [design-system](design-system.md) | 6 days | 20% |
+| [interaction-states](interaction-states.md) | 17 days | 5% |
+| [system-pages](system-pages.md) | 10 days | 8% |
+| [listings](listings.md) | 16 days | 0% |
+| [accounts](accounts.md) | 45 days | 0% |
+| [security](security.md) | 26 days | 3% |
+| [messaging](messaging.md) | 17 days | 0% |
+| [requests](requests.md) | 34 days | 0% |
+| [notifications](notifications.md) | 16 days | 0% |
+| [onboarding](onboarding.md) | 15 days | 0% |
+| [church-reference](church-reference.md) | 10 days | 0% |
+| [verification](verification.md) | 20 days | 0% |
+| [owner-workspace](owner-workspace.md) | 20 days | 0% |
+| [privacy](privacy.md) | 16 days | 0% |
+| [accessibility](accessibility.md) | 10 days | 0% |
+| [performance](performance.md) | 9 days | 6% |
+| [operations](operations.md) | 30 days | 3% |
+| [offline](offline.md) | 12 days | 0% |
+
+## Roadmap
+
+1. directory, listings: finish the sign-in prompt on the browse home, then business and product pages and search
+2. accounts, security: join, confirm e-mail, sign in and out, password recovery
+3. messaging, requests: message a business, book a meeting, ask for a quote, request a product
+4. onboarding, church-reference, verification: list a business, the church reference, the review queue
+5. owner-workspace, notifications, then privacy, offline, operations and the remaining cross-cutting designs

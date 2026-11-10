@@ -85,10 +85,10 @@ design introduces.
   excludes the stages draft, pending reference, ready to review, needs a
   decision and changes requested, and each paused, deleted or held listing
   (L2-028). Each public list and count in the slice applies it.
-- **`FeaturedSelector`** — domain service. It returns the public listings of
+- **`FeaturedSelector`** — application service in `Jubilee.Application`, because it queries the database. It returns the public listings of
   the current week's `FeaturedSlot` rows, up to five; when none is set it
   returns the most recently verified public listings.
-- **`DirectoryGrouping`** — domain service that turns public listings into
+- **`DirectoryGrouping`** — application service that turns public listings into
   `CategoryGroupDto` items: the category's count, its first four listings, and
   `HasMore` when the count exceeds four. It omits a category whose count is 0.
 - **`IDirectoryReadCache`** and **`DirectoryCacheInvalidator`** — Redis read

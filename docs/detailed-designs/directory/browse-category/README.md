@@ -75,7 +75,7 @@ The feature is a read-only vertical slice from the Angular page to the database.
 - **`ListingSortPolicy`** — domain service that maps `ListingSort` to an
   ordering. `NameAscending` orders by `Listing.SortName`, a stored form of the
   name that is case-folded, stripped of accents and stripped of a leading
-  "The". `Newest` orders by `Listing.VerifiedAt` descending. `Recommended`
+  "The". `Newest` orders by `Listing.ApprovedAt`, the date of verification, descending. `Recommended`
   orders by `Listing.RecommendedScore` descending and then by `SortName`.
 - **`Listing.RecommendedScore`** — stored score that combines profile
   completeness, response time and recency. The score is `0.5 × completeness + 0.3 × responsiveness +
