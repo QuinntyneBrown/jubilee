@@ -2,6 +2,7 @@ using Jubilee.Application.Abstractions;
 using Jubilee.Application.Directory;
 using Jubilee.Infrastructure.Caching;
 using Jubilee.Infrastructure.Persistence;
+using Jubilee.Infrastructure.Seed;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,6 +54,7 @@ public static class DependencyInjection
             });
         }
 
+        services.AddScoped<DemoDataSeeder>();
         services.AddSingleton<IDirectoryReadCache, DistributedDirectoryReadCache>();
         services.AddSingleton<DirectoryCacheInvalidationInterceptor>();
 
@@ -65,7 +67,8 @@ public static class DependencyInjection
     /// <summary>
     /// Prepares the database when the host starts. Migrations are never applied here: SQL Server
     /// is migrated explicitly with <c>jubilee migrate</c>. SQLite has no migrations, so its schema
-    /// is created from the model.
+    /// is created from the model, and <c>Seed:OnStartup=true</c> (honoured with SQLite only) seeds the
+    /// demo data, as the e2e API does.
     /// </summary>
     public static async Task InitialiseDatabaseAsync(this IServiceProvider services, IConfiguration configuration)
     {
@@ -77,5 +80,10 @@ public static class DependencyInjection
         using var scope = services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await db.Database.EnsureCreatedAsync();
+
+        if (string.Equals(configuration["Seed:OnStartup"], "true", StringComparison.OrdinalIgnoreCase))
+        {
+            await scope.ServiceProvider.GetRequiredService<DemoDataSeeder>().SeedAsync();
+        }
     }
 }

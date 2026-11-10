@@ -1,1 +1,3 @@
-return 0;
+using Jubilee.Cli;
+
+return await JubileeCli.RunAsync(args, Console.Out);

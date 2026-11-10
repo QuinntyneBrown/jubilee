@@ -8,4 +8,7 @@
     <ProjectReference Include="..\Jubilee.Infrastructure\Jubilee.Infrastructure.csproj" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

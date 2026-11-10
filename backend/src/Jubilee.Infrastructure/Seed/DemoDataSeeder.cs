@@ -1,0 +1,112 @@
+using Jubilee.Domain;
+using Jubilee.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using static Jubilee.Infrastructure.Seed.DemoCatalogue;
+
+namespace Jubilee.Infrastructure.Seed;
+
+/// <summary>
+/// Seeds the demo directory. Safe to re-run: rows that exist are left as they are, and the
+/// featured slots are restarted today so the demo data stays "Featured this week".
+/// </summary>
+public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
+{
+    public const string SeededBy = "Miriam Castillo";
+
+    public async Task SeedAsync(CancellationToken cancellationToken = default)
+    {
+        var now = clock.GetUtcNow();
+        var listings = await db.Listings.ToDictionaryAsync(l => l.Slug, cancellationToken);
+
+        // Every public demo listing is equally complete, so recency decides the Recommended
+        // order: each listing is approved a day before the one above it in the catalogue.
+        for (var i = 0; i < PublicListings.Length; i++)
+        {
+            var demo = PublicListings[i];
+            if (!listings.ContainsKey(demo.Slug))
+            {
+                var approvedAt = now.AddDays(-(i + 1));
+                var listing = Draft(demo, approvedAt.AddDays(-14));
+                listing.Approve(SeededBy, approvedAt);
+                listing.RefreshRecommendedScore(now);
+                listings[demo.Slug] = listing;
+                db.Listings.Add(listing);
+            }
+        }
+
+        foreach (var hidden in HiddenListings)
+        {
+            if (!listings.ContainsKey(hidden.Listing.Slug))
+            {
+                var listing = Hidden(hidden, now);
+                listings[hidden.Listing.Slug] = listing;
+                db.Listings.Add(listing);
+            }
+        }
+
+        var existingProducts = await db.Products.Select(p => new { p.ListingId, p.Slug }).ToListAsync(cancellationToken);
+        for (var i = 0; i < Products.Length; i++)
+        {
+            var demo = Products[i];
+            var shop = listings[demo.ShopSlug];
+            if (!existingProducts.Any(p => p.ListingId == shop.Id && p.Slug == demo.Slug))
+            {
+                db.Products.Add(Product.Create(
+                    shop.Id, demo.Slug, demo.Name, demo.PriceCents, demo.PerUnit, demo.Tint, demo.Icon,
+                    now.AddMinutes(-(i + 1))));
+            }
+        }
+
+        var today = TorontoClock.Today(now);
+        var slots = await db.FeaturedSlots.ToListAsync(cancellationToken);
+        for (var i = 0; i < FeaturedSlugs.Length; i++)
+        {
+            var listing = listings[FeaturedSlugs[i]];
+            var position = i + 1;
+            var slot = slots.FirstOrDefault(s => s.ListingId == listing.Id && s.Position == position);
+            if (slot is null)
+            {
+                db.FeaturedSlots.Add(FeaturedSlot.Create(listing.Id, position, today));
+            }
+            else
+            {
+                slot.RestartOn(today);
+            }
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private static Listing Draft(DemoListing demo, DateTimeOffset createdAt)
+    {
+        var listing = Listing.Create(demo.Slug, demo.Name, demo.Tagline, demo.Category, createdAt);
+        listing.SetHighlight(demo.Highlight);
+        listing.SetOffers(demo.Offers);
+        listing.SetAreasServed(demo.Areas);
+        return listing;
+    }
+
+    private static Listing Hidden(DemoHiddenListing hidden, DateTimeOffset now)
+    {
+        var listing = Draft(hidden.Listing, now.AddDays(-3));
+        switch (hidden.Because)
+        {
+            case HiddenBecause.PendingReference:
+                listing.MoveTo(ListingStage.PendingReference);
+                break;
+            case HiddenBecause.ChangesRequested:
+                listing.MoveTo(ListingStage.ChangesRequested);
+                break;
+            case HiddenBecause.Paused:
+                listing.Approve(SeededBy, now.AddHours(-2));
+                listing.Pause();
+                break;
+            case HiddenBecause.UnderModerationHold:
+                listing.Approve(SeededBy, now.AddHours(-1));
+                listing.PlaceModerationHold();
+                break;
+        }
+
+        return listing;
+    }
+}
