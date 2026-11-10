@@ -168,6 +168,14 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("DeliveryLine")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -177,18 +185,34 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("ListingId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("MinimumQuantity")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("nvarchar(120)");
 
+                    b.Property<string>("OptionName")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
                     b.Property<int>("PriceCents")
                         .HasColumnType("int");
+
+                    b.Property<string>("RestockNote")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("nvarchar(120)");
+
+                    b.Property<int?>("Stock")
+                        .HasColumnType("int");
 
                     b.Property<string>("TileIcon")
                         .IsRequired()
@@ -265,6 +289,60 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasForeignKey("ListingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsMany("Jubilee.Domain.ProductAttribute", "Attributes", b1 =>
+                        {
+                            b1.Property<Guid>("ProductId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<string>("Label")
+                                .IsRequired();
+
+                            b1.Property<string>("Value")
+                                .IsRequired();
+
+                            b1.HasKey("ProductId", "__synthesizedOrdinal");
+
+                            b1.ToTable("Products");
+
+                            b1
+                                .ToJson("Attributes")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId");
+                        });
+
+                    b.OwnsMany("Jubilee.Domain.ProductOption", "Options", b1 =>
+                        {
+                            b1.Property<Guid>("ProductId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAddOrUpdate();
+
+                            b1.Property<string>("Label")
+                                .IsRequired()
+                                .HasMaxLength(40);
+
+                            b1.Property<int?>("Stock");
+
+                            b1.HasKey("ProductId", "__synthesizedOrdinal");
+
+                            b1.ToTable("Products");
+
+                            b1
+                                .ToJson("Options")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId");
+                        });
+
+                    b.Navigation("Attributes");
+
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Service", b =>

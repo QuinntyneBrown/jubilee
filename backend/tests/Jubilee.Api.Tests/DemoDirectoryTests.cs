@@ -170,6 +170,20 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
     }
 
     [Fact]
+    public async Task The_demo_tee_page_is_the_product_mock()
+    {
+        var json = await factory.GetJson("/api/listings/luzandre/products/faith-heavyweight-tee-charcoal");
+
+        Assert.Equal("plus $9 shipping, or free pickup", json.GetProperty("deliveryLine").GetString());
+        Assert.Equal("Size", json.GetProperty("optionName").GetString());
+        Assert.Equal(20, json.GetProperty("options")[1].GetProperty("maxQuantity").GetInt32());
+        Assert.Equal(4, json.GetProperty("attributes").GetArrayLength());
+        Assert.Equal(["gold-cross-stoneware-mug", "custom-church-team-tee", "morning-mug-set-of-two"], json.GetProperty("more").Slugs());
+        var team = await factory.GetJson("/api/listings/luzandre/products/custom-church-team-tee");
+        Assert.Equal(12, team.GetProperty("minimumQuantity").GetInt32());
+    }
+
+    [Fact]
     public async Task The_demo_luzandre_page_is_the_shop_mock()
     {
         var json = await factory.GetJson("/api/listings/luzandre");

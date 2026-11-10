@@ -23,6 +23,7 @@ public class ErrorReferenceTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     [InlineData("/api/categories/home-property/listings", "JB-CAT-503")]
     [InlineData("/api/categories/home-property/listings/count", "JB-CAT-503")]
     [InlineData("/api/listings/legacy-financial", "JB-BIZ-503")]
+    [InlineData("/api/listings/luzandre/products/faith-heavyweight-tee-charcoal", "JB-PRD-503")]
     public async Task L2_118_AC2_a_directory_read_that_cannot_be_served_answers_503_with_its_reference(string url, string reference)
     {
         _factory.Database.Unavailable = true;

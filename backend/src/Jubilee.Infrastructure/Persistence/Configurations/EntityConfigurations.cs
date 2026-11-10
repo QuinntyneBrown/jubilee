@@ -45,6 +45,21 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.Name).HasMaxLength(120).IsRequired();
         builder.Property(p => p.TileTint).HasConversion<string>().HasMaxLength(16);
         builder.Property(p => p.TileIcon).HasConversion<string>().HasMaxLength(16);
+        builder.Property(p => p.Description).HasMaxLength(2000);
+        builder.Property(p => p.DeliveryLine).HasMaxLength(200);
+        builder.Property(p => p.OptionName).HasMaxLength(40);
+        builder.Property(p => p.RestockNote).HasMaxLength(200);
+        builder.Property(p => p.MinimumQuantity).HasDefaultValue(1);
+        builder.Ignore(p => p.IsSoldOut);
+        builder.Ignore(p => p.MaxQuantity);
+        // Options and attributes are read and written with their product, in the owner's order.
+        builder.OwnsMany(p => p.Options, o =>
+        {
+            o.ToJson();
+            o.Property(x => x.Label).HasMaxLength(40);
+            o.Ignore(x => x.MaxQuantity);
+        });
+        builder.OwnsMany(p => p.Attributes, a => a.ToJson());
         builder.HasIndex(p => new { p.ListingId, p.Slug }).IsUnique();
         builder.HasOne<Listing>().WithMany().HasForeignKey(p => p.ListingId).OnDelete(DeleteBehavior.Cascade);
     }

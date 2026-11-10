@@ -171,6 +171,31 @@ internal static class DemoCatalogue
         "waterworks-plumbing-drains",
     ];
 
+    /// <summary>What the product page of a demo product tells members, by product slug.</summary>
+    internal static readonly IReadOnlyDictionary<string, Action<Product>> ProductDetails = new Dictionary<string, Action<Product>>
+    {
+        ["faith-heavyweight-tee-charcoal"] = tee =>
+        {
+            tee.Describe(new ProductDescription(
+                "A 240 gsm combed-cotton tee with a small gold-thread emblem on the chest. Printed and stitched to order in Leslieville.",
+                "plus $9 shipping, or free pickup",
+                [new("Fit", "Relaxed, true to size"), new("Care", "Cold wash, hang dry"), new("Ready in", "5–7 days, made to order"), new("Returns", "14 days, unworn")]));
+            tee.SetOptions("Size", [new("S", 8), new("M", 20), new("L", 14), new("XL", 6), new("2XL", 4)]);
+        },
+        ["gold-cross-stoneware-mug"] = mug => mug.Describe(new ProductDescription(
+            "A 12 oz stoneware mug with a hand-gilded cross. Dishwasher safe.",
+            "plus $9 shipping, or free pickup",
+            [new("Care", "Dishwasher safe, not for the microwave"), new("Returns", "14 days, unused")])),
+        ["custom-church-team-tee"] = tee =>
+        {
+            tee.Describe(new ProductDescription(
+                "Your church or team's design on our heavyweight tee. Send the artwork with your request.",
+                "free pickup, or shipping quoted with your order",
+                [new("Ready in", "10–14 days, made to order")]));
+            tee.SetMinimumQuantity(12);
+        },
+    };
+
     /// <summary>Products, newest first. The last belongs to a paused shop and never shows.</summary>
     internal static readonly DemoProduct[] Products =
     [

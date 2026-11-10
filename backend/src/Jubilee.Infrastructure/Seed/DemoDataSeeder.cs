@@ -67,6 +67,12 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             }
         }
 
+        // Details are given once, to a product that has none, so an edited demo product is kept.
+        foreach (var product in await db.Products.Where(p => p.Description == null).ToListAsync(cancellationToken))
+        {
+            Detail(product);
+        }
+
         var existingProducts = await db.Products.Select(p => new { p.ListingId, p.Slug }).ToListAsync(cancellationToken);
         for (var i = 0; i < Products.Length; i++)
         {
@@ -74,9 +80,11 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             var shop = listings[demo.ShopSlug];
             if (!existingProducts.Any(p => p.ListingId == shop.Id && p.Slug == demo.Slug))
             {
-                db.Products.Add(Product.Create(
+                var product = Product.Create(
                     shop.Id, demo.Slug, demo.Name, demo.PriceCents, demo.PerUnit, demo.Tint, demo.Icon,
-                    now.AddMinutes(-(i + 1))));
+                    now.AddMinutes(-(i + 1)));
+                Detail(product);
+                db.Products.Add(product);
             }
         }
 
@@ -98,6 +106,14 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
         }
 
         await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private static void Detail(Product product)
+    {
+        if (ProductDetails.TryGetValue(product.Slug, out var describe))
+        {
+            describe(product);
+        }
     }
 
     private static Listing Draft(DemoListing demo, DateTimeOffset createdAt)
