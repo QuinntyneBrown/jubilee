@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jubilee design system</title>
-<meta name="description" content="Tokens, foundations, components and patterns for Jubilee, extracted from the HTML mocks.">
+<meta name="description" content="Tokens, foundations, components and patterns for Jubilee, following the design reference exactly.">
 <link rel="stylesheet" href="tokens/tokens.css">
 <link rel="stylesheet" href="assets/components.css">
 <link rel="stylesheet" href="assets/ds.css">
@@ -96,13 +96,13 @@
     <header class="ds-header">
       <p class="ds-kicker">Jubilee · Toronto's Christian marketplace</p>
       <h1>Jubilee design system</h1>
-      <p class="ds-lead">Tokens, foundations, 51 components and 8 patterns for Jubilee, in light and dark, accessible to WCAG 2.2 AA.</p>
-      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">v1.0 · 10 Nov 2026</span><span class="ds-pill">Light + dark</span></div>
+      <p class="ds-lead">Tokens, foundations, 51 components and 8 patterns for Jubilee, in light and dark, accessible to WCAG 2.2 AA with three documented contrast exceptions.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">v2.0 · 10 Nov 2026</span><span class="ds-pill">Light + dark</span></div>
       <ul class="ds-toc"><li><a href="#start">Start here</a></li><li><a href="#foundations">Foundations</a></li><li><a href="#components">Components</a></li><li><a href="#patterns">Patterns</a></li><li><a href="#how">How to use</a></li><li><a href="#provenance">Provenance</a></li></ul>
     </header>
     <section class="ds-section" id="start"><h2><a href="#start">Start here</a></h2>
-      <p>The Jubilee design system is the visual and interaction language of Jubilee, Toronto's Christian marketplace, written down once so every screen built in the Angular app is consistent. It was extracted from the 271 HTML mocks in <a href="../mocks/index.html">docs/mocks</a>: every token traces to a mock or a logged correction, both themes pass WCAG 2.2 AA, and every component documents anatomy, variants, sizes, states, responsive behaviour, accessibility, content and code.</p>
-      <div class="ds-cards"><a class="ds-card" href="foundations/color.html"><b>Color</b><span>Ink, cream, gold and green with checked contrast</span></a><a class="ds-card" href="foundations/typography.html"><b>Typography</b><span>Archivo and Inter, 12 roles</span></a><a class="ds-card" href="foundations/layout.html"><b>Layout</b><span>Breakpoints, grid, templates</span></a><a class="ds-card" href="components/button.html"><b>Button</b><span>Pills; one gold primary per view</span></a><a class="ds-card" href="components/form-field.html"><b>Form field</b><span>Label, help, error, counter</span></a><a class="ds-card" href="components/dialog.html"><b>Dialog</b><span>Confirmations, forms, sheets on phones</span></a></div>
+      <p>The Jubilee design system is the visual and interaction language of Jubilee, Toronto's Christian marketplace, written down once so every screen built in the Angular app is consistent. It follows the design reference at <a href="https://jubilee-app-812-site.magicpatterns.app/">https://jubilee-app-812-site.magicpatterns.app/</a> exactly, and the 271 HTML mocks in <a href="../mocks/index.html">docs/mocks</a> are built on it. Every value the reference defines is used as it is. Both themes meet WCAG 2.2 AA except for three reference values in the light theme and on avatars, listed under <a href="foundations/accessibility.html#exceptions">Contrast exceptions</a>; <code>prefers-contrast: more</code> restores AA values. Every component documents anatomy, variants, sizes, states, responsive behaviour, accessibility, content and code.</p>
+      <div class="ds-cards"><a class="ds-card" href="foundations/color.html"><b>Color</b><span>Ink, cream, gold and green with checked contrast</span></a><a class="ds-card" href="foundations/typography.html"><b>Typography</b><span>Archivo at 110% width and Inter, 16 roles</span></a><a class="ds-card" href="foundations/layout.html"><b>Layout</b><span>Breakpoints, grid, templates</span></a><a class="ds-card" href="components/button.html"><b>Button</b><span>Pills; one gold primary per view</span></a><a class="ds-card" href="components/form-field.html"><b>Form field</b><span>Label, help, error, counter</span></a><a class="ds-card" href="components/dialog.html"><b>Dialog</b><span>Confirmations, forms, sheets on phones</span></a></div>
     </section>
     <section class="ds-section" id="foundations"><h2><a href="#foundations">Foundations</a></h2>
       <div class="ds-cards"><a class="ds-card" href="foundations/color.html"><b>Color</b><span>Palette, roles, both themes, contrast</span></a><a class="ds-card" href="foundations/typography.html"><b>Typography</b><span>Families, roles, measure</span></a><a class="ds-card" href="foundations/spacing.html"><b>Spacing</b><span>4px scale, inside/between</span></a><a class="ds-card" href="foundations/layout.html"><b>Layout</b><span>Breakpoints, grid, templates</span></a><a class="ds-card" href="foundations/elevation.html"><b>Elevation</b><span>Shadows, surfaces, z-order</span></a><a class="ds-card" href="foundations/shape.html"><b>Shape</b><span>Radii, borders, fixed sizes</span></a><a class="ds-card" href="foundations/motion.html"><b>Motion</b><span>Durations, easing, reduced motion</span></a><a class="ds-card" href="foundations/iconography.html"><b>Iconography</b><span>45 icons, sizes, labelling</span></a><a class="ds-card" href="foundations/theming.html"><b>Theming</b><span>Tiers, themes, tokens.json</span></a><a class="ds-card" href="foundations/responsive.html"><b>Responsive</b><span>Per-breakpoint behaviour, touch</span></a><a class="ds-card" href="foundations/accessibility.html"><b>Accessibility</b><span>WCAG 2.2 AA commitments</span></a><a class="ds-card" href="foundations/content.html"><b>Content</b><span>Voice, mechanics, microcopy</span></a></div>
@@ -138,10 +138,10 @@
       </ul>
     </section>
     <section class="ds-section" id="provenance"><h2><a href="#provenance">Provenance</a></h2>
-      <p>Extracted on Tuesday 10 November 2026 from <a href="../mocks/index.html">docs/mocks</a> (67 screens, 271 mocks). The drift found in the mocks and how each item was resolved is in the <a href="README.md">README</a>.</p>
+      <p>The system follows the design reference <a href="https://jubilee-app-812-site.magicpatterns.app/">https://jubilee-app-812-site.magicpatterns.app/</a> exactly and was rebuilt on 10 November 2026. The screens in <a href="../mocks/index.html">docs/mocks</a> (67 screens, 271 mocks) use its CSS. The mapping from the reference to the tokens, the change log and the earlier drift log are in the <a href="README.md">README</a>.</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the <a href="https://jubilee-app-812-site.magicpatterns.app/">design reference</a> exactly · rebuilt on 10 November 2026 · <a href="../mocks/index.html">docs/mocks</a></span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="assets/ds.js"></script>
