@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Meet API latency and scale
+
+Container(web, "Jubilee Web", "Angular single-page application", "ListingsApi and SearchApi clients")
+System_Ext(edge, "Edge cache", "CDN in front of the API. Vendor <TO SUPPLY>")
+Container_Boundary(api, "Jubilee API") {
+  Component(metrics, "RequestMetricsMiddleware", "ASP.NET Core middleware", "Records server time per route and endpoint class")
+  Component(timeout, "RequestTimeoutMiddleware", "ASP.NET Core middleware", "Cancels a request at 10 seconds and returns ProblemDetails")
+  Component(edgefilter, "EdgeCacheFilter", "ASP.NET Core result filter", "Marks visitor directory responses cacheable for 60 seconds with cache tags")
+  Component(listings, "ListingsController", "ASP.NET Core controller", "Directory and category read endpoints. SearchController follows the same path")
+  Component(handler, "GetCategoryListingsQueryHandler", "MediatR handler", "No-tracking projection through IReadCache")
+  Component(searchh, "SearchQueryHandler", "MediatR handler", "Queries ISearchIndex with the request cancellation token")
+  Component(hub, "EventsHub", "SignalR hub", "Real-time connections over a Redis backplane")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(dispatcher, "OutboxDispatcherJob", "Hosted job", "Dispatches side effects after the write commits")
+  Component(purger, "EdgeCachePurgeHandler", "Outbox handler", "Purges cache tags when a listing changes state")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "State and outbox")
+ContainerDb(cache, "Cache", "Redis", "Read caches and backplane")
+ContainerDb(search, "Search index", "<TO SUPPLY>", "Search documents")
+
+Rel(web, edge, "Calls /api through", "JSON/HTTPS")
+Rel(edge, metrics, "Forwards to", "HTTPS")
+Rel(metrics, timeout, "Invokes next")
+Rel(timeout, listings, "Invokes with a linked cancellation token")
+Rel(listings, edgefilter, "Result passes through")
+Rel(listings, handler, "Sends query")
+Rel(listings, searchh, "Sends SearchQuery")
+Rel(handler, cache, "Reads and fills", "RESP")
+Rel(handler, db, "Reads", "EF Core")
+Rel(searchh, search, "Searches", "HTTPS")
+Rel(dispatcher, db, "Reads outbox", "EF Core")
+Rel(dispatcher, purger, "Dispatches ListingStateChanged")
+Rel(purger, edge, "Purges tags", "HTTPS")
+Rel(hub, cache, "Fans out events", "RESP")
+@enduml

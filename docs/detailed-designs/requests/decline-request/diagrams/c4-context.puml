@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Decline a request
+
+Person(owner, "Owner", "Declines a new request with a message")
+Person(member, "Member", "Is told the request is declined and why")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the decline mail")
+
+Rel(owner, jubilee, "Declines a request using", "HTTPS")
+Rel(jubilee, member, "Notifies of the decline with the message")
+Rel(jubilee, email, "Sends mail via")
+Rel(email, member, "Delivers mail to")
+@enduml

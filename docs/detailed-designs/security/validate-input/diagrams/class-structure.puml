@@ -1,0 +1,82 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Validate input
+
+class "ValidationBehavior<TRequest, TResponse>" as ValidationBehavior {
+  +Handle(request: TRequest, next: RequestHandlerDelegate<TResponse>): Task<TResponse>
+}
+
+abstract class "AbstractValidator<TRequest>" as AbstractValidator {
+  +Validate(request: TRequest): ValidationResult
+}
+
+class UpdateListingDetailsCommand {
+  +Guid ListingId
+  +string Name
+  +string Tagline
+  +string Website
+}
+
+class UpdateListingDetailsCommandValidator {
+  +UpdateListingDetailsCommandValidator()
+}
+
+class TextRules <<static>> {
+  +SingleLine(maxLength: int): IRuleBuilder
+  +MultiLine(maxLength: int): IRuleBuilder
+  +NoControlCharacters(): IRuleBuilder
+}
+
+class WebsiteUrl {
+  +string Value
+  +{static} Parse(input: string): Result<WebsiteUrl>
+  +bool IsHttpOrHttps
+}
+
+class FieldError {
+  +string Field
+  +string Code
+}
+
+class ValidationProblem {
+  +int Status = 422
+  +string CorrelationId
+  +IReadOnlyList<FieldError> Errors
+}
+
+class ContentSecurityPolicyBuilder {
+  +string ScriptNonce
+  +IReadOnlyList<string> ScriptHashes
+  +Build(): string
+}
+
+class ValidatorCoverageTest {
+  +EveryCommandAndQueryHasAValidator(): void
+}
+
+class ScriptPayloadSuite {
+  +string Payload
+  +PayloadAppearsAsTextOnEveryScreen(): void
+}
+
+AbstractValidator <|-- UpdateListingDetailsCommandValidator
+UpdateListingDetailsCommandValidator ..> UpdateListingDetailsCommand : validates
+UpdateListingDetailsCommandValidator ..> TextRules : uses
+UpdateListingDetailsCommandValidator ..> WebsiteUrl : parses
+ValidationBehavior --> "0..*" AbstractValidator : runs
+ValidationBehavior ..> ValidationProblem : raises
+ValidationProblem "1" *-- "1..*" FieldError : lists
+ValidatorCoverageTest ..> AbstractValidator : reflects over
+ScriptPayloadSuite ..> ContentSecurityPolicyBuilder : observes violations of
+@enduml

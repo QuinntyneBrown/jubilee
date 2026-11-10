@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — End all other sessions
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "AccountPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ISessionStore" as store
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+end box
+
+actor -> page : Open /account
+page -> client : getSession()
+client -> controller : GET /api/session
+controller -> store : CountForMember(memberId)
+store -> cache : Read the per-member session index
+cache --> store : Session identifiers
+store --> controller : Count
+controller --> client : 200 with other session count
+client --> page : SessionView
+page --> actor : Show "Signed in on this phone and 1 other device" (L2-011)
+actor -> page : Choose to end all other sessions
+page -> client : endOtherSessions()
+client -> controller : DELETE /api/session/others
+controller -> controller : Authenticate session and check anti-CSRF token (L2-135)
+controller -> store : EndOthers(memberId, currentSessionId)
+store -> cache : Delete every other session of the member
+cache --> store : Deleted count
+store --> controller : Count ended
+controller --> client : 200 with other session count 0
+client --> page : Updated SessionView
+page --> actor : Show that only this device is signed in
+@enduml

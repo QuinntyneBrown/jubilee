@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Record a security event and alert
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SignInPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SignInCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "SecurityEventLogger" as seclog
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "SecurityAlertJob" as job
+end box
+participant "Observability platform" as obs
+actor "On-call engineer" as oncall
+user -> page : Submit a wrong password
+page -> controller : POST /api/session
+controller -> handler : Send SignInCommand
+handler -> handler : Verify password hash. Fails
+handler -> seclog : Record SignInFailed with time, actor, IP, outcome (L2-143)
+seclog -> db : Insert SecurityEvent
+db --> seclog : Stored
+seclog -> obs : Forward event
+obs --> seclog : Accepted
+seclog --> handler : Recorded
+handler --> controller : Sign-in refused
+controller --> page : Uniform sign-in error
+page --> user : Show the sign-in error
+job -> db : Count SignInFailed in the last 5 minutes. Read new RoleChanged events
+db --> job : Count and events
+alt More than 100 failed sign-ins across accounts in 5 minutes (L2-143)
+  job -> obs : Raise alert: failed sign-in surge
+  obs -> oncall : Page the on-call security contact
+else Any RoleChanged event (L2-143)
+  job -> obs : Raise alert: role change with actor and target
+  obs -> oncall : Page the on-call security contact
+else Below thresholds
+  job -> job : No alert
+end
+@enduml

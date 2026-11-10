@@ -1,0 +1,94 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Render the site chrome
+
+class AppShell <<Angular component>> {
+  +showTabBar: Signal<boolean>
+  +reserveTabBarSpace(): void
+}
+
+class SkipLink <<Angular component>> {
+  +label: string = "Skip to content"
+  +target: string = "#main"
+  +activate(): void
+}
+
+class TopBar <<Angular component>> {
+  +entries: Signal<NavEntry[]>
+  +showNavigation: Signal<boolean>
+  +showSearchBox: Signal<boolean>
+}
+
+class TabBar <<Angular component>> {
+  +entries: Signal<NavEntry[]>
+}
+
+class SiteFooter <<Angular component>> {
+  +year: number
+  +links: FooterLink[]
+}
+
+class NavEntry {
+  +label: string
+  +route: string
+  +badge: number | null
+}
+
+class FooterLink {
+  +label: string
+  +route: string
+}
+
+class ViewportService {
+  +isMedium: Signal<boolean>
+  +isLarge: Signal<boolean>
+}
+
+class NavigationStore {
+  +summary: Signal<NavigationSummary | null>
+  +load(): Promise<void>
+  +applyBadgeChanged(event: BadgeChanged): void
+}
+
+class NavigationSummary {
+  +int UnreadConversationCount
+  +bool OwnsListing
+  +int NewRequestCount
+  +string AvatarInitials
+}
+
+class GetNavigationSummaryQueryHandler {
+  +Handle(query: GetNavigationSummaryQuery): Task<NavigationSummary>
+}
+
+class UnreadBadge <<Angular component>> {
+  +count: number
+  +text(): string
+}
+
+AppShell *-- "1" SkipLink
+AppShell *-- "1" TopBar
+AppShell *-- "0..1" TabBar
+AppShell *-- "1" SiteFooter
+AppShell ..> ViewportService : reads isMedium
+TopBar ..> ViewportService : reads isMedium and isLarge
+TopBar ..> NavigationStore : reads summary
+TabBar ..> NavigationStore : reads summary
+TopBar "1" --> "*" NavEntry
+TabBar "1" --> "4" NavEntry
+NavEntry ..> UnreadBadge : shown with
+SiteFooter "1" --> "4" FooterLink
+NavigationStore --> NavigationSummary : holds
+GetNavigationSummaryQueryHandler ..> NavigationSummary : returns
+@enduml

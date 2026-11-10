@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Limit abuse
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(interceptor, "RateLimitInterceptor", "Angular HTTP interceptor", "Turns 429 and Retry-After into a toast")
+  Component(widget, "BotChallengeWidget", "Angular component", "Adds a challenge token to join and report and reference forms")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(limiter, "RateLimitMiddleware", "ASP.NET Core middleware", "Applies the RateLimitPolicy named on the endpoint")
+  Component(store, "IRateLimitStore", "Application service", "Atomic counters with window expiry")
+  Component(verifier, "IBotChallengeVerifier", "Application service", "Verifies the token on the server")
+  Component(uniform, "UniformResponder", "Application helper", "Same status and body and timing for any e-mail")
+  Component(join, "JoinCommandHandler", "MediatR handler", "Reveals a taken address only after challenge and limit")
+  Component(spam, "SpamSuspensionPolicy", "Domain rule", "3 different businesses in 7 days suspends new conversations")
+  Component(seclog, "ISecurityEventLog", "Application service", "Records rate-limit trips")
+}
+ContainerDb(cache, "Cache", "Redis", "Counters")
+ContainerDb(db, "Jubilee database", "SQL Server", "Reports and restrictions and outbox")
+System_Ext(bot, "Bot challenge provider", "Verification endpoint")
+
+Rel(interceptor, limiter, "Sends calls through", "JSON/HTTPS")
+Rel(widget, verifier, "Token travels with the form to")
+Rel(limiter, store, "Asks for RateLimitDecision")
+Rel(store, cache, "Increments")
+Rel(limiter, seclog, "Reports trip to")
+Rel(limiter, verifier, "Passes allowed request to")
+Rel(verifier, bot, "Verifies with", "HTTPS")
+Rel(verifier, join, "Passes verified join to")
+Rel(join, uniform, "Shares response rules with")
+Rel(join, db, "Writes notice to outbox in", "EF Core")
+Rel(spam, db, "Counts reports and saves restriction in", "EF Core")
+@enduml

@@ -1,0 +1,85 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Handle session expiry
+enum SessionEndReason {
+  MaxAgeReached
+  IdleTimeout
+  PasswordChanged
+  SignedOut
+}
+class Session {
+  +string Id
+  +Guid MemberId
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset LastActivityAt
+  +bool KeepSignedIn
+  +{static} TimeSpan MaxAge = 30 days
+  +{static} TimeSpan IdleTimeout = 12 hours
+  +IsExpired(now: DateTimeOffset): bool
+  +Touch(now: DateTimeOffset): void
+}
+class SessionStore {
+  +Find(id: string): Task<Session?>
+  +Create(memberId: Guid, keepSignedIn: bool): Task<Session>
+  +EndAllFor(memberId: Guid, reason: SessionEndReason): Task
+}
+class SessionAuthenticationMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+}
+class SessionExpiryInterceptor {
+  +intercept(req: HttpRequest, next: HttpHandlerFn): Observable<HttpEvent>
+  -onSessionExpired(): void
+}
+interface DraftSource {
+  +key: string
+  +snapshot(): DraftPayload
+  +restore(payload: DraftPayload): void
+}
+class FormDraftDirective {
+  +draftKey: string
+  +snapshot(): DraftPayload
+  +restore(payload: DraftPayload): void
+}
+class DraftRegistry {
+  +register(source: DraftSource): void
+  +unregister(source: DraftSource): void
+  +snapshotAll(): Draft[]
+}
+class Draft {
+  +memberId: string
+  +route: string
+  +key: string
+  +payload: DraftPayload
+  +savedAt: string
+}
+class DraftStore {
+  +save(drafts: Draft[]): void
+  +take(memberId: string, route: string, key: string): Draft | null
+  +clearFor(otherMemberId: string): void
+}
+class ReturnUrlService {
+  +remember(url: string): void
+  +take(): string
+  -isSafe(url: string): boolean
+}
+
+SessionAuthenticationMiddleware ..> SessionStore : uses
+SessionStore --> Session : stores
+SessionStore ..> SessionEndReason
+FormDraftDirective ..|> DraftSource
+DraftRegistry "1" o-- "*" DraftSource
+DraftRegistry ..> Draft : creates
+DraftStore "1" o-- "*" Draft
+SessionExpiryInterceptor ..> DraftRegistry : snapshots
+SessionExpiryInterceptor ..> DraftStore : saves
+SessionExpiryInterceptor ..> ReturnUrlService : remembers
+@enduml

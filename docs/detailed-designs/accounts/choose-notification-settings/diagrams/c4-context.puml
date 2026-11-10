@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Choose notification settings
+
+
+Person(member, "Member", "Chooses which e-mails Jubilee sends and how often")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers immediate e-mails and daily summaries. Vendor <TO SUPPLY>")
+
+Rel(member, jubilee, "Sets switches and frequency at /account/notifications")
+Rel(jubilee, email, "Sends e-mail according to the settings via")
+Rel(email, member, "Delivers e-mail to")
+@enduml

@@ -1,0 +1,69 @@
+@startuml
+title UML sequence behaviour — Apply and switch the theme
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+participant "Browser" as browser
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ThemeBootScript" as boot
+  participant "ThemeService" as theme
+  participant "UserMenu" as menu
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SetThemePreferenceCommandHandler" as handler
+  participant "Member" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> browser : Open Jubilee
+browser -> boot : Run inline script in head before the stylesheet paints
+boot -> browser : Read localStorage jubilee-theme
+alt saved preference is Light or Dark
+  browser --> boot : light or dark
+  boot -> browser : Set data-theme on html (L2-170 no flash)
+else no saved preference or System
+  browser --> boot : Nothing or system
+  boot -> browser : Leave data-theme unset: tokens.css follows prefers-color-scheme (L2-170)
+end
+browser --> actor : First paint in the right theme
+
+actor -> menu : Choose Dark in the account menu
+menu -> theme : setPreference(Dark)
+theme -> browser : Set data-theme=dark on html (L2-170 no reload)
+theme -> browser : Write localStorage jubilee-theme=dark (L2-170 device)
+browser --> actor : Every component repaints from the dark token values (L2-169)
+theme -> client : setTheme(Dark)
+client -> controller : PUT /api/account/theme
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send SetThemePreferenceCommand
+handler -> db : Load member
+db --> handler : Member
+handler -> entity : SetThemePreference(Dark) (L2-170 account)
+entity --> handler : Updated
+handler -> db : Save changes in one unit of work
+db --> handler : Commit result
+handler --> controller : Typed result
+controller --> client : 204 No Content or ProblemDetails
+client --> theme : Saved
+opt save fails
+  theme -> theme : Keep the device value and retry on the next sign-in
+end
+@enduml

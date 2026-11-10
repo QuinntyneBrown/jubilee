@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Show error pages
+Person(visitor, "Visitor", "Follows an old or unknown link or opens a protected page")
+Person(member, "Member", "Opens a page without permission or meets a failure")
+Person(oncall, "On-call engineer", "Searches logs for a quoted error reference")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(observability, "Observability platform", "Stores logs searchable by error reference and correlation ID")
+
+Rel(visitor, jubilee, "Requests pages of", "HTTPS")
+Rel(member, jubilee, "Requests pages and asks for access in", "HTTPS")
+Rel(jubilee, observability, "Sends structured logs to")
+Rel(oncall, observability, "Searches by reference and time in")
+@enduml

@@ -1,0 +1,127 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Request an item
+
+enum RequestType {
+  Booking
+  Quote
+  Order
+}
+
+enum RequestStatus {
+  New
+  Confirmed
+  Declined
+  Cancelled
+  Completed
+}
+
+class Request {
+  +Guid Id
+  +RequestType Type
+  +RequestStatus Status
+  +Guid MemberId
+  +Guid ListingId
+  +Guid ConversationId
+  +DeclineReason? DeclineReason
+  +string? DeclineMessage
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? NudgedAt
+  +Confirm(actorId: Guid, now: DateTimeOffset): void
+  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
+  +Cancel(actorId: Guid, now: DateTimeOffset): void
+  +Complete(actorId: Guid?, now: DateTimeOffset): void
+  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
+  +MarkNudged(now: DateTimeOffset): void
+}
+
+class RequestTransition {
+  +Guid Id
+  +RequestStatus? From
+  +RequestStatus To
+  +Guid? ActorId
+  +DateTimeOffset OccurredAt
+  +DateTimeOffset? UndoableUntil
+}
+
+Request "1" *-- "1..*" RequestTransition : records
+Request --> RequestType : has
+Request --> RequestStatus : has
+
+enum DeliveryKind {
+  Ship
+  Pickup
+}
+
+class OrderDetails {
+  +Guid ProductId
+  +Guid? ProductOptionId
+  +int Quantity
+  +decimal UnitPrice
+  +decimal ItemAmount
+  +decimal ShippingAmount
+  +decimal EstimatedTotal
+  +Guid DeliveryMethodId
+  +string? ShippingAddress
+}
+
+class DeliveryMethod {
+  +Guid Id
+  +DeliveryKind Kind
+  +string Label
+  +decimal Fee
+  +string Estimate
+}
+
+class Product {
+  +Guid Id
+  +decimal Price
+  +int Stock
+  +HasStock(optionId: Guid?, quantity: int): bool
+  +StockLeft(optionId: Guid?): int
+}
+
+class RequestItemCommand {
+  +Guid ProductId
+  +Guid? ProductOptionId
+  +int Quantity
+  +Guid DeliveryMethodId
+  +string? ShippingAddress
+}
+
+class RequestItemCommandHandler {
+  +Handle(command: RequestItemCommand): Task<RequestCreatedResult>
+}
+
+class OrderPricingService {
+  +Price(product: Product, optionId: Guid?, quantity: int, method: DeliveryMethod, freeShippingThreshold: decimal?): OrderAmounts
+}
+
+class OrderAmounts {
+  +decimal UnitPrice
+  +decimal ItemAmount
+  +decimal ShippingAmount
+  +decimal EstimatedTotal
+}
+
+Request "1" *-- "0..1" OrderDetails : owns
+OrderDetails "*" --> "1" Product : refers to
+OrderDetails "*" --> "1" DeliveryMethod : uses
+DeliveryMethod --> DeliveryKind : has
+RequestItemCommandHandler ..> RequestItemCommand : handles
+RequestItemCommandHandler ..> OrderPricingService : prices with
+RequestItemCommandHandler --> Request : creates
+OrderPricingService ..> OrderAmounts : returns
+OrderPricingService ..> Product : reads
+@enduml

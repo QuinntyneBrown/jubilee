@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Decline a listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Verification team member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "DeclineListingDialog" as dialog
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminVerificationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeclineListingCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+  participant "ReferenceAnswerPurgeJob" as purge
+end box
+participant "E-mail provider" as email
+actor -> dialog : Choose "Decline listing" and enter a reason for the owner
+dialog -> client : decline(id, reason)
+client -> controller : POST /api/admin/verifications/{id}/decline
+controller -> controller : Authenticate and apply VerifierPolicy (L2-098)
+controller -> handler : Send DeclineListingCommand
+handler -> db : Load listing and church reference
+db --> handler : Current state
+alt stage is "Needs a decision"
+  handler -> entity : Decline(reason, verifier, now) (L2-104)
+  entity --> handler : Stage Declined
+  handler -> handler : Start the 90-day deletion clock on the reference answer
+  handler -> db : Save listing, AuditEntry (L2-180) and OutboxMessage in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Typed result
+  controller --> client : 200 with decision
+  client --> dialog : Declined
+  dialog --> actor : Show the listing as closed
+  job -> db : Read ListingDeclined from the outbox
+  db --> job : Outbox message
+  job -> email : Send the reason to the owner
+  email --> job : Accepted
+else any other stage
+  handler --> controller : Conflict
+  controller --> client : 409 ProblemDetails
+  client --> dialog : Conflict
+  dialog --> actor : Show the listing's current stage
+end
+purge -> db : Each run: delete answers whose DeleteAfter has passed (L2-104, L2-146)
+db --> purge : Rows deleted
+@enduml

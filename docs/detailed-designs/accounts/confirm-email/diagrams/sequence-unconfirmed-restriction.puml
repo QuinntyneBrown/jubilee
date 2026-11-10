@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Restrict an unconfirmed member
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "VerifyEmailBanner" as banner
+  participant "SessionService" as session
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionController" as controller
+  participant "ConfirmedEmailRequirement" as policy
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetSessionQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+
+actor -> banner : View any signed-in page while unconfirmed
+banner -> session : Read e-mail status
+session --> banner : Unconfirmed
+banner --> actor : Show "Confirm your e-mail to message businesses. We sent a link to {address}." with no dismiss button (L2-005)
+actor -> banner : Try to message - book - request or list
+banner --> actor : Action blocked in the UI (L2-005)
+opt request reaches the API anyway
+  client -> policy : POST to a restricted endpoint
+  policy -> db : Read member e-mail status
+  db --> policy : Unconfirmed
+  policy --> client : 403 with code EMAIL_UNCONFIRMED (L2-005)
+end
+actor -> session : Return to the tab after confirming in another tab
+session -> client : getSession()
+client -> controller : GET /api/session
+controller -> handler : Send GetSessionQuery
+handler -> db : Load member
+db --> handler : Member with EmailStatus Confirmed
+handler --> controller : Session view
+controller --> client : 200 with e-mail status confirmed
+client --> session : Session view
+session --> banner : Confirmed
+banner --> actor : Show "E-mail confirmed. You can now message businesses and book meetings." and enable the actions without reload
+@enduml

@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Keep the count current
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Owner" as actor
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Listing command handler" as handler
+  participant "GetWelcomeQueryHandler" as welcome
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "DirectoryCacheInvalidator" as invalidator
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IDirectoryReadCache" as cache
+  database "Jubilee database" as db
+end box
+actor -> controller : Pause the listing
+controller -> handler : Send the pause command
+handler -> db : Save the listing stage and a ListingVisibilityChanged outbox message
+db --> handler : Commit result
+handler --> controller : Paused
+controller --> actor : 200 OK
+invalidator -> db : Read the outbox message
+db --> invalidator : ListingVisibilityChanged
+invalidator -> cache : Remove the welcome entry
+cache --> invalidator : Removed
+invalidator -> db : Mark the message dispatched
+db --> invalidator : Commit result
+== Next request for /welcome ==
+welcome -> cache : Get the welcome entry
+cache --> welcome : Miss
+welcome -> db : Count listings through PublicListingFilter (L2-028)
+db --> welcome : Count without the paused listing
+welcome -> cache : Set the welcome entry for 60 s
+cache --> welcome : Stored. The count matches the directory within 5 minutes (L2-020)
+@enduml

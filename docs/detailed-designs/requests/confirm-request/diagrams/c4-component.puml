@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Confirm a request
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "IncomingRequestsPage", "Angular page", "Offers Confirm on each new request")
+  Component(dialog, "ConfirmRequestDialog", "Angular dialog", "States the commitment and confirms")
+  Component(toast, "ToastService", "Angular service", "Shows the success toast with Undo for 8 seconds")
+  Component(client, "RequestsApi", "Typed HTTP client", "Calls the confirm and undo endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "IncomingRequestsController", "ASP.NET Core controller", "Exposes /api/my-business/requests")
+  Component(policy, "ListingOwnerPolicy", "Authorization policy", "Passes for the owner or a co-owner only")
+  Component(confirm, "ConfirmRequestCommandHandler", "MediatR handler", "Applies the confirm transition")
+  Component(undo, "UndoConfirmRequestCommandHandler", "MediatR handler", "Returns the request to new")
+  Component(entity, "Request", "Domain entity", "Owns the request lifecycle")
+  Component(product, "Product", "Domain entity", "Owns stock")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Tells the customer after the undo window")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Requests and products and outbox")
+
+Rel(page, dialog, "Opens")
+Rel(dialog, client, "Confirms through")
+Rel(dialog, toast, "Shows result toast with")
+Rel(toast, client, "Undoes through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, policy, "Authorizes with")
+Rel(ctrl, confirm, "Sends ConfirmRequestCommand")
+Rel(ctrl, undo, "Sends UndoConfirmRequestCommand")
+Rel(confirm, entity, "Calls Confirm on")
+Rel(confirm, product, "Reduces stock of")
+Rel(undo, entity, "Calls UndoLastTransition on")
+Rel(undo, product, "Restores stock of")
+Rel(confirm, db, "Persists", "EF Core")
+Rel(undo, db, "Persists", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+@enduml

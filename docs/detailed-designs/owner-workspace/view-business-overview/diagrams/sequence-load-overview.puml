@@ -1,0 +1,69 @@
+@startuml
+title UML sequence behaviour — Load the business overview
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "OwnerWorkspaceShell" as shell
+  participant "MyBusinessOverviewPage" as page
+  participant "OwnerWorkspaceApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "OwnerWorkspaceController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetOwnerWorkspaceQueryHandler" as wsq
+  participant "GetBusinessOverviewQueryHandler" as ovq
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> shell : Open /my-business
+shell -> client : Load workspace summary
+client -> controller : GET /api/owner/workspace
+controller -> controller : Authenticate session cookie
+controller -> wsq : Send GetOwnerWorkspaceQuery
+wsq -> db : Load caller's listing and stage detail
+db --> wsq : Listing or none
+wsq --> controller : OwnerWorkspace
+controller --> client : 200 OwnerWorkspace
+client --> shell : Workspace summary
+alt No listing
+  shell --> actor : Show "List your business free." with "List your business" (L2-086)
+else Listing not live
+  shell -> shell : Show the stage in the header (L2-097)
+  shell -> page : Render waiting or changes-requested view
+  page --> actor : Show stage copy and next actions (L2-086)
+else Listing live
+  shell -> shell : Mark Overview tab aria-current="page" (L2-097)
+  shell -> page : Render live overview
+  page -> client : Load overview
+  client -> controller : GET /api/owner/listings/{listingId}/overview
+  controller -> controller : Apply ListingOwnerPolicy (L2-097 and L2-133)
+  alt Caller does not own the listing
+    controller --> client : 403 ProblemDetails
+    client --> page : Forbidden
+    page --> actor : Show the forbidden page
+  else Caller owns the listing
+    controller -> ovq : Send GetBusinessOverviewQuery
+    ovq -> db : Read statistics and up to 3 new requests and summary
+    db --> ovq : Read models
+    ovq --> controller : BusinessOverview
+    controller --> client : 200 BusinessOverview
+    client --> page : Overview
+    page --> actor : Show four stats and "Needs your reply" and "Your listing" (L2-085)
+  end
+end
+@enduml

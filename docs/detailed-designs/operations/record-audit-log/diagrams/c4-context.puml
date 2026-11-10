@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Record audit log
+
+Person(verifier, "Verification team member", "Takes sensitive actions on listings and reports. An admin searches the audit log")
+Person(member, "Member", "Deletes a member account")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(verifier, jubilee, "Decides and resolves and holds and removes and features in", "HTTPS")
+Rel(verifier, jubilee, "Searches the audit log in as admin", "HTTPS")
+Rel(member, jubilee, "Deletes account in", "HTTPS")
+@enduml

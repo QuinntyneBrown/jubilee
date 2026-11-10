@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — View the notification centre
+
+Person(member, "Member", "Reads notifications and sees unread badges")
+Person(owner, "Owner", "Reads notifications about an owned business and sees the Requests badge")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(member, jubilee, "Reads notifications and marks them read using")
+Rel(owner, jubilee, "Reads notifications and new-request counts using")
+@enduml

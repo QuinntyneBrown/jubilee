@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Validate input
+
+Person(member, "Member", "Types names, messages and notes")
+Person(owner, "Owner", "Types listing text and a website URL")
+Person(visitor, "Visitor", "Reads text that others typed")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Validates every input on the server and encodes every output")
+
+Rel(member, jubilee, "Submits text to", "HTTPS")
+Rel(owner, jubilee, "Submits listing details to", "HTTPS")
+Rel(visitor, jubilee, "Reads encoded text from", "HTTPS")
+@enduml

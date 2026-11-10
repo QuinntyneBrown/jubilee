@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View a product
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ProductPage", "Angular page", "Route /b/:slug/p/:product")
+  Component(form, "ProductRequestForm", "Angular component", "Option picker and quantity with validation")
+  Component(alert, "BackInStockButton", "Angular component", "Tell me when it's back")
+  Component(client, "ProductsApi", "Typed HTTP client", "Calls the product endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ProductsController", "ASP.NET Core controller", "Product page and stock alert endpoints")
+  Component(query, "GetProductPageQueryHandler", "MediatR handler", "Builds the ProductPageDto")
+  Component(sub, "RequestStockAlertCommandHandler", "MediatR handler", "Stores one StockAlert per member and product")
+  Component(product, "Product", "Domain entity", "Owns stock and options and quantity rules")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(dispatch, "OutboxDispatcherJob", "Hosted job", "Delivers ProductBackInStock messages")
+  Component(notify, "StockAlertNotifier", "Application service", "Notifies each waiting member once")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Product and StockAlert and OutboxMessage rows")
+System_Ext(email, "E-mail provider", "Vendor <TO SUPPLY>")
+
+Rel(page, form, "Renders")
+Rel(page, alert, "Renders when sold out")
+Rel(page, client, "Loads through")
+Rel(alert, client, "Subscribes through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, query, "Sends GetProductPageQuery")
+Rel(ctrl, sub, "Sends RequestStockAlertCommand")
+Rel(query, db, "Queries", "EF Core")
+Rel(sub, db, "Inserts StockAlert", "EF Core")
+Rel(product, db, "Writes ProductBackInStock to the outbox", "EF Core")
+Rel(dispatch, db, "Reads OutboxMessage", "EF Core")
+Rel(dispatch, notify, "Hands ProductBackInStock to")
+Rel(notify, db, "Marks StockAlert notified", "EF Core")
+Rel(notify, email, "Sends e-mail", "HTTPS")
+@enduml

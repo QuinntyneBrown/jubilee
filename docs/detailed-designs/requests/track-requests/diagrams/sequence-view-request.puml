@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — view a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestDetailPage" as page
+  participant "RequestsApi" as client
+  participant "RealtimeClient" as rt
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+  participant "EventsHub" as hub
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetRequestQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /requests/:id
+page -> client : get(id)
+client -> controller : GET /api/requests/{id}
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send GetRequestQuery
+handler -> db : Load request, details and transitions where MemberId is the caller (L2-133)
+db --> handler : Request or nothing
+alt request belongs to another member or does not exist
+  handler --> controller : Not found, attempt logged
+  controller --> client : 404 ProblemDetails (L2-048)
+  client --> page : Not found
+  page --> actor : Show the not-found page
+else load fails
+  controller --> client : 5xx ProblemDetails with correlation ID
+  client --> page : Error
+  page --> actor : Show "We couldn't load this request" with JB-REQ-502 (L2-118)
+else request found
+  handler --> controller : RequestDetailDto
+  controller --> client : 200 OK
+  client --> page : Request detail
+  page --> actor : Show status callout, details, actions for the status and the Progress timeline (L2-048)
+  opt owner confirms or declines while the page is open
+    hub -> rt : Request event for this member (L2-070)
+    rt -> page : Apply new status and transition
+    page --> actor : Update callout, badge and timeline without reload
+  end
+end
+@enduml

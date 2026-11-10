@@ -1,0 +1,110 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Browse a category
+
+enum ListingSort {
+  Recommended
+  Newest
+  NameAscending
+}
+
+enum OfferFilter {
+  FreeQuote
+  EmergencyCalls
+  OpenSaturdays
+}
+
+enum AreaServed {
+  Scarborough
+  NorthYork
+  EastYork
+  Etobicoke
+  Downtown
+}
+
+class Category {
+  +Guid Id
+  +string Slug
+  +string Name
+  +int DisplayOrder
+}
+
+class Listing {
+  +Guid Id
+  +Guid CategoryId
+  +string Slug
+  +string Name
+  +string SortName
+  +ListingStage Stage
+  +DateTimeOffset? VerifiedAt
+  +decimal RecommendedScore
+  +IsPublic(): bool
+}
+
+class CategoryFilterSet {
+  +IReadOnlySet<OfferFilter> Offers
+  +IReadOnlySet<AreaServed> Areas
+  +{static} Parse(offers: string, areas: string): CategoryFilterSet
+  +Without(token: string): CategoryFilterSet
+}
+
+class PageWindow {
+  +{static} int PageSize = 16
+  +int Page
+  +int TotalItems
+  +int TotalPages
+  +{static} Clamp(requested: int, totalItems: int): PageWindow
+}
+
+class GetCategoryListingsQuery {
+  +string CategorySlug
+  +CategoryFilterSet Filters
+  +ListingSort Sort
+  +int Page
+}
+
+class GetCategoryListingsQueryHandler {
+  +Handle(query: GetCategoryListingsQuery): Task<Result<CategoryPageResult>>
+}
+
+class ListingSortPolicy {
+  +Apply(listings: IQueryable<Listing>, sort: ListingSort): IOrderedQueryable<Listing>
+}
+
+class CategoryPageResult {
+  +string CategoryName
+  +int VerifiedBusinessCount
+  +string? CategoryFact
+  +IReadOnlyList<BusinessCardDto> Cards
+  +PageWindow Window
+  +IReadOnlyList<FilterSuggestion> Suggestions
+}
+
+class FilterSuggestion {
+  +CategoryFilterSet Filters
+  +int MatchCount
+}
+
+GetCategoryListingsQueryHandler ..> GetCategoryListingsQuery : handles
+GetCategoryListingsQueryHandler ..> ListingSortPolicy : orders with
+GetCategoryListingsQueryHandler ..> CategoryPageResult : returns
+GetCategoryListingsQuery --> "1" CategoryFilterSet : carries
+GetCategoryListingsQuery --> "1" ListingSort : carries
+CategoryFilterSet --> "*" OfferFilter : any of
+CategoryFilterSet --> "*" AreaServed : any of
+Category "1" o-- "*" Listing : groups
+CategoryPageResult *-- "1" PageWindow
+CategoryPageResult *-- "0..*" FilterSuggestion
+FilterSuggestion --> "1" CategoryFilterSet
+@enduml

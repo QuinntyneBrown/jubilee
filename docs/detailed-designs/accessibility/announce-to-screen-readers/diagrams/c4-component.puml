@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Announce to screen readers
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(shell, "AppShell", "Angular component", "Landmarks and the two live regions")
+  Component(title, "JubileeTitleStrategy", "Angular TitleStrategy", "Unique title per page")
+  Component(announcer, "LiveAnnouncer", "Angular service", "Writes messages to the polite or assertive region")
+  Component(regions, "LiveRegions", "Angular component", "One role=status region and one role=alert region")
+  Component(toast, "ToastService", "Angular service", "Shows toasts and announces them")
+  Component(summary, "ErrorSummary", "Angular component", "Announces form errors assertively")
+  Component(icon, "Icon", "Angular component", "Text alternative or aria-hidden")
+  Component(badge, "CountBadge", "Angular component", "Count with spoken context")
+  Component(realtime, "RealtimeClient", "Angular service", "Receives message and notification events")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(hub, "EventsHub", "SignalR hub", "Pushes real-time events")
+}
+System_Ext(ci, "CI pipeline", "axe.spec and structure.spec")
+
+Rel(shell, regions, "Renders once")
+Rel(shell, title, "Uses")
+Rel(announcer, regions, "Sets the text of")
+Rel(toast, announcer, "Announces through")
+Rel(summary, announcer, "Announces through")
+Rel(realtime, toast, "Raises message toasts in")
+Rel(realtime, badge, "Updates counts of")
+Rel(hub, realtime, "Pushes events to", "WebSocket")
+Rel(ci, shell, "Scans every screen and state of")
+Rel(ci, icon, "Checks names of")
+@enduml

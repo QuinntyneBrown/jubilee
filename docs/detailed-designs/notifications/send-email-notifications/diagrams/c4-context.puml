@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Send e-mail notifications
+
+Person(member, "Member", "Receives e-mail about events and unsubscribes with one click")
+Person(owner, "Owner", "Receives e-mail about requests and messages and meetings")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers e-mail from the authenticated Jubilee domain")
+
+Rel(jubilee, email, "Submits e-mail with List-Unsubscribe headers to")
+Rel(email, member, "Delivers e-mail to")
+Rel(email, owner, "Delivers e-mail to")
+Rel(member, jubilee, "Unsubscribes from a category using")
+@enduml

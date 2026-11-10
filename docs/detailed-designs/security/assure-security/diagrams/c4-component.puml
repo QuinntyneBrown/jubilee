@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Assure security
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(section, "SignInSecuritySection", "Angular component", "Lists sessions with device and location and last active")
+  Component(client, "AccountApi", "Typed HTTP client", "Session list and end-session calls")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(sessions, "SessionsController", "ASP.NET Core controller", "GET and DELETE /api/account/sessions")
+  Component(handlers, "Sign-in and account handlers", "MediatR handlers", "Raise security events")
+  Component(seclog, "SecurityEventLogger", "ISecurityEventLog", "Writes time and actor and IP and outcome")
+  Component(audit, "IAuditLog", "Application service", "Append-only entry for a role change")
+  Component(secretprovider, "ISecretProvider", "Infrastructure service", "Loads secrets at runtime")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(alertjob, "SecurityAlertJob", "Hosted job", "More than 100 failed sign-ins in 5 minutes or any role change")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Security events and audit entries")
+ContainerDb(cache, "Cache", "Redis", "Sessions")
+System_Ext(obs, "Observability platform", "Events and alerts")
+System_Ext(secrets, "Secrets manager", "Secrets")
+
+Rel(section, client, "Uses")
+Rel(client, sessions, "Calls", "JSON/HTTPS")
+Rel(sessions, cache, "Lists and ends sessions in")
+Rel(handlers, seclog, "Record events through")
+Rel(handlers, audit, "Record role change through")
+Rel(seclog, db, "Writes", "EF Core")
+Rel(seclog, obs, "Sends events to", "HTTPS")
+Rel(alertjob, db, "Counts events in", "EF Core")
+Rel(alertjob, obs, "Raises alert through", "HTTPS")
+Rel(secretprovider, secrets, "Reads", "HTTPS")
+@enduml

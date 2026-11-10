@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Delete account
+
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "DeleteAccountDialog", "Angular dialog", "Live counts and the DELETE confirmation field")
+  Component(client, "AccountApi", "Typed HTTP client", "getDeletionImpact and deleteAccount")
+  Component(session, "SessionService", "Angular service", "Clears the session and navigates to /welcome")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AccountController", "ASP.NET Core controller", "deletion-impact and deletion endpoints")
+  Component(impact, "GetDeletionImpactQueryHandler", "MediatR handler", "Counts conversations and open requests")
+  Component(handler, "DeleteAccountCommandHandler", "MediatR handler", "Closes the account in one unit of work")
+  Component(validator, "DeleteAccountCommandValidator", "FluentValidation validator", "Confirmation equals DELETE")
+  Component(entities, "Member and Request and Listing", "Domain entities", "Delete and cancel and unpublish rules")
+  Component(sessions, "ISessionStore", "Application service", "EndAll")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Notifications and index removal and e-mail")
+  Component(erase, "AccountErasureJob", "Hosted job", "Erases personal data after 30 days")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+ContainerDb(cache, "Cache", "Redis", "Sessions")
+
+Rel(dialog, client, "Loads counts and submits")
+Rel(dialog, session, "Signs out on success")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, impact, "Sends GetDeletionImpactQuery")
+Rel(ctrl, handler, "Sends DeleteAccountCommand")
+Rel(handler, validator, "Validated by")
+Rel(handler, entities, "Calls domain methods")
+Rel(handler, sessions, "Ends every session")
+Rel(impact, db, "Reads", "EF Core")
+Rel(handler, db, "Saves changes and outbox and audit entry", "EF Core")
+Rel(sessions, cache, "Deletes sessions")
+Rel(outbox, db, "Reads outbox", "EF Core")
+Rel(erase, db, "Erases due members", "EF Core")
+@enduml

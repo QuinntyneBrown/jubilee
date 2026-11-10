@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Operate by keyboard
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(shell, "AppShell", "Angular component", "Top bar and tab bar and main region and skip link")
+  Component(skip, "SkipLink", "Angular component", "First focusable element - moves focus to main")
+  Component(route, "RouteFocusService", "Angular service", "Moves focus to the h1 after each navigation")
+  Component(title, "JubileeTitleStrategy", "Angular TitleStrategy", "Sets the document title for each route")
+  Component(roving, "RovingFocusDirective", "Angular directive", "One tab stop with arrow-key movement")
+  Component(tabs, "Tabs", "Angular component", "WAI-ARIA tabs pattern")
+  Component(menu, "Menu", "Angular component", "WAI-ARIA menu button pattern")
+  Component(chip, "FilterChip", "Angular component", "Toggle button with aria-pressed")
+  Component(styles, "focus.css and target.css", "Global styles", "Focus ring and scroll padding and minimum target sizes")
+}
+System_Ext(ci, "CI pipeline", "keyboard.spec and target-size.spec and template lint")
+
+Rel(shell, skip, "Renders first")
+Rel(shell, route, "Starts")
+Rel(route, title, "Reads the new title from")
+Rel(tabs, roving, "Uses")
+Rel(menu, roving, "Uses")
+Rel(shell, styles, "Loads")
+Rel(chip, styles, "Sized by")
+Rel(ci, shell, "Tabs through every screen of")
+Rel(ci, styles, "Measures targets produced by")
+@enduml

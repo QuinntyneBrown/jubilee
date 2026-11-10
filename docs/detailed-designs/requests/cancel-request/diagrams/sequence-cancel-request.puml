@@ -1,0 +1,72 @@
+@startuml
+title UML sequence behaviour — cancel a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestDetailPage" as page
+  participant "CancelRequestDialog" as dialog
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "CancelRequestCommandHandler" as handler
+  participant "Request" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as outbox
+end box
+actor "Owner" as owner
+actor -> page : Press "Cancel request"
+page -> dialog : Open with type, business and booking start
+opt Confirmed booking starts within 24 hours
+  dialog -> dialog : Add "It's less than a day away; consider messaging {owner} too." (L2-049)
+end
+dialog --> actor : Ask "Cancel your {type} request to {business}?" with focus on "Keep request" (L2-129)
+actor -> dialog : Press "Cancel request"
+dialog -> client : cancel(requestId)
+client -> controller : POST /api/requests/{id}/cancel
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send CancelRequestCommand
+handler -> db : Load request where MemberId is the caller (L2-133)
+db --> handler : Current state
+handler -> entity : Apply L2-049 cancel rule: New or Confirmed to Cancelled (L2-043)
+alt status is New or Confirmed
+  entity --> handler : Status Cancelled, RequestTransition with UndoableUntil
+  handler -> db : Save request, conversation card and outbox messages in one unit of work
+  db --> handler : Commit result
+  handler --> controller : CancelResult
+  controller --> client : 200 OK
+  client --> dialog : Cancelled
+  dialog --> actor : Close and show toast "Request cancelled. {Business} has been told." with "Undo"
+  outbox -> db : Read pending outbox messages
+  db --> outbox : Messages
+  outbox --> owner : Notification and real-time event straight away
+else any other status
+  entity --> handler : InvalidTransitionException
+  handler --> controller : Conflict
+  controller --> client : 409 INVALID_TRANSITION
+  client --> dialog : Current status
+  dialog --> actor : Close and reload the request
+else request fails or connection drops
+  client --> dialog : Error
+  dialog --> actor : Show "We couldn't cancel it. The request is still open." with "Try again" (L2-128)
+end
+@enduml

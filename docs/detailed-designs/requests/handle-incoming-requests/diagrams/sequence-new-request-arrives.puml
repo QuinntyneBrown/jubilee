@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — a new request arrives
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "IncomingRequestsPage" as page
+  participant "IncomingRequestsStore" as store
+  participant "RealtimeClient" as rt
+  participant "ToastService" as toast
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+  participant "EventsHub" as hub
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Create request handler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as outbox
+end box
+member -> controller : POST /api/requests/bookings, quotes or orders
+controller -> handler : Send the create command
+handler -> db : Save Request with status New and RequestCreatedEvent in one unit of work (L2-043)
+db --> handler : Commit result
+handler --> controller : RequestCreatedResult
+controller --> member : 201 Created
+outbox -> db : Read pending outbox messages
+db --> outbox : RequestCreatedEvent
+outbox -> hub : Publish to the listing's owner and co-owners only (L2-070)
+hub -> rt : request.created event with row data
+rt -> store : Apply event
+store -> store : Insert row at the top of New and increase the counts
+store --> page : Updated rows and "Requests" tab count
+page --> actor : Row appears at the top within 5 seconds (L2-051)
+rt -> toast : Show request toast
+toast --> actor : "New {type} request. {Customer} asked for {summary}."
+opt connection dropped and reconnects
+  rt -> hub : Reconnect with last received event ID
+  hub --> rt : Missed events, none twice (L2-070)
+end
+@enduml

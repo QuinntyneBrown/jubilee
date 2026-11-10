@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Open the empty search page and remove a recent search
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SearchPage" as page
+  participant "SearchApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SearchController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RecentSearchService" as recent
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /search with no query or a whitespace-only query (L2-032)
+page -> page : Detect the empty query and skip the search call
+page -> client : getStart()
+client -> controller : GET /api/search/start
+controller -> controller : Read the session if one exists
+opt Signed-in member
+  controller -> recent : ListAsync(memberId)
+  recent -> db : Load the 5 newest RecentSearch rows of the member
+  db --> recent : Rows newest first
+  recent --> controller : Recent searches
+end
+controller --> client : 200 with recent searches and popular categories
+client --> page : Typed result
+alt Member with history
+  page --> actor : Show "Find a business, a service or a product." with "Your recent searches" and "Popular categories" (L2-031)
+else Visitor or member with no history
+  page --> actor : Show the page without "Your recent searches" (L2-031)
+end
+actor -> page : Remove one recent search
+page -> client : removeRecent(id)
+client -> controller : DELETE /api/search/recent/{id}
+controller -> controller : Authenticate the session and check the CSRF token
+controller -> recent : RemoveAsync(memberId, id)
+recent -> db : Delete the row where the member owns it (L2-133)
+db --> recent : Rows deleted
+alt Row belongs to the member
+  recent --> controller : Removed
+  controller --> client : 204 No Content
+  client --> page : Removed
+  page --> actor : Remove the entry from the list (L2-031)
+else Row missing or owned by another member
+  recent --> controller : NotFound
+  controller --> client : 404 ProblemDetails (L2-133)
+  client --> page : Not found
+  page --> actor : Reload the list
+end
+@enduml

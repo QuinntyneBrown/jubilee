@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Meet page budgets
+
+Person(member, "Member", "Loads pages on a mid-range phone")
+Person(engineer, "On-call engineer", "Reads the page performance dashboard")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Lazy routes, responsive images, Web Vitals capture")
+  Container(sw, "Jubilee service worker", "Angular service worker", "Serves the cached app shell on repeat visits")
+  Container(api, "Jubilee API", "ASP.NET Core", "Paginated list endpoints and the Web Vitals intake endpoint")
+  ContainerDb(db, "Jubilee database", "SQL Server", "System of record for listings and products")
+  Container(media, "Media storage", "Object storage + CDN", "Photo renditions and fingerprinted static assets on a cookieless domain")
+}
+System_Ext(obs, "Observability platform", "Real-user Web Vitals percentiles. Vendor <TO SUPPLY>")
+System_Ext(ci, "CI pipeline", "Runs the bundle budget check and Lighthouse. Vendor <TO SUPPLY>")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, sw, "Requests the app shell through", "Fetch")
+Rel(web, api, "Calls list endpoints and posts vitals", "JSON/HTTPS")
+Rel(web, media, "Loads images and static assets from", "HTTPS")
+Rel(api, db, "Reads pages of at most 50 rows", "EF Core")
+Rel(api, obs, "Forwards Web Vitals samples to", "HTTPS")
+Rel(ci, web, "Builds and measures")
+Rel(engineer, obs, "Reads dashboards in")
+@enduml

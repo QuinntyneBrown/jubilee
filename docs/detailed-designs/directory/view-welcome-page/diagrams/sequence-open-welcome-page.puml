@@ -1,0 +1,70 @@
+@startuml
+title UML sequence behaviour — Open the welcome page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Visitor or Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "WelcomeRedirectGuard" as guard
+  participant "WelcomePage" as page
+  participant "DirectoryApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "DirectoryController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetWelcomeQueryHandler" as handler
+  participant "FeaturedSelector" as selector
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IDirectoryReadCache" as cache
+  database "Jubilee database" as db
+end box
+actor -> guard : Open /welcome
+guard -> guard : Resolve the session through SessionService
+alt Signed-in member (L2-020)
+  guard --> actor : Redirect to /
+else Visitor
+  guard --> page : Activate
+  page -> client : getWelcome()
+  client -> controller : GET /api/directory/welcome
+  controller -> handler : Send GetWelcomeQuery
+  handler -> cache : Get the welcome entry
+  alt Entry younger than 60 s
+    cache --> handler : WelcomeDto
+  else No entry
+    cache --> handler : Miss
+    handler -> db : Count listings through PublicListingFilter (L2-028)
+    db --> handler : Live business count
+    handler -> db : Load the ten categories in order
+    db --> handler : Categories
+    handler -> selector : Select(now and 4)
+    selector -> db : Load current FeaturedSlot rows with public listings (L2-106)
+    db --> selector : Featured listings or none
+    opt No current slot
+      selector -> db : Load the 4 most recently verified public listings
+      db --> selector : Listings
+    end
+    selector --> handler : Up to 4 listings
+    handler -> cache : Set the welcome entry for 60 s
+    cache --> handler : Stored
+  end
+  handler --> controller : WelcomeDto
+  controller --> client : 200 WelcomeDto
+  client --> page : Welcome data
+  page --> actor : Show the count and categories and steps and featured cards (L2-027)
+end
+@enduml

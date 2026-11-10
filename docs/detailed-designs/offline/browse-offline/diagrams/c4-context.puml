@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Browse offline
+
+Person(member, "Member", "Signed-in account holder who browses and messages businesses")
+Person(visitor, "Visitor", "Anyone not signed in who browses the directory")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Keeps the directory readable on the device without a connection")
+
+Rel(member, jubilee, "Browses the cached directory and opened conversations offline using")
+Rel(visitor, jubilee, "Browses the cached directory offline using")
+@enduml

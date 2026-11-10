@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Describe a listing
+
+Person(member, "Member", "Describes a business on /list")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "ListBusinessPage with the form and the live preview")
+  Container(api, "Jubilee API", "ASP.NET Core", "Listing draft endpoints under /api/listings")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and their products and services and categories")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and the cached category list")
+}
+Rel(member, web, "Fills in the listing form", "HTTPS")
+Rel(web, api, "Starts and reads the draft and its items", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Reads the session and the ten categories")
+@enduml

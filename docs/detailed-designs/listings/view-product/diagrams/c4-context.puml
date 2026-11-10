@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — View a product
+
+Person(visitor, "Visitor", "Reads a product page without an account")
+Person(member, "Member", "Chooses options and asks for a back-in-stock alert")
+Person(owner, "Owner", "Changes the stock of a product")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the back-in-stock e-mail")
+
+Rel(visitor, jubilee, "Opens /b/:slug/p/:product in", "HTTPS")
+Rel(member, jubilee, "Requests an item or a stock alert in", "HTTPS")
+Rel(owner, jubilee, "Sets product stock in", "HTTPS")
+Rel(jubilee, email, "Sends the back-in-stock e-mail through", "HTTPS")
+Rel(email, member, "Delivers the e-mail to")
+@enduml

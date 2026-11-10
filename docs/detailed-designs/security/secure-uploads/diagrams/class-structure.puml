@@ -1,0 +1,102 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Secure uploads
+
+enum MediaUse {
+  ListingPhoto
+  ProductPhoto
+  MessagePhoto
+}
+
+enum MediaStatus {
+  Quarantined
+  Published
+  Rejected
+}
+
+enum UploadRejection {
+  NotAnImage
+  TooLarge
+  DimensionsTooLarge
+  Unreadable
+  FailedScan
+}
+
+enum ImageFormat {
+  Jpeg
+  Png
+}
+
+class MediaObject {
+  +Guid Id
+  +Guid OwnerMemberId
+  +MediaUse Use
+  +string StorageKey
+  +ImageFormat Format
+  +long SizeBytes
+  +int Width
+  +int Height
+  +MediaStatus Status
+  +Publish(): void
+  +Reject(reason: UploadRejection): void
+}
+
+class UploadPhotoCommand {
+  +Stream Content
+  +MediaUse Use
+}
+
+class UploadPhotoCommandHandler {
+  +Handle(command: UploadPhotoCommand): Task<Result<MediaObject>>
+}
+
+class ImageInspector {
+  +long MaxBytes = 5 MB
+  +int MaxSide = 8000
+  +Inspect(content: Stream): Result<ImageInfo>
+}
+
+class ImageInfo {
+  +ImageFormat Format
+  +int Width
+  +int Height
+}
+
+class ImageReencoder {
+  +Reencode(content: Stream, info: ImageInfo): Result<Stream>
+}
+
+interface IMalwareScanner {
+  +ScanAsync(storageKey: string): Task<bool>
+}
+
+interface IMediaStore {
+  +PutQuarantineAsync(storageKey: string, content: Stream, format: ImageFormat): Task
+  +PublishAsync(storageKey: string): Task
+  +DeleteAsync(storageKey: string): Task
+}
+
+UploadPhotoCommandHandler ..> UploadPhotoCommand : handles
+UploadPhotoCommandHandler ..> ImageInspector : inspects
+UploadPhotoCommandHandler ..> ImageReencoder : re-encodes
+UploadPhotoCommandHandler ..> IMalwareScanner : scans
+UploadPhotoCommandHandler ..> IMediaStore : stores
+UploadPhotoCommandHandler --> "1" MediaObject : creates
+ImageInspector ..> ImageInfo : returns
+ImageInfo --> ImageFormat : has
+MediaObject --> MediaStatus : has
+MediaObject --> MediaUse : has
+MediaObject ..> UploadRejection : rejected with
+UploadPhotoCommand --> MediaUse : names
+@enduml

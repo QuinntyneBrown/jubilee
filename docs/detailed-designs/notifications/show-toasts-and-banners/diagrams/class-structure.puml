@@ -1,0 +1,88 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Show toasts and banners
+
+class ToastService <<Angular service>> {
+  +{static} MaxVisible: number = 3
+  +{static} AutoDismissMs: number = 8000
+  +toasts: Signal<ToastModel[]>
+  +show(toast: ToastModel): string
+  +dismiss(id: string): void
+  +pause(id: string): void
+  +resume(id: string): void
+  -evictOldestNonError(): void
+}
+class ToastModel <<TypeScript>> {
+  +id: string
+  +tone: ToastTone
+  +title: string
+  +text: string
+  +action: ToastAction
+  +autoDismiss(): boolean
+}
+enum ToastTone {
+  Info
+  Success
+  Warning
+  Danger
+}
+class ToastAction <<TypeScript>> {
+  +label: string
+  +run(): void
+}
+class ToastTimer <<TypeScript>> {
+  +remainingMs: number
+  +start(): void
+  +pause(): void
+  +resume(): void
+}
+class ToastHost <<Angular component>> {
+  +politeRegion: ElementRef
+  +alertRegion: ElementRef
+}
+class BannerService <<Angular service>> {
+  +banners: Signal<BannerModel[]>
+  +setCondition(condition: BannerCondition, holds: boolean): void
+  +dismiss(id: string): void
+  +forRoute(url: string): BannerModel[]
+}
+class BannerModel <<TypeScript>> {
+  +id: string
+  +condition: BannerCondition
+  +tone: ToastTone
+  +persistent: boolean
+  +title: string
+  +text: string
+  +actions: ToastAction[]
+}
+enum BannerCondition {
+  EmailUnconfirmed
+  ListingPaused
+  Offline
+}
+class BannerHost <<Angular component>> {
+  +politeRegion: ElementRef
+}
+
+ToastService "1" o-- "0..3" ToastModel : shows
+ToastService "1" *-- "0..3" ToastTimer : runs
+ToastModel --> ToastTone : has
+ToastModel "1" o-- "0..1" ToastAction : carries
+ToastHost ..> ToastService : renders
+BannerService "1" o-- "*" BannerModel : holds
+BannerModel --> BannerCondition : describes
+BannerModel --> ToastTone : has
+BannerModel "1" o-- "0..2" ToastAction : offers
+BannerHost ..> BannerService : renders
+@enduml

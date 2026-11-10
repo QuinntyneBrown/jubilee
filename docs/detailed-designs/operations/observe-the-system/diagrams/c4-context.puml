@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Observe the system
+
+Person(member, "Member", "Uses Jubilee and quotes an error reference to support")
+Person(oncall, "On-call engineer", "Reads dashboards and logs and answers pages")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(obs, "Observability platform", "Logs and traces and metrics and dashboards and alerts and error tracker. Vendor to supply")
+
+Rel(member, jubilee, "Uses", "HTTPS")
+Rel(jubilee, obs, "Sends logs and traces and metrics and client errors to", "HTTPS")
+Rel(obs, oncall, "Pages on an alert")
+Rel(oncall, obs, "Searches logs and reads dashboards in", "HTTPS")
+@enduml

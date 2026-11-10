@@ -1,0 +1,105 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Protect credentials and sessions
+
+class Member {
+  +Guid Id
+  +string Email
+  +string PasswordHash
+  +DateTimeOffset PasswordChangedAt
+  +SetPassword(hash: string, now: DateTimeOffset): void
+}
+
+class Session {
+  +string IdHash
+  +Guid MemberId
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset LastActiveAt
+  +DateTimeOffset ExpiresAt
+  +string Device
+  +bool IsExpired(now: DateTimeOffset)
+}
+
+class LinkToken {
+  +Guid Id
+  +Guid MemberId
+  +LinkTokenPurpose Purpose
+  +DateTimeOffset? RevokedAt
+  +Revoke(now: DateTimeOffset): void
+}
+
+enum LinkTokenPurpose {
+  EmailConfirmation
+  PasswordReset
+  EmailChange
+  ChurchReference
+  DataDownload
+}
+
+class PasswordPolicy {
+  +int MinLength = 10
+  +int MaxLength = 128
+  +Check(password: string): ValidationResult
+}
+
+interface IBreachedPasswordChecker {
+  +IsBreachedAsync(password: string): Task<bool>
+}
+
+interface IPasswordHasher {
+  +Hash(password: string): string
+  +Verify(hash: string, password: string): PasswordVerification
+}
+
+enum PasswordVerification {
+  Failed
+  Success
+  SuccessRehashNeeded
+}
+
+class Argon2idPasswordHasher {
+  +int MemoryKiB
+  +int Iterations
+  +Hash(password: string): string
+  +Verify(hash: string, password: string): PasswordVerification
+}
+
+interface ISessionStore {
+  +CreateAsync(memberId: Guid, keepSignedIn: bool): Task<string>
+  +FindAsync(sessionId: string): Task<Session>
+  +RevokeAllExceptAsync(memberId: Guid, keepSessionId: string): Task
+}
+
+class CsrfTokenService {
+  +TokenFor(sessionId: string): string
+  +IsValid(sessionId: string, presented: string): bool
+}
+
+class ChangePasswordCommandHandler {
+  +Handle(command: ChangePasswordCommand): Task<Result>
+}
+
+IPasswordHasher <|.. Argon2idPasswordHasher
+IPasswordHasher ..> PasswordVerification : returns
+ChangePasswordCommandHandler ..> PasswordPolicy : applies
+ChangePasswordCommandHandler ..> IBreachedPasswordChecker : checks
+ChangePasswordCommandHandler ..> IPasswordHasher : hashes
+ChangePasswordCommandHandler ..> ISessionStore : revokes
+ChangePasswordCommandHandler --> Member : loads / mutates
+Member "1" --> "*" LinkToken : has
+Member "1" <-- "*" Session : belongs to
+ISessionStore ..> Session : stores
+LinkToken --> LinkTokenPurpose : has
+CsrfTokenService ..> Session : binds token to
+@enduml

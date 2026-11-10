@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Close a dialog with unsaved input
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyProductsPage" as page
+  participant "DialogService" as svc
+  participant "DialogShell" as shell
+  participant "ProductEditorDialog" as dialog
+  participant "DirtyTracker" as dirty
+  participant "DiscardChangesPrompt" as discard
+end box
+actor -> page : Press "Edit" on a product
+page -> svc : open(ProductEditorDialog, product, Large)
+svc -> svc : Record the opener
+svc -> shell : Create and showModal
+shell -> shell : Bottom sheet under 640 px, else centred up to 48rem (L2-130)
+shell -> dialog : Host
+dialog -> dirty : snapshot(values)
+dialog --> actor : Focus inside the dialog, Tab cycles within it (L2-130)
+actor -> dialog : Change the price
+actor -> shell : Press Escape
+shell -> dirty : hasUnsavedInput()
+alt Unsaved input
+  dirty --> shell : true
+  shell -> discard : Open (L2-130)
+  discard --> actor : Focus on the safe choice "Keep editing"
+  alt Owner presses "Keep editing"
+    actor -> discard : Press "Keep editing"
+    discard --> shell : Stay open
+    shell --> actor : Focus returns to the editor
+  else Owner presses "Discard changes"
+    actor -> discard : Press "Discard changes"
+    discard --> shell : Close
+    shell --> svc : Closed without result
+    svc --> actor : Focus returns to the opener (L2-130)
+  end
+else No unsaved input
+  dirty --> shell : false
+  shell --> svc : Closed without result
+  svc --> actor : Focus returns to the opener (L2-130)
+end
+@enduml

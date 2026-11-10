@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Show connection state
+
+Person(visitor, "Visitor", "Anyone not signed in")
+Person(member, "Member", "Signed-in account holder")
+Person(owner, "Owner", "Member who owns a business listing")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Reports the connection state in a banner and recovers automatically")
+System_Ext(status, "Status page", "Public service status. Address and hosting <TO SUPPLY>")
+
+Rel(visitor, jubilee, "Sees the connection state in")
+Rel(member, jubilee, "Sees the connection state in")
+Rel(owner, jubilee, "Sees the connection state in")
+Rel(jubilee, status, "Links to with Check status", "HTTPS")
+@enduml

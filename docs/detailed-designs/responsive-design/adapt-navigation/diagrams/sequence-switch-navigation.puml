@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Switch navigation when the viewport changes
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+participant "Browser" as browser
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ViewportService" as viewport
+  participant "AppShell" as shell
+  participant "TopBar" as topbar
+  participant "TabBar" as tabbar
+  participant "BrowseHero" as hero
+  participant "NavigationStore" as nav
+  participant "SessionApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionController" as controller
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "Cache" as cache
+end box
+
+actor -> browser : Open / on a phone 360 px wide
+browser -> shell : Bootstrap the app shell
+shell -> nav : refresh()
+nav -> client : Load session summary
+client -> controller : GET /api/session
+controller -> cache : Read session
+cache --> controller : Session with unread counts
+controller --> client : 200 session summary
+client --> nav : Items and badge counts
+shell -> viewport : Read mode
+viewport -> browser : matchMedia (min-width: 48rem) and (min-width: 64rem)
+browser --> viewport : Neither matches
+viewport --> shell : TabBar mode
+shell -> tabbar : Render Browse, List, Messages, You (L2-164)
+tabbar -> browser : Pad by env(safe-area-inset-bottom) (L2-163)
+shell -> topbar : Render brand and avatar only (L2-164)
+shell -> hero : Render heading and hero search
+shell --> actor : Phone navigation
+
+actor -> browser : Rotate or resize to 800 px
+browser -> viewport : change event on (min-width: 48rem)
+viewport --> shell : TopNavigation mode
+shell -> tabbar : Hide (L2-164)
+shell -> topbar : Show primary navigation and a search link to /search (L2-164)
+shell -> hero : Hide the hero search (L2-164)
+shell --> actor : Tablet navigation
+
+actor -> browser : Resize to 1280 px
+browser -> viewport : change event on (min-width: 64rem)
+viewport --> shell : TopNavigationWithSearch mode
+shell -> topbar : Show the search box and hide the search link (L2-164)
+shell --> actor : Desktop navigation
+@enduml

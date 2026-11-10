@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Adapt visual presentation
+
+Person(member, "Member", "Sets theme and motion and zoom and contrast preferences")
+Person(visitor, "Visitor", "Reads public pages with the same preferences")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(browser, "Browser and operating system", "Report reduced motion and forced colours and zoom and colour scheme")
+System_Ext(ci, "CI pipeline", "Checks contrast and reflow and forced colours and text spacing")
+
+Rel(member, browser, "Sets preferences in")
+Rel(visitor, browser, "Sets preferences in")
+Rel(browser, jubilee, "Supplies media features and viewport to")
+Rel(member, jubilee, "Reads and operates")
+Rel(ci, jubilee, "Checks token pairs and each screen of")
+@enduml

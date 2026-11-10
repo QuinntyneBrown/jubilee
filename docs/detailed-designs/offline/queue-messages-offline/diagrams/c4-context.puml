@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Queue messages offline
+
+Person(member, "Member", "Writes messages to a business. Sometimes without a connection")
+Person(owner, "Owner", "Replies to customers of a listing. Sometimes without a connection")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Keeps unsent messages on the device and delivers each one once")
+
+Rel(member, jubilee, "Writes messages offline using")
+Rel(owner, jubilee, "Writes replies offline using")
+Rel_Back(member, jubilee, "Delivers queued replies to")
+@enduml

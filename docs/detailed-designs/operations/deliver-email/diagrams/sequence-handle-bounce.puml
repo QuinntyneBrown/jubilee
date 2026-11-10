@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Handle a hard bounce or spam complaint
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+participant "E-mail provider" as provider
+box "Backend — Jubilee API" #D1FADF
+  participant "EmailWebhooksController" as controller
+  participant "EventsHub" as hub
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RecordEmailEventCommandHandler" as handler
+  participant "Member" as memberEntity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "WebhookSignatureVerifier" as sig
+  database "Jubilee database" as db
+end box
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SessionService" as session
+  participant "EmailUndeliverableBanner" as banner
+end box
+actor "Member" as actor
+provider -> controller : POST /api/webhooks/email
+controller -> sig : Verify signature
+alt signature invalid
+  sig --> controller : Invalid
+  controller --> provider : 401
+else signature valid
+  sig --> controller : Valid
+  controller -> handler : Send RecordEmailEventCommand
+  handler -> db : Look up SuppressedAddress by provider event ID
+  db --> handler : None or existing
+  opt event not seen before and type is hard bounce or complaint
+    handler -> db : Add SuppressedAddress
+    handler -> db : Load member by e-mail address
+    db --> handler : Member or none
+    handler -> memberEntity : MarkEmailUndeliverable (L2-179)
+    memberEntity --> handler : Deliverability changed
+    handler -> db : Save changes and outbox event in one unit of work
+    db --> handler : Commit result
+  end
+  handler --> controller : Done
+  controller --> provider : 200
+  hub -> session : Push EmailUndeliverable event
+  session -> banner : Deliverability undeliverable
+  banner --> actor : Show danger banner with Change e-mail (L2-004)
+end
+@enduml

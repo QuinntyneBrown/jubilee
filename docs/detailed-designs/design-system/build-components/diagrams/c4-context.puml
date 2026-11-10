@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Build components
+
+Person(visitor, "Visitor", "Sees business and product cards with photos or category tiles")
+Person(member, "Member", "Uses the same buttons, cards, badges and dialogs on every screen")
+Person(owner, "Owner", "Uploads the photos that cards and pages show")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Builds every screen from one component kit that matches the mocks")
+System_Ext(ci, "CI pipeline", "Compares each product screen with its mock and audits class names. Vendor <TO SUPPLY>")
+
+Rel(visitor, jubilee, "Views", "HTTPS")
+Rel(member, jubilee, "Uses", "HTTPS")
+Rel(owner, jubilee, "Uploads photos to", "HTTPS")
+Rel(ci, jubilee, "Checks component fidelity of")
+@enduml

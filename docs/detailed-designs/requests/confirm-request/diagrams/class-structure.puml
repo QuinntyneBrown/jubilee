@@ -1,0 +1,118 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Confirm a request
+
+enum RequestType {
+  Booking
+  Quote
+  Order
+}
+
+enum RequestStatus {
+  New
+  Confirmed
+  Declined
+  Cancelled
+  Completed
+}
+
+class Request {
+  +Guid Id
+  +RequestType Type
+  +RequestStatus Status
+  +Guid MemberId
+  +Guid ListingId
+  +Guid ConversationId
+  +DeclineReason? DeclineReason
+  +string? DeclineMessage
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? NudgedAt
+  +Confirm(actorId: Guid, now: DateTimeOffset): void
+  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
+  +Cancel(actorId: Guid, now: DateTimeOffset): void
+  +Complete(actorId: Guid?, now: DateTimeOffset): void
+  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
+  +MarkNudged(now: DateTimeOffset): void
+}
+
+class RequestTransition {
+  +Guid Id
+  +RequestStatus? From
+  +RequestStatus To
+  +Guid? ActorId
+  +DateTimeOffset OccurredAt
+  +DateTimeOffset? UndoableUntil
+}
+
+Request "1" *-- "1..*" RequestTransition : records
+Request --> RequestType : has
+Request --> RequestStatus : has
+
+class InvalidTransitionException {
+  +RequestStatus From
+  +string Attempted
+  +string Code = "INVALID_TRANSITION"
+}
+
+class ConfirmRequestCommand {
+  +Guid RequestId
+  +Guid ActorId
+}
+
+class ConfirmRequestCommandHandler {
+  +Handle(command: ConfirmRequestCommand): Task<ConfirmResult>
+}
+
+class ConfirmResult {
+  +RequestStatus Status
+  +DateTimeOffset UndoableUntil
+}
+
+class UndoConfirmRequestCommand {
+  +Guid RequestId
+  +Guid ActorId
+}
+
+class UndoConfirmRequestCommandHandler {
+  +Handle(command: UndoConfirmRequestCommand): Task<RequestStatus>
+}
+
+class Product {
+  +Guid Id
+  +int Stock
+  +ReduceStock(optionId: Guid?, quantity: int): void
+  +RestoreStock(optionId: Guid?, quantity: int): void
+}
+
+class OutboxMessage {
+  +Guid Id
+  +string Type
+  +string Payload
+  +DateTimeOffset? NotBefore
+  +DateTimeOffset? DispatchedAt
+  +DateTimeOffset? CancelledAt
+  +Cancel(now: DateTimeOffset): bool
+}
+
+Request ..> InvalidTransitionException : throws
+ConfirmRequestCommandHandler ..> ConfirmRequestCommand : handles
+ConfirmRequestCommandHandler --> Request : calls Confirm
+ConfirmRequestCommandHandler --> Product : reduces stock
+ConfirmRequestCommandHandler ..> ConfirmResult : returns
+ConfirmRequestCommandHandler ..> OutboxMessage : writes
+UndoConfirmRequestCommandHandler ..> UndoConfirmRequestCommand : handles
+UndoConfirmRequestCommandHandler --> Request : calls UndoLastTransition
+UndoConfirmRequestCommandHandler --> Product : restores stock
+UndoConfirmRequestCommandHandler ..> OutboxMessage : cancels pending
+@enduml

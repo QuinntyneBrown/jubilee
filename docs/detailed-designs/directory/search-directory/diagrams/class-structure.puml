@@ -1,0 +1,106 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Search the directory
+
+enum SearchResultKind {
+  Business
+  Service
+  Product
+}
+
+class SearchQueryText {
+  +{static} int MaxLength = 100
+  +string Value
+  +bool IsEmpty
+  +{static} From(raw: string): SearchQueryText
+}
+
+class SearchDirectoryQuery {
+  +SearchQueryText Text
+  +SearchResultKind Tab
+  +Guid? MemberId
+}
+
+class SearchDirectoryQueryHandler {
+  +Handle(query: SearchDirectoryQuery): Task<Result<SearchResults>>
+}
+
+interface ISearchIndex {
+  +SearchAsync(text: SearchQueryText): Task<SearchResults>
+  +SuggestAsync(text: SearchQueryText): Task<SearchSuggestion?>
+}
+
+class DatabaseNameSearch {
+  +SearchByNameAsync(text: SearchQueryText): Task<SearchResults>
+}
+
+class SearchResults {
+  +int BusinessCount
+  +int ServiceCount
+  +int ProductCount
+  +bool HasMatchExplanations
+  +IReadOnlyList<SearchHit> Hits
+  +SearchSuggestion? Suggestion
+}
+
+class SearchHit {
+  +SearchResultKind Kind
+  +string ListingSlug
+  +string Title
+  +string CategoryName
+  +MatchExplanation? Explanation
+}
+
+class MatchExplanation {
+  +string Text
+  +IReadOnlyList<TextRange> Highlights
+}
+
+class TextRange {
+  +int Start
+  +int Length
+}
+
+class SearchSuggestion {
+  +string? CloseTerm
+  +string? CategorySlug
+}
+
+class RecentSearch {
+  +Guid Id
+  +Guid MemberId
+  +string Text
+  +DateTimeOffset SearchedAt
+}
+
+class RecentSearchService {
+  +RecordAsync(memberId: Guid, text: SearchQueryText): Task
+  +ListAsync(memberId: Guid): Task<IReadOnlyList<RecentSearch>>
+  +RemoveAsync(memberId: Guid, id: Guid): Task
+  +ClearAsync(memberId: Guid): Task
+}
+
+SearchDirectoryQueryHandler ..> SearchDirectoryQuery : handles
+SearchDirectoryQueryHandler ..> ISearchIndex : searches through
+SearchDirectoryQueryHandler ..> DatabaseNameSearch : falls back to
+SearchDirectoryQueryHandler ..> RecentSearchService : records through
+SearchDirectoryQuery --> "1" SearchQueryText
+SearchDirectoryQuery --> "1" SearchResultKind
+SearchResults *-- "0..*" SearchHit
+SearchResults *-- "0..1" SearchSuggestion
+SearchHit --> "1" SearchResultKind
+SearchHit *-- "0..1" MatchExplanation
+MatchExplanation *-- "1..*" TextRange
+RecentSearchService --> "0..*" RecentSearch : manages
+@enduml

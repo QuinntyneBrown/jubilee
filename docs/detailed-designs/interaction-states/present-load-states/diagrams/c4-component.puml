@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Present load states
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(shell, "PageShell", "Angular layout component", "Top bar and tab bar and footer. Stays during any region state")
+  Component(page, "RequestsPage", "Angular page", "Example page at /requests with one region")
+  Component(store, "RequestsStore", "Signal store", "Exposes LoadState for the region")
+  Component(region, "LoadRegion", "Shared UI", "Renders one state. Delays skeletons by 200 ms")
+  Component(skel, "Skeleton", "Shared UI", "Placeholders matching the final layout")
+  Component(empty, "EmptyState and NoResultsState", "Shared UI", "Title and sentence and one action. Or the filter name and clear")
+  Component(err, "LoadErrorState", "Shared UI", "Error copy with reference and Try again and one way out")
+  Component(live, "LiveAnnouncer", "Shared service", "Visually hidden live region")
+  Component(client, "RequestsApi", "Typed HTTP client", "GET /api/requests")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(corr, "CorrelationIdMiddleware", "ASP.NET Core middleware", "Assigns the correlation ID")
+  Component(pd, "ProblemDetailsMiddleware", "ASP.NET Core middleware", "Maps failures to ProblemDetails with a JB reference")
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes GET /api/requests")
+  Component(handler, "ListRequestsQueryHandler", "MediatR handler", "Reads the member's requests")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Requests")
+
+Rel(shell, page, "Hosts")
+Rel(page, store, "Reads LoadState from")
+Rel(page, region, "Passes LoadState and templates to")
+Rel(region, skel, "Shows while loading")
+Rel(region, empty, "Shows for empty or no results")
+Rel(region, err, "Shows on error")
+Rel(region, live, "Announces loading through")
+Rel(err, store, "Asks to reload the region")
+Rel(store, client, "Fetches through")
+Rel(client, corr, "Calls", "JSON/HTTPS")
+Rel(corr, pd, "Passes request to")
+Rel(pd, ctrl, "Passes request to")
+Rel(ctrl, handler, "Sends ListRequestsQuery")
+Rel(handler, db, "Reads", "EF Core")
+@enduml

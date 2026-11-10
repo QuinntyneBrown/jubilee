@@ -1,0 +1,110 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Edit a listing
+
+enum PhotoStatus {
+  Processing
+  Ready
+  Rejected
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +string Name
+  +string Tagline
+  +string About
+  +Guid CategoryId
+  +string Where
+  +string Hours
+  +string? Website
+  +string? Highlight
+  +byte[] RowVersion
+  +UpdateDetails(details: ListingDetails): ListingChange
+  +AddPhoto(photo: ListingPhoto): void
+  +ReorderPhotos(photoIds: IReadOnlyList<Guid>): void
+  +RemovePhoto(photoId: Guid): void
+}
+
+class ListingPhoto {
+  +Guid Id
+  +int SortOrder
+  +string? AltText
+  +PhotoStatus Status
+  +bool IsCover
+  +SetAltText(text: string): void
+}
+
+class PhotoRendition {
+  +int WidthPx
+  +string Format
+  +string Url
+}
+
+class ListingChange {
+  +bool NameChanged
+  +bool CategoryChanged
+  +bool RequiresRecheck
+}
+
+class UpdateListingCommand {
+  +Guid ListingId
+  +byte[] ExpectedVersion
+  +ListingDetails Details
+}
+
+class UpdateListingCommandValidator {
+  +int TaglineMax = 90
+  +int AboutMax = 1500
+  +int HighlightMax = 30
+  +Validate(command: UpdateListingCommand): ValidationResult
+}
+
+class UpdateListingCommandHandler {
+  +Handle(command: UpdateListingCommand): Task<Result<ListingDto>>
+}
+
+class AddListingPhotoCommandHandler {
+  +int MaxPhotos = 6
+  +Handle(command: AddListingPhotoCommand): Task<Result<ListingPhotoDto>>
+}
+
+class ImageInspector {
+  +long MaxBytes = 5 MB
+  +Inspect(content: Stream): ImageInspection
+}
+
+interface IMediaStore {
+  +StoreOriginalAsync(content: Stream): Task<string>
+  +StoreRenditionAsync(key: string, widthPx: int, format: string): Task<string>
+}
+
+class PhotoProcessingJob {
+  +int[] Widths = 320, 640, 1280
+  +ProcessAsync(photoId: Guid): Task
+}
+
+Listing "1" *-- "0..6" ListingPhoto
+ListingPhoto "1" *-- "0..6" PhotoRendition
+ListingPhoto --> PhotoStatus : has
+Listing ..> ListingChange : returns
+UpdateListingCommandHandler ..> UpdateListingCommand : handles
+UpdateListingCommandValidator ..> UpdateListingCommand : validates
+UpdateListingCommandHandler --> Listing : loads / mutates
+AddListingPhotoCommandHandler --> Listing : adds photo
+AddListingPhotoCommandHandler ..> ImageInspector : checks content
+AddListingPhotoCommandHandler ..> IMediaStore : stores original
+PhotoProcessingJob ..> IMediaStore : writes renditions
+PhotoProcessingJob ..> ListingPhoto : marks Ready or Rejected
+@enduml

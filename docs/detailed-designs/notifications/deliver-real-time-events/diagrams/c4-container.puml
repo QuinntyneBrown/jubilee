@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Deliver real-time events
+
+Person(member, "Member", "Keeps a signed-in page open")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Holds one persistent connection per open page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Hosts the EventsHub real-time hub")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches outbox events to the real-time publisher")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Outbox")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and per-member event log and hub backplane")
+}
+System_Ext(obs, "Observability platform", "Metrics and traces")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Connects to /api/events and resumes after a drop", "WebSocket or server-sent events")
+Rel(api, web, "Pushes events", "WebSocket or server-sent events")
+Rel(api, cache, "Checks session and reads event log and subscribes to backplane", "Redis protocol")
+Rel(worker, db, "Reads outbox", "EF Core")
+Rel(worker, cache, "Appends events and publishes to backplane", "Redis protocol")
+Rel(api, obs, "Reports delivery latency")
+@enduml

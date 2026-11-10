@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — Confirm the new e-mail
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConfirmEmailChangePage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ConfirmEmailChangeCommandHandler" as handler
+  participant "LinkToken" as token
+  participant "Member" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open the confirmation link
+page -> page : Read the token and remove it from the address bar (L2-140)
+page -> client : confirmEmailChange(token)
+client -> controller : POST /api/account/email-change/confirm
+controller -> handler : Send ConfirmEmailChangeCommand
+handler -> db : Load LinkToken by SHA-256 hash of the token
+db --> handler : LinkToken or none
+handler -> token : IsUsable(now)
+token --> handler : Usable or not
+alt Token unknown or used or older than 24 hours
+  handler --> controller : Link not valid
+  controller --> client : 410 ProblemDetails
+  client --> page : Not confirmed
+  page --> actor : Show that the link no longer works. The old address stays in use
+else Token usable
+  handler -> db : Check that no other account uses the target address
+  db --> handler : Free
+  handler -> entity : ChangeEmail(TargetEmail) (L2-014)
+  entity --> handler : Address replaced and marked confirmed
+  handler -> token : MarkUsed(now)
+  token --> handler : Used
+  handler -> db : Save changes and security event in one unit of work (L2-143)
+  db --> handler : Commit result
+  handler --> controller : Confirmed
+  controller --> client : 200 OK
+  client --> page : Confirmed
+  page --> actor : Show the new address with "Confirmed."
+end
+@enduml

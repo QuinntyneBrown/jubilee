@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Deliver e-mail by the settings
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+  participant "DailySummaryJob" as summary
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "EmailDeliveryPolicy" as policy
+  participant "IEmailSender" as sender
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+participant "E-mail provider" as email
+job -> db : Read undispatched e-mail events
+db --> job : Event with EmailCategory and recipient
+job -> db : Load NotificationPreferences of the recipient
+db --> job : NotificationPreferences
+job -> policy : Decide(preferences and category)
+policy --> job : EmailDelivery
+alt Immediate: Security or MeetingReminders or frequency AsItHappens
+  job -> sender : Send the e-mail (L2-068)
+  sender -> email : Submit message
+  email --> sender : Accepted
+  sender --> job : Sent
+else Summary: category on and frequency DailySummary (L2-016)
+  job -> db : Insert SummaryItem
+  db --> job : Stored
+else Suppressed: category off
+  job -> job : Send nothing. The in-app notification already exists
+end
+job -> db : Mark the event dispatched
+db --> job : Commit result
+== 07:00 America/Toronto the next morning ==
+summary -> db : Acquire the schedule lock for this run (L2-182)
+db --> summary : Lock held
+summary -> db : Load SummaryItem rows of the previous day grouped by member
+db --> summary : Items per member
+loop Each member with items
+  summary -> sender : Send one summary e-mail
+  sender -> email : Submit message
+  email --> sender : Accepted
+  sender --> summary : Sent
+  summary -> db : Delete the member's sent items
+  db --> summary : Commit result
+end
+summary -> db : Record last success
+db --> summary : Commit result
+@enduml

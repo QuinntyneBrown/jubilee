@@ -1,0 +1,88 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Show error pages
+enum FailureKind {
+  UpstreamDependency
+  ServiceUnavailable
+  Unhandled
+}
+enum ShellOutcome {
+  Ok
+  NotFound
+  Forbidden
+  RedirectToSignIn
+  MovedPermanently
+}
+class ErrorReference {
+  +string Value
+  +string Area
+  +int Status
+  +ToString(): string
+}
+class ErrorReferenceFactory {
+  +ForLoadFailure(area: string, kind: FailureKind): ErrorReference
+  +ForUnhandled(correlationId: string): ErrorReference
+}
+class ErrorAreaAttribute {
+  +string Area
+}
+class JubileeProblemDetails {
+  +string Type
+  +string Title
+  +int Status
+  +string Reference
+  +string CorrelationId
+  +IDictionary<string, string[]> Errors
+}
+class ProblemDetailsMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+  -Write(context: HttpContext, problem: JubileeProblemDetails): Task
+}
+class PageShellEndpoint {
+  +Handle(context: HttpContext): Task<IResult>
+  -Resolve(path: string, session: Session): ShellOutcome
+}
+class ListingSlugResolver {
+  +Resolve(slug: string): Task<SlugResolution>
+}
+class SlugResolution {
+  +bool Found
+  +string CurrentSlug
+  +bool Renamed
+}
+class ListingSlugHistory {
+  +Guid ListingId
+  +string OldSlug
+  +DateTimeOffset ReplacedAt
+}
+class AccessRequest {
+  +Guid Id
+  +Guid MemberId
+  +string Url
+  +DateTimeOffset CreatedAt
+}
+class CreateAccessRequestCommandHandler {
+  +Handle(command: CreateAccessRequestCommand): Task<Result>
+}
+
+ProblemDetailsMiddleware ..> ErrorReferenceFactory : uses
+ProblemDetailsMiddleware ..> JubileeProblemDetails : writes
+ProblemDetailsMiddleware ..> ErrorAreaAttribute : reads
+ErrorReferenceFactory --> ErrorReference : creates
+ErrorReferenceFactory ..> FailureKind
+JubileeProblemDetails --> "0..1" ErrorReference
+PageShellEndpoint ..> ListingSlugResolver : uses
+PageShellEndpoint ..> ShellOutcome
+ListingSlugResolver --> SlugResolution : returns
+ListingSlugResolver ..> ListingSlugHistory : reads
+CreateAccessRequestCommandHandler --> AccessRequest : creates
+@enduml

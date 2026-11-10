@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Back up and recover
+
+Container_Boundary(ci, "Delivery pipeline") {
+  Component(drill, "restore-drill", "Pipeline job", "Restores the latest point in time to an isolated instance")
+  Component(verifier, "RestoreVerifier", ".NET console tool", "Checks schema version and row counts and data freshness")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ops, "OperationsController", "ASP.NET Core controller", "Exposes /api/ops/restore-drills and /api/ops/media")
+  Component(record, "RecordRestoreDrillCommandHandler", "MediatR handler", "Stores a RestoreDrillRecord")
+  Component(restorefile, "RestoreFileVersionCommandHandler", "MediatR handler", "Restores an earlier object version")
+  Component(store, "IMediaStore", "Storage adapter", "Lists and restores object versions")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(verify, "BackupVerificationJob", "Hosted job", "Compares backup state with BackupPolicy")
+  Component(client, "IBackupInventory", "Hosting adapter", "Reads restore points and replica state")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Drill records and the data that is backed up")
+ContainerDb(media, "Media storage", "Object storage + CDN", "Versioned objects")
+System_Ext(backup, "Hosting backup service", "Backups in two Canadian regions")
+System_Ext(obs, "Observability platform", "Alerts")
+
+Rel(drill, backup, "Requests restore from")
+Rel(drill, verifier, "Runs")
+Rel(drill, ops, "Posts result to", "JSON/HTTPS")
+Rel(ops, record, "Sends RecordRestoreDrillCommand")
+Rel(ops, restorefile, "Sends RestoreFileVersionCommand")
+Rel(record, db, "Persists", "EF Core")
+Rel(restorefile, store, "Restores through")
+Rel(store, media, "Calls", "HTTPS")
+Rel(verify, client, "Reads state through")
+Rel(client, backup, "Queries", "HTTPS")
+Rel(verify, store, "Reads versioning policy through")
+Rel(verify, db, "Reads last drill from", "EF Core")
+Rel(verify, obs, "Exports metrics to", "OTLP")
+@enduml

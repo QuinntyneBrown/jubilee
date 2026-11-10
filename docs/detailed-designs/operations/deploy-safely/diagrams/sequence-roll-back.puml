@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour — Roll back a production release
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "On-call engineer" as actor
+box "Delivery — CI pipeline" #E0F2FE
+  participant "RollbackJob" as rollback
+end box
+box "Environment — Production" #D1FADF
+  participant "Previous slot" as prev
+  participant "Hosting load balancer" as lb
+  participant "Active slot" as active
+  database "Jubilee database" as db
+end box
+actor -> rollback : Start rollback of the active release
+rollback -> prev : GET /health/ready
+alt previous slot ready
+  prev --> rollback : 200
+  rollback -> lb : Switch traffic to the previous slot
+  lb --> rollback : Switched
+  prev -> db : Read and write with the expanded schema (L2-178)
+  db --> prev : Compatible
+  rollback -> active : Mark release RolledBack
+  active --> rollback : Done
+  rollback --> actor : Rolled back in under 10 minutes
+else previous slot not ready
+  prev --> rollback : 503
+  rollback -> prev : Redeploy previous release artifact
+  prev --> rollback : Ready
+  rollback -> lb : Switch traffic to the previous slot
+  lb --> rollback : Switched
+  rollback --> actor : Rolled back
+end
+@enduml

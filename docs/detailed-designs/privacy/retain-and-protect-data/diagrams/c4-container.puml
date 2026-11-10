@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Retain and protect data
+
+Person(engineer, "On-call engineer", "Is alerted when a retention run fails")
+System_Boundary(jubilee, "Jubilee - Canadian data centres") {
+  Container(api, "Jubilee API", "ASP.NET Core", "Refuses to start without TLS to its stores")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Runs the daily retention job")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Encrypted at rest with AES-256 and managed keys")
+  ContainerDb(cache, "Cache", "Redis", "Job lock - encrypted at rest")
+  ContainerDb(media, "Media storage", "Object storage + CDN", "Encrypted at rest with AES-256 and managed keys")
+}
+System_Ext(observability, "Observability platform", "30-day application logs and 1-year security logs")
+
+Rel(api, db, "Reads and writes", "EF Core over TLS")
+Rel(worker, db, "Deletes expired data in", "EF Core over TLS")
+Rel(worker, cache, "Takes the daily job lock in", "TLS")
+Rel(worker, media, "Deletes attachments of redacted requests in", "HTTPS")
+Rel(worker, observability, "Logs deletion counts to", "HTTPS")
+Rel(api, observability, "Writes structured logs to", "HTTPS")
+Rel(observability, engineer, "Alerts")
+@enduml

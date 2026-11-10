@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Refuse a page and ask for access
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Browser" as browser
+  participant "ForbiddenPage" as page
+  participant "HelpApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "PageShellEndpoint" as shell
+  participant "HelpController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "CreateAccessRequestCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+actor -> browser : Open a protected page such as /admin/verifications
+browser -> shell : GET page URL
+shell -> cache : Read the session from the cookie
+cache --> shell : Session or nothing
+alt no session (visitor)
+  shell --> browser : 302 to /sign-in with the return URL (L2-114)
+  browser --> actor : Show the sign-in page
+else signed in without permission
+  shell -> shell : Check role and ownership for the route (L2-133)
+  shell --> browser : 403 with the application shell (L2-114)
+  browser -> page : Bootstrap and render
+  page --> actor : Show "You don't have access to this page." with "Back to browse" and "Ask for access"
+  actor -> page : Press "Ask for access"
+  page -> client : askForAccess(url)
+  client -> controller : POST /api/help/access-requests with an idempotency key (L2-132)
+  controller -> controller : Authenticate the session
+  controller -> handler : Send CreateAccessRequestCommand
+  handler -> db : Save AccessRequest with the URL and the member; grant nothing (L2-114)
+  db --> handler : Commit result
+  handler --> controller : Typed result
+  controller --> client : 201
+  client --> page : Request recorded
+  page --> actor : Confirm that the request was sent
+end
+@enduml

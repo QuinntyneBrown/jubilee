@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — View a request as the receiving business
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "IncomingRequestsPage" as page
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "BusinessRequestsController" as controller
+  participant "AudienceJsonModifier" as modifier
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetIncomingRequestQueryHandler" as handler
+  participant "PostalArea" as area
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open an incoming request
+page -> client : Request the incoming request
+client -> controller : GET /api/business/{listingId}/requests/{requestId}
+controller -> controller : Authenticate and apply L2-133 owner-of-listing policy
+alt caller does not own the listing
+  controller --> client : 403 ProblemDetails
+  client --> page : Forbidden result
+else caller owns the listing
+  controller -> handler : Send GetIncomingRequestQuery
+  handler -> db : Load request with member first name and postal code
+  db --> handler : Request row
+  handler -> area : Reduce postal code (L2-145 neighbourhood and first three characters)
+  area --> handler : Area label such as East York, M4C
+  handler --> controller : IncomingRequestDto with ContactPhone of this request only
+  controller -> modifier : Serialise for audience RequestBusiness
+  modifier -> modifier : Omit e-mail, home church and full postal code (L2-145)
+  modifier --> controller : JSON without hidden fields
+  controller --> client : 200 audience-limited request
+  client --> page : Typed request
+  page --> actor : Show phone and area label for this request
+end
+@enduml

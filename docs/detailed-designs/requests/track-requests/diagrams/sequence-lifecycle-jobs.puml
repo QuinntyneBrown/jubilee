@@ -1,0 +1,50 @@
+@startuml
+title UML sequence behaviour — automatic lifecycle steps
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Worker" #D1FADF
+  participant "BookingCompletionJob" as done
+  participant "UnansweredRequestJob" as stale
+  participant "OutboxDispatcherJob" as outbox
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Request" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor "Member" as member
+actor "Owner" as owner
+done -> db : Find Confirmed bookings whose meeting end time has passed
+db --> done : Bookings
+loop each booking
+  done -> entity : Complete(no actor, now) (L2-043)
+  entity --> done : Status Completed and RequestTransition recorded
+end
+done -> db : Save changes and outbox messages in one unit of work
+db --> done : Commit result
+stale -> db : Find New requests created 7 days ago or earlier with no NudgedAt
+db --> stale : Requests
+loop each request
+  stale -> entity : Mark nudged (L2-043)
+  entity --> stale : NudgedAt set, status unchanged
+end
+stale -> db : Save changes and one owner reminder per request to the outbox (L2-182)
+db --> stale : Commit result
+outbox -> db : Read pending outbox messages
+db --> outbox : Messages
+outbox --> owner : One reminder about the unanswered request
+outbox --> member : Request event; the detail page offers "Cancel or ask again"
+@enduml

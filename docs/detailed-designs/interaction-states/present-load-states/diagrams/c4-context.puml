@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Present load states
+
+Person(visitor, "Visitor", "Anyone not signed in")
+Person(member, "Member", "Signed-in account holder")
+Person(owner, "Owner", "Member who owns a business listing")
+Person(verifier, "Verification team member", "Reviews listings and reports")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Presents loading and empty and no-results and error states the same way on every page")
+System_Ext(obs, "Observability platform", "Logs searchable by error reference and time. Vendor <TO SUPPLY>")
+
+Rel(visitor, jubilee, "Sees load states in")
+Rel(member, jubilee, "Sees load states in")
+Rel(owner, jubilee, "Sees load states in")
+Rel(verifier, jubilee, "Sees load states in")
+Rel(jubilee, obs, "Sends logs with correlation IDs to")
+@enduml

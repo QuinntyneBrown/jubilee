@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Present load states
+
+Person(member, "Member", "Opens a list or detail page")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Renders skeletons and content and empty and no-results and error states per region")
+  Container(api, "Jubilee API", "ASP.NET Core", "Returns data or ProblemDetails with an error reference")
+  ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+}
+System_Ext(obs, "Observability platform", "Logs searchable by error reference. Vendor <TO SUPPLY>")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Fetches region data from", "JSON/HTTPS")
+Rel(api, db, "Reads", "EF Core")
+Rel(api, obs, "Sends logs with correlation IDs to")
+@enduml

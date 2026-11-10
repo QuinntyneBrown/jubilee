@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Save the draft when the session ends
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestQuoteDialog" as form
+  participant "SessionExpiryInterceptor" as interceptor
+  participant "DraftRegistry" as registry
+  participant "DraftStore" as store
+  participant "ReturnUrlService" as ret
+  participant "SessionExpiredPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionAuthenticationMiddleware" as mw
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "SessionStore" as sessions
+  database "Cache" as cache
+end box
+actor -> form : Fill in a form and submit
+form -> interceptor : HTTP request
+interceptor -> mw : POST /api/requests/quotes with the session cookie
+mw -> sessions : Find(session id)
+sessions -> cache : Read session
+cache --> sessions : Session or nothing
+sessions --> mw : Session or nothing
+mw -> mw : Check 30-day age and 12-hour inactivity (L2-010)
+alt session ended
+  mw --> interceptor : 401 ProblemDetails with code SESSION_EXPIRED
+  interceptor -> registry : snapshotAll()
+  registry -> form : snapshot()
+  form --> registry : Field values
+  registry --> interceptor : Drafts for the current route
+  interceptor -> store : save(drafts) (L2-116)
+  store --> interceptor : Saved in browser storage
+  interceptor -> ret : remember(current URL)
+  ret --> interceptor : Stored
+  interceptor -> page : Navigate to /session-expired
+  page --> actor : Show "You've been signed out." with "Sign in"
+else session valid
+  mw --> interceptor : Response of the endpoint
+  interceptor --> form : Result
+  form --> actor : Show the result
+end
+@enduml

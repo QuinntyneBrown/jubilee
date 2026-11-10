@@ -1,0 +1,103 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Deliver e-mail
+
+class EmailDelivery {
+  +Guid Id
+  +string TemplateKey
+  +string ToAddress
+  +EmailCategory Category
+  +EmailDeliveryStatus Status
+  +int Attempts
+  +DateTimeOffset FirstAttemptAt
+  +DateTimeOffset? NextAttemptAt
+  +string? ProviderMessageId
+  +MarkSent(providerMessageId: string): void
+  +ScheduleRetry(now: DateTimeOffset, backOff: IBackOff): void
+  +Suppress(): void
+}
+
+enum EmailDeliveryStatus {
+  Queued
+  Sent
+  Retrying
+  Failed
+  Suppressed
+}
+
+enum EmailCategory {
+  Security
+  Transactional
+  Notification
+  Summary
+}
+
+class EmailMessage {
+  +string To
+  +string Subject
+  +string HtmlBody
+  +string TextBody
+  +IReadOnlyDictionary<string, string> Headers
+}
+
+interface IEmailSender {
+  +SendAsync(message: EmailMessage): Task<SendResult>
+}
+
+class ProviderEmailSender {
+  +SendAsync(message: EmailMessage): Task<SendResult>
+}
+
+class SendResult {
+  +SendOutcome Outcome
+  +string? ProviderMessageId
+}
+
+enum SendOutcome {
+  Accepted
+  TransientFailure
+  PermanentFailure
+}
+
+class EmailTemplateRenderer {
+  +Render(templateKey: string, model: object): EmailMessage
+}
+
+class DeliverabilityGuard {
+  +MaySendAsync(address: string, category: EmailCategory): Task<bool>
+}
+
+class SuppressedAddress {
+  +string AddressHash
+  +SuppressionReason Reason
+  +DateTimeOffset RecordedAt
+  +string ProviderEventId
+}
+
+enum SuppressionReason {
+  HardBounce
+  SpamComplaint
+}
+
+EmailDelivery --> EmailDeliveryStatus : has
+EmailDelivery --> EmailCategory : has
+IEmailSender <|.. ProviderEmailSender
+IEmailSender ..> EmailMessage : sends
+IEmailSender ..> SendResult : returns
+SendResult --> SendOutcome : has
+EmailTemplateRenderer ..> EmailMessage : builds
+DeliverabilityGuard ..> "0..1" SuppressedAddress : looks up
+DeliverabilityGuard ..> EmailCategory : decides by
+SuppressedAddress --> SuppressionReason : has
+@enduml

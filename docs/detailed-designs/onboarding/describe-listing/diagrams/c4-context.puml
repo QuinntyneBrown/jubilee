@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Describe a listing
+
+Person(visitor, "Visitor", "Opens /list before signing in")
+Person(member, "Member", "Describes a business to list it on Jubilee")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
+System_Ext(google, "Google Identity", "OpenID Connect sign-in used on the way back to /list")
+
+Rel(visitor, jubilee, "Opens /list and is asked to sign in or join")
+Rel(member, jubilee, "Chooses products or services and describes the business")
+Rel(jubilee, google, "Signs the visitor in with", "OpenID Connect")
+@enduml

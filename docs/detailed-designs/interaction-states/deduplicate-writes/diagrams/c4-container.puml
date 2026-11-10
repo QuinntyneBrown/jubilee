@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Deduplicate writes
+
+Person(member, "Member", "Submits a create request")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Generates one idempotency key per intended create")
+  Container(sw, "Jubilee service worker", "Angular service worker", "Resends queued messages with their keys")
+  Container(api, "Jubilee API", "ASP.NET Core", "Replays the original result for a repeated key")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Deletes idempotency records after 24 hours")
+  ContainerDb(cache, "Cache", "Redis", "Key reservations and stored responses for 24 hours")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Resources and idempotency records with a unique index")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Sends creates with Idempotency-Key to", "JSON/HTTPS")
+Rel(sw, api, "Resends queued messages to", "JSON/HTTPS")
+Rel(api, cache, "Reserves and reads keys in")
+Rel(api, db, "Writes resource and record in one transaction", "EF Core")
+Rel(worker, db, "Deletes expired records from", "EF Core")
+@enduml

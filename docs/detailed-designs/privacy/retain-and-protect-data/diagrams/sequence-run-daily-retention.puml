@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Run the daily retention job
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+box "Backend — Jubilee Worker" #D1FADF
+  participant "RetentionJob" as job
+  participant "IRetentionRule" as rule
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Request" as request
+  participant "Report" as report
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "JobLock" as lock
+  database "Jubilee database" as db
+end box
+participant "Observability platform" as observability
+job -> lock : Acquire retention lock for today's schedule date (L2-182)
+alt lock is held by another instance
+  lock --> job : Not acquired
+  job -> job : Skip this run
+else lock is acquired
+  lock --> job : Acquired
+  loop each retention rule
+    job -> rule : ApplyAsync(now)
+    alt DeclinedRequestRetentionRule
+      rule -> db : Select requests declined 90 days ago or earlier (L2-148)
+      db --> rule : Due requests
+      rule -> request : RedactPersonalDetails(now)
+      request --> rule : Phone and details cleared, RedactedAt set
+    else NotificationRetentionRule
+      rule -> db : Delete notifications created 90 days ago or earlier (L2-148)
+      db --> rule : Rows deleted
+    else ReportRetentionRule
+      rule -> db : Select reports resolved 2 years ago or earlier (L2-148)
+      db --> rule : Due reports
+      rule -> report : RemoveReporterDetails()
+      report --> rule : Reporter cleared
+    else LogRetentionRule
+      rule -> observability : Read policies: application logs 30 days, security logs 1 year (L2-148)
+      observability --> rule : Policies and deleted count
+    end
+    rule -> db : Save changes in one unit of work
+    db --> rule : Committed
+    rule --> job : Deleted count
+    job -> db : Insert RetentionRun with rule name and count only (L2-148)
+    db --> job : Committed
+    job -> observability : Log retention.rule.completed with count
+  end
+  opt a rule fails 5 times
+    job -> observability : Move to dead-letter queue and alert on-call (L2-182)
+  end
+end
+@enduml

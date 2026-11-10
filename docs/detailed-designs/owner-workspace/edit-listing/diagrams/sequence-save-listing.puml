@@ -1,0 +1,75 @@
+@startuml
+title UML sequence behaviour — Save listing changes
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "EditListingPage" as page
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "OwnerListingController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "UpdateListingCommandValidator" as validator
+  participant "UpdateListingCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcher" as outbox
+end box
+actor -> page : Press "Save listing"
+page -> page : Make fields read-only and button busy (L2-127)
+page -> client : Build typed request with loaded version
+client -> controller : PUT /api/owner/listings/{listingId} with If-Match
+controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
+controller -> validator : Validate UpdateListingCommand
+alt Invalid fields
+  validator --> controller : Field codes such as TAGLINE_TOO_LONG and HOURS_REQUIRED
+  controller --> client : 422 ProblemDetails with per-field codes
+  client --> page : Validation errors
+  page --> actor : Show "Fix 2 things to continue" and keep typed values (L2-126)
+else Valid fields
+  validator --> controller : Valid
+  controller -> handler : Send UpdateListingCommand
+  handler -> db : Load listing
+  db --> handler : Listing with RowVersion
+  handler -> entity : UpdateDetails (L2-087)
+  entity --> handler : ListingChange
+  handler -> db : Save listing and outbox messages in one unit of work
+  alt Stored version is newer
+    db --> handler : Concurrency conflict
+    handler --> controller : Conflict LISTING_CHANGED
+    controller --> client : 409 ProblemDetails
+    client --> page : Conflict
+    page --> actor : Show "This listing changed since you opened it. Reload to see the latest."
+  else Version matches
+    db --> handler : Commit result
+    handler --> controller : Updated listing with new version
+    controller --> client : 200 listing
+    client --> page : Saved listing
+    page --> actor : Show "Listing updated. Your changes are live now."
+    outbox -> db : Read ListingUpdated and ListingRecheckRequested
+    db --> outbox : Pending messages
+    outbox -> outbox : Update search index
+    opt Name or category changed
+      outbox -> outbox : Notify verification team to re-check within two business days (L2-087)
+    end
+  end
+end
+@enduml

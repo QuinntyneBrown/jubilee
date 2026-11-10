@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Secure transport and tokens
+
+Person(visitor, "Visitor", "Opens pages and e-mailed links")
+Person(member, "Member", "Confirms e-mail. Resets password. Downloads data")
+Person_Ext(reference, "Church reference", "Opens the single-use reference link. No account")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Serves HTTPS only with security headers. Issues hashed link tokens")
+System_Ext(email, "E-mail provider", "Delivers e-mails that carry links")
+
+Rel(visitor, jubilee, "Browses", "HTTPS TLS 1.2 or 1.3")
+Rel(member, jubilee, "Opens token links in", "HTTPS")
+Rel(reference, jubilee, "Opens reference link in", "HTTPS")
+Rel(jubilee, email, "Sends links via", "HTTPS")
+Rel(email, member, "Delivers link to")
+Rel(email, reference, "Delivers link to")
+@enduml

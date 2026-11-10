@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Answer a church reference request
+
+Person_Ext(reference, "Church reference", "Answers through the e-mailed link")
+Person(owner, "Owner", "Sends the request again")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "ReferenceLinkPage at /reference/:token and the My business actions")
+  Container(api, "Jubilee API", "ASP.NET Core", "Anonymous token endpoints and owner reference endpoints")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox and sends the reference e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Church references and link token hashes and answers and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Rate-limit counters")
+}
+Rel(reference, web, "Opens the link and answers", "HTTPS")
+Rel(owner, web, "Presses Send the request again", "HTTPS")
+Rel(web, api, "Opens and answers and resends", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Counts requests and resends")
+Rel(worker, db, "Reads outbox messages", "EF Core")
+Rel(worker, email, "Sends the reference request", "HTTPS")
+@enduml

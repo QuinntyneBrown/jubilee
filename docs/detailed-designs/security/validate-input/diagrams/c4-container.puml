@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Validate input
+
+Person(owner, "Owner", "Submits listing text")
+Person(visitor, "Visitor", "Reads listing text")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Renders user text through encoded bindings under a CSP")
+  Container(api, "Jubilee API", "ASP.NET Core", "Validates each input against a schema. Rejects unknown fields. Sends the CSP")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Stores text as typed")
+}
+
+Rel(owner, web, "Uses", "HTTPS")
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Queries with bound parameters", "EF Core")
+@enduml

@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Suspend a member after spam reports
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConversationPage" as page
+  participant "ReportsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ReportsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ReportSpamCommandHandler" as handler
+  participant "SpamSuspensionPolicy" as policy
+  participant "Member" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+user -> page : Report a member's messages as spam
+page -> client : reportSpam(conversationId)
+client -> controller : POST /api/reports/spam
+controller -> controller : Authenticate, apply ListingOwner policy and Reports limit
+controller -> handler : Send ReportSpamCommand
+handler -> db : Save Report and load spam reports for the member in the last 7 days
+db --> handler : Reports
+handler -> policy : ShouldSuspend(reports, now)
+policy --> handler : True when 3 different businesses reported (L2-137)
+opt Third different business within 7 days
+  handler -> entity : SuspendNewConversations(now)
+  entity --> handler : MessagingRestriction pending review
+  handler -> db : Write review task for the verification team to outbox
+end
+handler -> db : Save changes in one unit of work
+db --> handler : Commit result
+handler --> controller : Report recorded
+controller --> client : 201 Created
+client --> page : Result
+page --> user : Confirm the report
+note over handler, entity : Later StartConversationCommandHandler refuses the suspended member with 403
+@enduml

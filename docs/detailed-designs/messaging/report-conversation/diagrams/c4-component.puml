@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Report a conversation
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "ReportConversationDialog", "Angular dialog", "Collects the reason and the block choice")
+  Component(text, "MessageTextComponent", "Angular component", "Renders message text and links without raw HTML")
+  Component(client, "MessagesApi", "Typed HTTP client", "Calls report and block endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ConversationsController", "ASP.NET Core controller", "Exposes reports and block under /api/conversations/{id}")
+  Component(admin, "AdminReportsController", "ASP.NET Core controller", "Exposes the reported conversation to verifiers")
+  Component(report, "ReportConversationCommandHandler", "MediatR handler", "Creates the report and the optional block")
+  Component(send, "SendMessageCommandHandler", "MediatR handler", "Refuses messages from a blocked side")
+  Component(policy, "ReportedConversationAccessPolicy", "Authorization policy", "Allows staff reads only with an open report")
+  Component(audit, "IAuditLog", "Application service", "Appends staff access records")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Reports and blocks and audit entries")
+
+Rel(dialog, client, "Calls reportConversation")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, report, "Sends ReportConversationCommand")
+Rel(ctrl, send, "Sends SendMessageCommand")
+Rel(admin, policy, "Evaluates before reading")
+Rel(admin, audit, "Records access or refusal")
+Rel(report, db, "Persists report and block and outbox row", "EF Core")
+Rel(send, db, "Reads block state", "EF Core")
+Rel(policy, db, "Looks up open report", "EF Core")
+Rel(audit, db, "Appends AuditEntry", "EF Core")
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Save a draft
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ListBusinessPage", "Angular page", "Shows loading and error and draft saved states")
+  Component(auto, "DraftAutosaver", "Angular service", "Saves after 10 seconds without typing")
+  Component(store, "ListingDraftStore", "Signal store", "Holds the draft and its save status")
+  Component(client, "ListingsApi", "Typed HTTP client", "GET and PUT /api/listings/id/draft")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Authenticates and checks ownership")
+  Component(save, "SaveListingDraftCommandHandler", "MediatR handler", "Stores a part-filled draft without required-field validation")
+  Component(get, "GetListingDraftQueryHandler", "MediatR handler", "Returns each stored value of the draft")
+  Component(listing, "Listing", "Domain entity", "Applies draft values and records the last touch")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "DraftRetentionJob", "Hosted job", "Warns at 180 days and deletes 14 days later")
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Sends queued e-mail")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Drafts and outbox")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+
+Rel(page, store, "Reads the draft and status")
+Rel(page, auto, "Reports form changes")
+Rel(auto, store, "Requests a save")
+Rel(store, client, "Saves and loads")
+Rel(client, ctrl, "GET and PUT draft", "JSON/HTTPS")
+Rel(ctrl, save, "Sends SaveListingDraftCommand")
+Rel(ctrl, get, "Sends GetListingDraftQuery")
+Rel(save, listing, "Applies values to")
+Rel(save, db, "Persists", "EF Core")
+Rel(get, db, "Reads", "EF Core")
+Rel(job, db, "Selects and deletes drafts", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+Rel(outbox, email, "Sends the expiry notice")
+@enduml

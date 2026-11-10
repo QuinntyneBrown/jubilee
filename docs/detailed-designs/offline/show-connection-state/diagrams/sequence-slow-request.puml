@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Handle a slow request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BookMeetingDialog" as dialog
+  participant "SlowRequestInterceptor" as slow
+  participant "LatencyMonitor" as latency
+  participant "ToastService" as toast
+  participant "ConnectionService" as conn
+  participant "ConnectionBanner" as banner
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "Jubilee API" as api
+end box
+actor -> dialog : Submit a request
+dialog -> slow : POST with Idempotency-Key
+slow -> api : First attempt
+slow -> slow : 5 seconds pass without a response
+slow -> toast : Show warning toast (L2-121)
+toast --> actor : "Still sending your request. Your connection is slow. We'll keep trying for a minute."
+loop Attempt fails on the network and less than 60 seconds have passed
+  slow -> api : Retry with the same Idempotency-Key (L2-132)
+end
+alt Response arrives within 60 seconds
+  api --> slow : 201 Created
+  slow -> latency : record(durationMs)
+  slow --> dialog : Response
+  dialog --> actor : Show success state
+else No response after 60 seconds
+  slow -> conn : reportNetworkFailure()
+  slow --> dialog : Connection error
+  dialog --> actor : Show failed state with input kept (L2-128)
+end
+latency -> latency : Mean over the last 30 seconds exceeds 3 seconds
+latency -> conn : reportSlow(true)
+conn --> banner : Slow
+banner --> actor : Warning banner "Your connection is slow. Pages may take longer to load." (L2-121)
+@enduml

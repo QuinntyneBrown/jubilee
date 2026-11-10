@@ -1,0 +1,106 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Submit for verification
+
+enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Paused
+  OnHold
+  Removed
+  Declined
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +string Name
+  +ListingSlug Slug
+  +ListingStage Stage
+  +DateTimeOffset? SubmittedAt
+  +SubmitForVerification(now: DateTimeOffset): void
+}
+
+class Member {
+  +Guid Id
+  +bool EmailConfirmed
+  +int MaxListings = 5
+  +CanStartListing(existing: int): bool
+}
+
+class SubmitListingCommand {
+  +Guid ListingId
+  +ListingDraftValues Values
+  +string IdempotencyKey
+}
+
+class SubmitListingCommandValidator {
+  +Validate(command: SubmitListingCommand): ValidationResult
+}
+
+class SubmitListingCommandHandler {
+  +Handle(command: SubmitListingCommand): Task<SubmissionResult>
+}
+
+class SubmissionResult {
+  +Guid ListingId
+  +string BusinessName
+  +ListingStage Stage
+  +DateTimeOffset SubmittedAt
+}
+
+class StartListingDraftCommand {
+  +Guid OwnerId
+  +ListingKind Kind
+}
+
+class StartListingDraftCommandHandler {
+  +Handle(command: StartListingDraftCommand): Task<ListingDraftDto>
+}
+
+class OwnerListingSummary {
+  +Guid ListingId
+  +string Name
+  +ListingStage Stage
+}
+
+class ReferenceRequested <<outbox event>> {
+  +Guid ListingId
+  +Guid ChurchReferenceId
+}
+
+class IdempotencyRecord {
+  +string Key
+  +Guid MemberId
+  +int StatusCode
+  +string ResponseBody
+  +DateTimeOffset ExpiresAt
+}
+
+Member "1" --> "0..5" Listing : owns
+Listing --> ListingStage : has
+SubmitListingCommandHandler ..> SubmitListingCommand : handles
+SubmitListingCommandValidator ..> SubmitListingCommand : validates
+SubmitListingCommandHandler --> Listing : loads / mutates
+SubmitListingCommandHandler ..> ReferenceRequested : writes to outbox
+SubmitListingCommandHandler ..> SubmissionResult : returns
+SubmitListingCommand ..> IdempotencyRecord : keyed by
+StartListingDraftCommandHandler ..> StartListingDraftCommand : handles
+StartListingDraftCommandHandler ..> Member : checks limit on
+OwnerListingSummary ..> Listing : projects
+@enduml

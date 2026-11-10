@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Share a listing
+
+Person(member, "Visitor or Member", "Shares a listing")
+System_Ext(apps, "Social or chat app", "Fetches link previews")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Share dialog with Copy and E-mail and WhatsApp and More")
+  Container(api, "Jubilee API", "ASP.NET Core", "Serves the /b/{slug} document with Open Graph tags")
+  ContainerDb(cache, "Cache", "Redis", "Listing preview data for at most 60 seconds")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listing name and tagline and cover photo")
+  ContainerDb(media, "Media storage", "Object storage + CDN", "Preview image")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(member, apps, "Pastes or sends the link in")
+Rel(apps, api, "Requests /b/{slug} from", "HTTPS")
+Rel(apps, media, "Downloads the og:image from", "HTTPS")
+Rel(api, cache, "Reads and writes preview data in", "Redis protocol")
+Rel(api, db, "Reads the live listing from", "EF Core")
+@enduml

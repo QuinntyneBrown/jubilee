@@ -1,0 +1,88 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Report a conversation
+
+class ReportConversationDialog <<Angular dialog>> {
+  +reason: FormControl<string>
+  +details: FormControl<string>
+  +blockOtherSide: FormControl<boolean>
+  +submit(): void
+}
+class MessageTextComponent <<Angular component>> {
+  +text: string
+  +segments(): TextSegment[]
+}
+class ReportConversationCommand {
+  +Guid ConversationId
+  +Guid ReporterMemberId
+  +string Reason
+  +string Details
+  +bool BlockOtherSide
+}
+class ReportConversationCommandHandler {
+  +Handle(command: ReportConversationCommand): Task<Guid>
+}
+class Report {
+  +Guid Id
+  +ReportTarget Target
+  +Guid ConversationId
+  +Guid ReporterMemberId
+  +string Reason
+  +ReportStatus Status
+  +DateTimeOffset CreatedAt
+  +IsOpen(): bool
+}
+enum ReportTarget {
+  Listing
+  Conversation
+}
+enum ReportStatus {
+  Open
+  InReview
+  Resolved
+}
+class Conversation {
+  +Guid Id
+  +Block(byMemberId: Guid, now: DateTimeOffset): void
+  +Unblock(byMemberId: Guid): void
+  +CanSend(senderId: Guid): bool
+}
+class ConversationBlock {
+  +Guid BlockedByMemberId
+  +ParticipantSide BlockedSide
+  +DateTimeOffset CreatedAt
+}
+class ReportedConversationAccessPolicy {
+  +Authorize(staff: Member, conversationId: Guid): Task<bool>
+}
+class AuditEntry {
+  +Guid Id
+  +Guid ActorMemberId
+  +string Action
+  +string Target
+  +DateTimeOffset OccurredAt
+  +string Reason
+}
+
+ReportConversationDialog ..> ReportConversationCommand : POST reports
+ReportConversationCommandHandler ..> ReportConversationCommand : handles
+ReportConversationCommandHandler --> Report : creates
+ReportConversationCommandHandler --> Conversation : blocks when chosen
+Report --> ReportTarget : has
+Report --> ReportStatus : has
+Report "*" --> "1" Conversation : attaches
+Conversation "1" *-- "0..2" ConversationBlock : has
+ReportedConversationAccessPolicy ..> Report : requires an open
+ReportedConversationAccessPolicy ..> AuditEntry : records
+@enduml

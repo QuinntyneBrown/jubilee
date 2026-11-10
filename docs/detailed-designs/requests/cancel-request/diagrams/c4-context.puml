@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Cancel a request
+
+Person(member, "Member", "Cancels an open request")
+Person(owner, "Owner", "Is told of the cancellation")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the request update mail")
+
+Rel(member, jubilee, "Cancels a request and may undo using", "HTTPS")
+Rel(jubilee, owner, "Notifies of the cancellation or its withdrawal")
+Rel(jubilee, email, "Sends mail via")
+Rel(email, owner, "Delivers mail to")
+@enduml

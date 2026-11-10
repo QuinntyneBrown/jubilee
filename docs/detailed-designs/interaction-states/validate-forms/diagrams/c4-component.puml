@@ -1,0 +1,41 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Validate forms
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "SignUpPage", "Angular page", "Example page form at /join")
+  Component(dialog, "BookMeetingDialog", "Angular dialog", "Example dialog form")
+  Component(form, "FormController", "Shared service", "Runs rules. Merges server errors. Moves focus")
+  Component(submit, "SubmitController", "Shared service", "Busy state. Blocks a second press. 10 s limit")
+  Component(summary, "ErrorSummary", "Shared UI", "Fix n things to continue with links to fields")
+  Component(field, "FormField", "Shared UI", "Label and control and linked message")
+  Component(alert, "DialogErrorAlert", "Shared UI", "Failed-state alert at the top of a dialog")
+  Component(catalog, "ValidationMessageCatalog", "TypeScript module", "Message code to copy")
+  Component(client, "AccountApi and RequestsApi", "Typed HTTP clients", "POST /api/account and POST /api/requests/bookings")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(pd, "ProblemDetailsMiddleware", "ASP.NET Core middleware", "Maps validation failures to 422 with field codes")
+  Component(ctrl, "AccountController and RequestsController", "ASP.NET Core controllers", "Send commands through MediatR")
+  Component(behavior, "ValidationBehavior", "MediatR pipeline behaviour", "Runs the validator before the handler")
+  Component(validator, "Command validators", "FluentValidation", "Same rules and codes as the browser")
+  Component(handler, "Command handlers", "MediatR handlers", "Run only for valid commands")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+
+Rel(page, form, "Validates through")
+Rel(page, summary, "Shows errors in")
+Rel(page, field, "Composes")
+Rel(dialog, form, "Validates through")
+Rel(dialog, alert, "Shows failure in")
+Rel(dialog, field, "Composes")
+Rel(form, catalog, "Reads copy from")
+Rel(form, submit, "Submits valid input through")
+Rel(submit, client, "Sends once through")
+Rel(client, pd, "Calls", "JSON/HTTPS")
+Rel(pd, ctrl, "Passes request to")
+Rel(ctrl, behavior, "Sends command through")
+Rel(behavior, validator, "Runs")
+Rel(behavior, handler, "Invokes when valid")
+Rel(handler, db, "Saves", "EF Core")
+@enduml

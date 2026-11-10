@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Manage services
+
+Person(owner, "Owner", "Manages the services of a listing")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Services page with editor and delete dialogs")
+  Container(api, "Jubilee API", "ASP.NET Core", "Owner service endpoints and rules")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and search indexing")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Services, requests and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
+  ContainerDb(search, "Search index", "<TO SUPPLY>", "Full-text search over services")
+}
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Calls service endpoints", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Stores idempotency keys for 24 hours", "Redis protocol")
+Rel(worker, db, "Reads outbox", "EF Core")
+Rel(worker, search, "Adds updates and removes service documents")
+@enduml

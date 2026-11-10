@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Owner views their own listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "OwnerPreviewBanner" as banner
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetListingPageQueryHandler" as handler
+  participant "ListingVisibilityPolicy" as policy
+  participant "RecordListingViewCommandHandler" as views
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open their own listing at /b/:slug
+page -> client : getListingPage(slug)
+client -> controller : GET /api/listings/{slug}
+controller -> controller : Authenticate the session cookie
+controller -> handler : Send GetListingPageQuery
+handler -> db : Load Listing by slug
+db --> handler : Listing
+handler -> policy : Evaluate(listing, viewer)
+policy -> policy : Compare Listing.OwnerId with the session member (L2-133)
+alt Listing is live
+  policy --> handler : Public with ViewerRelation Owner
+else Listing is not public
+  policy --> handler : Preview with ViewerRelation Owner and the stage (L2-028)
+end
+handler --> controller : ListingPageDto that bypasses the cache
+controller --> client : 200 with viewer Owner
+client --> page : Typed result
+page -> banner : Render for the owner
+banner --> actor : Show "This is how members see your listing." with "Go to My business" (L2-037)
+page --> actor : Show "Edit listing" in place of "Book a meeting" and "Message" and hide save and report (L2-037)
+page -> client : recordView(slug)
+client -> controller : POST /api/listings/{slug}/views
+controller -> views : Send RecordListingViewCommand
+views -> views : Detect that the viewer owns the listing
+views --> controller : Skipped so that no view is counted (L2-037)
+controller --> client : 204 No Content
+@enduml

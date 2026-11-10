@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Protect credentials and sessions
+
+Person(member, "Member", "Signs in. Sets and changes a password")
+Person(visitor, "Visitor", "Joins or resets a forgotten password")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Hashes passwords and keeps server-side sessions")
+System_Ext(breach, "Breached-password service", "Answers k-anonymity range queries over leaked passwords")
+System_Ext(google, "Google Identity", "OpenID Connect sign-in that also ends in a Jubilee session")
+
+Rel(member, jubilee, "Signs in to and changes password in", "HTTPS")
+Rel(visitor, jubilee, "Chooses a password in", "HTTPS")
+Rel(jubilee, breach, "Sends hash prefix to", "HTTPS")
+Rel(jubilee, google, "Verifies identity with", "OpenID Connect")
+@enduml

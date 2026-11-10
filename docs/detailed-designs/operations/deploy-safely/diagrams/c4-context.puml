@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Deploy safely
+
+Person(oncall, "On-call engineer", "Merges changes and approves production deploys and sets feature flags")
+Person(member, "Member", "Uses Jubilee during a deploy")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace in development and staging and production")
+System_Ext(pipeline, "Delivery pipeline", "Builds and tests and deploys each merge. Vendor to supply")
+System_Ext(hosting, "Hosting provider", "Canadian data centres with environments defined as code. Vendor to supply")
+System_Ext(lb, "Hosting load balancer", "Switches traffic between the blue and green slots")
+
+Rel(oncall, pipeline, "Merges to main and approves production in")
+Rel(pipeline, hosting, "Provisions environments in", "Infrastructure as code")
+Rel(pipeline, jubilee, "Deploys releases and runs migrations and smoke tests on", "HTTPS")
+Rel(pipeline, lb, "Switches the active slot on")
+Rel(member, lb, "Reaches Jubilee through", "HTTPS")
+Rel(lb, jubilee, "Routes to the active slot of", "HTTPS")
+Rel(oncall, jubilee, "Sets feature flags in", "HTTPS")
+@enduml

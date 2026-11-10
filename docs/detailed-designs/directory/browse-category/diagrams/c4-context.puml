@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Browse a category
+
+Person(visitor, "Visitor", "Browses the directory without an account")
+Person(member, "Member", "Browses the directory while signed in")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Opens /c/:category and filters and sorts and pages results in", "HTTPS")
+Rel(member, jubilee, "Opens /c/:category and filters and sorts and pages results in", "HTTPS")
+@enduml

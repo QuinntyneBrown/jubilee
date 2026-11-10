@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage products
+
+Person(owner, "Owner", "Member who owns a shop listing")
+Person(member, "Member", "Browses the shop and requests products")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(owner, jubilee, "Adds edits deletes and reorders products using", "HTTPS")
+Rel(member, jubilee, "Sees product changes on the public shop in", "HTTPS")
+@enduml

@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Open a policy page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "HelpPage" as page
+  participant "HelpDisclosure" as disc
+  participant "ContentApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ContentController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetPublishedContentQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+actor -> page : Open /help#how-does-a-business-get-verified
+page -> client : Load published content for help
+client -> controller : GET /api/content/help
+controller -> handler : Send GetPublishedContentQuery
+handler -> cache : Read published help content
+alt Cache hit
+  cache --> handler : PolicyDocumentDto
+else Cache miss
+  cache --> handler : None
+  handler -> db : Load published ContentVersion with sections
+  db --> handler : Version
+  handler -> cache : Store PolicyDocumentDto
+  cache --> handler : Stored
+end
+handler --> controller : PolicyDocumentDto
+controller --> client : 200 content
+client --> page : Sections
+page -> disc : Render one disclosure per question with its anchor (L2-110)
+opt URL fragment matches an anchor
+  page -> disc : Open and scroll to the matching question
+  disc -> disc : Set aria-expanded="true"
+end
+disc --> actor : Show questions and the opened answer
+actor -> disc : Press Enter or Space on another question
+disc -> disc : Toggle aria-expanded (L2-110)
+disc --> actor : Show or hide the answer
+@enduml

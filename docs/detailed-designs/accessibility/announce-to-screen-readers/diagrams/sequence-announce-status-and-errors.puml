@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Announce status changes and errors
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConversationPage" as page
+  participant "MessagesApi" as client
+  participant "RealtimeClient" as realtime
+  participant "ToastService" as toast
+  participant "LiveAnnouncer" as announcer
+  participant "LiveRegions" as regions
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "MessagesController" as controller
+  participant "EventsHub" as hub
+end box
+participant "Screen reader" as at
+actor -> page : Send a message
+page -> announcer : announce(sending status, Polite) (L2-159)
+announcer -> regions : Set the text of the role=status region
+regions --> at : Read when the screen reader is idle
+page -> client : Post the message
+client -> controller : POST /api/conversations/{id}/messages
+alt the message is stored
+  controller --> client : 201 message
+  client --> page : Sent result
+  page -> announcer : announce(sent status, Polite)
+  announcer -> regions : Set the text of the role=status region
+  regions --> at : Read when idle
+else the request fails
+  controller --> client : ProblemDetails with reference
+  client --> page : Error result
+  page -> toast : show(danger toast)
+  toast -> announcer : announce(error message, Assertive) (L2-159)
+  announcer -> regions : Set the text of the role=alert region
+  regions --> at : Read at once
+end
+opt a reply arrives
+  hub -> realtime : Message received event
+  realtime -> toast : show(message toast)
+  toast -> announcer : announce(message received, Polite) (L2-159)
+  announcer -> regions : Set the text of the role=status region
+  regions --> at : Read when idle
+  realtime -> page : Update the count badge name to Messages, {n} unread
+end
+@enduml

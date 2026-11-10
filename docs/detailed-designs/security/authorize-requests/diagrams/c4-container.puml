@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Authorize requests
+
+Person(member, "Member", "Signed-in account holder. Also an owner or verifier by role")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Route guards hide routes the role may not open")
+  Container(api, "Jubilee API", "ASP.NET Core", "Applies the role check and the object-level check on every endpoint")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members with roles. Owned objects with their owner")
+  ContainerDb(cache, "Cache", "Redis", "Sessions that identify the caller")
+}
+System_Ext(obs, "Observability platform", "Stores security events")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls with session cookie", "JSON/HTTPS")
+Rel(api, cache, "Resolves session in", "Redis protocol")
+Rel(api, db, "Loads owned object from", "EF Core")
+Rel(api, obs, "Writes AuthorizationDenied events to", "HTTPS")
+@enduml

@@ -1,0 +1,61 @@
+@startuml
+title UML sequence behaviour — Delete a service
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyServicesPage" as page
+  participant "DeleteServiceDialog" as dialog
+  participant "ServicesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "OwnerServicesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeleteServiceCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Delete" on a service
+page -> dialog : Open "Delete “{name}”?"
+dialog --> actor : Focus "Keep service" (L2-129)
+actor -> dialog : Press "Delete service"
+dialog -> client : Build typed request
+client -> controller : DELETE /api/owner/listings/{listingId}/services/{serviceId}
+controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
+controller -> handler : Send DeleteServiceCommand
+handler -> db : Load listing with the service
+db --> handler : Listing
+handler -> entity : RemoveService sets DeletedAt (L2-095)
+entity --> handler : Service removed
+handler -> db : Save service and ServiceChanged outbox message
+note right of db : Request rows are not touched.\nOpen requests stay open (L2-095).
+alt Save succeeds
+  db --> handler : Commit result
+  handler --> controller : Success
+  controller --> client : 204 No Content
+  client --> dialog : Deleted
+  dialog --> page : Close and remove the service
+  page --> actor : Show the updated service count
+else Save fails
+  db --> handler : Error
+  handler --> controller : Failure
+  controller --> client : ProblemDetails with error reference
+  client --> dialog : Failed
+  dialog --> actor : Show "We couldn't delete it. The service is still listed. Try again."
+end
+@enduml

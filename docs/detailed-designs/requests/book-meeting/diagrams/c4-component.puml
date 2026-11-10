@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Book a meeting
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "BookMeetingDialog", "Angular dialog", "Collects service and day and mode and time and note")
+  Component(picker, "AvailabilityPicker", "Angular component", "Offers selectable days and slots")
+  Component(client, "RequestsApi", "Typed HTTP client", "Calls the requests endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes /api/requests endpoints")
+  Component(idem, "IdempotencyMiddleware", "ASP.NET Core middleware", "Returns the original result for a repeated key")
+  Component(handler, "BookMeetingCommandHandler", "MediatR handler", "Creates the booking request")
+  Component(avail, "IAvailabilityService", "Application service", "Computes slots from business hours")
+  Component(entity, "Request", "Domain entity", "Owns the request lifecycle")
+  Component(cal, "GetBookingCalendarQueryHandler", "MediatR handler", "Builds the iCalendar file with CalendarFileBuilder")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Dispatches notification and e-mail and real-time event")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Requests and conversations and outbox")
+ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
+
+Rel(dialog, picker, "Hosts")
+Rel(picker, client, "Loads slots through")
+Rel(dialog, client, "Sends booking through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, idem, "Runs behind")
+Rel(idem, cache, "Reads and writes keys")
+Rel(ctrl, handler, "Sends BookMeetingCommand")
+Rel(ctrl, cal, "Sends GetBookingCalendarQuery")
+Rel(handler, avail, "Checks slot with")
+Rel(handler, entity, "Creates")
+Rel(handler, db, "Persists request and outbox", "EF Core")
+Rel(cal, db, "Reads booking", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+@enduml

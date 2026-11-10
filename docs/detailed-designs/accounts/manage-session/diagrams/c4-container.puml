@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Manage session
+
+Person(member, "Member", "Signed-in account holder")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "SessionExpiredPage - SignOutDialog - draft storage on the device")
+  Container(api, "Jubilee API", "ASP.NET Core", "Authenticates the session cookie and ends sessions")
+  ContainerDb(cache, "Cache", "Redis", "Server-side sessions")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members")
+}
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Sends the session cookie and the anti-CSRF token with each call", "JSON/HTTPS")
+Rel(api, cache, "Reads - renews and deletes sessions", "Redis protocol")
+Rel(api, db, "Reads the member of the session", "EF Core")
+@enduml

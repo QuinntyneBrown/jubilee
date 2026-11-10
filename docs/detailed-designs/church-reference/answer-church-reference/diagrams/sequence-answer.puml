@@ -1,0 +1,74 @@
+@startuml
+title UML sequence behaviour — Open the link and send an answer
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Church reference" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ReferenceLinkPage" as page
+  participant "ReferenceApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ReferenceRequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "OpenReferenceRequestQueryHandler" as query
+  participant "SubmitReferenceAnswerCommandHandler" as handler
+  participant "ChurchReference" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /reference/:token from the e-mail
+page -> page : Read the token and remove it from the address bar (L2-140)
+page -> client : open(token)
+client -> controller : POST /api/reference-requests/open
+controller -> controller : Apply the rate limit and redact the token from logs
+controller -> query : Send OpenReferenceRequestQuery
+query -> db : Find the LinkToken by SHA-256 hash
+db --> query : Open token with listing and owner
+query -> query : Word the copy with the owner's pronouns or first name (L2-081)
+query --> controller : ReferenceRequestView
+controller --> client : 200 OK
+client --> page : View
+page --> actor : Show "Can you confirm {owner}?" with the three answers
+actor -> page : Choose an answer and enter name and role and press "Send my answer"
+page -> page : Validate in the browser (L2-126)
+alt No answer chosen and role empty
+  page --> actor : Show "Fix 2 things to continue" (L2-081)
+else Valid
+  page -> client : answer(token, answer, name, role, note)
+  client -> controller : POST /api/reference-requests/answer
+  controller -> handler : Send SubmitReferenceAnswerCommand
+  handler -> db : Load the token by hash with its ChurchReference
+  db --> handler : Token and reference
+  handler -> handler : Check the token is open and redeem it (L2-080)
+  handler -> entity : RecordAnswer(answer)
+  entity --> handler : Status set from the answer
+  handler -> db : Save answer and used token and ReferenceAnswered outbox message
+  db --> handler : Commit result
+  handler --> controller : Accepted
+  controller --> client : 204 No Content
+  client --> page : Sent
+  page --> actor : Show "Thank you, {name}." and the link stops working (L2-081)
+end
+opt Reference presses "tell us"
+  actor -> page : Press "tell us"
+  page -> client : report(token)
+  client -> controller : POST /api/reference-requests/report
+  controller --> client : 204 No Content after closing the link and notifying the verification team
+  client --> page : Reported
+  page --> actor : Confirm the report
+end
+@enduml

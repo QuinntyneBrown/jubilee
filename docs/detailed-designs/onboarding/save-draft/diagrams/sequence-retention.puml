@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Warn about and delete an untouched draft
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Worker" #D1FADF
+  participant "DraftRetentionJob" as job
+  participant "OutboxDispatcherJob" as dispatcher
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  participant "IEmailSender" as sender
+end box
+participant "E-mail provider" as provider
+actor "Member" as actor
+job -> job : Start on schedule and take the single-run lock (L2-182)
+job -> db : Select drafts untouched for 180 days with no notice sent
+db --> job : Drafts to warn
+loop Each draft to warn
+  job -> entity : MarkExpiryNoticeSent(now)
+  job -> db : Save listing and DraftExpiryNotice outbox message in one transaction
+  db --> job : Commit result
+end
+job -> db : Select drafts with a notice sent 14 days ago and still untouched
+db --> job : Drafts to delete
+loop Each draft to delete
+  job -> db : Delete the draft with its items and reference fields (L2-077)
+  db --> job : Commit result
+end
+job -> db : Record last success
+db --> job : Recorded
+dispatcher -> db : Read undispatched outbox messages
+db --> dispatcher : DraftExpiryNotice
+dispatcher -> sender : Send the draft expiry notice
+sender -> provider : Submit e-mail
+provider --> sender : Accepted
+provider -> actor : Deliver the notice
+sender --> dispatcher : Sent
+dispatcher -> db : Mark dispatched
+db --> dispatcher : Commit result
+@enduml

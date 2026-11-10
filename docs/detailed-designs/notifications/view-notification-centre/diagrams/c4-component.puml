@@ -1,0 +1,41 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View the notification centre
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "NotificationsPage", "Angular page", "Route /notifications with heading and actions and list")
+  Component(item, "NotificationItem", "Angular component", "Title and detail and time and unread mark")
+  Component(badge, "UnreadBadge", "Angular component", "Count badge capped at 99+")
+  Component(store, "NotificationsStore", "Signal store", "Notification list and unread count")
+  Component(badges, "BadgeStore", "Signal store", "Unread conversations and new requests")
+  Component(client, "NotificationsApi", "Typed HTTP client", "Calls notification and badge endpoints")
+  Component(rt, "RealtimeClient", "Angular service", "Receives notification.created and badge.changed")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "NotificationsController", "ASP.NET Core controller", "Exposes /api/notifications and /api/badges")
+  Component(list, "ListNotificationsQueryHandler", "MediatR handler", "Returns the caller's notifications from the last 90 days")
+  Component(mark, "MarkNotificationsReadCommandHandler", "MediatR handler", "Marks one or all notifications read")
+  Component(counts, "GetBadgeCountsQueryHandler", "MediatR handler", "Counts unread conversations and new requests")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(proj, "NotificationProjector", "Outbox event handler", "Creates a Notification per event and recipient")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Notifications and outbox")
+
+Rel(page, item, "Renders one per notification")
+Rel(page, store, "Reads state from")
+Rel(badge, badges, "Reads count from")
+Rel(store, client, "Loads and marks through")
+Rel(badges, client, "Loads counts through")
+Rel(rt, store, "Applies notification.created to")
+Rel(rt, badges, "Applies badge.changed to")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, list, "Sends ListNotificationsQuery")
+Rel(ctrl, mark, "Sends MarkNotificationsReadCommand")
+Rel(ctrl, counts, "Sends GetBadgeCountsQuery")
+Rel(list, db, "Queries", "EF Core")
+Rel(mark, db, "Updates", "EF Core")
+Rel(counts, db, "Counts", "EF Core")
+Rel(proj, db, "Inserts notifications", "EF Core")
+@enduml

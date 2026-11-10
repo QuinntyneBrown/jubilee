@@ -1,0 +1,96 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Announce to screen readers
+
+enum Politeness {
+  Polite
+  Assertive
+}
+
+class LiveAnnouncer {
+  -Signal<string> politeText
+  -Signal<string> assertiveText
+  +announce(message: string, politeness: Politeness): void
+  +clear(): void
+}
+
+class LiveRegions {
+  +string politeText
+  +string assertiveText
+}
+
+class ToastService {
+  +show(toast: Toast): void
+  +dismiss(id: string): void
+}
+
+class Toast {
+  +string id
+  +ToastKind kind
+  +string message
+  +politeness(): Politeness
+}
+
+enum ToastKind {
+  Info
+  Success
+  Warning
+  Danger
+}
+
+class ErrorSummary {
+  +FieldError[] errors
+  +focusFirstError(): void
+}
+
+class Icon {
+  +string name
+  +string label
+  +boolean decorative
+}
+
+class CountBadge {
+  +number count
+  +string context
+  +accessibleName(): string
+}
+
+class JubileeTitleStrategy {
+  +updateTitle(snapshot: RouterStateSnapshot): void
+}
+
+class AxeSpec {
+  +string[] blockingImpacts = serious, critical
+  +scan(screen: ManifestScreen, state: string): AxeViolation[]
+}
+
+class StructureSpec {
+  +assertTitle(page: Page): void
+  +assertSingleH1(page: Page): void
+  +assertHeadingOrder(page: Page): void
+  +assertLandmarks(page: Page): void
+  +assertLang(page: Page): void
+}
+
+LiveAnnouncer --> Politeness : uses
+LiveAnnouncer --> LiveRegions : writes to
+ToastService ..> LiveAnnouncer : announces through
+ToastService "1" o-- "0..3" Toast : shows
+Toast --> ToastKind : has
+Toast ..> Politeness : maps to
+ErrorSummary ..> LiveAnnouncer : announces through
+AxeSpec ..> Icon : checks
+AxeSpec ..> CountBadge : checks
+StructureSpec ..> JubileeTitleStrategy : checks
+@enduml

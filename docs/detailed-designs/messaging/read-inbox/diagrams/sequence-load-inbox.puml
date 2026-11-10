@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Load the inbox
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member or Owner" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MessagesPage" as page
+  participant "MessagesStore" as store
+  participant "MessagesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ListConversationsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+member -> page : Open /messages
+page -> store : load()
+store -> client : list()
+client -> controller : GET /api/conversations
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send ListConversationsQuery
+handler -> db : Select conversations where caller is the member or owns the listing (L2-056)
+db --> handler : Rows with last message and read position
+handler -> handler : Order by latest activity and build previews (L2-056)
+handler --> controller : InboxResult
+controller --> client : 200 OK
+client --> store : Rows and totals
+store --> page : State
+alt no conversations
+  page --> member : Show "Start a conversation." with "Browse businesses"
+else conversations exist
+  page --> member : Show "4 conversations · 2 unread" and rows marked "Unread."
+  opt viewport 1024 px or wider and none open
+    page --> member : Show "Pick a conversation." in the right pane
+  end
+end
+@enduml

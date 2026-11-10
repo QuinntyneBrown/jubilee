@@ -1,0 +1,100 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Run background jobs
+
+interface IJob {
+  +string Name
+  +ExecuteAsync(context: JobContext): Task
+}
+
+class JobDefinition {
+  +string Name
+  +string CronExpression
+  +Type JobType
+}
+
+class JobContext {
+  +string JobName
+  +DateTimeOffset ScheduledFor
+  +int Attempt
+  +string CorrelationId
+}
+
+class JobRun {
+  +Guid Id
+  +string JobName
+  +DateTimeOffset ScheduledFor
+  +JobRunStatus Status
+  +int Attempts
+  +DateTimeOffset? NextAttemptAt
+  +DateTimeOffset LeaseExpiresAt
+  +string? LastError
+  +MarkSucceeded(now: DateTimeOffset): void
+  +MarkFailed(error: string, now: DateTimeOffset, backOff: IBackOff): void
+}
+
+enum JobRunStatus {
+  Claimed
+  Succeeded
+  Retrying
+  DeadLettered
+}
+
+class JobState {
+  +string JobName
+  +DateTimeOffset? LastSuccessAt
+  +DateTimeOffset? LastScheduledFor
+}
+
+class DeadLetterEntry {
+  +Guid Id
+  +Guid JobRunId
+  +string JobName
+  +string Error
+  +DateTimeOffset MovedAt
+  +DateTimeOffset? ReplayedAt
+}
+
+class TorontoSchedule {
+  +OccurrencesBetween(cron: string, from: DateTimeOffset, to: DateTimeOffset): IReadOnlyList<DateTimeOffset>
+  +ToInstant(localTime: DateTime): DateTimeOffset
+}
+
+class JobScheduler {
+  #ExecuteAsync(ct: CancellationToken): Task
+}
+
+class JobRunner {
+  +MaxAttempts: int = 5
+  +RunAsync(run: JobRun): Task
+}
+
+class MeetingReminderJob {
+  +ExecuteAsync(context: JobContext): Task
+}
+
+IJob <|.. MeetingReminderJob
+JobDefinition ..> IJob : names
+JobScheduler ..> "*" JobDefinition : reads
+JobScheduler ..> TorontoSchedule : asks
+JobScheduler ..> JobRun : claims
+JobRunner ..> IJob : executes
+JobRunner ..> JobContext : builds
+JobRunner --> JobRun : updates
+JobRunner ..> JobState : records success in
+JobRunner ..> DeadLetterEntry : creates
+JobRun --> JobRunStatus : has
+DeadLetterEntry "0..1" --> "1" JobRun : refers to
+JobState "1" .. "*" JobRun : summarises
+@enduml

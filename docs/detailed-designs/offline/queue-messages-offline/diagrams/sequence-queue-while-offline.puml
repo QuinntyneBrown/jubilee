@@ -1,0 +1,43 @@
+@startuml
+title UML sequence behaviour — Queue a message while offline
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MessageComposer" as composer
+  participant "ConversationStore" as store
+  participant "IdempotencyKeyFactory" as keys
+  participant "ConnectionService" as conn
+  participant "OutgoingMessageQueue" as queue
+end box
+box "Frontend — Jubilee service worker" #E0F2FE
+  participant "OutboxSyncHandler" as sync
+end box
+actor -> composer : Write a message and press "Send"
+composer -> store : send(body)
+store -> keys : create()
+keys --> store : Idempotency key (L2-132)
+store -> conn : isOffline()
+conn --> store : true
+store -> queue : enqueue(QueuedMessage in state WaitingToSend)
+queue -> queue : Assign next sequence, set queuedAt in UTC
+queue --> store : Stored on the device (L2-120)
+opt Browser supports Background Sync
+  store -> sync : Register sync tag jubilee-outbox
+  sync --> store : Registered
+end
+store --> composer : Thread with the queued message
+composer --> actor : Show the message marked "Waiting to send"
+@enduml

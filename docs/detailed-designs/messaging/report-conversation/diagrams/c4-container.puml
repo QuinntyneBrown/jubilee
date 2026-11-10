@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Report a conversation
+
+Person(member, "Member", "Reports and blocks")
+Person(verifier, "Verification team member", "Reviews reports")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Conversation page and report dialog and admin report view")
+  Container(api, "Jubilee API", "ASP.NET Core", "Report and block endpoints and staff access policy")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Notifies verifiers of new reports")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Reports and blocks and audit entries and outbox")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and idempotency keys")
+}
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(verifier, web, "Uses", "HTTPS")
+Rel(web, api, "Calls report and block and admin endpoints", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Checks session and idempotency key", "Redis protocol")
+Rel(worker, db, "Reads outbox", "EF Core")
+@enduml

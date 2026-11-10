@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Meet API latency and scale
+
+Person(visitor, "Visitor", "Requests public directory and category pages")
+Person(member, "Member", "Reads the inbox and requests and sends messages and requests")
+Person(engineer, "On-call engineer", "Reads latency dashboards and load test reports")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(edge, "Edge cache", "CDN in front of the API. Caches visitor directory responses for up to 60 seconds. Vendor <TO SUPPLY>")
+System_Ext(obs, "Observability platform", "Latency percentiles per endpoint and alerts. Vendor <TO SUPPLY>")
+System_Ext(load, "Load test runner", "Generates 500 requests per second and 5,000 real-time connections. Tool <TO SUPPLY>")
+
+Rel(visitor, edge, "Requests directory pages through", "HTTPS")
+Rel(edge, jubilee, "Forwards cache misses to", "HTTPS")
+Rel(member, jubilee, "Reads and writes through", "HTTPS")
+Rel(jubilee, edge, "Purges changed listings from", "HTTPS")
+Rel(jubilee, obs, "Sends request metrics to", "HTTPS")
+Rel(load, jubilee, "Drives mixed traffic against a production-like environment of", "HTTPS and WebSocket")
+Rel(engineer, obs, "Reads dashboards in")
+@enduml

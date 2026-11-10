@@ -1,0 +1,93 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Read the inbox
+
+class MessagesStore <<signal store>> {
+  +rows: Signal<ConversationSummary[]>
+  +total: Signal<number>
+  +unread: Signal<number>
+  +term: Signal<string>
+  +load(): void
+  +search(term: string): void
+  +setMuted(id: string, muted: boolean): void
+  +applyEvent(event: RealtimeEvent): void
+}
+class MessagesApi <<Angular service>> {
+  +list(term: string): Observable<InboxResult>
+  +mute(id: string): Observable<void>
+  +unmute(id: string): Observable<void>
+}
+class ListConversationsQuery {
+  +Guid MemberId
+  +string SearchTerm
+}
+class ListConversationsQueryHandler {
+  +Handle(query: ListConversationsQuery): Task<InboxResult>
+}
+class InboxResult {
+  +int Total
+  +int Unread
+  +IReadOnlyList<ConversationSummary> Rows
+}
+class ConversationSummary {
+  +Guid ConversationId
+  +string BusinessName
+  +string Initials
+  +DateTimeOffset LastActivityAt
+  +string PreviewPrefix
+  +string Preview
+  +bool IsUnread
+  +bool IsMuted
+}
+class SetConversationMuteCommand {
+  +Guid ConversationId
+  +Guid MemberId
+  +bool Muted
+}
+class SetConversationMuteCommandHandler {
+  +Handle(command: SetConversationMuteCommand): Task
+}
+class Conversation {
+  +Guid Id
+  +Guid MemberId
+  +Guid ListingId
+  +DateTimeOffset LastActivityAt
+  +ParticipantFor(memberId: Guid): ConversationParticipant
+}
+class ConversationParticipant {
+  +Guid MemberId
+  +ParticipantSide Side
+  +long LastReadSequence
+  +DateTimeOffset? MutedAt
+  +Mute(now: DateTimeOffset): void
+  +Unmute(): void
+  +IsUnread(lastSequence: long): bool
+}
+enum ParticipantSide {
+  Member
+  Business
+}
+
+MessagesStore ..> MessagesApi : calls
+MessagesStore "1" o-- "*" ConversationSummary : holds
+MessagesApi ..> ListConversationsQuery : GET /api/conversations
+MessagesApi ..> SetConversationMuteCommand : PUT or DELETE mute
+ListConversationsQueryHandler ..> ListConversationsQuery : handles
+ListConversationsQueryHandler ..> InboxResult : returns
+InboxResult "1" *-- "*" ConversationSummary : contains
+SetConversationMuteCommandHandler ..> SetConversationMuteCommand : handles
+SetConversationMuteCommandHandler --> Conversation : loads
+Conversation "1" *-- "2" ConversationParticipant : has
+ConversationParticipant --> ParticipantSide : has
+@enduml

@@ -1,0 +1,50 @@
+@startuml
+title UML sequence behaviour — Unsubscribe with one click
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+participant "Mail client" as client
+box "Backend — Jubilee API" #D1FADF
+  participant "UnsubscribeController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "UnsubscribeCommandHandler" as handler
+  participant "NotificationPreferences" as prefs
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+member -> client : Press unsubscribe in the mail client
+client -> controller : POST /api/email/unsubscribe/{token} with List-Unsubscribe=One-Click
+controller -> controller : Accept without a session (L2-068)
+controller -> handler : Send UnsubscribeCommand
+handler -> db : Find LinkToken by hash with purpose Unsubscribe
+alt token unknown
+  db --> handler : No row
+  handler --> controller : Not found
+  controller --> client : 404 ProblemDetails
+else token valid
+  db --> handler : Token with member and category
+  handler -> db : Load NotificationPreferences
+  db --> handler : Preferences
+  handler -> prefs : TurnOff(category) (L2-068)
+  prefs --> handler : Category off
+  handler -> db : Save changes in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Done
+  controller --> client : 200 OK
+  client --> member : Unsubscribed
+end
+@enduml

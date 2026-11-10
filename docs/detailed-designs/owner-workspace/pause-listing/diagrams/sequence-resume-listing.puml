@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Resume a listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "VerificationBanner" as banner
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "OwnerListingController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ResumeListingCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcher" as outbox
+end box
+participant "Search index" as search
+actor -> banner : Press "Resume listing"
+banner -> client : Build typed request
+client -> controller : POST /api/owner/listings/{listingId}/resume
+controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
+controller -> handler : Send ResumeListingCommand
+handler -> db : Load listing
+db --> handler : Listing with PausedAt
+handler -> entity : Resume(now) applies the 12 month rule (L2-096)
+alt Paused for under 12 months
+  entity --> handler : Stage Live
+  handler -> db : Save stage and ListingVisibilityChanged outbox message
+  db --> handler : Commit result
+  handler --> controller : ListingStageDto
+  controller --> client : 200 stage Live
+  client --> banner : Live
+  banner --> actor : Clear the paused banner
+  outbox -> db : Read ListingVisibilityChanged
+  db --> outbox : Pending message
+  outbox -> search : Add listing within 60 seconds (L2-096)
+  search --> outbox : Added
+else Paused for 12 months or more
+  entity --> handler : Stage ReadyToReview
+  handler -> db : Save stage in one unit of work
+  db --> handler : Commit result
+  handler --> controller : ListingStageDto
+  controller --> client : 200 stage ReadyToReview
+  client --> banner : Back in the verification queue
+  banner --> actor : Show the listing stage in the workspace header
+end
+@enduml

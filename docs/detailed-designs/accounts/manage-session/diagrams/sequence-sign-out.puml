@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Sign out of the current session
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SignOutDialog" as dialog
+  participant "AccountApi" as client
+  participant "SessionService" as session
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "CsrfMiddleware" as csrf
+  participant "SessionController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ISessionStore" as store
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+end box
+
+actor -> dialog : Choose "Sign out" in the account menu
+dialog --> actor : Ask "Sign out of Jubilee?" with "Stay signed in" and "Sign out" (L2-011)
+alt member presses "Stay signed in"
+  dialog --> actor : Close the dialog and return focus
+else member presses "Sign out"
+  dialog -> client : signOut()
+  client -> csrf : DELETE /api/session
+  csrf -> csrf : Check anti-CSRF token bound to the session (L2-135)
+  csrf -> controller : Forward request
+  controller -> store : End(currentSessionId, SignedOut)
+  store -> cache : Delete this session only (L2-011)
+  cache --> store : Deleted
+  store --> controller : Ended
+  controller --> client : 204 No Content with cleared cookie
+  client --> dialog : Signed out
+  dialog -> session : Clear the signed-in member and keep drafts on the device (L2-011)
+  session --> dialog : Cleared
+  dialog --> actor : Navigate to /welcome
+end
+@enduml

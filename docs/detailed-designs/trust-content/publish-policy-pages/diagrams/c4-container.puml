@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Publish policy pages
+
+Person(visitor, "Visitor", "Reads policy pages")
+Person(admin, "Verification team member", "Publishes policy text")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Statement of faith, terms, privacy and help pages")
+  Container(api, "Jubilee API", "ASP.NET Core", "Content read and publish endpoints")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Content documents, versions and terms acceptances")
+  ContainerDb(cache, "Cache", "Redis", "Published content read cache")
+}
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(admin, web, "Uses", "HTTPS")
+Rel(web, api, "Reads and publishes content", "JSON/HTTPS")
+Rel(api, cache, "Reads and invalidates published content", "Redis protocol")
+Rel(api, db, "Reads and appends versions", "EF Core")
+@enduml

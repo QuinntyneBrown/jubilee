@@ -1,0 +1,100 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Meet page budgets
+
+enum VitalName {
+  LCP
+  INP
+  CLS
+}
+
+enum PageType {
+  Browse
+  Category
+  Search
+  Business
+  Shop
+  Product
+  Conversation
+}
+
+class VitalSample {
+  +name: VitalName
+  +value: number
+  +pageType: PageType
+  +deviceClass: string
+  +release: string
+}
+
+class WebVitalsReporter {
+  -samples: VitalSample[]
+  +start(pageType: PageType): void
+  +flush(): void
+}
+
+class ImageRendition {
+  +width: number
+  +format: string
+  +url: string
+}
+
+class ImageUrlBuilder {
+  +renditions(photoId: string): ImageRendition[]
+  +srcset(photoId: string, format: string): string
+}
+
+class ResponsiveImage {
+  +photoId: string
+  +alt: string
+  +width: number
+  +height: number
+  +sizes: string
+  +priority: boolean
+  +loading(): string
+  +fetchPriority(): string
+}
+
+class PageRequest {
+  +int Page
+  +int PageSize
+  +{static} int MaxPageSize = 50
+  +Normalize(): PageRequest
+}
+
+class "PagedResult<T>" as PagedResult {
+  +IReadOnlyList<T> Items
+  +int Page
+  +int PageSize
+  +int TotalCount
+}
+
+class BudgetRule {
+  +assetType: string
+  +maxCompressedKb: number
+}
+
+class BundleBudgetCheck {
+  +rules: BudgetRule[]
+  +measure(statsPath: string): number
+  +assertWithinBudget(): void
+}
+
+WebVitalsReporter "1" o-- "*" VitalSample : buffers
+VitalSample --> VitalName : has
+VitalSample --> PageType : has
+ResponsiveImage ..> ImageUrlBuilder : uses
+ImageUrlBuilder "1" --> "6" ImageRendition : builds per photo
+PagedResult ..> PageRequest : echoes
+BundleBudgetCheck "1" *-- "2" BudgetRule : enforces
+@enduml

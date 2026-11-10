@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Exchange messages
+
+Person(member, "Member", "Writes to a business and reads its replies")
+Person(owner, "Owner", "Replies on behalf of the business and sets an away period")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(scanner, "Malware scanner", "Scans uploaded photos")
+
+Rel(member, jubilee, "Reads and sends messages and photos using")
+Rel(owner, jubilee, "Replies and sets away status using")
+Rel(jubilee, scanner, "Submits uploaded photos to")
+@enduml

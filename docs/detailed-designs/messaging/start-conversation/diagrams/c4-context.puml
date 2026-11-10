@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Start a conversation
+
+Person(member, "Member", "Signed-in account holder who writes to a business")
+Person(owner, "Owner", "Member who owns the listing and receives the message")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the new-message e-mail to the owner")
+
+Rel(member, jubilee, "Sends a first message from a listing using")
+Rel(jubilee, owner, "Notifies of the new message")
+Rel(jubilee, email, "Sends new-message e-mail via")
+Rel(email, owner, "Delivers e-mail to")
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage e-mail consent
+
+Person(member, "Member", "Opts in to or out of promotional e-mail")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers promotional e-mail with unsubscribe headers - vendor TO SUPPLY")
+
+Rel(member, jubilee, "Gives or withdraws consent using")
+Rel(jubilee, email, "Sends promotional e-mail to opted-in members via", "HTTPS")
+Rel(email, member, "Delivers e-mail with an unsubscribe link to")
+Rel(member, jubilee, "Unsubscribes without signing in using")
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Request changes
+Person(verifier, "Verification team member", "Asks the owner for changes or declines a listing")
+Person(owner, "Owner", "Edits and resubmits the listing")
+Person_Ext(reference, "Church reference", "Pastor or elder asked again when the reference changes")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers change requests and decline reasons and reference requests")
+
+Rel(verifier, jubilee, "Requests changes or declines in", "HTTPS")
+Rel(owner, jubilee, "Reads the request and resubmits in", "HTTPS")
+Rel(jubilee, email, "Sends e-mail via")
+Rel(email, owner, "Delivers the request or the decline reason to")
+Rel(email, reference, "Delivers a new reference request to")
+@enduml

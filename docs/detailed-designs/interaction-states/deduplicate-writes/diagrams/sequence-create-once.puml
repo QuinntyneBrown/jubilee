@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Create a resource once
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BookMeetingDialog" as dialog
+  participant "IdempotencyKeyFactory" as keys
+  participant "SubmitController" as submit
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IdempotencyMiddleware" as mw
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "BookMeetingCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "RedisIdempotencyStore" as store
+  database "Jubilee database" as db
+end box
+actor -> dialog : Open the dialog
+dialog -> keys : create()
+keys --> dialog : Idempotency key (L2-132)
+actor -> dialog : Double-click the primary button
+dialog -> submit : submit(send)
+dialog -> submit : submit(send)
+submit --> dialog : Second press ignored (L2-127)
+submit -> client : bookMeeting(request, key)
+client -> mw : POST /api/requests/bookings with Idempotency-Key
+mw -> mw : Check the key format, compute the request fingerprint
+mw -> store : TryReserveAsync(scope, key, hash)
+store --> mw : Reserved, state InProgress, expiry 24 hours
+mw -> controller : Pass request
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send BookMeetingCommand
+handler -> db : Insert Request, IdempotencyRecord and outbox entry in one transaction
+db --> handler : Commit result, unique index on Scope and Key holds
+handler --> controller : RequestDto
+controller --> mw : 201 Created
+mw -> store : CompleteAsync(record with status and body)
+store --> mw : Stored for 24 hours (L2-132)
+mw --> client : 201 Created
+client --> submit : Typed result
+submit --> dialog : State Succeeded
+dialog --> actor : Show the success state
+@enduml

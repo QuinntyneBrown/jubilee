@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Adapt visual presentation
+
+Person(member, "Member", "Sets theme and motion and zoom and contrast preferences")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Design tokens and themes and preference-aware styles")
+}
+System_Ext(browser, "Browser and operating system", "Media features and zoom and forced colours")
+System_Ext(ci, "CI pipeline", "Contrast check and style lint and visual adaptation tests")
+
+Rel(member, web, "Reads and operates", "HTTPS")
+Rel(browser, web, "Reports prefers-reduced-motion and forced-colors and viewport width to")
+Rel(ci, web, "Builds and tests")
+@enduml

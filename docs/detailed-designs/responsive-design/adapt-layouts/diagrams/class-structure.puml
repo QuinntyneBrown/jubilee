@@ -1,0 +1,88 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Adapt layouts
+
+enum InboxView {
+  ListAndConversation
+  ListOnly
+  ConversationOnly
+}
+
+enum FieldKind {
+  Email
+  Telephone
+  PostalCode
+  CurrentPassword
+  NewPassword
+  Price
+  Quantity
+  Text
+}
+
+class LayoutRule {
+  +cssClass: string
+  +belowPx: number
+  +columnsBelow: string
+  +columnsFrom: string
+}
+
+class ViewportService {
+  +breakpoint: Signal<Breakpoint>
+  +isBelow(minWidthPx: number): boolean
+}
+
+class InboxLayout {
+  +conversationId: Signal<string | null>
+  +view: Signal<InboxView>
+  +hostClass(): string
+  +backToList(): void
+}
+
+class ConversationPage {
+  +messages: Signal<Message[]>
+  +scrollLatestIntoView(): void
+}
+
+class KeyboardInsetDirective {
+  -visualViewport: VisualViewport
+  +keyboardInsetPx: Signal<number>
+  +onViewportResize(): void
+}
+
+class ResponsiveTableDirective {
+  +stackBelowPx: number = 768
+  +stacked: Signal<boolean>
+  +labelCells(): void
+}
+
+class InputTraits {
+  +type: string
+  +inputmode: string
+  +autocomplete: string
+}
+
+class InputTraitsDirective {
+  +kind: FieldKind
+  +traits(): InputTraits
+}
+
+InboxLayout --> InboxView : resolves
+InboxLayout --> ViewportService : reads
+InboxLayout *-- ConversationPage : hosts
+ConversationPage --> KeyboardInsetDirective : composer uses
+ResponsiveTableDirective --> ViewportService : reads
+InputTraitsDirective --> FieldKind : configured by
+InputTraitsDirective ..> InputTraits : produces
+ViewportService ..> LayoutRule : shares breakpoints with
+@enduml

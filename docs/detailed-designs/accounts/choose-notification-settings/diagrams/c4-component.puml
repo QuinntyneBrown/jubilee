@@ -1,0 +1,41 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Choose notification settings
+
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "NotificationSettingsPage", "Angular page", "Route /account/notifications")
+  Component(row, "PreferenceSwitchRow", "Angular component", "One switch with Saving and Saved states")
+  Component(store, "PreferencesStore", "Signal store", "Optimistic change and revert on failure")
+  Component(client, "AccountApi", "Typed HTTP client", "Reads and patches preferences")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "NotificationPreferencesController", "ASP.NET Core controller", "GET and PATCH endpoints")
+  Component(handler, "UpdateNotificationPreferenceCommandHandler", "MediatR handler", "Saves one setting")
+  Component(query, "GetNotificationPreferencesQueryHandler", "MediatR handler", "Returns the settings")
+  Component(prefs, "NotificationPreferences", "Domain entity", "Five switches and a frequency")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Sends or defers or drops each e-mail")
+  Component(policy, "EmailDeliveryPolicy", "Domain service", "Decides Immediate or Summary or Suppressed")
+  Component(summary, "DailySummaryJob", "Hosted job", "One summary per member at 07:00 America/Toronto")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Preferences and SummaryItem and OutboxMessage")
+System_Ext(email, "E-mail provider", "Vendor <TO SUPPLY>")
+
+Rel(page, row, "Renders 5")
+Rel(row, store, "Reports a change")
+Rel(store, client, "Saves one setting")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends UpdateNotificationPreferenceCommand")
+Rel(ctrl, query, "Sends GetNotificationPreferencesQuery")
+Rel(handler, prefs, "Calls Set or SetFrequency")
+Rel(handler, db, "Saves", "EF Core")
+Rel(query, db, "Reads", "EF Core")
+Rel(outbox, policy, "Asks for a decision")
+Rel(outbox, db, "Reads outbox and writes SummaryItem", "EF Core")
+Rel(summary, db, "Reads and deletes SummaryItem", "EF Core")
+Rel(outbox, email, "Sends immediate e-mail", "HTTPS")
+Rel(summary, email, "Sends summary e-mail", "HTTPS")
+@enduml

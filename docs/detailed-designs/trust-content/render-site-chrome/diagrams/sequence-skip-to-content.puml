@@ -1,0 +1,36 @@
+@startuml
+title UML sequence behaviour — Skip to content
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "AppShell" as shell
+  participant "SkipLink" as skip
+  participant "TopBar" as top
+  participant "main element" as main
+end box
+actor -> shell : Load a page and press Tab
+shell -> skip : Focus the first focusable element (L2-112)
+skip --> actor : Show "Skip to content"
+alt Member activates the link
+  actor -> skip : Press Enter
+  skip -> main : Move focus to main (L2-112)
+  main --> actor : Focus is at the start of the page content
+else Member presses Tab again
+  actor -> skip : Press Tab
+  skip -> top : Focus moves to the brand link
+  top --> actor : Continue through the navigation
+end
+@enduml

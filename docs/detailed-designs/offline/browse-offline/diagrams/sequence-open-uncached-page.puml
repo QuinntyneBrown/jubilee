@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Open an uncached page offline
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Angular Router" as router
+  participant "OfflineNavigationHandler" as navh
+  participant "OfflinePage" as page
+  participant "ConnectionService" as conn
+end box
+box "Frontend — Jubilee service worker" #E0F2FE
+  participant "Jubilee service worker" as sw
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "Jubilee API" as api
+end box
+actor -> router : Open a page that is not cached
+router -> sw : GET page data
+sw -> sw : Network fails, no cached response
+sw --> router : 504 Gateway Timeout
+router -> navh : handle(error, attemptedUrl)
+navh -> conn : isOffline()
+conn --> navh : true
+navh -> page : Render with returnUrl, keep the address (L2-122)
+page --> actor : "You're offline. Jubilee needs a connection to load this page." with "Try again" and "Open messages"
+alt Connection returns
+  conn -> page : state becomes Online
+  page -> router : navigateByUrl(returnUrl) (L2-122)
+  router -> sw : GET page data
+  sw -> api : Forward request
+  api --> sw : 200 OK
+  sw --> router : Response
+  router --> actor : Show the original page
+else Member presses "Open messages"
+  actor -> page : Press "Open messages"
+  page -> router : navigate /messages
+  router --> actor : Show conversations read from the conversations cache
+end
+@enduml

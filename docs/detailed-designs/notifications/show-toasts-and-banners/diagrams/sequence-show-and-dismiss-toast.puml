@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Show and dismiss a toast
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Page or RealtimeClient" as caller
+  participant "ToastService" as svc
+  participant "ToastTimer" as timer
+  participant "ToastHost" as host
+end box
+caller -> svc : show(toast)
+opt three toasts are already visible
+  svc -> svc : Remove the oldest non-error toast (L2-066)
+end
+svc -> host : Publish list with the newest toast last
+alt tone is Danger
+  host --> member : Render in the role="alert" region and announce assertively (L2-066)
+else tone is Info or Success or Warning
+  host --> member : Render in the polite live region
+  svc -> timer : start() with 8 seconds (L2-066)
+  opt pointer hovers the toast or focus enters it
+    member -> host : Hover or focus
+    host -> svc : pause(id)
+    svc -> timer : pause()
+    timer --> svc : Remaining time kept
+    member -> host : Leave or blur
+    host -> svc : resume(id)
+    svc -> timer : resume()
+  end
+  timer --> svc : Elapsed
+  svc -> host : Remove toast
+end
+opt member presses the action such as "Undo"
+  member -> host : Press action
+  host -> svc : Run ToastAction then dismiss(id)
+  svc --> host : Updated list
+end
+opt member presses the dismiss button
+  member -> host : Press dismiss
+  host -> svc : dismiss(id)
+  svc --> host : Updated list
+end
+host --> member : Remaining toasts in visual and Tab order
+@enduml

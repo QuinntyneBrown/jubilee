@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Share a listing from the dialog
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "ShareListingDialog" as dialog
+  participant "ShareLinkBuilder" as builder
+  participant "ClipboardService" as clip
+  participant "WebShareService" as share
+  participant "LiveAnnouncer" as announce
+end box
+participant "Browser and device" as device
+actor -> page : Press the share action
+page -> dialog : Open with the listing slug and name
+dialog -> builder : canonicalUrl(slug)
+builder --> dialog : https://{host}/b/{slug}
+dialog -> share : isSupported()
+share --> dialog : Web Share API present or absent
+dialog --> actor : Show "Share {business}" with the link and "Copy" and "E-mail" and "WhatsApp" and "Done" (L2-038)
+alt Press "Copy"
+  actor -> dialog : Press "Copy"
+  dialog -> clip : writeText(canonical link)
+  clip -> device : navigator.clipboard.writeText
+  device --> clip : Written
+  clip --> dialog : true
+  dialog -> announce : Announce the copy politely
+  announce --> dialog : Announced
+  dialog --> actor : Button reads "Copied ✓" for 2 seconds (L2-038)
+else Press "E-mail" or "WhatsApp"
+  actor -> dialog : Press "E-mail" or "WhatsApp"
+  dialog -> builder : mailtoUrl(target) or whatsAppUrl(target)
+  builder --> dialog : URL with the encoded canonical link
+  dialog -> device : Open the URL
+  device --> actor : Open the mail or WhatsApp composer
+else Press "More…" where the Web Share API exists
+  actor -> dialog : Press "More…"
+  dialog -> share : share(title and canonical link)
+  share -> device : navigator.share
+  device --> actor : Open the native share sheet (L2-038)
+end
+actor -> dialog : Press "Done"
+dialog --> page : Close and return focus to the share action (L2-130)
+@enduml

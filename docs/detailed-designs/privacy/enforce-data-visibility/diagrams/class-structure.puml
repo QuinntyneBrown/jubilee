@@ -1,0 +1,101 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Enforce data visibility
+
+enum DataAudience {
+  NoOne
+  Self
+  RequestBusiness
+  Verifier
+  Public
+}
+
+class PersonalDataAttribute {
+  +DataAudience Audience
+}
+
+class AudienceJsonModifier {
+  +Apply(typeInfo: JsonTypeInfo, audience: DataAudience): void
+  -IsVisible(property: JsonPropertyInfo, audience: DataAudience): bool
+}
+
+class Member {
+  +Guid Id
+  +string Email
+  +string Phone
+  +PostalCode PostalCode
+  +string HomeChurch
+}
+
+class PostalCode {
+  +string Value
+  +ForwardSortationArea(): string
+}
+
+class PostalArea {
+  +string Neighbourhood
+  +string FirstThreeCharacters
+  +{static} From(code: PostalCode, directory: INeighbourhoodDirectory): PostalArea
+  +ToLabel(): string
+}
+
+class Request {
+  +Guid Id
+  +Guid MemberId
+  +Guid ListingId
+  +string ContactPhone
+}
+
+class IncomingRequestDto {
+  +Guid Id
+  +string MemberFirstName
+  +string ContactPhone
+  +string AreaLabel
+}
+
+interface IStaffPersonalDataQuery {
+  +StaffAccessReason Reason
+}
+
+class StaffAccessReason {
+  +Guid? ReportId
+  +Guid? ListingId
+  +IsValid(): bool
+}
+
+class StaffAccessAuditBehavior {
+  +Handle(query: IStaffPersonalDataQuery, next: RequestHandlerDelegate): Task<TResponse>
+}
+
+class AuditEntry {
+  +Guid Id
+  +Guid ActorId
+  +string Action
+  +string Target
+  +string Reason
+  +DateTimeOffset OccurredAt
+}
+
+PersonalDataAttribute --> DataAudience : declares
+AudienceJsonModifier ..> PersonalDataAttribute : reads
+Member "1" *-- "0..1" PostalCode : has
+Member ..> PersonalDataAttribute : annotated with
+PostalArea ..> PostalCode : derived from
+Request "*" --> "1" Member : sent by
+IncomingRequestDto ..> Request : projects
+IncomingRequestDto ..> PostalArea : carries label of
+IStaffPersonalDataQuery "1" *-- "1" StaffAccessReason : carries
+StaffAccessAuditBehavior ..> IStaffPersonalDataQuery : intercepts
+StaffAccessAuditBehavior ..> AuditEntry : appends
+@enduml

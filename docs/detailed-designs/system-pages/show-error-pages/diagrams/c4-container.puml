@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Show error pages
+Person(member, "Member", "Meets a missing or forbidden or failed page")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Not found and forbidden and server error pages and load-error states")
+  Container(api, "Jubilee API", "ASP.NET Core", "Page shell with status codes plus ProblemDetails with error references")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listing slugs and slug history and access requests")
+  ContainerDb(cache, "Cache", "Redis", "Sessions")
+}
+System_Ext(observability, "Observability platform", "Logs with error reference and correlation ID")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Loads pages and calls", "HTTPS")
+Rel(api, db, "Reads slugs and writes access requests", "EF Core")
+Rel(api, cache, "Reads session", "Redis protocol")
+Rel(api, observability, "Writes structured logs to")
+@enduml

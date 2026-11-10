@@ -1,0 +1,97 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Pause and resume a listing
+
+enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Paused
+  OnHold
+  Removed
+  Declined
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +string Name
+  +ListingStage Stage
+  +DateTimeOffset? ApprovedAt
+  +DateTimeOffset? PausedAt
+  +int MaxPauseMonths = 12
+  +Pause(now: DateTimeOffset): void
+  +Resume(now: DateTimeOffset): ListingStage
+  +IsPublic(): bool
+}
+
+class PauseListingCommand {
+  +Guid ListingId
+}
+
+class ResumeListingCommand {
+  +Guid ListingId
+}
+
+class PauseListingCommandHandler {
+  +Handle(command: PauseListingCommand): Task<Result<ListingStageDto>>
+}
+
+class ResumeListingCommandHandler {
+  +Handle(command: ResumeListingCommand): Task<Result<ListingStageDto>>
+}
+
+class ListingStageDto {
+  +Guid ListingId
+  +ListingStage Stage
+  +DateTimeOffset? PausedAt
+}
+
+class OutboxMessage {
+  +Guid Id
+  +string Type
+  +string Payload
+  +DateTimeOffset OccurredAt
+  +DateTimeOffset? DispatchedAt
+}
+
+class OutboxDispatcher {
+  +DispatchAsync(message: OutboxMessage): Task
+}
+
+interface IClock {
+  +Now(): DateTimeOffset
+}
+
+interface ISearchIndex {
+  +UpsertListingAsync(listingId: Guid): Task
+  +RemoveListingAsync(listingId: Guid): Task
+}
+
+Listing --> ListingStage : has
+PauseListingCommandHandler ..> PauseListingCommand : handles
+ResumeListingCommandHandler ..> ResumeListingCommand : handles
+PauseListingCommandHandler --> Listing : pauses
+ResumeListingCommandHandler --> Listing : resumes
+PauseListingCommandHandler ..> IClock : reads time
+ResumeListingCommandHandler ..> IClock : reads time
+PauseListingCommandHandler ..> OutboxMessage : writes
+ResumeListingCommandHandler ..> OutboxMessage : writes
+PauseListingCommandHandler ..> ListingStageDto : returns
+OutboxDispatcher "1" --> "*" OutboxMessage : dispatches
+OutboxDispatcher ..> ISearchIndex : updates
+@enduml

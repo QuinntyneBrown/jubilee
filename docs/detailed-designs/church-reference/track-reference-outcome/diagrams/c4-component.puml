@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Track the reference outcome
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "MyBusinessPage", "Angular page", "Pending state of /my-business")
+  Component(banner, "VerificationBanner", "Shared UI", "Info and warning and danger banners with their actions")
+  Component(dialog, "ChangeReferenceDialog", "Angular dialog", "New church and pastor's e-mail")
+  Component(client, "ListingsApi", "Typed HTTP client", "Status and reminder and change reference calls")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Authenticates and checks ownership")
+  Component(status, "GetVerificationStatusQueryHandler", "MediatR handler", "Returns the stage and banner state without the answer")
+  Component(remind, "SendReferenceReminderCommandHandler", "MediatR handler", "At most one reminder per 72 hours")
+  Component(change, "ChangeReferenceCommandHandler", "MediatR handler", "Revokes the old link and requests the new reference")
+  Component(outcome, "ReferenceAnsweredHandler", "MediatR notification handler", "Applies the answer to the listing stage")
+  Component(listing, "Listing", "Domain entity", "Owns the stage transitions")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "ReferenceFollowUpJob", "Hosted job", "Marks 7 days of silence and 14-day expiry")
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Sends reminders and notices and real-time events")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings and references and outbox")
+
+Rel(page, banner, "Shows")
+Rel(banner, dialog, "Opens on Change reference")
+Rel(page, client, "Loads the status through")
+Rel(dialog, client, "Sends the new reference through")
+Rel(client, ctrl, "GET status and POST reminder and PUT reference", "JSON/HTTPS")
+Rel(ctrl, status, "Sends GetVerificationStatusQuery")
+Rel(ctrl, remind, "Sends SendReferenceReminderCommand")
+Rel(ctrl, change, "Sends ChangeReferenceCommand")
+Rel(outcome, listing, "Calls ApplyReferenceOutcome on")
+Rel(change, listing, "Calls ChangeReference on")
+Rel(status, db, "Reads", "EF Core")
+Rel(remind, db, "Writes outbox", "EF Core")
+Rel(job, db, "Selects silent references", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Stay available
+
+Person(member, "Member", "Reads the directory and searches for businesses")
+Person(oncall, "On-call engineer", "Schedules maintenance and handles incidents")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(lb, "Hosting load balancer", "Probes each instance and routes traffic to ready instances")
+System_Ext(status, "Status page", "Public page for maintenance and incident notices. Vendor to supply")
+System_Ext(obs, "Observability platform", "Runs outside probes and opens incidents. Vendor to supply")
+
+Rel(member, jubilee, "Browses and searches using", "HTTPS")
+Rel(oncall, jubilee, "Schedules maintenance windows in", "HTTPS")
+Rel(lb, jubilee, "Probes liveness and readiness of", "HTTPS")
+Rel(obs, jubilee, "Measures availability of", "HTTPS")
+Rel(jubilee, status, "Publishes maintenance notices to", "HTTPS")
+Rel(obs, status, "Opens an incident on", "HTTPS")
+Rel(oncall, status, "Updates incidents on")
+@enduml

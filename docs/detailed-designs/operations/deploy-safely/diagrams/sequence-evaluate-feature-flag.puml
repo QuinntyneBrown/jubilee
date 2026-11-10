@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Turn a feature on for a percentage of users
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "On-call engineer" as operator
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "FeatureFlagDirective" as directive
+  participant "FeatureFlagService" as flagsvc
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "FeatureFlagsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "FeatureFlagEvaluator" as eval
+  participant "FeatureFlag" as flag
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+operator -> controller : PUT /api/ops/feature-flags/{key}
+controller -> controller : Authenticate and require Admin role (L2-133)
+controller -> flag : SetRule(Production, enabled, percentage)
+flag --> controller : Rule set
+controller -> db : Save flag and audit entry
+db --> controller : Commit result
+controller -> cache : Remove cached rules
+cache --> controller : Removed
+controller --> operator : 204 No Content
+actor -> directive : Open a page
+directive -> flagsvc : isEnabled(key)
+flagsvc -> controller : GET /api/feature-flags
+controller -> eval : GetAllAsync(context)
+eval -> cache : Read rules
+alt rules cached
+  cache --> eval : Rules
+else cache miss
+  cache --> eval : None
+  eval -> db : Load FeatureFlag rows
+  db --> eval : Rules
+  eval -> cache : Store rules
+  cache --> eval : Stored
+end
+eval -> eval : Apply L2-178 rule: environment enabled and bucket below percentage
+eval --> controller : Flag values for this user
+controller --> flagsvc : 200 JSON
+flagsvc --> directive : true or false
+directive --> actor : Render or omit the feature
+@enduml

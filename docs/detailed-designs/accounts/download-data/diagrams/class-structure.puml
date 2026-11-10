@@ -1,0 +1,103 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Download data
+
+
+enum DataExportStatus {
+  Requested
+  Ready
+  Expired
+  Failed
+}
+
+class DataExport {
+  +Guid Id
+  +Guid MemberId
+  +DataExportStatus Status
+  +DateTime RequestedAt
+  +DateTime? ReadyAt
+  +DateTime? ExpiresAt
+  +string? StorageKey
+  +MarkReady(storageKey: string, now: DateTime): void
+  +MarkFailed(now: DateTime): void
+  +Expire(now: DateTime): void
+  +IsDownloadableBy(memberId: Guid, now: DateTime): bool
+}
+
+class LinkToken {
+  +Guid Id
+  +Guid MemberId
+  +LinkTokenPurpose Purpose
+  +string TokenHash
+  +Guid? DataExportId
+  +DateTime ExpiresAt
+  +IsUsable(now: DateTime): bool
+}
+
+class Member {
+  +Guid Id
+  +string Email
+  +bool OwnsListing
+}
+
+class RequestDataExportCommandHandler {
+  +Handle(command: RequestDataExportCommand): Task<Guid>
+}
+
+class DownloadDataExportQueryHandler {
+  +Handle(query: DownloadDataExportQuery): Task<Stream>
+}
+
+class DataExportJob {
+  +RunAsync(dataExportId: Guid): Task
+}
+
+class DataArchiveBuilder {
+  +BuildAsync(memberId: Guid): Task<Stream>
+}
+
+interface IArchiveSection {
+  +string Name
+  +AppliesTo(member: Member): bool
+  +WriteAsync(memberId: Guid, writer: Utf8JsonWriter): Task
+}
+
+class ProfileSection
+class MessagesSection
+class ListingSection <<owner only>>
+class IncomingRequestsSection <<owner only>>
+
+interface IExportStore {
+  +SaveAsync(key: string, content: Stream): Task
+  +OpenAsync(key: string): Task<Stream>
+  +DeleteAsync(key: string): Task
+}
+
+RequestDataExportCommandHandler --> DataExport : creates
+DownloadDataExportQueryHandler --> LinkToken : loads by hash
+DownloadDataExportQueryHandler --> DataExport : checks
+DownloadDataExportQueryHandler ..> IExportStore : opens
+DataExportJob --> DataExport : marks ready
+DataExportJob ..> DataArchiveBuilder : uses
+DataExportJob ..> IExportStore : saves
+DataExportJob --> LinkToken : creates
+DataArchiveBuilder "1" o-- "9" IArchiveSection
+IArchiveSection <|.. ProfileSection
+IArchiveSection <|.. MessagesSection
+IArchiveSection <|.. ListingSection
+IArchiveSection <|.. IncomingRequestsSection
+Member "1" --> "*" DataExport : requests
+DataExport "1" <-- "0..1" LinkToken : opens
+DataExport --> DataExportStatus : has
+@enduml

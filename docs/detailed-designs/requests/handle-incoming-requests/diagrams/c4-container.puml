@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Handle incoming requests
+
+Person(member, "Member", "Sends requests and sees the Replies fast badge")
+Person(owner, "Owner", "Sees and answers requests sent to the business")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Incoming requests page and listing badge")
+  Container(api, "Jubilee API", "ASP.NET Core", "HTTPS JSON API under /api and real-time hub")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and response-time badge job")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Requests and messages and response-time stats")
+  ContainerDb(cache, "Cache", "Redis", "Sessions")
+}
+System_Ext(email, "E-mail provider", "Delivers the new request mail")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Calls and subscribes", "JSON/HTTPS and WebSocket")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Reads session")
+Rel(worker, db, "Reads outbox", "EF Core")
+Rel(worker, api, "Publishes real-time events through EventsHub")
+Rel(worker, email, "Sends mail via")
+@enduml

@@ -1,0 +1,61 @@
+@startuml
+title UML sequence behaviour — Load a region
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestsPage" as page
+  participant "LoadRegion" as region
+  participant "LiveAnnouncer" as live
+  participant "RequestsStore" as store
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ListRequestsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /requests
+page -> store : load(filter)
+store --> region : LoadState loading
+store -> client : list(filter)
+client -> controller : GET /api/requests?status={filter}
+opt Still loading after 200 ms (L2-123)
+  region -> region : Show skeletons matching the final layout
+  region -> live : announce("Loading your requests…")
+  live --> region : Announced
+end
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send ListRequestsQuery
+handler -> db : Read the member's requests
+db --> handler : Rows
+handler --> controller : Page of RequestSummaryDto
+controller --> client : 200 OK
+client --> store : Typed result
+alt Items returned
+  store --> region : LoadState loaded
+  region --> actor : Replace skeletons with content, layout shift below 0.1 (L2-123)
+else No items and no filter
+  store --> region : LoadState empty
+  region --> actor : EmptyState "Nothing requested yet" with "Browse businesses" (L2-124)
+else No items match the filter
+  store --> region : LoadState noResults with the filter name
+  region --> actor : NoResultsState "No declined requests" with "Show all requests" (L2-124)
+end
+@enduml

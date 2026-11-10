@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Sign in
+
+Person(visitor, "Visitor", "Signs in at /sign-in or from the sign-in prompt")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the sign-in blocked e-mail")
+
+Rel(visitor, jubilee, "Signs in with e-mail and password using", "HTTPS")
+Rel(jubilee, email, "Sends the lockout notice via")
+Rel(email, visitor, "Delivers the lockout notice with a reset link to")
+@enduml

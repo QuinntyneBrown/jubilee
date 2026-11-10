@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Render the site chrome
+
+Person(member, "Member", "Navigates Jubilee")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Skip link, top bar, tab bar and footer on every page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Navigation summary endpoint and real-time hub")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Conversations, listings and requests")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and navigation summary cache")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Reads the navigation summary", "JSON/HTTPS")
+Rel(api, web, "Pushes BadgeChanged events", "WebSocket or server-sent events")
+Rel(api, cache, "Reads session and cached summary", "Redis protocol")
+Rel(api, db, "Counts unread conversations and new requests", "EF Core")
+@enduml

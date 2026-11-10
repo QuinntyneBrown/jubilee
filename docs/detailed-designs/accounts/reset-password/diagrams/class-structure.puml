@@ -1,0 +1,107 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Reset password
+
+enum LinkTokenPurpose {
+  EmailConfirmation
+  PasswordReset
+  EmailChange
+  ChurchReference
+  DataDownload
+}
+
+enum ResetLinkState {
+  Valid
+  Expired
+}
+
+class Member {
+  +Guid Id
+  +EmailAddress Email
+  +string PasswordHash
+  +DateTimeOffset PasswordChangedAt
+  +ChangePassword(passwordHash: string, now: DateTimeOffset): void
+}
+
+class LinkToken {
+  +Guid Id
+  +Guid MemberId
+  +LinkTokenPurpose Purpose
+  +byte[] TokenHash
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? UsedAt
+  +DateTimeOffset? SupersededAt
+  +IsRedeemable(now: DateTimeOffset): bool
+  +Redeem(now: DateTimeOffset): void
+}
+
+class RequestPasswordResetCommand {
+  +string Email
+}
+
+class RequestPasswordResetCommandHandler {
+  +Handle(command: RequestPasswordResetCommand): Task<Result>
+}
+
+class SendPasswordResetLinkHandler {
+  +Handle(message: PasswordResetRequested): Task
+}
+
+class InspectResetLinkQueryHandler {
+  +Handle(query: InspectResetLinkQuery): Task<ResetLinkView>
+}
+
+class ResetLinkView {
+  +ResetLinkState State
+  +string Email
+}
+
+class ResetPasswordCommand {
+  +string Token
+  +string NewPassword
+  +string RepeatPassword
+}
+
+class ResetPasswordCommandValidator {
+  +Validate(command: ResetPasswordCommand): ValidationResult
+}
+
+class ResetPasswordCommandHandler {
+  +Handle(command: ResetPasswordCommand): Task<Result>
+}
+
+interface ILinkTokenService {
+  +Issue(memberId: Guid, purpose: LinkTokenPurpose, lifetime: TimeSpan): IssuedToken
+  +Find(rawToken: string, purpose: LinkTokenPurpose): Task<LinkToken>
+  +SupersedeOutstanding(memberId: Guid, purpose: LinkTokenPurpose): void
+}
+
+interface ISessionStore {
+  +EndAllForMember(memberId: Guid): Task
+}
+
+Member "1" --> "*" LinkToken : receives
+LinkToken --> LinkTokenPurpose : has
+RequestPasswordResetCommandHandler ..> RequestPasswordResetCommand : handles
+SendPasswordResetLinkHandler ..> ILinkTokenService : uses
+InspectResetLinkQueryHandler ..> ILinkTokenService : uses
+InspectResetLinkQueryHandler ..> ResetLinkView : returns
+ResetLinkView --> ResetLinkState : has
+ResetPasswordCommandValidator ..> ResetPasswordCommand : validates
+ResetPasswordCommandHandler ..> ResetPasswordCommand : handles
+ResetPasswordCommandHandler ..> ILinkTokenService : uses
+ResetPasswordCommandHandler ..> ISessionStore : uses
+ResetPasswordCommandHandler --> Member : changes password
+ILinkTokenService --> LinkToken : issues and finds
+@enduml

@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Erase personal data after 30 days
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as outbox
+  participant "AccountErasureJob" as job
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Member" as entity
+  participant "INotificationPublisher" as notifier
+  participant "ISearchIndex" as index
+  participant "IEmailSender" as sender
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+participant "Search index" as search
+participant "E-mail provider" as email
+== Immediately after deletion ==
+outbox -> db : Read the outbox messages of the deletion
+db --> outbox : Cancelled requests and unpublished listing and confirmation e-mail
+outbox -> notifier : Notify each business of its cancelled request
+notifier --> outbox : Published
+outbox -> index : Remove the unpublished listing
+index -> search : Delete documents
+search --> index : Removed
+index --> outbox : Removed
+outbox -> sender : Send the confirmation e-mail
+sender -> email : Submit message
+email --> sender : Accepted
+sender --> outbox : Sent
+outbox -> db : Mark messages dispatched
+db --> outbox : Commit result
+== Daily run, 30 days after deletion ==
+job -> db : Load members with Status Deleted and EraseAfter passed
+db --> job : Members due for erasure
+loop Each due member
+  job -> entity : Erase(now) (L2-017)
+  entity --> job : Personal fields cleared and Status Erased
+  job -> db : Delete profile rows and saved list and conversation access
+  db --> job : Deleted
+  job -> db : Set sender of the member's messages to "Former member"
+  db --> job : Updated
+  job -> db : Commit the member's erasure
+  db --> job : Commit result
+end
+job -> db : Record counts and last success
+db --> job : Commit result
+@enduml

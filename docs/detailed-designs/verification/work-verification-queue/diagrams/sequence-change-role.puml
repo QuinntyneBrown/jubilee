@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Grant or remove a role
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Verification team member (admin role)" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MemberRolesPage" as page
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminRolesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ChangeMemberRoleCommandHandler" as handler
+  participant "Member" as entity
+  participant "IAuditLog" as audit
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Choose a role for a member
+page -> client : changeRole(memberId, role, reason)
+client -> controller : PUT /api/admin/members/{id}/roles
+controller -> controller : Authenticate session and apply AdminPolicy (L2-098)
+alt caller does not hold the admin role
+  controller --> client : 403 ProblemDetails
+  client --> page : Forbidden
+  page --> actor : Show the forbidden page
+else caller holds the admin role
+  controller -> handler : Send ChangeMemberRoleCommand
+  handler -> db : Load member
+  db --> handler : Member
+  handler -> entity : ChangeRole(role, actor)
+  entity --> handler : Role changed
+  handler -> audit : Record actor, target, before, after and reason (L2-180)
+  audit --> handler : AuditEntry appended
+  handler -> db : Save changes in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Typed result
+  controller --> client : 204
+  client --> page : Role saved
+  page --> actor : Show the member's new role
+end
+@enduml

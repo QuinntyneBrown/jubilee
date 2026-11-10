@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Publish a new content version
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Verification team member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Content editing screen <TO SUPPLY>" as page
+  participant "ContentApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ContentController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "PublishContentVersionCommandHandler" as handler
+  participant "ContentDocument" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+actor -> page : Submit new text for the statement of faith
+page -> client : Build typed request
+client -> controller : POST /api/admin/content/statement-of-faith/versions
+controller -> controller : Authenticate and apply Admin role policy (L2-133)
+alt Caller is not an admin
+  controller --> client : 403 ProblemDetails
+  client --> page : Forbidden
+  page --> actor : Show the forbidden page
+else Caller is an admin
+  controller -> handler : Send PublishContentVersionCommand
+  handler -> db : Load ContentDocument with its versions
+  db --> handler : Document
+  handler -> entity : Publish assigns the next version number (L2-107)
+  entity --> handler : New ContentVersion - previous versions unchanged
+  handler -> db : Insert version and update PublishedVersionNumber in one unit of work
+  db --> handler : Commit result
+  handler -> cache : Remove the cached published content
+  cache --> handler : Removed
+  handler --> controller : New version number
+  controller --> client : 201 version
+  client --> page : Published
+  page --> actor : Show the new version and "Last updated {date}"
+end
+@enduml

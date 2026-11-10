@@ -1,0 +1,113 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Present load states
+
+enum LoadStatus {
+  Idle
+  Loading
+  Loaded
+  Empty
+  NoResults
+  Error
+}
+
+class "LoadState<T>" as LoadState {
+  +status: LoadStatus
+  +data: T
+  +criteria: string
+  +error: LoadError
+}
+
+class LoadError {
+  +reference: string
+  +correlationId: string
+  +httpStatus: number
+}
+
+class LoadRegion {
+  +state: LoadState<T>
+  +thing: string
+  +skeletonDelayMs: number = 200
+  +retry: EventEmitter<void>
+  +focusHeading(): void
+}
+
+class EmptyState {
+  +title: string
+  +sentence: string
+  +actionLabel: string
+  +actionRoute: string
+}
+
+class NoResultsState {
+  +criteriaName: string
+  +clearLabel: string
+  +clear: EventEmitter<void>
+}
+
+class LoadErrorState {
+  +thing: string
+  +reference: string
+  +wayOutLabel: string
+  +wayOutRoute: string
+  +retry: EventEmitter<void>
+}
+
+class ErrorReferenceResolver {
+  +resolve(response: HttpErrorResponse, defaultArea: string): LoadError
+}
+
+class RequestsStore {
+  +list: Signal<LoadState<RequestSummary[]>>
+  +load(filter: string): Promise<void>
+  +reload(): Promise<void>
+}
+
+class ProblemDetails {
+  +string Type
+  +string Title
+  +int Status
+  +string Reference
+  +string CorrelationId
+}
+
+class ErrorReference {
+  +string Area
+  +int Number
+  +ToString(): string
+}
+
+class ErrorReferenceCatalog {
+  +For(area: string, kind: FailureKind): ErrorReference
+}
+
+enum FailureKind {
+  UpstreamFailed
+  ServiceUnavailable
+}
+
+LoadState --> LoadStatus : has
+LoadState "1" --> "0..1" LoadError : carries
+LoadRegion --> LoadState : renders
+LoadRegion ..> EmptyState : shows
+LoadRegion ..> NoResultsState : shows
+LoadRegion ..> LoadErrorState : shows
+RequestsStore --> LoadState : exposes
+RequestsStore ..> ErrorReferenceResolver : maps failures
+ErrorReferenceResolver ..> ProblemDetails : reads
+ErrorReferenceResolver ..> LoadError : creates
+ProblemDetails "1" --> "1" ErrorReference : carries
+ErrorReferenceCatalog ..> ErrorReference : creates
+ErrorReferenceCatalog ..> FailureKind : maps
+@enduml

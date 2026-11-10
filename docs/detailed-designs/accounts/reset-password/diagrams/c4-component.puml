@@ -1,0 +1,44 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Reset password
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(forgot, "ForgotPasswordPage", "Angular page", "Collects the e-mail and shows the neutral success message")
+  Component(reset, "ResetPasswordPage", "Angular page", "Collects the new password twice")
+  Component(client, "AccountApi", "Typed HTTP client", "Calls the password reset endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "PasswordResetController", "ASP.NET Core controller", "Exposes the password reset endpoints")
+  Component(request, "RequestPasswordResetCommandHandler", "MediatR handler", "Queues the request without reading the account")
+  Component(apply, "ResetPasswordCommandHandler", "MediatR handler", "Redeems the token and changes the password")
+  Component(validator, "ResetPasswordCommandValidator", "FluentValidation validator", "Length - match - breached-password check")
+  Component(member, "Member", "Domain entity", "Owns the password hash")
+  Component(sessions, "ISessionStore", "Application service", "Ends every session of the member")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "OutboxDispatcherJob", "Hosted job", "Dispatches outbox messages")
+  Component(send, "SendPasswordResetLinkHandler", "Outbox message handler", "Applies the per-e-mail limit and issues the link")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Members - link tokens - outbox")
+ContainerDb(cache, "Cache", "Redis", "Counters and sessions")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+System_Ext(breach, "Breached-password service", "k-anonymity range query")
+
+Rel(forgot, client, "Submits through")
+Rel(reset, client, "Submits through")
+Rel(client, ctrl, "POST /api/account/password-reset-requests and /password-resets", "JSON/HTTPS")
+Rel(ctrl, request, "Sends RequestPasswordResetCommand")
+Rel(ctrl, apply, "Sends ResetPasswordCommand")
+Rel(ctrl, validator, "Validates through MediatR pipeline")
+Rel(validator, breach, "Checks password")
+Rel(request, db, "Writes outbox message", "EF Core")
+Rel(apply, member, "Calls ChangePassword on")
+Rel(apply, sessions, "Ends sessions through")
+Rel(sessions, cache, "Deletes sessions")
+Rel(apply, db, "Saves member - token - outbox message", "EF Core")
+Rel(job, send, "Dispatches PasswordResetRequested to")
+Rel(send, cache, "Increments e-mail counter")
+Rel(send, db, "Reads member and writes token hash", "EF Core")
+Rel(send, email, "Sends reset link")
+@enduml

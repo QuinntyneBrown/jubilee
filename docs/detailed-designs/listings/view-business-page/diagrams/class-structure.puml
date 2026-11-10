@@ -1,0 +1,117 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — View a business page
+
+enum ListingKind {
+  Services
+  Shop
+}
+
+enum ViewerRelation {
+  Visitor
+  Member
+  Owner
+  Verifier
+}
+
+enum ReplyTimeBand {
+  None
+  WithinFewHours
+  WithinDay
+  WithinFewDays
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +Guid CategoryId
+  +string Slug
+  +string Name
+  +string Tagline
+  +string? Highlight
+  +ListingKind Kind
+  +ListingStage Stage
+  +ReplyTimeBand ReplyTimeBand
+  +IsPublic(): bool
+  +SetReplyTimeBand(medianFirstReply: TimeSpan?, replyCount: int): void
+}
+
+class Service {
+  +Guid Id
+  +string Name
+  +string Detail
+  +ServicePrice Price
+  +int DisplayOrder
+}
+
+class Product {
+  +Guid Id
+  +string Slug
+  +string Name
+  +decimal Price
+  +bool IsSoldOut
+}
+
+class ListingVisibilityPolicy {
+  +Evaluate(listing: Listing, viewer: ViewerContext): ListingVisibility
+}
+
+class GetListingPageQuery {
+  +string Slug
+  +ViewerContext Viewer
+}
+
+class GetListingPageQueryHandler {
+  +Handle(query: GetListingPageQuery): Task<Result<ListingPageDto>>
+}
+
+class ListingPageDto {
+  +ListingKind Kind
+  +ViewerRelation Viewer
+  +string StageLabel
+  +string? RepliesText
+  +IReadOnlyList<ServiceRowDto> Services
+  +IReadOnlyList<ProductCardDto> Products
+  +IReadOnlyList<BusinessCardDto> Related
+}
+
+class RecordListingViewCommand {
+  +string Slug
+  +ViewerContext Viewer
+}
+
+class ListingView {
+  +Guid Id
+  +Guid ListingId
+  +string VisitorKey
+  +DateTimeOffset ViewedAt
+}
+
+class ResponseTimeBadgeJob {
+  +ExecuteAsync(stoppingToken: CancellationToken): Task
+}
+
+Listing "1" *-- "0..*" Service
+Listing "1" *-- "0..*" Product
+Listing --> "1" ListingKind
+Listing --> "1" ReplyTimeBand
+Listing "1" o-- "0..*" ListingView
+GetListingPageQueryHandler ..> GetListingPageQuery : handles
+GetListingPageQueryHandler ..> ListingVisibilityPolicy : checks with
+GetListingPageQueryHandler ..> ListingPageDto : returns
+GetListingPageQueryHandler --> Listing : loads
+ListingPageDto --> "1" ViewerRelation
+RecordListingViewCommand ..> ListingView : creates
+ResponseTimeBadgeJob ..> Listing : updates band of
+@enduml

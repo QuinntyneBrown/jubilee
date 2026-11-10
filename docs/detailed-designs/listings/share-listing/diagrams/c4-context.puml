@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Share a listing
+
+Person(visitor, "Visitor", "Shares a listing without an account")
+Person(member, "Member", "Shares a listing with a friend or small group")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(apps, "Social or chat app", "Receives the shared link and fetches its preview")
+
+Rel(visitor, jubilee, "Opens the share dialog in", "HTTPS")
+Rel(member, jubilee, "Opens the share dialog in", "HTTPS")
+Rel(member, apps, "Sends the canonical link through")
+Rel(apps, jubilee, "Fetches the listing URL for Open Graph tags from", "HTTPS")
+@enduml

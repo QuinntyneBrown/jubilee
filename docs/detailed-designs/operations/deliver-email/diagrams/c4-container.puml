@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Deliver e-mail
+
+Person(member, "Member", "Sees the undeliverable banner")
+System_Ext(provider, "E-mail provider", "Transactional e-mail. Vendor to supply")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Shows the undeliverable banner")
+  Container(api, "Jubilee API", "ASP.NET Core", "Receives provider webhooks and pushes real-time events")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Renders and sends and retries e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Outbox and deliveries and suppressed addresses")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls and subscribes to", "JSON/HTTPS and WebSocket")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Reads outbox and writes delivery state in", "EF Core")
+Rel(worker, provider, "Sends e-mail through", "HTTPS")
+Rel(provider, api, "Posts bounce and complaint events to", "HTTPS webhook")
+@enduml

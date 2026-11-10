@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour — Verify backup state on a schedule
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Worker" #D1FADF
+  participant "BackupVerificationJob" as job
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IBackupInventory" as inventory
+  participant "IMediaStore" as store
+  database "Jubilee database" as db
+end box
+participant "Hosting backup service" as backup
+participant "Media storage" as media
+participant "Observability platform" as obs
+actor "On-call engineer" as oncall
+job -> inventory : GetStateAsync
+inventory -> backup : Read restore points, replica, encryption
+backup --> inventory : Backup state
+inventory --> job : BackupState
+job -> store : GetVersionRetentionAsync
+store -> media : Read lifecycle rule
+media --> store : Version retention
+store --> job : 30 days
+job -> db : Read latest RestoreDrillRecord
+db --> job : Record
+job -> job : Evaluate L2-177 checks against BackupPolicy
+job -> obs : Export one metric per check
+obs --> job : Accepted
+alt each check passes
+  obs -> obs : Dashboards only
+else a check fails
+  obs -> oncall : Page backup-check-failed
+end
+@enduml

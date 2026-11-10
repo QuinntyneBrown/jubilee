@@ -1,0 +1,76 @@
+@startuml
+title UML sequence behaviour — Join with e-mail
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "JoinPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RateLimitMiddleware" as limit
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "JoinWithEmailCommandValidator" as validator
+  participant "JoinWithEmailCommandHandler" as handler
+  participant "Member" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+participant "Bot challenge provider" as bot
+participant "Breached-password service" as breach
+
+actor -> page : Fill the form and press "Create account"
+page -> page : Validate every field (L2-002)
+alt browser validation fails
+  page --> actor : Show ErrorSummary "Fix 3 things to continue" and keep typed values
+else form is valid
+  page -> client : join(form, challengeToken)
+  client -> limit : POST /api/account/join
+  limit -> cache : Increment join counter for the IP (L2-137)
+  cache --> limit : Count within 5 per hour
+  limit -> controller : Forward request
+  controller -> bot : Verify challenge token (L2-137)
+  bot --> controller : Challenge passed
+  controller -> validator : Validate JoinWithEmailCommand (L2-002)
+  validator -> breach : Range query for the password hash prefix (L2-134)
+  breach --> validator : Not breached
+  validator -> db : Look up normalised e-mail
+  db --> validator : No account uses it
+  alt server validation fails
+    validator --> controller : Field error codes
+    controller --> client : 422 ProblemDetails with per-field codes
+    client --> page : Field errors
+    page --> actor : Show every problem at once
+  else command is valid
+    controller -> handler : Send JoinWithEmailCommand
+    handler -> handler : Hash password with Argon2id (L2-134)
+    handler -> entity : Member.Join with normalised e-mail (L2-001)
+    entity --> handler : Member with EmailStatus Unconfirmed
+    handler -> handler : Issue confirmation LinkToken for 24 hours (L2-140)
+    handler -> db : Save member - token hash - outbox message in one unit of work
+    db --> handler : Commit result
+    handler -> cache : Store new Session (L2-010)
+    cache --> handler : Session identifier
+    handler --> controller : JoinResult
+    controller --> client : 201 Created with session cookie
+    client --> page : Joined member
+    page --> actor : Show "Check your e-mail" naming the address
+  end
+end
+@enduml

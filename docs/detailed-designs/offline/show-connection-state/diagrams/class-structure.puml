@@ -1,0 +1,99 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Show connection state
+
+enum ConnectionState {
+  Online
+  Offline
+  ServiceUnreachable
+  Reconnecting
+  Slow
+}
+
+enum BannerVariant {
+  Persistent
+  Danger
+  Info
+  Warning
+  Success
+}
+
+class ConnectionService {
+  +state: Signal<ConnectionState>
+  +secondsToRetry: Signal<number>
+  +isOffline(): boolean
+  +retryNow(): void
+  +reportNetworkFailure(): void
+  +reportSlow(isSlow: boolean): void
+  -scheduleProbe(): void
+}
+
+class BackoffSchedule {
+  +initialSeconds: number = 5
+  +maxSeconds: number = 60
+  +nextDelaySeconds(): number
+  +reset(): void
+}
+
+class ReachabilityProbe {
+  +check(): Promise<ProbeResult>
+}
+
+enum ProbeResult {
+  Reachable
+  NoNetwork
+  ServiceUnreachable
+}
+
+class LatencyMonitor {
+  +windowSeconds: number = 30
+  +thresholdSeconds: number = 3
+  +record(durationMs: number): void
+  +meanSeconds(): number
+}
+
+class SlowRequestInterceptor {
+  +toastAfterSeconds: number = 5
+  +retryForSeconds: number = 60
+  +intercept(request: HttpRequest): Observable<HttpEvent>
+}
+
+class BannerContent {
+  +variant: BannerVariant
+  +title: string
+  +body: string
+  +actionLabel: string
+  +dismissible: boolean
+}
+
+class ConnectionBanner {
+  +content: Signal<BannerContent>
+  +onAction(): void
+}
+
+class HealthController {
+  +Ping(): IActionResult
+}
+
+ConnectionService --> ConnectionState : holds
+ConnectionService "1" *-- "1" BackoffSchedule : owns
+ConnectionService ..> ReachabilityProbe : runs
+ReachabilityProbe ..> ProbeResult : returns
+ReachabilityProbe ..> HealthController : calls
+LatencyMonitor ..> ConnectionService : reports slow
+SlowRequestInterceptor ..> ConnectionService : reports failure
+ConnectionBanner ..> ConnectionService : reads
+ConnectionBanner "1" --> "0..1" BannerContent : shows
+BannerContent --> BannerVariant : has
+@enduml

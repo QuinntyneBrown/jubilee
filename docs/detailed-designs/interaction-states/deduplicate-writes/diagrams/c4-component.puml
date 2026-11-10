@@ -1,0 +1,36 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Deduplicate writes
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "BookMeetingDialog", "Angular dialog", "Example create form")
+  Component(submit, "SubmitController", "Shared service", "Ignores a second press while submitting")
+  Component(keys, "IdempotencyKeyFactory", "Angular service", "UUID per intended create")
+  Component(client, "RequestsApi", "Typed HTTP client", "POST /api/requests/bookings")
+  Component(icpt, "IdempotencyInterceptor", "HTTP interceptor", "Sets the Idempotency-Key header")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(mw, "IdempotencyMiddleware", "ASP.NET Core middleware", "Reserves or replays or rejects per key")
+  Component(store, "RedisIdempotencyStore", "Infrastructure adapter", "Atomic reservation with 24 hour expiry")
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Create action marked RequiresIdempotencyKey")
+  Component(handler, "BookMeetingCommandHandler", "MediatR handler", "Saves the Request and its IdempotencyRecord together")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "IdempotencyCleanupJob", "Hosted job", "Deletes expired IdempotencyRecord rows")
+}
+ContainerDb(cache, "Cache", "Redis", "Reservations and stored responses")
+ContainerDb(db, "Jubilee database", "SQL Server", "Unique index on Scope and Key")
+
+Rel(dialog, keys, "Gets one key from")
+Rel(dialog, submit, "Submits through")
+Rel(submit, client, "Sends once through")
+Rel(client, icpt, "Passes request to")
+Rel(icpt, mw, "Calls with Idempotency-Key", "JSON/HTTPS")
+Rel(mw, store, "Reserves and completes through")
+Rel(store, cache, "Reads and writes")
+Rel(mw, ctrl, "Passes first request to")
+Rel(ctrl, handler, "Sends BookMeetingCommand")
+Rel(handler, db, "Saves in one transaction", "EF Core")
+Rel(job, db, "Deletes expired rows from", "EF Core")
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Render a business card with a photo or a category tile
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "CategoryPage" as page
+  participant "ListingsApi" as client
+  participant "BusinessCard" as card
+  participant "MediaTile" as tile
+  participant "CategoryTileMap" as tiles
+  participant "VerifiedBadge" as badge
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetCategoryListingsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+participant "Media storage" as media
+
+actor -> page : Open /c/:category
+page -> client : Load listings
+client -> controller : GET /api/categories/{category}/listings
+controller -> handler : Send GetCategoryListingsQuery
+handler -> db : Read verified listings with cover photo and category
+db --> handler : Rows
+handler --> controller : PagedResult of ListingSummary
+controller --> client : 200 listings
+client --> page : Listings
+loop each listing
+  page -> card : Render a.biz-card inside ul.card-grid (L2-171)
+  card -> tile : Render media for the listing
+  alt listing has photos
+    tile -> media : Request the cover photo rendition
+    media --> tile : Image
+    tile -> tile : Show img with object-fit cover inside the 4 / 3 frame (L2-173)
+  else no photos
+    tile -> tiles : tileFor(categorySlug)
+    tiles --> tile : Tint and icon
+    tile -> tile : Show .media with the tint modifier and the category icon (L2-173)
+  end
+  tile --> card : Media rendered
+  opt listing is verified
+    card -> badge : Render .verified with icon and text (L2-171)
+    badge --> card : Badge rendered
+  end
+  card --> page : Card rendered
+end
+page --> actor : Card grid that matches the mock
+@enduml

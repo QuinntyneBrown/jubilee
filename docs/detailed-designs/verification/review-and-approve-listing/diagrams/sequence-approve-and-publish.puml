@@ -1,0 +1,78 @@
+@startuml
+title UML sequence behaviour — Approve and publish
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Verification team member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ApproveListingDialog" as dialog
+  participant "AdminApi" as client
+  participant "VerificationReviewPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminVerificationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ApproveListingCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+participant "Search index" as search
+participant "E-mail provider" as email
+actor -> page : Press "Approve and publish"
+page -> dialog : Open with unticked checklist items
+dialog --> actor : Ask "Approve and publish {business}?" and require a note when items are unticked (L2-101)
+actor -> dialog : Confirm
+dialog -> client : approve(id, note, version)
+client -> controller : POST /api/admin/verifications/{id}/approve
+controller -> controller : Authenticate, apply VerifierPolicy and refuse the listing's owner (L2-098)
+controller -> handler : Send ApproveListingCommand
+handler -> db : Load listing, review and church reference
+db --> handler : Current state
+alt a decision already exists or the version is stale
+  handler --> controller : Conflict
+  controller --> client : 409 ProblemDetails with the existing decision (L2-100)
+  client --> dialog : Conflict
+  dialog --> actor : Close and show the other verifier's decision
+else no decision yet
+  handler -> entity : Approve(verifier, note, now)
+  entity --> handler : Stage Live, Verified true, VerificationDecision
+  handler -> handler : Start the 90-day deletion clock on the reference answer (L2-101)
+  handler -> db : Save listing, AuditEntry (L2-180) and OutboxMessage in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Typed result
+  controller --> client : 200 with decision
+  client --> dialog : Approved
+  dialog --> page : Close
+  page --> actor : Show "Approved and live." with "View public listing"
+  job -> db : Read ListingApproved from the outbox
+  db --> job : Outbox message
+  job -> search : Index the listing and invalidate public list caches within 60 seconds (L2-101)
+  search --> job : Indexed
+  job -> email : Send the approval e-mail to the owner
+  email --> job : Accepted
+  job -> db : Create the owner notification and mark the message dispatched
+  db --> job : Commit result
+end
+opt approval fails
+  controller --> client : 5xx ProblemDetails
+  client --> dialog : Failure
+  dialog --> actor : Show "We couldn't publish it. The listing is still in the queue. Try again."
+end
+@enduml

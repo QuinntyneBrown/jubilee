@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Back up and recover
+
+Person(oncall, "On-call engineer", "Runs restores and reviews drill records")
+Person(owner, "Owner", "Uploads listing photos")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(backup, "Hosting backup service", "Encrypted database backups in two Canadian regions. Vendor to supply")
+System_Ext(pipeline, "Delivery pipeline", "Runs the quarterly restore drill. Vendor to supply")
+System_Ext(obs, "Observability platform", "Alerts on a stale backup or an overdue drill")
+
+Rel(owner, jubilee, "Uploads photos to", "HTTPS")
+Rel(jubilee, backup, "Database is backed up continuously by")
+Rel(pipeline, backup, "Restores a point in time from")
+Rel(pipeline, jubilee, "Records the drill result in", "HTTPS")
+Rel(oncall, pipeline, "Starts a restore or a drill in")
+Rel(jubilee, obs, "Exports backup metrics to", "OTLP")
+Rel(obs, oncall, "Pages")
+@enduml

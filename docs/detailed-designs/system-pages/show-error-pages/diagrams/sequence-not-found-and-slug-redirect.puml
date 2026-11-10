@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Answer an unknown URL or a renamed slug
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Browser" as browser
+  participant "NotFoundPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "PageShellEndpoint" as shell
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ListingSlugResolver" as resolver
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> browser : Follow a link such as /b/:slug
+browser -> shell : GET page URL
+shell -> shell : Match the path against the route manifest
+alt path matches no route
+  shell --> browser : 404 with the application shell (L2-113)
+  browser -> page : Bootstrap and render
+  page --> actor : Show "We can't find that page." with "Back to browse" and "Search"
+else listing route
+  shell -> resolver : Resolve(slug)
+  resolver -> db : Read listing by slug, then ListingSlugHistory
+  db --> resolver : Listing or old slug or nothing
+  resolver --> shell : SlugResolution
+  alt slug was renamed
+    shell --> browser : 301 with Location /b/{current slug} (L2-113)
+    browser -> shell : GET the current URL
+    shell --> browser : 200 with the application shell
+    browser --> actor : Show the listing
+  else listing removed or not visible to this caller
+    shell --> browser : 404 with the application shell (L2-113)
+    browser -> page : Bootstrap and render
+    page --> actor : Show "We can't find that page."
+  else listing is live
+    shell --> browser : 200 with the application shell
+    browser --> actor : Show the listing
+  end
+end
+@enduml

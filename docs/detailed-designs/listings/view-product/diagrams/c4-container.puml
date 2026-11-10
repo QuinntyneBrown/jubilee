@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — View a product
+
+Person(member, "Visitor or Member", "Views a product")
+Person(owner, "Owner", "Sets product stock")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Product page and stock alert action")
+  Container(api, "Jubilee API", "ASP.NET Core", "Serves product pages and stores stock alerts")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches back-in-stock notifications from the outbox")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Products and options and stock alerts and outbox")
+  ContainerDb(media, "Media storage", "Object storage + CDN", "Product photos")
+}
+System_Ext(email, "E-mail provider", "Vendor <TO SUPPLY>")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(web, media, "Loads photos from", "HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Reads outbox and stock alerts in", "EF Core")
+Rel(worker, email, "Sends e-mail through", "HTTPS")
+@enduml

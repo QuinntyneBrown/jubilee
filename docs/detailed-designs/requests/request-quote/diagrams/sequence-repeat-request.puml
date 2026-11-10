@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — repeat a quote request with the same key
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestQuoteDialog" as dialog
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IdempotencyMiddleware" as idem
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RequestQuoteCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+actor -> dialog : Press "Send request" twice, or the network retries
+dialog -> client : requestQuote(command, same idempotency key)
+client -> idem : POST /api/requests/quotes with Idempotency-Key
+idem -> cache : Look up key for this member (L2-132)
+cache --> idem : Stored result or nothing
+alt key seen within 24 hours
+  idem --> client : Original 201 response
+  client --> dialog : Same request ID
+else first use of the key
+  idem -> controller : Continue
+  controller -> handler : Send RequestQuoteCommand
+  handler -> db : Save request in one unit of work
+  db --> handler : Commit result
+  handler --> controller : RequestCreatedResult
+  controller --> idem : 201 Created
+  idem -> cache : Store result under the key for 24 hours
+  cache --> idem : Stored
+  idem --> client : 201 Created
+  client --> dialog : Request ID
+end
+dialog --> actor : Show one sent request
+@enduml

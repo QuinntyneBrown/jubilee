@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Send an e-mail for an event
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+  participant "EmailNotificationHandler" as planner
+  participant "EmailDispatchJob" as dispatch
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "EmailPolicy" as policy
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+  participant "IEmailSender" as sender
+end box
+participant "E-mail provider" as provider
+actor "Member" as member
+job -> planner : Handle(event)
+planner -> db : Load recipient NotificationPreferences
+db --> planner : Preferences
+opt event is a new message
+  planner -> cache : Check whether the recipient has the conversation open
+  cache --> planner : Presence
+  planner -> db : Read mute flag of the recipient's participant row
+  db --> planner : MutedAt
+end
+planner -> policy : Decide(event, preferences, isReading)
+alt transactional or security e-mail
+  policy --> planner : SendNow regardless of preferences (L2-068)
+else category off or conversation muted or being read now
+  policy --> planner : Skip and keep the in-app notification (L2-068)
+else frequency is One daily summary
+  policy --> planner : AddToDailySummary (L2-016)
+else category on and As it happens
+  policy --> planner : SendNow
+end
+opt decision is SendNow
+  planner -> db : Append to the open PendingEmail for the batch key or create one (L2-068)
+  db --> planner : Commit result
+end
+planner --> job : Done
+dispatch -> db : Read PendingEmail rows that are due
+db --> dispatch : Due rows with combined items
+dispatch -> sender : SendAsync(message) within 2 minutes of the event (L2-068)
+sender -> sender : Add RFC 8058 List-Unsubscribe headers to non-security e-mail
+sender -> provider : Submit from the authenticated domain
+provider --> sender : Accepted
+sender --> dispatch : Sent
+dispatch -> db : Set SentAt
+db --> dispatch : Commit result
+provider --> member : E-mail
+@enduml

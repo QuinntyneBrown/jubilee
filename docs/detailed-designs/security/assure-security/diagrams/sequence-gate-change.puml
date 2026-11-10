@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Gate a change in the pipeline
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Developer" as dev
+box "Delivery — CI pipeline" #E0F2FE
+  participant "SecretScanStep" as secret
+  participant "LockedRestoreStep" as restore
+  participant "DependencyScanStep" as deps
+  participant "StaticAnalysisStep" as sast
+  participant "Deploy to staging" as deploy
+  participant "ZapBaselineStep" as zap
+  participant "PenetrationTestGate" as gate
+end box
+box "Backend — Staging deployment" #D1FADF
+  participant "Jubilee API and Jubilee Web" as staging
+end box
+actor "Independent penetration tester" as tester
+dev -> secret : Push a change
+secret -> secret : Scan commits for credentials (L2-142)
+alt Secret found
+  secret --> dev : Fail. Secret is revoked and rotated
+else No secret
+  secret -> restore : Continue
+  restore -> restore : Restore from lockfiles only. Deterministic build (L2-142)
+  restore -> deps : Continue
+  deps -> deps : Scan NuGet and npm graphs (L2-142)
+  deps -> sast : Continue
+  sast -> sast : Run static analysis (L2-142)
+  alt Critical or high vulnerability known
+    sast --> dev : Build failed
+  else No critical or high finding
+    sast -> deploy : Artefacts
+    deploy -> staging : Deploy
+    staging --> deploy : Ready
+    deploy -> zap : Continue
+    zap -> staging : OWASP ZAP baseline scan (L2-144)
+    staging --> zap : Responses
+    alt High-risk alert
+      zap --> dev : Pipeline failed
+    else No high-risk alert
+      zap -> gate : Candidate
+      opt Release candidate for launch
+        tester -> staging : Test OWASP Top 10 and ASVS Level 2 (L2-144)
+        staging --> tester : Findings
+        tester --> gate : Report
+        gate -> gate : Pass only with no open critical or high finding
+      end
+      gate --> dev : Candidate may be released
+    end
+  end
+end
+@enduml

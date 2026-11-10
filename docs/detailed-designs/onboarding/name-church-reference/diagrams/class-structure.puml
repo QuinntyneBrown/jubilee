@@ -1,0 +1,115 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Name a church reference
+
+enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Paused
+  OnHold
+  Removed
+  Declined
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingStage Stage
+  +ChurchReference Reference
+  +FaithAgreement Agreement
+  +NameReference(church: string, email: EmailAddress): void
+  +RecordAgreement(version: StatementOfFaithVersion, at: DateTimeOffset): void
+  +AddFlag(flag: ListingFlag): void
+}
+
+class ChurchReference {
+  +Guid Id
+  +Guid ListingId
+  +string ChurchName
+  +EmailAddress Email
+  +ChurchReferenceStatus Status
+  +DateTimeOffset NamedAt
+}
+
+enum ChurchReferenceStatus {
+  Waiting
+  Confirmed
+  CantVouch
+  DoesntKnow
+}
+
+class EmailAddress <<value object>> {
+  +string Value
+  +string Normalized
+  +{static} TryParse(text: string): EmailAddress?
+}
+
+class FaithAgreement {
+  +Guid Id
+  +Guid MemberId
+  +Guid? ListingId
+  +DateOnly StatementVersion
+  +DateTimeOffset AgreedAt
+}
+
+class StatementOfFaithVersion {
+  +DateOnly Version
+  +DateTimeOffset PublishedAt
+  +bool IsCurrent
+}
+
+class Member {
+  +Guid Id
+  +EmailAddress Email
+  +EmailAddress? PendingEmail
+  +string FirstName
+}
+
+class ListingFlag {
+  +Guid Id
+  +ListingFlagKind Kind
+  +DateTimeOffset RaisedAt
+}
+
+class ReferenceEmailPolicy {
+  +IsOwnersOwn(owner: Member, email: EmailAddress): Task<bool>
+}
+
+class ReferenceReusePolicy {
+  +int Limit = 5
+  +int WindowDays = 30
+  +IsNamedOften(email: EmailAddress, now: DateTimeOffset): Task<bool>
+}
+
+class ChurchReferenceValidator {
+  +Validate(church: string, email: string): ValidationResult
+}
+
+Listing --> ListingStage : has
+Listing "1" *-- "0..1" ChurchReference : names
+Listing "1" --> "0..1" FaithAgreement : records
+Listing "1" *-- "*" ListingFlag : carries
+ChurchReference --> ChurchReferenceStatus : has
+ChurchReference *-- EmailAddress : addressed at
+Member "1" --> "*" FaithAgreement : gives
+Member "1" --> "*" Listing : owns
+FaithAgreement "*" --> "1" StatementOfFaithVersion : for
+ReferenceEmailPolicy ..> Member : compares with
+ReferenceReusePolicy ..> ChurchReference : counts
+ChurchReferenceValidator ..> ReferenceEmailPolicy : uses
+@enduml

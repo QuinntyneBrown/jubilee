@@ -1,0 +1,79 @@
+@startuml
+title UML sequence behaviour — Join or sign in with Google
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SignInPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "GoogleSignInController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "CompleteGoogleSignInCommandHandler" as handler
+  participant "Member" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IGoogleIdentityClient" as oidc
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+participant "Google Identity" as google
+
+actor -> page : Press "Continue with Google"
+page -> controller : GET /api/auth/google/start?returnUrl=...
+controller -> controller : Create state - nonce - PKCE code verifier (L2-003)
+controller -> cache : Save OidcTransaction keyed by state
+cache --> controller : Saved
+controller --> actor : 302 to Google with state - nonce - code challenge
+actor -> google : Sign in and consent
+google --> actor : 302 to /api/auth/google/callback with code and state
+actor -> controller : GET /api/auth/google/callback
+controller -> cache : Consume OidcTransaction for state
+cache --> controller : Transaction or nothing
+alt state unknown
+  controller --> actor : 302 to /sign-in with the sign-in error state
+else state matches
+  controller -> oidc : Redeem(code, transaction)
+  oidc -> google : Token request with code verifier (PKCE)
+  google --> oidc : ID token
+  oidc -> oidc : Validate signature - issuer - audience - expiry - nonce (L2-003)
+  oidc --> controller : GoogleIdentity or failure
+  alt ID token invalid or nonce mismatch
+    controller --> actor : 302 to /sign-in with the sign-in error state
+  else e-mail not verified by Google
+    controller --> actor : 302 to /sign-in showing "Use a Google account with a confirmed e-mail, or join with e-mail."
+  else identity accepted
+    controller -> handler : Send CompleteGoogleSignInCommand
+    handler -> db : Find member by Google subject - then by e-mail
+    db --> handler : Member or nothing
+    alt member already linked
+      handler -> handler : Outcome SignedIn
+    else confirmed e-mail account with the same verified e-mail
+      handler -> entity : LinkGoogle(subject) (L2-003)
+      entity --> handler : Linked
+    else no account
+      handler -> entity : Member.JoinWithGoogle with EmailStatus Confirmed (L2-003)
+      entity --> handler : Member awaiting agreement
+    end
+    handler -> db : Save changes in one unit of work
+    db --> handler : Commit result
+    handler -> cache : Store new Session (L2-010)
+    cache --> handler : Session identifier
+    handler --> controller : GoogleSignInResult
+    controller --> actor : 302 with session cookie to the return URL or /join/agreement
+  end
+end
+@enduml

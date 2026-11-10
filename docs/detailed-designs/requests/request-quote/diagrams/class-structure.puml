@@ -1,0 +1,113 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Request a quote
+
+enum RequestType {
+  Booking
+  Quote
+  Order
+}
+
+enum RequestStatus {
+  New
+  Confirmed
+  Declined
+  Cancelled
+  Completed
+}
+
+class Request {
+  +Guid Id
+  +RequestType Type
+  +RequestStatus Status
+  +Guid MemberId
+  +Guid ListingId
+  +Guid ConversationId
+  +DeclineReason? DeclineReason
+  +string? DeclineMessage
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? NudgedAt
+  +Confirm(actorId: Guid, now: DateTimeOffset): void
+  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
+  +Cancel(actorId: Guid, now: DateTimeOffset): void
+  +Complete(actorId: Guid?, now: DateTimeOffset): void
+  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
+  +MarkNudged(now: DateTimeOffset): void
+}
+
+class RequestTransition {
+  +Guid Id
+  +RequestStatus? From
+  +RequestStatus To
+  +Guid? ActorId
+  +DateTimeOffset OccurredAt
+  +DateTimeOffset? UndoableUntil
+}
+
+Request "1" *-- "1..*" RequestTransition : records
+Request --> RequestType : has
+Request --> RequestStatus : has
+
+class QuoteDetails {
+  +Guid? ServiceId
+  +string Description
+  +DateOnly? NeededBy
+  +string? Budget
+  +PhoneNumber? Phone
+}
+
+class PhoneNumber {
+  +string Digits
+  +{static} TryParse(input: string, out value: PhoneNumber): bool
+  +Format(): string
+}
+
+class RequestQuoteCommand {
+  +Guid ListingId
+  +Guid? ServiceId
+  +string Description
+  +DateOnly? NeededBy
+  +string? Budget
+  +string? Phone
+}
+
+class RequestQuoteCommandValidator {
+  +int DescriptionMaxLength = 2000
+  +int BudgetMaxLength = 60
+  +Validate(command: RequestQuoteCommand): ValidationResult
+}
+
+class RequestQuoteCommandHandler {
+  +Handle(command: RequestQuoteCommand): Task<RequestCreatedResult>
+}
+
+class RequestCreatedResult {
+  +Guid RequestId
+  +RequestStatus Status
+  +string TypicalReplyTime
+}
+
+interface IClock {
+  +TorontoToday(): DateOnly
+  +UtcNow(): DateTimeOffset
+}
+
+Request "1" *-- "0..1" QuoteDetails : owns
+QuoteDetails "1" *-- "0..1" PhoneNumber : holds
+RequestQuoteCommandHandler ..> RequestQuoteCommand : handles
+RequestQuoteCommandValidator ..> RequestQuoteCommand : validates
+RequestQuoteCommandValidator ..> IClock : reads today
+RequestQuoteCommandHandler --> Request : creates
+RequestQuoteCommandHandler ..> RequestCreatedResult : returns
+@enduml

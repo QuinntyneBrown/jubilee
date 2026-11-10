@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Observe the system
+
+Person(member, "Member", "Uses Jubilee")
+Person(oncall, "On-call engineer", "Answers pages")
+System_Ext(obs, "Observability platform", "Logs and traces and metrics and alerts and error tracker. Vendor to supply")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Starts browser traces and reports client errors")
+  Container(api, "Jubilee API", "ASP.NET Core", "Assigns correlation IDs and writes logs and metrics")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Runs jobs under the originating correlation ID")
+  ContainerDb(db, "Jubilee database", "SQL Server", "System of record and outbox")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls with traceparent header", "JSON/HTTPS")
+Rel(api, db, "Reads and writes with traced queries", "EF Core")
+Rel(worker, db, "Reads outbox messages with correlation IDs from", "EF Core")
+Rel(web, obs, "Sends browser spans and scrubbed client errors to", "HTTPS")
+Rel(api, obs, "Exports logs and traces and metrics to", "OTLP")
+Rel(worker, obs, "Exports logs and traces and metrics to", "OTLP")
+Rel(obs, oncall, "Pages")
+@enduml

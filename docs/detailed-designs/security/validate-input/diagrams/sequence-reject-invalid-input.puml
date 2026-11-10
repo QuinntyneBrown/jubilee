@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Reject invalid input
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "EditListingPage" as page
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "StrictJsonOptions" as json
+  participant "ListingsController" as controller
+  participant "ProblemDetailsMiddleware" as problem
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ValidationBehavior" as validation
+  participant "UpdateListingDetailsCommandValidator" as validator
+  participant "UpdateListingDetailsCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "JubileeDbContext" as ctx
+  database "Jubilee database" as db
+end box
+user -> page : Save listing details
+page -> client : updateDetails(listingId, details)
+client -> json : PUT /api/listings/{id}/details
+alt Body holds an unknown field or a wrong type
+  json --> problem : Binding failure
+  problem --> client : 400 ProblemDetails (L2-136 unknown fields rejected)
+else Body matches the request record
+  json -> controller : Typed request
+  controller -> validation : Send UpdateListingDetailsCommand
+  validation -> validator : Validate type, length, format, allowed values (L2-136)
+  validator -> validator : WebsiteUrl.Parse allows http and https only (L2-136)
+  validator --> validation : ValidationResult
+  alt One or more fields invalid
+    validation --> problem : ValidationProblem
+    problem --> client : 422 with per-field error codes. Nothing created
+  else All fields valid
+    validation -> handler : Handle command
+    handler -> ctx : Apply change and save
+    ctx -> db : Parameterised UPDATE (L2-136)
+    db --> ctx : Commit result
+    ctx --> handler : Saved
+    handler --> validation : Typed result
+    validation --> controller : Typed result
+    controller --> client : 204 No Content
+  end
+end
+client --> page : Result
+page --> user : Show saved state or field errors
+@enduml

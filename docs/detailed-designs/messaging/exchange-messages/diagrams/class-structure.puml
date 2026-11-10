@@ -1,0 +1,107 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Exchange messages
+
+class ConversationStore <<signal store>> {
+  +header: Signal<ConversationHeader>
+  +items: Signal<TimelineItem[]>
+  +load(id: string): void
+  +loadOlder(): void
+  +send(text: string, attachmentIds: string[]): void
+  +retry(clientId: string): void
+  +discard(clientId: string): void
+  +applyEvent(event: RealtimeEvent): void
+}
+class OutgoingMessage <<TypeScript>> {
+  +clientId: string
+  +idempotencyKey: string
+  +text: string
+  +status: SendStatus
+}
+enum SendStatus {
+  Sending
+  WaitingToSend
+  Sent
+  Failed
+}
+class PhotoAttachmentService <<Angular service>> {
+  +maxBytes: number = 5 MB
+  +prepare(file: File): Promise<Blob>
+}
+class SendMessageCommand {
+  +Guid ConversationId
+  +Guid SenderMemberId
+  +string Text
+  +IReadOnlyList<Guid> AttachmentIds
+}
+class SendMessageCommandHandler {
+  +Handle(command: SendMessageCommand): Task<MessageDto>
+}
+class Conversation {
+  +Guid Id
+  +Guid MemberId
+  +Guid ListingId
+  +long LastSequence
+  +AddMessage(senderId: Guid, text: string, now: DateTimeOffset): Message
+  +AddRequestCard(requestId: Guid, now: DateTimeOffset): Message
+  +MarkRead(memberId: Guid): void
+}
+class ConversationParticipant {
+  +Guid MemberId
+  +long LastReadSequence
+}
+class Message {
+  +Guid Id
+  +long Sequence
+  +MessageKind Kind
+  +Guid? SenderMemberId
+  +string Text
+  +Guid? RequestId
+  +DateTimeOffset SentAt
+}
+enum MessageKind {
+  Text
+  RequestCard
+}
+class MessageAttachment {
+  +Guid Id
+  +string StorageKey
+  +string ContentType
+  +long SizeBytes
+  +AttachmentState State
+}
+class AwayPeriod <<value object>> {
+  +DateOnly ReturnsOn
+  +IsActive(today: DateOnly): bool
+}
+class Listing {
+  +Guid Id
+  +AwayPeriod? Away
+  +SetAway(returnsOn: DateOnly): void
+  +ClearAway(): void
+}
+
+ConversationStore "1" o-- "*" OutgoingMessage : tracks
+OutgoingMessage --> SendStatus : has
+ConversationStore ..> PhotoAttachmentService : uses
+ConversationStore ..> SendMessageCommand : POST messages
+SendMessageCommandHandler ..> SendMessageCommand : handles
+SendMessageCommandHandler --> Conversation : loads / mutates
+Conversation "1" *-- "2" ConversationParticipant : has
+Conversation "1" *-- "*" Message : contains
+Message --> MessageKind : has
+Message "1" *-- "0..*" MessageAttachment : carries
+Conversation "*" --> "1" Listing : addressed to
+Listing "1" *-- "0..1" AwayPeriod : has
+@enduml

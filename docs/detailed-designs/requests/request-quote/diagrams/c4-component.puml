@@ -1,0 +1,36 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Request a quote
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "RequestQuoteDialog", "Angular dialog", "Collects description and date and budget and phone")
+  Component(fv, "QuoteFormValidators", "Angular validators", "Check the fields before sending")
+  Component(session, "SessionService", "Angular service", "Supplies profile phone and confirmation state")
+  Component(client, "RequestsApi", "Typed HTTP client", "Calls POST /api/requests/quotes")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes /api/requests endpoints")
+  Component(idem, "IdempotencyMiddleware", "ASP.NET Core middleware", "Returns the original result for a repeated key")
+  Component(val, "RequestQuoteCommandValidator", "FluentValidation validator", "Repeats the field rules on the server")
+  Component(handler, "RequestQuoteCommandHandler", "MediatR handler", "Creates the quote request")
+  Component(entity, "Request", "Domain entity", "Owns the request lifecycle")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Dispatches notification and mail and real-time event")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Requests and conversations and outbox")
+ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
+
+Rel(dialog, fv, "Validates with")
+Rel(dialog, session, "Reads profile from")
+Rel(dialog, client, "Sends quote request through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, idem, "Runs behind")
+Rel(idem, cache, "Reads and writes keys")
+Rel(ctrl, val, "Validates command with")
+Rel(ctrl, handler, "Sends RequestQuoteCommand")
+Rel(handler, entity, "Creates")
+Rel(handler, db, "Persists request and outbox", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+@enduml

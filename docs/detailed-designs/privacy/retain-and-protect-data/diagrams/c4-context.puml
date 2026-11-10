@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Retain and protect data
+
+Person(member, "Member", "Whose notifications and declined requests are stored")
+Person(owner, "Owner", "Whose Declined tab loses requests after 90 days")
+Person(engineer, "On-call engineer", "Is alerted when a retention run fails")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace hosted in Canadian data centres")
+System_Ext(observability, "Observability platform", "Holds application and security logs - vendor TO SUPPLY")
+
+Rel(member, jubilee, "Stores personal data in", "TLS")
+Rel(owner, jubilee, "Reads declined requests in", "TLS")
+Rel(jubilee, observability, "Writes logs and deletion counts to", "TLS")
+Rel(observability, engineer, "Alerts on a failed retention run")
+@enduml

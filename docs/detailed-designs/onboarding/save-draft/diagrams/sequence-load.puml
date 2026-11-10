@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Load a saved draft
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "ListingDraftStore" as store
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetListingDraftQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Return to /list or open the draft from My business
+page -> store : load(listingId)
+page --> actor : Show "Loading your draft…"
+store -> client : getDraft(listingId)
+client -> controller : GET /api/listings/{listingId}/draft
+controller -> controller : Authenticate and check the caller owns the listing
+controller -> handler : Send GetListingDraftQuery
+handler -> db : Read the draft with items and reference fields
+alt Draft read
+  db --> handler : Draft
+  handler --> controller : ListingDraftDto
+  controller --> client : 200 OK
+  client --> store : Draft
+  store --> page : Draft signal
+  page --> actor : Restore each value (L2-077)
+else Service unavailable
+  db --> handler : Failure
+  handler --> controller : Error
+  controller --> client : 503 ProblemDetails with JB-LST-503
+  client --> store : Load error
+  store --> page : Error state
+  page --> actor : Show "We couldn't load your draft" with JB-LST-503 and "Try again"
+end
+@enduml

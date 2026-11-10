@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Delete account
+
+
+Person(member, "Member", "Account holder who deletes the account")
+Person(owner, "Owner", "Business owner with an open request from the member")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the confirmation e-mail. Vendor <TO SUPPLY>")
+
+Rel(member, jubilee, "Types DELETE and confirms deletion in")
+Rel(jubilee, owner, "Tells that the member's open request is cancelled")
+Rel(jubilee, email, "Sends the deletion confirmation via")
+Rel(email, member, "Delivers e-mail to")
+@enduml

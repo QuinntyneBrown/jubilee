@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Apply motion, theme and forced-colour preferences
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+participant "Browser and operating system" as browser
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "index.html" as index
+  participant "ThemeService" as theme
+  participant "MotionService" as motion
+  participant "DialogShell" as dialog
+  participant "tokens.css" as tokens
+end box
+actor -> browser : Open Jubilee
+browser -> index : Load the document
+index -> theme : Resolve the theme before first paint
+theme -> browser : Read the saved choice and prefers-color-scheme
+browser --> theme : Light, Dark or System
+theme -> tokens : Set data-theme on html
+tokens --> browser : Colour tokens that meet L2-160 in that theme
+index -> motion : Start
+motion -> browser : matchMedia(prefers-reduced-motion: reduce)
+browser --> motion : Matches or not
+actor -> dialog : Open a dialog
+dialog -> motion : Read reduced
+alt reduced motion is requested
+  motion --> dialog : true
+  dialog -> tokens : Use zeroed duration tokens (L2-161)
+  tokens --> dialog : No slide and no shimmer
+  dialog --> actor : Dialog appears without movement
+else no preference
+  motion --> dialog : false
+  dialog -> tokens : Use --duration-slow
+  tokens --> dialog : Slide and fade
+  dialog --> actor : Dialog animates in
+end
+opt Windows forced-colours mode is active
+  browser -> tokens : Apply the forced-colors: active block
+  tokens --> browser : Borders kept and primary buttons in Highlight (L2-161)
+end
+@enduml

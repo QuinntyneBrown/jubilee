@@ -1,0 +1,75 @@
+@startuml
+title UML sequence behaviour — Handle a write within the latency budget
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConversationPage" as page
+  participant "MessagesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestMetricsMiddleware" as metrics
+  participant "RequestTimeoutMiddleware" as timeout
+  participant "MessagesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SendMessageCommandHandler" as handler
+  participant "Conversation" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+end box
+participant "E-mail provider" as email
+participant "Observability platform" as obs
+
+actor -> page : Send a message
+page -> client : Build typed request with idempotency key
+client -> metrics : POST /api/conversations/{id}/messages
+metrics -> metrics : Start timer
+metrics -> timeout : Invoke next
+timeout -> timeout : Link a 10 second cancellation token (L2-152)
+timeout -> controller : Invoke next
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send SendMessageCommand with the cancellation token
+handler -> db : Load conversation
+db --> handler : Current state
+handler -> entity : Add message
+entity --> handler : Message and MessageSent event
+alt completes in time
+  handler -> db : Save message and OutboxMessage in one transaction
+  db --> handler : Committed
+  handler --> controller : Typed result
+  controller --> timeout : 201 Created
+  timeout --> metrics : 201 Created
+else 10 seconds elapse
+  timeout -> handler : Cancel through the token
+  handler --> timeout : OperationCanceledException and no commit
+  timeout --> metrics : 503 ProblemDetails with error reference and correlation ID
+end
+metrics -> obs : Record server time for route and class Write (target 300 ms at p95)
+metrics --> client : HTTP response with Server-Timing header
+client --> page : Message result
+page --> actor : Message shown as sent or failed with retry
+
+job -> db : Read undispatched outbox messages
+db --> job : MessageSent
+job -> email : Send new-message e-mail asynchronously (L2-152)
+email --> job : Accepted
+job -> db : Mark message dispatched
+db --> job : Saved
+@enduml

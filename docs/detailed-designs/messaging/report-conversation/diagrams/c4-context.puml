@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Report a conversation
+
+Person(member, "Member", "Participant who reports or blocks the other side")
+Person(owner, "Owner", "Participant who reports or is blocked")
+Person(verifier, "Verification team member", "Reviews reported conversations")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(member, jubilee, "Reports a conversation and blocks a business using")
+Rel(owner, jubilee, "Reports a conversation and sends messages using")
+Rel(verifier, jubilee, "Reads reported conversations using")
+@enduml

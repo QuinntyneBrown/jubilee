@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Show an error reference
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestsPage" as page
+  participant "ErrorInterceptor" as interceptor
+  participant "LoadErrorState" as state
+  participant "ServerErrorPage" as serverpage
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "CorrelationIdMiddleware" as corr
+  participant "ProblemDetailsMiddleware" as pd
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ErrorReferenceFactory" as factory
+end box
+participant "Observability platform" as obs
+actor -> page : Open a page that loads data
+page -> interceptor : HTTP request
+interceptor -> corr : GET /api/requests
+corr -> corr : Assign the correlation ID
+corr -> pd : Next
+pd -> controller : Next
+alt upstream dependency failed or service unavailable
+  controller --> pd : Dependency failure
+  pd -> factory : ForLoadFailure(area REQ, kind)
+  factory --> pd : JB-REQ-502 or JB-REQ-503 (L2-118)
+  pd -> obs : Log reference, correlation ID and exception
+  pd --> interceptor : 502 or 503 ProblemDetails with reference and correlation ID
+  interceptor --> page : Load error with reference
+  page -> state : Render with thing, reference and one way out
+  state --> actor : Show "We couldn't load {thing}. ... quote {reference}." with "Try again"
+else unhandled exception
+  controller --> pd : Exception
+  pd -> factory : ForUnhandled(correlationId)
+  factory --> pd : JB-500-{code}
+  pd -> obs : Log reference, correlation ID and stack trace
+  pd --> interceptor : 500 ProblemDetails without stack trace, SQL, path or host name (L2-115)
+  interceptor -> serverpage : Navigate with the reference
+  serverpage --> actor : Show "Something went wrong on our side." with "Try again", "Get help" and the reference
+else success
+  controller --> pd : 200 with data
+  pd --> interceptor : 200 with data
+  interceptor --> page : Data
+  page --> actor : Show the page
+end
+@enduml

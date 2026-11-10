@@ -1,0 +1,90 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Feature businesses
+enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Paused
+  OnHold
+  Removed
+  Declined
+}
+class FeaturedWeek {
+  +Guid Id
+  +DateOnly StartDate
+  +DateOnly EndDate
+  +Guid SelectedBy
+  +IReadOnlyList<FeaturedSlot> Slots
+  +{static} int MaxSlots = 5
+  +{static} int LengthDays = 7
+  +SetSlots(listingIds: IReadOnlyList<Guid>): void
+  +IsActiveOn(date: DateOnly): bool
+}
+class FeaturedSlot {
+  +Guid ListingId
+  +int Position
+}
+class Listing {
+  +Guid Id
+  +string Name
+  +string Slug
+  +ListingStage Stage
+  +bool Verified
+}
+class SetFeaturedWeekCommand {
+  +DateOnly StartDate
+  +IReadOnlyList<Guid> ListingIds
+}
+class SetFeaturedWeekCommandValidator {
+  +Validate(command: SetFeaturedWeekCommand): ValidationResult
+}
+class SetFeaturedWeekCommandHandler {
+  +Handle(command: SetFeaturedWeekCommand): Task<Result>
+}
+class GetFeaturedListingsQuery {
+  +DateOnly Today
+}
+class GetFeaturedListingsQueryHandler {
+  +Handle(query: GetFeaturedListingsQuery): Task<IReadOnlyList<FeaturedBusinessDto>>
+}
+class FeaturedBusinessDto {
+  +Guid ListingId
+  +string Name
+  +string Slug
+  +string Tagline
+  +string PhotoUrl
+  +int Position
+}
+class AuditEntry {
+  +Guid ActorId
+  +string Action
+  +string Target
+  +string Before
+  +string After
+  +DateTimeOffset At
+}
+
+SetFeaturedWeekCommandHandler ..> SetFeaturedWeekCommand : handles
+SetFeaturedWeekCommandValidator ..> SetFeaturedWeekCommand : validates
+SetFeaturedWeekCommandHandler --> FeaturedWeek : creates / replaces
+SetFeaturedWeekCommandHandler ..> AuditEntry : appends
+GetFeaturedListingsQueryHandler ..> GetFeaturedListingsQuery : handles
+GetFeaturedListingsQueryHandler --> FeaturedBusinessDto : returns
+GetFeaturedListingsQueryHandler ..> FeaturedWeek : reads
+FeaturedWeek "1" *-- "0..5" FeaturedSlot
+FeaturedSlot "*" --> "1" Listing
+Listing --> ListingStage
+@enduml

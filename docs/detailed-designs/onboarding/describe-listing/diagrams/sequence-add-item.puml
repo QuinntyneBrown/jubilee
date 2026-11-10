@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Add a product or service during onboarding
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "OnboardingItemsSection" as section
+  participant "ProductEditorDialog" as dialog
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AddProductCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> section : Press "Add a product"
+section -> dialog : Open the product editor (L2-091)
+actor -> dialog : Enter name and price and save
+dialog -> client : addProduct(listingId, product)
+client -> controller : POST /api/listings/{listingId}/products
+controller -> controller : Authenticate and check the caller owns the listing (L2-133)
+alt Caller does not own the listing
+  controller --> client : 403 ProblemDetails
+  client --> dialog : Forbidden
+else Owner
+  controller -> handler : Send AddProductCommand
+  handler -> db : Load listing in stage Draft
+  db --> handler : Listing
+  handler -> entity : AddProduct(product)
+  entity --> handler : Product attached and not public (L2-073)
+  handler -> db : Save in one unit of work
+  db --> handler : Commit result
+  handler --> controller : ProductDto
+  controller --> client : 201 Created
+  client --> dialog : Saved product
+  dialog --> section : Close with the product
+  section --> actor : Show the product with name and price (L2-073)
+end
+note over section, dialog
+  The Services section follows the same steps with
+  ServiceEditorDialog (L2-094) and AddServiceCommand.
+end note
+@enduml

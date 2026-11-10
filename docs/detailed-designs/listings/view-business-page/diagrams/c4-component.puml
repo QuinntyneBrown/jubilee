@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View a business page
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "BusinessPage", "Angular page", "Route /b/:slug that picks the layout by ListingKind")
+  Component(svc, "ServiceBusinessView", "Angular component", "Services list with Book and Ask actions")
+  Component(shop, "ShopView", "Angular component", "Product cards and Custom work")
+  Component(related, "RelatedBusinesses", "Angular component", "More in {category} with up to two cards")
+  Component(banner, "OwnerPreviewBanner", "Angular component", "Owner banner and Edit listing action")
+  Component(client, "ListingsApi", "Typed HTTP client", "Calls the listing endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "GET /api/listings/{slug} and POST /api/listings/{slug}/views")
+  Component(handler, "GetListingPageQueryHandler", "MediatR handler", "Builds the ListingPageDto for the viewer")
+  Component(policy, "ListingVisibilityPolicy", "Authorization policy", "Decides public or preview or not found")
+  Component(views, "RecordListingViewCommandHandler", "MediatR handler", "Counts a view unless it is excluded")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "ResponseTimeBadgeJob", "Hosted job", "Sets ReplyTimeBand from the 90-day median")
+}
+ContainerDb(cache, "Cache", "Redis", "Listing pages and view keys")
+ContainerDb(db, "Jubilee database", "SQL Server", "Listing data")
+
+Rel(page, svc, "Renders for Services")
+Rel(page, shop, "Renders for Shop")
+Rel(page, related, "Renders")
+Rel(page, banner, "Renders for the owner")
+Rel(page, client, "Loads through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetListingPageQuery")
+Rel(ctrl, views, "Sends RecordListingViewCommand")
+Rel(handler, policy, "Checks visibility with")
+Rel(handler, cache, "Reads and writes", "Redis protocol")
+Rel(handler, db, "Queries", "EF Core")
+Rel(views, cache, "Checks the 30-minute key in", "Redis protocol")
+Rel(views, db, "Inserts ListingView", "EF Core")
+Rel(job, db, "Updates Listing.ReplyTimeBand", "EF Core")
+@enduml

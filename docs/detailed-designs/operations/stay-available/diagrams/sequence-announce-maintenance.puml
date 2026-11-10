@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Announce planned maintenance
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "On-call engineer" as actor
+box "Backend — Jubilee API" #D1FADF
+  participant "OperationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ScheduleMaintenanceCommandHandler" as handler
+  participant "MaintenanceWindow" as window
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as job
+  participant "StatusPagePublisher" as publisher
+end box
+participant "Status page" as status
+actor -> controller : POST /api/ops/maintenance-windows
+controller -> controller : Authenticate and require Admin role (L2-133)
+controller -> handler : Send ScheduleMaintenanceCommand
+handler -> window : Schedule(startsAt, endsAt, clock)
+window -> window : Apply L2-174 rules: 48 hours notice, at most 2 hours, outside 07:00–22:00 Toronto time
+alt rules hold
+  window --> handler : MaintenanceWindow
+  handler -> db : Save window and MaintenanceAnnounced outbox message
+  db --> handler : Commit result
+  handler --> controller : Window identifier
+  controller --> actor : 201 Created
+  job -> db : Read due outbox messages
+  db --> job : MaintenanceAnnounced
+  job -> publisher : PublishMaintenanceAsync
+  publisher -> status : Post scheduled maintenance notice
+  status --> publisher : Accepted
+  publisher --> job : Done
+  job -> db : Mark message dispatched
+  db --> job : Commit result
+else a rule fails
+  window --> handler : Rule violation
+  handler --> controller : Validation failure
+  controller --> actor : 422 ProblemDetails with field codes
+end
+@enduml

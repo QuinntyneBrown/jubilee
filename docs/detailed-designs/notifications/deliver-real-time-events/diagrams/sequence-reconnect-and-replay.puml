@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Reconnect and replay missed events
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RealtimeClient" as rt
+  participant "Feature store" as store
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionAuthenticationMiddleware" as auth
+  participant "EventsHub" as hub
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "IEventLog" as log
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+end box
+member -> rt : Open a signed-in page
+rt -> auth : Connect to /api/events with the session cookie
+alt no valid session
+  auth --> rt : 401 Unauthorized
+else valid session
+  auth -> hub : Authenticated connection
+  hub -> hub : Add connection to group member:{memberId} (L2-070)
+  hub --> rt : Connected over WebSocket or server-sent events
+end
+... the persistent connection drops ...
+rt -> rt : Set state Reconnecting and wait with back-off
+rt -> auth : Reconnect with the session cookie
+auth -> hub : Authenticated connection
+hub --> rt : Connected
+rt -> hub : Resume(lastEventId)
+hub -> log : ReadAfterAsync(memberId, lastEventId)
+log -> cache : Read the member's event log after the ID
+cache --> log : Missed events in order
+log --> hub : ResumeResult
+alt log still covers the last event ID
+  hub --> rt : Missed events (L2-070)
+  rt -> rt : Drop event IDs already seen so nothing is shown twice (L2-070)
+  rt -> store : Dispatch each missed event in order
+else log no longer covers the last event ID
+  hub --> rt : ResumeResult with Complete false
+  rt -> store : Request a reload of state through the HTTP API
+end
+store --> member : Page reflects every missed event once
+@enduml

@@ -1,0 +1,80 @@
+@startuml
+title UML sequence behaviour — View a business or shop page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetListingPageQueryHandler" as handler
+  participant "ListingVisibilityPolicy" as policy
+  participant "RecordListingViewCommandHandler" as views
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+actor -> page : Open /b/legacy-financial
+page -> client : getListingPage(slug)
+client -> controller : GET /api/listings/legacy-financial
+controller -> controller : Read the session if one exists
+controller -> handler : Send GetListingPageQuery
+handler -> db : Load Listing with services and products by slug
+db --> handler : Listing or none
+handler -> policy : Evaluate(listing, viewer)
+alt No listing or not public for this viewer
+  policy --> handler : NotFound (L2-028)
+  handler --> controller : NotFound
+  controller --> client : 404 ProblemDetails
+  client --> page : Not found
+  page --> actor : Show the not-found page
+else Public listing
+  policy --> handler : Public
+  handler -> db : Load up to two other live listings of the category (L2-040)
+  db --> handler : Related listings without the current one
+  handler -> handler : Map ReplyTimeBand to the "Replies" text (L2-033)
+  handler -> cache : Store the public page for 60 seconds
+  cache --> handler : Stored
+  handler --> controller : ListingPageDto
+  controller --> client : 200 with the listing page
+  client --> page : Typed result
+  alt ListingKind is Services
+    page --> actor : Show header and services and About and Details (L2-033)
+  else ListingKind is Shop
+    page --> actor : Show header and products and "Custom work" and Details (L2-034)
+  end
+  page -> client : recordView(slug)
+  client -> controller : POST /api/listings/legacy-financial/views
+  controller -> views : Send RecordListingViewCommand
+  views -> cache : Set the visitor key for 30 minutes if absent
+  cache --> views : New or repeated
+  opt New view and not a known bot
+    views -> db : Insert ListingView
+    db --> views : Saved
+  end
+  views --> controller : Done
+  controller --> client : 204 No Content
+end
+opt Listing fails to load
+  controller --> client : 503 ProblemDetails with JB-BIZ-503
+  client --> page : Load error
+  page --> actor : Show "We couldn't load this business" or "We couldn't load this shop" with JB-BIZ-503
+end
+@enduml

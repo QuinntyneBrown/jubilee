@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Limit abuse
+
+Person(member, "Member", "Acts on the marketplace")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Shows the 429 toast. Hosts the bot challenge widget")
+  Container(api, "Jubilee API", "ASP.NET Core", "Counts actions. Verifies challenges. Returns uniform responses")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches notice e-mails from the outbox")
+  ContainerDb(cache, "Cache", "Redis", "Rate-limit counters per key and window")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Spam reports. Messaging restrictions. Outbox")
+}
+System_Ext(bot, "Bot challenge provider", "Challenge tokens")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, bot, "Obtains challenge token from", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, cache, "Increments counters in", "Redis protocol")
+Rel(api, bot, "Verifies token with", "HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Reads outbox from", "EF Core")
+Rel(worker, email, "Sends notices via", "HTTPS")
+@enduml

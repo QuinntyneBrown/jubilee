@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Edit a listing
+
+Person(owner, "Owner", "Edits a business listing")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Listing editor with live preview")
+  Container(api, "Jubilee API", "ASP.NET Core", "Validates and saves listing edits and uploads")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Photo processing and outbox dispatch")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings, photos and outbox")
+  ContainerDb(media, "Media storage", "Object storage + CDN", "Photo originals and renditions")
+  ContainerDb(search, "Search index", "<TO SUPPLY>", "Full-text search over businesses")
+}
+System_Ext(scanner, "Malware scanner", "Scans uploaded photos")
+
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Saves edits and uploads photos", "JSON and multipart/HTTPS")
+Rel(web, media, "Loads photo renditions", "HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, media, "Stores originals")
+Rel(worker, db, "Reads outbox and photo status", "EF Core")
+Rel(worker, media, "Writes renditions")
+Rel(worker, scanner, "Scans originals")
+Rel(worker, search, "Updates the listing document")
+@enduml

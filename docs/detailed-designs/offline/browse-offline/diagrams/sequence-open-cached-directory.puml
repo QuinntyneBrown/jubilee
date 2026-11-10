@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Open the cached directory
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BrowsePage" as page
+  participant "BrowseStore" as store
+  participant "DirectoryApi" as client
+  participant "OfflineSnapshotStore" as snap
+end box
+box "Frontend — Jubilee service worker" #E0F2FE
+  participant "browse-home data group" as sw
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "DirectoryController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetBrowseHomeQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /browse
+page -> store : load()
+store -> client : getHome()
+client -> sw : GET /api/directory/home
+alt Device is online
+  sw -> controller : Forward request
+  controller -> handler : Send GetBrowseHomeQuery
+  handler -> db : Read featured listings and categories
+  db --> handler : Rows
+  handler --> controller : BrowseHomeDto
+  controller --> sw : 200 OK
+  sw -> sw : Store response in browse-home cache (L2-119)
+  sw --> client : Fresh response
+  client --> store : BrowseHomeDto
+  store -> snap : stamp("browse-home", now in UTC)
+  snap --> store : Stamp saved
+  store --> page : Directory, fromCache = false
+  page --> actor : Show the directory
+else Device is offline and the browse home was opened before
+  sw -> sw : Network fails, read browse-home cache
+  sw --> client : Cached response
+  client --> store : BrowseHomeDto
+  store -> snap : read("browse-home")
+  snap --> store : SnapshotStamp with savedAt
+  store --> page : Directory, fromCache = true, savedAt
+  page -> page : Show persistent banner "You're offline. Showing the directory saved at {time}." (L2-119)
+  page -> page : Disable search, save and request controls with an explanation (L2-119)
+  page --> actor : Show the cached directory
+end
+@enduml

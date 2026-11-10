@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Secure uploads
+
+Person(owner, "Owner", "Uploads listing and product photos")
+Person(member, "Member", "Attaches photos to messages")
+Person(visitor, "Visitor", "Views published photos")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Inspects and re-encodes and scans every uploaded photo")
+System_Ext(scanner, "Malware scanner", "Scans stored objects for malware")
+
+Rel(owner, jubilee, "Uploads photos to", "HTTPS")
+Rel(member, jubilee, "Uploads message photos to", "HTTPS")
+Rel(visitor, jubilee, "Fetches published photos from", "HTTPS")
+Rel(jubilee, scanner, "Submits each upload to", "HTTPS")
+@enduml

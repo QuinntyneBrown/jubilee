@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Assure security
+
+Person(member, "Member", "Reviews and ends own sessions")
+Person(oncall, "On-call engineer", "On-call security contact")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Account page with the Sign-in and security section")
+  Container(api, "Jubilee API", "ASP.NET Core", "Records security events. Lists and ends sessions")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Evaluates alert thresholds")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Security events and audit entries")
+  ContainerDb(cache, "Cache", "Redis", "Active sessions")
+}
+System_Ext(obs, "Observability platform", "Events and alerts")
+System_Ext(secrets, "Secrets manager", "Runtime secrets")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Writes security events to", "EF Core")
+Rel(api, cache, "Lists and ends sessions in", "Redis protocol")
+Rel(worker, db, "Counts events in", "EF Core")
+Rel(api, obs, "Sends events to", "HTTPS")
+Rel(worker, obs, "Raises alert through", "HTTPS")
+Rel(obs, oncall, "Alerts")
+Rel(api, secrets, "Reads secrets from", "HTTPS")
+Rel(worker, secrets, "Reads secrets from", "HTTPS")
+@enduml

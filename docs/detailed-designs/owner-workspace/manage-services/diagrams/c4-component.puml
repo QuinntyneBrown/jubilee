@@ -1,0 +1,38 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage services
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "MyServicesPage", "Angular page", "Service list with reorder controls")
+  Component(editor, "ServiceEditorDialog", "Angular dialog", "Adds or edits one service")
+  Component(del, "DeleteServiceDialog", "Angular dialog", "Confirms a delete")
+  Component(client, "ServicesApi", "Typed HTTP client", "Calls the owner service endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "OwnerServicesController", "ASP.NET Core controller", "Exposes /api/owner/listings/{id}/services")
+  Component(validator, "ServiceCommandValidator", "FluentValidation validator", "Pricing and booking rules")
+  Component(save, "AddServiceCommandHandler and UpdateServiceCommandHandler", "MediatR handlers", "Validate and save a service")
+  Component(remove, "DeleteServiceCommandHandler", "MediatR handler", "Soft-deletes a service")
+  Component(reorder, "ReorderServicesCommandHandler", "MediatR handler", "Rewrites the sort order")
+  Component(listing, "Listing", "Domain aggregate", "Owns services and the 50 service limit")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+
+Rel(page, editor, "Opens")
+Rel(page, del, "Opens")
+Rel(page, client, "Lists and reorders through")
+Rel(editor, client, "Saves through")
+Rel(del, client, "Deletes through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, save, "Sends AddServiceCommand or UpdateServiceCommand")
+Rel(ctrl, remove, "Sends DeleteServiceCommand")
+Rel(ctrl, reorder, "Sends ReorderServicesCommand")
+Rel(save, validator, "Validated by")
+Rel(save, listing, "Calls AddService")
+Rel(remove, listing, "Calls RemoveService")
+Rel(reorder, listing, "Calls ReorderServices")
+Rel(save, db, "Saves service and outbox", "EF Core")
+Rel(remove, db, "Saves", "EF Core")
+Rel(reorder, db, "Saves", "EF Core")
+@enduml

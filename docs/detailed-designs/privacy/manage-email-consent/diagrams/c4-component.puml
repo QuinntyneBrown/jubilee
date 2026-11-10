@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage e-mail consent
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "NotificationSettingsPage", "Angular page", "Switches for each e-mail category at /account/notifications")
+  Component(unsub, "UnsubscribePage", "Angular page", "Confirms an unsubscribe from an e-mailed link")
+  Component(client, "AccountApi", "Typed HTTP client", "Calls the preference and unsubscribe endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "NotificationPreferencesController", "ASP.NET Core controller", "Saves one category per call")
+  Component(uctrl, "UnsubscribeController", "ASP.NET Core controller", "Accepts a token without a session")
+  Component(handler, "SetEmailConsentCommandHandler", "MediatR handler", "Changes the preference and appends the consent record")
+  Component(prefs, "NotificationPreferences", "Domain entity", "Owns the per-category switches")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "PromotionalEmailJob", "Hosted job", "Sends New businesses and Tips for business owners")
+  Component(audience, "PromotionalAudienceQuery", "Query", "Selects only opted-in members")
+  Component(guard, "PromotionalEmailComposer", "Application service", "Adds sender identity and mailing address and unsubscribe")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "NotificationPreferences and ConsentRecord")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+
+Rel(page, client, "Saves a switch through")
+Rel(unsub, client, "Submits the token through")
+Rel(client, ctrl, "PUT preference", "JSON/HTTPS")
+Rel(client, uctrl, "POST unsubscribe", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends SetEmailConsentCommand")
+Rel(uctrl, handler, "Sends SetEmailConsentCommand")
+Rel(handler, prefs, "Sets the category on")
+Rel(handler, db, "Saves preference and ConsentRecord", "EF Core")
+Rel(job, audience, "Reads recipients from")
+Rel(audience, db, "Reads", "EF Core")
+Rel(job, guard, "Composes each e-mail with")
+Rel(job, email, "Sends via", "HTTPS")
+@enduml

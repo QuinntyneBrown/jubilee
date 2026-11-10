@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Record staff access to personal data
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Verification team member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ReportReviewPage" as page
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminReportsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "StaffAccessAuditBehavior" as behavior
+  participant "GetReportedConversationQueryHandler" as handler
+  participant "IAuditLog" as audit
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open a reported conversation
+page -> client : Request the conversation for the report
+client -> controller : GET /api/admin/reports/{reportId}/conversation
+controller -> controller : Authenticate and apply L2-133 verifier policy
+controller -> behavior : Send GetReportedConversationQuery with reason ReportId
+alt reason is missing or names no open report
+  behavior --> controller : Validation failure
+  controller --> client : 422 ProblemDetails
+  client --> page : Error result
+else reason is valid
+  behavior -> audit : Append StaffViewedPersonalData with actor, target and reason (L2-150, L2-180)
+  audit -> db : Insert AuditEntry
+  alt audit entry is not stored
+    db --> audit : Failure
+    audit --> behavior : Failure
+    behavior --> controller : Access refused
+    controller --> client : 503 ProblemDetails JB-ADM-503
+    client --> page : Load error with reference
+  else audit entry is stored
+    db --> audit : Committed
+    audit --> behavior : Recorded
+    behavior -> handler : Continue to the handler
+    handler -> db : Load conversation and participants
+    db --> handler : Conversation
+    handler --> behavior : ReportedConversationDto
+    behavior --> controller : ReportedConversationDto
+    controller --> client : 200 conversation for audience Verifier
+    client --> page : Typed conversation
+    page --> actor : Show the reported conversation
+  end
+end
+@enduml

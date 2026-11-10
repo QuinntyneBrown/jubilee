@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — decline a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "IncomingRequestsPage" as page
+  participant "DeclineRequestDialog" as dialog
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IncomingRequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeclineRequestCommandHandler" as handler
+  participant "Request" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as outbox
+end box
+actor "Member" as member
+actor -> page : Press "Decline" on a new request
+page -> dialog : Open with customer and type
+dialog --> actor : Ask "Decline {customer}'s {type}?" with focus on "Keep request" (L2-129)
+actor -> dialog : Choose a reason, write a message, press "Decline request"
+dialog -> dialog : Require a message of at most 1,000 characters (L2-053)
+alt message is empty
+  dialog --> actor : Show "Write a short note so {customer} knows why and what to do next."
+else message present
+  dialog -> client : decline(requestId, reason, message)
+  client -> controller : POST /api/my-business/requests/{id}/decline
+  controller -> controller : Authenticate, apply ListingOwnerPolicy (L2-133), validate the command
+  controller -> handler : Send DeclineRequestCommand
+  handler -> db : Load request and conversation
+  db --> handler : Current state
+  handler -> entity : Apply L2-053 decline: New to Declined (L2-043)
+  entity --> handler : Status Declined, reason and message stored, RequestTransition recorded
+  handler -> db : Save request, decline card and outbox messages in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Status Declined
+  controller --> client : 200 OK
+  client --> dialog : Declined
+  dialog --> page : Close and move the row to Declined
+  page --> actor : Show updated tabs and counts
+  outbox -> db : Read pending outbox messages
+  db --> outbox : Messages
+  outbox --> member : Notification, e-mail and decline message on the request and in the conversation
+end
+@enduml

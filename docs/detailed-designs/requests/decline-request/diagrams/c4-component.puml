@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Decline a request
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "IncomingRequestsPage", "Angular page", "Offers Decline on each new request")
+  Component(dialog, "DeclineRequestDialog", "Angular dialog", "Collects reason and required message")
+  Component(store, "IncomingRequestsStore", "Signal store", "Moves the row to Declined")
+  Component(client, "RequestsApi", "Typed HTTP client", "Calls the decline endpoint")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "IncomingRequestsController", "ASP.NET Core controller", "Exposes /api/my-business/requests")
+  Component(policy, "ListingOwnerPolicy", "Authorization policy", "Passes for the owner or a co-owner only")
+  Component(val, "DeclineRequestCommandValidator", "FluentValidation validator", "Requires reason and message up to 1000 characters")
+  Component(handler, "DeclineRequestCommandHandler", "MediatR handler", "Applies the decline transition")
+  Component(entity, "Request", "Domain entity", "Owns the request lifecycle")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Tells the customer of the decline")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Requests and conversations and outbox")
+
+Rel(page, dialog, "Opens")
+Rel(dialog, client, "Declines through")
+Rel(dialog, store, "Updates on success")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, policy, "Authorizes with")
+Rel(ctrl, val, "Validates command with")
+Rel(ctrl, handler, "Sends DeclineRequestCommand")
+Rel(handler, entity, "Calls Decline on")
+Rel(handler, db, "Persists", "EF Core")
+Rel(outbox, db, "Reads outbox", "EF Core")
+@enduml

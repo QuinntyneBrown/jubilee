@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Sign in
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "SignInRequiredDialog", "Angular dialog", "Prompts a visitor who starts a member action")
+  Component(page, "SignInPage", "Angular page", "Sign-in form with busy and invalid states")
+  Component(pending, "PendingActionService", "Angular service", "Remembers the started action and the return path")
+  Component(client, "AccountApi", "Typed HTTP client", "Calls POST /api/session")
+  Component(session, "SessionService", "Angular service", "Holds the signed-in member")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(limit, "RateLimitMiddleware", "ASP.NET Core middleware", "20 failures per IP in 15 minutes")
+  Component(ctrl, "SessionController", "ASP.NET Core controller", "Exposes /api/session")
+  Component(handler, "SignInCommandHandler", "MediatR handler", "Verifies credentials and applies the lockout")
+  Component(tracker, "ISignInAttemptTracker", "Application service", "Failed-attempt counters and locks")
+  Component(hasher, "IPasswordHasher", "Application service", "Argon2id verification")
+  Component(sessions, "ISessionStore", "Application service", "Issues a new session identifier")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Members and outbox")
+ContainerDb(cache, "Cache", "Redis", "Counters and sessions")
+
+Rel(dialog, pending, "Records the started action in")
+Rel(dialog, page, "Opens")
+Rel(page, client, "Submits through")
+Rel(page, session, "Sets the member in")
+Rel(page, pending, "Resumes the action through")
+Rel(client, limit, "POST /api/session", "JSON/HTTPS")
+Rel(limit, cache, "Reads the IP failure counter")
+Rel(limit, ctrl, "Passes allowed requests to")
+Rel(ctrl, handler, "Sends SignInCommand")
+Rel(handler, tracker, "Checks and records attempts with")
+Rel(tracker, cache, "Stores counters")
+Rel(handler, hasher, "Verifies password with")
+Rel(handler, sessions, "Issues session through")
+Rel(sessions, cache, "Stores sessions")
+Rel(handler, db, "Loads member and writes lockout outbox message", "EF Core")
+@enduml

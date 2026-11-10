@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Load the verification queue
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Verification team member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "VerifierGuard" as guard
+  participant "VerificationQueuePage" as page
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminVerificationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetVerificationQueueQueryHandler" as handler
+  participant "BusinessDayCalendar" as calendar
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> guard : Open /admin/verifications
+guard -> guard : Check verifier role and second factor (L2-098)
+guard --> page : Activate route
+page -> client : getQueue(filter)
+client -> controller : GET /api/admin/verifications?filter=ready-to-review
+controller -> controller : Authenticate session and apply VerifierPolicy (L2-133)
+alt caller lacks the verifier role
+  controller --> client : 403 ProblemDetails
+  client --> page : Forbidden
+  page --> actor : Show the forbidden page (L2-098)
+else verifier with second factor
+  controller -> handler : Send GetVerificationQueueQuery
+  handler -> db : Read submitted listings, oldest submitted first (L2-099)
+  db --> handler : Rows with owner and reference outcome
+  handler -> calendar : Business days in "Ready to review"
+  calendar --> handler : Days waited
+  handler -> handler : Mark rows over 2 business days overdue (L2-099)
+  handler --> controller : VerificationQueueResult
+  controller --> client : 200 with items, counts and summary
+  client --> page : Queue
+  alt queue is empty
+    page --> actor : Show "The queue is clear." with "Refresh"
+  else chosen filter is empty
+    page --> actor : Show the filter message with a link to "Ready to review"
+  else rows exist
+    page --> actor : Show summary line, filter tabs and table
+  end
+end
+opt request fails
+  controller --> client : 503 ProblemDetails with JB-ADM-503
+  client --> page : Load error
+  page --> actor : Show "We couldn't load the queue" with JB-ADM-503 (L2-118)
+end
+@enduml

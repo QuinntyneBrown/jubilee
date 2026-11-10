@@ -1,0 +1,103 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Apply design tokens
+
+enum ThemePreference {
+  System
+  Light
+  Dark
+}
+
+enum TokenCategory {
+  Colour
+  Font
+  Size
+  Spacing
+  Radius
+  Shadow
+  ZIndex
+  Duration
+}
+
+class DesignToken {
+  +name: string
+  +category: TokenCategory
+  +lightValue: string
+  +darkValue: string
+}
+
+class ThemeService {
+  +preference: Signal<ThemePreference>
+  +resolved: Signal<string>
+  +{static} storageKey: string = jubilee-theme
+  +setPreference(value: ThemePreference): void
+  +adoptAccountPreference(value: ThemePreference): void
+  -apply(value: ThemePreference): void
+}
+
+class ThemeBootScript {
+  +run(): void
+}
+
+class AccountApi {
+  +getTheme(): Observable<ThemePreference>
+  +setTheme(value: ThemePreference): Observable<void>
+}
+
+class SetThemePreferenceCommand {
+  +Guid MemberId
+  +ThemePreference Preference
+}
+
+class SetThemePreferenceCommandHandler {
+  +Handle(command: SetThemePreferenceCommand, ct: CancellationToken): Task<Result>
+}
+
+class Member {
+  +Guid Id
+  +ThemePreference ThemePreference
+  +SetThemePreference(value: ThemePreference): void
+}
+
+class FontFace {
+  +family: string
+  +file: string
+  +display: string = swap
+  +fallbackFamily: string
+  +sizeAdjust: string
+}
+
+class TokenLint {
+  +allowed: DesignToken[]
+  +check(stylesheetPath: string): LintFinding[]
+}
+
+class LintFinding {
+  +file: string
+  +line: number
+  +property: string
+  +rawValue: string
+}
+
+ThemeService --> ThemePreference : holds
+ThemeService --> AccountApi : saves through
+ThemeBootScript ..> ThemePreference : reads stored
+SetThemePreferenceCommandHandler ..> SetThemePreferenceCommand : handles
+SetThemePreferenceCommandHandler --> Member : loads / mutates
+Member --> ThemePreference : has
+DesignToken --> TokenCategory : has
+TokenLint "1" o-- "*" DesignToken : allows
+TokenLint ..> LintFinding : reports
+FontFace ..> DesignToken : named by font tokens
+@enduml

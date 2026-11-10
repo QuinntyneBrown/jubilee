@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Apply design tokens
+
+Person(visitor, "Visitor", "Sees the theme that matches the device setting")
+Person(member, "Member", "Chooses Light, Dark or System in the account menu")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Styles every screen from design tokens in a light and a dark theme")
+System_Ext(ci, "CI pipeline", "Runs the token lint, the contrast check and the font shift check. Vendor <TO SUPPLY>")
+
+Rel(visitor, jubilee, "Views", "HTTPS")
+Rel(member, jubilee, "Chooses a theme in", "HTTPS")
+Rel(ci, jubilee, "Lints and measures the styles of")
+@enduml

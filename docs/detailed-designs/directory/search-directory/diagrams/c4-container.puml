@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Search the directory
+
+Person(visitor, "Visitor", "Searches without an account")
+Person(member, "Member", "Searches while signed in")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Search box and search page at /search")
+  Container(api, "Jubilee API", "ASP.NET Core", "Serves /api/search and recent searches")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Keeps the search index current from the outbox")
+  ContainerDb(index, "Search index", "<TO SUPPLY>", "Full-text documents for businesses and services and products")
+  ContainerDb(cache, "Cache", "Redis", "Rate-limit counters per IP address")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and recent searches")
+}
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Sends queries to", "JSON/HTTPS")
+Rel(api, index, "Queries", "HTTPS")
+Rel(api, cache, "Counts searches per minute in", "Redis protocol")
+Rel(api, db, "Reads the name-search fallback and recent searches from", "EF Core")
+Rel(worker, db, "Reads outbox messages from", "EF Core")
+Rel(worker, index, "Writes documents for live listings to", "HTTPS")
+@enduml

@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Serve the link preview of a shared listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+participant "Social or chat app" as app
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingDocumentController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetListingPreviewQueryHandler" as handler
+  participant "OpenGraphTagBuilder" as tags
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+participant "Media storage" as media
+app -> controller : GET https://{host}/b/{slug}
+controller -> handler : Send GetListingPreviewQuery
+handler -> cache : Get preview by slug
+alt Cached within 60 seconds
+  cache --> handler : ListingPreview
+else Not cached
+  cache --> handler : Miss
+  handler -> db : Load name and tagline and cover photo of the live listing (L2-028)
+  db --> handler : Listing or none
+  opt Live listing found
+    handler -> cache : Store preview for 60 seconds
+    cache --> handler : Stored
+  end
+end
+alt Live listing
+  handler --> controller : ListingPreview
+  controller -> tags : Build(preview)
+  tags --> controller : Encoded og:title and og:description and og:image and og:url (L2-038)
+  controller --> app : 200 application document with the Open Graph tags in the head
+  app -> media : GET the og:image URL
+  media --> app : Image
+else Listing not public or unknown
+  handler --> controller : NotFound
+  controller --> app : 404 application document without listing tags (L2-028)
+end
+@enduml

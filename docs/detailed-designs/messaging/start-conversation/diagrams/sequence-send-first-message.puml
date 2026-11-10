@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Send a first message
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "NewMessageDialog" as dialog
+  participant "MessagesApi" as client
+  participant "ToastService" as toast
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IdempotencyMiddleware" as idem
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "StartConversationCommandHandler" as handler
+  participant "Conversation" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+member -> dialog : Press "Send message"
+dialog -> dialog : Check L2-055 required text and 4000 limit
+alt empty message
+  dialog --> member : Show "Write a message before sending."
+else valid message
+  dialog -> client : startConversation(listingId, text, key)
+  client -> idem : POST /api/conversations with Idempotency-Key
+  idem -> idem : Look up key (L2-132)
+  idem -> controller : Forward new request
+  controller -> controller : Authenticate and apply endpoint policy
+  alt e-mail unconfirmed
+    controller --> client : 403 EMAIL_UNCONFIRMED (L2-005)
+    client --> dialog : Blocked result
+  else confirmed member
+    controller -> handler : Send StartConversationCommand
+    handler -> db : Find conversation for member and listing
+    db --> handler : Existing conversation or none
+    opt no conversation exists
+      handler -> entity : Start(memberId, listingId)
+      entity --> handler : New conversation
+    end
+    handler -> entity : AddMessage (L2-055 one conversation per pair)
+    entity --> handler : Message
+    handler -> db : Save conversation and message and outbox row
+    db --> handler : Commit result
+    handler --> controller : StartConversationResult
+    controller --> idem : 201 Created or 200 OK
+    idem --> client : Response stored under the key
+    client --> dialog : Conversation ID
+    dialog -> toast : Show toast linking to /messages/:id
+    dialog --> member : Close dialog
+  end
+end
+@enduml

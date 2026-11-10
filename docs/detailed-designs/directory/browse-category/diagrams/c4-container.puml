@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Browse a category
+
+Person(visitor, "Visitor", "Browses without an account")
+Person(member, "Member", "Browses while signed in")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Category page with filter chips and filters sheet and sort and pagination")
+  Container(api, "Jubilee API", "ASP.NET Core", "Serves category results under /api/categories")
+  ContainerDb(cache, "Cache", "Redis", "Category result pages for at most 60 seconds")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Categories and live listings")
+}
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Requests category results from", "JSON/HTTPS")
+Rel(api, cache, "Reads and writes result pages in", "Redis protocol")
+Rel(api, db, "Reads live listings from", "EF Core")
+@enduml

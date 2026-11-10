@@ -1,0 +1,92 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Stay available
+
+enum HealthStatus {
+  Healthy
+  Unhealthy
+}
+
+interface IDependencyHealthCheck {
+  +string Name
+  +CheckAsync(ct: CancellationToken): Task<HealthStatus>
+}
+
+class DatabaseHealthCheck {
+  +CheckAsync(ct: CancellationToken): Task<HealthStatus>
+}
+
+class CacheHealthCheck {
+  +CheckAsync(ct: CancellationToken): Task<HealthStatus>
+}
+
+class ReadinessReport {
+  +HealthStatus Status
+  +IReadOnlyDictionary<string, HealthStatus> Dependencies
+  +int HttpStatusCode
+}
+
+interface ISearchIndex {
+  +SearchAsync(query: SearchQuery): Task<SearchResultPage>
+}
+
+class ResilientSearchIndex {
+  -ISearchIndex inner
+  -DatabaseNameSearch fallback
+  +SearchAsync(query: SearchQuery): Task<SearchResultPage>
+}
+
+class DatabaseNameSearch {
+  +SearchByNameAsync(query: SearchQuery): Task<SearchResultPage>
+}
+
+class SearchResultPage {
+  +IReadOnlyList<SearchHit> Hits
+  +bool Degraded
+}
+
+class SearchHit {
+  +Guid ListingId
+  +string Name
+  +string? MatchExplanation
+}
+
+class MaintenanceWindow {
+  +Guid Id
+  +DateTimeOffset AnnouncedAt
+  +DateTimeOffset StartsAt
+  +DateTimeOffset EndsAt
+  +{static} Schedule(startsAt: DateTimeOffset, endsAt: DateTimeOffset, clock: IClock): MaintenanceWindow
+  +Covers(instant: DateTimeOffset): bool
+}
+
+class AvailabilityReport {
+  +int Year
+  +int Month
+  +decimal AvailabilityPercent
+  +TimeSpan ExcludedMaintenance
+  +bool MeetsTarget
+}
+
+IDependencyHealthCheck <|.. DatabaseHealthCheck
+IDependencyHealthCheck <|.. CacheHealthCheck
+ReadinessReport ..> IDependencyHealthCheck : aggregates "2"
+ReadinessReport --> HealthStatus : has
+ISearchIndex <|.. ResilientSearchIndex
+ResilientSearchIndex --> "1" ISearchIndex : wraps
+ResilientSearchIndex --> "1" DatabaseNameSearch : falls back to
+ISearchIndex ..> SearchResultPage : returns
+SearchResultPage "1" *-- "*" SearchHit
+AvailabilityReport ..> "*" MaintenanceWindow : excludes
+@enduml

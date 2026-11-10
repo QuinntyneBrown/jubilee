@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Run maintenance mode
+Container_Boundary(web, "Jubilee Web") {
+  Component(interceptor, "MaintenanceInterceptor", "HTTP interceptor", "Reacts to 503 with the code MAINTENANCE")
+  Component(page, "MaintenancePage", "Angular page", "Shows the back-by time and Check again")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(mw, "MaintenanceMiddleware", "Middleware", "Answers 503 with Retry-After while the switch is on")
+  Component(state, "MaintenanceState", "Application service", "Exposes the current MaintenanceOptions")
+  Component(staticpage, "Static maintenance page", "HTML document", "Served for document requests during maintenance")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(watcher, "MaintenanceWatcherJob", "Hosted job", "Detects switch changes and records the window")
+  Component(ext, "LinkTokenExtensionService", "Application service", "Extends link tokens by the window length")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Maintenance windows and link tokens")
+System_Ext(config, "Configuration store", "Maintenance switch")
+
+Rel(interceptor, mw, "Receives 503 from", "JSON/HTTPS")
+Rel(interceptor, page, "Navigates to")
+Rel(page, mw, "Checks again against", "HTTPS")
+Rel(mw, state, "Reads the switch through")
+Rel(mw, staticpage, "Serves")
+Rel(state, config, "Reloads options from")
+Rel(watcher, config, "Reloads options from")
+Rel(watcher, db, "Opens and closes MaintenanceWindow in", "EF Core")
+Rel(watcher, ext, "Calls when a window closes")
+Rel(ext, db, "Updates LinkToken expiry in", "EF Core")
+@enduml

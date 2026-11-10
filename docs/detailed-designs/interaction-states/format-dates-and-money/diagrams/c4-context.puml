@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Format dates and money
+
+Person(member, "Member", "Reads times and prices on pages and in e-mail")
+Person(owner, "Owner", "Reads request times and order totals")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Stores times in UTC and shows them in America/Toronto. Shows money in three fixed styles")
+System_Ext(email, "E-mail provider", "Delivers e-mail. Vendor <TO SUPPLY>")
+
+Rel(member, jubilee, "Reads dates and amounts in")
+Rel(owner, jubilee, "Reads dates and amounts in")
+Rel(jubilee, email, "Sends e-mail with formatted times and amounts via")
+@enduml

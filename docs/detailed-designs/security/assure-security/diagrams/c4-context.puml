@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Assure security
+
+Person(member, "Member", "Reviews and ends own sessions")
+Person(oncall, "On-call engineer", "On-call security contact. Receives alerts")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace. Logs security events. Reads secrets at runtime")
+System_Ext(obs, "Observability platform", "Stores security events and delivers alerts")
+System_Ext(secrets, "Secrets manager", "Holds database credentials and API keys and signing keys")
+System_Ext(pipeline, "CI pipeline", "Scans dependencies and code and secrets. Runs the ZAP baseline scan")
+Person_Ext(tester, "Independent penetration tester", "Tests the launch release candidate")
+
+Rel(member, jubilee, "Views Sign-in and security in", "HTTPS")
+Rel(jubilee, obs, "Sends security events to", "HTTPS")
+Rel(obs, oncall, "Alerts")
+Rel(jubilee, secrets, "Reads secrets from", "HTTPS")
+Rel(pipeline, jubilee, "Builds and scans and deploys")
+Rel(tester, jubilee, "Tests staging of", "HTTPS")
+@enduml

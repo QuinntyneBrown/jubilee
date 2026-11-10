@@ -1,0 +1,106 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Work the verification queue
+enum MemberRole {
+  Member
+  Verifier
+  Admin
+}
+enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Paused
+  OnHold
+  Removed
+  Declined
+}
+enum QueueFilter {
+  ReadyToReview
+  WaitingOnReference
+  NeedsDecision
+  ChangesRequested
+}
+enum ReferenceOutcome {
+  Waiting
+  Confirmed
+  CantVouch
+  DoesntKnow
+}
+class Session {
+  +Guid Id
+  +Guid MemberId
+  +DateTimeOffset? SecondFactorVerifiedAt
+  +HasSecondFactor(): bool
+}
+class Member {
+  +Guid Id
+  +string Name
+  +MemberRole Role
+  +ChangeRole(role: MemberRole, actor: Member): void
+}
+class GetVerificationQueueQuery {
+  +QueueFilter? Filter
+  +Guid ViewerId
+}
+class GetVerificationQueueQueryHandler {
+  +Handle(query: GetVerificationQueueQuery): Task<VerificationQueueResult>
+}
+class VerificationQueueResult {
+  +int Total
+  +int OldestWaitingDays
+  +IReadOnlyDictionary<QueueFilter, int> Counts
+  +IReadOnlyList<VerificationQueueItem> Items
+}
+class VerificationQueueItem {
+  +Guid ListingId
+  +string BusinessName
+  +string Category
+  +string OwnerName
+  +ReferenceOutcome Reference
+  +DateTimeOffset SubmittedAt
+  +ListingStage Stage
+  +bool Overdue
+  +bool OwnedByViewer
+}
+class BusinessDayCalendar {
+  +BusinessDaysBetween(from: DateTimeOffset, to: DateTimeOffset): int
+}
+class ChangeMemberRoleCommand {
+  +Guid MemberId
+  +MemberRole Role
+  +string Reason
+}
+class AuditEntry {
+  +Guid ActorId
+  +string Action
+  +string Target
+  +string Before
+  +string After
+  +DateTimeOffset At
+}
+
+GetVerificationQueueQueryHandler ..> GetVerificationQueueQuery : handles
+GetVerificationQueueQueryHandler --> VerificationQueueResult : returns
+GetVerificationQueueQueryHandler ..> BusinessDayCalendar : uses
+VerificationQueueResult "1" *-- "*" VerificationQueueItem
+VerificationQueueItem --> ListingStage
+VerificationQueueItem --> ReferenceOutcome
+GetVerificationQueueQuery --> QueueFilter
+Member --> MemberRole
+Session "*" --> "1" Member
+ChangeMemberRoleCommand ..> Member : targets
+ChangeMemberRoleCommand ..> AuditEntry : produces
+@enduml

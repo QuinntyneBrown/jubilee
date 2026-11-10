@@ -1,0 +1,74 @@
+@startuml
+title UML sequence behaviour — Confirm a consequential action and undo it
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestDetailPage" as page
+  participant "DialogService" as svc
+  participant "CancelRequestDialog" as dialog
+  participant "ToastService" as toast
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "CancelRequestCommandHandler" as handler
+  participant "Request" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Cancel request"
+page -> svc : open(CancelRequestDialog, request)
+svc -> svc : Record the opener
+svc -> dialog : showModal, page behind inert (L2-130)
+dialog -> dialog : State the consequence with type and business name (L2-129)
+dialog --> actor : Focus on the safe choice "Keep request" (L2-129)
+alt Member presses "Keep request" or Escape
+  actor -> dialog : Press "Keep request"
+  dialog --> svc : Closed without result
+  svc --> actor : Focus returns to the opener (L2-130)
+else Member presses "Cancel request"
+  actor -> dialog : Press "Cancel request"
+  dialog -> dialog : Busy: spinner, safe button disabled, Escape ignored (L2-127)
+  dialog -> client : cancel(requestId)
+  client -> controller : POST /api/requests/{requestId}/cancel
+  controller -> controller : Authenticate and check ownership (L2-133)
+  controller -> handler : Send CancelRequestCommand
+  handler -> db : Load request
+  db --> handler : Request
+  handler -> entity : Cancel(now)
+  entity --> handler : Status cancelled, previous status kept
+  handler -> db : Save request and outbox entry in one unit of work
+  db --> handler : Commit result
+  handler --> controller : RequestDto
+  controller --> client : 200 OK
+  client --> dialog : Result
+  dialog --> svc : Closed with result
+  svc --> page : Focus returns to the opener (L2-130)
+  page -> toast : success("Request cancelled. {Business} has been told.", Undo)
+  toast --> actor : Success toast with "Undo" for 8 seconds (L2-129)
+  opt Member presses "Undo" within 8 seconds
+    actor -> toast : Press "Undo"
+    toast -> client : undoCancel(requestId)
+    client -> controller : POST /api/requests/{requestId}/cancel/undo
+    controller --> client : 200 OK, previous status restored
+    client --> page : Result
+    page --> actor : Show the request with its previous status
+  end
+end
+@enduml

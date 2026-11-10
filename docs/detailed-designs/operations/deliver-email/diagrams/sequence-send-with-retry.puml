@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Send an e-mail with retry
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+box "Backend — Jubilee Worker" #D1FADF
+  participant "SendEmailJob" as job
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeliverabilityGuard" as guard
+  participant "EmailTemplateRenderer" as renderer
+  participant "EmailDelivery" as delivery
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "ProviderEmailSender" as sender
+  database "Jubilee database" as db
+end box
+participant "E-mail provider" as provider
+job -> db : Read due EmailDelivery rows
+db --> job : Deliveries
+job -> guard : MaySendAsync(address, category)
+guard -> db : Look up SuppressedAddress
+db --> guard : Row or none
+alt address undeliverable and category not Security
+  guard --> job : false
+  job -> delivery : Suppress (L2-179)
+  delivery --> job : Status Suppressed
+else send allowed
+  guard --> job : true
+  job -> renderer : Render(templateKey, model)
+  renderer --> job : EmailMessage with HTML and plain-text parts
+  job -> sender : SendAsync(message)
+  sender -> provider : Send request with correlation ID
+  alt accepted
+    provider --> sender : Message identifier
+    sender --> job : Accepted
+    job -> delivery : MarkSent
+    delivery --> job : Status Sent
+  else transient failure
+    provider --> sender : Timeout or 5xx or 429
+    sender --> job : TransientFailure
+    job -> delivery : ScheduleRetry
+    delivery -> delivery : Apply L2-179 rule: back-off up to 24 hours after first attempt
+    delivery --> job : Status Retrying or Failed
+  else permanent failure
+    provider --> sender : Rejected
+    sender --> job : PermanentFailure
+    job -> delivery : Mark Failed
+    delivery --> job : Status Failed
+  end
+end
+job -> db : Save delivery state
+db --> job : Commit result
+@enduml

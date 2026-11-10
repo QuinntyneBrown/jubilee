@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Mute a conversation
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConversationRow" as row
+  participant "MessagesStore" as store
+  participant "MessagesApi" as client
+  participant "ToastService" as toast
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SetConversationMuteCommandHandler" as handler
+  participant "ConversationParticipant" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+member -> row : Choose "Mute"
+row -> store : setMuted(id, true)
+store -> client : mute(id)
+client -> controller : PUT /api/conversations/{id}/mute
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send SetConversationMuteCommand
+handler -> db : Load conversation for a participant (L2-133)
+alt caller is not a participant
+  db --> handler : No row
+  handler --> controller : Not found
+  controller --> client : 404 ProblemDetails
+  client --> store : Error
+else participant
+  db --> handler : Conversation
+  handler -> entity : Mute(now) (L2-061)
+  entity --> handler : MutedAt set
+  handler -> db : Save changes in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Done
+  controller --> client : 204 No Content
+  client --> store : Muted
+  store -> toast : Show "Conversation muted." with "Undo"
+  toast --> member : Toast
+  opt member presses "Undo" or later chooses "Unmute"
+    member -> toast : Press "Undo"
+    toast -> store : setMuted(id, false)
+    store -> client : unmute(id)
+    client -> controller : DELETE /api/conversations/{id}/mute
+    controller --> client : 204 No Content
+    client --> store : E-mails resume (L2-061)
+  end
+end
+@enduml

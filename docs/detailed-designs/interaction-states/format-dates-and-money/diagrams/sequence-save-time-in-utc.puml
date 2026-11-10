@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Save a chosen time in UTC
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BookMeetingDialog" as dialog
+  participant "TorontoTime" as toronto
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "UtcJsonConverter" as json
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "BookMeetingCommandHandler" as handler
+  participant "IClock" as clock
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "UtcDateTimeConverter" as conv
+  database "Jubilee database" as db
+end box
+actor -> dialog : Choose a day and the time "10:00 a.m."
+dialog -> toronto : toUtc(day, time)
+toronto -> toronto : Apply the America/Toronto offset in force on that day (L2-131)
+toronto --> dialog : UTC instant
+actor -> dialog : Press the primary button
+dialog -> client : bookMeeting(startsAtUtc)
+client -> json : POST /api/requests/bookings
+alt Instant carries no offset
+  json --> client : 422 with a field error code
+  client --> dialog : Field error
+  dialog --> actor : Show the message under the field
+else Instant is ISO 8601 with Z
+  json -> controller : Bound DateTime in UTC
+  controller -> handler : Send BookMeetingCommand
+  handler -> clock : UtcNow
+  clock --> handler : Current UTC instant
+  handler -> conv : Save Request with StartsAtUtc and CreatedAtUtc
+  conv -> db : Write datetime2 in UTC (L2-131)
+  db --> conv : Commit result
+  conv --> handler : Saved
+  handler --> controller : RequestDto
+  controller --> client : 201 Created, instants with Z
+  client --> dialog : Typed result
+  dialog -> toronto : formatTime(startsAtUtc)
+  toronto --> dialog : "10:00 a.m." in America/Toronto
+  dialog --> actor : Show the success state with the chosen time
+end
+@enduml

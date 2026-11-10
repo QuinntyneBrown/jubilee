@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Expire a message after 24 hours
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConversationPage" as page
+  participant "ConversationStore" as store
+  participant "QueueExpiryMonitor" as expiry
+  participant "OutgoingMessageQueue" as queue
+  participant "QueueDrainer" as drainer
+end box
+expiry -> queue : sweep(now)
+queue -> queue : Find WaitingToSend messages with queuedAt older than 24 hours
+queue -> queue : markNotSent(id) (L2-120)
+queue --> expiry : Expired messages
+expiry --> store : Queue changed
+store --> page : Thread with the message in state NotSent
+page --> actor : Show "Not sent" with "Try again" and "Delete"
+alt Member presses "Try again"
+  actor -> page : Press "Try again"
+  page -> store : retry(id)
+  store -> queue : retry(id), keep the idempotency key, reset queuedAt
+  queue --> store : State WaitingToSend
+  store -> drainer : drain()
+  drainer --> store : Sent count
+  store --> page : Updated thread
+  page --> actor : Show the message as sent or "Waiting to send"
+else Member presses "Delete"
+  actor -> page : Press "Delete"
+  page -> store : delete(id)
+  store -> queue : remove(id)
+  queue --> store : Removed
+  store --> page : Updated thread
+  page --> actor : Remove the message from the thread
+end
+@enduml

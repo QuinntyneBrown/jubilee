@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Run background jobs
+
+Person(member, "Member", "Receives reminders and daily summaries")
+Person(oncall, "On-call engineer", "Is alerted about dead-lettered jobs and replays them")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers reminder and summary e-mail. Vendor to supply")
+System_Ext(obs, "Observability platform", "Receives job metrics and alerts on-call. Vendor to supply")
+
+Rel(jubilee, member, "Sends reminders and summaries to")
+Rel(jubilee, email, "Sends e-mail through", "HTTPS")
+Rel(jubilee, obs, "Exports job metrics to", "OTLP")
+Rel(obs, oncall, "Alerts about dead-lettered jobs")
+Rel(oncall, jubilee, "Inspects and replays jobs in", "HTTPS")
+@enduml

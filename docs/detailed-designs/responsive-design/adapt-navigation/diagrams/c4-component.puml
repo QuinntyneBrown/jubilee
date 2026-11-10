@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Adapt navigation
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(shell, "AppShell", "Angular component", "Hosts TopBar, the router outlet, the footer and TabBar")
+  Component(topbar, "TopBar", "Angular component", "Renders .topbar.topbar--ink: brand, primary navigation, search box, avatar")
+  Component(tabbar, "TabBar", "Angular component", "Renders .tabbar with Browse, List, Messages and You")
+  Component(hero, "BrowseHero", "Angular component", "Renders .hero with the heading and the hero search")
+  Component(viewport, "ViewportService", "Angular service", "Exposes the current Breakpoint as a signal from matchMedia")
+  Component(nav, "NavigationStore", "Signal store", "Holds the navigation items and unread badge counts")
+  Component(css, "ui.css navigation rules", "Stylesheet", "Media queries at 48rem and 64rem and safe-area padding")
+}
+Container_Boundary(pipeline, "CI pipeline") {
+  Component(visual, "VisualRegressionSuite", "Test suite", "Screenshots every manifest screen and state at five widths in two themes")
+  Component(overflow, "OverflowCheck", "Test helper", "Fails when the document is wider than the viewport or boxes overlap")
+  Component(reach, "ReachabilityCheck", "Test helper", "Fails when a function shown at 1280 px has no route at 360 px")
+}
+Container(api, "Jubilee API", "ASP.NET Core", "GET /api/session and unread counts")
+
+Rel(shell, topbar, "Renders")
+Rel(shell, tabbar, "Renders on member pages")
+Rel(shell, viewport, "Reads breakpoint")
+Rel(topbar, nav, "Reads items and badges")
+Rel(tabbar, nav, "Reads items and badges")
+Rel(hero, css, "Is shown or hidden by")
+Rel(topbar, css, "Is laid out by")
+Rel(tabbar, css, "Is laid out by")
+Rel(nav, api, "Loads unread counts", "JSON/HTTPS")
+Rel(visual, shell, "Renders and screenshots")
+Rel(visual, overflow, "Runs per screenshot")
+Rel(visual, reach, "Runs per screen")
+@enduml

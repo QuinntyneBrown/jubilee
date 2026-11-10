@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Confirm e-mail
+
+Person(member, "Member", "Holds an unconfirmed account and opens the e-mailed link")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers confirmation e-mail and reports bounces")
+
+Rel(member, jubilee, "Opens /verify-email/:token and browses while unconfirmed", "HTTPS")
+Rel(jubilee, email, "Sends confirmation e-mail via")
+Rel(email, jubilee, "Reports a bounce to", "Webhook")
+Rel(email, member, "Delivers the confirmation link to")
+@enduml

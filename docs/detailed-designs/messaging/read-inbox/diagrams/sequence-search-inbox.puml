@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Search the inbox
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "InboxSearchBox" as search
+  participant "MessagesStore" as store
+  participant "MessagesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ListConversationsQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+member -> search : Type "trevor"
+search -> search : Debounce so the query runs within 300 ms (L2-059)
+search -> store : search(term)
+store -> client : list(term)
+client -> controller : GET /api/conversations?q=trevor
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send ListConversationsQuery with SearchTerm
+handler -> db : Match business name and participant name and message text within the caller's conversations (L2-059)
+db --> handler : Matching rows
+handler --> controller : InboxResult
+controller --> client : 200 OK
+client --> store : Rows
+alt no match
+  store --> search : Empty result
+  search --> member : Show "No messages match" with "Clear search"
+else matches
+  store --> search : Filtered rows
+  search --> member : Show only matching conversations
+end
+@enduml

@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Sign in and restore the draft
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SessionExpiredPage" as page
+  participant "SignInPage" as signin
+  participant "ReturnUrlService" as ret
+  participant "FormDraftDirective" as form
+  participant "DraftStore" as store
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AuthController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SignInCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "SessionStore" as sessions
+  database "Cache" as cache
+end box
+actor -> page : Press "Sign in"
+page -> signin : Navigate to /sign-in
+actor -> signin : Enter credentials
+signin -> controller : POST /api/auth/sign-in
+controller -> handler : Send SignInCommand
+handler -> sessions : Create(memberId, keepSignedIn)
+sessions -> cache : Store a session with a new identifier (L2-010)
+cache --> sessions : Stored
+sessions --> handler : Session
+handler --> controller : Typed result
+controller --> signin : 200 with a new session cookie
+signin -> ret : take()
+ret -> ret : Accept same-origin paths only
+ret --> signin : The page the member left
+signin -> form : Navigate to the return URL; the form initialises
+form -> store : take(memberId, route, key)
+alt draft belongs to this member
+  store --> form : Draft
+  form -> form : restore(payload) (L2-116)
+  form --> actor : Show the same page with the draft restored
+else no draft or another member signed in
+  store --> form : Nothing
+  form --> actor : Show the page with an empty form
+end
+@enduml

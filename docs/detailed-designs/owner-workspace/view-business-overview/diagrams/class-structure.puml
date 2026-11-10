@@ -1,0 +1,121 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — View the business overview
+
+enum ListingStage {
+  Draft
+  WaitingOnReference
+  ReadyToReview
+  NeedsDecision
+  ChangesRequested
+  Live
+  Paused
+  OnHold
+  Removed
+  Declined
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +string Name
+  +ListingStage Stage
+  +DateTimeOffset? LiveSince
+  +DateTimeOffset? LiveBannerSeenAt
+  +IsOwnedBy(memberId: Guid): bool
+  +AcknowledgeLiveBanner(now: DateTimeOffset): void
+}
+
+class OwnerWorkspace {
+  +Guid? ListingId
+  +string BusinessName
+  +ListingStage? Stage
+  +DateTimeOffset? LiveSince
+  +int NewRequestCount
+  +bool ShowLiveBanner
+  +StageDetail Detail
+}
+
+class StageDetail {
+  +string ReferenceName
+  +string Church
+  +DateTimeOffset? ReferenceEmailedAt
+  +IReadOnlyList<string> RequestedChanges
+  +string ReviewerFirstName
+  +DateTimeOffset? ChangesRequestedAt
+}
+
+class BusinessOverview {
+  +OverviewStats Stats
+  +IReadOnlyList<RequestCard> NeedsReply
+  +ListingSummary Summary
+}
+
+class OverviewStats {
+  +int ListingViews7Days
+  +int ViewsChangePercent
+  +int OpenRequests
+  +int NewSinceYesterday
+  +int UnansweredMessages
+  +int SavedByMembers
+  +int SavedChangeThisWeek
+}
+
+class ListingSummary {
+  +int ProductCount
+  +int SoldOutCount
+  +int ServiceCount
+  +string ReferenceStatus
+}
+
+class RequestCard {
+  +Guid RequestId
+  +RequestType Type
+  +string Title
+  +string CustomerName
+  +DateTimeOffset SentAt
+}
+
+class ListingViewDaily {
+  +Guid ListingId
+  +DateOnly Day
+  +int Count
+  +Increment(): void
+}
+
+class ListingViewRecorder {
+  +RecordAsync(listingId: Guid, viewer: ViewerContext): Task
+}
+
+class GetBusinessOverviewQueryHandler {
+  +Handle(query: GetBusinessOverviewQuery): Task<BusinessOverview>
+}
+
+class GetOwnerWorkspaceQueryHandler {
+  +Handle(query: GetOwnerWorkspaceQuery): Task<OwnerWorkspace>
+}
+
+Listing --> ListingStage : has
+Listing "1" --> "*" ListingViewDaily : counted in
+OwnerWorkspace --> ListingStage : shows
+OwnerWorkspace *-- "0..1" StageDetail
+BusinessOverview *-- "1" OverviewStats
+BusinessOverview *-- "0..3" RequestCard
+BusinessOverview *-- "1" ListingSummary
+GetOwnerWorkspaceQueryHandler ..> OwnerWorkspace : returns
+GetOwnerWorkspaceQueryHandler ..> Listing : reads
+GetBusinessOverviewQueryHandler ..> BusinessOverview : returns
+GetBusinessOverviewQueryHandler ..> ListingViewDaily : sums 7 days
+ListingViewRecorder ..> ListingViewDaily : increments
+@enduml

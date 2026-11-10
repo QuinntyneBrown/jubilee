@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Run background jobs
+
+Person(oncall, "On-call engineer", "Replays dead-lettered jobs")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+System_Ext(obs, "Observability platform", "Metrics and alerts")
+System_Boundary(jubilee, "Jubilee") {
+  Container(api, "Jubilee API", "ASP.NET Core", "Writes outbox messages and serves job operations endpoints")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Two or more instances that schedule and run jobs")
+  ContainerDb(db, "Jubilee database", "SQL Server", "JobRun and JobState and DeadLetterEntry and outbox")
+}
+Rel(oncall, api, "Inspects and replays through", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Claims runs and records results in", "EF Core")
+Rel(worker, email, "Sends e-mail through", "HTTPS")
+Rel(worker, obs, "Exports job metrics to", "OTLP")
+Rel(obs, oncall, "Alerts")
+@enduml

@@ -1,0 +1,104 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Confirm e-mail
+
+enum EmailStatus {
+  Unconfirmed
+  Confirmed
+}
+
+enum LinkTokenPurpose {
+  EmailConfirmation
+  PasswordReset
+  EmailChange
+  ChurchReference
+  DataDownload
+}
+
+enum ConfirmEmailOutcome {
+  Confirmed
+  AlreadyConfirmed
+  Expired
+}
+
+class Member {
+  +Guid Id
+  +EmailAddress Email
+  +EmailStatus EmailStatus
+  +bool EmailBounced
+  +ConfirmEmail(now: DateTimeOffset): void
+  +ReplaceUnconfirmedEmail(email: EmailAddress): void
+  +MarkEmailBounced(): void
+  +CanTransact(): bool
+}
+
+class LinkToken {
+  +Guid Id
+  +Guid MemberId
+  +LinkTokenPurpose Purpose
+  +byte[] TokenHash
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? UsedAt
+  +DateTimeOffset? SupersededAt
+  +IsRedeemable(now: DateTimeOffset): bool
+  +Redeem(now: DateTimeOffset): void
+  +Supersede(now: DateTimeOffset): void
+}
+
+interface ILinkTokenService {
+  +Issue(memberId: Guid, purpose: LinkTokenPurpose, lifetime: TimeSpan): IssuedToken
+  +Find(rawToken: string, purpose: LinkTokenPurpose): Task<LinkToken>
+  +SupersedeOutstanding(memberId: Guid, purpose: LinkTokenPurpose): void
+}
+
+class ConfirmEmailCommand {
+  +string Token
+}
+
+class ConfirmEmailCommandHandler {
+  +Handle(command: ConfirmEmailCommand): Task<ConfirmEmailOutcome>
+}
+
+class ChangeUnconfirmedEmailCommand {
+  +Guid MemberId
+  +string NewEmail
+}
+
+class ChangeUnconfirmedEmailCommandHandler {
+  +Handle(command: ChangeUnconfirmedEmailCommand): Task<Result>
+}
+
+class ConfirmedEmailRequirement {
+  +string FailureCode = "EMAIL_UNCONFIRMED"
+  +IsMet(member: Member): bool
+}
+
+class RecordEmailBounceCommandHandler {
+  +Handle(command: RecordEmailBounceCommand): Task<Result>
+}
+
+Member --> EmailStatus : has
+Member "1" --> "*" LinkToken : receives
+LinkToken --> LinkTokenPurpose : has
+ILinkTokenService --> LinkToken : issues and finds
+ConfirmEmailCommandHandler ..> ConfirmEmailCommand : handles
+ConfirmEmailCommandHandler ..> ILinkTokenService : uses
+ConfirmEmailCommandHandler --> Member : confirms
+ConfirmEmailCommandHandler ..> ConfirmEmailOutcome : returns
+ChangeUnconfirmedEmailCommandHandler ..> ChangeUnconfirmedEmailCommand : handles
+ChangeUnconfirmedEmailCommandHandler ..> ILinkTokenService : uses
+ChangeUnconfirmedEmailCommandHandler --> Member : mutates
+ConfirmedEmailRequirement ..> Member : reads
+RecordEmailBounceCommandHandler --> Member : marks bounced
+@enduml

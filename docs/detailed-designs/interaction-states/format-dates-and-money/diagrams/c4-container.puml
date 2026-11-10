@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Format dates and money
+
+Person(member, "Member", "Reads times and prices")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Formats UTC instants in America/Toronto and cents as dollars")
+  Container(api, "Jubilee API", "ASP.NET Core", "Exchanges ISO 8601 UTC instants and integer cents")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Formats times and amounts in e-mail with the same rules")
+  ContainerDb(db, "Jubilee database", "SQL Server", "datetime2 columns in UTC. Amounts in cents")
+}
+System_Ext(email, "E-mail provider", "Delivers e-mail. Vendor <TO SUPPLY>")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Reads and writes instants and amounts through", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Reads", "EF Core")
+Rel(worker, email, "Sends formatted e-mail via")
+@enduml

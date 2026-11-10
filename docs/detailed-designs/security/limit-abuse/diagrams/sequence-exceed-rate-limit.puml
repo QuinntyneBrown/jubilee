@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Exceed a rate limit
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as user
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConversationPage" as page
+  participant "RateLimitInterceptor" as interceptor
+  participant "ToastService" as toast
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RateLimitMiddleware" as limiter
+  participant "MessagesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SendMessageCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "RedisRateLimitStore" as store
+  database "Cache" as cache
+  participant "ISecurityEventLog" as seclog
+end box
+user -> page : Send a message
+page -> interceptor : POST /api/conversations/{id}/messages
+interceptor -> limiter : HTTPS request
+limiter -> limiter : Read policy Messages: 30 per member per 10 minutes (L2-137)
+limiter -> store : HitAsync(key, policy)
+store -> cache : Increment counter with window expiry
+cache --> store : Count and time to live
+store --> limiter : RateLimitDecision
+alt Count within the limit
+  limiter -> controller : Pass request
+  controller -> handler : Send SendMessageCommand
+  handler --> controller : Message created
+  controller --> interceptor : 201 Created
+  interceptor --> page : Message
+  page --> user : Show sent message
+else Limit exceeded
+  limiter -> seclog : Record rate-limit trip (L2-143)
+  seclog --> limiter : Recorded
+  limiter --> interceptor : 429 with Retry-After seconds (L2-137)
+  interceptor -> toast : Show with n = Retry-After rounded up to minutes
+  toast --> user : "You're doing that a lot. Try again in {n} minutes."
+  interceptor --> page : Error. Draft message kept
+end
+@enduml

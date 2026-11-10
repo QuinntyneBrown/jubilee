@@ -1,0 +1,72 @@
+@startuml
+title UML sequence behaviour — Apply filters and sort
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "FilterChips" as chips
+  participant "FiltersDialog" as sheet
+  participant "CategoryStore" as store
+  participant "DirectoryApi" as client
+  participant "CategoryPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "CategoriesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetCategoryListingsQueryHandler" as handler
+  participant "CategoryFilterSet" as filterset
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+alt Viewport 768 px or wider
+  actor -> chips : Press the chip "Emergency calls"
+  chips -> store : toggleOffer(EmergencyCalls)
+  chips --> actor : Chip shows aria-pressed="true" (L2-024)
+else Viewport under 768 px
+  actor -> sheet : Press "Filters" and tick boxes
+  sheet -> client : countListings(slug, draft filters)
+  client -> controller : GET /api/categories/{slug}/listings/count
+  controller --> client : Match count
+  client --> sheet : Count
+  sheet --> actor : Primary button reads "Show {n} businesses" (L2-024)
+  actor -> sheet : Press "Show {n} businesses"
+  sheet -> store : applyFilters(draft filters and sort)
+end
+store -> store : Write offers and areas and sort to the query string and reset page to 1 (L2-024)
+store -> client : getListings(slug, query)
+client -> controller : GET /api/categories/{slug}/listings?offers=emergency-calls&sort=name
+controller -> handler : Send GetCategoryListingsQuery
+handler -> filterset : Parse(offers, areas)
+filterset --> handler : Allowed values only and unknown values ignored (L2-024)
+handler -> db : Query live listings matching any value within a group and all groups (L2-024)
+db --> handler : Rows ordered by the chosen sort (L2-025)
+alt No listing matches
+  handler -> db : Count matches for each filter set with one filter removed
+  db --> handler : Counts for nearby combinations
+  handler --> controller : Empty result with FilterSuggestion list
+  controller --> client : 200 with suggestions
+  client --> store : Typed result
+  store --> page : No results
+  page --> actor : Show "No businesses match these filters" with "Clear all filters" and a button that removes the most recent filter (L2-024)
+else One or more listings match
+  handler --> controller : CategoryPageResult
+  controller --> client : 200 with cards
+  client --> store : Typed result
+  store --> page : Cards
+  page --> actor : Show the narrowed and sorted cards
+end
+@enduml

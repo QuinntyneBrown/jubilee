@@ -1,0 +1,43 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Queue messages offline
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(composer, "MessageComposer", "Angular component", "Stays enabled offline")
+  Component(store, "ConversationStore", "Signal store", "Routes a send to the API or to the queue")
+  Component(keys, "IdempotencyKeyFactory", "Angular service", "Creates one key per message")
+  Component(queue, "OutgoingMessageQueue", "IndexedDB store", "Ordered messages waiting to send")
+  Component(drainer, "QueueDrainer", "Angular service", "Sends waiting messages in order on reconnect")
+  Component(expiry, "QueueExpiryMonitor", "Angular service", "Marks messages older than 24 hours Not sent")
+  Component(conn, "ConnectionService", "Angular service", "Reports the connection state")
+  Component(banner, "ConnectionBanner", "Shared UI", "Reports how many saved messages were sent")
+  Component(mapi, "MessagesApi", "Typed HTTP client", "POST /api/conversations/{conversationId}/messages")
+}
+Container(sw, "Jubilee service worker", "Angular service worker", "OutboxSyncHandler drains the queue on the sync event")
+Container_Boundary(api, "Jubilee API") {
+  Component(idem, "IdempotencyMiddleware", "ASP.NET Core middleware", "Replays the stored response for a repeated key")
+  Component(ctrl, "ConversationsController", "ASP.NET Core controller", "Exposes the message endpoint")
+  Component(handler, "SendMessageCommandHandler", "MediatR handler", "Adds the message and writes the outbox entry")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and messages and outbox")
+ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
+
+Rel(composer, store, "Sends text to")
+Rel(store, keys, "Gets a key from")
+Rel(store, conn, "Reads state from")
+Rel(store, queue, "Enqueues when offline")
+Rel(store, mapi, "Posts when online")
+Rel(drainer, conn, "Starts on Online from")
+Rel(drainer, queue, "Reads and marks")
+Rel(drainer, mapi, "Posts each message through")
+Rel(drainer, banner, "Reports sent count to")
+Rel(expiry, queue, "Marks expired in")
+Rel(sw, queue, "Reads and marks", "IndexedDB")
+Rel(mapi, idem, "Calls with Idempotency-Key", "JSON/HTTPS")
+Rel(sw, idem, "Calls with Idempotency-Key", "JSON/HTTPS")
+Rel(idem, cache, "Looks up key in")
+Rel(idem, ctrl, "Passes first request to")
+Rel(ctrl, handler, "Sends SendMessageCommand")
+Rel(handler, db, "Saves", "EF Core")
+@enduml

@@ -1,0 +1,61 @@
+@startuml
+title UML sequence behaviour — Delete a product
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyProductsPage" as page
+  participant "DeleteProductDialog" as dialog
+  participant "ProductsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "OwnerProductsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeleteProductCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Delete" on a product
+page -> dialog : Open "Delete “{name}”?" with the past request count
+dialog --> actor : Focus "Keep product" (L2-129)
+actor -> dialog : Press "Delete product"
+dialog -> client : Build typed request
+client -> controller : DELETE /api/owner/listings/{listingId}/products/{productId}
+controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
+controller -> handler : Send DeleteProductCommand
+handler -> db : Load listing with the product
+db --> handler : Listing
+handler -> entity : RemoveProduct sets DeletedAt (L2-092)
+entity --> handler : Product removed
+handler -> db : Save product and ProductChanged outbox message
+note right of db : Request rows keep their name and price snapshot.\nOpen order requests stay open (L2-092).
+alt Save succeeds
+  db --> handler : Commit result
+  handler --> controller : Success
+  controller --> client : 204 No Content
+  client --> dialog : Deleted
+  dialog --> page : Close and remove the row
+  page --> actor : Show the updated product count
+else Save fails
+  db --> handler : Error
+  handler --> controller : Failure
+  controller --> client : ProblemDetails with error reference
+  client --> dialog : Failed
+  dialog --> actor : Show "We couldn't delete it. The product is still listed. Try again."
+end
+@enduml

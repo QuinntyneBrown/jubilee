@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Restore an earlier version of an uploaded file
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "On-call engineer" as actor
+box "Backend — Jubilee API" #D1FADF
+  participant "OperationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RestoreFileVersionCommandHandler" as handler
+  participant "IAuditLog" as audit
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IMediaStore" as store
+  database "Jubilee database" as db
+end box
+participant "Media storage" as media
+actor -> controller : GET /api/ops/media/{key}/versions
+controller -> controller : Authenticate and require Admin role (L2-133)
+controller -> store : ListVersionsAsync(key)
+store -> media : List object versions
+media --> store : Versions of the last 30 days (L2-177)
+store --> controller : ObjectVersion list
+controller --> actor : 200 JSON
+actor -> controller : POST /api/ops/media/{key}/versions/{versionId}/restore
+controller -> handler : Send RestoreFileVersionCommand
+handler -> store : RestoreVersionAsync(key, versionId)
+store -> media : Copy version to current
+alt version exists
+  media --> store : New current version
+  store --> handler : Done
+  handler -> audit : Record restore with reason (L2-180)
+  audit --> handler : AuditEntry added
+  handler -> db : Save changes in one unit of work
+  db --> handler : Commit result
+  handler --> controller : Done
+  controller --> actor : 204 No Content
+else version older than 30 days
+  media --> store : Not found
+  store --> handler : Missing version
+  handler --> controller : Not found
+  controller --> actor : 404 ProblemDetails
+end
+@enduml

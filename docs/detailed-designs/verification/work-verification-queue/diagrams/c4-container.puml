@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Work the verification queue
+Person(verifier, "Verification team member", "Works the verification queue")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Queue page and top bar count and forbidden page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Admin endpoints under /api/admin with the verifier policy")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and church references and roles and audit entries")
+  ContainerDb(cache, "Cache", "Redis", "Sessions with second factor state and the queue count")
+}
+Rel(verifier, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, cache, "Reads session and caches count", "Redis protocol")
+@enduml

@@ -1,0 +1,72 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Run maintenance mode
+enum LinkTokenPurpose {
+  EmailConfirmation
+  ChurchReference
+  PasswordReset
+}
+class MaintenanceOptions {
+  +bool Enabled
+  +DateTimeOffset BackBy
+}
+interface IMaintenanceState {
+  +Current: MaintenanceOptions
+  +OnChange(listener: Action<MaintenanceOptions>): IDisposable
+}
+class MaintenanceState {
+  +MaintenanceOptions Current
+  +OnChange(listener: Action<MaintenanceOptions>): IDisposable
+}
+class MaintenanceMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+  -RetryAfterSeconds(now: DateTimeOffset): int
+  -IsDocumentRequest(request: HttpRequest): bool
+}
+class MaintenanceWindow {
+  +Guid Id
+  +DateTimeOffset StartedAt
+  +DateTimeOffset? EndedAt
+  +DateTimeOffset BackBy
+  +Close(now: DateTimeOffset): TimeSpan
+}
+class MaintenanceWatcherJob {
+  +ExecuteAsync(stoppingToken: CancellationToken): Task
+  -OnSwitchChanged(options: MaintenanceOptions): Task
+}
+class LinkTokenExtensionService {
+  +ExtendFor(window: MaintenanceWindow): Task<int>
+}
+class LinkToken {
+  +Guid Id
+  +LinkTokenPurpose Purpose
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? UsedAt
+  +Extend(by: TimeSpan): void
+}
+class MaintenanceProblemDetails {
+  +int Status = 503
+  +string Code = "MAINTENANCE"
+  +DateTimeOffset BackBy
+}
+
+MaintenanceState ..|> IMaintenanceState
+MaintenanceState --> MaintenanceOptions : current
+MaintenanceMiddleware ..> IMaintenanceState : reads
+MaintenanceMiddleware ..> MaintenanceProblemDetails : writes
+MaintenanceWatcherJob ..> IMaintenanceState : observes
+MaintenanceWatcherJob --> MaintenanceWindow : opens / closes
+MaintenanceWatcherJob ..> LinkTokenExtensionService : calls
+LinkTokenExtensionService ..> MaintenanceWindow : reads length
+LinkTokenExtensionService --> "*" LinkToken : extends
+LinkToken --> LinkTokenPurpose
+@enduml

@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour — Scan every screen and state in CI
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+box "Delivery — CI pipeline" #E0F2FE
+  participant "CI pipeline" as pipeline
+  participant "axe.spec" as axe
+  participant "structure.spec" as structure
+end box
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Jubilee Web build" as app
+end box
+pipeline -> axe : Run with docs/mocks/manifest.json
+loop each screen and state in the manifest
+  axe -> app : Open the route with the fixture for that state
+  app --> axe : Rendered page
+  axe -> axe : Run axe-core with the WCAG 2.2 AA rules (L2-157)
+  axe -> structure : Check the same page
+  structure -> app : Read title, html lang, headings and landmarks
+  app --> structure : Document structure
+  structure -> structure : Assert title {Page} · Jubilee is unique and one h1 exists (L2-157)
+  structure -> structure : Assert heading order, landmark regions and lang en-CA (L2-157)
+  structure --> axe : Structure result
+end
+axe --> pipeline : Violations by impact
+alt any serious or critical violation or structure failure
+  pipeline -> pipeline : Fail the build and attach the report
+else zero serious or critical violations
+  pipeline -> pipeline : Continue to the next stage
+end
+@enduml

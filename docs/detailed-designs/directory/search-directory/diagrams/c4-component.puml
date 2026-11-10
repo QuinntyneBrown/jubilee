@@ -1,0 +1,40 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Search the directory
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(box, "SearchBox", "Angular component", "Query input in the top bar and the browse hero")
+  Component(page, "SearchPage", "Angular page", "Results and no-results and empty states of /search")
+  Component(highlight, "MatchExplanation", "Angular component", "Renders the match text with mark elements from ranges")
+  Component(client, "SearchApi", "Typed HTTP client", "Calls the search endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(limit, "RateLimitMiddleware", "ASP.NET Core middleware", "Allows 60 searches a minute per IP address")
+  Component(ctrl, "SearchController", "ASP.NET Core controller", "Exposes /api/search and /api/search/recent")
+  Component(handler, "SearchDirectoryQueryHandler", "MediatR handler", "Normalises the query and groups results")
+  Component(text, "SearchQueryText", "Value object", "Trims and truncates to 100 characters")
+  Component(isearch, "ISearchIndex", "Application service", "Full-text search with stemming and folding")
+  Component(fallback, "DatabaseNameSearch", "Infrastructure service", "Name search used when the index is down")
+  Component(recent, "RecentSearchService", "Application service", "Records and lists and deletes recent searches")
+}
+ContainerDb(index, "Search index", "<TO SUPPLY>", "Search documents")
+ContainerDb(cache, "Cache", "Redis", "Rate-limit counters")
+ContainerDb(db, "Jubilee database", "SQL Server", "Listing and RecentSearch rows")
+
+Rel(box, page, "Navigates to /search?q=")
+Rel(page, highlight, "Renders results with")
+Rel(page, client, "Loads through")
+Rel(client, limit, "Calls", "JSON/HTTPS")
+Rel(limit, cache, "Increments counter in", "Redis protocol")
+Rel(limit, ctrl, "Passes allowed requests to")
+Rel(ctrl, handler, "Sends SearchDirectoryQuery")
+Rel(ctrl, recent, "Lists and deletes through")
+Rel(handler, text, "Normalises with")
+Rel(handler, isearch, "Searches through")
+Rel(handler, fallback, "Falls back to")
+Rel(handler, recent, "Records the query through")
+Rel(isearch, index, "Queries", "HTTPS")
+Rel(fallback, db, "Queries", "EF Core")
+Rel(recent, db, "Reads and writes", "EF Core")
+@enduml

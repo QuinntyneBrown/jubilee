@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — View the business overview
+
+Person(owner, "Owner", "Monitors a business listing")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Owner workspace shell and overview page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Owner workspace queries and listing owner policy")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings, requests, messages, saved items and daily view counts")
+  ContainerDb(cache, "Cache", "Redis", "Sessions and 30 minute view keys")
+}
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Reads workspace and overview", "JSON/HTTPS")
+Rel(api, web, "Pushes request badge changes", "WebSocket")
+Rel(api, db, "Reads read models and writes view counts", "EF Core")
+Rel(api, cache, "Reads session and sets view keys", "Redis protocol")
+@enduml

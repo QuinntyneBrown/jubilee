@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Save a listing
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(heart, "SaveButton", "Angular component", "Heart toggle with aria-pressed")
+  Component(page, "SavedPage", "Angular page", "Route /saved with business and product cards")
+  Component(store, "SavedStore", "Signal store", "Optimistic set of saved item keys")
+  Component(toast, "ToastService", "Angular service", "Success toast with Undo and error toast with Try again")
+  Component(client, "SavedApi", "Typed HTTP client", "Calls /api/saved")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "SavedController", "ASP.NET Core controller", "PUT and DELETE and GET under /api/saved")
+  Component(save, "SaveItemCommandHandler", "MediatR handler", "Adds a SavedItem within the 500 limit")
+  Component(unsave, "UnsaveItemCommandHandler", "MediatR handler", "Removes a SavedItem")
+  Component(list, "GetSavedListQueryHandler", "MediatR handler", "Lists the caller's items newest first")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "SavedItem rows")
+
+Rel(heart, store, "Toggles through")
+Rel(page, store, "Reads the list from")
+Rel(store, toast, "Shows toasts through")
+Rel(store, client, "Calls")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, save, "Sends SaveItemCommand")
+Rel(ctrl, unsave, "Sends UnsaveItemCommand")
+Rel(ctrl, list, "Sends GetSavedListQuery")
+Rel(save, db, "Inserts", "EF Core")
+Rel(unsave, db, "Deletes", "EF Core")
+Rel(list, db, "Queries", "EF Core")
+@enduml

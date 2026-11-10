@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Adapt layouts
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(css, "ui.css layout rules", "Stylesheet", "card-grid, feature-grid, dir-groups, stat-grid, split, chip-row, scroller, dl, form-grid, choice-cards")
+  Component(inbox, "InboxLayout", "Angular component", "Renders .inbox as list and conversation or one of them by route")
+  Component(convo, "ConversationPage", "Angular page", "Chat log, back control and composer")
+  Component(keyboard, "KeyboardInsetDirective", "Angular directive", "Keeps the composer above the on-screen keyboard")
+  Component(table, "ResponsiveTableDirective", "Angular directive", "Turns table rows into labelled stacked cards under 768 px")
+  Component(traits, "InputTraitsDirective", "Angular directive", "Sets type, inputmode and autocomplete from the field kind")
+  Component(products, "MyProductsPage", "Angular page", "Products table with row actions")
+  Component(viewport, "ViewportService", "Angular service", "Current breakpoint as a signal")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(mctrl, "ConversationsController", "ASP.NET Core controller", "GET /api/conversations and GET /api/conversations/{id}")
+  Component(pctrl, "ProductsController", "ASP.NET Core controller", "GET /api/my-business/products")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and products")
+
+Rel(inbox, viewport, "Reads breakpoint")
+Rel(inbox, convo, "Hosts")
+Rel(convo, keyboard, "Applies to the composer")
+Rel(products, table, "Applies to the products table")
+Rel(table, viewport, "Reads breakpoint")
+Rel(inbox, css, "Uses .inbox rules")
+Rel(products, css, "Uses .table-wrap rules")
+Rel(traits, css, "Relies on the 16 px input font rule")
+Rel(convo, mctrl, "Loads conversation", "JSON/HTTPS")
+Rel(products, pctrl, "Loads products", "JSON/HTTPS")
+Rel(mctrl, db, "Reads", "EF Core")
+Rel(pctrl, db, "Reads", "EF Core")
+@enduml

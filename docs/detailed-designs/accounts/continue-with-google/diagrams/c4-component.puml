@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Continue with Google
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(pages, "JoinPage and SignInPage", "Angular pages", "Offer the Google buttons and the sign-in error state")
+  Component(agree, "GoogleAgreementPage", "Angular page", "Collects the statement-of-faith and terms agreement")
+  Component(client, "AccountApi", "Typed HTTP client", "Posts the agreement")
+  Component(session, "SessionService", "Angular service", "Holds the signed-in member and the agreement flag")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "GoogleSignInController", "ASP.NET Core controller", "Start and callback endpoints")
+  Component(oidc, "IGoogleIdentityClient", "Infrastructure adapter", "Builds the authorization URL - exchanges the code - validates the ID token")
+  Component(txn, "IOidcTransactionStore", "Infrastructure adapter", "Keeps state - nonce - code verifier - return URL")
+  Component(handler, "CompleteGoogleSignInCommandHandler", "MediatR handler", "Creates or links the member and starts the session")
+  Component(accept, "AcceptAgreementCommandHandler", "MediatR handler", "Records the agreement")
+  Component(member, "Member", "Domain entity", "Owns the Google identity and the agreement")
+  Component(sessions, "ISessionStore", "Application service", "Issues the session")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Members")
+ContainerDb(cache, "Cache", "Redis", "Transactions and sessions")
+System_Ext(google, "Google Identity", "OpenID Connect provider")
+
+Rel(pages, ctrl, "Navigates to GET /api/auth/google/start", "HTTPS")
+Rel(ctrl, txn, "Saves and consumes the transaction in")
+Rel(txn, cache, "Stores")
+Rel(ctrl, oidc, "Uses")
+Rel(oidc, google, "Token request and signing keys", "HTTPS")
+Rel(ctrl, handler, "Sends CompleteGoogleSignInCommand")
+Rel(handler, member, "Creates or links")
+Rel(handler, db, "Loads and saves", "EF Core")
+Rel(handler, sessions, "Issues session through")
+Rel(sessions, cache, "Stores")
+Rel(agree, client, "Submits through")
+Rel(agree, session, "Refreshes")
+Rel(client, accept, "POST /api/account/agreement via AccountController", "JSON/HTTPS")
+Rel(accept, member, "Calls AcceptAgreement on")
+@enduml

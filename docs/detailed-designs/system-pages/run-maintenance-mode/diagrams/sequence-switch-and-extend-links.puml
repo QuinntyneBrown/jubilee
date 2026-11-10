@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Switch maintenance mode and extend links
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "On-call engineer" as actor
+participant "Configuration store" as config
+box "Backend — Jubilee API" #D1FADF
+  participant "MaintenanceState" as state
+  participant "MaintenanceMiddleware" as mw
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "MaintenanceWatcherJob" as watcher
+  participant "LinkTokenExtensionService" as ext
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> config : Set Enabled true and the back-by time (L2-117)
+config --> state : Changed options, no deployment
+state --> mw : New requests receive 503
+config --> watcher : Changed options
+watcher -> db : Insert MaintenanceWindow with StartedAt and BackBy
+db --> watcher : Commit result
+... maintenance work ...
+actor -> config : Set Enabled false
+config --> state : Changed options
+state --> mw : Requests pass again
+config --> watcher : Changed options
+watcher -> db : Load the open MaintenanceWindow
+db --> watcher : Window
+watcher -> watcher : Close(now) gives the window length
+watcher -> ext : ExtendFor(window)
+ext -> db : Read unused church reference and e-mail confirmation tokens valid at StartedAt
+db --> ext : Link tokens
+ext -> ext : Extend each ExpiresAt by the window length (L2-117)
+ext -> db : Save tokens and the closed window in one unit of work
+db --> ext : Commit result
+ext --> watcher : Number of tokens extended
+watcher --> actor : Log the closed window and the count
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Request and build the archive
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "AccountPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "DataExportsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RequestDataExportCommandHandler" as handler
+  participant "DataArchiveBuilder" as builder
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "DataExportJob" as job
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IExportStore" as store
+  database "Jubilee database" as db
+end box
+participant "E-mail provider" as email
+actor -> page : Press the download action
+page -> client : requestDataExport()
+client -> controller : POST /api/account/data-exports
+controller -> controller : Authenticate session and check CSRF token
+controller -> handler : Send RequestDataExportCommand
+handler -> db : Save DataExport (Requested) and outbox message in one unit of work
+db --> handler : Commit result
+handler --> controller : Export identifier
+controller --> client : 202 Accepted
+client --> page : Requested
+page --> actor : Say that the link arrives by e-mail within 24 hours (L2-018)
+job -> db : Receive the outbox message and load the DataExport
+db --> job : DataExport (Requested)
+job -> builder : BuildAsync(member)
+builder -> db : Read profile and saved list and requests and messages and settings
+db --> builder : Member data
+opt Member owns a listing
+  builder -> db : Read listing and products and services and incoming requests
+  db --> builder : Owner data without ReferenceAnswer (L2-146)
+end
+builder --> job : JSON archive stream
+job -> store : SaveAsync(key and archive)
+store --> job : Stored
+job -> db : MarkReady with 7-day expiry and save LinkToken hash and e-mail outbox message (L2-140)
+db --> job : Commit result
+job -> email : Send the download link
+email --> job : Accepted
+@enduml

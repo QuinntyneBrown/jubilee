@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Deliver e-mail
+
+Person(member, "Member", "Receives e-mail and sees the undeliverable banner")
+Person_Ext(reference, "Church reference", "Receives a reference request by e-mail")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(provider, "E-mail provider", "Transactional e-mail delivery and event webhooks. Vendor to supply")
+System_Ext(dns, "DNS for the sending domain", "SPF and DKIM and DMARC records")
+
+Rel(member, jubilee, "Uses", "HTTPS")
+Rel(jubilee, provider, "Sends e-mail through", "HTTPS")
+Rel(provider, jubilee, "Reports bounces and complaints to", "HTTPS webhook")
+Rel(provider, member, "Delivers e-mail to", "SMTP")
+Rel(provider, reference, "Delivers e-mail to", "SMTP")
+Rel(provider, dns, "Is authorised as sender by")
+@enduml

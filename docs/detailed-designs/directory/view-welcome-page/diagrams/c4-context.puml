@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — View welcome page
+
+
+Person(visitor, "Visitor", "Anyone not signed in")
+Person(member, "Member", "Signed-in account holder")
+Person(verifier, "Verification team member", "Chooses the featured businesses each week")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Opens /welcome and reads the count and categories and featured businesses")
+Rel(member, jubilee, "Opens /welcome and is taken to /")
+Rel(verifier, jubilee, "Sets Featured this week in")
+@enduml

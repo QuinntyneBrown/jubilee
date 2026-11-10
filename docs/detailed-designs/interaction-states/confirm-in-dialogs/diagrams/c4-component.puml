@@ -1,0 +1,41 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Confirm in dialogs
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "RequestDetailPage", "Angular page", "Offers Cancel request")
+  Component(svc, "DialogService", "Shared service", "Opens dialogs. Remembers the opener. Restores focus")
+  Component(shell, "DialogShell", "Shared UI", "Modal frame. Focus cycle. Escape rules. Bottom sheet under 640 px")
+  Component(confirm, "ConfirmDialog", "Shared UI", "Consequence text. Safe choice focused first")
+  Component(cancel, "CancelRequestDialog", "Angular dialog", "Names the request type and the business")
+  Component(dirty, "DirtyTracker", "Shared service", "Detects unsaved input in dialog forms")
+  Component(discard, "DiscardChangesPrompt", "Shared UI", "Keep editing or Discard changes")
+  Component(toast, "ToastService", "Shared service", "Success toast with Undo for 8 s")
+  Component(client, "RequestsApi", "Typed HTTP client", "Cancel and undo calls")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "RequestsController", "ASP.NET Core controller", "POST cancel and POST cancel/undo")
+  Component(handler, "CancelRequestCommandHandler", "MediatR handler", "Cancels and writes the outbox entry")
+  Component(undo, "UndoCancelRequestCommandHandler", "MediatR handler", "Restores the previous status")
+  Component(entity, "Request", "Domain entity", "Owns the cancel and undo rules")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Requests and outbox")
+
+Rel(page, svc, "Opens CancelRequestDialog through")
+Rel(svc, shell, "Creates")
+Rel(shell, cancel, "Hosts")
+Rel(cancel, confirm, "Configures")
+Rel(shell, dirty, "Asks before closing")
+Rel(shell, discard, "Opens for unsaved input")
+Rel(cancel, client, "Sends cancel through")
+Rel(page, toast, "Shows Undo through")
+Rel(toast, client, "Sends undo through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends CancelRequestCommand")
+Rel(ctrl, undo, "Sends UndoCancelRequestCommand")
+Rel(handler, entity, "Calls Cancel on")
+Rel(undo, entity, "Calls UndoCancel on")
+Rel(handler, db, "Saves", "EF Core")
+Rel(undo, db, "Saves", "EF Core")
+@enduml

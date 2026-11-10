@@ -1,0 +1,42 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Stay available
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "SearchPage", "Angular page", "Shows results and omits match explanations when degraded")
+  Component(sapi, "SearchApi", "Typed HTTP client", "Calls GET /api/search")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(health, "HealthEndpoints", "ASP.NET Core health checks", "Serves /health/live and /health/ready")
+  Component(dbcheck, "DatabaseHealthCheck", "Health check", "Runs a trivial query")
+  Component(cachecheck, "CacheHealthCheck", "Health check", "Sends a ping")
+  Component(sctrl, "SearchController", "ASP.NET Core controller", "Dispatches SearchQuery")
+  Component(resilient, "ResilientSearchIndex", "ISearchIndex decorator", "Circuit breaker and fallback")
+  Component(namesearch, "DatabaseNameSearch", "Infrastructure service", "Searches listing names")
+  Component(ops, "OperationsController", "ASP.NET Core controller", "Schedules maintenance windows")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(dispatcher, "OutboxDispatcherJob", "Hosted job", "Dispatches queued side effects with retry")
+  Component(publisher, "StatusPagePublisher", "IStatusPage adapter", "Posts notices to the status page")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record and outbox")
+ContainerDb(cache, "Cache", "Redis", "Sessions and counters")
+ContainerDb(search, "Search index", "Technology to supply", "Full-text search")
+System_Ext(status, "Status page", "Public notices")
+
+Rel(page, sapi, "Requests results from")
+Rel(sapi, sctrl, "Calls", "JSON/HTTPS")
+Rel(sctrl, resilient, "Searches through")
+Rel(resilient, search, "Queries first", "HTTPS")
+Rel(resilient, namesearch, "Falls back to")
+Rel(namesearch, db, "Reads", "EF Core")
+Rel(health, dbcheck, "Runs")
+Rel(health, cachecheck, "Runs")
+Rel(dbcheck, db, "Queries")
+Rel(cachecheck, cache, "Pings")
+Rel(ops, db, "Saves window and outbox message", "EF Core")
+Rel(dispatcher, db, "Reads outbox from", "EF Core")
+Rel(dispatcher, publisher, "Dispatches notice through")
+Rel(publisher, status, "Posts notice to", "HTTPS")
+@enduml

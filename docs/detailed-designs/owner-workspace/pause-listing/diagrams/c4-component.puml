@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Pause and resume a listing
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "PauseListingDialog", "Angular dialog", "Confirms the pause")
+  Component(banner, "VerificationBanner", "Angular component", "Persistent paused banner with Resume listing")
+  Component(store, "OwnerWorkspaceStore", "Signal store", "Holds the listing stage")
+  Component(client, "ListingsApi", "Typed HTTP client", "Calls pause and resume")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "OwnerListingController", "ASP.NET Core controller", "Exposes pause and resume endpoints")
+  Component(pause, "PauseListingCommandHandler", "MediatR handler", "Pauses and clears caches")
+  Component(resume, "ResumeListingCommandHandler", "MediatR handler", "Resumes or re-queues")
+  Component(listing, "Listing", "Domain entity", "Owns Pause and Resume stage rules")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(outbox, "OutboxDispatcher", "Hosted job", "Applies ListingVisibilityChanged to the search index")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "System of record")
+ContainerDb(cache, "Cache", "Redis", "Public read caches")
+ContainerDb(search, "Search index", "<TO SUPPLY>", "Live listings")
+
+Rel(dialog, client, "Pauses through")
+Rel(banner, client, "Resumes through")
+Rel(dialog, store, "Updates stage")
+Rel(banner, store, "Reads stage")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, pause, "Sends PauseListingCommand")
+Rel(ctrl, resume, "Sends ResumeListingCommand")
+Rel(pause, listing, "Calls Pause")
+Rel(resume, listing, "Calls Resume")
+Rel(pause, db, "Saves stage and outbox", "EF Core")
+Rel(resume, db, "Saves stage and outbox", "EF Core")
+Rel(pause, cache, "Removes cached entries")
+Rel(outbox, db, "Reads outbox", "EF Core")
+Rel(outbox, search, "Removes or adds the listing")
+@enduml

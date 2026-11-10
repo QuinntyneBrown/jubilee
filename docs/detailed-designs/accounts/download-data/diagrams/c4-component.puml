@@ -1,0 +1,41 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Download data
+
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "AccountPage", "Angular page", "Download action at /account")
+  Component(dl, "DataDownloadPage", "Angular page", "Opens the e-mailed link behind AuthGuard")
+  Component(client, "AccountApi", "Typed HTTP client", "requestDataExport and downloadDataExport")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "DataExportsController", "ASP.NET Core controller", "POST and GET /api/account/data-exports")
+  Component(reqH, "RequestDataExportCommandHandler", "MediatR handler", "Creates the DataExport and outbox message")
+  Component(dlH, "DownloadDataExportQueryHandler", "MediatR handler", "Checks token and member and expiry")
+}
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "DataExportJob", "Hosted job", "Builds and stores the archive and queues the link")
+  Component(builder, "DataArchiveBuilder", "Application service", "Composes the JSON sections")
+  Component(store, "IExportStore", "Storage adapter", "Private archive files")
+  Component(cleanup, "DataExportCleanupJob", "Hosted job", "Deletes files after 7 days")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "DataExport and LinkToken and member data")
+ContainerDb(storage, "Media storage", "Object storage", "Private export area")
+System_Ext(email, "E-mail provider", "Vendor <TO SUPPLY>")
+
+Rel(page, client, "requestDataExport")
+Rel(dl, client, "downloadDataExport")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, reqH, "Sends RequestDataExportCommand")
+Rel(ctrl, dlH, "Sends DownloadDataExportQuery")
+Rel(reqH, db, "Saves", "EF Core")
+Rel(dlH, db, "Reads", "EF Core")
+Rel(dlH, storage, "Opens the file stream")
+Rel(job, builder, "Builds with")
+Rel(job, store, "Stores with")
+Rel(builder, db, "Reads member data", "EF Core")
+Rel(store, storage, "Writes and deletes")
+Rel(cleanup, store, "Deletes expired with")
+Rel(job, email, "Queues the link e-mail for")
+@enduml

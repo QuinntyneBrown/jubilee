@@ -1,0 +1,50 @@
+@startuml
+title UML sequence behaviour — Remove an unready instance from the load balancer
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+participant "Hosting load balancer" as lb
+box "Backend — Jubilee API" #D1FADF
+  participant "HealthEndpoints" as health
+  participant "DatabaseHealthCheck" as dbcheck
+  participant "CacheHealthCheck" as cachecheck
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+  database "Cache" as cache
+end box
+lb -> health : GET /health/live
+health --> lb : 200 process is running
+lb -> health : GET /health/ready
+health -> dbcheck : CheckAsync
+dbcheck -> db : Run trivial query
+db --> dbcheck : Row
+dbcheck --> health : Healthy
+health -> cachecheck : CheckAsync
+cachecheck -> cache : PING
+alt cache and database reachable
+  cache --> cachecheck : PONG
+  cachecheck --> health : Healthy
+  health --> lb : 200 ReadinessReport
+  lb -> lb : Keep instance in rotation
+else cache unreachable (L2-181)
+  cache --> cachecheck : Timeout
+  cachecheck --> health : Unhealthy
+  health --> lb : 503 ReadinessReport
+  lb -> lb : Remove instance from rotation
+  lb -> health : GET /health/ready on the next probe
+  health --> lb : 200 once the cache answers
+  lb -> lb : Return instance to rotation
+end
+@enduml

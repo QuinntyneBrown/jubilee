@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — Agree to a new statement of faith version
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SessionService" as session
+  participant "FaithReagreementDialog" as dialog
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetFaithAgreementStatusQueryHandler" as query
+  participant "RecordFaithAgreementCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> session : Sign in
+session -> client : getFaithAgreementStatus()
+client -> controller : GET /api/account/faith-agreement
+controller -> controller : Authenticate session
+controller -> query : Send GetFaithAgreementStatusQuery
+query -> db : Load current version and the owner's latest agreement
+db --> query : Version and agreement
+query --> controller : Status with the current version and the grace end date
+controller --> client : 200 OK
+client --> session : Status
+alt Latest agreement is for the current version
+  session --> actor : Continue to the requested page
+else Statement was updated since the agreement (L2-075)
+  session -> dialog : Open with the new version date
+  dialog --> actor : Ask to agree to the new version
+  actor -> dialog : Agree
+  dialog -> client : recordFaithAgreement(version)
+  client -> controller : POST /api/account/faith-agreement
+  controller -> handler : Send RecordFaithAgreementCommand
+  handler -> db : Insert FaithAgreement with time and version
+  db --> handler : Commit result
+  handler --> controller : Recorded
+  controller --> client : 204 No Content
+  client --> dialog : Recorded
+  dialog --> actor : Close and continue
+end
+note over query, db
+  The listing stays live for 30 days after the
+  new version is published (L2-075).
+end note
+@enduml

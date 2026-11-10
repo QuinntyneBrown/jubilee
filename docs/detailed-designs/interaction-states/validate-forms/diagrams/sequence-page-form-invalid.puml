@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Submit a page form with errors
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SignUpPage" as page
+  participant "FormController" as form
+  participant "ErrorSummary" as summary
+  participant "SubmitController" as submit
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ProblemDetailsMiddleware" as pd
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ValidationBehavior" as behavior
+  participant "SignUpCommandValidator" as validator
+end box
+actor -> page : Press "Create account"
+page -> form : validate()
+alt Browser rules fail
+  form -> form : Collect FieldError per rule, keep values, clear password (L2-126)
+  form --> page : Errors
+  page -> summary : Show "Fix {n} thing(s) to continue" with links, role alert
+  page -> page : Set aria-invalid and aria-describedby on each field (L2-126)
+  form -> summary : focus()
+  summary --> actor : Summary and field messages
+else Browser rules pass
+  form -> submit : submit(send)
+  submit -> submit : State Submitting, fields read-only, button aria-busy (L2-127)
+  submit -> client : signUp(request)
+  client -> pd : POST /api/account
+  pd -> controller : Pass request
+  controller -> behavior : Send SignUpCommand
+  behavior -> validator : Validate with the same rules and codes (L2-126)
+  alt Server rule fails
+    validator --> behavior : Failure with code email_in_use
+    behavior --> pd : ValidationException
+    pd --> client : 422 ValidationProblemDetails with field and code
+    client --> submit : HttpErrorResponse
+    submit --> form : Server field errors
+    form -> form : applyServerErrors, look up copy by code
+    form -> summary : focus()
+    summary --> actor : "Fix 1 thing to continue" with a link to the e-mail field
+  else Command is valid
+    validator --> behavior : Valid
+    behavior --> controller : Handler result
+    controller --> client : 201 Created
+    client --> submit : Typed result
+    submit --> page : State Succeeded
+    page --> actor : Show the success state
+  end
+end
+@enduml

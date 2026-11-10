@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Count a listing view
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetPublicListingQueryHandler" as handler
+  participant "ListingViewRecorder" as recorder
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+actor -> page : Open /b/:slug
+page -> client : Load public listing
+client -> controller : GET /api/listings/{slug}
+controller -> handler : Send GetPublicListingQuery
+handler -> db : Load live listing
+db --> handler : Listing
+handler -> recorder : RecordAsync(listingId and viewer context)
+alt Viewer is the owner or a known bot
+  recorder -> recorder : Skip count (L2-085 exclusion)
+else Any other viewer
+  recorder -> cache : Set view:{listingId}:{visitorKey} if absent with 30 minute expiry
+  cache --> recorder : Key set or already present
+  opt Key newly set
+    recorder -> db : Increment ListingViewDaily for today
+    db --> recorder : Commit result
+  end
+end
+recorder --> handler : Done
+handler --> controller : Public listing
+controller --> client : 200 listing
+client --> page : Listing
+page --> actor : Show the listing page
+@enduml

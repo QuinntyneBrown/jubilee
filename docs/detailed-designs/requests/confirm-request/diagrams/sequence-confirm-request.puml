@@ -1,0 +1,74 @@
+@startuml
+title UML sequence behaviour — confirm a request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "IncomingRequestsPage" as page
+  participant "ConfirmRequestDialog" as dialog
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IncomingRequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ConfirmRequestCommandHandler" as handler
+  participant "Request" as entity
+  participant "Product" as product
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "OutboxDispatcherJob" as outbox
+end box
+actor "Member" as member
+actor -> page : Press "Confirm" on a new request
+page -> dialog : Open with customer, order, needed by and total
+dialog --> actor : Ask "Confirm {customer}'s order?" with focus on "Not yet" (L2-129)
+actor -> dialog : Press "Confirm order"
+dialog -> client : confirm(requestId)
+client -> controller : POST /api/my-business/requests/{id}/confirm
+controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
+controller -> handler : Send ConfirmRequestCommand
+handler -> db : Load request with row version, and product for an order
+db --> handler : Current state
+handler -> entity : Apply L2-052 confirm: New to Confirmed (L2-043)
+alt status is New
+  entity --> handler : Status Confirmed, RequestTransition with UndoableUntil
+  opt request type is Order
+    handler -> product : ReduceStock(option, quantity) (L2-052)
+    product --> handler : Stock reduced
+  end
+  handler -> db : Save request, stock, conversation card and outbox messages in one unit of work
+  db --> handler : Commit result
+  handler --> controller : ConfirmResult
+  controller --> client : 200 OK
+  client --> dialog : Confirmed
+  dialog --> actor : Close and show toast "Order confirmed. {Customer} has been told." with "Undo"
+  outbox -> db : Read outbox messages whose NotBefore has passed
+  db --> outbox : Messages
+  outbox --> member : In-app notification, real-time event and e-mail
+else customer cancelled a moment earlier
+  entity --> handler : InvalidTransitionException
+  handler --> controller : Conflict with current status Cancelled
+  controller --> client : 409 INVALID_TRANSITION
+  client --> dialog : Cancelled by customer
+  dialog --> actor : Show "{Customer} cancelled this request." and confirm nothing (L2-052)
+else request fails or connection drops
+  client --> dialog : Error
+  dialog --> actor : Show "We couldn't confirm it. The request is still new." with "Try again" (L2-128)
+end
+@enduml

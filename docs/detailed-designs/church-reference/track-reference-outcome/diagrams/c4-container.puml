@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Track the reference outcome
+
+Person(owner, "Owner", "Follows the verification of a listing")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "My business with the verification banner and the change reference dialog")
+  Container(api, "Jubilee API", "ASP.NET Core", "Verification status and reminder and change reference endpoints and the real-time hub")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Reference follow-up job and outbox dispatch")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and church references and outbox")
+}
+Rel(owner, web, "Opens My business", "HTTPS")
+Rel(web, api, "Reads the status and sends a reminder or a new reference", "JSON/HTTPS")
+Rel(api, web, "Pushes stage changes", "WebSocket")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Finds silent references and reads the outbox", "EF Core")
+Rel(worker, email, "Sends reminders and notices", "HTTPS")
+@enduml

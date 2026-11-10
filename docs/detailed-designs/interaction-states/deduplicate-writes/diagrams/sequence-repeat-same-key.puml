@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Repeat a request with the same key
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BookMeetingDialog" as dialog
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IdempotencyMiddleware" as mw
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "RedisIdempotencyStore" as store
+  database "Jubilee database" as db
+end box
+actor -> dialog : Press "Try again" after a lost response
+dialog -> client : bookMeeting(request, same key)
+client -> mw : POST /api/requests/bookings with Idempotency-Key
+mw -> mw : Compute the request fingerprint
+mw -> store : TryReserveAsync(scope, key, hash)
+alt Key completed with the same fingerprint
+  store --> mw : Completed with stored response
+  mw --> client : 201 Created, original body, Idempotency-Replayed: true (L2-132)
+  client --> dialog : Original result
+  dialog --> actor : Show the success state, one request exists
+else First request still in progress
+  store --> mw : InProgress
+  mw --> client : 409 idempotency_request_in_progress, Retry-After: 1
+  client -> mw : Retry after 1 second with the same key
+  mw --> client : 201 Created, original body
+  client --> dialog : Original result
+  dialog --> actor : Show the success state
+else Same key with a different body
+  store --> mw : FingerprintMismatch
+  mw --> client : 422 idempotency_key_reused
+  client --> dialog : Error
+  dialog --> actor : Show the failed state with input kept
+else Key missing from the Cache
+  store --> mw : Reserved
+  mw -> controller : Pass request
+  controller -> db : Insert through the handler
+  db --> controller : Unique index on Scope and Key rejects the insert
+  controller --> mw : Duplicate key conflict
+  mw -> db : Load the IdempotencyRecord row
+  db --> mw : Stored response
+  mw --> client : 201 Created, original body (L2-132)
+  client --> dialog : Original result
+  dialog --> actor : Show the success state, one request exists
+end
+@enduml

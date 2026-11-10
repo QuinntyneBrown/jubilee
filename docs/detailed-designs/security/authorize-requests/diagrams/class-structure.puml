@@ -1,0 +1,91 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Authorize requests
+
+enum MemberRole {
+  Member
+  Verifier
+  Admin
+}
+
+enum EndpointPolicy {
+  Public
+  MemberOnly
+  ListingOwner
+  Verifier
+  Admin
+}
+
+enum AccessDecision {
+  Allowed
+  NotFound
+  Forbidden
+}
+
+interface ICurrentCaller {
+  +Guid? MemberId
+  +MemberRole? Role
+  +bool IsAuthenticated
+  +string IpAddress
+}
+
+class RequirePolicyAttribute {
+  +EndpointPolicy Policy
+}
+
+interface "IResourceAuthorizer<TRequest>" as IResourceAuthorizer {
+  +AuthorizeAsync(request: TRequest, caller: ICurrentCaller): Task<AccessDecision>
+}
+
+class RequestAccessAuthorizer {
+  +AuthorizeAsync(request: GetRequestQuery, caller: ICurrentCaller): Task<AccessDecision>
+}
+
+class ListingOwnerAuthorizer {
+  +AuthorizeAsync(request: UpdateListingCommand, caller: ICurrentCaller): Task<AccessDecision>
+}
+
+class "AuthorizationBehavior<TRequest, TResponse>" as AuthorizationBehavior {
+  +Handle(request: TRequest, next: RequestHandlerDelegate<TResponse>): Task<TResponse>
+}
+
+interface ISecurityEventLog {
+  +RecordAsync(securityEvent: SecurityEvent): Task
+}
+
+class SecurityEvent {
+  +DateTimeOffset OccurredAt
+  +Guid? ActorId
+  +string IpAddress
+  +string Type
+  +string Outcome
+  +string Target
+}
+
+class EndpointAuthorizationTests {
+  +EveryEndpointDeclaresAPolicy(): void
+  +EveryEndpointRefusesACallerWithoutPermission(): void
+}
+
+IResourceAuthorizer <|.. RequestAccessAuthorizer
+IResourceAuthorizer <|.. ListingOwnerAuthorizer
+AuthorizationBehavior --> "1" ICurrentCaller : reads
+AuthorizationBehavior --> "1" IResourceAuthorizer : runs
+AuthorizationBehavior ..> ISecurityEventLog : reports denial
+IResourceAuthorizer ..> AccessDecision : returns
+ICurrentCaller --> "0..1" MemberRole : has
+RequirePolicyAttribute --> "1" EndpointPolicy : declares
+ISecurityEventLog ..> SecurityEvent : records
+EndpointAuthorizationTests ..> RequirePolicyAttribute : inspects
+@enduml

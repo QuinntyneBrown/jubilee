@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Meet page budgets
+
+Person(visitor, "Visitor", "Browses the public directory on a mid-range phone")
+Person(member, "Member", "Uses browse, search, business, shop, product and conversation pages")
+Person(engineer, "On-call engineer", "Reads the page performance dashboard and build results")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(obs, "Observability platform", "Stores real-user Web Vitals samples and shows 75th percentile over 28 days. Vendor <TO SUPPLY>")
+
+Rel(visitor, jubilee, "Loads pages from", "HTTPS")
+Rel(member, jubilee, "Loads pages from", "HTTPS")
+Rel(jubilee, obs, "Sends LCP, INP and CLS samples to", "HTTPS")
+Rel(engineer, obs, "Reads dashboards in")
+@enduml

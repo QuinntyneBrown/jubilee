@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Run maintenance mode
+Person(member, "Member", "Requests a page during maintenance")
+Person(oncall, "On-call engineer", "Operates the switch")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Maintenance page and the 503 interceptor")
+  Container(api, "Jubilee API", "ASP.NET Core", "Maintenance middleware in front of every route")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Records maintenance windows and extends link validity")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Maintenance windows and link tokens")
+}
+System_Ext(config, "Configuration store", "Maintenance switch with the back-by time")
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Requests pages and calls", "HTTPS")
+Rel(oncall, config, "Sets the switch in")
+Rel(api, config, "Reads the switch from")
+Rel(worker, config, "Watches the switch in")
+Rel(worker, db, "Writes windows and extends link tokens", "EF Core")
+@enduml

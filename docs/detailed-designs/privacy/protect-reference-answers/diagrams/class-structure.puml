@@ -1,0 +1,100 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Protect reference answers
+
+enum ReferenceAnswerKind {
+  KnowsAndVouches
+  KnowsCannotVouch
+  DoesNotKnow
+}
+
+class Listing {
+  +Guid Id
+  +Guid OwnerId
+  +ListingStage Stage
+  +DateTimeOffset? DecidedAt
+  +YearMonth? ReferenceConfirmedOn
+  +ReferenceConfirmedLabel(): string
+}
+
+class ChurchReference {
+  +Guid Id
+  +Guid ListingId
+  +string ChurchName
+  +string Name
+  +string Role
+  +string Email
+  +IsDueForDeletion(now: DateTimeOffset, decidedAt: DateTimeOffset): bool
+}
+
+class ReferenceAnswer {
+  +Guid Id
+  +Guid ChurchReferenceId
+  +ReferenceAnswerKind Kind
+  +string Note
+  +DateTimeOffset AnsweredAt
+}
+
+class ListingReviewDto {
+  +Guid ListingId
+  +ReferencePanelDto Reference
+}
+
+class ReferencePanelDto {
+  +string ChurchName
+  +string AnsweredByName
+  +string AnsweredByRole
+  +DateTimeOffset AnsweredAt
+  +ReferenceAnswerKind Answer
+  +string Note
+}
+
+class OwnerListingDto {
+  +Guid ListingId
+  +ListingStage Stage
+  +string ReferenceConfirmedLabel
+}
+
+interface IRetentionRule {
+  +string Name
+  +ApplyAsync(now: DateTimeOffset, ct: CancellationToken): Task<int>
+}
+
+class ReferenceRetentionRule {
+  +TimeSpan RetainAfterDecision = 90 days
+  +ApplyAsync(now: DateTimeOffset, ct: CancellationToken): Task<int>
+}
+
+class DataExportBuilder {
+  +BuildAsync(memberId: Guid, ct: CancellationToken): Task<DataExportArchive>
+}
+
+class ReferenceEmailSender {
+  +SendRequestAsync(referenceId: Guid): Task
+  +SendReminderAsync(referenceId: Guid): Task
+}
+
+Listing "1" *-- "0..1" ChurchReference : names
+ChurchReference "1" *-- "0..1" ReferenceAnswer : receives
+ReferenceAnswer --> ReferenceAnswerKind : has
+ListingReviewDto "1" *-- "0..1" ReferencePanelDto : contains
+ReferencePanelDto ..> ChurchReference : projects
+ReferencePanelDto ..> ReferenceAnswer : projects
+OwnerListingDto ..> Listing : projects
+IRetentionRule <|.. ReferenceRetentionRule
+ReferenceRetentionRule ..> ChurchReference : deletes
+ReferenceRetentionRule ..> Listing : keeps confirmed month on
+DataExportBuilder ..> Listing : exports
+ReferenceEmailSender ..> ChurchReference : reads e-mail of
+@enduml

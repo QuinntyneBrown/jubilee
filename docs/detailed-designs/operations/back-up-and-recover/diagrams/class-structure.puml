@@ -1,0 +1,87 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Back up and recover
+
+class BackupPolicy {
+  +TimeSpan PointInTimeRetention
+  +TimeSpan RecoveryPointObjective
+  +TimeSpan RecoveryTimeObjective
+  +TimeSpan MediaVersionRetention
+  +TimeSpan DrillInterval
+}
+
+class BackupState {
+  +DateTimeOffset EarliestRestorePoint
+  +DateTimeOffset LatestRestorePoint
+  +bool SecondRegionCopyPresent
+  +bool Encrypted
+}
+
+interface IBackupInventory {
+  +GetStateAsync(ct: CancellationToken): Task<BackupState>
+}
+
+class BackupVerificationJob {
+  +ExecuteAsync(context: JobContext): Task
+  -Evaluate(state: BackupState, policy: BackupPolicy): IReadOnlyList<BackupFinding>
+}
+
+class BackupFinding {
+  +string Check
+  +bool Passed
+  +string Detail
+}
+
+class RestoreDrillRecord {
+  +Guid Id
+  +DateTimeOffset StartedAt
+  +DateTimeOffset RestorePoint
+  +TimeSpan Duration
+  +DrillOutcome Outcome
+  +string Notes
+  +string RecordedBy
+}
+
+enum DrillOutcome {
+  Passed
+  Failed
+}
+
+class RestoreVerifier {
+  +VerifyAsync(connection: string): Task<IReadOnlyList<BackupFinding>>
+}
+
+interface IMediaStore {
+  +ListVersionsAsync(key: string): Task<IReadOnlyList<ObjectVersion>>
+  +RestoreVersionAsync(key: string, versionId: string): Task
+  +GetVersionRetentionAsync(): Task<TimeSpan>
+}
+
+class ObjectVersion {
+  +string Key
+  +string VersionId
+  +DateTimeOffset CreatedAt
+  +bool IsCurrent
+}
+
+BackupVerificationJob ..> IBackupInventory : reads
+BackupVerificationJob ..> BackupPolicy : compares with
+BackupVerificationJob ..> IMediaStore : checks retention
+BackupVerificationJob ..> RestoreDrillRecord : reads latest
+BackupVerificationJob ..> "*" BackupFinding : produces
+IBackupInventory ..> BackupState : returns
+RestoreVerifier ..> "*" BackupFinding : produces
+RestoreDrillRecord --> DrillOutcome : has
+IMediaStore ..> "*" ObjectVersion : lists
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Render the site chrome
+
+Person(visitor, "Visitor", "Anyone not signed in")
+Person(member, "Member", "Signed-in account holder")
+Person(owner, "Owner", "Member who owns a business listing")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Reaches trust pages from the footer of", "HTTPS")
+Rel(member, jubilee, "Navigates with the top bar or tab bar of", "HTTPS")
+Rel(owner, jubilee, "Reaches My business from the chrome of", "HTTPS")
+@enduml

@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Move focus after a route change
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Router" as router
+  participant "CategoryPage" as page
+  participant "JubileeTitleStrategy" as title
+  participant "RouteFocusService" as focus
+  participant "LiveAnnouncer" as announcer
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+participant "Assistive technology" as at
+actor -> router : Press Enter on a link to /c/:category
+router -> page : Activate the route
+page -> controller : GET the category listings
+controller --> page : Listings
+page --> router : Rendered with one h1
+router -> title : updateTitle(snapshot)
+title -> title : Set document title to {Page} · Jubilee
+title --> router : Title set
+router -> focus : NavigationEnd
+focus -> page : Find the h1 inside main
+page --> focus : Heading element with tabindex -1
+focus -> page : Focus the h1 without scrolling under the sticky header (L2-158)
+focus -> announcer : announce(new title, polite) (L2-158)
+announcer --> at : Title read out
+focus --> router : Done
+opt the member presses Tab
+  actor -> page : Tab
+  page --> actor : Focus ring on the first control after the h1
+end
+@enduml

@@ -1,0 +1,81 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Deliver real-time events
+
+class RealtimeClient <<Angular service>> {
+  +state: Signal<ConnectionState>
+  -lastEventId: string
+  -seen: Set<string>
+  +start(): void
+  +stop(): void
+  +on(type: string): Observable<RealtimeEvent>
+  -resume(): void
+  -accept(event: RealtimeEvent): boolean
+}
+enum ConnectionState {
+  Connecting
+  Connected
+  Reconnecting
+  Disconnected
+}
+class RealtimeEvent {
+  +string EventId
+  +string Type
+  +DateTimeOffset OccurredAt
+  +string Payload
+}
+enum RealtimeEventType {
+  NotificationCreated
+  MessageCreated
+  RequestUpdated
+  BadgeChanged
+}
+class EventsHub {
+  +OnConnectedAsync(): Task
+  +Resume(lastEventId: string): Task<ResumeResult>
+  +OnDisconnectedAsync(error: Exception): Task
+}
+class ResumeResult {
+  +IReadOnlyList<RealtimeEvent> Missed
+  +bool Complete
+}
+interface IRealtimePublisher {
+  +PublishAsync(memberId: Guid, type: RealtimeEventType, payload: object): Task
+}
+class RealtimePublisher {
+  +PublishAsync(memberId: Guid, type: RealtimeEventType, payload: object): Task
+}
+interface IEventLog {
+  +AppendAsync(memberId: Guid, event: RealtimeEvent): Task<string>
+  +ReadAfterAsync(memberId: Guid, lastEventId: string): Task<ResumeResult>
+}
+class OutboxMessage {
+  +Guid Id
+  +string Type
+  +string Payload
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? DispatchedAt
+}
+
+RealtimeClient --> ConnectionState : has
+RealtimeClient ..> RealtimeEvent : receives
+RealtimeClient ..> EventsHub : connects to
+EventsHub ..> IEventLog : reads missed events
+EventsHub ..> ResumeResult : returns
+ResumeResult "1" o-- "*" RealtimeEvent : lists
+IRealtimePublisher <|.. RealtimePublisher
+RealtimePublisher ..> IEventLog : appends
+RealtimePublisher ..> RealtimeEventType : publishes
+RealtimePublisher ..> OutboxMessage : dispatched from
+@enduml

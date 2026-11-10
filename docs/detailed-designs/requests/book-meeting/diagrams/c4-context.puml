@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Book a meeting
+
+Person(member, "Member", "Asks a business for a meeting")
+Person(owner, "Owner", "Receives the booking request")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers the owner's request e-mail")
+
+Rel(member, jubilee, "Books a meeting and downloads the calendar file using", "HTTPS")
+Rel(jubilee, owner, "Shows the incoming request and notifies")
+Rel(jubilee, email, "Sends the new request e-mail via")
+Rel(email, owner, "Delivers e-mail to")
+@enduml

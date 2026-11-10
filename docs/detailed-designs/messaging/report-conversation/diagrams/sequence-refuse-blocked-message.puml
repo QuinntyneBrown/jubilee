@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Refuse a message from a blocked side
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as owner
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MessageComposer" as composer
+  participant "MessagesApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ConversationsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SendMessageCommandHandler" as handler
+  participant "Conversation" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+owner -> composer : Send a message to the member
+composer -> client : sendMessage(id, text, key)
+client -> controller : POST /api/conversations/{id}/messages
+controller -> controller : Authenticate and apply endpoint policy
+controller -> handler : Send SendMessageCommand
+handler -> db : Load conversation with blocks
+db --> handler : Conversation
+handler -> entity : CanSend(senderId) (L2-063)
+alt sender's side is blocked
+  entity --> handler : false
+  handler --> controller : Refused
+  controller --> client : 403 MESSAGE_REFUSED with no mention of a block
+  client --> composer : Failed send
+  composer --> owner : Show the message as not sent
+else not blocked
+  entity --> handler : true
+  handler -> entity : AddMessage(sender, text, now)
+  entity --> handler : Message
+  handler -> db : Save message and outbox row
+  db --> handler : Commit result
+  handler --> controller : MessageDto
+  controller --> client : 201 Created
+  client --> composer : Confirmed message
+  composer --> owner : Show the sent time
+end
+@enduml

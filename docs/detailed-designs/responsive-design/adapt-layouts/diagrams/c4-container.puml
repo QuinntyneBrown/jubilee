@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Adapt layouts
+
+Person(member, "Member", "Uses pages on a phone or desktop")
+Person(owner, "Owner", "Manages products")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Layout classes from ui.css and layout directives for the inbox, tables and forms")
+  Container(api, "Jubilee API", "ASP.NET Core", "Serves the same data to every viewport")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Conversations, products, listings")
+}
+
+Rel(member, web, "Uses", "HTTPS")
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml
