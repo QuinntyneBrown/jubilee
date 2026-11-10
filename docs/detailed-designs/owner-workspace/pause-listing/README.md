@@ -16,8 +16,7 @@ the owner and the verification team.
 
 *Resuming* makes the listing public again. A listing paused for under 12 months
 returns without new verification. A listing paused for 12 months or more goes
-back to the verification queue, because the facts the church reference confirmed
-may have changed.
+back to the verification queue and is reviewed again before it is public.
 
 Both changes reach public lists within 60 seconds. The owner starts a pause from
 "Pause listing" on the overview at `/my-business` and resumes from the persistent
