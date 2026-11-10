@@ -222,6 +222,6 @@ test.describe('not-found page (L2-113)', () => {
     );
     await expect(notFound.backToBrowse).toHaveAttribute('href', '/');
     await expect(notFound.search).toHaveAttribute('href', '/search');
-    expect(await notFound.dataPage()).toBe('not-found');
+    await expect.poll(() => notFound.dataPage()).toBe('not-found');
   });
 });

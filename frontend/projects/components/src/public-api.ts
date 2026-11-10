@@ -9,6 +9,7 @@ export * from './lib/icon/icons';
 export * from './lib/media-tile/category-tile';
 export * from './lib/media-tile/media-tile';
 export * from './lib/navigation';
+export * from './lib/pagination/pagination';
 export * from './lib/product-card/product-card';
 export * from './lib/site-footer/site-footer';
 export * from './lib/skip-link/skip-link';

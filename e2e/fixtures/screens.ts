@@ -1,12 +1,18 @@
 import type { Page } from '@playwright/test';
 import { BrowsePage } from '../pages/browse.page';
+import { CategoryFiltersScreen, CategoryPage } from '../pages/category.page';
 import { NotFoundPage } from '../pages/not-found.page';
 import { WelcomePage } from '../pages/welcome.page';
 import type { RouteKey } from './routes';
 import type { Screen } from './visual';
 
 /** Every screen state of the journey with the page object that knows its parts. */
-export const screens: { key: RouteKey; screen: (page: Page) => Screen }[] = [
+export const screens: {
+  key: RouteKey;
+  screen: (page: Page) => Screen;
+  /** The widths at which the screen exists, when it is not all of them. */
+  below?: number;
+}[] = [
   { key: 'welcome', screen: (page) => new WelcomePage(page) },
   { key: 'browse', screen: (page) => new BrowsePage(page) },
   { key: 'browse.signed-out', screen: (page) => new BrowsePage(page) },
@@ -14,5 +20,13 @@ export const screens: { key: RouteKey; screen: (page: Page) => Screen }[] = [
   { key: 'browse.empty', screen: (page) => new BrowsePage(page) },
   { key: 'browse.error', screen: (page) => new BrowsePage(page) },
   { key: 'browse.edge', screen: (page) => new BrowsePage(page) },
+  { key: 'category', screen: (page) => new CategoryPage(page) },
+  { key: 'category.loading', screen: (page) => new CategoryPage(page) },
+  { key: 'category.empty', screen: (page) => new CategoryPage(page) },
+  { key: 'category.error', screen: (page) => new CategoryPage(page) },
+  { key: 'category.no-results', screen: (page) => new CategoryPage(page) },
+  { key: 'category.long', screen: (page) => new CategoryPage(page) },
+  // The filters sheet is the under-768 px form of the filters.
+  { key: 'filters', screen: (page) => new CategoryFiltersScreen(page), below: 768 },
   { key: 'not-found', screen: (page) => new NotFoundPage(page) },
 ];

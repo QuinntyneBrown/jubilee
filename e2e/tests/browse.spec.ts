@@ -31,7 +31,7 @@ test.describe('browse home for a member (L2-021)', () => {
   }) => {
     const browse = new BrowsePage(page);
     await jb.open('browse');
-    expect(await browse.dataPage()).toBe('browse');
+    await expect.poll(() => browse.dataPage()).toBe('browse');
     await expect(browse.heading).toHaveText('Do business with Toronto’s Christian community.');
     await expect(browse.subline).toHaveText(
       '47 verified businesses — shops, advisors, trades and more.',

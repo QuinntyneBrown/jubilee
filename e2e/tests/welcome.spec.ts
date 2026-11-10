@@ -21,7 +21,7 @@ test.describe('welcome page (L2-020)', () => {
     );
     await expect(welcome.joinFree).toHaveAttribute('href', '/join');
     await expect(welcome.browseBusinesses).toHaveAttribute('href', '/');
-    expect(await welcome.dataPage()).toBe('welcome');
+    await expect.poll(() => welcome.dataPage()).toBe('welcome');
   });
 
   test('AC2: it lists the ten categories, the three steps, the featured four and the owner panel', async ({

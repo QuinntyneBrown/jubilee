@@ -1,0 +1,56 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div style="flex: 1"><h2 class="dialog__title" id="filters-title">Filters</h2></div>
+    <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <div class="dialog__body stack">
+    <fieldset>
+      <legend>Offers</legend>
+      @for (offer of offerOptions; track offer.value) {
+        <div>
+          <label class="choice"
+            ><input
+              #box
+              type="checkbox"
+              [checked]="offers().includes(offer.value)"
+              (change)="toggleOffer(offer.value, box.checked)"
+            /><span class="choice__text">{{ offer.label }}</span></label
+          >
+        </div>
+      }
+    </fieldset>
+    <fieldset>
+      <legend>Area served</legend>
+      @for (area of areaOptions; track area.value) {
+        <div>
+          <label class="choice"
+            ><input
+              #box
+              type="checkbox"
+              [checked]="areas().includes(area.value)"
+              (change)="toggleArea(area.value, box.checked)"
+            /><span class="choice__text">{{ area.label }}</span></label
+          >
+        </div>
+      }
+    </fieldset>
+    <div class="field">
+      <label class="field__label" for="filters-sort">Sort</label>
+      <select #sortBox class="select" id="filters-sort" (change)="setSort(sortBox.value)">
+        @for (option of sortOptions; track option.value) {
+          <option [value]="option.value" [selected]="option.value === sort()">
+            {{ option.label }}
+          </option>
+        }
+      </select>
+    </div>
+  </div>
+  <div class="dialog__footer">
+    <button class="btn" type="button" (click)="clearAll()">Clear all</button>
+    <button class="btn btn--primary" type="button" cdkFocusInitial (click)="apply()">
+      Show {{ count() | jbCount }} {{ count() === 1 ? 'business' : 'businesses' }}
+    </button>
+  </div>
+</div>
