@@ -43,8 +43,9 @@ Effort is working days for one intermediate developer, tests included.
   them, then the supply side that fills the directory, then follow-up, convenience and housekeeping. It is
   not a strict dependency order. Each prompt names the journeys it builds on and builds the smallest seam
   itself when one is missing.
+- [`AGENTS.md`](../AGENTS.md) holds the rules and the folder structure every journey follows.
 - No application code exists yet. The first journey implemented also pays a one-off foundation cost of about
-  15 days (solution skeleton, design tokens and base components, CI). It is not in the figures above. Every
+  15 days (the `backend/`, `frontend/`, `e2e/` and `eng/` skeleton, design tokens and base components, CI). It is not in the figures above. Every
   prompt carries the foundation as a phase that is skipped once the solution exists.
 - The cross-cutting designs (accessibility, design system, interaction states, responsive design, security,
   privacy, performance, operations) are not journeys. Each prompt binds its journey to them, and the effort
