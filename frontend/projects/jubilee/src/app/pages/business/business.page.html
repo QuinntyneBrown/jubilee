@@ -69,6 +69,17 @@
     @let isShop = listing.kind === 'shop';
     @let hasServices = listing.services.length > 0;
     @let hasProducts = listing.products.length > 0;
+    @let isOwner = listing.viewerRelation === 'owner';
+    @if (isOwner) {
+      <div class="alert" role="status">
+        <svg jb-icon name="info"></svg>
+        <div class="alert__body">
+          <div class="alert__title">This is how members see your listing</div>
+          <div>It’s live and verified. Changes you make are published straight away.</div>
+          <div class="alert__actions"><a routerLink="/my-business">Go to My business</a></div>
+        </div>
+      </div>
+    }
     <div class="split" style="margin-top: var(--space-2)">
       <div>
         @if (tile(); as media) {
@@ -92,43 +103,52 @@
           </div>
         }
         <div class="detail-head__actions">
-          @if (isShop && hasProducts) {
-            <a class="btn btn--primary btn--lg" [routerLink]="[]" fragment="products"
-              ><svg jb-icon name="bag"></svg>Shop products</a
+          @if (isOwner) {
+            <a class="btn btn--primary btn--lg" routerLink="/my-business/edit"
+              ><svg jb-icon name="edit"></svg>Edit listing</a
             >
-          } @else if (!isShop && hasServices) {
-            <a class="btn btn--primary btn--lg" [routerLink]="link('book')"
-              ><svg jb-icon name="calendar"></svg>Book a meeting</a
-            >
+            <a class="btn btn--icon" [routerLink]="link('share')" aria-label="Share listing"
+              ><svg jb-icon name="share"></svg
+            ></a>
           } @else {
-            <a class="btn btn--primary btn--lg" [routerLink]="link('message')"
-              ><svg jb-icon name="message"></svg>Send a message</a
+            @if (isShop && hasProducts) {
+              <a class="btn btn--primary btn--lg" [routerLink]="[]" fragment="products"
+                ><svg jb-icon name="bag"></svg>Shop products</a
+              >
+            } @else if (!isShop && hasServices) {
+              <a class="btn btn--primary btn--lg" [routerLink]="link('book')"
+                ><svg jb-icon name="calendar"></svg>Book a meeting</a
+              >
+            } @else {
+              <a class="btn btn--primary btn--lg" [routerLink]="link('message')"
+                ><svg jb-icon name="message"></svg>Send a message</a
+              >
+            }
+            <a
+              class="btn btn--icon btn--lg"
+              [routerLink]="link('message')"
+              aria-label="Message"
+              style="width: var(--control-height-lg)"
+              ><svg jb-icon name="message"></svg
+            ></a>
+            <!-- Saving arrives with journey 19 (ADR 0007). -->
+            <button
+              class="btn btn--icon btn--lg"
+              type="button"
+              aria-label="Save"
+              aria-pressed="false"
+              style="width: var(--control-height-lg)"
             >
+              <svg jb-icon name="heart"></svg>
+            </button>
+            <a
+              class="btn btn--icon btn--lg"
+              [routerLink]="link('share')"
+              aria-label="Share"
+              style="width: var(--control-height-lg)"
+              ><svg jb-icon name="share"></svg
+            ></a>
           }
-          <a
-            class="btn btn--icon btn--lg"
-            [routerLink]="link('message')"
-            aria-label="Message"
-            style="width: var(--control-height-lg)"
-            ><svg jb-icon name="message"></svg
-          ></a>
-          <!-- Saving arrives with journey 19 (ADR 0007). -->
-          <button
-            class="btn btn--icon btn--lg"
-            type="button"
-            aria-label="Save"
-            aria-pressed="false"
-            style="width: var(--control-height-lg)"
-          >
-            <svg jb-icon name="heart"></svg>
-          </button>
-          <a
-            class="btn btn--icon btn--lg"
-            [routerLink]="link('share')"
-            aria-label="Share"
-            style="width: var(--control-height-lg)"
-            ><svg jb-icon name="share"></svg
-          ></a>
         </div>
         @if (listing.highlight) {
           <p class="perk">{{ listing.highlight }}</p>
@@ -246,12 +266,14 @@
         </ul>
       </section>
     }
-    <p class="text-caption" style="margin-top: var(--space-8)">
-      <a
-        style="display: inline-flex; gap: var(--space-1); align-items: center"
-        [routerLink]="link('report')"
-        ><svg jb-icon name="flag" size="sm"></svg> Report this listing</a
-      >
-    </p>
+    @if (!isOwner) {
+      <p class="text-caption" style="margin-top: var(--space-8)">
+        <a
+          style="display: inline-flex; gap: var(--space-1); align-items: center"
+          [routerLink]="link('report')"
+          ><svg jb-icon name="flag" size="sm"></svg> Report this listing</a
+        >
+      </p>
+    }
   }
 }

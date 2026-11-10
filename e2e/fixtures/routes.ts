@@ -20,6 +20,7 @@ export type StubName =
   | 'business-error'
   | 'business-empty'
   | 'business-edge'
+  | 'business-owner'
   | 'shop-loading'
   | 'shop-error'
   | 'shop-empty'
@@ -126,6 +127,12 @@ export const routes = {
     mock: 'pages/business/edge.html',
     who: 'member',
     stub: 'business-edge',
+  },
+  'business.owner': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/owner.html',
+    who: 'member',
+    stub: 'business-owner',
   },
   shop: { app: '/b/luzandre', mock: 'pages/shop/default.html', who: 'member' },
   'shop.loading': {

@@ -40,6 +40,7 @@ export const screens: {
   { key: 'business.error', screen: (page) => new BusinessPage(page) },
   { key: 'business.empty', screen: (page) => new BusinessPage(page) },
   { key: 'business.edge', screen: (page) => new BusinessPage(page) },
+  { key: 'business.owner', screen: (page) => new BusinessPage(page) },
   { key: 'shop', screen: (page) => new BusinessPage(page) },
   { key: 'shop.loading', screen: (page) => new BusinessLoadingScreen(page) },
   { key: 'shop.error', screen: (page) => new BusinessPage(page) },

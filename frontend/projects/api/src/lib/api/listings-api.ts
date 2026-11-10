@@ -7,6 +7,8 @@ import { ProductPage } from '../models/product';
 /** Contract of the listing pages: one business or shop at `/b/:slug` and its products. */
 export interface ListingsApi {
   getListing(slug: string): Observable<ListingPage>;
+  /** The page was shown; the server counts it unless the caller owns the listing. */
+  recordView(slug: string): Observable<void>;
   getProduct(slug: string, product: string): Observable<ProductPage>;
   /** "Tell me when it's back" on a sold-out product; asking again changes nothing. */
   requestStockAlert(productId: string): Observable<void>;
@@ -20,6 +22,10 @@ export class HttpListingsApi implements ListingsApi {
 
   getListing(slug: string): Observable<ListingPage> {
     return this.http.get<ListingPage>(`/api/listings/${encodeURIComponent(slug)}`);
+  }
+
+  recordView(slug: string): Observable<void> {
+    return this.http.post<void>(`/api/listings/${encodeURIComponent(slug)}/views`, null);
   }
 
   getProduct(slug: string, product: string): Observable<ProductPage> {

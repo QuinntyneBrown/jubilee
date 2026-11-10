@@ -105,6 +105,12 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ...listing,
         ...listingFromMock('edge'),
       }));
+    case 'business-owner':
+      // The demo member is not Legacy Financial's owner; the server decides the relation.
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        viewerRelation: 'owner',
+      }));
     case 'shop-loading':
       return page.route(luzandre, pending);
     case 'shop-error':

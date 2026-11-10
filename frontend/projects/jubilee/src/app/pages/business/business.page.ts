@@ -128,6 +128,10 @@ export class BusinessPage {
         this.hints.rememberCategory(listing.related, listing.category.slug);
         this.state.set({ status: 'loaded', value: listing });
         this.title.setTitle(`${listing.name} · Jubilee`);
+        // A listing view counts for the owner's statistics; their own visits do not (L2-037).
+        if (listing.viewerRelation !== 'owner') {
+          this.api.recordView(listing.slug).subscribe({ error: () => undefined });
+        }
       },
       error: (error: unknown) => {
         // A listing that is not public is the not-found page, at its own URL (L2-028 AC3).
