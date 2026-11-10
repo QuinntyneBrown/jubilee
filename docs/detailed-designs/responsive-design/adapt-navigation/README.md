@@ -39,7 +39,8 @@ change behaviour as well as appearance.
   `viewport-fit=cover` in the viewport meta tag so that `env(safe-area-inset-*)`
   reports the device insets.
 - **`TopBar`** — Angular component that renders `.topbar.topbar--ink`. Under
-  `768 px` it shows only the brand (`.topbar__brand`) and the avatar. From
+  `768 px` it shows only the brand (`.topbar__brand`), the search link and the
+  notifications button; the avatar shows from `768 px`. From
   `768 px` it shows the primary navigation (`.topbar__nav`) with "Browse",
   "Messages" and "List your business" (or "My business" for an owner), and a
   search link (`.only-narrow`, label "Search") to `/search`. From `1024 px` it
@@ -60,8 +61,9 @@ change behaviour as well as appearance.
   `TopNavigation` or `TopNavigationWithSearch`.
 - **`NavigationStore`** — signal store that holds the `NavigationItem` list
   for the signed-in role and the unread counts shown on "Messages" and on the
-  notifications button. It loads the counts from `GET /api/session` and updates
-  them from `RealtimeClient` events.
+  notifications button. It loads the counts from `GET /api/me/navigation` (the signed-in
+  member comes from `GET /api/session`) and updates them from `RealtimeClient`
+  events.
 - **Navigation rules in `ui.css`** — the media queries that show and hide
   `.tabbar`, `.topbar__nav`, `.topbar--ink .search`, `.hero .search`,
   `.only-mobile`, `.only-desktop` and `.only-narrow`. They use the breakpoint
@@ -72,20 +74,23 @@ change behaviour as well as appearance.
   tab bar shows, and `.topbar` adds `env(safe-area-inset-top)`,
   `env(safe-area-inset-left)` and `env(safe-area-inset-right)`. `Toast` regions
   sit above the tab bar.
-- **`VisualRegressionSuite`** — CI test suite (runner `<TO SUPPLY>`). It reads
+- **`VisualRegressionSuite`** — CI test suite, run by Playwright in Chromium (`e2e/tests/visual/`). It reads
   each screen and state from `docs/mocks/manifest.json`, renders the matching
   product screen with fixture data at `360`, `576`, `768`, `992` and `1280 px`
-  in the light and dark themes, and compares each screenshot with its baseline.
-  A difference above the threshold (`<TO SUPPLY>`) fails the build.
+  in the light and dark themes, and compares each screenshot, region by region, with its baseline.
+  A difference above the threshold (`1 %` of the pixels of a region) fails the
+  build.
 - **`OverflowCheck`** — helper run for every case. It fails when
   `document.documentElement.scrollWidth` exceeds `clientWidth` or when the
   bounding boxes of two sibling content elements overlap.
 - **`ReachabilityCheck`** — helper run per screen. It collects the links and
   buttons present at `1280 px` and fails when one has no counterpart at
   `360 px`, either on the screen, in the tab bar or in the account menu.
-- **Baseline store** — approved screenshots keyed by screen, state, width and
-  theme; location `<TO SUPPLY>`. A baseline changes only through a reviewed
-  change.
+- **Baseline store** — approved screenshots keyed by screen, state, region,
+  width and theme. They are not stored: each run renders them from
+  `docs/mocks` (`JB_BASELINE=1`) with the same browser that then renders the
+  app (`docs/adr/0005-visual-baselines-from-mocks.md`). A baseline therefore
+  changes only through a reviewed change to a mock.
 
 ## Requirements
 
@@ -95,7 +100,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-163` | `L1-023` | Every screen and state rendered at 360, 576, 768, 992 and 1280 px wide in light and dark themes shall show no horizontal overflow and no overlapping content, and every function shown at XL shall be reachable at XS. Visual regression tests in CI shall compare each screen with its approved baseline at those widths and fail the build on a difference above threshold, and fixed bars shall respect `env(safe-area-inset-*)`. |
-| `L2-164` | `L1-023` | Under 768 px each member page shall show the bottom tab bar and a top bar with only the brand and the avatar. From 768 px to 1023 px the tab bar shall be hidden and the top bar shall show the primary navigation; from 1024 px the top bar shall also show the search box. The browse hero search shall be hidden from 768 px. |
+| `L2-164` | `L1-023` | Under 768 px each member page shall show the bottom tab bar and a top bar with only the brand, the search link and the notifications button. From 768 px to 1023 px the tab bar shall be hidden and the top bar shall show the primary navigation; from 1024 px the top bar shall also show the search box. The browse hero search shall be hidden from 768 px. |
 | `L2-162` | `L1-022` | Each interactive target shall be at least 24 × 24 CSS px, and primary controls on touch devices (buttons, tab bar items, list rows, chips) shall be at least 44 × 44 CSS px. |
 
 ## Diagrams

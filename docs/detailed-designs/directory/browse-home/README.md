@@ -97,11 +97,22 @@ design introduces.
   Together they bound the time a paused listing stays visible to 60 seconds.
 
 A member's saved-heart state and message count come from the saved-list and
-messaging slices and are merged in the browser. The rule that picks and orders
-the five "From the shops" products is `<TO SUPPLY>`. The order of the four
-businesses inside a category group is `<TO SUPPLY>`. The direct-URL rule of
+messaging slices and are merged in the browser. "From the shops" shows the five most recently added
+products of public listings in the Shops category, newest first. The four
+businesses inside a category group are the first four in "Recommended" order
+(`docs/adr/0004-directory-ordering-rules.md`). The top bar entries for
+messages and notifications lead to screens of later journeys; "Open messages"
+is offered to a member only, and a visitor gets "Sign in" in its place. The direct-URL rule of
 L2-028 (HTTP `404` for a listing that is not public, with a preview for its
 owner and the verification team) is enforced by the business page slice.
+
+Until the outbox of `Jubilee Worker` exists (`operations/run-background-jobs`),
+`DirectoryCacheInvalidationInterceptor` in `Jubilee.Infrastructure` does the
+work of `DirectoryCacheInvalidator`: it removes the cached directory entries
+when `AppDbContext` saves a change to a `Listing`, `Product` or `FeaturedSlot`.
+`IDirectoryReadCache` is built on `IDistributedCache`, in memory unless a Redis
+connection string is configured, and the API also marks the responses
+`Cache-Control: public, max-age=60` (`docs/adr/0003-directory-read-cache.md`).
 
 ## Requirements
 

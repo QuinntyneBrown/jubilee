@@ -9,8 +9,8 @@ System_Boundary(jubilee, "Jubilee") {
   Container(api, "Jubilee API", "ASP.NET Core", "Session and unread counts for the navigation badges")
   ContainerDb(cache, "Cache", "Redis", "Sessions")
 }
-System_Ext(ci, "CI pipeline", "Visual regression and overflow checks. Vendor <TO SUPPLY>")
-System_Ext(baselines, "Baseline store", "Approved screenshots per screen, state, width and theme. Location <TO SUPPLY>")
+System_Ext(ci, "CI pipeline", "Visual regression and overflow checks. GitHub Actions")
+System_Ext(baselines, "Baseline store", "Screenshots of docs/mocks per screen, state, region, width and theme, rendered on each run")
 
 Rel(member, web, "Uses", "HTTPS")
 Rel(web, api, "Reads session and unread counts", "JSON/HTTPS")

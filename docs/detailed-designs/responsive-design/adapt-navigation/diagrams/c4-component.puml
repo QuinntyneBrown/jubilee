@@ -17,7 +17,7 @@ Container_Boundary(pipeline, "CI pipeline") {
   Component(overflow, "OverflowCheck", "Test helper", "Fails when the document is wider than the viewport or boxes overlap")
   Component(reach, "ReachabilityCheck", "Test helper", "Fails when a function shown at 1280 px has no route at 360 px")
 }
-Container(api, "Jubilee API", "ASP.NET Core", "GET /api/session and unread counts")
+Container(api, "Jubilee API", "ASP.NET Core", "GET /api/session and GET /api/me/navigation (unread counts)")
 
 Rel(shell, topbar, "Renders")
 Rel(shell, tabbar, "Renders on member pages")
