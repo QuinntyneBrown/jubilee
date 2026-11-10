@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Church reference · default — Jubilee mocks</title>
+<meta name="mock:kind" content="page">
+<meta name="mock:screen" content="church-reference">
+<meta name="mock:state" content="default">
+<meta name="description" content="Church reference form, ready to fill in.">
+<link rel="stylesheet" href="../../assets/tokens.css">
+<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../assets/mock.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="auth-layout"><a class="auth-brand" href="../../pages/welcome/default.html"><svg class="icon brand-mark" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 4v9a4 4 0 0 0 8 0V4M12 2v6M9.5 5h5"/></svg>jubilee</a><div class="auth-card card stack"><h1>Can you confirm Naomi Laurent?</h1>
+<p class="text-muted">Naomi is listing <strong>Luzandre.com</strong> on Jubilee, Toronto’s Christian marketplace, and named you at <strong>Grace Toronto Church</strong> as her church reference. Your answer is private: Naomi and the public never see it.</p>
+<form class="stack" novalidate>
+<fieldset><legend>How well do you know Naomi? <span class="optional text-muted">(required)</span></legend>
+<label class="choice"><input type="radio" name="know" id="know-yes" checked><span class="choice__text">I know her and can vouch for her<small>She is part of our church and I trust her to deal honestly</small></span></label>
+<label class="choice"><input type="radio" name="know" id="know-some"><span class="choice__text">I know her, but I can’t vouch for her business<small>Tell us more below if you can</small></span></label>
+<label class="choice"><input type="radio" name="know" id="know-no"><span class="choice__text">I don’t know this person<small>We will not publish the listing on this reference</small></span></label>
+</fieldset>
+<div class="form-grid form-grid--2"><div class="field"><label class="field__label" for="name">Your name <span class="optional">(required)</span></label><input class="input" id="name" type="text" value="Daniel Okoro" placeholder="" required autocomplete="name"></div><div class="field"><label class="field__label" for="role">Your role <span class="optional">(required)</span></label><input class="input" id="role" type="text" value="Lead pastor" placeholder="Pastor, elder, deacon…" required></div></div>
+<div class="field"><label class="field__label" for="note">Anything we should know <span class="optional">(optional)</span></label><span class="field__help" id="note-help">Only the Jubilee verification team reads this.</span><textarea class="textarea" id="note" rows="3" placeholder="" aria-describedby="note-help">Naomi has served on our hospitality team for six years.</textarea></div>
+<button class="btn btn--primary btn--block btn--lg" type="submit">Send my answer</button>
+</form></div><p class="auth-foot">Not expecting this? You can ignore it, or <a href="../../pages/help/default.html">tell us</a>.</p></main>
+<div class="toast-region" role="status" aria-live="polite"></div>
+
+<nav class="mock-bar" aria-label="Mock navigation">
+  <a class="mock-bar__home" href="../../index.html" aria-label="All mocks">⌂</a>
+  <span class="mock-bar__screen">Church reference</span>
+  <ul class="mock-bar__states"><li><a href="default.html" aria-current="page">default</a></li><li><a href="loading.html">loading</a></li><li><a href="error.html">error</a></li><li><a href="invalid.html">invalid</a></li><li><a href="submitting.html">submitting</a></li><li><a href="success.html">success</a></li><li><a href="expired.html">expired</a></li></ul>
+  <button type="button" data-theme-toggle aria-pressed="false">☾ Dark</button>
+  <button type="button" data-chrome-toggle aria-label="Hide mock chrome">×</button>
+</nav>
+<script src="../../assets/mock.js"></script>
+</body>
+</html>
