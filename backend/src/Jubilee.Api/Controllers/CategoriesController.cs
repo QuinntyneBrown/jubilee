@@ -1,9 +1,11 @@
 using Jubilee.Api.Errors;
 using Jubilee.Api.Filters;
+using Jubilee.Api.RateLimiting;
 using Jubilee.Application.Directory;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Jubilee.Api.Controllers;
 
@@ -15,6 +17,7 @@ namespace Jubilee.Api.Controllers;
 [Route("api/categories/{slug}/listings")]
 [AllowAnonymous]
 [PublicDirectoryCache]
+[EnableRateLimiting(DirectoryRateLimit.Policy)]
 [ErrorReference("JB-CAT-503")]
 public sealed class CategoriesController(ISender sender) : ControllerBase
 {

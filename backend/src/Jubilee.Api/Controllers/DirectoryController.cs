@@ -1,9 +1,11 @@
 using Jubilee.Api.Errors;
 using Jubilee.Api.Filters;
+using Jubilee.Api.RateLimiting;
 using Jubilee.Application.Directory;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Jubilee.Api.Controllers;
 
@@ -12,6 +14,7 @@ namespace Jubilee.Api.Controllers;
 [Route("api/directory")]
 [AllowAnonymous]
 [PublicDirectoryCache]
+[EnableRateLimiting(DirectoryRateLimit.Policy)]
 [ErrorReference("JB-DIR-503")]
 public sealed class DirectoryController(ISender sender) : ControllerBase
 {

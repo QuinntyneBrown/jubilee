@@ -1,5 +1,6 @@
 using Jubilee.Api.Errors;
 using Jubilee.Api.Middleware;
+using Jubilee.Api.RateLimiting;
 using Jubilee.Application;
 using Jubilee.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
+builder.Services.AddJubileeRateLimiting(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -44,6 +46,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -43,6 +43,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         builder.UseEnvironment("Development");
         builder.UseSetting("Database:Provider", "Sqlite");
         builder.UseSetting("ConnectionStrings:Jubilee", _connectionString);
+        builder.UseSetting("RateLimits:DirectoryReadsPerMinute", "100000");
         ConfigureSettings(builder);
         builder.ConfigureServices(services =>
         {
