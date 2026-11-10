@@ -26,7 +26,8 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             if (!listings.ContainsKey(demo.Slug))
             {
                 var approvedAt = now.AddDays(-(i + 1));
-                var listing = Draft(demo, approvedAt.AddDays(-14));
+                var createdAt = Profiles.TryGetValue(demo.Slug, out var joined) ? joined.JoinedOn : approvedAt.AddDays(-14);
+                var listing = Draft(demo, createdAt);
                 listing.Approve(SeededBy, approvedAt);
                 listing.RefreshRecommendedScore(now);
                 listings[demo.Slug] = listing;
@@ -41,6 +42,28 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
                 var listing = Hidden(hidden, now);
                 listings[hidden.Listing.Slug] = listing;
                 db.Listings.Add(listing);
+            }
+        }
+
+        // A listing page the mocks describe is filled in once; an owner's later edits stay.
+        var describedListings = await db.Services.Select(s => s.ListingId).Distinct().ToListAsync(cancellationToken);
+        foreach (var (slug, demo) in Profiles)
+        {
+            var listing = listings[slug];
+            if (listing.About is null && listing.OwnerName is null)
+            {
+                listing.Describe(demo.Profile);
+                listing.SetMedianResponseMinutes(demo.MedianReplyMinutes);
+                listing.RefreshRecommendedScore(now);
+            }
+
+            if (!describedListings.Contains(listing.Id))
+            {
+                for (var i = 0; i < demo.Services.Length; i++)
+                {
+                    var service = demo.Services[i];
+                    db.Services.Add(Service.Create(listing.Id, i + 1, service.Name, service.Detail, service.Price, service.Action));
+                }
             }
         }
 

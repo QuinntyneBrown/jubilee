@@ -23,6 +23,26 @@ public sealed class Listing
 
     public string CategorySlug { get; private set; } = string.Empty;
 
+    /// <summary>Main offer: services or a shop. A listing in Shops starts as a shop.</summary>
+    public ListingKind Kind { get; private set; }
+
+    /// <summary>The owner's name with credentials, for example "Trevor Chew, CKA®".</summary>
+    public string? OwnerName { get; private set; }
+
+    public List<string> Credentials { get; private set; } = [];
+
+    public string? About { get; private set; }
+
+    public string? Where { get; private set; }
+
+    public string? Hours { get; private set; }
+
+    public string? Languages { get; private set; }
+
+    public string? Delivery { get; private set; }
+
+    public string? MadeToOrder { get; private set; }
+
     public ListingStage Stage { get; private set; }
 
     public bool IsPaused { get; private set; }
@@ -68,6 +88,7 @@ public sealed class Listing
             SortName = Domain.SortName.From(name),
             Tagline = tagline,
             CategorySlug = categorySlug,
+            Kind = categorySlug == Category.ShopsSlug ? ListingKind.Shop : ListingKind.Services,
             Stage = ListingStage.Draft,
             CreatedAt = now,
         };
@@ -117,9 +138,29 @@ public sealed class Listing
 
     public void SetOffers(OfferFilter offers) => Offers = offers;
 
+    public void SetKind(ListingKind kind) => Kind = kind;
+
+    /// <summary>Replaces what the listing page tells members about the business.</summary>
+    public void Describe(ListingProfile profile)
+    {
+        OwnerName = Clean(profile.OwnerName);
+        Credentials = [.. profile.Credentials.Select(Clean).OfType<string>()];
+        About = Clean(profile.About);
+        Where = Clean(profile.Where);
+        Hours = Clean(profile.Hours);
+        Languages = Clean(profile.Languages);
+        Delivery = Clean(profile.Delivery);
+        MadeToOrder = Clean(profile.MadeToOrder);
+    }
+
+    /// <summary>The "Replies" band of the stored median first-reply time (L2-033 AC5).</summary>
+    public ReplyTimeBand ReplyTimeBand => ReplyTimeBands.From(MedianResponseMinutes);
+
     public void SetAreasServed(AreaServed areasServed) => AreasServed = areasServed;
 
     public void SetMedianResponseMinutes(int? minutes) => MedianResponseMinutes = minutes;
+
+    private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     /// <summary>Recomputes the stored <see cref="RecommendedScore"/> as of <paramref name="now"/>.</summary>
     public void RefreshRecommendedScore(DateTimeOffset now) =>

@@ -11,6 +11,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<Product> Products => Set<Product>();
 
+    public DbSet<Service> Services => Set<Service>();
+
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>

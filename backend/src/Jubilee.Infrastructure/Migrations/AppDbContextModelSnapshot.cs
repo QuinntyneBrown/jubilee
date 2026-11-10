@@ -50,6 +50,10 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("About")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<DateTimeOffset?>("ApprovedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -68,18 +72,43 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.PrimitiveCollection<string>("Credentials")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Delivery")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Highlight")
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("Hours")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("IsPaused")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsUnderModerationHold")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("Languages")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("MadeToOrder")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int?>("MedianResponseMinutes")
                         .HasColumnType("int");
@@ -91,6 +120,10 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<int>("Offers")
                         .HasColumnType("int");
+
+                    b.Property<string>("OwnerName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<double>("RecommendedScore")
                         .HasColumnType("float");
@@ -110,6 +143,10 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<string>("Tagline")
                         .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Where")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -171,6 +208,47 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("Products", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.Service", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("Detail")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PriceCents")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PriceKind")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListingId", "Position");
+
+                    b.ToTable("Services", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.FeaturedSlot", b =>
                 {
                     b.HasOne("Jubilee.Domain.Listing", null)
@@ -181,6 +259,15 @@ namespace Jubilee.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Product", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Listing", null)
+                        .WithMany()
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.Service", b =>
                 {
                     b.HasOne("Jubilee.Domain.Listing", null)
                         .WithMany()

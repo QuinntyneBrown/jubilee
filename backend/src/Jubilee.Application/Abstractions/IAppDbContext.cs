@@ -9,6 +9,8 @@ public interface IAppDbContext
 
     DbSet<Product> Products { get; }
 
+    DbSet<Service> Services { get; }
+
     DbSet<FeaturedSlot> FeaturedSlots { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

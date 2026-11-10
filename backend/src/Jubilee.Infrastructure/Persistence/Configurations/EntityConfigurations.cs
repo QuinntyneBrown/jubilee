@@ -20,6 +20,16 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.CategorySlug).HasMaxLength(40).IsRequired();
         builder.Property(l => l.ApprovedBy).HasMaxLength(120);
         builder.Ignore(l => l.IsVerified);
+        builder.Ignore(l => l.ReplyTimeBand);
+        builder.Property(l => l.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.Property(l => l.OwnerName).HasMaxLength(200);
+        builder.PrimitiveCollection(l => l.Credentials).IsRequired();
+        builder.Property(l => l.About).HasMaxLength(2000);
+        builder.Property(l => l.Where).HasMaxLength(200);
+        builder.Property(l => l.Hours).HasMaxLength(200);
+        builder.Property(l => l.Languages).HasMaxLength(200);
+        builder.Property(l => l.Delivery).HasMaxLength(200);
+        builder.Property(l => l.MadeToOrder).HasMaxLength(200);
         builder.HasIndex(l => new { l.CategorySlug, l.Stage });
     }
 }
@@ -37,6 +47,22 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.TileIcon).HasConversion<string>().HasMaxLength(16);
         builder.HasIndex(p => new { p.ListingId, p.Slug }).IsUnique();
         builder.HasOne<Listing>().WithMany().HasForeignKey(p => p.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
+{
+    public void Configure(EntityTypeBuilder<Service> builder)
+    {
+        builder.ToTable("Services");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.Name).HasMaxLength(120).IsRequired();
+        builder.Property(s => s.Detail).HasMaxLength(200).IsRequired();
+        builder.Property(s => s.PriceKind).HasConversion<string>().HasMaxLength(16);
+        builder.Property(s => s.Action).HasConversion<string>().HasMaxLength(16);
+        builder.HasIndex(s => new { s.ListingId, s.Position });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
 

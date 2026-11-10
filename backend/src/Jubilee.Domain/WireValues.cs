@@ -36,6 +36,31 @@ public static class WireValues
 
     public static string Of(TileIcon value) => value.ToString().ToLowerInvariant();
 
+    /// <summary>"draft", "pending-reference", "ready-to-review", "needs-decision", "changes-requested" or "live".</summary>
+    public static string Of(ListingStage value) => value switch
+    {
+        ListingStage.PendingReference => "pending-reference",
+        ListingStage.ReadyToReview => "ready-to-review",
+        ListingStage.NeedsDecision => "needs-decision",
+        ListingStage.ChangesRequested => "changes-requested",
+        _ => value.ToString().ToLowerInvariant(),
+    };
+
+    public static string Of(ListingKind value) => value == ListingKind.Shop ? "shop" : "services";
+
+    public static string Of(ServiceAction value) => value.ToString().ToLowerInvariant();
+
+    public static string Of(ServicePriceKind value) => value.ToString().ToLowerInvariant();
+
+    /// <summary>"few-hours", "day" or "few-days"; null for <see cref="ReplyTimeBand.None"/>.</summary>
+    public static string? Of(ReplyTimeBand value) => value switch
+    {
+        ReplyTimeBand.FewHours => "few-hours",
+        ReplyTimeBand.Day => "day",
+        ReplyTimeBand.FewDays => "few-days",
+        _ => null,
+    };
+
     public static OfferFilter? ParseOffer(string wire) => Find(OfferPairs, wire);
 
     public static AreaServed? ParseArea(string wire) => Find(AreaPairs, wire);

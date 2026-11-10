@@ -26,6 +26,12 @@ internal static class DemoCatalogue
         UnderModerationHold,
     }
 
+    internal sealed record DemoService(string Name, string Detail, ServicePrice Price, ServiceAction Action);
+
+    /// <summary>What a listing page shows of a business the mocks describe in full.</summary>
+    internal sealed record DemoProfile(
+        ListingProfile Profile, DateTimeOffset JoinedOn, int? MedianReplyMinutes, DemoService[] Services);
+
     internal sealed record DemoProduct(
         string ShopSlug, string Slug, string Name, int PriceCents, bool PerUnit, TileTint Tint, TileIcon Icon);
 
@@ -41,8 +47,8 @@ internal static class DemoCatalogue
 
         // Financial & insurance (3)
         new("financial-insurance", "legacy-financial", "Legacy Financial", "Build a Legacy. Protect a Legacy. Leave a Legacy.", "Free first meeting", FreeQuote, AllOfToronto),
-        new("financial-insurance", "deeks-insurance", "Deeks Insurance", "We put our heart – and faith – into everything we do as a business.", "Free quote", FreeQuote, Downtown | Etobicoke),
-        new("financial-insurance", "jd-smith-insurance-brokers", "JD Smith Insurance Brokers", "Personal & commercial insurance solutions", "Free quote", FreeQuote, NorthYork | Scarborough),
+        new("financial-insurance", "deeks-insurance", "Deeks Insurance", "We put our heart – and faith – into everything we do as a business.", "Get a quote", FreeQuote, Downtown | Etobicoke),
+        new("financial-insurance", "jd-smith-insurance-brokers", "JD Smith Insurance Brokers", "Personal & commercial insurance solutions", "Get a quote", FreeQuote, NorthYork | Scarborough),
 
         // Legal & immigration (6)
         new("legal-immigration", "kevin-marshall-barrister-solicitor", "Kevin Marshall, Barrister & Solicitor", "Caring for you, so you can take care of what matters", "Free first call", FreeQuote, Downtown | EastYork),
@@ -113,6 +119,47 @@ internal static class DemoCatalogue
         new(new("shops", "bethel-gift-baskets", "Bethel Gift Baskets", "Gift baskets for new neighbours, new babies and hard days.", "Pickup in store", OpenSaturdays, NorthYork), HiddenBecause.Paused),
         new(new("health-family", "shiloh-wellness-clinic", "Shiloh Wellness Clinic", "Physiotherapy and massage close to home.", "Accepting new clients", FreeQuote, EastYork | Downtown), HiddenBecause.UnderModerationHold),
     ];
+
+    /// <summary>The listing pages of the mocks: pages/business (Legacy Financial) and pages/shop (Luzandre.com).</summary>
+    internal static readonly Dictionary<string, DemoProfile> Profiles = new()
+    {
+        ["legacy-financial"] = new(
+            new ListingProfile(
+                OwnerName: "Trevor Chew, CKA®, CFP®, CLU®",
+                Credentials: ["CKA® · CFP® · CLU®"],
+                About: "Financial planning grounded in biblical stewardship: budgeting and debt, retirement, insurance and estate planning, and a generosity plan your family can keep for generations.",
+                Where: "2 Sheppard Ave E, North York · video across Ontario",
+                Hours: "Mon–Fri 9:00–5:00 · Thu until 8:00",
+                Languages: "English, Cantonese",
+                Delivery: null,
+                MadeToOrder: null),
+            JoinedOn: new DateTimeOffset(2026, 3, 16, 14, 0, 0, TimeSpan.Zero),
+            MedianReplyMinutes: 9 * 60,
+            Services:
+            [
+                new("Discovery meeting", "30 min · In person or video", ServicePrice.Free, ServiceAction.Book),
+                new("Retirement & RRSP review", "60 min · Bring your statements", ServicePrice.Ask, ServiceAction.Book),
+                new("Life & disability insurance review", "45 min", ServicePrice.Free, ServiceAction.Book),
+                new("Estate & legacy plan", "Two sessions, written plan", ServicePrice.Ask, ServiceAction.Book),
+            ]),
+        ["luzandre"] = new(
+            new ListingProfile(
+                OwnerName: null,
+                Credentials: [],
+                About: "Custom tees, mugs and original artwork designed to share joy. Order a ready-made piece or ask for something made just for your church, team or family.",
+                Where: "Online · studio pickup in Leslieville",
+                Hours: null,
+                Languages: null,
+                Delivery: "Canada Post, $9 flat · free over $75",
+                MadeToOrder: "Ready in 5–7 days"),
+            JoinedOn: new DateTimeOffset(2026, 6, 8, 14, 0, 0, TimeSpan.Zero),
+            MedianReplyMinutes: 2 * 60,
+            Services:
+            [
+                new("Custom design consultation", "30 min · Video", ServicePrice.Free, ServiceAction.Ask),
+                new("Church merch package", "Tees, mugs and totes for your congregation", ServicePrice.Ask, ServiceAction.Ask),
+            ]),
+    };
 
     /// <summary>"Featured this week", positions 1 to 5.</summary>
     internal static readonly string[] FeaturedSlugs =

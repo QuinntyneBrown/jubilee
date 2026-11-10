@@ -168,4 +168,21 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
             Assert.DoesNotContain(slug, await client.GetStringAsync(url));
         }
     }
+
+    [Fact]
+    public async Task The_demo_legacy_financial_page_is_the_business_mock()
+    {
+        var json = await factory.GetJson("/api/listings/legacy-financial");
+
+        Assert.Equal("services", json.GetProperty("kind").GetString());
+        Assert.Equal("Trevor Chew, CKA®, CFP®, CLU®", json.GetProperty("ownerName").GetString());
+        Assert.Equal(
+            ["Discovery meeting", "Retirement & RRSP review", "Life & disability insurance review", "Estate & legacy plan"],
+            json.GetProperty("services").EnumerateArray().Select(s => s.GetProperty("name").GetString()));
+        Assert.Equal(new DateTimeOffset(2026, 3, 16, 14, 0, 0, TimeSpan.Zero), json.GetProperty("details").GetProperty("onJubileeSince").GetDateTimeOffset());
+        Assert.Equal("day", json.GetProperty("details").GetProperty("replies").GetString());
+        Assert.Equal(
+            [("Deeks Insurance", "Get a quote"), ("JD Smith Insurance Brokers", "Get a quote")],
+            json.GetProperty("related").EnumerateArray().Select(c => (c.GetProperty("name").GetString()!, c.GetProperty("highlight").GetString()!)));
+    }
 }

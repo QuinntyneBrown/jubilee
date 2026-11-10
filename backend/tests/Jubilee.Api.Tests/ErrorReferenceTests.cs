@@ -22,6 +22,7 @@ public class ErrorReferenceTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     [InlineData("/api/directory/home", "JB-DIR-503")]
     [InlineData("/api/categories/home-property/listings", "JB-CAT-503")]
     [InlineData("/api/categories/home-property/listings/count", "JB-CAT-503")]
+    [InlineData("/api/listings/legacy-financial", "JB-BIZ-503")]
     public async Task L2_118_AC2_a_directory_read_that_cannot_be_served_answers_503_with_its_reference(string url, string reference)
     {
         _factory.Database.Unavailable = true;
@@ -45,6 +46,7 @@ public class ErrorReferenceTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     [Theory]
     [InlineData("/api/directory/home", "JB-DIR-503")]
     [InlineData("/api/categories/media/listings", "JB-CAT-503")]
+    [InlineData("/api/listings/legacy-financial", "JB-BIZ-503")]
     public async Task L2_118_AC3_the_reference_is_logged_with_the_correlation_id_of_the_failing_request(string url, string reference)
     {
         _factory.Database.Unavailable = true;
