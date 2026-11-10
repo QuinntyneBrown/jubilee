@@ -14,7 +14,6 @@ import { AREAS, CATEGORIES, FilterSuggestion, ListingSort, OFFERS, SORTS } from 
 import {
   BusinessCard,
   CardGridSkeleton,
-  CountPipe,
   EmptyState,
   Icon,
   Pagination,
