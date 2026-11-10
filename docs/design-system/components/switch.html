@@ -116,8 +116,8 @@
         <ol class="ds-anatomy__list">
           <li><div><b>Title</b><small><code>.row__title</code> inside the <code>label for</code>; the accessible name.</small></div></li>
           <li><div><b>Meta</b><small><code>.row__meta</code>, part of the label, explains what the setting does.</small></div></li>
-          <li><div><b>Track</b><small>44 × 24px (<code>--target-comfortable</code> × <code>--target-min</code>); <code>--color-border-strong</code> off, gold with an accent-border edge on.</small></div></li>
-          <li><div><b>Thumb</b><small>20px circle (<code>--icon-size-md</code>) on <code>--color-bg-surface</code> with <code>--shadow-1</code>; slides 20px.</small></div></li>
+          <li><div><b>Track</b><small>44 × 24px (<code>--switch-width</code> × <code>--switch-height</code>); <code>--color-fg-subtle</code> off, green <code>--color-success-solid</code> on.</small></div></li>
+          <li><div><b>Thumb</b><small>20px circle (<code>--switch-knob</code>), 2px inside the track, <code>--color-bg-surface</code> with <code>--shadow-1</code>; slides 20px and turns <code>--color-fg-on-success</code> when on.</small></div></li>
         </ol>
       </div>
     </section>
@@ -135,11 +135,11 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;label class="switch"&gt;&lt;input type="checkbox" role="switch"&gt;&lt;span&gt;Show my home church on my profile&lt;/span&gt;&lt;/label&gt;
 &lt;label class="switch"&gt;&lt;input type="checkbox" role="switch" checked&gt;&lt;span&gt;Accept new requests&lt;/span&gt;&lt;/label&gt;</code></pre></details></div>
     </section>
-    <section class="ds-section" id="sizes" data-na="One size only: the 44 × 24px track meets the touch target on its own, and a smaller switch would not."><h2><a href="#sizes">Sizes</a></h2>
-      <p class="ds-na">One size only: the 44 × 24px track meets the touch target on its own, and a smaller switch would not.</p>
+    <section class="ds-section" id="sizes" data-na="One size only: the 44 × 24px track meets the 24px minimum target on its own, and a smaller switch would not."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size only: the 44 × 24px track meets the 24px minimum target on its own, and a smaller switch would not.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
-      <p>Forced with <code>data-state</code>. Hover changes only the cursor today (a hover edge is proposed). Active keeps the hover look; the thumb moves on release.</p>
+      <p>Forced with <code>data-state</code>. Hover draws a 1px <code>--color-fg-default</code> edge inside the track. Active keeps the hover look; the thumb moves on release. Disabled is the same switch at 50% opacity.</p>
       <div class="ds-matrix"><table>
         <thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Active</th><th scope="col">Disabled</th></tr></thead>
         <tbody>
@@ -169,11 +169,11 @@
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
         <li>The switch stays at the row's end at every width; the row body wraps.</li>
-        <li>Rows keep a 44px minimum height on phones, so the whole row is a comfortable target through the label.</li>
+        <li>Rows have 16px of padding above and below, so through the label the whole row is the target at every width.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>On: <code>--color-accent</code> track with a <code>--color-accent-border</code> inset edge (gold alone is 1.6:1 on cream; the edge carries the 3:1). Off: <code>--color-border-strong</code> track. Thumb: <code>--color-bg-surface</code> with <code>--shadow-1</code> in both themes.</p>
+      <p>On: <code>--color-success-solid</code> track (green, the same fill as a checked checkbox) with a <code>--color-fg-on-success</code> thumb: white in light, ink in dark. Off: <code>--color-fg-subtle</code> track with a <code>--color-bg-surface</code> thumb. The thumb carries <code>--shadow-1</code> in both themes. The switch does not use gold.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -190,16 +190,16 @@
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Off track on card</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
-        <div class="ds-pair"><span>On edge on card</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Off track on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>On track on card</span><span class="ds-pair__ratio" data-contrast="--color-success-solid|--color-bg-surface" data-min="3"></span></div>
         <div class="ds-pair"><span>Title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Meta</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Saved status</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-surface" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Off track on card</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div>
-        <div class="ds-pair"><span>On edge on card</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Off track on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>On track on card</span><span class="ds-pair__ratio" data-contrast="--color-success-solid|--color-bg-surface" data-min="3"></span></div>
         <div class="ds-pair"><span>Title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Meta</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Saved status</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface" data-min="4.5"></span></div>
@@ -207,9 +207,9 @@
         </div></div>
       </div>
       <h3>Motion</h3>
-      <p>Track colour and thumb slide over <code>--duration-base</code>; reduced motion zeroes both through the token. The saving dot's pulse stops under reduced motion.</p>
+      <p>Track colour and thumb slide over <code>--duration-base</code> (200ms); reduced motion zeroes both through the token. The saving dot's pulse stops under reduced motion.</p>
       <h3>Touch</h3>
-      <p>Track is 44 × 24px; with the row label the target is the full row (at least 44px tall).</p>
+      <p>Track is 44 × 24px, which meets the 24px minimum target; with the row label the target is the full row.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -230,11 +230,11 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Track off / on</td><td><code>--color-border-strong</code> / <code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
-          <tr><td>On edge</td><td><code>--color-accent-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td></tr>
-          <tr><td>Thumb / shadow</td><td><code>--color-bg-surface</code> / <code>--shadow-1</code></td><td colspan="2"><span data-token="--color-bg-surface"></span> / <span data-token="--shadow-1"></span></td></tr>
-          <tr><td>Track width / height</td><td><code>--target-comfortable</code> / <code>--target-min</code></td><td colspan="2"><span data-token="--target-comfortable"></span> / <span data-token="--target-min"></span></td></tr>
-          <tr><td>Thumb size / inset</td><td><code>--icon-size-md</code> / <code>--space-0-5</code></td><td colspan="2"><span data-token="--icon-size-md"></span> / <span data-token="--space-0-5"></span></td></tr>
+          <tr><td>Track off / on</td><td><code>--color-fg-subtle</code> / <code>--color-success-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span></td></tr>
+          <tr><td>Thumb when on</td><td><code>--color-fg-on-success</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-success" data-swatch></i><span data-token="--color-fg-on-success"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-success" data-swatch></i><span data-token="--color-fg-on-success"></span></span></td></tr>
+          <tr><td>Thumb when off / shadow</td><td><code>--color-bg-surface</code> / <code>--shadow-1</code></td><td colspan="2"><span data-token="--color-bg-surface"></span> / <span data-token="--shadow-1"></span></td></tr>
+          <tr><td>Track width / height</td><td><code>--switch-width</code> / <code>--switch-height</code></td><td colspan="2"><span data-token="--switch-width"></span> / <span data-token="--switch-height"></span></td></tr>
+          <tr><td>Thumb size / inset</td><td><code>--switch-knob</code> / <code>--space-0-5</code></td><td colspan="2"><span data-token="--switch-knob"></span> / <span data-token="--space-0-5"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>Transition</td><td><code>--duration-base</code> / <code>--ease-standard</code></td><td colspan="2"><span data-token="--duration-base"></span> / <span data-token="--ease-standard"></span></td></tr>
           <tr><td>Status text</td><td><code>--text-body-sm</code> / <code>--color-fg-muted</code></td><td colspan="2"><span data-token="--text-body-sm"></span> / <span data-token="--color-fg-muted"></span></td></tr>
@@ -265,7 +265,7 @@
         <li><a href="../../mocks/pages/preferences/submitting.html">pages/preferences/submitting</a> (saving)</li>
         <li><a href="../../mocks/pages/preferences/success.html">pages/preferences/success</a> (saved)</li>
       </ul>
-      <p>Drift fixed during extraction: each row title set <code>style="display: block"</code> inline (15 times); the system uses a line break inside the label instead. The settings card used <code>max-width: 42rem</code> inline, now <code>.container--narrow</code>. The switch CSS has no hover style; a hover edge is proposed. The saving mock disables only the switch being saved, which the system keeps.</p>
+      <p>Drift fixed during extraction: each row title set <code>style="display: block"</code> inline (15 times); the system uses a line break inside the label instead. The settings card used <code>max-width: 42rem</code> inline, now <code>.container--narrow</code>. The switch had no hover style; the system adds an inset edge. The saving mock disables only the switch being saved, which the system keeps.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

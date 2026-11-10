@@ -106,7 +106,7 @@
         <li><b>Text</b> lines (<code>.skeleton--text</code>, with <code>--w30/50/70</code> widths); the last line in a group is 60%.</li>
         <li><b>Title</b> and <b>H1</b> bars for headings.</li>
         <li><b>Avatar</b>, <b>media</b> (4:3) and <b>square</b> for images.</li>
-        <li><b>Rect</b> for inputs and panels; <b>button</b> (<code>.skeleton--btn</code>, <code>--btn-sm</code>) for pill actions.</li>
+        <li><b>Rect</b> for panels; <b>input</b> (<code>.skeleton--input</code>) for form fields; <b>button</b> (<code>.skeleton--btn</code>, <code>--btn-sm</code>, <code>--btn-block</code>) for pill actions.</li>
       </ul>
     </section>
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
@@ -116,7 +116,7 @@
           <span class="ds-callout" style="left: 50%; top: 30%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 40%; top: 70%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 50%; top: 82%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 30%; top: 93%;" aria-hidden="true">4</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Media</b><small><code>.skeleton--media</code>: 4:3, <code>--radius-lg</code>, the card's photo.</small></div></li>
+          <li><div><b>Media</b><small><code>.skeleton--media</code>: 4:3, 16px <code>--radius-lg</code>, the card's photo.</small></div></li>
           <li><div><b>Title line</b><small><code>.skeleton--text.skeleton--w70</code>: the business name.</small></div></li>
           <li><div><b>Meta line</b><small><code>.skeleton--text</code>: full width, the category and area.</small></div></li>
           <li><div><b>Short line</b><small><code>.skeleton--w50</code>: the rating or price.</small></div></li>
@@ -148,14 +148,14 @@
 &lt;ul class="rows" aria-hidden="true" style="width: 100%;"&gt;&lt;li class="row"&gt;&lt;div class="row__body"&gt;&lt;span class="skeleton skeleton--text skeleton--w50"&gt;&lt;/span&gt;&lt;span class="skeleton skeleton--text skeleton--w70"&gt;&lt;/span&gt;&lt;/div&gt;&lt;span class="skeleton skeleton--btn skeleton--btn-sm"&gt;&lt;/span&gt;&lt;/li&gt;&lt;li class="row"&gt;&lt;div class="row__body"&gt;&lt;span class="skeleton skeleton--text skeleton--w50"&gt;&lt;/span&gt;&lt;span class="skeleton skeleton--text skeleton--w70"&gt;&lt;/span&gt;&lt;/div&gt;&lt;span class="skeleton skeleton--btn skeleton--btn-sm"&gt;&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
       <div class="ds-example"><div class="ds-example__canvas">
         <ul class="list" aria-hidden="true" style="width: 100%;"><li class="thread"><span class="skeleton skeleton--avatar"></span><span class="thread__body"><span class="skeleton skeleton--text skeleton--w50"></span><span class="skeleton skeleton--text"></span></span></li><li class="thread"><span class="skeleton skeleton--avatar"></span><span class="thread__body"><span class="skeleton skeleton--text skeleton--w50"></span><span class="skeleton skeleton--text"></span></span></li></ul>
-        <div class="form" aria-hidden="true" style="width: 100%; max-width: 24rem;"><span class="skeleton skeleton--title"></span><div class="field"><span class="skeleton skeleton--text skeleton--w30"></span><span class="skeleton skeleton--rect" style="height: var(--control-height-md);"></span></div><span class="skeleton skeleton--btn"></span></div>
+        <div class="form" aria-hidden="true" style="width: 100%; max-width: 24rem;"><span class="skeleton skeleton--title"></span><div class="field"><span class="skeleton skeleton--text skeleton--w30"></span><span class="skeleton skeleton--input"></span></div><span class="skeleton skeleton--btn"></span></div>
       </div>
-        <div class="ds-example__caption"><span>Message thread (messages) and form (sign in, account). Inputs use a rect at <code>--control-height-md</code>.</span></div>
+        <div class="ds-example__caption"><span>Message thread (messages) and form (sign in, account). Inputs use <code>.skeleton--input</code>: 48px tall with a 12px radius, like the field it replaces.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="list" aria-hidden="true" style="width: 100%;"&gt;&lt;li class="thread"&gt;&lt;span class="skeleton skeleton--avatar"&gt;&lt;/span&gt;&lt;span class="thread__body"&gt;&lt;span class="skeleton skeleton--text skeleton--w50"&gt;&lt;/span&gt;&lt;span class="skeleton skeleton--text"&gt;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;li class="thread"&gt;&lt;span class="skeleton skeleton--avatar"&gt;&lt;/span&gt;&lt;span class="thread__body"&gt;&lt;span class="skeleton skeleton--text skeleton--w50"&gt;&lt;/span&gt;&lt;span class="skeleton skeleton--text"&gt;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;
-&lt;div class="form" aria-hidden="true" style="width: 100%; max-width: 24rem;"&gt;&lt;span class="skeleton skeleton--title"&gt;&lt;/span&gt;&lt;div class="field"&gt;&lt;span class="skeleton skeleton--text skeleton--w30"&gt;&lt;/span&gt;&lt;span class="skeleton skeleton--rect" style="height: var(--control-height-md);"&gt;&lt;/span&gt;&lt;/div&gt;&lt;span class="skeleton skeleton--btn"&gt;&lt;/span&gt;&lt;/div&gt;</code></pre></details></div>
+&lt;div class="form" aria-hidden="true" style="width: 100%; max-width: 24rem;"&gt;&lt;span class="skeleton skeleton--title"&gt;&lt;/span&gt;&lt;div class="field"&gt;&lt;span class="skeleton skeleton--text skeleton--w30"&gt;&lt;/span&gt;&lt;span class="skeleton skeleton--input"&gt;&lt;/span&gt;&lt;/div&gt;&lt;span class="skeleton skeleton--btn"&gt;&lt;/span&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>Shapes take their size from the content they replace: text lines follow the font size (<code>0.9em</code> high), titles <code>1.5em</code>, H1 <code>--font-size-4xl</code>, avatar <code>--avatar-size-md</code>, button <code>--control-height-md</code>. Width modifiers are 30, 50 and 70%; vary them so the block reads as text, not as a barcode.</p>
+      <p>Shapes take their size from the content they replace: text lines follow the font size (<code>0.9em</code> high), titles <code>1.5em</code>, H1 <code>--font-size-4xl</code>, avatar <code>--avatar-size-md</code> (40px), button <code>--control-height-md</code> (40px), input and block button <code>--control-height-lg</code> (48px). Width modifiers are 30, 50 and 70%; vary them so the block reads as text, not as a barcode.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Skeletons are not interactive: no hover, focus, active or disabled. They have two states, loading and reduced motion, and then they are replaced.</p>
@@ -178,12 +178,12 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>Skeletons sit inside the real layout (<code>.card-grid</code>, <code>.rows</code>, <code>.inbox</code>), so they reflow exactly like the content: four cards per row on desktop, one on phones.</li>
+        <li>Skeletons sit inside the real layout (<code>.card-grid</code>, <code>.rows</code>, <code>.inbox</code>), so they reflow exactly like the content: four cards per row from 1024px, three from 640px, two on phones.</li>
         <li>Percent widths scale with the container; fixed shapes (avatar, button) do not.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>The shimmer is a gradient between <code>--color-bg-subtle</code> and <code>--color-bg-subtle-hover</code>, which are ink-100/200 in light and ink-800/700 in dark. No other colour is involved.</p>
+      <p>The shimmer is a gradient between <code>--color-bg-subtle</code> and <code>--color-bg-subtle-hover</code>, which are ink at 5% and 10% in light and ink-800/700 in dark. No other colour is involved.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -235,6 +235,7 @@
           <tr><td>Button radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>Avatar</td><td><code>--avatar-size-md</code></td><td colspan="2"><span data-token="--avatar-size-md"></span></td></tr>
           <tr><td>Button height</td><td><code>--control-height-md</code></td><td colspan="2"><span data-token="--control-height-md"></span></td></tr>
+          <tr><td>Input and block button height / input radius</td><td><code>--control-height-lg</code> / <code>--radius-md</code></td><td colspan="2"><span data-token="--control-height-lg"></span> / <span data-token="--radius-md"></span></td></tr>
           <tr><td>H1 height</td><td><code>--font-size-4xl</code></td><td colspan="2"><span data-token="--font-size-4xl"></span></td></tr>
           <tr><td>Loop</td><td><code>--duration-loop</code> / <code>--ease-standard</code></td><td colspan="2"><span data-token="--duration-loop"></span> / <span data-token="--ease-standard"></span></td></tr>
         </tbody>
@@ -255,8 +256,9 @@
         <tr><td><code>--text</code> <code>--title</code> <code>--h1</code></td><td>Text shapes.</td></tr>
         <tr><td><code>--w30</code> <code>--w50</code> <code>--w70</code></td><td>Widths.</td></tr>
         <tr><td><code>--avatar</code> <code>--media</code> <code>--square</code> <code>--circle</code></td><td>Image shapes.</td></tr>
-        <tr><td><code>--rect</code></td><td>Panels and inputs (set the height).</td></tr>
-        <tr><td><code>--btn</code> <code>--btn-sm</code></td><td>Pill button, 9rem or 5rem.</td></tr>
+        <tr><td><code>--rect</code></td><td>Panels (set the height).</td></tr>
+        <tr><td><code>--input</code></td><td>Form field: 48px, 12px radius.</td></tr>
+        <tr><td><code>--btn</code> <code>--btn-sm</code> <code>--btn-block</code></td><td>Pill button, 40px tall: 9rem or 5rem wide. Block is full width and 48px tall.</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
@@ -268,7 +270,7 @@
         <li><a href="../../mocks/pages/business/loading.html">pages/business/loading</a> (detail page)</li>
         <li><a href="../../mocks/pages/requests/loading.html">pages/requests/loading</a> (request rows)</li>
       </ul>
-      <p>Drift fixed during extraction: <code>style="width: 5rem"</code> on <code>.skeleton--btn</code> appeared 40 times and is now <code>.skeleton--btn-sm</code>. Two more inline patterns remain: input skeletons are <code>.skeleton--rect</code> with <code>style="height: var(--control-height-md)"</code> (26×), and the detail-page action is <code>.skeleton--btn</code> with <code>style="width: 100%; height: var(--control-height-lg)"</code> (3×); a <code>.skeleton--input</code> and a <code>.skeleton--btn-block</code> would remove them. The shimmer's raw 1.4s is now <code>--duration-loop</code>. Loading regions never set <code>aria-busy</code>.</p>
+      <p>Drift fixed during extraction: <code>style="width: 5rem"</code> on <code>.skeleton--btn</code> appeared 40 times and is now <code>.skeleton--btn-sm</code>. Two more inline patterns were found: input skeletons as <code>.skeleton--rect</code> with <code>style="height: var(--control-height-md)"</code>, and the detail-page action as <code>.skeleton--btn</code> with <code>style="width: 100%; height: var(--control-height-lg)"</code>; the system adds <code>.skeleton--input</code> and <code>.skeleton--btn-block</code> for them. The shimmer's raw 1.4s is now <code>--duration-loop</code>. Loading regions never set <code>aria-busy</code>.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
