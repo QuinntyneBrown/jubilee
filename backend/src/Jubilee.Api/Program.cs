@@ -1,11 +1,13 @@
 using Jubilee.Api.Errors;
 using Jubilee.Api.Middleware;
 using Jubilee.Application;
+using Jubilee.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -44,6 +46,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+await app.Services.InitialiseDatabaseAsync(app.Configuration);
 
 app.Run();
 
