@@ -10,6 +10,6 @@ import { Icon } from '../icon/icon';
   imports: [Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'verified' },
-  template: `<svg jb-icon name="verified"></svg>Verified`,
+  templateUrl: './verified-mark.html',
 })
 export class VerifiedMark {}

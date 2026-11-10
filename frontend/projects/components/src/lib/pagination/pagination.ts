@@ -27,62 +27,7 @@ export function pageWindow(current: number, last: number): (number | null)[] {
   imports: [RouterLink, CountPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { style: 'display: contents' },
-  template: `
-    @if (last() > 1) {
-      <nav
-        class="cluster cluster--between"
-        aria-label="Pagination"
-        style="margin-top: var(--space-8)"
-      >
-        <span class="text-caption"
-          >Showing {{ from() | jbCount }}–{{ to() | jbCount }} of {{ total() | jbCount }}</span
-        >
-        <ul class="pagination">
-          <li>
-            <a
-              [routerLink]="[]"
-              [queryParams]="{ page: paramFor(page() - 1) }"
-              queryParamsHandling="merge"
-              [attr.aria-disabled]="page() === 1 ? 'true' : null"
-              [attr.tabindex]="page() === 1 ? -1 : null"
-              aria-label="Previous page"
-              >‹</a
-            >
-          </li>
-          @for (item of pages(); track $index) {
-            <li>
-              @if (item === null) {
-                <span aria-hidden="true">…</span>
-              } @else {
-                <a
-                  [routerLink]="[]"
-                  [queryParams]="{ page: paramFor(item) }"
-                  queryParamsHandling="merge"
-                  [attr.aria-current]="item === page() ? 'page' : null"
-                  >{{ item }}</a
-                >
-              }
-            </li>
-          }
-          <li>
-            <a
-              [routerLink]="[]"
-              [queryParams]="{ page: paramFor(page() + 1) }"
-              queryParamsHandling="merge"
-              [attr.aria-disabled]="page() === last() ? 'true' : null"
-              [attr.tabindex]="page() === last() ? -1 : null"
-              aria-label="Next page"
-              >›</a
-            >
-          </li>
-        </ul>
-      </nav>
-    } @else {
-      <p class="text-caption" style="margin-top: var(--space-6)">
-        Showing all {{ total() | jbCount }}
-      </p>
-    }
-  `,
+  templateUrl: './pagination.html',
 })
 export class Pagination {
   readonly page = input.required<number>();

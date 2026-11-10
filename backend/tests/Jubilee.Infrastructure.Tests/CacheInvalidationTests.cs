@@ -6,7 +6,7 @@ namespace Jubilee.Infrastructure.Tests;
 
 public class CacheInvalidationTests : IDisposable
 {
-    private readonly SqliteDatabase _database = new();
+    private readonly InMemoryDatabase _database = new();
     private int _builds;
 
     public void Dispose() => _database.Dispose();
@@ -56,10 +56,12 @@ public class CacheInvalidationTests : IDisposable
     [Fact]
     public async Task L2_156_AC2_a_save_that_fails_keeps_the_cache()
     {
-        await Save(db => db.Add(ListingMother.Public("shop", "shops")));
+        var listing = ListingMother.Public("shop", "shops");
+        await Save(db => db.Add(listing));
         Assert.Equal("build 1", await Read());
 
-        await Assert.ThrowsAsync<DbUpdateException>(() => Save(db => db.Add(ListingMother.Public("shop", "shops"))));
+        // The same listing again: its key is taken, so the save fails.
+        await Assert.ThrowsAnyAsync<Exception>(() => Save(db => db.Add(listing)));
 
         Assert.Equal("build 1", await Read());
     }

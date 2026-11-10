@@ -31,9 +31,11 @@ public class DirectoryCacheTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
         await _factory.Arrange(ListingMother.Public("stays"), ListingMother.Public("pauses"));
         var before = await ReadAll();
 
-        await _factory.WithDb(db => db.Listings
-            .Where(l => l.Slug == "pauses")
-            .ExecuteUpdateAsync(s => s.SetProperty(l => l.IsPaused, true)));
+        await _factory.WithDbBehindTheApp(async db =>
+        {
+            (await db.Listings.SingleAsync(l => l.Slug == "pauses")).Pause();
+            await db.SaveChangesAsync();
+        });
 
         _factory.Clock.Advance(TimeSpan.FromSeconds(59));
         var cached = await ReadAll();

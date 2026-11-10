@@ -5,7 +5,7 @@
  */
 export type Who = 'visitor' | 'member';
 
-/** Names a data stub in `fixtures/stubs.ts`; absent means the real, seeded API answers. */
+/** Names a data stub in `fixtures/stubs.ts`; absent means the recorded answers of the seeded API (ADR 0009). */
 export type StubName =
   | 'browse-loading'
   | 'browse-empty'
@@ -15,13 +15,30 @@ export type StubName =
   | 'category-empty'
   | 'category-error'
   | 'category-long'
-  | 'category-not-found';
+  | 'category-not-found'
+  | 'business-loading'
+  | 'business-error'
+  | 'business-empty'
+  | 'business-edge'
+  | 'business-owner'
+  | 'shop-loading'
+  | 'shop-error'
+  | 'shop-empty'
+  | 'product-loading'
+  | 'product-error'
+  | 'product-sold-out'
+  | 'product-alert-requested';
 
 export interface ScreenRoute {
   app: string;
   mock: string;
   who: Who;
   stub?: StubName;
+  /**
+   * Opens this path first and follows its link to `app`, for a state that depends on what the
+   * app learnt from the list it was opened from.
+   */
+  via?: string;
 }
 
 export const routes = {
@@ -81,6 +98,98 @@ export const routes = {
     app: '/c/home-property?offers=free-quote&areas=east-york',
     mock: 'dialogs/filters/default.html',
     who: 'member',
+  },
+  business: {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/default.html',
+    who: 'member',
+  },
+  'business.loading': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/loading.html',
+    who: 'member',
+    stub: 'business-loading',
+  },
+  'business.error': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/error.html',
+    who: 'member',
+    stub: 'business-error',
+  },
+  'business.empty': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/empty.html',
+    who: 'member',
+    stub: 'business-empty',
+  },
+  'business.edge': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/edge.html',
+    who: 'member',
+    stub: 'business-edge',
+  },
+  'business.owner': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/owner.html',
+    who: 'member',
+    stub: 'business-owner',
+  },
+  shop: { app: '/b/luzandre', mock: 'pages/shop/default.html', who: 'member' },
+  'shop.loading': {
+    app: '/b/luzandre',
+    mock: 'pages/shop/loading.html',
+    who: 'member',
+    stub: 'shop-loading',
+    via: '/c/shops',
+  },
+  'shop.error': {
+    app: '/b/luzandre',
+    mock: 'pages/shop/error.html',
+    who: 'member',
+    stub: 'shop-error',
+    via: '/c/shops',
+  },
+  'shop.empty': {
+    app: '/b/luzandre',
+    mock: 'pages/shop/empty.html',
+    who: 'member',
+    stub: 'shop-empty',
+  },
+  product: {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/default.html',
+    who: 'member',
+  },
+  'product.invalid': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/invalid.html',
+    who: 'member',
+  },
+  'product.loading': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/loading.html',
+    who: 'member',
+    stub: 'product-loading',
+    via: '/b/luzandre',
+  },
+  'product.error': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/error.html',
+    who: 'member',
+    stub: 'product-error',
+    via: '/b/luzandre',
+  },
+  'product.sold-out': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/sold-out.html',
+    who: 'member',
+    stub: 'product-sold-out',
+  },
+  'product.alert-requested': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/alert-requested.html',
+    who: 'member',
+    stub: 'product-alert-requested',
   },
   'not-found': { app: '/no-such-page', mock: 'pages/not-found/default.html', who: 'member' },
 } as const satisfies Record<string, ScreenRoute>;

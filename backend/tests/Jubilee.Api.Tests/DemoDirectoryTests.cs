@@ -168,4 +168,52 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
             Assert.DoesNotContain(slug, await client.GetStringAsync(url));
         }
     }
+
+    [Fact]
+    public async Task The_demo_tee_page_is_the_product_mock()
+    {
+        var json = await factory.GetJson("/api/listings/luzandre/products/faith-heavyweight-tee-charcoal");
+
+        Assert.Equal("plus $9 shipping, or free pickup", json.GetProperty("deliveryLine").GetString());
+        Assert.Equal("Size", json.GetProperty("optionName").GetString());
+        Assert.Equal(20, json.GetProperty("options")[1].GetProperty("maxQuantity").GetInt32());
+        Assert.Equal(4, json.GetProperty("attributes").GetArrayLength());
+        Assert.Equal(["gold-cross-stoneware-mug", "custom-church-team-tee", "morning-mug-set-of-two"], json.GetProperty("more").Slugs());
+        var team = await factory.GetJson("/api/listings/luzandre/products/custom-church-team-tee");
+        Assert.Equal(12, team.GetProperty("minimumQuantity").GetInt32());
+    }
+
+    [Fact]
+    public async Task The_demo_luzandre_page_is_the_shop_mock()
+    {
+        var json = await factory.GetJson("/api/listings/luzandre");
+
+        Assert.Equal("shop", json.GetProperty("kind").GetString());
+        Assert.Equal(4, json.GetProperty("productCount").GetInt32());
+        Assert.Equal(
+            ["faith-heavyweight-tee-charcoal", "gold-cross-stoneware-mug", "custom-church-team-tee", "morning-mug-set-of-two"],
+            json.GetProperty("products").Slugs());
+        Assert.Equal(
+            ["Custom design consultation", "Church merch package"],
+            json.GetProperty("services").EnumerateArray().Select(s => s.GetProperty("name").GetString()));
+        Assert.Equal("few-hours", json.GetProperty("details").GetProperty("replies").GetString());
+        Assert.Equal(["christian-bookstores", "flower-creations"], json.GetProperty("related").Slugs());
+    }
+
+    [Fact]
+    public async Task The_demo_legacy_financial_page_is_the_business_mock()
+    {
+        var json = await factory.GetJson("/api/listings/legacy-financial");
+
+        Assert.Equal("services", json.GetProperty("kind").GetString());
+        Assert.Equal("Trevor Chew, CKA®, CFP®, CLU®", json.GetProperty("ownerName").GetString());
+        Assert.Equal(
+            ["Discovery meeting", "Retirement & RRSP review", "Life & disability insurance review", "Estate & legacy plan"],
+            json.GetProperty("services").EnumerateArray().Select(s => s.GetProperty("name").GetString()));
+        Assert.Equal(new DateTimeOffset(2026, 3, 16, 14, 0, 0, TimeSpan.Zero), json.GetProperty("details").GetProperty("onJubileeSince").GetDateTimeOffset());
+        Assert.Equal("day", json.GetProperty("details").GetProperty("replies").GetString());
+        Assert.Equal(
+            [("Deeks Insurance", "Get a quote"), ("JD Smith Insurance Brokers", "Get a quote")],
+            json.GetProperty("related").EnumerateArray().Select(c => (c.GetProperty("name").GetString()!, c.GetProperty("highlight").GetString()!)));
+    }
 }

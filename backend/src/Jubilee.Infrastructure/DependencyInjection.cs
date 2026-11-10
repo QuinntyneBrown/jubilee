@@ -4,6 +4,7 @@ using Jubilee.Infrastructure.Caching;
 using Jubilee.Infrastructure.Persistence;
 using Jubilee.Infrastructure.Seed;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,19 +17,34 @@ public static class DependencyInjection
     public const string SqliteProvider = "Sqlite";
 
     /// <summary>
-    /// Registers persistence and the directory read cache. <c>Database:Provider</c> picks SQL Server (the default) or SQLite;
-    /// both read <c>ConnectionStrings:Jubilee</c>.
+    /// EF Core InMemory, for automated tests only (ADR 0009): <c>ConnectionStrings:Jubilee</c> names
+    /// the store, which lives as long as the process.
+    /// </summary>
+    public const string InMemoryProvider = "InMemory";
+
+    /// <summary>The stores of the InMemory provider, shared by every service provider of the process.</summary>
+    public static readonly InMemoryDatabaseRoot InMemoryRoot = new();
+
+    /// <summary>
+    /// Registers persistence and the directory read cache. <c>Database:Provider</c> picks SQL Server (the default), SQLite
+    /// or, in tests, InMemory; each reads <c>ConnectionStrings:Jubilee</c>.
     /// </summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.TryAddSingleton(TimeProvider.System);
 
+        var provider = configuration["Database:Provider"];
         var useSqlite = UsesSqlite(configuration);
+        var useInMemory = string.Equals(provider, InMemoryProvider, StringComparison.OrdinalIgnoreCase);
         var connectionString = configuration.GetConnectionString("Jubilee");
         services.AddDbContext<AppDbContext>((provider, options) =>
         {
             options.AddInterceptors(provider.GetRequiredService<DirectoryCacheInvalidationInterceptor>());
-            if (useSqlite)
+            if (useInMemory)
+            {
+                options.UseInMemoryDatabase(connectionString ?? "jubilee", InMemoryRoot);
+            }
+            else if (useSqlite)
             {
                 options.UseSqlite(connectionString);
             }
@@ -64,6 +80,11 @@ public static class DependencyInjection
     public static bool UsesSqlite(IConfiguration configuration) =>
         string.Equals(configuration["Database:Provider"], SqliteProvider, StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>SQLite and InMemory have no migrations: their schema comes from the model.</summary>
+    public static bool SchemaFromModel(IConfiguration configuration) =>
+        UsesSqlite(configuration)
+        || string.Equals(configuration["Database:Provider"], InMemoryProvider, StringComparison.OrdinalIgnoreCase);
+
     /// <summary>
     /// Prepares the database when the host starts. Migrations are never applied here: SQL Server
     /// is migrated explicitly with <c>jubilee migrate</c>. SQLite has no migrations, so its schema
@@ -72,7 +93,7 @@ public static class DependencyInjection
     /// </summary>
     public static async Task InitialiseDatabaseAsync(this IServiceProvider services, IConfiguration configuration)
     {
-        if (!UsesSqlite(configuration))
+        if (!SchemaFromModel(configuration))
         {
             return;
         }

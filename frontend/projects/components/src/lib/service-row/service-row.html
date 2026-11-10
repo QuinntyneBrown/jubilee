@@ -1,0 +1,14 @@
+<div class="row__body">
+  <div class="row__title">{{ service().name }}</div>
+  <div class="row__meta">{{ service().detail }}</div>
+</div>
+<span class="row__price" [class.row__price--free]="service().priceKind === 'free'">{{
+  price()
+}}</span>
+<a
+  class="btn btn--sm"
+  [routerLink]="actionLink()"
+  [queryParams]="{ service: service().id }"
+  [attr.aria-label]="label() + ' ' + service().name"
+  >{{ label() }}</a
+>

@@ -83,7 +83,8 @@ jubilee/
 
 You need the [.NET 10 SDK](https://dotnet.microsoft.com/download), [Node.js 22](https://nodejs.org)
 and [PowerShell 7](https://learn.microsoft.com/powershell/) (`pwsh`). SQL Server is needed only
-for the full local stack; the quick start and all the tests run on SQLite.
+for the full local stack; the quick start runs on SQLite, and the tests need no database at all
+(ADR 0009).
 
 1. Clone the repository and install the frontend and end-to-end dependencies.
 
@@ -131,17 +132,22 @@ tokens and components.
 | Frontend lint | `npm run lint` | `frontend/` |
 | Frontend format check | `npm run format:check` | `frontend/` |
 | Design-system copy is current | `npm run design:check` | `frontend/` |
-| End-to-end tests | `npm run baseline` then `npm test` | `e2e/` |
+| End-to-end behaviour tests | `npm test` | `e2e/` |
+| Visual, responsive and accessibility sweeps (by hand only) | `npm run sweeps` | `e2e/` |
 
-The backend tests need no database server. The end-to-end suite runs in Chromium only; run
-`npx playwright install chromium` in `e2e/` once. It starts the API (through
-`eng/Start-E2eApi.ps1`) and the app by itself, or uses the ones already running.
+The backend tests run on EF Core InMemory and need no database. The end-to-end suite runs in
+Chromium only; run `npx playwright install chromium` in `e2e/` once. It starts the app by itself,
+or uses the one already running, and never reaches the API: every `/api` request is answered from
+the recorded responses in `e2e/fixtures/api/responses.json` (ADR 0009). When an endpoint's answer
+changes, start `pwsh eng/Start-E2eApi.ps1` and run `npm run record-api` in `e2e/` to refresh the
+recording.
 
-`npm run baseline` renders the mocks in `docs/mocks` to screenshots, and `npm test` then compares
-the app with them, region by region, along with the behaviour, accessibility and responsive
-specs. The screenshots are not committed: to change how a screen looks, change its mock first.
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs all of the above on every pull
-request.
+`npm test` runs the behaviour specs only (ADR 0010). `npm run sweeps` is run by hand: it renders
+the mocks in `docs/mocks` to screenshots, then compares the app with them region by region and
+runs the responsive and accessibility sweeps. CI never runs the sweeps. The screenshots are not
+committed: to change how a screen looks, change its mock first.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs all of the above except the sweeps on
+every pull request.
 
 ## Documentation
 

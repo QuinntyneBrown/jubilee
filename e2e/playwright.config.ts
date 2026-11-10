@@ -2,12 +2,22 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * One suite, two targets (AGENTS.md):
- * - default: the Angular app on :4200 in front of the API started by eng/Start-E2eApi.ps1;
+ * - default: the Angular app on :4200. It never reaches the API: every /api request is answered
+ *   from fixtures/api/responses.json by Playwright API mocking (ADR 0009). JB_RECORD_API=1
+ *   (`npm run record-api`) instead lets the API started by eng/Start-E2eApi.ps1 answer, and
+ *   records its answers;
  * - JB_BASELINE=1: the static design reference in docs/mocks, served on :4300, used to render
  *   the visual baselines the app is then compared with.
+ *
+ * ADR 0010: only the behaviour specs run. The sweeps (visual parity, responsive fit, automated
+ * accessibility) are kept and maintained but run only when the repository owner runs
+ * `npm run sweeps` by hand, which sets JB_SWEEPS=1.
  */
 const baseline = process.env['JB_BASELINE'] === '1';
 const ci = !!process.env['CI'];
+const recording = process.env['JB_RECORD_API'] === '1';
+const sweeps = process.env['JB_SWEEPS'] === '1' || baseline;
+const sweepSpecs = ['visual/**/*.spec.ts', 'responsive.spec.ts', 'accessibility.spec.ts'];
 
 const mocksServer = {
   command: 'npx http-server ../docs -p 4300 -c-1 --silent',
@@ -15,13 +25,14 @@ const mocksServer = {
   reuseExistingServer: !ci,
 };
 
+const apiServer = {
+  command: 'pwsh ../eng/Start-E2eApi.ps1',
+  url: 'http://localhost:5080/api/health',
+  reuseExistingServer: true,
+  timeout: 240_000,
+};
+
 const appServers = [
-  {
-    command: 'pwsh ../eng/Start-E2eApi.ps1',
-    url: 'http://localhost:5080/api/health',
-    reuseExistingServer: !ci,
-    timeout: 240_000,
-  },
   {
     command: 'npm start --prefix ../frontend -- --port 4200',
     url: 'http://localhost:4200',
@@ -34,6 +45,7 @@ export default defineConfig({
   testDir: './tests',
   // Baseline runs only render the mocks; behaviour specs need the app.
   testMatch: baseline ? 'visual/**/*.spec.ts' : '**/*.spec.ts',
+  testIgnore: sweeps ? [] : sweepSpecs,
   fullyParallel: true,
   forbidOnly: ci,
   retries: ci ? 1 : 0,
@@ -52,5 +64,6 @@ export default defineConfig({
   },
   // Chromium only (AGENTS.md).
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: baseline ? [mocksServer] : appServers,
+  webServer: baseline ? [mocksServer] : recording ? [apiServer, ...appServers] : appServers,
+  globalTeardown: recording ? './fixtures/record-api-teardown.ts' : undefined,
 });

@@ -9,7 +9,13 @@ public interface IAppDbContext
 
     DbSet<Product> Products { get; }
 
+    DbSet<Service> Services { get; }
+
     DbSet<FeaturedSlot> FeaturedSlots { get; }
+
+    DbSet<StockAlert> StockAlerts { get; }
+
+    DbSet<ListingView> ListingViews { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

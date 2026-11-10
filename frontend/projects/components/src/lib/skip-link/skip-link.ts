@@ -12,7 +12,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     href: '#main',
     '(click)': 'skip($event)',
   },
-  template: `<ng-content />`,
+  templateUrl: './skip-link.html',
 })
 export class SkipLink {
   protected skip(event: Event): void {

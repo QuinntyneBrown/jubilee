@@ -1,10 +1,14 @@
 import type { Page, Route } from '@playwright/test';
 import { categories } from './categories';
-import { browseHomeFromMock, categoryPageFromMock } from './mock-data';
+import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
+import { fulfil, recordedAnswer } from './mock-api';
 import type { StubName } from './routes';
 
 const home = '**/api/directory/home';
 const categoryListings = '**/api/categories/*/listings?*';
+const legacyFinancial = '**/api/listings/legacy-financial';
+const luzandre = '**/api/listings/luzandre';
+const tee = '**/api/listings/luzandre/products/faith-heavyweight-tee-charcoal';
 
 /** The ProblemDetails the API sends when a directory read cannot be served (L2-118). */
 function unavailable(reference: string) {
@@ -28,6 +32,21 @@ export function stubBrowseHome(page: Page, directory: unknown): Promise<unknown>
 /** A request that is still on its way when the test looks at the screen. */
 function pending(route: Route): Promise<void> {
   return new Promise(() => void route);
+}
+
+/**
+ * Answers a listing request with the recorded answer (ADR 0009) changed by `patch`, so a state differs
+ * from the seed only in what the state is about.
+ */
+export function patchListing(
+  page: Page,
+  url: string,
+  patch: (listing: Record<string, unknown>) => Record<string, unknown>,
+): Promise<unknown> {
+  return page.route(url, async (route) => {
+    const answer = await recordedAnswer(route);
+    await fulfil(route, { ...answer, body: patch(answer.body as Record<string, unknown>) });
+  });
 }
 
 /** Installs the API answers that put a screen in a state the seeded data cannot produce. */
@@ -71,6 +90,56 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return page.route(categoryListings, (route) =>
         route.fulfill({ json: categoryPageFromMock('long') }),
       );
+    case 'business-loading':
+      return page.route(legacyFinancial, pending);
+    case 'business-error':
+      return page.route(legacyFinancial, (route) => route.fulfill(unavailable('JB-BIZ-503')));
+    case 'business-empty':
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        highlight: null,
+        services: [],
+      }));
+    case 'business-edge':
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        ...listingFromMock('edge'),
+      }));
+    case 'business-owner':
+      // The demo member is not Legacy Financial's owner; the server decides the relation.
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        viewerRelation: 'owner',
+      }));
+    case 'shop-loading':
+      return page.route(luzandre, pending);
+    case 'shop-error':
+      return page.route(luzandre, (route) => route.fulfill(unavailable('JB-BIZ-503')));
+    case 'shop-empty':
+      return patchListing(page, luzandre, (listing) => ({
+        ...listing,
+        products: [],
+        productCount: 0,
+      }));
+    case 'product-loading':
+      return page.route(tee, pending);
+    case 'product-error':
+      return page.route(tee, (route) => route.fulfill(unavailable('JB-PRD-503')));
+    case 'product-sold-out':
+    case 'product-alert-requested':
+      // The seeded tee is in stock; the sold-out state comes from its owner's later edits.
+      await page.route('**/api/products/*/stock-alert', (route) => route.fulfill({ status: 204 }));
+      return patchListing(page, tee, (product) => ({
+        ...product,
+        soldOut: true,
+        maxQuantity: 0,
+        options: (product['options'] as { label: string }[]).map(({ label }) => ({
+          label,
+          maxQuantity: 0,
+        })),
+        restockNote: 'Naomi prints the next batch on Mon 23 Nov.',
+        stockAlertRequested: name === 'product-alert-requested',
+      }));
     case 'category-not-found':
       return page.route(categoryListings, (route) =>
         route.fulfill({

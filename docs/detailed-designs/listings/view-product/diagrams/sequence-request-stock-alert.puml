@@ -30,7 +30,7 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-page --> actor : Show "Sold out" badge and "Sold out in every size" and the restock note with "Request this item" disabled (L2-036)
+page --> actor : Show "Sold out" badge and "Sold out in every size" and the restock note with "Tell me when it's back" in place of "Request this item" (L2-036)
 actor -> button : Press "Tell me when it's back"
 alt Visitor without a session
   button --> actor : Open the sign-in prompt

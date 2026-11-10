@@ -26,7 +26,8 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             if (!listings.ContainsKey(demo.Slug))
             {
                 var approvedAt = now.AddDays(-(i + 1));
-                var listing = Draft(demo, approvedAt.AddDays(-14));
+                var createdAt = Profiles.TryGetValue(demo.Slug, out var joined) ? joined.JoinedOn : approvedAt.AddDays(-14);
+                var listing = Draft(demo, createdAt);
                 listing.Approve(SeededBy, approvedAt);
                 listing.RefreshRecommendedScore(now);
                 listings[demo.Slug] = listing;
@@ -44,6 +45,39 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             }
         }
 
+        // A listing page the mocks describe is filled in once; an owner's later edits stay.
+        var describedListings = await db.Services.Select(s => s.ListingId).Distinct().ToListAsync(cancellationToken);
+        foreach (var (slug, demo) in Profiles)
+        {
+            var listing = listings[slug];
+            if (listing.OwnerId is null && Owners.TryGetValue(slug, out var owner))
+            {
+                listing.AssignOwner(owner);
+            }
+
+            if (listing.About is null && listing.OwnerName is null)
+            {
+                listing.Describe(demo.Profile);
+                listing.SetMedianResponseMinutes(demo.MedianReplyMinutes);
+                listing.RefreshRecommendedScore(now);
+            }
+
+            if (!describedListings.Contains(listing.Id))
+            {
+                for (var i = 0; i < demo.Services.Length; i++)
+                {
+                    var service = demo.Services[i];
+                    db.Services.Add(Service.Create(listing.Id, i + 1, service.Name, service.Detail, service.Price, service.Action));
+                }
+            }
+        }
+
+        // Details are given once, to a product that has none, so an edited demo product is kept.
+        foreach (var product in await db.Products.Where(p => p.Description == null).ToListAsync(cancellationToken))
+        {
+            Detail(product);
+        }
+
         var existingProducts = await db.Products.Select(p => new { p.ListingId, p.Slug }).ToListAsync(cancellationToken);
         for (var i = 0; i < Products.Length; i++)
         {
@@ -51,9 +85,11 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             var shop = listings[demo.ShopSlug];
             if (!existingProducts.Any(p => p.ListingId == shop.Id && p.Slug == demo.Slug))
             {
-                db.Products.Add(Product.Create(
+                var product = Product.Create(
                     shop.Id, demo.Slug, demo.Name, demo.PriceCents, demo.PerUnit, demo.Tint, demo.Icon,
-                    now.AddMinutes(-(i + 1))));
+                    now.AddMinutes(-(i + 1)));
+                Detail(product);
+                db.Products.Add(product);
             }
         }
 
@@ -75,6 +111,14 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
         }
 
         await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private static void Detail(Product product)
+    {
+        if (ProductDetails.TryGetValue(product.Slug, out var describe))
+        {
+            describe(product);
+        }
     }
 
     private static Listing Draft(DemoListing demo, DateTimeOffset createdAt)

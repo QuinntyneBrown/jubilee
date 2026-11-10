@@ -125,8 +125,10 @@ test.describe('filters as inline chips, from 768 px (L2-024)', () => {
     await jb.open('category.long');
     await page.unroute('**/api/categories/*/listings?*');
     await jb.goto('/c/home-property?page=1&sort=newest');
+    const reloaded = page.waitForResponse(/listings\?offers=free-quote&sort=newest&page=1$/);
     await category.chip('Free quote').click();
     await expect(page).toHaveURL(/\/c\/home-property\?offers=free-quote&sort=newest$/);
+    await reloaded;
   });
 });
 

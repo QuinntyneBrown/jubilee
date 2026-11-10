@@ -37,6 +37,18 @@ export const routes: Routes = [
     title: 'Category · Jubilee',
   },
   {
+    path: 'b/:slug',
+    loadComponent: () => import('./pages/business/business.page').then((m) => m.BusinessPage),
+    data: data({ shell: 'app', page: 'business', section: 'browse' }),
+    title: 'Business · Jubilee',
+  },
+  {
+    path: 'b/:slug/p/:product',
+    loadComponent: () => import('./pages/product/product.page').then((m) => m.ProductPage),
+    data: data({ shell: 'app', page: 'product', section: 'browse' }),
+    title: 'Product · Jubilee',
+  },
+  {
     path: '**',
     loadComponent: () => import('./pages/not-found/not-found.page').then((m) => m.NotFoundPage),
     data: data({ shell: 'app', page: 'not-found' }),

@@ -41,6 +41,9 @@ public class RateLimitTests(ThreeReadsPerMinuteFactory factory) : IClassFixture<
         Assert.Equal("rate_limited", json.GetProperty("code").GetString());
         Assert.False(string.IsNullOrEmpty(json.GetProperty("correlationId").GetString()));
 
+        // The listing and product pages share the same budget.
+        Assert.Equal(HttpStatusCode.TooManyRequests, (await client.GetAsync("/api/listings/luzandre")).StatusCode);
+
         // The limit covers the directory reads only.
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/session")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/health")).StatusCode);

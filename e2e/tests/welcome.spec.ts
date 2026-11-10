@@ -3,7 +3,7 @@ import { expect, test } from '../fixtures/jb-test';
 import { WelcomePage } from '../pages/welcome.page';
 
 // Welcome page: L2-020, with L2-106 (featured), L2-027 and L2-111 (card rules, verified mark).
-// The default state runs against the seeded API: the mocks' catalogue of 47 businesses.
+// The default state runs against the recorded answers of the seeded API (ADR 0009): the mocks' catalogue of 47 businesses.
 
 test.describe('welcome page (L2-020)', () => {
   test('AC1: a visitor sees the tagline, heading, live count and the two actions', async ({

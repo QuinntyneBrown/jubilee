@@ -7,15 +7,7 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'footer' },
-  template: `
-    <span>© {{ year() }} Jubilee · Toronto’s Christian marketplace</span>
-    <span class="cluster">
-      <a routerLink="/statement-of-faith">Statement of faith</a>
-      <a routerLink="/help">Help</a>
-      <a routerLink="/terms">Terms</a>
-      <a routerLink="/privacy">Privacy</a>
-    </span>
-  `,
+  templateUrl: './site-footer.html',
 })
 export class SiteFooter {
   readonly year = input.required<number>();

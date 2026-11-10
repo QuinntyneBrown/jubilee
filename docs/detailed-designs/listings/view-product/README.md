@@ -39,15 +39,27 @@ background path for stock alerts.
   button. Pressing the button without a chosen size shows "Choose a size." on
   the size group and does not open the dialog. Quantity accepts whole numbers
   from 1 to the stock available for the chosen option, or to 99 when stock is
-  not tracked. A quantity under the minimum order quantity shows "This item has
-  a minimum of 12." with the product's own minimum.
-- **`BackInStockButton`** — button "Tell me when it's back", shown when the
-  product is sold out. In that state the page shows a "Sold out" badge, "Sold
-  out in every size" and the owner's optional restock note, and disables
-  "Request this item". For a visitor the button opens the sign-in prompt.
+  not tracked; before an option is chosen, the largest stock of the options
+  bounds it. Any other value shows "Choose a number from 1 to {max}." on the
+  quantity (`pages/product/invalid.html`). A quantity under the minimum order
+  quantity shows "This item has a minimum of 12." with the product's own
+  minimum. The API gives each option's `maxQuantity`, never the stock itself.
+- **`BackInStockButton`** — button "Tell me when it's back", shown in place of
+  "Request this item" when the product is sold out. In that state the page shows
+  a "Sold out" badge, "Sold out in every size" ("Sold out" for a product without
+  options) and the owner's optional restock note, drops the "No payment now"
+  line, and disables the options and
+  quantity. For a visitor the button opens the sign-in prompt
+  (`dialogs/sign-in-required`) titled "Join to be told when it's back", whose
+  "Sign in" and "Join free" carry the product page as `returnUrl`. For a member it asks for the alert, and the
+  status "We'll tell you when it's back" takes its place
+  (`pages/product/alert-requested.html`).
 - **`ProductsApi`** — typed Angular HTTP client for
   `GET /api/listings/{slug}/products/{productSlug}` and
-  `PUT /api/products/{id}/stock-alert`.
+  `PUT /api/products/{id}/stock-alert`. "Request this item" with a valid
+  selection navigates to `/b/:slug/p/:product/request?option=…&quantity=…`, the
+  route the order request feature (journey 9) opens its dialog on; until then it
+  reaches the not-found page (ADR 0007).
 - **`ProductsController`** — ASP.NET Core controller in `Jubilee.Api`. The
   `GET` endpoint is anonymous. The `PUT` endpoint requires a session. A load
   failure returns 503 `ProblemDetails` with `JB-PRD-503`.
@@ -55,7 +67,7 @@ background path for stock alerts.
   query and handler. The handler loads the `Product` with its `ProductOption`,
   `ProductAttribute` and `ListingPhoto` rows, returns not found when the listing
   is not public for the viewer, and adds up to three other products of the same
-  shop. The order of those products is `<TO SUPPLY>`.
+  shop, newest first, the order of "From the shops" on the browse home.
 - **`Product`** — domain entity that owns stock and quantity rules.
   `MaxQuantity` returns the stock of the chosen option, or 99 when stock is
   untracked. `SetStock` returns a `StockChange`: `BecameSoldOut` when stock
@@ -70,6 +82,11 @@ background path for stock alerts.
   effect.
 - **`ProductBackInStock`** — outbox message written in the same transaction as
   the stock change that returned `BackInStock`.
+- **Deferred** — no endpoint changes stock until the owner's product
+  management (journey 16), and no notification or e-mail is sent until
+  notifications exist (journey 17). This feature builds `Product.SetStock`,
+  `StockChange` and `StockAlert`; `ProductBackInStock`, `StockAlertNotifier` and
+  the owner's toast below arrive with those journeys.
 - **`StockAlertNotifier`** — application service run by `OutboxDispatcherJob`
   in `Jubilee.Worker`. For each `StockAlert` without `NotifiedAt` it sets
   `NotifiedAt`, creates the in-app `Notification` and sends one e-mail through

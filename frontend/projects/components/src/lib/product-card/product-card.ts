@@ -19,18 +19,10 @@ export interface ProductCardView {
   imports: [MediaTile, PricePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'biz-card product-card' },
-  template: `
-    <div
-      jb-media-tile
-      shape="square"
-      [tint]="product().tile.tint"
-      [icon]="product().tile.icon"
-    ></div>
-    <h3 class="biz-card__name">{{ product().name }}</h3>
-    <p class="biz-card__tagline">{{ product().shopName }}</p>
-    <p class="price">{{ product().priceCents | jbPrice: product().perUnit }}</p>
-  `,
+  templateUrl: './product-card.html',
 })
 export class ProductCard {
   readonly product = input.required<ProductCardView>();
+  /** False on the shop's own pages, where the shop's name goes without saying. */
+  readonly showShop = input(true);
 }

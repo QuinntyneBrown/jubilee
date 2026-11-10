@@ -8,7 +8,7 @@ namespace Jubilee.Infrastructure.Caching;
 
 /// <summary>
 /// Drops the cached directory entries after a save that added, changed or removed a listing, a
-/// product or a featured slot, so a state change shows on the next request (L2-156 AC2).
+/// product, a service or a featured slot, so a state change shows on the next request (L2-156 AC2).
 /// </summary>
 public sealed class DirectoryCacheInvalidationInterceptor(IDirectoryReadCache cache) : SaveChangesInterceptor
 {
@@ -65,7 +65,7 @@ public sealed class DirectoryCacheInvalidationInterceptor(IDirectoryReadCache ca
         }
 
         var changesDirectory = context.ChangeTracker.Entries().Any(entry =>
-            entry.Entity is Listing or Product or FeaturedSlot
+            entry.Entity is Listing or Product or Service or FeaturedSlot
             && entry.State is EntityState.Added or EntityState.Modified or EntityState.Deleted);
         if (changesDirectory)
         {

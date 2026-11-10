@@ -1,6 +1,8 @@
 import { expect, test } from '../fixtures/jb-test';
 import { BrowsePage } from '../pages/browse.page';
+import { BusinessPage } from '../pages/business.page';
 import { CategoryPage } from '../pages/category.page';
+import { ProductPage } from '../pages/product.page';
 import { WelcomePage } from '../pages/welcome.page';
 
 // The journey by keyboard alone: welcome → browse home → a filtered, sorted category.
@@ -59,4 +61,51 @@ test('the filters sheet keeps focus inside and is operable with the keyboard', a
   await filters.show.focus();
   await category.pressEnter();
   await expect(category.cards).toHaveCount(3);
+});
+
+test('a visitor uses a business page with the keyboard only', async ({ page, jb }) => {
+  const business = new BusinessPage(page);
+  await business.setWidth(1280);
+  await jb.open('business');
+
+  // The actions follow one another in reading order
+  await business.primaryAction.focus();
+  await business.pressTab();
+  await expect(business.messageLink).toBeFocused();
+  await business.pressTab();
+  await expect(business.saveButton).toBeFocused();
+  await business.pressTab();
+  await expect(business.shareLink).toBeFocused();
+
+  // A related business opens with Enter
+  await business.relatedCard(0).root.focus();
+  await business.pressEnter();
+  await expect(business.heading).toHaveText('Deeks Insurance');
+});
+
+test('a member chooses a size and a quantity and requests a product with the keyboard only', async ({
+  page,
+  jb,
+}) => {
+  const product = new ProductPage(page);
+  await product.setWidth(1280);
+  await jb.open('product');
+
+  // Space chooses the first size, the arrow keys move to the next one
+  await product.option('S').focus();
+  await page.keyboard.press('Space');
+  await page.keyboard.press('ArrowRight');
+  await expect(product.option('M')).toBeChecked();
+
+  await page.keyboard.press('Tab');
+  await expect(product.quantity).toBeFocused();
+  await page.keyboard.press('ArrowUp');
+  await expect(product.quantity).toHaveValue('2');
+
+  await page.keyboard.press('Tab');
+  await expect(product.requestButton).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(
+    '/b/luzandre/p/faith-heavyweight-tee-charcoal/request?option=M&quantity=2',
+  );
 });

@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   selector: 'span[jb-unread-badge]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'badge badge--count', role: 'img', '[attr.aria-label]': 'label()' },
-  template: `{{ text() }}`,
+  templateUrl: './unread-badge.html',
 })
 export class UnreadBadge {
   readonly count = input.required<number>();

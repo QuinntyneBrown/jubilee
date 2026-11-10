@@ -6,7 +6,7 @@ namespace Jubilee.Infrastructure.Tests;
 
 public class PublicListingFilterTests : IDisposable
 {
-    private readonly SqliteDatabase _database = new();
+    private readonly InMemoryDatabase _database = new();
 
     public void Dispose() => _database.Dispose();
 

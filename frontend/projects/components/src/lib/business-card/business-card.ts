@@ -21,19 +21,7 @@ export interface BusinessCardView {
   imports: [MediaTile, VerifiedMark],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'biz-card' },
-  template: `
-    <div jb-media-tile [tint]="tile().tint" [icon]="tile().icon" [tag]="tile().label"></div>
-    <h3 class="biz-card__name">{{ business().name }}</h3>
-    <p class="biz-card__tagline">{{ business().tagline }}</p>
-    <p class="biz-card__meta">
-      @if (business().highlight; as highlight) {
-        <span class="perk">{{ highlight }}</span>
-      }
-      @if (business().verified) {
-        <span jb-verified-mark></span>
-      }
-    </p>
-  `,
+  templateUrl: './business-card.html',
 })
 export class BusinessCard {
   readonly business = input.required<BusinessCardView>();

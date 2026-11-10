@@ -19,6 +19,12 @@ public sealed class TestAuthHandler(
     public const string SchemeName = "Test";
     public const string UserHeader = "X-Test-User";
 
+    /// <summary>The session's subject; without it the subject follows from the name.</summary>
+    public const string SubjectHeader = "X-Test-Subject";
+
+    /// <summary>A role of the session, for example <c>verifier</c>.</summary>
+    public const string RoleHeader = "X-Test-Role";
+
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         if (!Request.Headers.TryGetValue(UserHeader, out var values) || string.IsNullOrWhiteSpace(values))
@@ -27,13 +33,21 @@ public sealed class TestAuthHandler(
         }
 
         var name = values.ToString();
-        var identity = new ClaimsIdentity(
-            [
-                new Claim("sub", Guid.NewGuid().ToString()),
-                new Claim("name", name),
-                new Claim("given_name", name.Split(' ')[0]),
-            ],
-            SchemeName);
+        var subject = Request.Headers.TryGetValue(SubjectHeader, out var subjects) && !string.IsNullOrWhiteSpace(subjects)
+            ? subjects.ToString()
+            : $"test|{name}";
+        List<Claim> claims =
+        [
+            new Claim("sub", subject),
+            new Claim("name", name),
+            new Claim("given_name", name.Split(' ')[0]),
+        ];
+        if (Request.Headers.TryGetValue(RoleHeader, out var roles) && !string.IsNullOrWhiteSpace(roles))
+        {
+            claims.Add(new Claim("role", roles.ToString()));
+        }
+
+        var identity = new ClaimsIdentity(claims, SchemeName);
         return Task.FromResult(
             AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName)));
     }

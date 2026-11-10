@@ -1,28 +1,23 @@
 using Jubilee.Application.Directory;
 using Jubilee.Infrastructure.Persistence;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jubilee.Infrastructure.Tests;
 
-/// <summary>The real infrastructure on a private in-memory SQLite database.</summary>
-public sealed class SqliteDatabase : IDisposable
+/// <summary>The real infrastructure on a private EF Core InMemory store (ADR 0009).</summary>
+public sealed class InMemoryDatabase : IDisposable
 {
-    private readonly SqliteConnection _keepAlive;
     private readonly ServiceProvider _services;
 
-    public SqliteDatabase()
+    public InMemoryDatabase()
     {
-        var connectionString = $"DataSource=file:infra-{Guid.NewGuid():N}?mode=memory&cache=shared";
-        _keepAlive = new SqliteConnection(connectionString);
-        _keepAlive.Open();
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["Database:Provider"] = "Sqlite",
-                ["ConnectionStrings:Jubilee"] = connectionString,
+                ["Database:Provider"] = DependencyInjection.InMemoryProvider,
+                ["ConnectionStrings:Jubilee"] = $"jubilee-infra-{Guid.NewGuid():N}",
             })
             .Build();
         _services = new ServiceCollection()
@@ -45,6 +40,5 @@ public sealed class SqliteDatabase : IDisposable
     public void Dispose()
     {
         _services.Dispose();
-        _keepAlive.Dispose();
     }
 }
