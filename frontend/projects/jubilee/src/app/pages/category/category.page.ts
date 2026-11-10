@@ -57,7 +57,7 @@ function businesses(count: number): string {
  */
 @Component({
   selector: 'jb-category-page',
-  imports: [RouterLink, BusinessCard, CardGridSkeleton, CountPipe, EmptyState, Icon, Pagination],
+  imports: [RouterLink, BusinessCard, CardGridSkeleton, EmptyState, Icon, Pagination],
   providers: [CategoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
