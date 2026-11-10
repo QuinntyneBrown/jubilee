@@ -191,7 +191,7 @@
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
       <p>Lists use semantic tokens only: <code>--color-border-default</code> dividers, <code>--color-fg-muted</code> meta, <code>--color-bg-subtle</code> hover, <code>--color-accent-subtle</code> current, <code>--color-fg-link</code> for free prices. Item lists add a <code>--color-border-strong</code> outline (ink 15% in light) and a 12px radius because they behave like a form field.</p>
-      <p>Dark mode swaps the tokens. "Free" is 4.5:1 on cards in both themes; on the cream page in light it is 4.07:1, the design-reference value for green text.</p>
+      <p>Dark mode swaps the tokens. "Free" is at least 4.5:1 on cards in both themes; on the cream page in light it is 4.07:1, the design-reference value for green text.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -307,7 +307,7 @@
       <p>Drift fixed during extraction: <code>.list__item</code> is in the kit but no mock uses it; the mocks put <code>.dir-row</code> and <code>.thread</code> inside <code>.list</code>, so those keep their own dividers. Truncated meta lines used inline <code>style="display: block"</code> on spans throughout. The item list was spaced with an inline <code>margin-top</code>. Free prices were consistent (<code>.row__price--free</code>, 58 uses). One known CSS limitation, reported rather than patched: <code>.list__item:last-child</code> removes the divider from every item when the class sits on a link inside an <code>&lt;li&gt;</code> (each link is its own last child), so interactive kit lists lose their dividers; the demos show this.</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the design reference; screens in <a href="../../mocks/index.html">docs/mocks</a> · rebuilt 10 November 2026</span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="../assets/ds.js"></script>

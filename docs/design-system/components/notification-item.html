@@ -103,8 +103,8 @@
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Use notification items only on the Notifications page, in a <code>.list.card.card--list</code>. They are the record of events. For a message that interrupts the current task use a <a href="../components/toast.html">Toast</a>; for a page-level condition (offline, verify your e-mail) use an <a href="../components/alert.html">alert or banner</a>. A notification about a message links to the conversation; the conversation itself is a <a href="../components/message-thread.html">Message thread</a>.</p>
       <ul>
-        <li><b>Unread</b> (<code>.notif--unread</code>): gold-subtle fill, bold title, hidden "Unread.".</li>
-        <li><b>Read</b> (<code>.notif</code>): transparent, regular title.</li>
+        <li><b>Unread</b> (<code>.notif--unread</code>): gold-subtle fill, semibold title, hidden "Unread.".</li>
+        <li><b>Read</b> (<code>.notif</code>): transparent, medium-weight title.</li>
         <li>Each item: a round icon for the kind of event (calendar, message, bag, store, check), a title sentence, one line of detail and a time.</li>
       </ul>
       <p>The page header carries <em>Mark all as read</em> (secondary <a href="../components/button.html">Button</a>) and a ghost <em>Settings</em> link to notification preferences. See the <a href="../patterns/notifications.html">Notifications</a> pattern for which events notify and how.</p>
@@ -117,9 +117,9 @@
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Icon</b><small><code>.notif__icon</code>: 40px (<code>--avatar-size-md</code>) circle on <code>--color-bg-subtle</code>, event icon, <code>aria-hidden</code>.</small></div></li>
-          <li><div><b>Title</b><small><code>.notif__title</code>, <code>--text-label</code>; bold when unread. Starts with a hidden "Unread." when unread.</small></div></li>
-          <li><div><b>Detail</b><small><code>.notif__meta</code>, <code>--text-body-sm</code> muted: the when/what of the event, or the quoted message.</small></div></li>
-          <li><div><b>Time</b><small><code>.text-caption</code>: when the event happened.</small></div></li>
+          <li><div><b>Title</b><small><code>.notif__title</code>, 15px medium (<code>--text-body-md</code>); semibold when unread. Starts with a hidden "Unread." when unread.</small></div></li>
+          <li><div><b>Detail</b><small><code>.notif__meta</code>, 13px (<code>--text-meta</code>) muted: the when/what of the event, or the quoted message.</small></div></li>
+          <li><div><b>Time</b><small><code>.text-caption</code>, 12px muted: when the event happened.</small></div></li>
           <li><div><b>Container</b><small>The whole item is a link; unread fills with <code>--color-accent-subtle</code>; hairline divider below.</small></div></li>
         </ol>
       </div>
@@ -156,7 +156,7 @@
         <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><ul class="list card card--list"><li><a class="notif notif--unread" href="../../mocks/pages/conversation/default.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;"><span class="visually-hidden">Unread. </span>New message from WaterWorks Plumbing &amp; Drains</span><span class="notif__meta" style="display: block;">“We can come Saturday morning for the kitchen drain.”</span><span class="text-caption">Yesterday, 6:02 p.m.</span></span></a></li><li><a class="notif" href="../../mocks/pages/account/default.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;">Your e-mail is confirmed</span><span class="notif__meta" style="display: block;">You can now message businesses and book meetings.</span><span class="text-caption">14 Oct</span></span></a></li></ul></div></div>
       </div>
       <ul>
-        <li><b>Unread hover</b> shows no change today: <code>.notif--unread</code> is declared after the hover rule and wins. A <code>--color-accent-subtle-hover</code> fill is proposed for it.</li>
+        <li><b>Unread hover</b> deepens the gold-subtle fill to <code>--color-accent-subtle-hover</code>.</li>
         <li><b>Active</b> has no look of its own; the tap navigates.</li>
         <li><b>Loading</b>: five skeleton items (circle + two bars), list <code>aria-hidden</code>, a hidden <code>role="status"</code> "Loading notifications…". Mark all as read is hidden until loaded.</li>
         <li><b>Empty</b>: an <a href="../components/empty-state.html">Empty state</a> ("No notifications yet") that says what will appear here and offers Browse businesses. <b>All read</b> (pages/notifications/read) keeps the list with every item read and the subtitle "You’re all caught up".</li>
@@ -208,7 +208,7 @@
       <h3>Motion</h3>
       <p>None. Read fills clear instantly.</p>
       <h3>Touch</h3>
-      <p>Items are full-width and at least 80px tall. Mark all as read and Settings are 44px buttons.</p>
+      <p>Items are full-width and at least 80px tall. Mark all as read and Settings are 40px buttons with a 44px hit area on coarse pointers.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -222,7 +222,7 @@
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><div style="inline-size: 100%;"><ul class="list card card--list"><li><a class="notif notif--unread" href="../../mocks/pages/request-detail/confirmed.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;"><span class="visually-hidden">Unread. </span>Legacy Financial confirmed your meeting</span><span class="notif__meta" style="display: block;">Thu 12 Nov, 10:00 a.m. by video</span><span class="text-caption">9:14 a.m.</span></span></a></li></ul></div></div><figcaption>Name the business and the event in the title, and the slot in the detail.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div style="inline-size: 100%;"><ul class="list card card--list"><li><a class="notif notif--unread" href="../../mocks/pages/request-detail/confirmed.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;"><span class="visually-hidden">Unread. </span>You have a new update</span><span class="notif__meta" style="display: block;">Tap to see more</span><span class="text-caption">9:14 a.m.</span></span></a></li></ul></div></div><figcaption>A vague title. The person has to open it to learn anything, and a screen-reader list of "You have a new update" is useless.</figcaption></figure>
-        <figure class="ds-do"><div class="ds-example__canvas"><div style="inline-size: 100%;"><ul class="list card card--list"><li><a class="notif notif--unread" href="../../mocks/pages/request-detail/confirmed.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;"><span class="visually-hidden">Unread. </span>Christian Bookstores confirmed your order</span><span class="notif__meta" style="display: block;">Leather journaling Bible, ESV · pickup Fri 13 Nov</span><span class="text-caption">Sat 7 Nov</span></span></a></li></ul></div></div><figcaption>Unread is the fill, the bold title and a hidden "Unread." together.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div style="inline-size: 100%;"><ul class="list card card--list"><li><a class="notif notif--unread" href="../../mocks/pages/request-detail/confirmed.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;"><span class="visually-hidden">Unread. </span>Christian Bookstores confirmed your order</span><span class="notif__meta" style="display: block;">Leather journaling Bible, ESV · pickup Fri 13 Nov</span><span class="text-caption">Sat 7 Nov</span></span></a></li></ul></div></div><figcaption>Unread is the fill, the semibold title and a hidden "Unread." together.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div style="inline-size: 100%;"><ul class="list card card--list"><li><a class="notif notif--unread" href="../../mocks/pages/request-detail/confirmed.html"><span class="notif__icon" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span class="notif__body"><span class="notif__title" style="display: block;">Christian Bookstores confirmed your order</span></span></a></li></ul></div></div><figcaption>Unread shown by colour alone. Without the hidden word, a screen-reader user cannot tell unread from read.</figcaption></figure>
       </div>
     </section>
@@ -233,14 +233,14 @@
           <tr><td>Item padding / gap</td><td><code>--space-4</code> / <code>--space-3</code></td><td colspan="2"><span data-token="--space-4"></span> / <span data-token="--space-3"></span></td></tr>
           <tr><td>Divider</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr>
           <tr><td>Hover fill</td><td><code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
-          <tr><td>Unread fill</td><td><code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr>
+          <tr><td>Unread fill / unread hover</td><td><code>--color-accent-subtle</code> / <code>--color-accent-subtle-hover</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle-hover" data-swatch></i><span data-token="--color-accent-subtle-hover"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle-hover" data-swatch></i><span data-token="--color-accent-subtle-hover"></span></span></td></tr>
           <tr><td>Icon circle size</td><td><code>--avatar-size-md</code></td><td colspan="2"><span data-token="--avatar-size-md"></span></td></tr>
           <tr><td>Icon circle</td><td><code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr>
-          <tr><td>Title font / unread weight</td><td><code>--text-label</code> / <code>--font-weight-bold</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--font-weight-bold"></span></td></tr>
-          <tr><td>Detail font</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Title font / weight / unread weight</td><td><code>--text-body-md</code> / <code>--font-weight-medium</code> / <code>--font-weight-semibold</code></td><td colspan="2"><span data-token="--text-body-md"></span> / <span data-token="--font-weight-medium"></span> / <span data-token="--font-weight-semibold"></span></td></tr>
+          <tr><td>Detail font</td><td><code>--text-meta</code></td><td colspan="2"><span data-token="--text-meta"></span></td></tr>
           <tr><td>Detail colour</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
           <tr><td>Time font</td><td><code>--text-caption</code></td><td colspan="2"><span data-token="--text-caption"></span></td></tr>
-          <tr><td>Container radius / shadow</td><td><code>--radius-lg</code> / <code>--shadow-1</code></td><td colspan="2"><span data-token="--radius-lg"></span> / <span data-token="--shadow-1"></span></td></tr>
+          <tr><td>Container radius / edge</td><td><code>--radius-lg</code> / <code>--color-border-default</code></td><td colspan="2"><span data-token="--radius-lg"></span> / <span data-token="--color-border-default"></span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -257,7 +257,7 @@
 &lt;/ul&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.notif</code></td><td>Item link: flex row, padding, divider, hover fill.</td></tr>
-        <tr><td><code>.notif--unread</code></td><td>Gold-subtle fill and bold title.</td></tr>
+        <tr><td><code>.notif--unread</code></td><td>Gold-subtle fill and semibold title.</td></tr>
         <tr><td><code>.notif__icon</code> <code>__body</code> <code>__title</code> <code>__meta</code></td><td>Parts.</td></tr>
         <tr><td><code>.list.card.card--list</code></td><td>The framed list that holds items.</td></tr>
         <tr><td><code>data-state="hover|focus"</code></td><td>Documentation only.</td></tr>
@@ -272,10 +272,10 @@
         <li><a href="../../mocks/pages/notifications/empty.html">pages/notifications/empty</a> (empty)</li>
         <li><a href="../../mocks/pages/notifications/error.html">pages/notifications/error</a> (error)</li>
       </ul>
-      <p>Drift fixed during extraction: every title and detail carries inline <code>style="display: block;"</code> because the parts are <code>span</code>s; <code>.notif__title, .notif__meta { display: block; }</code> is proposed for the CSS. Unread items lose their hover feedback because <code>.notif--unread</code> overrides <code>.notif:hover</code>. <code>.card--list &gt; :last-child</code> removes the border from the last <code>&lt;li&gt;</code>, but the divider is on the <code>.notif</code> inside it, so the last item keeps a double edge against the card border. Times are plain spans, not <code>&lt;time&gt;</code>.</p>
+      <p>Drift fixed during extraction: every title and detail carries inline <code>style="display: block;"</code> because the parts are <code>span</code>s; <code>.notif__title, .notif__meta { display: block; }</code> is now in the CSS. Unread items used to lose their hover feedback because <code>.notif--unread</code> overrode <code>.notif:hover</code>; they now have their own hover fill. <code>.card--list &gt; :last-child</code> removes the border from the last <code>&lt;li&gt;</code>, but the divider is on the <code>.notif</code> inside it, so the last item kept a double edge against the card border; the kit now clears it with <code>.card--list &gt; li:last-child &gt; *</code>. Times are plain spans, not <code>&lt;time&gt;</code>.</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the design reference; screens in <a href="../../mocks/index.html">docs/mocks</a> · rebuilt 10 November 2026</span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="../assets/ds.js"></script>

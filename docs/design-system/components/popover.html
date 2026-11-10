@@ -116,7 +116,7 @@
         <ol class="ds-anatomy__list">
           <li><div><b>Title</b><small>A short label in <code>--text-label</code>; it names the popover via <code>aria-labelledby</code>.</small></div></li>
           <li><div><b>Text</b><small>Two sentences at most, <code>--text-body-sm</code>, muted.</small></div></li>
-          <li><div><b>Actions (optional)</b><small>Up to two small buttons. The surface is <code>--color-bg-surface-raised</code>, hairline edge, <code>--radius-md</code>, <code>--shadow-3</code>, padding <code>--space-4</code>, max width 20rem.</small></div></li>
+          <li><div><b>Actions (optional)</b><small>Up to two small buttons. The surface is <code>--color-bg-surface-raised</code>, hairline edge, <code>--radius-md</code> (12px), <code>--shadow-3</code>, padding <code>--space-4</code>, max width 20rem.</small></div></li>
         </ol>
       </div>
     </section>
@@ -196,7 +196,7 @@
       <h3>Motion</h3>
       <p>Appears without movement; if a fade is added it uses <code>--duration-fast</code> and is zeroed by reduced motion.</p>
       <h3>Touch</h3>
-      <p>The trigger is a button of at least 32px with 8px around it, or 44px on phones; small buttons inside keep <code>--space-2</code> apart.</p>
+      <p>The trigger is a button of at least 36px; on coarse pointers its hit area is 44px. Small buttons inside keep <code>--space-2</code> apart.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -248,10 +248,10 @@
         <li><a href="../../mocks/pages/business/default.html">pages/business/default</a> (the Verified mark a popover would explain)</li>
         <li><a href="../../mocks/pages/help/default.html">pages/help/default</a> (the verification answer used as copy)</li>
       </ul>
-      <p>Drift fixed during extraction: the popover exists only in the kit CSS and no mock uses it, so there is no drift to fix. The kit sets no gap or placement; this page uses <code>--space-2</code> below the trigger.</p>
+      <p>Drift fixed during extraction: the popover exists only in the kit CSS and no mock uses it, so there is no drift to fix. Inside <code>.menu-anchor</code> the kit places the popover <code>--space-2</code> below the trigger, aligned to its start edge; flipping is left to script.</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the design reference; screens in <a href="../../mocks/index.html">docs/mocks</a> · rebuilt 10 November 2026</span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="../assets/ds.js"></script>

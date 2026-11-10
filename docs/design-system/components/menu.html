@@ -116,8 +116,8 @@
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Trigger</b><small>Button with <code>aria-haspopup="menu"</code> and <code>aria-expanded</code>; here the avatar.</small></div></li>
-          <li><div><b>Panel</b><small><code>.menu</code>: raised surface, hairline border, <code>--radius-md</code>, <code>--shadow-3</code>, <code>--z-dropdown</code>.</small></div></li>
-          <li><div><b>Item</b><small><code>.menu__item</code>: icon plus label, 32px tall on pointer devices, <code>--radius-sm</code> hover fill.</small></div></li>
+          <li><div><b>Panel</b><small><code>.menu</code>: raised surface, hairline border, <code>--radius-md</code> (12px), <code>--shadow-3</code>, <code>--z-dropdown</code>.</small></div></li>
+          <li><div><b>Item</b><small><code>.menu__item</code>: icon plus label in <code>--text-body-sm</code>, 36px tall in the dropdown, <code>--radius-sm</code> (8px) hover fill.</small></div></li>
           <li><div><b>Divider</b><small><code>.menu__divider</code> separates the destructive group.</small></div></li>
           <li><div><b>Danger item</b><small><code>.menu__item--danger</code> in <code>--color-danger-fg</code>; always last.</small></div></li>
         </ol>
@@ -137,7 +137,7 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="menu" role="menu" aria-label="Sort businesses" style="position: static;"&gt;&lt;li class="menu__label" role="presentation"&gt;Sort by&lt;/li&gt;&lt;li role="none"&gt;&lt;button class="menu__item" type="button" role="menuitemradio" aria-checked="true"&gt;Recommended&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button class="menu__item" type="button" role="menuitemradio" aria-checked="false"&gt;Newest&lt;/button&gt;&lt;/li&gt;&lt;li role="none"&gt;&lt;button class="menu__item" type="button" role="menuitemradio" aria-checked="false"&gt;Name A–Z&lt;/button&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>One size on pointer devices: 32px items (<code>--control-height-sm</code>), minimum width 12rem. In the phone sheet the same items are 44px (<code>--target-comfortable</code>).</p>
+      <p>One size in the dropdown: 36px items (<code>--control-height-sm</code>), minimum width 12rem. In the phone sheet (<code>.menu--sheet</code>) the same items are 44px (<code>--target-comfortable</code>).</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Item states, forced with <code>data-state</code>. Active keeps the hover look; the menu closes on release.</p>
@@ -203,7 +203,7 @@
       <h3>Motion</h3>
       <p>Scales in from 96% with a fade over <code>--duration-fast</code> and <code>--ease-enter</code>; reduced motion zeroes the duration so it appears at once.</p>
       <h3>Touch</h3>
-      <p>On touch the sheet's 44px rows apply. Dropdown items are 32px tall, full width and adjacent; their combined area keeps each target above 24px.</p>
+      <p>On touch the sheet's 44px rows apply. Dropdown items are 36px tall, full width and adjacent, well above the 24px minimum.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -252,8 +252,9 @@
 &lt;/div&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.menu-anchor</code></td><td>Positioning context around trigger and menu.</td></tr>
-        <tr><td><code>.menu</code></td><td>Panel.</td></tr>
-        <tr><td><code>.menu__item</code></td><td>Item (button or link).</td></tr>
+        <tr><td><code>.menu</code></td><td>Panel, 12px radius.</td></tr>
+        <tr><td><code>.menu--sheet</code></td><td>Phone sheet: items 44px tall.</td></tr>
+        <tr><td><code>.menu__item</code></td><td>Item (button or link), 36px tall, 8px radius.</td></tr>
         <tr><td><code>.menu__item--danger</code></td><td>Destructive item.</td></tr>
         <tr><td><code>.menu__label</code></td><td>Group heading.</td></tr>
         <tr><td><code>.menu__divider</code></td><td>Separator.</td></tr>
@@ -270,10 +271,10 @@
         <li><a href="../../mocks/pages/category/default.html">pages/category/default</a> (sort)</li>
         <li><a href="../../mocks/pages/browse/default.html">pages/browse/default</a> (avatar trigger)</li>
       </ul>
-      <p>Drift fixed during extraction: the dropdown form is never drawn, only described in a mock note; the phone sheet sets <code>style="min-height: var(--target-comfortable)"</code> on all seven items and reuses <code>.menu__item</code> inside a <code>.list</code>. No mock carries <code>aria-haspopup</code> or <code>aria-expanded</code>; the avatar trigger is a link to the sheet page. In the CSS, <code>.menu__item:focus-visible</code> removes the outline and relies on <code>--color-bg-subtle</code>, which is below 3:1 on the raised surface; the system documents the ring as required (CSS fix proposed).</p>
+      <p>Drift fixed during extraction: the dropdown form is never drawn, only described in a mock note; the phone sheet sets <code>style="min-height: var(--target-comfortable)"</code> on all seven items and reuses <code>.menu__item</code> inside a <code>.list</code>. No mock carries <code>aria-haspopup</code> or <code>aria-expanded</code>; the avatar trigger is a link to the sheet page. In the CSS, <code>.menu__item:focus-visible</code> used to remove the outline and rely on <code>--color-bg-subtle</code>, which is below 3:1 on the raised surface; it now draws the 2px ring inside the item as well as the fill.</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the design reference; screens in <a href="../../mocks/index.html">docs/mocks</a> · rebuilt 10 November 2026</span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="../assets/ds.js"></script>

@@ -104,7 +104,7 @@
       <p>Use pagination on category and search results longer than one page (16 cards). Short lists show everything; message threads and notifications load older items on scroll instead. Only the long category mock paginates today.</p>
       <ul>
         <li>A <b>result count</b> on the left (<code>.text-caption</code>) and the <b>pager</b> on the right, in a <code>.cluster--between</code> row.</li>
-        <li>The pager shows previous, the first pages, an ellipsis, the last page and next. The current page is a gold pill with the accent border.</li>
+        <li>The pager shows previous, the first pages, an ellipsis, the last page and next. The current page is a gold pill with an ink label and no darker edge.</li>
       </ul>
     </section>
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
@@ -116,9 +116,9 @@
         <ol class="ds-anatomy__list">
           <li><div><b>Result count</b><small><code>.text-caption</code>: "Showing 1–16 of 312".</small></div></li>
           <li><div><b>Previous</b><small><code>‹</code> labelled "Previous page"; <code>aria-disabled="true"</code> and no <code>href</code> on page 1.</small></div></li>
-          <li><div><b>Current page</b><small><code>aria-current="page"</code>: <code>--color-accent</code> fill, <code>--color-accent-border</code> edge, ink label.</small></div></li>
+          <li><div><b>Current page</b><small><code>aria-current="page"</code>: <code>--color-accent</code> fill, ink label (<code>--color-fg-on-accent</code>), no visible edge.</small></div></li>
           <li><div><b>Ellipsis</b><small><code>&lt;span aria-hidden="true"&gt;…&lt;/span&gt;</code>, not focusable.</small></div></li>
-          <li><div><b>Page link</b><small>32px pill (<code>--control-height-sm</code>, <code>--radius-full</code>), muted label, subtle background on hover.</small></div></li>
+          <li><div><b>Page link</b><small>36px pill (<code>--control-height-sm</code>, <code>--radius-full</code>), 14px medium muted label, subtle background and ink label on hover.</small></div></li>
         </ol>
       </div>
     </section>
@@ -135,8 +135,8 @@
         <div class="ds-example__caption"><span>Page 2: both arrows live.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;nav class="cluster cluster--between" aria-label="Pagination, page 2" style="width: 100%;"&gt;&lt;span class="text-caption"&gt;Showing 17–32 of 312&lt;/span&gt;&lt;ul class="pagination"&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Previous page"&gt;‹&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Page 1"&gt;1&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-current="page" aria-label="Page 2"&gt;2&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Page 3"&gt;3&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;span aria-hidden="true"&gt;…&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Page 20"&gt;20&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="../../mocks/pages/category/long.html" aria-label="Next page"&gt;›&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/nav&gt;</code></pre></details></div>
     </section>
-    <section class="ds-section" id="sizes" data-na="One size: --control-height-sm (32px) pills. Pagination sits under content and never needs a larger form."><h2><a href="#sizes">Sizes</a></h2>
-      <p class="ds-na">One size: --control-height-sm (32px) pills. Pagination sits under content and never needs a larger form.</p>
+    <section class="ds-section" id="sizes" data-na="One size: --control-height-sm (36px) pills. Pagination sits under content and never needs a larger form."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size: --control-height-sm (36px) pills. Pagination sits under content and never needs a larger form.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Forced with <code>data-state</code> where no attribute exists. Current uses <code>aria-current</code>; disabled uses <code>aria-disabled</code> without <code>href</code>.</p>
@@ -155,13 +155,13 @@
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
-        <li>At 360px the count sits above the pager (the cluster wraps) and the pager keeps all seven items in 250px.</li>
+        <li>At 360px the count sits above the pager (the cluster wraps) and the pager keeps all seven items in about 276px (seven 36px pills and six 4px gaps).</li>
         <li>Never drop to only previous/next: the page count is how members judge a long category.</li>
         <li>Beyond 7 visible items, collapse middle pages into one ellipsis on each side of the current page.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Muted and subtle tokens flip with the theme; the current page stays gold with an ink label (<code>--color-fg-on-accent</code>) and the darker gold edge (<code>--color-accent-border</code>) that keeps it at 3:1 against the page.</p>
+      <p>Muted and subtle tokens flip with the theme; the current page stays gold with an ink label (<code>--color-fg-on-accent</code>) in both themes. It has no edge of its own.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -180,22 +180,21 @@
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Page number</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Current label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Current edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
         <div class="ds-pair"><span>Hovered page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Page number</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Current label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Current edge</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-canvas" data-min="3"></span></div>
         <div class="ds-pair"><span>Hovered page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Focus ring</span><span class="ds-pair__ratio" data-contrast="--color-focus-ring|--color-bg-canvas" data-min="3"></span></div>
         </div></div>
       </div>
+      <p>The gold fill is not relied on for 3:1 against the cream page. The current page is told apart by its ink label on gold next to muted numbers, and by <code>aria-current="page"</code>.</p>
       <h3>Motion</h3>
       <p>None; page changes are instant.</p>
       <h3>Touch</h3>
-      <p>Pills are 32px, above the 24px minimum, spaced <code>--space-1</code>. They are below the 44px comfortable size; the count and arrows give enough margin that mis-taps are rare, but do not shrink them further.</p>
+      <p>Pills are 36px, above the 24px minimum, spaced <code>--space-1</code>. On coarse pointers each pill gets a 44px hit area (<code>--target-comfortable</code>) without changing its size; do not shrink the pills further.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -218,11 +217,11 @@
         <tbody>
           <tr><td>Page label</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
           <tr><td>Hover</td><td><code>--color-bg-subtle</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
-          <tr><td>Current</td><td><code>--color-accent</code> / <code>--color-fg-on-accent</code> / <code>--color-accent-border</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-border" data-swatch></i><span data-token="--color-accent-border"></span></span></td></tr>
-          <tr><td>Pill size</td><td><code>--control-height-sm</code></td><td colspan="2"><span data-token="--control-height-sm"></span></td></tr>
+          <tr><td>Current fill / label</td><td><code>--color-accent</code> / <code>--color-fg-on-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td></tr>
+          <tr><td>Pill size / touch hit area</td><td><code>--control-height-sm</code> / <code>--target-comfortable</code></td><td colspan="2"><span data-token="--control-height-sm"></span> / <span data-token="--target-comfortable"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>Padding / gap</td><td><code>--space-2</code> / <code>--space-1</code></td><td colspan="2"><span data-token="--space-2"></span> / <span data-token="--space-1"></span></td></tr>
-          <tr><td>Edge</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
+          <tr><td>Edge width (transparent)</td><td><code>--border-width-hairline</code></td><td colspan="2"><span data-token="--border-width-hairline"></span></td></tr>
           <tr><td>Type</td><td><code>--text-label</code></td><td colspan="2"><span data-token="--text-label"></span></td></tr>
         </tbody>
       </table></div>
@@ -241,7 +240,7 @@
 &lt;/nav&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.pagination</code></td><td>The pager list.</td></tr>
-        <tr><td><code>[aria-current="page"]</code></td><td>Current page: gold pill.</td></tr>
+        <tr><td><code>[aria-current="page"]</code></td><td>Current page: gold pill, ink label.</td></tr>
         <tr><td><code>[aria-disabled="true"]</code></td><td>Disabled arrow; omit <code>href</code>.</td></tr>
         <tr><td><code>data-state="hover"</code></td><td>Documentation only.</td></tr>
       </tbody></table></div>
@@ -253,10 +252,10 @@
         <li><a href="../../mocks/pages/category/default.html">pages/category/default</a> (16 results, no pager)</li>
         <li><a href="../../mocks/pages/search/default.html">pages/search/default</a> (short results, no pager)</li>
       </ul>
-      <p>Drift fixed during extraction: the mock's stylesheet drew the current page as an accent-subtle square (<code>--radius-md</code>) with a raw 1px border; the system uses the gold pill with <code>--color-accent-border</code> and <code>--border-width-hairline</code>, matching selected chips. The disabled previous arrow keeps its <code>href</code> in the mock (keyboard can still follow it); the system drops the <code>href</code>. Page numbers had no labels; they now read "Page 2".</p>
+      <p>Drift fixed during extraction: the mock's stylesheet drew the current page as an accent-subtle square (<code>--radius-md</code>) with a raw 1px border; the system uses a gold pill with an ink label and no darker edge, matching selected chips. The disabled previous arrow keeps its <code>href</code> in the mock (keyboard can still follow it); the system drops the <code>href</code>. Page numbers had no labels; they now read "Page 2".</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the design reference; screens in <a href="../../mocks/index.html">docs/mocks</a> · rebuilt 10 November 2026</span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="../assets/ds.js"></script>

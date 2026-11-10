@@ -329,7 +329,7 @@
       <p>Drift fixed during extraction: every banner mock sets <code>style="margin: 0;"</code> on <code>.alert__actions</code> and renders an empty <code>.alert__actions</code> span when there are none; the system omits the empty span and the margin now lives in <code>.banner .alert__actions</code>. Lists inside alerts (error summary, changes requested) carry <code>style="margin: 0; padding-left: var(--space-5)"</code> 17 times with no class. <code>.alert .close</code> had a <code>:hover</code> rule but no <code>data-state="hover"</code> hook, unlike the toast; the hook is now there. The success offline banner (<em>You’re back online</em>) and info verification banner are dismissible while an equivalent persistent banner is not; these docs set the rule: conditions that still hold are not dismissible.</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the design reference; screens in <a href="../../mocks/index.html">docs/mocks</a> · rebuilt 10 November 2026</span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="../assets/ds.js"></script>

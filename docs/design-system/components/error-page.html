@@ -114,8 +114,8 @@
           <span class="ds-callout" style="left: 50%; top: 12%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 34%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 50%; top: 52%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 50%; top: 74%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 50%; top: 92%;" aria-hidden="true">5</span>
         </figure>
         <ol class="ds-anatomy__list">
-          <li><div><b>Icon disc</b><small>Names the kind of failure at a glance: compass (lost), lock, warning, wifi-off, gear, clock.</small></div></li>
-          <li><div><b>Title</b><small><code>&lt;h1 class="empty__title"&gt;</code> on the real page: what happened.</small></div></li>
+          <li><div><b>Icon disc</b><small>A 64px neutral circle with a 24px icon. Names the kind of failure at a glance: compass (lost), lock, warning, wifi-off, gear, clock.</small></div></li>
+          <li><div><b>Title</b><small><code>&lt;h1 class="empty__title"&gt;</code> on the real page: what happened. 20px (<code>--text-h3</code>); 24px inside the auth card.</small></div></li>
           <li><div><b>Reassurance</b><small><code>.empty__text</code>: what is safe and what to do.</small></div></li>
           <li><div><b>Actions</b><small>One primary way forward, optionally one way out.</small></div></li>
           <li><div><b>Reference</b><small>Server errors only: <code>.text-caption</code> with a code to quote to support.</small></div></li>
@@ -182,7 +182,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>No component tokens of its own: the page uses <code>--color-bg-canvas</code>, the card <code>--color-bg-surface</code> and the empty state's disc tokens. Error pages keep the gold disc rather than the danger one: they are a dead end, not an alarm.</p>
+      <p>No component tokens of its own: the page uses <code>--color-bg-canvas</code>, the card <code>--color-bg-surface</code> and the empty state's disc tokens. Error pages keep the neutral disc (<code>--color-bg-subtle</code> with an ink icon) rather than the danger one: they are a dead end, not an alarm.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -202,21 +202,21 @@
         <div class="ds-pair"><span>Title on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="3"></span></div>
         <div class="ds-pair"><span>Primary label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Title on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text on page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Text on card</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-accent-subtle" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Icon in disc</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-subtle" data-min="3"></span></div>
         <div class="ds-pair"><span>Primary label</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
       <p>None.</p>
       <h3>Touch</h3>
-      <p>Actions are medium buttons (44px) spaced <code>--space-3</code>.</p>
+      <p>Actions are default buttons (40px) spaced <code>--space-3</code>; on coarse pointers their hit area is 44px.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -239,7 +239,8 @@
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
           <tr><td>Page / card</td><td><code>--color-bg-canvas</code> / <code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-canvas" data-swatch></i><span data-token="--color-bg-canvas"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-canvas" data-swatch></i><span data-token="--color-bg-canvas"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr>
-          <tr><td>Disc / icon</td><td><code>--color-accent-subtle</code> / <code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
+          <tr><td>Disc / icon</td><td><code>--color-bg-subtle</code> / <code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr>
+          <tr><td>Icon size</td><td><code>--icon-size-xl</code></td><td colspan="2"><span data-token="--icon-size-xl"></span></td></tr>
           <tr><td>Title / text</td><td><code>--text-h3</code> / <code>--color-fg-muted</code></td><td colspan="2"><span data-token="--text-h3"></span> / <span data-token="--color-fg-muted"></span></td></tr>
           <tr><td>Reference</td><td><code>--text-caption</code></td><td colspan="2"><span data-token="--text-caption"></span></td></tr>
           <tr><td>Page side margin</td><td><code>--layout-margin</code></td><td colspan="2"><span data-token="--layout-margin"></span></td></tr>
@@ -285,7 +286,7 @@
       <p>Drift fixed during extraction: Try again on the server-error and offline pages, and Check again on maintenance, are links to <code>browse/default.html</code> rather than buttons that retry the request; the system makes them <code>&lt;button&gt;</code>s. The two layouts (in-app <code>.status-page</code> vs bare <code>.auth-layout</code>) were not documented; the split is now a rule: use the bare layout when the app shell itself may be unavailable. <code>.status-page</code> uses a raw <code>70dvh</code>.</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the design reference; screens in <a href="../../mocks/index.html">docs/mocks</a> · rebuilt 10 November 2026</span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="../assets/ds.js"></script>

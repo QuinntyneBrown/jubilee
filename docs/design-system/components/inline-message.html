@@ -103,8 +103,8 @@
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Use these for feedback scoped to one control or one form. For a message about a whole section, use an <a href="../components/alert.html">Alert and banner</a>; for an outcome the person might miss, a <a href="../components/toast.html">Toast</a>. The field wrapper and label are documented in <a href="../components/form-field.html">Form field</a>.</p>
       <ul>
-        <li><b>Help</b> (<code>.field__help</code>): what to enter and why, in muted text, between label and control.</li>
-        <li><b>Error</b> (<code>.field__error</code>): how to fix the value, in danger text with a warning glyph, below the control; the control gets <code>aria-invalid="true"</code>.</li>
+        <li><b>Help</b> (<code>.field__help</code>): what to enter and why, in muted text, between label and control: 2px under the label, with the control 10px below.</li>
+        <li><b>Error</b> (<code>.field__error</code>): how to fix the value, in danger text with a warning glyph, 6px below the control; the control gets <code>aria-invalid="true"</code>.</li>
         <li><b>Inline status</b> (<code>.inline-status</code>): a live save status for a form or settings list: idle, saving, saved, failed.</li>
         <li><b>Dot</b> (<code>.dot</code>): an 8px <code>currentColor</code> dot that leads an inline status; <code>.dot--pulse</code> while saving. Always beside text, never alone.</li>
       </ul>
@@ -226,7 +226,7 @@
       <h3>Motion</h3>
       <p>The saving dot pulses over <code>--duration-loop</code>; reduced motion stops the pulse and keeps the text "Saving…".</p>
       <h3>Touch</h3>
-      <p>Not interactive. Messages never shrink the control's 44px height.</p>
+      <p>Not interactive. Messages never shrink the control's 48px height.</p>
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
@@ -254,6 +254,7 @@
           <tr><td>Saved / failed status</td><td><code>--color-success-fg</code> / <code>--color-danger-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span></td></tr>
           <tr><td>Text</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
           <tr><td>Glyph gap / status gap</td><td><code>--space-1</code> / <code>--space-2</code></td><td colspan="2"><span data-token="--space-1"></span> / <span data-token="--space-2"></span></td></tr>
+          <tr><td>Help under label / error under control</td><td><code>--space-0-5</code> / <code>--space-1-5</code></td><td colspan="2"><span data-token="--space-0-5"></span> / <span data-token="--space-1-5"></span></td></tr>
           <tr><td>Dot</td><td><code>--indicator-size</code></td><td colspan="2"><span data-token="--indicator-size"></span></td></tr>
           <tr><td>Dot radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>Pulse</td><td><code>--duration-loop</code></td><td colspan="2"><span data-token="--duration-loop"></span></td></tr>
@@ -293,7 +294,7 @@
       <p>Drift fixed during extraction: help sits before the control but in the sign-up password field the error is rendered before the help and <code>aria-describedby</code> lists help first, so visual and spoken orders differ; the system puts help between label and control and the error after the control. The two <code>.dot</code> spans in the preferences mocks lack <code>aria-hidden</code>. The footer "Saving…" status in account and edit-listing has no <code>role="status"</code>, and every footer status uses <code>style="margin-right: auto"</code>; a <code>.form-actions .inline-status { margin-inline-end: auto; }</code> rule would replace it. <code>.field__error::before { content: "⚠" }</code> is read aloud as "warning sign" by some screen readers; <code>content: "⚠" / ""</code> silences it.</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the design reference; screens in <a href="../../mocks/index.html">docs/mocks</a> · rebuilt 10 November 2026</span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="../assets/ds.js"></script>

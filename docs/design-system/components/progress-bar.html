@@ -96,7 +96,7 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Feedback</p>
       <h1>Progress bar</h1>
-      <p class="ds-lead">The progress bar shows how far a task has got when the task takes long enough to notice: a photo uploading, a listing being set up. It is a pill-shaped 8px track with a gold fill, and it never stands without a label and a number.</p>
+      <p class="ds-lead">The progress bar shows how far a task has got when the task takes long enough to notice: a photo uploading, a listing being set up. It is a pill-shaped 8px track with a green fill (light gold in dark), and it never stands without a label and a number.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>role="progressbar"</code></span><span class="ds-pill">Kit component, not yet in mocks</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
@@ -117,7 +117,7 @@
         <ol class="ds-anatomy__list">
           <li><div><b>Label</b><small>Names the task; it is the bar's accessible name through <code>aria-labelledby</code>.</small></div></li>
           <li><div><b>Value text</b><small><code>.text-caption</code>: the number, in units the person understands.</small></div></li>
-          <li><div><b>Fill</b><small><code>.progress__bar</code>, <code>--color-accent</code>, width from <code>--value</code>, animated over <code>--duration-slow</code>.</small></div></li>
+          <li><div><b>Fill</b><small><code>.progress__bar</code>, <code>--color-fg-accent</code>, width from <code>--value</code>, animated over <code>--duration-slow</code> (300ms).</small></div></li>
           <li><div><b>Track</b><small><code>.progress</code>: <code>--indicator-size</code> high, <code>--radius-full</code>, <code>--color-bg-subtle-hover</code>.</small></div></li>
         </ol>
       </div>
@@ -162,7 +162,7 @@
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Fill <code>--color-accent</code> (gold in both themes), track <code>--color-bg-subtle-hover</code>, success <code>--color-success-solid</code>, danger <code>--color-danger-solid</code>. Gold on the light track is low contrast by design: the text value carries the information, so the bar is supplementary (WCAG 1.4.11 does not require 3:1 for a redundant graphic).</p>
+      <p>Fill <code>--color-fg-accent</code> (green in light, light gold in dark), track <code>--color-bg-subtle-hover</code>, success <code>--color-success-solid</code>, danger <code>--color-danger-solid</code>. In light the default fill and the success fill are the same green, so the text says when the task is complete. The text value carries the information in every case; the bar is supplementary.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -181,13 +181,13 @@
         <div class="ds-pair"><span>Value text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Success fill on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-solid|--color-bg-surface" data-min="3"></span></div>
         <div class="ds-pair"><span>Danger fill on surface</span><span class="ds-pair__ratio" data-contrast="--color-danger-solid|--color-bg-surface" data-min="3"></span></div>
-        <div class="ds-pair"><span>Gold edge on surface (reference)</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Fill on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-bg-surface" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Value text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Success fill on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-solid|--color-bg-surface" data-min="3"></span></div>
         <div class="ds-pair"><span>Danger fill on surface</span><span class="ds-pair__ratio" data-contrast="--color-danger-solid|--color-bg-surface" data-min="3"></span></div>
-        <div class="ds-pair"><span>Gold edge on surface (reference)</span><span class="ds-pair__ratio" data-contrast="--color-accent-border|--color-bg-surface" data-min="3"></span></div>
+        <div class="ds-pair"><span>Fill on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-accent|--color-bg-surface" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
@@ -205,7 +205,7 @@
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><div class="stack" style="gap: var(--space-2); width: 100%;"><div class="cluster" style="justify-content: space-between;"><span class="field__label" id="progress-bar-d1">Uploading walnut-bench.jpg</span><span class="text-caption">2.2 of 4.8 MB</span></div><div class="progress" role="progressbar" aria-labelledby="progress-bar-d1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="45"><div class="progress__bar" style="--value: 45%;"></div></div></div></div><figcaption>Label and value beside the bar.</figcaption></figure>
-        <figure class="ds-dont"><div class="ds-example__canvas"><div class="progress" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="45"><div class="progress__bar" style="--value: 45%;"></div></div></div><figcaption>A bare bar: gold on the light track is faint, and "Progress" names nothing.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="progress" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="45"><div class="progress__bar" style="--value: 45%;"></div></div></div><figcaption>A bare bar: no number says how far it has got, and "Progress" names nothing.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><div class="stack" style="gap: var(--space-2); width: 100%;"><div class="cluster" style="justify-content: space-between;"><span class="field__label" id="progress-bar-d3">Checking photo</span><span class="text-caption">Shrinking to 5 MB</span></div><div class="progress progress--indeterminate" role="progressbar" aria-labelledby="progress-bar-d3"><div class="progress__bar"></div></div></div></div><figcaption>Indeterminate while the size is unknown, with a sentence saying why.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div class="stack" style="gap: var(--space-2); width: 100%;"><div class="cluster" style="justify-content: space-between;"><span class="field__label" id="progress-bar-d4">Loading page</span></div><div class="progress progress--indeterminate" role="progressbar" aria-labelledby="progress-bar-d4"><div class="progress__bar"></div></div></div></div><figcaption>A progress bar for page loading. Pages use skeletons; bars are for tasks the person started.</figcaption></figure>
       </div>
@@ -214,13 +214,13 @@
       <div class="ds-table-wrap"><table class="ds-table">
         <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
         <tbody>
-          <tr><td>Track / fill</td><td><code>--color-bg-subtle-hover</code> / <code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr>
+          <tr><td>Track / fill</td><td><code>--color-bg-subtle-hover</code> / <code>--color-fg-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle-hover" data-swatch></i><span data-token="--color-bg-subtle-hover"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-accent" data-swatch></i><span data-token="--color-fg-accent"></span></span></td></tr>
           <tr><td>Success / danger fill</td><td><code>--color-success-solid</code> / <code>--color-danger-solid</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-solid" data-swatch></i><span data-token="--color-success-solid"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-solid" data-swatch></i><span data-token="--color-danger-solid"></span></span></td></tr>
           <tr><td>Height</td><td><code>--indicator-size</code></td><td colspan="2"><span data-token="--indicator-size"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>Fill transition</td><td><code>--duration-slow</code> / <code>--ease-standard</code></td><td colspan="2"><span data-token="--duration-slow"></span> / <span data-token="--ease-standard"></span></td></tr>
           <tr><td>Indeterminate loop</td><td><code>--duration-loop</code></td><td colspan="2"><span data-token="--duration-loop"></span></td></tr>
-          <tr><td>Label / value</td><td><code>--text-label</code> / <code>--text-caption</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--text-caption"></span></td></tr>
+          <tr><td>Label / value</td><td><code>--text-subhead</code> / <code>--text-caption</code></td><td colspan="2"><span data-token="--text-subhead"></span> / <span data-token="--text-caption"></span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -250,10 +250,10 @@
         <li><a href="../../mocks/pages/list-business/default.html">pages/list-business/default</a> (four-part listing setup)</li>
         <li><a href="../../mocks/notifications/toast/info.html">notifications/toast/info</a> (toast timer bar)</li>
       </ul>
-      <p>Drift fixed during extraction: no mock uses <code>.progress</code>: the product editor's <em>Add photo</em> and the message composer's attachment go straight from idle to done, with only the warning toast "Shrinking it to 5 MB before sending" hinting at a wait. The only bar in the mocks is the toast's decorative <code>.toast__progress</code>. The kit's raw 1.4s sweep is now <code>--duration-loop</code>. The gold fill on the light track is about 1.3:1, which is why the label and value are required.</p>
+      <p>Drift fixed during extraction: no mock uses <code>.progress</code>: the product editor's <em>Add photo</em> and the message composer's attachment go straight from idle to done, with only the warning toast "Shrinking it to 5 MB before sending" hinting at a wait. The only bar in the mocks is the toast's decorative <code>.toast__progress</code>. The kit's raw 1.4s sweep is now <code>--duration-loop</code>. The fill was gold, about 1.3:1 on the light track; it now reads <code>--color-fg-accent</code>. The label and value stay required.</p>
     </section>
 
-    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+    <footer class="ds-footer"><span>Jubilee design system · follows the design reference; screens in <a href="../../mocks/index.html">docs/mocks</a> · rebuilt 10 November 2026</span><a href="#top">Back to top</a></footer>
   </main>
 </div>
 <script src="../assets/ds.js"></script>
