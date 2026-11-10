@@ -42,8 +42,11 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Swagger stays above UseAuthentication so the fallback policy never hides the API description.
-app.UseSwagger();
-app.UseSwaggerUI();
+if (!app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseRouting();
 app.UseRateLimiter();
