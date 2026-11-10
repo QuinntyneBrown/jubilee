@@ -1,0 +1,50 @@
+using Jubilee.Api.Errors;
+using Jubilee.Api.Middleware;
+using Jubilee.Application;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddApplication();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Sign-in arrives in a later journey. The cookie scheme is in place so that an API caller is
+// answered with a status code, never a redirect to a sign-in page.
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "jubilee.session";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Events.OnRedirectToLogin = context => ProblemWriter.WriteAsync(
+            context.HttpContext, StatusCodes.Status401Unauthorized, "Sign in to continue.", code: "sign_in_required");
+        options.Events.OnRedirectToAccessDenied = context => ProblemWriter.WriteAsync(
+            context.HttpContext, StatusCodes.Status403Forbidden, "You can't do that.", code: "forbidden");
+    });
+
+// Every endpoint requires a signed-in caller unless it opts out with [AllowAnonymous].
+builder.Services.AddAuthorizationBuilder()
+    .SetFallbackPolicy(new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build());
+
+var app = builder.Build();
+
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
+
+// Swagger stays above UseAuthentication so the fallback policy never hides the API description.
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+
+public partial class Program;
