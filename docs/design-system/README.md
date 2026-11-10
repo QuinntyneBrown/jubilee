@@ -1,8 +1,47 @@
 # Jubilee design system
 
-Extracted from [docs/mocks](../mocks/README.md) (67 screens, 271 mocks) on Tuesday 10 November 2026. Open [index.html](index.html) locally; no server or network is needed. Press `t` or use the sidebar toggle to switch themes.
+Follows the design reference at <https://jubilee-app-812-site.magicpatterns.app/> exactly. Rebuilt on Tuesday 10 November 2026 from the reference's stylesheet and its three screens (browse, business page, list your business); the screens in [docs/mocks](../mocks/README.md) (67 screens, 271 mocks) load this system's CSS directly. Open [index.html](index.html) locally. The fonts load from Google Fonts, as in the reference; offline, the pages fall back to system fonts. Press `t` or use the sidebar toggle to switch themes.
 
-The system is the product's visual and interaction language written down once: tokens, 12 foundation pages, one page per component (anatomy, variants, sizes, every state, responsive, theming, accessibility, content, do/don't, tokens, code, sources) and 8 pattern pages. Both themes pass WCAG 2.2 AA. The mocks now load this system's CSS directly.
+The system is the product's visual and interaction language written down once: tokens, 12 foundation pages, one page per component (anatomy, variants, sizes, every state, responsive, theming, accessibility, content, do/don't, tokens, code, sources) and 8 pattern pages.
+
+## How the system follows the reference
+
+Where the reference defines a value, the system uses that value. Where the reference is silent, the system extends it with the same palette, scale and shapes.
+
+| Reference | In the system |
+|---|---|
+| Colours `ink` `#0b0e14`, `cream` `#f4f2ec`, `gold` `#ffb81c` (hover `#ffc94d`), `clay` `#00875a`, `muted` `#5b5f68` | `--palette-ink-950`, `--palette-ink-50`, `--palette-gold-400` / `-300`, `--palette-green-500`, `--palette-ink-500` |
+| Tints `ink/5`, `/10`, `/15`, `/75`, `/80` and `cream/10` to `/95` | `--palette-ink-a5` … `-a80`, `--palette-cream-a10` … `-a95`; on the ink band the cream tints are also given as solids (`--palette-cream-on-ink-10`, `-20`) |
+| Display type: Archivo, width 110, bold, tracking -0.025em (wordmark -0.03em) | `--font-family-display`, `--font-variation-display`, `--font-weight-bold`, `--letter-spacing-tight`, `--letter-spacing-tighter` |
+| Text: Inter 400, 500, 600 at 11, 12, 13, 14, 15, 16, 17 px | `--font-family-sans`, `--font-size-2xs` … `--font-size-lead` |
+| Headings 32 → 48 px, 28 → 36 px, 20 → 24 px, stepping at 640 px | `--text-display`, `--text-h1`, `--text-h2` with `--font-size-display-sm`, `--font-size-h1-sm`, `--font-size-xl` on phones |
+| Radii 8, 12, 16, 24 px and full | `--radius-sm`, `-md`, `-lg`, `-xl`, `--radius-full` |
+| Control heights 36, 40, 48 px | `--control-height-sm`, `-md`, `-lg` |
+| Page margin 20 px, 32 px from 640 px; content 1280 px; form page 1152 px | `--layout-margin`, `--layout-container-max`, `--layout-container-form` |
+| Sections 56 px apart; rule above a section at ink 15% | `--space-14`, `--color-border-rule`, `.section--ruled` |
+| Transitions 150 ms and 300 ms, ease-out; press scale 0.97 / 0.98; image zoom 1.03 | `--duration-fast`, `--duration-slow`, `--ease-standard`, `--press-scale-sm`, `--press-scale`, `--zoom-scale` |
+| One shadow (`shadow-sm`) under buttons that float over a photo | `--shadow-1` |
+| Logo: a J with a gold crossbar beside the wordmark "jubilee" | `.brand-mark` in `assets/components.css`; file at [`docs/assets/jubilee-icon.svg`](../assets/jubilee-icon.svg) |
+
+### What the system adds
+
+The reference has three screens and one theme. The product needs more, so the system adds these from the same tokens:
+
+- **A dark theme**, required by `L2-170`. The reference has none.
+- **Components the reference does not show**: dialogs, menus, toasts, alerts, tables, tabs, pagination, steppers, timelines, the inbox, and status colours (blue, amber, red).
+- **A visible focus ring** on every control. The reference removes the outline on most of them.
+- **A footer, the notification bell and tinted icon tiles** that stand in for photographs. The reference uses photographs and has none of the three.
+- **A 44 px touch hit area** on coarse pointers (`L2-162`). The controls keep the reference's 36 and 40 px look.
+
+### Where the reference is below WCAG AA
+
+Three reference values are used exactly although they are below WCAG 2.2 AA. Each is recorded in [`tokens/contrast-pairs.json`](tokens/contrast-pairs.json) with the ratio it reaches, and `prefers-contrast: more` swaps in values that pass.
+
+| Value | Ratio | AA needs |
+|---|---|---|
+| Green text (`#00875a`) on the cream page: perks, "See all", link text | 4.07:1 | 4.5:1 |
+| Input and outline-button edge at ink 15% | about 1.4:1 | 3:1 |
+| Cream initials on the green avatar | 4.07:1 | 4.5:1 |
 
 ## Foundations
 
@@ -177,20 +216,18 @@ Every inconsistency found while extracting, and how the system resolved it. *Ope
 
 ## Changelog
 
-- **1.0 — 10 Nov 2026.** First extraction from docs/mocks. Value changes against the mocks' draft tokens are listed in the drift log above.
+- **2.0 — 10 Nov 2026.** Rebuilt to follow the design reference exactly: Archivo at 110% width and bold only; type, radius, control-height, margin and motion scales replaced with the reference's; ink and cream tints for edges, dividers and soft text; gold controls lose their darker edge; outline buttons, 48 px inputs, green checkboxes and avatars, the cream tab bar and the reference's top bar; the J mark replaces the earlier brand mark everywhere. The drift log below describes version 1.0 and is kept for history; where it and the tables above disagree, the tables above are current.
+- **1.0 — 10 Nov 2026.** First extraction from docs/mocks. Value changes against the mocks' draft tokens are listed in the drift log below.
 
 ## Verification
 
-Run on 10 November 2026, all from the repository root:
+Run on 10 November 2026 after the rebuild, all from the repository root:
 
 | Check | Command | Result |
 |---|---|---|
-| Contrast, both themes | `python .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 161 pairs passed, 0 failed |
+| Contrast, both themes | `python .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 182 pairs passed, 0 failed (three pairs carry the reference's own ratio as their minimum; see above) |
 | Structure | `python .claude/skills/extracting-design-systems/scripts/check_design_system.py docs/design-system` | 72 pages (51 components, 8 patterns), 0 errors, 0 warnings |
-| Token export | `python .claude/skills/extracting-design-systems/scripts/tokens_to_json.py docs/design-system/tokens/tokens.css` | 290 tokens written to tokens.json |
+| Token export | `python .claude/skills/extracting-design-systems/scripts/tokens_to_json.py docs/design-system/tokens/tokens.css` | 365 tokens written to tokens.json |
 | Mocks on the system CSS | `python .claude/skills/writing-html-mocks/scripts/check_mocks.py docs/mocks` | 67 screens, 271 mocks, 0 errors, 0 warnings |
-| No horizontal scroll | every page at 360px in light and dark (Playwright) | 72 of 72 pages fit |
-| Screenshots reviewed | index, color, button, dialog, top-bar, text-field at 360 and 1280 px, light and dark | no overflow or clipped specimens; focus rings visible; dark dialogs and menus read as raised |
-| Mocks before vs after | all 271 mocks at 360 and 1280 px, both themes, old CSS vs system CSS | median change 0.1% of pixels: badge size, chip and tab colours, gold progress and focus details. `.media--ink` tiles are now a deeper neutral |
-
-Each token in `tokens.css` appears in the token table of exactly one foundation page (checked by script).
+| Against the reference | browse, business page and list your business at 390 and 1280 px, mock beside reference (Playwright) | type, colour, radii, control sizes, spacing and layout match; remaining differences are listed under "What the system adds" |
+| Other screens | 30 further mocks at 390 and 1280 px in light and dark | no overflow, clipping or unreadable text |

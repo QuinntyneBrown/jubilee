@@ -44,8 +44,8 @@ Reuse these in every new mock so the story holds across screens. **Today is Tues
 
 | File | What it is |
 |---|---|
-| `assets/tokens.css` | Design tokens: ink and cream neutrals, gold accent (always with ink text), green for verified, links and success; Archivo for headings, Inter for text; light and dark themes. The only place colours, sizes and durations live. |
-| `assets/ui.css` | The component kit shared by every mock. The Jubilee components (top bar, phone tab bar, hero band, media tiles, business and product cards, directory rows, inbox, timeline) are in the second half. Extend it; never fork per mock. |
+| `../design-system/tokens/tokens.css` | Design tokens, following the design reference exactly: ink and cream neutrals, gold accent (always with ink text), green for verified, links and success; Archivo for headings, Inter for text; light and dark themes. The only place colours, sizes and durations live. |
+| `../design-system/assets/components.css` | The component kit shared by every mock; it also loads the fonts. The Jubilee components (top bar, phone tab bar, hero band, media tiles, business and product cards, directory rows, inbox, timeline) are in the second half. Extend it; never fork per mock. |
 | `assets/mock.css`, `assets/mock.js` | The mock bar, annotation notes and theme switch. Not product UI. |
 
 Both themes pass the design-system contrast checker (WCAG AA). Gold on cream is 1.6:1, so gold
@@ -68,10 +68,10 @@ Magic Patterns design reference. These assumptions shaped it; each one is a deci
 5. **Ten categories from the design reference.** Photographers, speakers, consultants and
    furniture makers fit under Media, Learning, Business & tech and Shops; say if they should have
    their own categories.
-6. **Photography is represented by tinted icon tiles** (`.media`) so the mocks open from disk
-   with no network. Real photos replace them in the app.
-7. **Fonts fall back to system fonts** when Archivo and Inter are not installed, because mocks
-   may not load web fonts.
+6. **Photography is represented by tinted icon tiles** (`.media`). The design reference uses
+   photographs; real photos replace the tiles in the app.
+7. **Fonts load from Google Fonts**, as in the design reference (Archivo at 110% width for
+   headings, Inter for text). Offline, the mocks fall back to system fonts.
 8. **No reviews or ratings**, no map, and no e-mail templates in this set.
 9. **Buyer screens show Joanna before she owns a listing** ("List your business" in the top bar);
    seller screens show Naomi ("My business").

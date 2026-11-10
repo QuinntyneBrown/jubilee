@@ -75,7 +75,9 @@ against every screen in `docs/mocks/manifest.json`.
   24 px) and `--target-comfortable` (`2.75rem`, 44 px). Every interactive
   element has a minimum width and height of `--target-min`; an icon smaller
   than that gains the area through padding. Under `@media (pointer: coarse)`
-  buttons, tab bar items, list rows and chips take `--target-comfortable`.
+  buttons, chips, links and tabs gain an invisible hit area of
+  `--target-comfortable`; their visible size stays at the design reference's
+  36 or 40 px. Tab bar items and list rows are taller than 44 px already.
 - **`keyboard.spec`** — browser test that presses Tab through each screen. It
   asserts that the skip link is first, that the order follows visual order,
   that each focused element shows an outline, and that its box does not

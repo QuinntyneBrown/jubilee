@@ -23,8 +23,11 @@ The design uses five local terms.
   colours of the page
 
 `L2-160` sets the colour rules. Normal text meets 4.5:1 and large text and UI
-components meet 3:1 in both themes. The gold accent is never a text colour;
-gold controls carry ink text and the darker `--color-accent-border` edge. A
+components meet 3:1 in both themes, except three values taken exactly from the
+design reference (green text on the cream page, the edge of inputs and outline
+buttons, and the avatar initials), which `prefers-contrast: more` replaces. The
+gold accent is never a text colour; gold controls carry ink text and no darker
+edge. A
 status is conveyed by text or icon as well as colour. `L2-161` sets the
 adaptation rules: animation is removed or reduced to fades under 100 ms when
 reduced motion is requested; content and functions remain available at 200 %
@@ -51,7 +54,8 @@ shared components, and checks that run in the CI pipeline.
   for large text or a UI component fails the build.
 - **Gold accent rule** — `--color-accent` is a background token. `Button`
   renders its primary variant with `--color-accent` as background,
-  `--color-fg-on-accent` (ink) as text and `--color-accent-border` as edge. A
+  `--color-fg-on-accent` (ink) as text and no edge; `--color-accent-border` is
+  kept for gold indicators on light surfaces (tab underline, spinner). A
   style lint rule rejects `--color-accent`, `--color-accent-hover` and
   `--color-accent-active` as the value of `color`.
 - **`StatusBadge`** — component for verified, unread, error and sold out. Its
@@ -94,7 +98,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-160` | `L1-022` | Every text and background pair in both themes shall meet 4.5:1 for normal text and 3:1 for large text and UI components. The gold accent shall never be used for text, gold controls shall carry ink text and the darker `--color-accent-border` edge, and every status (verified, unread, error, sold out) shall be conveyed by text or icon as well as colour. |
+| `L2-160` | `L1-022` | Every text and background pair in both themes shall meet 4.5:1 for normal text and 3:1 for large text and UI components. Three values taken exactly from the design reference and recorded in `docs/design-system/tokens/contrast-pairs.json` are excepted, and `prefers-contrast: more` shall replace them with passing values. The gold accent shall never be used for text, gold controls shall carry ink text and no darker edge, and every status (verified, unread, error, sold out) shall be conveyed by text or icon as well as colour. |
 | `L2-161` | `L1-022` | Under `prefers-reduced-motion: reduce` the app shall remove animations or reduce them to fades under 100 ms. At 200 % browser zoom and at 400 % zoom at 1280 px (320 CSS px reflow) all content and functions shall remain available without horizontal scrolling, except tables, which scroll within their region; in Windows forced-colours mode buttons, inputs, cards and chips shall keep visible borders and primary buttons shall use system Highlight colours; and text spacing overrides (line height 1.5, letter spacing 0.12 em) shall clip no text. |
 | `L2-170` | `L1-024` | The app shall follow `prefers-color-scheme` when no preference is saved, shall switch between Light, Dark and System without reload and before first paint, and both themes shall meet `L2-160`. |
 

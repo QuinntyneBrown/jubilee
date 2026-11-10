@@ -1,8 +1,9 @@
 /* ==========================================================================
    Jubilee design system — tokens.css
    The single source of truth for colour, type, space, layout, shape,
-   elevation, motion, z-order and interaction sizes. Extracted from
-   docs/mocks on 10 November 2026; see docs/design-system/README.md.
+   elevation, motion, z-order and interaction sizes. Every value the design
+   reference defines (https://jubilee-app-812-site.magicpatterns.app/) is
+   used exactly; see docs/design-system/README.md for the mapping.
 
    Three tiers:
      1. Primitives  (--palette-*, --font-family-*, --font-size-*, --font-weight-*,
@@ -45,6 +46,23 @@
   --palette-ink-900: #141821;
   --palette-ink-950: #0b0e14;
   --palette-ink-975: #070a0f;
+
+  /* Ink and cream tints: the reference's dividers, edges and soft text
+     (Tailwind ink/5 … ink/80 and cream/10 … cream/95). */
+  --palette-ink-a5: rgb(11 14 20 / 0.05);
+  --palette-ink-a10: rgb(11 14 20 / 0.1);
+  --palette-ink-a15: rgb(11 14 20 / 0.15);
+  --palette-ink-a75: rgb(11 14 20 / 0.75);
+  --palette-ink-a80: rgb(11 14 20 / 0.8);
+  --palette-cream-on-ink-10: #22252a; /* cream 10% over ink, as a solid: search field and chips on the brand band */
+  --palette-cream-on-ink-20: #3a3c3f; /* cream 20% over ink: their hover */
+  --palette-cream-a10: rgb(244 242 236 / 0.1);
+  --palette-cream-a20: rgb(244 242 236 / 0.2);
+  --palette-cream-a50: rgb(244 242 236 / 0.5);
+  --palette-cream-a60: rgb(244 242 236 / 0.6);
+  --palette-cream-a70: rgb(244 242 236 / 0.7);
+  --palette-cream-a80: rgb(244 242 236 / 0.8);
+  --palette-cream-a95: rgb(244 242 236 / 0.95);
 
   /* Gold: the brand accent (#ffb81c). Always carries ink text. */
   --palette-gold-50: #fff7e0;
@@ -91,44 +109,58 @@
   --palette-red-950: #3a110d;
 
   /* ---------- Primitives: typography -------------------------------------- */
-  --font-family-display: "Archivo", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-family-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-family-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-family-display: "Archivo", "Inter", system-ui, sans-serif;
+  --font-variation-display: "wdth" 110; /* every display role is Archivo at 110% width */
+  --font-family-sans: "Inter", system-ui, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-  --font-size-xs: 0.75rem;    /* 12px  captions, badges, tab-bar labels */
-  --font-size-sm: 0.875rem;   /* 14px  secondary text, labels, table cells */
-  --font-size-md: 1rem;       /* 16px  body, inputs, buttons */
-  --font-size-lg: 1.125rem;   /* 18px  lead paragraph, h4 */
-  --font-size-xl: 1.25rem;    /* 20px  h3, dialog titles */
-  --font-size-2xl: 1.5rem;    /* 24px  h2, wordmark, auth h1 */
-  --font-size-3xl: 1.875rem;  /* 30px  h1 on phones */
-  --font-size-4xl: 2.25rem;   /* 36px  h1 from 768px */
-  --font-size-5xl: 3rem;      /* 48px  hero h1 from 1024px */
+  --font-size-2xs: 0.6875rem; /* 11px  tab-bar labels, count badges */
+  --font-size-xs: 0.75rem;    /* 12px  media tags, avatar initials */
+  --font-size-meta: 0.8125rem;/* 13px  metadata: perks, verified, row taglines, counts */
+  --font-size-sm: 0.875rem;   /* 14px  labels, nav links, chips, buttons, help text */
+  --font-size-read: 0.9375rem;/* 15px  inputs, leads, row names, product names */
+  --font-size-md: 1rem;       /* 16px  body, large buttons, service names */
+  --font-size-lead: 1.0625rem;/* 17px  business tagline */
+  --font-size-lg: 1.125rem;   /* 18px  card names from 640px, prices */
+  --font-size-xl: 1.25rem;    /* 20px  h2 on phones */
+  --font-size-2xl: 1.5rem;    /* 24px  h2 from 640px, wordmark, featured name on phones */
+  --font-size-h1-sm: 1.75rem; /* 28px  page h1 on phones */
+  --font-size-3xl: 1.875rem;  /* 30px  featured name from 640px */
+  --font-size-display-sm: 2rem; /* 32px  display h1 on phones */
+  --font-size-4xl: 2.25rem;   /* 36px  page h1 from 640px */
+  --font-size-5xl: 3rem;      /* 48px  display h1 from 640px */
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
+  --font-weight-bold: 700;    /* every display role; the reference never goes heavier */
 
-  --line-height-tight: 1.2;    /* display, h1, h2 */
-  --line-height-snug: 1.3;     /* h3, h4 */
+  --line-height-display: 1.05; /* display h1 */
+  --line-height-h1: 1.08;      /* page h1 */
+  --line-height-tight: 1.25;   /* card names */
+  --line-height-heading: 1.3333; /* h2 */
+  --line-height-snug: 1.375;   /* taglines, product names, row names */
   --line-height-normal: 1.5;   /* body, labels */
-  --line-height-relaxed: 1.65; /* long-form reading (legal pages) */
+  --line-height-relaxed: 1.625;/* long-form reading (about, legal pages) */
 
-  --letter-spacing-tight: -0.01em; /* headings, wordmark */
+  --letter-spacing-tighter: -0.03em; /* wordmark */
+  --letter-spacing-tight: -0.025em;  /* every display role */
   --letter-spacing-normal: 0;
-  --letter-spacing-wide: 0.04em;   /* all-caps overlines and badges */
+  --letter-spacing-wide: 0.04em;     /* all-caps overlines */
 
   /* ---------- Semantic: typography roles (font shorthands) --------------- */
-  --text-display: var(--font-weight-extrabold) var(--font-size-5xl) / var(--line-height-tight) var(--font-family-display);
-  --text-h1: var(--font-weight-extrabold) var(--font-size-4xl) / var(--line-height-tight) var(--font-family-display);
-  --text-h2: var(--font-weight-bold) var(--font-size-2xl) / var(--line-height-tight) var(--font-family-display);
-  --text-h3: var(--font-weight-bold) var(--font-size-xl) / var(--line-height-snug) var(--font-family-display);
-  --text-h4: var(--font-weight-semibold) var(--font-size-lg) / var(--line-height-snug) var(--font-family-display);
-  --text-body-lg: var(--font-weight-regular) var(--font-size-lg) / var(--line-height-normal) var(--font-family-sans);
+  --text-display: var(--font-weight-bold) var(--font-size-5xl) / var(--line-height-display) var(--font-family-display);
+  --text-h1: var(--font-weight-bold) var(--font-size-4xl) / var(--line-height-h1) var(--font-family-display);
+  --text-h2: var(--font-weight-bold) var(--font-size-2xl) / var(--line-height-heading) var(--font-family-display);
+  --text-h3: var(--font-weight-bold) var(--font-size-xl) / var(--line-height-heading) var(--font-family-display);
+  --text-h4: var(--font-weight-bold) var(--font-size-lg) / var(--line-height-tight) var(--font-family-display);
+  --text-title-lg: var(--font-weight-bold) var(--font-size-3xl) / var(--line-height-tight) var(--font-family-display);
+  --text-subhead: var(--font-weight-semibold) var(--font-size-sm) / var(--line-height-normal) var(--font-family-sans);
+  --text-body-lg: var(--font-weight-regular) var(--font-size-lead) / var(--line-height-snug) var(--font-family-sans);
   --text-body: var(--font-weight-regular) var(--font-size-md) / var(--line-height-normal) var(--font-family-sans);
+  --text-body-md: var(--font-weight-regular) var(--font-size-read) / var(--line-height-normal) var(--font-family-sans);
   --text-body-sm: var(--font-weight-regular) var(--font-size-sm) / var(--line-height-normal) var(--font-family-sans);
+  --text-meta: var(--font-weight-regular) var(--font-size-meta) / var(--line-height-normal) var(--font-family-sans);
   --text-caption: var(--font-weight-regular) var(--font-size-xs) / var(--line-height-normal) var(--font-family-sans);
   --text-label: var(--font-weight-medium) var(--font-size-sm) / var(--line-height-normal) var(--font-family-sans);
   --text-overline: var(--font-weight-semibold) var(--font-size-xs) / var(--line-height-normal) var(--font-family-sans);
@@ -138,14 +170,18 @@
   --space-0: 0;
   --space-0-5: 0.125rem; /* 2px  hairline gaps */
   --space-1: 0.25rem;    /* 4px  icon-to-label, label-to-input */
-  --space-2: 0.5rem;     /* 8px  inside chips, between inline items */
+  --space-1-5: 0.375rem; /* 6px  icon-to-text in links, verified tick gap */
+  --space-2: 0.5rem;     /* 8px  between chips, between buttons */
+  --space-2-5: 0.625rem; /* 10px media-tag padding, label-to-control */
   --space-3: 0.75rem;    /* 12px compact padding, between buttons */
   --space-4: 1rem;       /* 16px default padding, stack gap */
   --space-5: 1.25rem;    /* 20px timeline rhythm, chip row offset */
   --space-6: 1.5rem;     /* 24px card and dialog padding, form gap */
-  --space-8: 2rem;       /* 32px section gap */
+  --space-7: 1.75rem;    /* 28px between form groups */
+  --space-8: 2rem;       /* 32px card-grid row gap, ruled-section padding */
   --space-10: 2.5rem;    /* 40px hero padding (desktop), split gap */
-  --space-12: 3rem;      /* 48px empty-state padding, directory column gap */
+  --space-12: 3rem;      /* 48px page bottom padding, empty-state padding */
+  --space-14: 3.5rem;    /* 56px between page sections */
   --space-16: 4rem;      /* 64px page bottom padding */
   --space-20: 5rem;      /* 80px */
   --space-24: 6rem;      /* 96px off-screen offset (skip link) */
@@ -158,21 +194,23 @@
   --layout-breakpoint-2xl: 96rem;  /* 1536px wide screens: content stays at container max */
 
   --layout-columns: 4;              /* grid columns at the current breakpoint */
-  --layout-gutter: var(--space-4);  /* gap between columns */
-  --layout-margin: var(--space-4);  /* viewport edge to content */
+  --layout-gutter: var(--space-4); /* gap between columns */
+  --layout-margin: var(--space-5); /* viewport edge to content: 20px, 32px from 640px */
   --layout-container-max: 80rem;    /* 1280px */
-  --layout-container-narrow: 42rem; /* 672px  forms, settings, request detail */
+  --layout-container-form: 72rem;   /* 1152px form pages with a preview column */
+  --layout-container-prose: 48rem;  /* 768px  sections of running content */
+  --layout-container-narrow: 42rem; /* 672px  settings, request detail */
   --layout-measure: 65ch;           /* max line length for prose */
   --layout-sidebar-width: 16rem;    /* 256px */
   --layout-topbar-height: 4rem;     /* 64px */
-  --layout-tabbar-height: 3.75rem;  /* 60px phone tab bar */
+  --layout-tabbar-height: 4.5rem; /* 72px phone tab bar */
 
   /* ---------- Semantic: shape --------------------------------------------- */
-  --radius-xs: 0.125rem;  /* 2px  checkbox, tab indicator */
-  --radius-sm: 0.25rem;   /* 4px  tooltips, code, menu items */
-  --radius-md: 0.625rem;  /* 10px inputs, menus, toasts, alerts, thumbnails */
-  --radius-lg: 1rem;      /* 16px cards, media tiles, dialogs, tables */
-  --radius-xl: 1.25rem;   /* 20px bottom sheets, CTA band */
+  --radius-xs: 0.25rem;   /* 4px  checkbox, focus ring corners */
+  --radius-sm: 0.5rem;    /* 8px  credential tags, thumbnails, menu items, tooltips */
+  --radius-md: 0.75rem;   /* 12px inputs, choice cards, item lists, menus, toasts, alerts */
+  --radius-lg: 1rem;      /* 16px media tiles, cards, dialogs, tables */
+  --radius-xl: 1.5rem;    /* 24px business hero image, bottom sheets, CTA band */
   --radius-full: 9999px;  /* buttons, chips, badges, avatars, search */
 
   --border-width-hairline: 1px;
@@ -181,14 +219,14 @@
 
   /* ---------- Semantic: motion -------------------------------------------- */
   --duration-instant: 0ms;
-  --duration-fast: 120ms;      /* hover, colour changes, tooltips */
+  --duration-fast: 150ms; /* hover, press, colour changes */
   --duration-base: 200ms;      /* menus, toasts, switches */
-  --duration-slow: 320ms;      /* dialogs, sheets, progress fill */
+  --duration-slow: 300ms; /* image zoom, dialogs, sheets, progress fill */
   --duration-deliberate: 500ms;/* page-level transitions */
   --duration-spin: 800ms;      /* one spinner revolution (status: never zeroed) */
   --duration-loop: 1400ms;     /* shimmer, indeterminate bar, pulse cycles */
-  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-enter: cubic-bezier(0, 0, 0, 1);
+  --ease-standard: cubic-bezier(0, 0, 0.2, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);
   --ease-exit: cubic-bezier(0.3, 0, 1, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
@@ -203,40 +241,63 @@
   --z-toast: 1500;
   --z-tooltip: 1600;   /* also the focused skip link */
 
+  /* ---------- Semantic: colours that hold in both themes --------------------- */
+  --color-bg-on-brand-field: var(--palette-ink-50);      /* phone search field on the hero: cream */
+  --color-fg-on-brand-field: var(--palette-ink-950);
+  --color-fg-on-brand-field-muted: var(--palette-ink-500);
+
   /* ---------- Semantic: interaction and sizing ---------------------------- */
   --target-min: 1.5rem;          /* 24px  WCAG 2.5.8 minimum target */
-  --target-comfortable: 2.75rem; /* 44px  nav links, tabs, rows, primary mobile actions */
+  --target-comfortable: 2.75rem; /* 44px  touch target: the hit area of buttons, chips, links and tabs on coarse pointers */
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
-  --control-height-sm: 2rem;     /* 32px  small buttons, chips, menu items */
-  --control-height-md: 2.75rem;  /* 44px  default buttons and inputs */
-  --control-height-lg: 3rem;     /* 48px  large buttons, hero search */
-  --icon-size-sm: 1rem;          /* 16px  inline with captions, verified tick */
-  --icon-size-md: 1.25rem;       /* 20px  default */
-  --icon-size-lg: 1.5rem;        /* 24px  brand mark, empty-state glyph */
-  --avatar-size-sm: 2rem;        /* 32px  top bar, rows */
+  --control-height-sm: 2.25rem; /* 36px  chips, small buttons, top-bar icon button */
+  --control-height-md: 2.5rem; /* 40px  default buttons, top-bar search and links */
+  --control-height-lg: 3rem; /* 48px  inputs, page-level buttons and their icon buttons */
+  --icon-size-xs: 0.875rem;      /* 14px  verified tick */
+  --icon-size-sm: 1rem;          /* 16px  search, chevrons, back arrow, remove */
+  --icon-size-md: 1.125rem;      /* 18px  icons in buttons and icon buttons */
+  --icon-size-lg: 1.25rem;       /* 20px  tab bar, choice-card icons */
+  --icon-size-xl: 1.5rem;        /* 24px  empty-state glyph */
+  --avatar-size-sm: 2.25rem; /* 36px  top bar, rows */
   --avatar-size-md: 2.5rem;      /* 40px  lists, threads, dialog icons */
   --avatar-size-lg: 3.5rem;      /* 56px  profile headers */
   --indicator-size: 0.5rem;      /* 8px   status dots, unread dots */
   --badge-height: 1.25rem;       /* 20px  badges and count badges */
+  --switch-width: 2.75rem;       /* 44px */
+  --switch-height: 1.5rem;       /* 24px */
+  --switch-knob: 1.25rem;        /* 20px */
+  --spinner-size: 1.25rem;       /* 20px */
+  --tabbar-pill-width: 3rem;     /* 48px  pill behind the current tab's icon */
+  --tabbar-pill-height: 2rem;    /* 32px */
+  --checkbox-size: 1rem;         /* 16px  checkboxes and radios */
+  --brand-mark-size: 1.1em;      /* the mark is 1.1 times the wordmark's size */
+  --brand-mark-gap: 0.12em;      /* gap between mark and wordmark */
+  --press-scale: 0.98;           /* large buttons shrink slightly when pressed */
+  --press-scale-sm: 0.97;        /* default and small buttons */
+  --zoom-scale: 1.03;            /* card media grows slightly on hover */
 }
 
 /* Responsive layout tokens: columns, gutters and margins grow with the viewport.
    Custom properties cannot be used inside @media, so the breakpoint values are
-   repeated here (48rem = --layout-breakpoint-md, 64rem = --layout-breakpoint-lg). */
+   repeated here (40rem = --layout-breakpoint-sm, 48rem = --layout-breakpoint-md,
+   64rem = --layout-breakpoint-lg). */
+@media (min-width: 40rem) {
+  :root {
+    --layout-gutter: var(--space-6);
+    --layout-margin: var(--space-8);
+  }
+}
+
 @media (min-width: 48rem) {
   :root {
     --layout-columns: 8;
-    --layout-gutter: var(--space-6);
-    --layout-margin: var(--space-8);
   }
 }
 
 @media (min-width: 64rem) {
   :root {
     --layout-columns: 12;
-    --layout-gutter: var(--space-8);
-    --layout-margin: var(--space-12);
   }
 }
 
@@ -248,42 +309,54 @@
   --color-bg-canvas: var(--palette-ink-50);          /* page background (cream) */
   --color-bg-surface: var(--palette-white);          /* cards, panels, inputs */
   --color-bg-surface-raised: var(--palette-white);   /* dialogs, menus, popovers */
-  --color-bg-surface-sunken: var(--palette-ink-100); /* wells, table headers */
-  --color-bg-subtle: var(--palette-ink-100);         /* hover rows, chips, media tiles */
-  --color-bg-subtle-hover: var(--palette-ink-200);
+  --color-bg-surface-sunken: var(--palette-ink-a5); /* wells, table headers */
+  --color-bg-subtle: var(--palette-ink-a5); /* media tiles, hover rows, icon circles (ink 5%) */
+  --color-bg-subtle-hover: var(--palette-ink-a10);
   --color-bg-inverse: var(--palette-ink-950);        /* tooltips, toasts, own chat bubbles */
   --color-bg-backdrop: rgb(11 14 20 / 0.6);          /* modal scrim (ink-950 at 60%) */
   --color-bg-brand: var(--palette-ink-950);          /* top bar, hero band, CTA band: ink in both themes */
-  --color-bg-on-brand-subtle: var(--palette-ink-800);/* search field and chips on the brand band */
+  --color-bg-surface-glass: var(--palette-cream-a95);/* tab bar, sticky action bar, buttons over photos */
+  --color-bg-on-brand-subtle: var(--palette-cream-on-ink-10); /* search field and chips on the brand band (cream 10%) */
+  --color-bg-on-brand-subtle-hover: var(--palette-cream-on-ink-20);
 
   --color-fg-default: var(--palette-ink-950);        /* body text */
-  --color-fg-muted: var(--palette-ink-600);          /* secondary text */
-  --color-fg-subtle: var(--palette-ink-500);         /* placeholders, metadata */
+  --color-fg-secondary: var(--palette-ink-a80);      /* taglines and running text beside a heading (ink 80%) */
+  --color-fg-supporting: var(--palette-ink-a75);     /* card taglines (ink 75%) */
+  --color-fg-muted: var(--palette-ink-500); /* secondary text (#5b5f68) */
+  --color-fg-subtle: var(--palette-ink-500); /* placeholders, metadata */
   --color-fg-disabled: var(--palette-ink-300);       /* disabled text; exempt from contrast (1.4.3) */
-  --color-fg-inverse: var(--palette-white);          /* text on --color-bg-inverse and solid fills */
-  --color-fg-link: var(--palette-green-700);
-  --color-fg-link-hover: var(--palette-green-900);
-  --color-fg-accent: var(--palette-green-700);       /* accent-coloured text on surfaces (never gold) */
+  --color-fg-inverse: var(--palette-ink-50); /* text on --color-bg-inverse and solid fills (cream) */
+  --color-fg-link: var(--palette-green-500);
+  --color-fg-link-hover: var(--palette-green-700);
+  --color-fg-accent: var(--palette-green-500); /* accent-coloured text on surfaces (never gold) */
   --color-fg-on-accent: var(--palette-ink-950);      /* text on gold: always ink */
   --color-fg-on-danger: var(--palette-white);
-  --color-fg-on-brand: var(--palette-white);
-  --color-fg-on-brand-muted: var(--palette-ink-300);
+  --color-fg-on-success: var(--palette-white);       /* check mark on the green checkbox */
+  --color-avatar-bg: var(--palette-green-500);       /* account avatar: green with cream initials */
+  --color-avatar-fg: var(--palette-ink-50);
+  --color-fg-on-brand: var(--palette-ink-50);
+  --color-fg-on-brand-strong: var(--palette-cream-a80); /* chip labels on the brand band */
+  --color-fg-on-brand-soft: var(--palette-cream-a70);   /* hero sub-line */
+  --color-fg-on-brand-muted: var(--palette-cream-a60);
+  --color-fg-on-brand-placeholder: var(--palette-cream-a50);
 
-  --color-border-default: var(--palette-ink-200);    /* dividers, card edges (decorative) */
-  --color-border-strong: var(--palette-ink-400);     /* form control edges (>= 3:1) */
+  --color-border-default: var(--palette-ink-a10); /* dividers, card edges (ink 10%) */
+  --color-border-strong: var(--palette-ink-a15); /* form control and outline-button edges (ink 15%) */
+  --color-border-media: var(--palette-ink-a5);       /* hairline around photos and tiles (ink 5%) */
+  --color-border-rule: var(--palette-ink-a15);        /* rule above a page section (ink 15%) */
   --color-border-inverse: var(--palette-ink-700);
-  --color-border-on-brand: var(--palette-ink-700);
+  --color-border-on-brand: var(--palette-cream-a10);
 
   --color-accent: var(--palette-gold-400);           /* primary actions, selected chips, current tab */
   --color-accent-hover: var(--palette-gold-300);
-  --color-accent-active: var(--palette-gold-500);
-  --color-accent-border: var(--palette-gold-600);    /* edge of gold controls: >= 3:1 on cream and white */
+  --color-accent-active: var(--palette-gold-300);
+  --color-accent-border: var(--palette-gold-600); /* gold indicators on light surfaces (tab underline, spinner, unread dot): >= 3:1 */
   --color-accent-subtle: var(--palette-gold-50);     /* unread rows, avatar, empty-state icon */
   --color-accent-subtle-hover: var(--palette-gold-100);
 
   --color-focus-ring: var(--palette-ink-950);
   --color-focus-ring-offset: var(--color-bg-surface);
-  --color-focus-ring-on-brand: var(--palette-gold-300);
+  --color-focus-ring-on-brand: var(--palette-gold-400);
 
   --color-info-bg: var(--palette-blue-50);
   --color-info-fg: var(--palette-blue-800);
@@ -314,8 +387,8 @@
   --color-danger-solid: var(--palette-red-600);      /* destructive buttons, invalid borders */
   --color-danger-solid-hover: var(--palette-red-700);
 
-  --shadow-color: 20 25 35;
-  --shadow-1: 0 1px 2px rgb(var(--shadow-color) / 0.08);
+  --shadow-color: 0 0 0;
+  --shadow-1: 0 1px 3px 0 rgb(var(--shadow-color) / 0.1), 0 1px 2px -1px rgb(var(--shadow-color) / 0.1);
   --shadow-2: 0 2px 6px rgb(var(--shadow-color) / 0.10), 0 1px 2px rgb(var(--shadow-color) / 0.06);
   --shadow-3: 0 8px 24px rgb(var(--shadow-color) / 0.14), 0 2px 6px rgb(var(--shadow-color) / 0.08);
   --shadow-4: 0 20px 48px rgb(var(--shadow-color) / 0.22), 0 4px 12px rgb(var(--shadow-color) / 0.10);
@@ -339,9 +412,13 @@
   --color-bg-inverse: var(--palette-ink-50);
   --color-bg-backdrop: rgb(0 0 0 / 0.7);
   --color-bg-brand: var(--palette-ink-950);
-  --color-bg-on-brand-subtle: var(--palette-ink-800);
+  --color-bg-on-brand-subtle: var(--palette-cream-on-ink-10);
+  --color-bg-on-brand-subtle-hover: var(--palette-cream-on-ink-20);
+  --color-bg-surface-glass: rgb(11 14 20 / 0.95);
 
-  --color-fg-default: var(--palette-ink-100);
+  --color-fg-default: var(--palette-ink-50);
+  --color-fg-secondary: var(--palette-cream-a80);
+  --color-fg-supporting: var(--palette-cream-a70);
   --color-fg-muted: var(--palette-ink-300);
   --color-fg-subtle: var(--palette-ink-350);
   --color-fg-disabled: var(--palette-ink-600);
@@ -351,24 +428,32 @@
   --color-fg-accent: var(--palette-gold-300);
   --color-fg-on-accent: var(--palette-ink-950);
   --color-fg-on-danger: var(--palette-red-950);
-  --color-fg-on-brand: var(--palette-white);
-  --color-fg-on-brand-muted: var(--palette-ink-300);
+  --color-fg-on-success: var(--palette-ink-950);
+  --color-avatar-bg: var(--palette-green-500);
+  --color-avatar-fg: var(--palette-ink-50);
+  --color-fg-on-brand: var(--palette-ink-50);
+  --color-fg-on-brand-strong: var(--palette-cream-a80);
+  --color-fg-on-brand-soft: var(--palette-cream-a70);
+  --color-fg-on-brand-muted: var(--palette-cream-a60);
+  --color-fg-on-brand-placeholder: var(--palette-cream-a50);
 
-  --color-border-default: var(--palette-ink-700);
+  --color-border-default: var(--palette-cream-a10);
   --color-border-strong: var(--palette-ink-350);
+  --color-border-media: var(--palette-cream-a10);
+  --color-border-rule: var(--palette-cream-a20);
   --color-border-inverse: var(--palette-ink-300);
-  --color-border-on-brand: var(--palette-ink-700);
+  --color-border-on-brand: var(--palette-cream-a10);
 
   --color-accent: var(--palette-gold-400);
   --color-accent-hover: var(--palette-gold-300);
-  --color-accent-active: var(--palette-gold-200);
+  --color-accent-active: var(--palette-gold-300);
   --color-accent-border: var(--palette-gold-400);
   --color-accent-subtle: var(--palette-gold-950);
   --color-accent-subtle-hover: var(--palette-gold-900);
 
-  --color-focus-ring: var(--palette-gold-300);
+  --color-focus-ring: var(--palette-gold-400);
   --color-focus-ring-offset: var(--color-bg-surface);
-  --color-focus-ring-on-brand: var(--palette-gold-300);
+  --color-focus-ring-on-brand: var(--palette-gold-400);
 
   --color-info-bg: var(--palette-blue-950);
   --color-info-fg: var(--palette-blue-200);
@@ -421,9 +506,13 @@
     --color-bg-inverse: var(--palette-ink-50);
     --color-bg-backdrop: rgb(0 0 0 / 0.7);
     --color-bg-brand: var(--palette-ink-950);
-    --color-bg-on-brand-subtle: var(--palette-ink-800);
+    --color-bg-on-brand-subtle: var(--palette-cream-on-ink-10);
+    --color-bg-on-brand-subtle-hover: var(--palette-cream-on-ink-20);
+    --color-bg-surface-glass: rgb(11 14 20 / 0.95);
 
-    --color-fg-default: var(--palette-ink-100);
+    --color-fg-default: var(--palette-ink-50);
+    --color-fg-secondary: var(--palette-cream-a80);
+    --color-fg-supporting: var(--palette-cream-a70);
     --color-fg-muted: var(--palette-ink-300);
     --color-fg-subtle: var(--palette-ink-350);
     --color-fg-disabled: var(--palette-ink-600);
@@ -433,24 +522,32 @@
     --color-fg-accent: var(--palette-gold-300);
     --color-fg-on-accent: var(--palette-ink-950);
     --color-fg-on-danger: var(--palette-red-950);
-    --color-fg-on-brand: var(--palette-white);
-    --color-fg-on-brand-muted: var(--palette-ink-300);
+    --color-fg-on-success: var(--palette-ink-950);
+    --color-avatar-bg: var(--palette-green-500);
+    --color-avatar-fg: var(--palette-ink-50);
+    --color-fg-on-brand: var(--palette-ink-50);
+    --color-fg-on-brand-strong: var(--palette-cream-a80);
+    --color-fg-on-brand-soft: var(--palette-cream-a70);
+    --color-fg-on-brand-muted: var(--palette-cream-a60);
+    --color-fg-on-brand-placeholder: var(--palette-cream-a50);
 
-    --color-border-default: var(--palette-ink-700);
+    --color-border-default: var(--palette-cream-a10);
     --color-border-strong: var(--palette-ink-350);
+    --color-border-media: var(--palette-cream-a10);
+    --color-border-rule: var(--palette-cream-a20);
     --color-border-inverse: var(--palette-ink-300);
-    --color-border-on-brand: var(--palette-ink-700);
+    --color-border-on-brand: var(--palette-cream-a10);
 
     --color-accent: var(--palette-gold-400);
     --color-accent-hover: var(--palette-gold-300);
-    --color-accent-active: var(--palette-gold-200);
+    --color-accent-active: var(--palette-gold-300);
     --color-accent-border: var(--palette-gold-400);
     --color-accent-subtle: var(--palette-gold-950);
     --color-accent-subtle-hover: var(--palette-gold-900);
 
-    --color-focus-ring: var(--palette-gold-300);
+    --color-focus-ring: var(--palette-gold-400);
     --color-focus-ring-offset: var(--color-bg-surface);
-    --color-focus-ring-on-brand: var(--palette-gold-300);
+    --color-focus-ring-on-brand: var(--palette-gold-400);
 
     --color-info-bg: var(--palette-blue-950);
     --color-info-fg: var(--palette-blue-200);
@@ -504,14 +601,33 @@
     --duration-base: 0.01ms;
     --duration-slow: 0.01ms;
     --duration-deliberate: 0.01ms;
+    --press-scale: 1;
+    --press-scale-sm: 1;
+    --zoom-scale: 1;
   }
 }
 
+/* More contrast: the reference's soft edges, mid-green text and green avatar
+   give way to values that clear 3:1 (edges) and 4.5:1 (text). */
 @media (prefers-contrast: more) {
   :root {
-    --color-border-default: var(--color-border-strong);
+    --color-border-default: var(--palette-ink-400);
+    --color-border-strong: var(--palette-ink-400);
+    --color-border-rule: var(--palette-ink-400);
     --color-fg-muted: var(--color-fg-default);
-    --color-fg-subtle: var(--color-fg-muted);
+    --color-fg-subtle: var(--color-fg-default);
+    --color-avatar-bg: var(--palette-green-700);
+  }
+  :root:not([data-theme="dark"]),
+  [data-theme="light"] {
+    --color-fg-link: var(--palette-green-700);
+    --color-fg-accent: var(--palette-green-700);
+  }
+}
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-fg-link: var(--palette-green-300);
+    --color-fg-accent: var(--palette-gold-300);
   }
 }
 

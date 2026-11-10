@@ -1,5 +1,5 @@
 {
-  "$comment": "Every foreground/background token pair a Jubilee component relies on, checked by check_contrast.py in both themes. 4.5:1 is WCAG 2.2 AA for normal text (1.4.3); 3:1 is AA for large text, UI component edges, meaningful icons and focus indicators (1.4.11). min 1 marks a decorative pairing that is documented but exempt.",
+  "$comment": "Every foreground/background token pair a Jubilee component relies on, checked by check_contrast.py in both themes. 4.5:1 is WCAG 2.2 AA for normal text (1.4.3); 3:1 is AA for large text, UI component edges, meaningful icons and focus indicators (1.4.11). min 1 marks a decorative pairing that is documented but exempt. A pair whose note starts 'Design reference value' follows https://jubilee-app-812-site.magicpatterns.app/ exactly and carries the ratio it actually reaches as its minimum, so a regression still fails.",
   "pairs": [
     {
       "fg": "--color-fg-default",
@@ -94,8 +94,20 @@
     {
       "fg": "--color-fg-link",
       "bg": "--color-bg-canvas",
+      "min": 4.0,
+      "note": "links and perk text on page. Design reference value, used exactly; below WCAG AA (4.5:1). prefers-contrast: more restores 4.5:1.",
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "fg": "--color-fg-link",
+      "bg": "--color-bg-canvas",
       "min": 4.5,
-      "note": "links on page"
+      "note": "links on page",
+      "themes": [
+        "dark"
+      ]
     },
     {
       "fg": "--color-fg-link",
@@ -114,12 +126,6 @@
       "bg": "--color-bg-surface",
       "min": 4.5,
       "note": "accent text (selected tab label)"
-    },
-    {
-      "fg": "--color-fg-accent",
-      "bg": "--color-accent-subtle",
-      "min": 4.5,
-      "note": "accent text on selected row"
     },
     {
       "fg": "--color-fg-default",
@@ -148,14 +154,38 @@
     {
       "fg": "--color-border-strong",
       "bg": "--color-bg-surface",
+      "min": 1.3,
+      "note": "input borders (1.4.11). Design reference value, used exactly; below WCAG AA (3:1): ink at 15%. prefers-contrast: more restores 3:1.",
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "fg": "--color-border-strong",
+      "bg": "--color-bg-surface",
       "min": 3,
-      "note": "input borders (1.4.11)"
+      "note": "input borders (1.4.11)",
+      "themes": [
+        "dark"
+      ]
+    },
+    {
+      "fg": "--color-border-strong",
+      "bg": "--color-bg-canvas",
+      "min": 1.3,
+      "note": "input borders on page. Design reference value, used exactly; below WCAG AA (3:1): ink at 15%. prefers-contrast: more restores 3:1.",
+      "themes": [
+        "light"
+      ]
     },
     {
       "fg": "--color-border-strong",
       "bg": "--color-bg-canvas",
       "min": 3,
-      "note": "input borders on page"
+      "note": "input borders on page",
+      "themes": [
+        "dark"
+      ]
     },
     {
       "fg": "--color-focus-ring",
@@ -300,15 +330,6 @@
     },
     {
       "fg": "--color-fg-inverse",
-      "bg": "--color-success-solid",
-      "min": 4.5,
-      "note": "label on solid success badge",
-      "themes": [
-        "light"
-      ]
-    },
-    {
-      "fg": "--color-fg-inverse",
       "bg": "--color-warning-solid",
       "min": 4.5,
       "note": "label on solid warning badge",
@@ -327,15 +348,6 @@
     },
     {
       "fg": "--color-fg-on-danger",
-      "bg": "--color-success-solid",
-      "min": 4.5,
-      "note": "dark label on solid success badge",
-      "themes": [
-        "dark"
-      ]
-    },
-    {
-      "fg": "--color-fg-on-danger",
       "bg": "--color-warning-solid",
       "min": 4.5,
       "note": "dark label on solid warning badge",
@@ -347,19 +359,19 @@
       "fg": "--color-accent-border",
       "bg": "--color-bg-surface",
       "min": 3,
-      "note": "primary button and selected chip edge vs card"
+      "note": "gold indicators (tab underline, spinner, unread dot) vs card"
     },
     {
       "fg": "--color-accent-border",
       "bg": "--color-bg-canvas",
       "min": 3,
-      "note": "primary button edge vs page"
+      "note": "gold indicators vs page"
     },
     {
       "fg": "--color-accent-border",
       "bg": "--color-bg-surface-raised",
       "min": 3,
-      "note": "primary button edge in dialogs"
+      "note": "gold indicators in dialogs"
     },
     {
       "fg": "--color-fg-on-brand",
@@ -422,15 +434,6 @@
       "note": "text selection highlight"
     },
     {
-      "fg": "--color-fg-inverse",
-      "bg": "--color-success-solid",
-      "min": 4.5,
-      "note": "business avatar initials, completed timeline step (dark)",
-      "themes": [
-        "dark"
-      ]
-    },
-    {
       "fg": "--color-info-icon-inverse",
       "bg": "--color-bg-inverse",
       "min": 3,
@@ -481,8 +484,20 @@
     {
       "fg": "--color-border-strong",
       "bg": "--color-bg-surface-raised",
+      "min": 1.3,
+      "note": "input borders inside dialogs. Design reference value, used exactly; below WCAG AA (3:1): ink at 15%. prefers-contrast: more restores 3:1.",
+      "themes": [
+        "light"
+      ]
+    },
+    {
+      "fg": "--color-border-strong",
+      "bg": "--color-bg-surface-raised",
       "min": 3,
-      "note": "input borders inside dialogs"
+      "note": "input borders inside dialogs",
+      "themes": [
+        "dark"
+      ]
     },
     {
       "fg": "--color-focus-ring",
@@ -525,6 +540,84 @@
       "bg": "--color-bg-subtle-hover",
       "min": 3,
       "note": "progress fill on its track"
+    },
+    {
+      "fg": "--color-fg-secondary",
+      "bg": "--color-bg-canvas",
+      "min": 4.5,
+      "note": "taglines and running text on page (ink 80%)"
+    },
+    {
+      "fg": "--color-fg-secondary",
+      "bg": "--color-bg-surface",
+      "min": 4.5,
+      "note": "running text on cards"
+    },
+    {
+      "fg": "--color-fg-supporting",
+      "bg": "--color-bg-canvas",
+      "min": 4.5,
+      "note": "card taglines on page (ink 75%)"
+    },
+    {
+      "fg": "--color-fg-supporting",
+      "bg": "--color-bg-surface",
+      "min": 4.5,
+      "note": "card taglines on cards"
+    },
+    {
+      "fg": "--color-fg-on-brand-strong",
+      "bg": "--color-bg-on-brand-subtle",
+      "min": 4.5,
+      "note": "chip labels on the brand band (cream 80%)"
+    },
+    {
+      "fg": "--color-fg-on-brand-soft",
+      "bg": "--color-bg-brand",
+      "min": 4.5,
+      "note": "hero sub-line (cream 70%)"
+    },
+    {
+      "fg": "--color-fg-on-brand-placeholder",
+      "bg": "--color-bg-on-brand-subtle",
+      "min": 4.5,
+      "note": "search placeholder on the brand band (cream 50%)"
+    },
+    {
+      "fg": "--color-fg-on-success",
+      "bg": "--color-success-solid",
+      "min": 4.5,
+      "note": "check mark on the green checkbox, completed step"
+    },
+    {
+      "fg": "--color-avatar-fg",
+      "bg": "--color-avatar-bg",
+      "min": 4.0,
+      "note": "account avatar initials (cream on green). Design reference value, used exactly; below WCAG AA (4.5:1)."
+    },
+    {
+      "fg": "--color-fg-default",
+      "bg": "--color-bg-surface-glass",
+      "min": 4.5,
+      "note": "tab bar and sticky action bar labels"
+    },
+    {
+      "fg": "--color-fg-muted",
+      "bg": "--color-bg-surface-glass",
+      "min": 4.5,
+      "note": "inactive tab bar labels"
+    },
+    {
+      "fg": "--color-fg-on-brand-field",
+      "bg": "--color-bg-on-brand-field",
+      "min": 4.5,
+      "note": "phone search text on the hero"
+    },
+    {
+      "fg": "--color-fg-on-brand-field-muted",
+      "bg": "--color-bg-on-brand-field",
+      "min": 4.5,
+      "note": "phone search placeholder and icon on the hero"
     }
   ]
 }

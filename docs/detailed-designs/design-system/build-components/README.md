@@ -39,8 +39,8 @@ The slice lives in `Jubilee Web`, with data from `Jubilee API`, photos from
 - **`Button`** — Angular directive on `button` and `a` elements. It emits
   `.btn` with the modifiers `.btn--primary`, `.btn--ghost`, `.btn--danger`,
   `.btn--link`, `.btn--sm`, `.btn--lg`, `.btn--icon` and `.btn--block`. Primary
-  buttons are gold with ink text, pill shaped (`--radius-full`), and carry the
-  `--color-accent-border` edge. A busy button sets `aria-busy="true"`; a toggle
+  buttons are gold with ink text, pill shaped (`--radius-full`), with no edge,
+  as in the design reference. A busy button sets `aria-busy="true"`; a toggle
   sets `aria-pressed`.
 - **`TopBar`** — Angular component that emits `.topbar.topbar--ink`, the ink
   top bar. The current navigation link carries `aria-current="page"`.
@@ -94,7 +94,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-171` | `L1-024` | Each screen shall use the mocks' BEM class names and accessible state attributes (`aria-current`, `aria-pressed`, `aria-invalid`, `aria-busy`, `data-state`) from `docs/mocks/assets/ui.css`. Each screen and state in `docs/mocks/manifest.json` shall match its mock in layout, copy and states, verified by the visual regression tests of `L2-163`, and the ink top bar, gold pill-shaped primary buttons, media tiles and verified badges shall follow the mock components without per-page overrides. |
 | `L2-173` | `L1-024` | A listing or product with photos shall show the real photos; without photos it shall show the category's tinted icon tile (`.media`). Every image shall keep its aspect ratio with `object-fit: cover` and shall not distort. |
 | `L2-163` | `L1-023` | Visual regression tests in CI shall compare each screen with its approved baseline at 360, 576, 768, 992 and 1280 px wide and shall fail the build on a difference above threshold. |
-| `L2-160` | `L1-022` | The gold accent shall not be used for text; gold controls shall carry ink text and the darker `--color-accent-border` edge. Each status shall be conveyed by text or icon as well as colour. |
+| `L2-160` | `L1-022` | The gold accent shall not be used for text; gold controls shall carry ink text and no darker edge. Each status shall be conveyed by text or icon as well as colour. |
 
 ## Diagrams
 
