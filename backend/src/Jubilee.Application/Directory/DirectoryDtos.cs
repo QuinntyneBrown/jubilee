@@ -67,3 +67,32 @@ public sealed record BrowseHomeDto(
     IReadOnlyList<BusinessCardDto> Featured,
     IReadOnlyList<ProductCardDto> Products,
     IReadOnlyList<CategoryGroupDto> Groups);
+
+/// <summary>A short count shown beside the business count, for example "3 take emergency calls".</summary>
+public sealed record CategoryFactDto(string Offer, int Count);
+
+/// <summary>The sanitised filters that were applied, in request order.</summary>
+public sealed record AppliedFiltersDto(IReadOnlyList<string> Offers, IReadOnlyList<string> Areas)
+{
+    public static AppliedFiltersDto From(CategoryFilterSet filters) => new(filters.OfferValues, filters.AreaValues);
+}
+
+public sealed record RemovedFilterDto(string Group, string Value);
+
+/// <summary>How many businesses match when one applied filter is removed (L2-024 AC4).</summary>
+public sealed record FilterSuggestion(RemovedFilterDto Removed, int Count);
+
+public sealed record CategoryPageResult(
+    CategoryLinkDto Category,
+    int TotalCount,
+    int MatchCount,
+    CategoryFactDto? Fact,
+    AppliedFiltersDto Filters,
+    string Sort,
+    int Page,
+    int PageSize,
+    int PageCount,
+    IReadOnlyList<BusinessCardDto> Businesses,
+    IReadOnlyList<FilterSuggestion> Suggestions);
+
+public sealed record CategoryCountDto(int Count);
