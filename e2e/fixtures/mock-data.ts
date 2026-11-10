@@ -162,3 +162,30 @@ export function categoryPageFromMock(state: 'long') {
     suggestions: [],
   };
 }
+
+function priceOf(label: string): { priceKind: string; priceCents: number | null } {
+  if (label === 'Free') return { priceKind: 'free', priceCents: null };
+  if (label === 'Ask') return { priceKind: 'ask', priceCents: null };
+  return { priceKind: 'amount', priceCents: Math.round(count(label.replace('$', '')) * 100) };
+}
+
+/**
+ * What `pages/business/{state}.html` shows of the header and the services, as the part of the
+ * listing answer that differs from the seeded Legacy Financial.
+ */
+export function listingFromMock(state: 'edge') {
+  const html = read(`pages/business/${state}.html`);
+  const rows = between(html, 'id="svc"', '</section>').match(/<li class="row">.*?<\/li>/gs) ?? [];
+  return {
+    name: text(first(html, /<h1>(.*?)<\/h1>/s)),
+    ownerName: text(first(html, /<p><strong>(.*?)<\/strong><\/p>/s)),
+    credentials: (html.match(/<span class="tag">(.*?)<\/span>/gs) ?? []).map((tag) => text(tag)),
+    services: rows.map((row, index) => ({
+      id: `00000000-0000-0000-0000-${String(index + 1).padStart(12, '0')}`,
+      name: text(first(row, /row__title">(.*?)<\/div>/s)),
+      detail: text(first(row, /row__meta">(.*?)<\/div>/s)),
+      ...priceOf(text(first(row, /row__price[^"]*">(.*?)<\/span>/s))),
+      action: text(first(row, /<a class="btn btn--sm"[^>]*>(.*?)<\/a>/s)).toLowerCase(),
+    })),
+  };
+}

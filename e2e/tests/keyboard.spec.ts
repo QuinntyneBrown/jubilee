@@ -1,5 +1,6 @@
 import { expect, test } from '../fixtures/jb-test';
 import { BrowsePage } from '../pages/browse.page';
+import { BusinessPage } from '../pages/business.page';
 import { CategoryPage } from '../pages/category.page';
 import { WelcomePage } from '../pages/welcome.page';
 
@@ -59,4 +60,24 @@ test('the filters sheet keeps focus inside and is operable with the keyboard', a
   await filters.show.focus();
   await category.pressEnter();
   await expect(category.cards).toHaveCount(3);
+});
+
+test('a visitor uses a business page with the keyboard only', async ({ page, jb }) => {
+  const business = new BusinessPage(page);
+  await business.setWidth(1280);
+  await jb.open('business');
+
+  // The actions follow one another in reading order
+  await business.primaryAction.focus();
+  await business.pressTab();
+  await expect(business.messageLink).toBeFocused();
+  await business.pressTab();
+  await expect(business.saveButton).toBeFocused();
+  await business.pressTab();
+  await expect(business.shareLink).toBeFocused();
+
+  // A related business opens with Enter
+  await business.relatedCard(0).root.focus();
+  await business.pressEnter();
+  await expect(business.heading).toHaveText('Deeks Insurance');
 });

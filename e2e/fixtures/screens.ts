@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import { BrowsePage } from '../pages/browse.page';
+import { BusinessPage } from '../pages/business.page';
 import { CategoryFiltersScreen, CategoryPage } from '../pages/category.page';
 import { NotFoundPage } from '../pages/not-found.page';
 import { WelcomePage } from '../pages/welcome.page';
@@ -28,5 +29,10 @@ export const screens: {
   { key: 'category.long', screen: (page) => new CategoryPage(page) },
   // The filters sheet is the under-768 px form of the filters.
   { key: 'filters', screen: (page) => new CategoryFiltersScreen(page), below: 768 },
+  { key: 'business', screen: (page) => new BusinessPage(page) },
+  { key: 'business.loading', screen: (page) => new BusinessPage(page) },
+  { key: 'business.error', screen: (page) => new BusinessPage(page) },
+  { key: 'business.empty', screen: (page) => new BusinessPage(page) },
+  { key: 'business.edge', screen: (page) => new BusinessPage(page) },
   { key: 'not-found', screen: (page) => new NotFoundPage(page) },
 ];

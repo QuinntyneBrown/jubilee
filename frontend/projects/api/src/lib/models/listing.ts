@@ -1,0 +1,53 @@
+import { BusinessCard, CategoryLink } from './directory';
+
+/** Main offer of a listing; it picks the layout of the listing page. */
+export type ListingKind = 'services' | 'shop';
+
+/** The caller's relation to the listing, decided by the server from the session. */
+export type ViewerRelation = 'visitor' | 'member' | 'owner' | 'verifier';
+
+/** The "Replies" band; null when there are too few replies to say (L2-033 AC5). */
+export type ReplyTimeBand = 'few-hours' | 'day' | 'few-days';
+
+/** One row of "Services" or "Custom work" (L2-033 AC2). */
+export interface ServiceRow {
+  id: string;
+  name: string;
+  detail: string;
+  priceKind: 'free' | 'amount' | 'ask';
+  priceCents: number | null;
+  /** What the row's action opens: the booking or the quote request. */
+  action: 'book' | 'ask';
+}
+
+/** The "Details" list; a value the owner has not given is null and its row is left out. */
+export interface ListingDetails {
+  where: string | null;
+  hours: string | null;
+  languages: string | null;
+  delivery: string | null;
+  madeToOrder: string | null;
+  /** ISO date-time the listing was created; the page shows its month. */
+  onJubileeSince: string;
+  replies: ReplyTimeBand | null;
+}
+
+/** `GET /api/listings/{slug}`: the listing page of one business (L2-033, L2-034). */
+export interface ListingPage {
+  slug: string;
+  kind: ListingKind;
+  name: string;
+  category: CategoryLink;
+  verified: boolean;
+  stage: string;
+  viewerRelation: ViewerRelation;
+  ownerName: string | null;
+  tagline: string;
+  credentials: string[];
+  highlight: string | null;
+  about: string | null;
+  coverPhoto: null;
+  details: ListingDetails;
+  services: ServiceRow[];
+  related: BusinessCard[];
+}

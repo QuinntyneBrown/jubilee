@@ -1,10 +1,11 @@
 import type { Page, Route } from '@playwright/test';
 import { categories } from './categories';
-import { browseHomeFromMock, categoryPageFromMock } from './mock-data';
+import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
 import type { StubName } from './routes';
 
 const home = '**/api/directory/home';
 const categoryListings = '**/api/categories/*/listings?*';
+const legacyFinancial = '**/api/listings/legacy-financial';
 
 /** The ProblemDetails the API sends when a directory read cannot be served (L2-118). */
 function unavailable(reference: string) {
@@ -28,6 +29,22 @@ export function stubBrowseHome(page: Page, directory: unknown): Promise<unknown>
 /** A request that is still on its way when the test looks at the screen. */
 function pending(route: Route): Promise<void> {
   return new Promise(() => void route);
+}
+
+/**
+ * Answers a listing request with the real, seeded answer changed by `patch`, so a state differs
+ * from the seed only in what the state is about.
+ */
+export function patchListing(
+  page: Page,
+  url: string,
+  patch: (listing: Record<string, unknown>) => Record<string, unknown>,
+): Promise<unknown> {
+  return page.route(url, async (route) => {
+    const response = await route.fetch();
+    const listing = (await response.json()) as Record<string, unknown>;
+    await route.fulfill({ response, json: patch(listing) });
+  });
 }
 
 /** Installs the API answers that put a screen in a state the seeded data cannot produce. */
@@ -71,6 +88,21 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return page.route(categoryListings, (route) =>
         route.fulfill({ json: categoryPageFromMock('long') }),
       );
+    case 'business-loading':
+      return page.route(legacyFinancial, pending);
+    case 'business-error':
+      return page.route(legacyFinancial, (route) => route.fulfill(unavailable('JB-BIZ-503')));
+    case 'business-empty':
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        highlight: null,
+        services: [],
+      }));
+    case 'business-edge':
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        ...listingFromMock('edge'),
+      }));
     case 'category-not-found':
       return page.route(categoryListings, (route) =>
         route.fulfill({

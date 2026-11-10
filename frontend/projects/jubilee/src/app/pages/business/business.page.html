@@ -1,0 +1,191 @@
+@let current = state();
+<a class="back-link" routerLink="/"><svg jb-icon name="arrow-left"></svg>Back to browse</a>
+@switch (current.status) {
+  @case ('loading') {
+    <h1 class="visually-hidden">Loading this business</h1>
+    <p class="visually-hidden" role="status">Loading this business…</p>
+    <div class="split" aria-hidden="true">
+      <div><span class="skeleton skeleton--media"></span></div>
+      <div class="stack">
+        <span class="skeleton skeleton--text skeleton--w50"></span>
+        <span class="skeleton skeleton--h1"></span>
+        <span class="skeleton skeleton--text"></span>
+        <span class="skeleton skeleton--text"></span>
+        <span
+          class="skeleton skeleton--btn"
+          style="width: 100%; height: var(--control-height-lg)"
+        ></span>
+      </div>
+    </div>
+    <section class="section">
+      <span class="skeleton skeleton--title"></span>
+      <ul class="rows" aria-hidden="true">
+        @for (placeholder of [1, 2, 3, 4]; track placeholder) {
+          <li class="row">
+            <div class="row__body">
+              <span class="skeleton skeleton--text skeleton--w50"></span>
+              <span class="skeleton skeleton--text skeleton--w70"></span>
+            </div>
+            <span class="skeleton skeleton--btn" style="width: 5rem"></span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+  @case ('error') {
+    <div
+      jb-empty-state
+      icon="alert"
+      heading="We couldn’t load this business"
+      [level]="1"
+      [error]="true"
+    >
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loaded') {
+    @let listing = current.value;
+    @let hasServices = listing.services.length > 0;
+    <div class="split" style="margin-top: var(--space-2)">
+      <div>
+        @if (tile(); as media) {
+          <div jb-media-tile [tint]="media.tint" [icon]="media.icon" [tag]="media.label"></div>
+        }
+      </div>
+      <div class="detail-head split__sticky">
+        <p jb-verified-business-label [category]="listing.category"></p>
+        <h1>{{ listing.name }}</h1>
+        @if (listing.ownerName) {
+          <p>
+            <strong>{{ listing.ownerName }}</strong>
+          </p>
+        }
+        <p class="lead">{{ listing.tagline }}</p>
+        @if (listing.credentials.length) {
+          <div class="cluster" style="gap: var(--space-2)">
+            @for (credential of listing.credentials; track $index) {
+              <span class="tag">{{ credential }}</span>
+            }
+          </div>
+        }
+        <div class="detail-head__actions">
+          @if (hasServices) {
+            <a class="btn btn--primary btn--lg" [routerLink]="link('book')"
+              ><svg jb-icon name="calendar"></svg>Book a meeting</a
+            >
+          } @else {
+            <a class="btn btn--primary btn--lg" [routerLink]="link('message')"
+              ><svg jb-icon name="message"></svg>Send a message</a
+            >
+          }
+          <a
+            class="btn btn--icon btn--lg"
+            [routerLink]="link('message')"
+            aria-label="Message"
+            style="width: var(--control-height-lg)"
+            ><svg jb-icon name="message"></svg
+          ></a>
+          <!-- Saving arrives with journey 19 (ADR 0007). -->
+          <button
+            class="btn btn--icon btn--lg"
+            type="button"
+            aria-label="Save"
+            aria-pressed="false"
+            style="width: var(--control-height-lg)"
+          >
+            <svg jb-icon name="heart"></svg>
+          </button>
+          <a
+            class="btn btn--icon btn--lg"
+            [routerLink]="link('share')"
+            aria-label="Share"
+            style="width: var(--control-height-lg)"
+            ><svg jb-icon name="share"></svg
+          ></a>
+        </div>
+        @if (listing.highlight) {
+          <p class="perk">{{ listing.highlight }}</p>
+        }
+      </div>
+    </div>
+    <div class="split">
+      <div>
+        <section class="section" aria-labelledby="svc">
+          <div class="section-head"><h2 id="svc">Services</h2></div>
+          @if (hasServices) {
+            <ul class="rows">
+              @for (service of listing.services; track service.id) {
+                <li
+                  jb-service-row
+                  [service]="service"
+                  [actionLink]="link(service.action === 'book' ? 'book' : 'quote')"
+                ></li>
+              }
+            </ul>
+          } @else {
+            <div
+              jb-empty-state
+              icon="calendar"
+              heading="No services listed yet"
+              [level]="3"
+              [compact]="true"
+            >
+              {{ listing.name }} is new on Jubilee and hasn’t added services. You can still message
+              them to ask what they offer.
+              <a slot="actions" class="btn btn--primary" [routerLink]="link('message')"
+                ><svg jb-icon name="message"></svg>Send a message</a
+              >
+            </div>
+          }
+        </section>
+        @if (listing.about) {
+          <section class="section" aria-labelledby="about">
+            <h2 id="about">About</h2>
+            <p style="margin-top: var(--space-3)">{{ listing.about }}</p>
+          </section>
+        }
+      </div>
+      <aside class="section card" aria-labelledby="det">
+        <h2 id="det" class="card__title">Details</h2>
+        <dl class="dl" style="margin-top: var(--space-4)">
+          @for (detail of details(); track detail.term) {
+            <dt>{{ detail.term }}</dt>
+            <dd>{{ detail.value }}</dd>
+          }
+        </dl>
+      </aside>
+    </div>
+    @if (listing.related.length) {
+      <section
+        class="section"
+        aria-labelledby="more"
+        style="border-top: 1px solid var(--color-border-default); padding-top: var(--space-8)"
+      >
+        <div class="section-head">
+          <h2 id="more">More in {{ listing.category.name }}</h2>
+          <a [routerLink]="['/c', listing.category.slug]">See all</a>
+        </div>
+        <ul class="card-grid">
+          @for (business of listing.related; track business.slug) {
+            <li>
+              <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+    <p class="text-caption" style="margin-top: var(--space-8)">
+      <a
+        style="display: inline-flex; gap: var(--space-1); align-items: center"
+        [routerLink]="link('report')"
+        ><svg jb-icon name="flag" size="sm"></svg> Report this listing</a
+      >
+    </p>
+  }
+}

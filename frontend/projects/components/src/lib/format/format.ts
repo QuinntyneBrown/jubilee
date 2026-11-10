@@ -27,3 +27,10 @@ export class PricePipe implements PipeTransform {
     return formatPrice(cents, perUnit);
   }
 }
+
+/** A service's price as its row shows it: "Free", "Ask", or the amount in dollars (L2-033 AC2). */
+export function formatServicePrice(kind: 'free' | 'amount' | 'ask', cents: number | null): string {
+  if (kind === 'free') return 'Free';
+  if (kind === 'ask' || cents === null) return 'Ask';
+  return formatPrice(cents);
+}

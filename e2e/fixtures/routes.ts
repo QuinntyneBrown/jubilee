@@ -15,7 +15,11 @@ export type StubName =
   | 'category-empty'
   | 'category-error'
   | 'category-long'
-  | 'category-not-found';
+  | 'category-not-found'
+  | 'business-loading'
+  | 'business-error'
+  | 'business-empty'
+  | 'business-edge';
 
 export interface ScreenRoute {
   app: string;
@@ -81,6 +85,35 @@ export const routes = {
     app: '/c/home-property?offers=free-quote&areas=east-york',
     mock: 'dialogs/filters/default.html',
     who: 'member',
+  },
+  business: {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/default.html',
+    who: 'member',
+  },
+  'business.loading': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/loading.html',
+    who: 'member',
+    stub: 'business-loading',
+  },
+  'business.error': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/error.html',
+    who: 'member',
+    stub: 'business-error',
+  },
+  'business.empty': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/empty.html',
+    who: 'member',
+    stub: 'business-empty',
+  },
+  'business.edge': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/edge.html',
+    who: 'member',
+    stub: 'business-edge',
   },
   'not-found': { app: '/no-such-page', mock: 'pages/not-found/default.html', who: 'member' },
 } as const satisfies Record<string, ScreenRoute>;

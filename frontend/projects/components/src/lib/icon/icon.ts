@@ -13,6 +13,7 @@ import { ICONS, IconName, IconShape } from './icons';
     'aria-hidden': 'true',
     viewBox: '0 0 24 24',
     '[class.icon--lg]': 'size() === "lg"',
+    '[class.icon--sm]': 'size() === "sm"',
   },
   template: `
     @for (shape of shapes(); track $index) {
@@ -38,6 +39,6 @@ import { ICONS, IconName, IconShape } from './icons';
 })
 export class Icon {
   readonly name = input.required<IconName>();
-  readonly size = input<'md' | 'lg'>('md');
+  readonly size = input<'sm' | 'md' | 'lg'>('md');
   protected readonly shapes = computed<readonly IconShape[]>(() => ICONS[this.name()]);
 }

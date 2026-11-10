@@ -8,7 +8,9 @@ import {
 import { provideRouter } from '@angular/router';
 import {
   DIRECTORY_API,
+  LISTINGS_API,
   HttpDirectoryApi,
+  HttpListingsApi,
   HttpNavigationApi,
   HttpSessionApi,
   NAVIGATION_API,
@@ -26,6 +28,7 @@ export const appConfig: ApplicationConfig = {
     { provide: SESSION_API, useClass: HttpSessionApi },
     { provide: NAVIGATION_API, useClass: HttpNavigationApi },
     { provide: DIRECTORY_API, useClass: HttpDirectoryApi },
+    { provide: LISTINGS_API, useClass: HttpListingsApi },
     provideAppInitializer(() => inject(SessionService).resolve()),
   ],
 };
