@@ -132,7 +132,8 @@ tokens and components.
 | Frontend lint | `npm run lint` | `frontend/` |
 | Frontend format check | `npm run format:check` | `frontend/` |
 | Design-system copy is current | `npm run design:check` | `frontend/` |
-| End-to-end tests | `npm run baseline` then `npm test` | `e2e/` |
+| End-to-end behaviour tests | `npm test` | `e2e/` |
+| Visual, responsive and accessibility sweeps (by hand only) | `npm run sweeps` | `e2e/` |
 
 The backend tests run on EF Core InMemory and need no database. The end-to-end suite runs in
 Chromium only; run `npx playwright install chromium` in `e2e/` once. It starts the app by itself,
@@ -141,11 +142,12 @@ the recorded responses in `e2e/fixtures/api/responses.json` (ADR 0009). When an 
 changes, start `pwsh eng/Start-E2eApi.ps1` and run `npm run record-api` in `e2e/` to refresh the
 recording.
 
-`npm run baseline` renders the mocks in `docs/mocks` to screenshots, and `npm test` then compares
-the app with them, region by region, along with the behaviour, accessibility and responsive
-specs. The screenshots are not committed: to change how a screen looks, change its mock first.
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs all of the above on every pull
-request.
+`npm test` runs the behaviour specs only (ADR 0010). `npm run sweeps` is run by hand: it renders
+the mocks in `docs/mocks` to screenshots, then compares the app with them region by region and
+runs the responsive and accessibility sweeps. CI never runs the sweeps. The screenshots are not
+committed: to change how a screen looks, change its mock first.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs all of the above except the sweeps on
+every pull request.
 
 ## Documentation
 

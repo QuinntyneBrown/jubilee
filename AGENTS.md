@@ -4,8 +4,8 @@ Jubilee is Toronto's Christian marketplace: a directory of verified Christian-ow
 where members find a business, message it, book a meeting, ask for a quote or request a product,
 and the business confirms or declines. Jubilee does not take payment; members pay the business
 directly. The .NET backend owns accounts, listings, requests, messaging, notifications and
-verification; the Angular frontend provides the app, and Playwright covers behaviour and visual
-parity with the design reference.
+verification; the Angular frontend provides the app, and Playwright covers behaviour (and, run by
+hand, visual parity with the design reference).
 
 Roles, requirements and the journeys to build are in `docs/specs/L1.md`, `docs/specs/L2.md` and
 `docs/journey.md`. Use the words those documents use in code, docs and UI; do not invent synonyms.
@@ -170,8 +170,16 @@ design system).
   interactions. Tests state intent; page objects know the DOM. Never put a selector in a test.
 - Specs import `test` and `expect` from `e2e/fixtures/jb-test.ts`; routes are keyed in
   `e2e/fixtures/routes.ts` so one spec serves the mocks (`JB_BASELINE=1`) and the app.
-- Visual regression (`e2e/tests/visual/`) compares the app to `docs/mocks` region by region.
-  Update baselines only for intentional design changes, after changing the mock first.
+- **Mandatory (ADR 0010): only behaviour Playwright tests run.** `npm test` and CI run the
+  behaviour specs and nothing else. The sweeps, visual parity (`e2e/tests/visual/`), responsive
+  fit (`responsive.spec.ts`) and automated accessibility (`accessibility.spec.ts`), are still
+  written and kept current: give every new screen state its `routes.ts` entry and page-object
+  regions, and add a sweep where a requirement calls for one. **Never run them**: no agent or CI
+  job runs `npm run sweeps`, `npm run baseline` or anything that sets `JB_SWEEPS=1` or
+  `JB_BASELINE=1`; only the repository owner runs them, by hand. Done means the behaviour specs
+  pass, not the sweeps.
+- Visual regression compares the app to `docs/mocks` region by region. Update baselines only for
+  intentional design changes, after changing the mock first.
 - Run frontend tests in Chromium only. Do not configure or run Firefox, WebKit, or any other
   browser for frontend testing.
 

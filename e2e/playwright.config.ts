@@ -8,10 +8,16 @@ import { defineConfig, devices } from '@playwright/test';
  *   records its answers;
  * - JB_BASELINE=1: the static design reference in docs/mocks, served on :4300, used to render
  *   the visual baselines the app is then compared with.
+ *
+ * ADR 0010: only the behaviour specs run. The sweeps (visual parity, responsive fit, automated
+ * accessibility) are kept and maintained but run only when the repository owner runs
+ * `npm run sweeps` by hand, which sets JB_SWEEPS=1.
  */
 const baseline = process.env['JB_BASELINE'] === '1';
 const ci = !!process.env['CI'];
 const recording = process.env['JB_RECORD_API'] === '1';
+const sweeps = process.env['JB_SWEEPS'] === '1' || baseline;
+const sweepSpecs = ['visual/**/*.spec.ts', 'responsive.spec.ts', 'accessibility.spec.ts'];
 
 const mocksServer = {
   command: 'npx http-server ../docs -p 4300 -c-1 --silent',
@@ -39,6 +45,7 @@ export default defineConfig({
   testDir: './tests',
   // Baseline runs only render the mocks; behaviour specs need the app.
   testMatch: baseline ? 'visual/**/*.spec.ts' : '**/*.spec.ts',
+  testIgnore: sweeps ? [] : sweepSpecs,
   fullyParallel: true,
   forbidOnly: ci,
   retries: ci ? 1 : 0,
