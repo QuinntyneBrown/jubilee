@@ -70,8 +70,9 @@ Magic Patterns design reference. These assumptions shaped it; each one is a deci
    their own categories.
 6. **Photography is represented by tinted icon tiles** (`.media`) so the mocks open from disk
    with no network. Real photos replace them in the app.
-7. **Fonts fall back to system fonts** when Archivo and Inter are not installed, because mocks
-   may not load web fonts.
+7. **Archivo is bundled; Inter falls back to system fonts.** Headings and the wordmark load
+   Archivo from `docs/design-system/assets/fonts/`, so they match the design reference from disk.
+   Body text uses Inter only where it is installed, because mocks do not load web fonts.
 8. **No reviews or ratings**, no map, and no e-mail templates in this set.
 9. **Buyer screens show Joanna before she owns a listing** ("List your business" in the top bar);
    seller screens show Naomi ("My business").

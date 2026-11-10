@@ -132,6 +132,15 @@ design system).
 - Keep component styles encapsulated and global styles limited to shared foundations and utilities.
 - Read design tokens by role, never hex values; the token set lives in `components`.
   Component-scoped knobs keep the `--jb-` prefix.
+- **Fonts are bundled, never left to the system.** Archivo, the display face, is one variable
+  WOFF2 at `docs/design-system/assets/fonts/Archivo.woff2`, declared by the `@font-face` in
+  `tokens.css` with its weight (400–900) and width (62–125%) ranges. Keep that rule and that file:
+  without them Windows substitutes Segoe UI and headings and the wordmark render far heavier than
+  the design reference. Do not replace the file with one that lacks the width axis (the copy in
+  `docs/videos/assets/` is weight-only). The app self-hosts the same file.
+- **The wordmark is lowercase "jubilee" in Archivo bold (700) at 110% width with −0.03em
+  tracking**, read from `--font-weight-bold`, `--font-stretch-wide` and `--letter-spacing-tighter`.
+  It matches the Magic Patterns design reference; never set it at 800 or in a fallback face.
 - **Declare each `ng-content` slot once.** A component that renders `<a>` or `<button>` by
   condition puts its slots in one `<ng-template>` and renders it with `ngTemplateOutlet` in both
   branches; slots repeated per `@if` branch project into one branch only. On the consumer side, a
