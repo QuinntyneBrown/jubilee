@@ -8,6 +8,8 @@ import { ProductPage } from '../models/product';
 export interface ListingsApi {
   getListing(slug: string): Observable<ListingPage>;
   getProduct(slug: string, product: string): Observable<ProductPage>;
+  /** "Tell me when it's back" on a sold-out product; asking again changes nothing. */
+  requestStockAlert(productId: string): Observable<void>;
 }
 
 export const LISTINGS_API = new InjectionToken<ListingsApi>('LISTINGS_API');
@@ -24,5 +26,9 @@ export class HttpListingsApi implements ListingsApi {
     return this.http.get<ProductPage>(
       `/api/listings/${encodeURIComponent(slug)}/products/${encodeURIComponent(product)}`,
     );
+  }
+
+  requestStockAlert(productId: string): Observable<void> {
+    return this.http.put<void>(`/api/products/${encodeURIComponent(productId)}/stock-alert`, null);
   }
 }

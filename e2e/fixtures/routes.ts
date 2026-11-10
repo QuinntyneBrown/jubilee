@@ -24,7 +24,9 @@ export type StubName =
   | 'shop-error'
   | 'shop-empty'
   | 'product-loading'
-  | 'product-error';
+  | 'product-error'
+  | 'product-sold-out'
+  | 'product-alert-requested';
 
 export interface ScreenRoute {
   app: string;
@@ -169,6 +171,18 @@ export const routes = {
     who: 'member',
     stub: 'product-error',
     via: '/b/luzandre',
+  },
+  'product.sold-out': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/sold-out.html',
+    who: 'member',
+    stub: 'product-sold-out',
+  },
+  'product.alert-requested': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+    mock: 'pages/product/alert-requested.html',
+    who: 'member',
+    stub: 'product-alert-requested',
   },
   'not-found': { app: '/no-such-page', mock: 'pages/not-found/default.html', who: 'member' },
 } as const satisfies Record<string, ScreenRoute>;

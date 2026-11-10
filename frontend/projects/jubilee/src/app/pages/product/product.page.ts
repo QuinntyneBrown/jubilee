@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
@@ -12,8 +13,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LISTINGS_API, ProductPage as ProductPageModel } from 'api';
 import { EmptyState, Icon, MediaTile, PricePipe, ProductCard } from 'components';
 import { Subscription } from 'rxjs';
+import {
+  SignInRequiredData,
+  SignInRequiredDialog,
+} from '../../dialogs/sign-in-required/sign-in-required.dialog';
 import { ListingHints } from '../../services/listing-hints';
 import { LoadState, errorReference } from '../../services/load-state';
+import { SessionService } from '../../services/session.service';
 import { ProductRequestForm, ProductSelection } from './product-request-form';
 
 /**
@@ -34,11 +40,14 @@ export class ProductPage {
   private readonly router = inject(Router);
   private readonly title = inject(Title);
   private readonly hints = inject(ListingHints);
+  private readonly session = inject(SessionService);
+  private readonly dialog = inject(Dialog);
   private request?: Subscription;
 
   protected readonly slug = signal('');
   protected readonly productSlug = signal('');
   protected readonly state = signal<LoadState<ProductPageModel>>({ status: 'loading' });
+  protected readonly alertRequested = signal(false);
 
   /** The shop's name, known before the product loads when it was reached from a list. */
   protected readonly shopName = computed(() => {
@@ -72,6 +81,7 @@ export class ProductPage {
       next: (product) => {
         this.hints.remember(product.shop.slug, 'shop', product.shop.name);
         this.hints.rememberProducts(product.more);
+        this.alertRequested.set(product.stockAlertRequested);
         this.state.set({ status: 'loaded', value: product });
         this.title.setTitle(`${product.name} · Jubilee`);
       },
@@ -83,6 +93,27 @@ export class ProductPage {
         }
         this.state.set({ status: 'error', reference: errorReference(error, 'JB-PRD-503') });
       },
+    });
+  }
+
+  /**
+   * "Tell me when it's back" (L2-036 AC2): a member's alert is saved and the status takes the
+   * button's place; a visitor is asked to join or sign in first (L2-012).
+   */
+  protected askForAlert(product: ProductPageModel, button: HTMLElement): void {
+    if (!this.session.member()) {
+      this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+        data: { title: 'Join to be told when it’s back', returnUrl: this.router.url },
+        ariaLabelledBy: 'dlg-title',
+        ariaDescribedBy: 'dlg-desc',
+        ariaModal: true,
+        backdropClass: 'backdrop',
+        restoreFocus: button,
+      });
+      return;
+    }
+    this.api.requestStockAlert(product.id).subscribe({
+      next: () => this.alertRequested.set(true),
     });
   }
 

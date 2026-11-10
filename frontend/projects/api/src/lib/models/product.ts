@@ -28,4 +28,6 @@ export interface ProductPage {
   soldOut: boolean;
   restockNote: string | null;
   more: ProductCard[];
+  /** The signed-in member already asked to be told when it is back (L2-036 AC2). */
+  stockAlertRequested: boolean;
 }

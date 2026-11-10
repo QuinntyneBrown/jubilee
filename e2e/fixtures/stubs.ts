@@ -119,6 +119,21 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return page.route(tee, pending);
     case 'product-error':
       return page.route(tee, (route) => route.fulfill(unavailable('JB-PRD-503')));
+    case 'product-sold-out':
+    case 'product-alert-requested':
+      // The seeded tee is in stock; the sold-out state comes from its owner's later edits.
+      await page.route('**/api/products/*/stock-alert', (route) => route.fulfill({ status: 204 }));
+      return patchListing(page, tee, (product) => ({
+        ...product,
+        soldOut: true,
+        maxQuantity: 0,
+        options: (product['options'] as { label: string }[]).map(({ label }) => ({
+          label,
+          maxQuantity: 0,
+        })),
+        restockNote: 'Naomi prints the next batch on Mon 23 Nov.',
+        stockAlertRequested: name === 'product-alert-requested',
+      }));
     case 'category-not-found':
       return page.route(categoryListings, (route) =>
         route.fulfill({

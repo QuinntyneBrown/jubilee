@@ -47,9 +47,11 @@ background path for stock alerts.
 - **`BackInStockButton`** — button "Tell me when it's back", shown in place of
   "Request this item" when the product is sold out. In that state the page shows
   a "Sold out" badge, "Sold out in every size" ("Sold out" for a product without
-  options) and the owner's optional restock note, and disables the options and
+  options) and the owner's optional restock note, drops the "No payment now"
+  line, and disables the options and
   quantity. For a visitor the button opens the sign-in prompt
-  (`dialogs/sign-in-required`). For a member it asks for the alert, and the
+  (`dialogs/sign-in-required`) titled "Join to be told when it's back", whose
+  "Sign in" and "Join free" carry the product page as `returnUrl`. For a member it asks for the alert, and the
   status "We'll tell you when it's back" takes its place
   (`pages/product/alert-requested.html`).
 - **`ProductsApi`** — typed Angular HTTP client for

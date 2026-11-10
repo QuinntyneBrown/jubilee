@@ -142,14 +142,19 @@ export class BusinessPage extends ShellPage implements Screen {
     return this.heading.evaluate((el) => el.scrollWidth > el.clientWidth + 1);
   }
 
+  /** Resolves once the page has loaded or failed; the loading state has its own screen. */
   async ready(): Promise<void> {
-    await this.main
-      .locator('.detail-head, .empty--error, .skeleton')
-      .first()
-      .waitFor({ state: 'attached' });
+    await this.main.locator('.detail-head, .empty--error').first().waitFor({ state: 'attached' });
   }
 
   regions(): Region[] {
     return [...this.chromeRegions(), { name: 'main', locator: this.main }];
+  }
+}
+
+/** The business page while its data is still on the way. */
+export class BusinessLoadingScreen extends BusinessPage {
+  override async ready(): Promise<void> {
+    await this.main.locator('.skeleton').first().waitFor({ state: 'attached' });
   }
 }

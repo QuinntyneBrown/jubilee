@@ -22,7 +22,8 @@ export interface ProductSelection {
 /**
  * The option, quantity and "Request this item" of a product page (L2-035 AC2, AC3). It checks
  * the selection before a request starts: an option must be chosen, and the quantity is a whole
- * number from the minimum order quantity to the bound of the chosen option.
+ * number from the minimum order quantity to the bound of the chosen option. A sold-out product
+ * disables both and offers "Tell me when it's back" in place of the request (L2-036 AC1).
  */
 @Component({
   selector: 'jb-product-request-form',
@@ -75,13 +76,44 @@ export interface ProductSelection {
         <span class="field__error" id="qty-error">{{ error }}</span>
       }
     </div>
-    <ng-content select="[slot=status]" />
+    @if (item.soldOut) {
+      <div class="alert alert--warning" role="status">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">
+            {{
+              item.options.length
+                ? 'Sold out in every ' + (item.optionName ?? 'option').toLowerCase()
+                : 'Sold out'
+            }}
+          </div>
+          @if (item.restockNote) {
+            <div>{{ item.restockNote }}</div>
+          }
+        </div>
+      </div>
+    }
     <div class="detail-head__actions">
-      @if (item.soldOut) {
-        <ng-content select="[slot=sold-out-action]" />
-      } @else {
+      @if (!item.soldOut) {
         <button class="btn btn--primary btn--lg" type="button" (click)="submit()">
           <svg jb-icon name="bag"></svg>Request this item
+        </button>
+      } @else if (alertRequested()) {
+        <p
+          class="inline-status inline-status--success"
+          role="status"
+          style="min-height: var(--control-height-lg)"
+        >
+          <svg jb-icon name="verified"></svg>We’ll tell you when it’s back
+        </p>
+      } @else {
+        <button
+          #alertButton
+          class="btn btn--primary btn--lg"
+          type="button"
+          (click)="alertAsked.emit(alertButton)"
+        >
+          <svg jb-icon name="bell"></svg>Tell me when it’s back
         </button>
       }
       <a
@@ -96,7 +128,11 @@ export interface ProductSelection {
 })
 export class ProductRequestForm {
   readonly product = input.required<ProductPage>();
+  /** The member has an open back-in-stock alert for this product (L2-036 AC2). */
+  readonly alertRequested = input(false);
   readonly requested = output<ProductSelection>();
+  /** "Tell me when it's back" was pressed; the button is where focus returns to. */
+  readonly alertAsked = output<HTMLElement>();
 
   // Another product starts again: nothing chosen, at its minimum order quantity, no errors.
   protected readonly chosen = linkedSignal<ProductPage, string | null>({

@@ -87,11 +87,9 @@ export class ProductPage extends ShellPage implements Screen {
     return new ProductCardPart(this.moreCards.nth(index));
   }
 
+  /** Resolves once the page has loaded or failed; the loading state has its own screen. */
   async ready(): Promise<void> {
-    await this.main
-      .locator('.detail-head, .empty--error, .skeleton')
-      .first()
-      .waitFor({ state: 'attached' });
+    await this.main.locator('.detail-head, .empty--error').first().waitFor({ state: 'attached' });
   }
 
   regions(): Region[] {
@@ -117,5 +115,12 @@ export class ProductInvalidScreen extends ProductPage {
     await this.optionError.waitFor();
     // The failed request moves focus to the first field to fix; captured at rest, unfocused.
     await this.page.locator(':focus').blur();
+  }
+}
+
+/** The product page while its data is still on the way. */
+export class ProductLoadingScreen extends ProductPage {
+  override async ready(): Promise<void> {
+    await this.main.locator('.skeleton').first().waitFor({ state: 'attached' });
   }
 }

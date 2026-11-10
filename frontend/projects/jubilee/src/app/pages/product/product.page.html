@@ -76,10 +76,17 @@
             <svg jb-icon name="verified"></svg>Verified
           }
         </p>
-        <jb-product-request-form [product]="product" (requested)="startRequest($event)" />
-        <p class="text-caption">
-          No payment now. {{ product.shop.name }} confirms stock and tells you how to pay.
-        </p>
+        <jb-product-request-form
+          [product]="product"
+          [alertRequested]="alertRequested()"
+          (requested)="startRequest($event)"
+          (alertAsked)="askForAlert(product, $event)"
+        />
+        @if (!product.soldOut) {
+          <p class="text-caption">
+            No payment now. {{ product.shop.name }} confirms stock and tells you how to pay.
+          </p>
+        }
         @if (product.description || product.attributes.length) {
           <section aria-labelledby="pd">
             <h2 id="pd" style="margin-top: var(--space-4)">Details</h2>
