@@ -4,7 +4,7 @@ import { BusinessPage } from '../pages/business.page';
 import { NotFoundPage } from '../pages/not-found.page';
 
 // Service business page: L2-033, L2-028, L2-040, L2-088, L2-111 and L2-118.
-// "business" is /b/legacy-financial against the seeded API.
+// "business" is /b/legacy-financial against the recorded answers of the seeded API (ADR 0009).
 
 test.describe('service business page (L2-033)', () => {
   test('AC1: it shows the header, actions, highlight, services, About, Details, related and report', async ({

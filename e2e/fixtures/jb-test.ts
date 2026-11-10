@@ -1,6 +1,7 @@
 import { test as base, expect, type Page } from '@playwright/test';
 import { joanna, mockNow, type NavigationSummary } from './cast';
 import { routes, type RouteKey, type ScreenRoute, type Who } from './routes';
+import { installMockApi, saveShard } from './mock-api';
 import { applyStub } from './stubs';
 
 export const BASELINE = process.env['JB_BASELINE'] === '1';
@@ -37,7 +38,7 @@ export class Jb {
     await this.goto(route.app, options.theme, options.now);
   }
 
-  /** Opens an app path as it is, against the real API unless stubs were installed first. */
+  /** Opens an app path as it is, answered from the recording unless stubs were installed first. */
   async goto(path: string, theme: Theme = 'light', now: Date = mockNow): Promise<void> {
     await this.page.clock.setFixedTime(now);
     await this.page.addInitScript((value) => {
@@ -61,10 +62,26 @@ export class Jb {
   }
 }
 
-export const test = base.extend<{ jb: Jb }>({
+export const test = base.extend<{ jb: Jb }, { apiRecording: void }>({
+  // ADR 0009: no test reaches the API. Every /api request of the page is answered from the
+  // recording, and one without a recorded answer fails the test.
+  page: async ({ page }, use) => {
+    const unanswered: string[] = [];
+    if (!BASELINE) await installMockApi(page, unanswered);
+    await use(page);
+    expect(unanswered, 'API requests without a recorded answer (ADR 0009)').toEqual([]);
+  },
   jb: async ({ page }, use) => {
     await use(new Jb(page));
   },
+  // While recording, each worker keeps what the real API answered.
+  apiRecording: [
+    async ({}, use, workerInfo) => {
+      await use();
+      saveShard(workerInfo.workerIndex);
+    },
+    { scope: 'worker', auto: true },
+  ],
 });
 
 export { expect };

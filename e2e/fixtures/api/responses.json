@@ -1,0 +1,2380 @@
+{
+  "GET /api/categories/home-property/listings/count": {
+    "status": 200,
+    "body": {
+      "count": 10
+    }
+  },
+  "GET /api/categories/home-property/listings/count?offers=emergency-calls": {
+    "status": 200,
+    "body": {
+      "count": 3
+    }
+  },
+  "GET /api/categories/home-property/listings/count?offers=free-quote": {
+    "status": 200,
+    "body": {
+      "count": 8
+    }
+  },
+  "GET /api/categories/home-property/listings/count?offers=free-quote&areas=east-york": {
+    "status": 200,
+    "body": {
+      "count": 4
+    }
+  },
+  "GET /api/categories/home-property/listings?areas=scarborough&sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 4,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [],
+        "areas": [
+          "scarborough"
+        ]
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "ace-waterproofing",
+          "name": "Ace Waterproofing",
+          "tagline": "Specializing In Basement Waterproofing",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "good-ground-landscaping",
+          "name": "Good Ground Landscaping",
+          "tagline": "Gardens, lawns and snow, cared for all year",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "mustard-seed-painting",
+          "name": "Mustard Seed Painting",
+          "tagline": "Small crew, careful work, clean lines",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "olive-branch-roofing",
+          "name": "Olive Branch Roofing",
+          "tagline": "Roofs repaired and replaced without the runaround",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=emergency-calls&sort=name&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 3,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "emergency-calls"
+        ],
+        "areas": []
+      },
+      "sort": "name",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "cornerstone-electric",
+          "name": "Cornerstone Electric",
+          "tagline": "Licensed electricians who show up when they say they will",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "waterworks-plumbing-drains",
+          "name": "WaterWorks Plumbing & Drains",
+          "tagline": "Treating Every Customer As Family",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=emergency-calls&sort=newest&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 3,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "emergency-calls"
+        ],
+        "areas": []
+      },
+      "sort": "newest",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "waterworks-plumbing-drains",
+          "name": "WaterWorks Plumbing & Drains",
+          "tagline": "Treating Every Customer As Family",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "cornerstone-electric",
+          "name": "Cornerstone Electric",
+          "tagline": "Licensed electricians who show up when they say they will",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=emergency-calls&sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 3,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "emergency-calls"
+        ],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "waterworks-plumbing-drains",
+          "name": "WaterWorks Plumbing & Drains",
+          "tagline": "Treating Every Customer As Family",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "cornerstone-electric",
+          "name": "Cornerstone Electric",
+          "tagline": "Licensed electricians who show up when they say they will",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=emergency-calls,open-saturdays&areas=etobicoke&sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 2,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "emergency-calls",
+          "open-saturdays"
+        ],
+        "areas": [
+          "etobicoke"
+        ]
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "cornerstone-electric",
+          "name": "Cornerstone Electric",
+          "tagline": "Licensed electricians who show up when they say they will",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=emergency-calls,open-saturdays&areas=scarborough&sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 0,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "emergency-calls",
+          "open-saturdays"
+        ],
+        "areas": [
+          "scarborough"
+        ]
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [],
+      "suggestions": [
+        {
+          "removed": {
+            "group": "offers",
+            "value": "emergency-calls"
+          },
+          "count": 0
+        },
+        {
+          "removed": {
+            "group": "offers",
+            "value": "open-saturdays"
+          },
+          "count": 0
+        },
+        {
+          "removed": {
+            "group": "areas",
+            "value": "scarborough"
+          },
+          "count": 3
+        }
+      ]
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=emergency-calls,open-saturdays&sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 3,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "emergency-calls",
+          "open-saturdays"
+        ],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "waterworks-plumbing-drains",
+          "name": "WaterWorks Plumbing & Drains",
+          "tagline": "Treating Every Customer As Family",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "cornerstone-electric",
+          "name": "Cornerstone Electric",
+          "tagline": "Licensed electricians who show up when they say they will",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=free-quote&areas=east-york&sort=name&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 4,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "free-quote"
+        ],
+        "areas": [
+          "east-york"
+        ]
+      },
+      "sort": "name",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "ace-waterproofing",
+          "name": "Ace Waterproofing",
+          "tagline": "Specializing In Basement Waterproofing",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "atera-construction-and-renovation",
+          "name": "Atera Construction and Renovation",
+          "tagline": "Expert construction on any project",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "good-ground-landscaping",
+          "name": "Good Ground Landscaping",
+          "tagline": "Gardens, lawns and snow, cared for all year",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "moores-cleaning-service",
+          "name": "Moore’s Cleaning Service",
+          "tagline": "Enjoy the Freedom of Clean",
+          "highlight": "Weekly or one-time",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=free-quote&areas=east-york&sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 4,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "free-quote"
+        ],
+        "areas": [
+          "east-york"
+        ]
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "ace-waterproofing",
+          "name": "Ace Waterproofing",
+          "tagline": "Specializing In Basement Waterproofing",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "atera-construction-and-renovation",
+          "name": "Atera Construction and Renovation",
+          "tagline": "Expert construction on any project",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "moores-cleaning-service",
+          "name": "Moore’s Cleaning Service",
+          "tagline": "Enjoy the Freedom of Clean",
+          "highlight": "Weekly or one-time",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "good-ground-landscaping",
+          "name": "Good Ground Landscaping",
+          "tagline": "Gardens, lawns and snow, cared for all year",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=free-quote&sort=newest&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 8,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "free-quote"
+        ],
+        "areas": []
+      },
+      "sort": "newest",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "ace-waterproofing",
+          "name": "Ace Waterproofing",
+          "tagline": "Specializing In Basement Waterproofing",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "atera-construction-and-renovation",
+          "name": "Atera Construction and Renovation",
+          "tagline": "Expert construction on any project",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "moores-cleaning-service",
+          "name": "Moore’s Cleaning Service",
+          "tagline": "Enjoy the Freedom of Clean",
+          "highlight": "Weekly or one-time",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "good-ground-landscaping",
+          "name": "Good Ground Landscaping",
+          "tagline": "Gardens, lawns and snow, cared for all year",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "mustard-seed-painting",
+          "name": "Mustard Seed Painting",
+          "tagline": "Small crew, careful work, clean lines",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "olive-branch-roofing",
+          "name": "Olive Branch Roofing",
+          "tagline": "Roofs repaired and replaced without the runaround",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "plumb-line-handyman",
+          "name": "Plumb Line Handyman",
+          "tagline": "The small jobs done properly",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?offers=open-saturdays&areas=scarborough&sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 0,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [
+          "open-saturdays"
+        ],
+        "areas": [
+          "scarborough"
+        ]
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [],
+      "suggestions": [
+        {
+          "removed": {
+            "group": "offers",
+            "value": "open-saturdays"
+          },
+          "count": 4
+        },
+        {
+          "removed": {
+            "group": "areas",
+            "value": "scarborough"
+          },
+          "count": 2
+        }
+      ]
+    }
+  },
+  "GET /api/categories/home-property/listings?sort=name&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 10,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "name",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "ace-waterproofing",
+          "name": "Ace Waterproofing",
+          "tagline": "Specializing In Basement Waterproofing",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "atera-construction-and-renovation",
+          "name": "Atera Construction and Renovation",
+          "tagline": "Expert construction on any project",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "cornerstone-electric",
+          "name": "Cornerstone Electric",
+          "tagline": "Licensed electricians who show up when they say they will",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "good-ground-landscaping",
+          "name": "Good Ground Landscaping",
+          "tagline": "Gardens, lawns and snow, cared for all year",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "moores-cleaning-service",
+          "name": "Moore’s Cleaning Service",
+          "tagline": "Enjoy the Freedom of Clean",
+          "highlight": "Weekly or one-time",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "mustard-seed-painting",
+          "name": "Mustard Seed Painting",
+          "tagline": "Small crew, careful work, clean lines",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "olive-branch-roofing",
+          "name": "Olive Branch Roofing",
+          "tagline": "Roofs repaired and replaced without the runaround",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "plumb-line-handyman",
+          "name": "Plumb Line Handyman",
+          "tagline": "The small jobs done properly",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "waterworks-plumbing-drains",
+          "name": "WaterWorks Plumbing & Drains",
+          "tagline": "Treating Every Customer As Family",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?sort=newest&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 10,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "newest",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "waterworks-plumbing-drains",
+          "name": "WaterWorks Plumbing & Drains",
+          "tagline": "Treating Every Customer As Family",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "ace-waterproofing",
+          "name": "Ace Waterproofing",
+          "tagline": "Specializing In Basement Waterproofing",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "atera-construction-and-renovation",
+          "name": "Atera Construction and Renovation",
+          "tagline": "Expert construction on any project",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "moores-cleaning-service",
+          "name": "Moore’s Cleaning Service",
+          "tagline": "Enjoy the Freedom of Clean",
+          "highlight": "Weekly or one-time",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "cornerstone-electric",
+          "name": "Cornerstone Electric",
+          "tagline": "Licensed electricians who show up when they say they will",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "good-ground-landscaping",
+          "name": "Good Ground Landscaping",
+          "tagline": "Gardens, lawns and snow, cared for all year",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "mustard-seed-painting",
+          "name": "Mustard Seed Painting",
+          "tagline": "Small crew, careful work, clean lines",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "olive-branch-roofing",
+          "name": "Olive Branch Roofing",
+          "tagline": "Roofs repaired and replaced without the runaround",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "plumb-line-handyman",
+          "name": "Plumb Line Handyman",
+          "tagline": "The small jobs done properly",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 10,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "waterworks-plumbing-drains",
+          "name": "WaterWorks Plumbing & Drains",
+          "tagline": "Treating Every Customer As Family",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "ace-waterproofing",
+          "name": "Ace Waterproofing",
+          "tagline": "Specializing In Basement Waterproofing",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "atera-construction-and-renovation",
+          "name": "Atera Construction and Renovation",
+          "tagline": "Expert construction on any project",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "moores-cleaning-service",
+          "name": "Moore’s Cleaning Service",
+          "tagline": "Enjoy the Freedom of Clean",
+          "highlight": "Weekly or one-time",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "cornerstone-electric",
+          "name": "Cornerstone Electric",
+          "tagline": "Licensed electricians who show up when they say they will",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "good-ground-landscaping",
+          "name": "Good Ground Landscaping",
+          "tagline": "Gardens, lawns and snow, cared for all year",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "mustard-seed-painting",
+          "name": "Mustard Seed Painting",
+          "tagline": "Small crew, careful work, clean lines",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "olive-branch-roofing",
+          "name": "Olive Branch Roofing",
+          "tagline": "Roofs repaired and replaced without the runaround",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "plumb-line-handyman",
+          "name": "Plumb Line Handyman",
+          "tagline": "The small jobs done properly",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/home-property/listings?sort=recommended&page=9": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "home-property",
+        "name": "Home & property"
+      },
+      "totalCount": 10,
+      "matchCount": 10,
+      "fact": {
+        "offer": "emergency-calls",
+        "count": 3
+      },
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "waterworks-plumbing-drains",
+          "name": "WaterWorks Plumbing & Drains",
+          "tagline": "Treating Every Customer As Family",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "ace-waterproofing",
+          "name": "Ace Waterproofing",
+          "tagline": "Specializing In Basement Waterproofing",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "atera-construction-and-renovation",
+          "name": "Atera Construction and Renovation",
+          "tagline": "Expert construction on any project",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "moores-cleaning-service",
+          "name": "Moore’s Cleaning Service",
+          "tagline": "Enjoy the Freedom of Clean",
+          "highlight": "Weekly or one-time",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "cornerstone-electric",
+          "name": "Cornerstone Electric",
+          "tagline": "Licensed electricians who show up when they say they will",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "shepherds-heating-cooling",
+          "name": "Shepherd’s Heating & Cooling",
+          "tagline": "Furnaces and air conditioners kept running, winter and summer",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "good-ground-landscaping",
+          "name": "Good Ground Landscaping",
+          "tagline": "Gardens, lawns and snow, cared for all year",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "mustard-seed-painting",
+          "name": "Mustard Seed Painting",
+          "tagline": "Small crew, careful work, clean lines",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "olive-branch-roofing",
+          "name": "Olive Branch Roofing",
+          "tagline": "Roofs repaired and replaced without the runaround",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "plumb-line-handyman",
+          "name": "Plumb Line Handyman",
+          "tagline": "The small jobs done properly",
+          "highlight": "Free quote",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/learning/listings?sort=name&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "learning",
+        "name": "Learning"
+      },
+      "totalCount": 2,
+      "matchCount": 2,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "name",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "the-revelation-centre",
+          "name": "The Revelation Centre",
+          "tagline": "Discipleship training through empirical theology. Come and see.",
+          "highlight": "Evening classes",
+          "categorySlug": "learning",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "talent-can-be-taught",
+          "name": "Talent Can Be Taught",
+          "tagline": "Learning Music Made Simple.",
+          "highlight": "First lesson free",
+          "categorySlug": "learning",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/learning/listings?sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "learning",
+        "name": "Learning"
+      },
+      "totalCount": 2,
+      "matchCount": 2,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "talent-can-be-taught",
+          "name": "Talent Can Be Taught",
+          "tagline": "Learning Music Made Simple.",
+          "highlight": "First lesson free",
+          "categorySlug": "learning",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "the-revelation-centre",
+          "name": "The Revelation Centre",
+          "tagline": "Discipleship training through empirical theology. Come and see.",
+          "highlight": "Evening classes",
+          "categorySlug": "learning",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/categories/plumbers/listings?sort=recommended&page=1": {
+    "status": 404,
+    "body": {
+      "title": "We can't find that.",
+      "status": 404,
+      "detail": "There is no such category.",
+      "correlationId": "d1dd6f9d8180462ab2ec03c2a30be60d",
+      "code": "category_not_found"
+    }
+  },
+  "GET /api/categories/shops/listings?sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "shops",
+        "name": "Shops"
+      },
+      "totalCount": 3,
+      "matchCount": 3,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "luzandre",
+          "name": "Luzandre.com",
+          "tagline": "Unique & custom Christian apparel, artworks & gifts that bring joy",
+          "highlight": "Ships across Canada",
+          "categorySlug": "shops",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "christian-bookstores",
+          "name": "Christian Bookstores",
+          "tagline": "Bibles, devotionals and gifts from Toronto’s Christian booksellers",
+          "highlight": "Pickup in store",
+          "categorySlug": "shops",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "flower-creations",
+          "name": "Flower Creations",
+          "tagline": "Fresh Blooms for Every Occasion",
+          "highlight": "Same-day delivery",
+          "categorySlug": "shops",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": []
+    }
+  },
+  "GET /api/directory/home": {
+    "status": 200,
+    "body": {
+      "liveBusinessCount": 47,
+      "categories": [
+        {
+          "slug": "shops",
+          "name": "Shops"
+        },
+        {
+          "slug": "financial-insurance",
+          "name": "Financial & insurance"
+        },
+        {
+          "slug": "legal-immigration",
+          "name": "Legal & immigration"
+        },
+        {
+          "slug": "home-property",
+          "name": "Home & property"
+        },
+        {
+          "slug": "real-estate-living",
+          "name": "Real estate & living"
+        },
+        {
+          "slug": "health-family",
+          "name": "Health & family"
+        },
+        {
+          "slug": "business-tech",
+          "name": "Business & tech"
+        },
+        {
+          "slug": "learning",
+          "name": "Learning"
+        },
+        {
+          "slug": "media",
+          "name": "Media"
+        },
+        {
+          "slug": "community",
+          "name": "Community"
+        }
+      ],
+      "featured": [
+        {
+          "slug": "legacy-financial",
+          "name": "Legacy Financial",
+          "tagline": "Build a Legacy. Protect a Legacy. Leave a Legacy.",
+          "highlight": "Free first meeting",
+          "categorySlug": "financial-insurance",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "luzandre",
+          "name": "Luzandre.com",
+          "tagline": "Unique & custom Christian apparel, artworks & gifts that bring joy",
+          "highlight": "Ships across Canada",
+          "categorySlug": "shops",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "christian-bookstores",
+          "name": "Christian Bookstores",
+          "tagline": "Bibles, devotionals and gifts from Toronto’s Christian booksellers",
+          "highlight": "Pickup in store",
+          "categorySlug": "shops",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "adrianne-sequeira",
+          "name": "Adrianne Sequeira, DMin., RP, RMFT, RN",
+          "tagline": "Expert therapy and counselling for individuals, couples, and families",
+          "highlight": "Accepting new clients",
+          "categorySlug": "health-family",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "waterworks-plumbing-drains",
+          "name": "WaterWorks Plumbing & Drains",
+          "tagline": "Treating Every Customer As Family",
+          "highlight": "Emergency calls",
+          "categorySlug": "home-property",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "products": [
+        {
+          "slug": "faith-heavyweight-tee-charcoal",
+          "businessSlug": "luzandre",
+          "name": "Faith heavyweight tee, charcoal",
+          "shopName": "Luzandre.com",
+          "priceCents": 3400,
+          "perUnit": false,
+          "tile": {
+            "tint": "ink",
+            "icon": "shirt"
+          }
+        },
+        {
+          "slug": "gold-cross-stoneware-mug",
+          "businessSlug": "luzandre",
+          "name": "Gold cross stoneware mug",
+          "shopName": "Luzandre.com",
+          "priceCents": 2400,
+          "perUnit": false,
+          "tile": {
+            "tint": "gold",
+            "icon": "mug"
+          }
+        },
+        {
+          "slug": "custom-church-team-tee",
+          "businessSlug": "luzandre",
+          "name": "Custom church team tee (min. 12)",
+          "shopName": "Luzandre.com",
+          "priceCents": 2200,
+          "perUnit": true,
+          "tile": {
+            "tint": "blue",
+            "icon": "shirt"
+          }
+        },
+        {
+          "slug": "morning-mug-set-of-two",
+          "businessSlug": "luzandre",
+          "name": "Morning mug, set of two",
+          "shopName": "Luzandre.com",
+          "priceCents": 4200,
+          "perUnit": false,
+          "tile": {
+            "tint": "green",
+            "icon": "mug"
+          }
+        },
+        {
+          "slug": "leather-journaling-bible-esv",
+          "businessSlug": "christian-bookstores",
+          "name": "Leather journaling Bible, ESV",
+          "shopName": "Christian Bookstores",
+          "priceCents": 6400,
+          "perUnit": false,
+          "tile": {
+            "tint": "gold",
+            "icon": "book"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "slug": "shops",
+          "name": "Shops",
+          "count": 3,
+          "hasMore": false,
+          "businesses": [
+            {
+              "slug": "luzandre",
+              "name": "Luzandre.com",
+              "tagline": "Unique & custom Christian apparel, artworks & gifts that bring joy",
+              "verified": true
+            },
+            {
+              "slug": "christian-bookstores",
+              "name": "Christian Bookstores",
+              "tagline": "Bibles, devotionals and gifts from Toronto’s Christian booksellers",
+              "verified": true
+            },
+            {
+              "slug": "flower-creations",
+              "name": "Flower Creations",
+              "tagline": "Fresh Blooms for Every Occasion",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "slug": "financial-insurance",
+          "name": "Financial & insurance",
+          "count": 3,
+          "hasMore": false,
+          "businesses": [
+            {
+              "slug": "legacy-financial",
+              "name": "Legacy Financial",
+              "tagline": "Build a Legacy. Protect a Legacy. Leave a Legacy.",
+              "verified": true
+            },
+            {
+              "slug": "deeks-insurance",
+              "name": "Deeks Insurance",
+              "tagline": "We put our heart – and faith – into everything we do as a business.",
+              "verified": true
+            },
+            {
+              "slug": "jd-smith-insurance-brokers",
+              "name": "JD Smith Insurance Brokers",
+              "tagline": "Personal & commercial insurance solutions",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "slug": "legal-immigration",
+          "name": "Legal & immigration",
+          "count": 6,
+          "hasMore": true,
+          "businesses": [
+            {
+              "slug": "kevin-marshall-barrister-solicitor",
+              "name": "Kevin Marshall, Barrister & Solicitor",
+              "tagline": "Caring for you, so you can take care of what matters",
+              "verified": true
+            },
+            {
+              "slug": "desloges-law-group",
+              "name": "Desloges Law Group",
+              "tagline": "Helping thousands of people from all over the world obtain legal status and make Canada their home.",
+              "verified": true
+            },
+            {
+              "slug": "kyl-law-firm",
+              "name": "KYL Law Firm",
+              "tagline": "Immigration and family matters, handled ethically and efficiently.",
+              "verified": true
+            },
+            {
+              "slug": "law-office-of-denise-badley-castello",
+              "name": "Law Office of Denise Badley-Castello",
+              "tagline": "Legal Representation You Can Trust",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "slug": "home-property",
+          "name": "Home & property",
+          "count": 10,
+          "hasMore": true,
+          "businesses": [
+            {
+              "slug": "waterworks-plumbing-drains",
+              "name": "WaterWorks Plumbing & Drains",
+              "tagline": "Treating Every Customer As Family",
+              "verified": true
+            },
+            {
+              "slug": "ace-waterproofing",
+              "name": "Ace Waterproofing",
+              "tagline": "Specializing In Basement Waterproofing",
+              "verified": true
+            },
+            {
+              "slug": "atera-construction-and-renovation",
+              "name": "Atera Construction and Renovation",
+              "tagline": "Expert construction on any project",
+              "verified": true
+            },
+            {
+              "slug": "moores-cleaning-service",
+              "name": "Moore’s Cleaning Service",
+              "tagline": "Enjoy the Freedom of Clean",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "slug": "real-estate-living",
+          "name": "Real estate & living",
+          "count": 4,
+          "hasMore": false,
+          "businesses": [
+            {
+              "slug": "bob-bush-realty",
+              "name": "Bob Bush Realty",
+              "tagline": "Find your dream Cottage!",
+              "verified": true
+            },
+            {
+              "slug": "remax-professional-jonathan-bradshaw",
+              "name": "RE/MAX Professional – Jonathan Bradshaw",
+              "tagline": "Putting people and homes together is my passion!",
+              "verified": true
+            },
+            {
+              "slug": "sutton-old-mill-liz-st-louis",
+              "name": "Sutton Old Mill – Liz St Louis",
+              "tagline": "Building your future one key at a time…",
+              "verified": true
+            },
+            {
+              "slug": "ccsvillage-lifestyle-community",
+              "name": "CCSVillage Lifestyle Community",
+              "tagline": "Welcome Home to Faith, Fellowship, and Carefree Living.",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "slug": "health-family",
+          "name": "Health & family",
+          "count": 4,
+          "hasMore": false,
+          "businesses": [
+            {
+              "slug": "adrianne-sequeira",
+              "name": "Adrianne Sequeira, DMin., RP, RMFT, RN",
+              "tagline": "Expert therapy and counselling for individuals, couples, and families",
+              "verified": true
+            },
+            {
+              "slug": "break-free-family-centre",
+              "name": "Break Free Family Centre",
+              "tagline": "“Every mountain top is within reach if you just keep climbing.”",
+              "verified": true
+            },
+            {
+              "slug": "confident-smiles-implant-denture-solutions",
+              "name": "Confident Smiles Implant Denture Solutions",
+              "tagline": "Ensuring your smile stays bright.",
+              "verified": true
+            },
+            {
+              "slug": "angelic-treasures-christian-childcare",
+              "name": "Angelic Treasures Christian Childcare",
+              "tagline": "Christian childcare business opportunity",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "slug": "business-tech",
+          "name": "Business & tech",
+          "count": 5,
+          "hasMore": true,
+          "businesses": [
+            {
+              "slug": "ccbf-canadian-christian-business-federation",
+              "name": "CCBF Canadian Christian Business Federation",
+              "tagline": "Connecting your Sunday faith to your Monday work.",
+              "verified": true
+            },
+            {
+              "slug": "digital-consultants",
+              "name": "Digital Consultants",
+              "tagline": "Igniting Online Presence",
+              "verified": true
+            },
+            {
+              "slug": "east-west-express",
+              "name": "East-West Express",
+              "tagline": "Operating in Canada since 1991",
+              "verified": true
+            },
+            {
+              "slug": "lamont-it-services",
+              "name": "Lamont IT Services",
+              "tagline": "Your Complete On-site IT Solutions Partner!",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "slug": "learning",
+          "name": "Learning",
+          "count": 2,
+          "hasMore": false,
+          "businesses": [
+            {
+              "slug": "talent-can-be-taught",
+              "name": "Talent Can Be Taught",
+              "tagline": "Learning Music Made Simple.",
+              "verified": true
+            },
+            {
+              "slug": "the-revelation-centre",
+              "name": "The Revelation Centre",
+              "tagline": "Discipleship training through empirical theology. Come and see.",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "slug": "media",
+          "name": "Media",
+          "count": 7,
+          "hasMore": true,
+          "businesses": [
+            {
+              "slug": "amen-fm-christian-superstation",
+              "name": "Amen FM Christian Superstation",
+              "tagline": "Radio with a purpose",
+              "verified": true
+            },
+            {
+              "slug": "faith-tv",
+              "name": "FAITH TV",
+              "tagline": "The Nation’s Faith Station",
+              "verified": true
+            },
+            {
+              "slug": "joy-radio-cjye",
+              "name": "Joy Radio CJYE",
+              "tagline": "Discover the life changing power of Joy Radio!",
+              "verified": true
+            },
+            {
+              "slug": "joy-tv",
+              "name": "JOY TV",
+              "tagline": "Faith and Opinion",
+              "verified": true
+            }
+          ]
+        },
+        {
+          "slug": "community",
+          "name": "Community",
+          "count": 3,
+          "hasMore": false,
+          "businesses": [
+            {
+              "slug": "the-scott-mission",
+              "name": "The Scott Mission",
+              "tagline": "A Christian Ministry of Mercy and Love.",
+              "verified": true
+            },
+            {
+              "slug": "teen-challenge-canada-vehicle-donation",
+              "name": "Teen Challenge Canada – Vehicle Donation",
+              "tagline": "Donated vehicles change lives!",
+              "verified": true
+            },
+            {
+              "slug": "jesus-in-the-city-parade-and-festival",
+              "name": "Jesus in the City Parade and Festival",
+              "tagline": "Celebrating our love for God and love for people",
+              "verified": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "GET /api/directory/welcome": {
+    "status": 200,
+    "body": {
+      "liveBusinessCount": 47,
+      "categories": [
+        {
+          "slug": "shops",
+          "name": "Shops"
+        },
+        {
+          "slug": "financial-insurance",
+          "name": "Financial & insurance"
+        },
+        {
+          "slug": "legal-immigration",
+          "name": "Legal & immigration"
+        },
+        {
+          "slug": "home-property",
+          "name": "Home & property"
+        },
+        {
+          "slug": "real-estate-living",
+          "name": "Real estate & living"
+        },
+        {
+          "slug": "health-family",
+          "name": "Health & family"
+        },
+        {
+          "slug": "business-tech",
+          "name": "Business & tech"
+        },
+        {
+          "slug": "learning",
+          "name": "Learning"
+        },
+        {
+          "slug": "media",
+          "name": "Media"
+        },
+        {
+          "slug": "community",
+          "name": "Community"
+        }
+      ],
+      "featured": [
+        {
+          "slug": "legacy-financial",
+          "name": "Legacy Financial",
+          "tagline": "Build a Legacy. Protect a Legacy. Leave a Legacy.",
+          "highlight": "Free first meeting",
+          "categorySlug": "financial-insurance",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "luzandre",
+          "name": "Luzandre.com",
+          "tagline": "Unique & custom Christian apparel, artworks & gifts that bring joy",
+          "highlight": "Ships across Canada",
+          "categorySlug": "shops",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "christian-bookstores",
+          "name": "Christian Bookstores",
+          "tagline": "Bibles, devotionals and gifts from Toronto’s Christian booksellers",
+          "highlight": "Pickup in store",
+          "categorySlug": "shops",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "adrianne-sequeira",
+          "name": "Adrianne Sequeira, DMin., RP, RMFT, RN",
+          "tagline": "Expert therapy and counselling for individuals, couples, and families",
+          "highlight": "Accepting new clients",
+          "categorySlug": "health-family",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ]
+    }
+  },
+  "GET /api/listings/bethel-gift-baskets": {
+    "status": 404,
+    "body": {
+      "title": "We can't find that.",
+      "status": 404,
+      "detail": "There is no such business.",
+      "correlationId": "1aeb02afa3ae416193d1fc7ee5fd5296",
+      "code": "listing_not_found"
+    }
+  },
+  "GET /api/listings/deeks-insurance": {
+    "status": 200,
+    "body": {
+      "slug": "deeks-insurance",
+      "kind": "services",
+      "name": "Deeks Insurance",
+      "category": {
+        "slug": "financial-insurance",
+        "name": "Financial & insurance"
+      },
+      "verified": true,
+      "stage": "live",
+      "viewerRelation": "visitor",
+      "ownerName": null,
+      "tagline": "We put our heart – and faith – into everything we do as a business.",
+      "credentials": [],
+      "highlight": "Get a quote",
+      "about": null,
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-10-22T23:03:33.4949943+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [
+        {
+          "slug": "legacy-financial",
+          "name": "Legacy Financial",
+          "tagline": "Build a Legacy. Protect a Legacy. Leave a Legacy.",
+          "highlight": "Free first meeting",
+          "categorySlug": "financial-insurance",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "jd-smith-insurance-brokers",
+          "name": "JD Smith Insurance Brokers",
+          "tagline": "Personal & commercial insurance solutions",
+          "highlight": "Get a quote",
+          "categorySlug": "financial-insurance",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ]
+    }
+  },
+  "GET /api/listings/legacy-financial": {
+    "status": 200,
+    "body": {
+      "slug": "legacy-financial",
+      "kind": "services",
+      "name": "Legacy Financial",
+      "category": {
+        "slug": "financial-insurance",
+        "name": "Financial & insurance"
+      },
+      "verified": true,
+      "stage": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Trevor Chew, CKA®, CFP®, CLU®",
+      "tagline": "Build a Legacy. Protect a Legacy. Leave a Legacy.",
+      "credentials": [
+        "CKA® · CFP® · CLU®"
+      ],
+      "highlight": "Free first meeting",
+      "about": "Financial planning grounded in biblical stewardship: budgeting and debt, retirement, insurance and estate planning, and a generosity plan your family can keep for generations.",
+      "coverPhoto": null,
+      "details": {
+        "where": "2 Sheppard Ave E, North York · video across Ontario",
+        "hours": "Mon–Fri 9:00–5:00 · Thu until 8:00",
+        "languages": "English, Cantonese",
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-03-16T14:00:00+00:00",
+        "replies": "day"
+      },
+      "services": [
+        {
+          "id": "0c7b0628-0273-4c65-8da2-42fd0c6b6a12",
+          "name": "Discovery meeting",
+          "detail": "30 min · In person or video",
+          "priceKind": "free",
+          "priceCents": null,
+          "action": "book"
+        },
+        {
+          "id": "b7383188-bfd2-40d3-b1d8-f4b9e7fd49e6",
+          "name": "Retirement & RRSP review",
+          "detail": "60 min · Bring your statements",
+          "priceKind": "ask",
+          "priceCents": null,
+          "action": "book"
+        },
+        {
+          "id": "623670a4-3e1b-41b6-9f17-d99db76ddb09",
+          "name": "Life & disability insurance review",
+          "detail": "45 min",
+          "priceKind": "free",
+          "priceCents": null,
+          "action": "book"
+        },
+        {
+          "id": "5a52d861-455d-43ed-95d9-6031e45797cb",
+          "name": "Estate & legacy plan",
+          "detail": "Two sessions, written plan",
+          "priceKind": "ask",
+          "priceCents": null,
+          "action": "book"
+        }
+      ],
+      "productCount": 0,
+      "products": [],
+      "related": [
+        {
+          "slug": "deeks-insurance",
+          "name": "Deeks Insurance",
+          "tagline": "We put our heart – and faith – into everything we do as a business.",
+          "highlight": "Get a quote",
+          "categorySlug": "financial-insurance",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "jd-smith-insurance-brokers",
+          "name": "JD Smith Insurance Brokers",
+          "tagline": "Personal & commercial insurance solutions",
+          "highlight": "Get a quote",
+          "categorySlug": "financial-insurance",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ]
+    }
+  },
+  "GET /api/listings/luzandre": {
+    "status": 200,
+    "body": {
+      "slug": "luzandre",
+      "kind": "shop",
+      "name": "Luzandre.com",
+      "category": {
+        "slug": "shops",
+        "name": "Shops"
+      },
+      "verified": true,
+      "stage": "live",
+      "viewerRelation": "visitor",
+      "ownerName": null,
+      "tagline": "Unique & custom Christian apparel, artworks & gifts that bring joy",
+      "credentials": [],
+      "highlight": "Ships across Canada",
+      "about": "Custom tees, mugs and original artwork designed to share joy. Order a ready-made piece or ask for something made just for your church, team or family.",
+      "coverPhoto": null,
+      "details": {
+        "where": "Online · studio pickup in Leslieville",
+        "hours": null,
+        "languages": null,
+        "delivery": "Canada Post, $9 flat · free over $75",
+        "madeToOrder": "Ready in 5–7 days",
+        "onJubileeSince": "2026-06-08T14:00:00+00:00",
+        "replies": "few-hours"
+      },
+      "services": [
+        {
+          "id": "cb61bd0b-3a15-4824-a80d-ce8ff4bada6d",
+          "name": "Custom design consultation",
+          "detail": "30 min · Video",
+          "priceKind": "free",
+          "priceCents": null,
+          "action": "ask"
+        },
+        {
+          "id": "19d75649-5168-4c2c-8bb0-b7a94c509d2c",
+          "name": "Church merch package",
+          "detail": "Tees, mugs and totes for your congregation",
+          "priceKind": "ask",
+          "priceCents": null,
+          "action": "ask"
+        }
+      ],
+      "productCount": 4,
+      "products": [
+        {
+          "slug": "faith-heavyweight-tee-charcoal",
+          "businessSlug": "luzandre",
+          "name": "Faith heavyweight tee, charcoal",
+          "shopName": "Luzandre.com",
+          "priceCents": 3400,
+          "perUnit": false,
+          "tile": {
+            "tint": "ink",
+            "icon": "shirt"
+          }
+        },
+        {
+          "slug": "gold-cross-stoneware-mug",
+          "businessSlug": "luzandre",
+          "name": "Gold cross stoneware mug",
+          "shopName": "Luzandre.com",
+          "priceCents": 2400,
+          "perUnit": false,
+          "tile": {
+            "tint": "gold",
+            "icon": "mug"
+          }
+        },
+        {
+          "slug": "custom-church-team-tee",
+          "businessSlug": "luzandre",
+          "name": "Custom church team tee (min. 12)",
+          "shopName": "Luzandre.com",
+          "priceCents": 2200,
+          "perUnit": true,
+          "tile": {
+            "tint": "blue",
+            "icon": "shirt"
+          }
+        },
+        {
+          "slug": "morning-mug-set-of-two",
+          "businessSlug": "luzandre",
+          "name": "Morning mug, set of two",
+          "shopName": "Luzandre.com",
+          "priceCents": 4200,
+          "perUnit": false,
+          "tile": {
+            "tint": "green",
+            "icon": "mug"
+          }
+        }
+      ],
+      "related": [
+        {
+          "slug": "christian-bookstores",
+          "name": "Christian Bookstores",
+          "tagline": "Bibles, devotionals and gifts from Toronto’s Christian booksellers",
+          "highlight": "Pickup in store",
+          "categorySlug": "shops",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "flower-creations",
+          "name": "Flower Creations",
+          "tagline": "Fresh Blooms for Every Occasion",
+          "highlight": "Same-day delivery",
+          "categorySlug": "shops",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ]
+    }
+  },
+  "GET /api/listings/luzandre/products/custom-church-team-tee": {
+    "status": 200,
+    "body": {
+      "id": "62001c75-4b3d-4e5d-848e-8d5e1d48be44",
+      "slug": "custom-church-team-tee",
+      "name": "Custom church team tee (min. 12)",
+      "priceCents": 2200,
+      "perUnit": true,
+      "deliveryLine": "free pickup, or shipping quoted with your order",
+      "tile": {
+        "tint": "blue",
+        "icon": "shirt"
+      },
+      "shop": {
+        "slug": "luzandre",
+        "name": "Luzandre.com",
+        "verified": true
+      },
+      "description": "Your church or team's design on our heavyweight tee. Send the artwork with your request.",
+      "attributes": [
+        {
+          "label": "Ready in",
+          "value": "10–14 days, made to order"
+        }
+      ],
+      "optionName": null,
+      "options": [],
+      "minimumQuantity": 12,
+      "maxQuantity": 99,
+      "soldOut": false,
+      "restockNote": null,
+      "more": [
+        {
+          "slug": "faith-heavyweight-tee-charcoal",
+          "businessSlug": "luzandre",
+          "name": "Faith heavyweight tee, charcoal",
+          "shopName": "Luzandre.com",
+          "priceCents": 3400,
+          "perUnit": false,
+          "tile": {
+            "tint": "ink",
+            "icon": "shirt"
+          }
+        },
+        {
+          "slug": "gold-cross-stoneware-mug",
+          "businessSlug": "luzandre",
+          "name": "Gold cross stoneware mug",
+          "shopName": "Luzandre.com",
+          "priceCents": 2400,
+          "perUnit": false,
+          "tile": {
+            "tint": "gold",
+            "icon": "mug"
+          }
+        },
+        {
+          "slug": "morning-mug-set-of-two",
+          "businessSlug": "luzandre",
+          "name": "Morning mug, set of two",
+          "shopName": "Luzandre.com",
+          "priceCents": 4200,
+          "perUnit": false,
+          "tile": {
+            "tint": "green",
+            "icon": "mug"
+          }
+        }
+      ],
+      "stockAlertRequested": false
+    }
+  },
+  "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
+    "status": 200,
+    "body": {
+      "id": "a82b0ff9-76cc-47df-869f-94df0b624e7c",
+      "slug": "faith-heavyweight-tee-charcoal",
+      "name": "Faith heavyweight tee, charcoal",
+      "priceCents": 3400,
+      "perUnit": false,
+      "deliveryLine": "plus $9 shipping, or free pickup",
+      "tile": {
+        "tint": "ink",
+        "icon": "shirt"
+      },
+      "shop": {
+        "slug": "luzandre",
+        "name": "Luzandre.com",
+        "verified": true
+      },
+      "description": "A 240 gsm combed-cotton tee with a small gold-thread emblem on the chest. Printed and stitched to order in Leslieville.",
+      "attributes": [
+        {
+          "label": "Fit",
+          "value": "Relaxed, true to size"
+        },
+        {
+          "label": "Care",
+          "value": "Cold wash, hang dry"
+        },
+        {
+          "label": "Ready in",
+          "value": "5–7 days, made to order"
+        },
+        {
+          "label": "Returns",
+          "value": "14 days, unworn"
+        }
+      ],
+      "optionName": "Size",
+      "options": [
+        {
+          "label": "S",
+          "maxQuantity": 8
+        },
+        {
+          "label": "M",
+          "maxQuantity": 20
+        },
+        {
+          "label": "L",
+          "maxQuantity": 14
+        },
+        {
+          "label": "XL",
+          "maxQuantity": 6
+        },
+        {
+          "label": "2XL",
+          "maxQuantity": 4
+        }
+      ],
+      "minimumQuantity": 1,
+      "maxQuantity": 20,
+      "soldOut": false,
+      "restockNote": null,
+      "more": [
+        {
+          "slug": "gold-cross-stoneware-mug",
+          "businessSlug": "luzandre",
+          "name": "Gold cross stoneware mug",
+          "shopName": "Luzandre.com",
+          "priceCents": 2400,
+          "perUnit": false,
+          "tile": {
+            "tint": "gold",
+            "icon": "mug"
+          }
+        },
+        {
+          "slug": "custom-church-team-tee",
+          "businessSlug": "luzandre",
+          "name": "Custom church team tee (min. 12)",
+          "shopName": "Luzandre.com",
+          "priceCents": 2200,
+          "perUnit": true,
+          "tile": {
+            "tint": "blue",
+            "icon": "shirt"
+          }
+        },
+        {
+          "slug": "morning-mug-set-of-two",
+          "businessSlug": "luzandre",
+          "name": "Morning mug, set of two",
+          "shopName": "Luzandre.com",
+          "priceCents": 4200,
+          "perUnit": false,
+          "tile": {
+            "tint": "green",
+            "icon": "mug"
+          }
+        }
+      ],
+      "stockAlertRequested": false
+    }
+  },
+  "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
+    "status": 200,
+    "body": {
+      "id": "8429c588-e6e0-4150-93ec-94d3427c7c89",
+      "slug": "gold-cross-stoneware-mug",
+      "name": "Gold cross stoneware mug",
+      "priceCents": 2400,
+      "perUnit": false,
+      "deliveryLine": "plus $9 shipping, or free pickup",
+      "tile": {
+        "tint": "gold",
+        "icon": "mug"
+      },
+      "shop": {
+        "slug": "luzandre",
+        "name": "Luzandre.com",
+        "verified": true
+      },
+      "description": "A 12 oz stoneware mug with a hand-gilded cross. Dishwasher safe.",
+      "attributes": [
+        {
+          "label": "Care",
+          "value": "Dishwasher safe, not for the microwave"
+        },
+        {
+          "label": "Returns",
+          "value": "14 days, unused"
+        }
+      ],
+      "optionName": null,
+      "options": [],
+      "minimumQuantity": 1,
+      "maxQuantity": 99,
+      "soldOut": false,
+      "restockNote": null,
+      "more": [
+        {
+          "slug": "faith-heavyweight-tee-charcoal",
+          "businessSlug": "luzandre",
+          "name": "Faith heavyweight tee, charcoal",
+          "shopName": "Luzandre.com",
+          "priceCents": 3400,
+          "perUnit": false,
+          "tile": {
+            "tint": "ink",
+            "icon": "shirt"
+          }
+        },
+        {
+          "slug": "custom-church-team-tee",
+          "businessSlug": "luzandre",
+          "name": "Custom church team tee (min. 12)",
+          "shopName": "Luzandre.com",
+          "priceCents": 2200,
+          "perUnit": true,
+          "tile": {
+            "tint": "blue",
+            "icon": "shirt"
+          }
+        },
+        {
+          "slug": "morning-mug-set-of-two",
+          "businessSlug": "luzandre",
+          "name": "Morning mug, set of two",
+          "shopName": "Luzandre.com",
+          "priceCents": 4200,
+          "perUnit": false,
+          "tile": {
+            "tint": "green",
+            "icon": "mug"
+          }
+        }
+      ],
+      "stockAlertRequested": false
+    }
+  },
+  "GET /api/listings/luzandre/products/no-such-product": {
+    "status": 404,
+    "body": {
+      "title": "We can't find that.",
+      "status": 404,
+      "detail": "There is no such product.",
+      "correlationId": "4ee5ca9ae31c45799d1a06a875825289",
+      "code": "product_not_found"
+    }
+  },
+  "GET /api/session": {
+    "status": 200,
+    "body": {
+      "signedIn": false
+    }
+  },
+  "POST /api/listings/deeks-insurance/views": {
+    "status": 204,
+    "body": null
+  },
+  "POST /api/listings/legacy-financial/views": {
+    "status": 204,
+    "body": null
+  },
+  "POST /api/listings/luzandre/views": {
+    "status": 204,
+    "body": null
+  }
+}

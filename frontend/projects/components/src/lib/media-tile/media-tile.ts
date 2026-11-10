@@ -19,12 +19,7 @@ import { TileTint } from './category-tile';
     '[class.media--blue]': 'tint() === "blue"',
     '[class.media--square]': 'shape() === "square"',
   },
-  template: `
-    @if (tag()) {
-      <span class="media__tag">{{ tag() }}</span>
-    }
-    <svg jb-icon [name]="icon()"></svg>
-  `,
+  templateUrl: './media-tile.html',
 })
 export class MediaTile {
   readonly tint = input.required<TileTint>();

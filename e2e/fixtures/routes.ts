@@ -5,7 +5,7 @@
  */
 export type Who = 'visitor' | 'member';
 
-/** Names a data stub in `fixtures/stubs.ts`; absent means the real, seeded API answers. */
+/** Names a data stub in `fixtures/stubs.ts`; absent means the recorded answers of the seeded API (ADR 0009). */
 export type StubName =
   | 'browse-loading'
   | 'browse-empty'

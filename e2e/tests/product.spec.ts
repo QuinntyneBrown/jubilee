@@ -1,7 +1,7 @@
 import { expect, test } from '../fixtures/jb-test';
 import { ProductPage } from '../pages/product.page';
 
-// Product page: L2-035, L2-118. "product" is the charcoal tee of Luzandre.com in the seeded API.
+// Product page: L2-035, L2-118. "product" is the charcoal tee of Luzandre.com in the recorded answers of the seeded API (ADR 0009).
 
 const teePath = '/b/luzandre/p/faith-heavyweight-tee-charcoal';
 

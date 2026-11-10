@@ -6,6 +6,7 @@
     "test": "playwright test --trace off",
     "baseline": "JB_BASELINE=1 playwright test tests/visual --update-snapshots --trace off",
     "test:visual": "npm run baseline && playwright test tests/visual --trace off",
+    "record-api": "JB_RECORD_API=1 playwright test --trace off",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

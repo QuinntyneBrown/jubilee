@@ -1,4 +1,5 @@
 import { expect, test } from '../fixtures/jb-test';
+import { fulfil, recordedAnswer } from '../fixtures/mock-api';
 import { ProductPage } from '../pages/product.page';
 import { SignInRequiredDialog } from '../pages/sign-in-required.dialog';
 
@@ -36,9 +37,9 @@ test.describe('sold-out product (L2-036)', () => {
     await page.route(
       '**/api/listings/luzandre/products/gold-cross-stoneware-mug',
       async (route) => {
-        const response = await route.fetch();
-        const mug = (await response.json()) as Record<string, unknown>;
-        await route.fulfill({ response, json: { ...mug, soldOut: true, maxQuantity: 0 } });
+        const answer = await recordedAnswer(route);
+        const mug = answer.body as Record<string, unknown>;
+        await fulfil(route, { ...answer, body: { ...mug, soldOut: true, maxQuantity: 0 } });
       },
     );
     await jb.goto('/b/luzandre/p/gold-cross-stoneware-mug');

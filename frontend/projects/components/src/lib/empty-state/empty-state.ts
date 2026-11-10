@@ -24,18 +24,7 @@ import { IconName } from '../icon/icons';
     '[class.empty--compact]': 'compact()',
     '[attr.role]': 'error() ? "alert" : null',
   },
-  template: `
-    <div class="empty__icon" aria-hidden="true"><svg jb-icon size="lg" [name]="icon()"></svg></div>
-    @if (level() === 1) {
-      <h1 class="empty__title">{{ heading() }}</h1>
-    } @else if (level() === 2) {
-      <h2 class="empty__title">{{ heading() }}</h2>
-    } @else {
-      <h3 class="empty__title">{{ heading() }}</h3>
-    }
-    <p class="empty__text"><ng-content /></p>
-    <div class="empty__actions"><ng-content select="[slot=actions]" /></div>
-  `,
+  templateUrl: './empty-state.html',
 })
 export class EmptyState {
   readonly icon = input.required<IconName>();

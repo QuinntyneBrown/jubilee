@@ -3,3 +3,5 @@ test-results/
 playwright-report/
 # Baselines are rendered from docs/mocks on each run (ADR 0005); they are never committed.
 __baselines__/
+# Shards of a recording in progress (npm run record-api).
+fixtures/api/.recording/

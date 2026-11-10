@@ -1,9 +1,10 @@
 import { expect, test } from '../fixtures/jb-test';
+import { recordedAnswer } from '../fixtures/mock-api';
 import { CategoryPage } from '../pages/category.page';
 import { NotFoundPage } from '../pages/not-found.page';
 
 // Category page: L2-023, L2-026, L2-111, L2-113 and L2-118.
-// "category" is /c/home-property against the seeded API: ten businesses.
+// "category" is /c/home-property against the recorded answers of the seeded API (ADR 0009): ten businesses.
 
 test.describe('category page (L2-023)', () => {
   test('AC1: it shows the breadcrumb, heading, count with the category fact, filters, sort and cards', async ({
@@ -148,8 +149,12 @@ test.describe('pagination (L2-026)', () => {
     await page.route('**/api/categories/*/listings?*', async (route) => {
       const url = new URL(route.request().url());
       asked.push(url.searchParams.get('page') ?? '');
-      const response = await route.fetch({ url: url.toString().replace(/page=\d+/, 'page=1') });
-      const body = await response.json();
+      const { body } = (await recordedAnswer(
+        route,
+        url.toString().replace(/page=\d+/, 'page=1'),
+      )) as {
+        body: { businesses: unknown[] };
+      };
       await route.fulfill({
         json: {
           ...body,

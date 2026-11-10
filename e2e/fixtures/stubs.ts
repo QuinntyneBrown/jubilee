@@ -1,6 +1,7 @@
 import type { Page, Route } from '@playwright/test';
 import { categories } from './categories';
 import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
+import { fulfil, recordedAnswer } from './mock-api';
 import type { StubName } from './routes';
 
 const home = '**/api/directory/home';
@@ -34,7 +35,7 @@ function pending(route: Route): Promise<void> {
 }
 
 /**
- * Answers a listing request with the real, seeded answer changed by `patch`, so a state differs
+ * Answers a listing request with the recorded answer (ADR 0009) changed by `patch`, so a state differs
  * from the seed only in what the state is about.
  */
 export function patchListing(
@@ -43,9 +44,8 @@ export function patchListing(
   patch: (listing: Record<string, unknown>) => Record<string, unknown>,
 ): Promise<unknown> {
   return page.route(url, async (route) => {
-    const response = await route.fetch();
-    const listing = (await response.json()) as Record<string, unknown>;
-    await route.fulfill({ response, json: patch(listing) });
+    const answer = await recordedAnswer(route);
+    await fulfil(route, { ...answer, body: patch(answer.body as Record<string, unknown>) });
   });
 }
 

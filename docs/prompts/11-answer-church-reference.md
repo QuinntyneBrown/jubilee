@@ -81,7 +81,7 @@ Builds on: journey 10 (List a business, `docs/prompts/10-list-a-business.md`). I
 - Start `docs/adr/` with a `README.md` index and one ADR per decision the skeleton forces.
 - Bring in the tokens from `docs/design-system/tokens/` and build only the `jb-*` components this journey needs in `frontend/projects/components/`, as `docs/detailed-designs/design-system/apply-design-tokens/README.md` and `docs/detailed-designs/design-system/build-components/README.md` describe.
 - Replace the placeholder text in the "Getting started" and "Running the tests" sections of the root `README.md` with the real setup and development commands, update its status note, and add `.github/workflows/ci.yml` that runs the backend tests, the frontend lint and format checks, and the Playwright suite.
-- Prove the skeleton with one Playwright test that loads the app against the API started by `eng/Start-E2eApi.ps1`, before starting the journey.
+- Prove the skeleton with one Playwright test that loads the app with every API request answered by Playwright API mocking (ADR 0009; no API or database runs in a test), before starting the journey.
 
 ## Phase 3: Incremental implementation (`implementing-incrementally`, test-first)
 - Plan thin vertical slices, each from the Angular screen to the database. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:

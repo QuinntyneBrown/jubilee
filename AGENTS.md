@@ -126,6 +126,9 @@ design system).
   owns lint; CI fails on either. Run `npm run lint` and `npm run format:check` in `frontend/`. The
   husky pre-commit hook fixes staged frontend files.
 - Component selectors use `jb-*`; TypeScript class, file, and folder names omit the `Jb` prefix.
+- **File per type, no single-file components** (ADR 0008). A component is `name.ts` + `name.html`
+  (+ `name.scss` when it has styles) using `templateUrl`/`styleUrl`; never an inline `template` or
+  `styles`, however short.
 - Components preserve the mock design's BEM classes and accessible state semantics; e2e locators
   depend on that parity.
 - Keep component styles encapsulated and global styles limited to shared foundations and utilities.

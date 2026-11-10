@@ -15,27 +15,7 @@ import { ICONS, IconName, IconShape } from './icons';
     '[class.icon--lg]': 'size() === "lg"',
     '[class.icon--sm]': 'size() === "sm"',
   },
-  template: `
-    @for (shape of shapes(); track $index) {
-      @switch (shape.kind) {
-        @case ('path') {
-          <svg:path [attr.d]="shape.d" />
-        }
-        @case ('circle') {
-          <svg:circle [attr.cx]="shape.cx" [attr.cy]="shape.cy" [attr.r]="shape.r" />
-        }
-        @case ('rect') {
-          <svg:rect
-            [attr.x]="shape.x"
-            [attr.y]="shape.y"
-            [attr.width]="shape.width"
-            [attr.height]="shape.height"
-            [attr.rx]="shape.rx"
-          />
-        }
-      }
-    }
-  `,
+  templateUrl: './icon.html',
 })
 export class Icon {
   readonly name = input.required<IconName>();

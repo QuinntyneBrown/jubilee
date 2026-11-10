@@ -1,0 +1,93 @@
+@let item = product();
+@if (item.options.length) {
+  <fieldset [attr.aria-describedby]="optionError() ? 'option-error' : null">
+    <legend>{{ item.optionName }}</legend>
+    <div class="cluster" style="gap: var(--space-2)">
+      @for (option of item.options; track option.label) {
+        <label class="chip" style="position: relative"
+          ><input
+            #optionInput
+            type="radio"
+            name="option"
+            class="visually-hidden"
+            [value]="option.label"
+            [checked]="chosen() === option.label"
+            [disabled]="item.soldOut"
+            (change)="choose(option.label)"
+          />{{ option.label }}</label
+        >
+      }
+    </div>
+    @if (optionError(); as error) {
+      <span class="field__error" id="option-error">{{ error }}</span>
+    }
+  </fieldset>
+}
+<div class="field" style="max-width: 8rem">
+  <label class="field__label" for="qty">Quantity</label>
+  <input
+    #quantityInput
+    class="input"
+    id="qty"
+    type="number"
+    inputmode="numeric"
+    [min]="item.minimumQuantity"
+    [max]="max()"
+    [value]="quantity()"
+    [disabled]="item.soldOut"
+    [attr.aria-invalid]="quantityError() ? 'true' : null"
+    [attr.aria-describedby]="quantityError() ? 'qty-error' : null"
+    (input)="quantity.set(quantityInput.value)"
+  />
+  @if (quantityError(); as error) {
+    <span class="field__error" id="qty-error">{{ error }}</span>
+  }
+</div>
+@if (item.soldOut) {
+  <div class="alert alert--warning" role="status">
+    <svg jb-icon name="alert"></svg>
+    <div class="alert__body">
+      <div class="alert__title">
+        {{
+          item.options.length
+            ? 'Sold out in every ' + (item.optionName ?? 'option').toLowerCase()
+            : 'Sold out'
+        }}
+      </div>
+      @if (item.restockNote) {
+        <div>{{ item.restockNote }}</div>
+      }
+    </div>
+  </div>
+}
+<div class="detail-head__actions">
+  @if (!item.soldOut) {
+    <button class="btn btn--primary btn--lg" type="button" (click)="submit()">
+      <svg jb-icon name="bag"></svg>Request this item
+    </button>
+  } @else if (alertRequested()) {
+    <p
+      class="inline-status inline-status--success"
+      role="status"
+      style="min-height: var(--control-height-lg)"
+    >
+      <svg jb-icon name="verified"></svg>We’ll tell you when it’s back
+    </p>
+  } @else {
+    <button
+      #alertButton
+      class="btn btn--primary btn--lg"
+      type="button"
+      (click)="alertAsked.emit(alertButton)"
+    >
+      <svg jb-icon name="bell"></svg>Tell me when it’s back
+    </button>
+  }
+  <a
+    class="btn btn--icon btn--lg"
+    [routerLink]="['/b', item.shop.slug, 'message']"
+    [attr.aria-label]="'Message ' + item.shop.name"
+    style="width: var(--control-height-lg)"
+    ><svg jb-icon name="message"></svg
+  ></a>
+</div>

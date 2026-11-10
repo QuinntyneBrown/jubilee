@@ -22,22 +22,7 @@ export interface ServiceRowView {
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'row' },
-  template: `
-    <div class="row__body">
-      <div class="row__title">{{ service().name }}</div>
-      <div class="row__meta">{{ service().detail }}</div>
-    </div>
-    <span class="row__price" [class.row__price--free]="service().priceKind === 'free'">{{
-      price()
-    }}</span>
-    <a
-      class="btn btn--sm"
-      [routerLink]="actionLink()"
-      [queryParams]="{ service: service().id }"
-      [attr.aria-label]="label() + ' ' + service().name"
-      >{{ label() }}</a
-    >
-  `,
+  templateUrl: './service-row.html',
 })
 export class ServiceRow {
   readonly service = input.required<ServiceRowView>();

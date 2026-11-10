@@ -5,7 +5,7 @@ import { stubBrowseHome } from '../fixtures/stubs';
 import { BrowsePage } from '../pages/browse.page';
 
 // Browse home: L2-021, L2-022, L2-027, L2-118 and L2-164 (criterion 4).
-// "browse" is Joanna, a signed-in member, against the seeded API (the mocks' catalogue).
+// "browse" is Joanna, a signed-in member, against the recorded answers of the seeded API (ADR 0009) (the mocks' catalogue).
 
 test.describe('browse home for a member (L2-021)', () => {
   for (const [time, word] of [

@@ -1,7 +1,7 @@
 import { expect, test } from '../fixtures/jb-test';
 import { BusinessPage } from '../pages/business.page';
 
-// Shop page: L2-034. "shop" is /b/luzandre against the seeded API.
+// Shop page: L2-034. "shop" is /b/luzandre against the recorded answers of the seeded API (ADR 0009).
 
 test.describe('shop page (L2-034)', () => {
   test('AC1: it shows the header, "Shop products", products with the count, Custom work, About, Details and related', async ({

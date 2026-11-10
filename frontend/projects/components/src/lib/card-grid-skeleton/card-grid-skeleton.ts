@@ -9,16 +9,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   selector: 'ul[jb-card-grid-skeleton]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'card-grid', 'aria-hidden': 'true' },
-  template: `
-    @for (card of cards(); track card) {
-      <li class="biz-card">
-        <span class="skeleton skeleton--media"></span>
-        <span class="skeleton skeleton--text skeleton--w70"></span>
-        <span class="skeleton skeleton--text"></span>
-        <span class="skeleton skeleton--text skeleton--w50"></span>
-      </li>
-    }
-  `,
+  templateUrl: './card-grid-skeleton.html',
 })
 export class CardGridSkeleton {
   readonly count = input(4);

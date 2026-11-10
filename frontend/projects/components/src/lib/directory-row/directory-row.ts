@@ -18,18 +18,7 @@ export interface DirectoryRowView {
   imports: [Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dir-row' },
-  template: `
-    <span class="dir-row__body">
-      <span class="dir-row__name">
-        <span class="truncate">{{ business().name }}</span>
-        @if (business().verified) {
-          <svg jb-icon name="verified"></svg><span class="visually-hidden">Verified</span>
-        }
-      </span>
-      <span class="dir-row__tagline truncate" style="display: block">{{ business().tagline }}</span>
-    </span>
-    <svg jb-icon name="chevron-right"></svg>
-  `,
+  templateUrl: './directory-row.html',
 })
 export class DirectoryRow {
   readonly business = input.required<DirectoryRowView>();
