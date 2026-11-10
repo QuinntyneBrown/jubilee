@@ -125,3 +125,16 @@ public sealed class FeaturedSlotConfiguration : IEntityTypeConfiguration<Feature
         builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+public sealed class RecentSearchConfiguration : IEntityTypeConfiguration<RecentSearch>
+{
+    public void Configure(EntityTypeBuilder<RecentSearch> builder)
+    {
+        builder.ToTable("RecentSearches");
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.MemberSubject).HasMaxLength(200).IsRequired();
+        builder.Property(r => r.Query).HasMaxLength(SearchQueryText.MaxLength).IsRequired();
+        builder.HasIndex(r => new { r.MemberSubject, r.SearchedAt });
+    }
+}

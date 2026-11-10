@@ -261,6 +261,31 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("Products", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.RecentSearch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MemberSubject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Query")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTimeOffset>("SearchedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberSubject", "SearchedAt");
+
+                    b.ToTable("RecentSearches", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.Service", b =>
                 {
                     b.Property<Guid>("Id")

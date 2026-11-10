@@ -10,6 +10,8 @@ public static class DependencyInjection
         services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
         services.AddScoped<FeaturedSelector>();
         services.AddScoped<DirectoryGrouping>();
+        services.AddScoped<Search.DatabaseNameSearch>();
+        services.AddScoped<Search.SearchStartBuilder>();
         return services;
     }
 }
