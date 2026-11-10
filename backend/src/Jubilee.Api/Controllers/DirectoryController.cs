@@ -16,4 +16,8 @@ public sealed class DirectoryController(ISender sender) : ControllerBase
     [HttpGet("welcome")]
     public async Task<ActionResult<WelcomeDto>> GetWelcome(CancellationToken cancellationToken) =>
         Ok(await sender.Send(new GetWelcomeQuery(), cancellationToken));
+
+    [HttpGet("home")]
+    public async Task<ActionResult<BrowseHomeDto>> GetHome(CancellationToken cancellationToken) =>
+        Ok(await sender.Send(new GetBrowseHomeQuery(), cancellationToken));
 }
