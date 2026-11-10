@@ -15,15 +15,32 @@ public sealed record GetCategoryListingsQuery(string Slug, CategoryFilterSet Fil
         new(slug, CategoryFilterSet.Parse(offers, areas), ListingSortPolicy.Parse(sort), PageWindow.ParseRequestedPage(page));
 }
 
-public sealed class GetCategoryListingsQueryHandler(IAppDbContext db)
+public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectoryReadCache cache)
     : IRequestHandler<GetCategoryListingsQuery, CategoryPageResult>
 {
     /// <summary>The offer the category fact is derived from.</summary>
     public const OfferFilter FactOffer = OfferFilter.EmergencyCalls;
 
-    public async Task<CategoryPageResult> Handle(GetCategoryListingsQuery request, CancellationToken cancellationToken)
+    public Task<CategoryPageResult> Handle(GetCategoryListingsQuery request, CancellationToken cancellationToken)
     {
+        // An unknown slug is refused before the cache, so junk slugs never become cache keys.
         var category = CategoryQueries.Require(request.Slug);
+
+        // One entry per result page: slug plus the sanitised category query.
+        var key = string.Join(
+            '|',
+            "category",
+            category.Slug,
+            string.Join(',', request.Filters.OfferValues),
+            string.Join(',', request.Filters.AreaValues),
+            WireValues.Of(request.Sort),
+            Math.Max(1, request.Page));
+        return cache.GetOrCreateAsync(key, ct => BuildAsync(category, request, ct), cancellationToken);
+    }
+
+    private async Task<CategoryPageResult> BuildAsync(
+        Category category, GetCategoryListingsQuery request, CancellationToken cancellationToken)
+    {
         var inCategory = CategoryQueries.PublicListingsIn(db, category);
         var matches = request.Filters.Apply(inCategory);
 

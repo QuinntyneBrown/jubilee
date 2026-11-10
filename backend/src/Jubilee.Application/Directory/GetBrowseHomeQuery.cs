@@ -11,12 +11,16 @@ public sealed class GetBrowseHomeQueryHandler(
     IAppDbContext db,
     FeaturedSelector featuredSelector,
     DirectoryGrouping grouping,
+    IDirectoryReadCache cache,
     TimeProvider clock) : IRequestHandler<GetBrowseHomeQuery, BrowseHomeDto>
 {
     public const int FeaturedLimit = 5;
     public const int ShopProductLimit = 5;
 
-    public async Task<BrowseHomeDto> Handle(GetBrowseHomeQuery request, CancellationToken cancellationToken)
+    public Task<BrowseHomeDto> Handle(GetBrowseHomeQuery request, CancellationToken cancellationToken) =>
+        cache.GetOrCreateAsync("home", BuildAsync, cancellationToken);
+
+    private async Task<BrowseHomeDto> BuildAsync(CancellationToken cancellationToken)
     {
         var count = await db.Listings.WherePublic().CountAsync(cancellationToken);
         var featured = await featuredSelector.SelectAsync(clock.GetUtcNow(), FeaturedLimit, cancellationToken);

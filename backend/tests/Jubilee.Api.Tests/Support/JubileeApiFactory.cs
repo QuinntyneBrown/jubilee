@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using Jubilee.Application.Directory;
 using Jubilee.Infrastructure.Persistence;
 using Jubilee.Tests.Shared;
 using Microsoft.AspNetCore.Authentication;
@@ -78,7 +79,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         await db.SaveChangesAsync();
     });
 
-    /// <summary>Empties the database and resets the clock between tests.</summary>
+    /// <summary>Empties the database and the read cache and resets the clock between tests.</summary>
     public async Task Reset()
     {
         _clock.Current = new FakeTimeProvider(ListingMother.Now);
@@ -88,6 +89,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             await db.Products.ExecuteDeleteAsync();
             await db.Listings.ExecuteDeleteAsync();
         });
+        Services.GetRequiredService<IDirectoryReadCache>().Invalidate();
     }
 
     public async Task<JsonElement> GetJson(string url, HttpClient? client = null)
