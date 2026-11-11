@@ -466,7 +466,7 @@ public partial class AccountTests : IClassFixture<JubileeApiFactory>, IAsyncLife
 
         Assert.Equal(HttpStatusCode.Forbidden, forged.StatusCode);
         Assert.Equal("csrf_token_invalid", (await Json(forged)).GetProperty("code").GetString());
-        Assert.NotEqual("csrf_token_invalid", (await Json(genuine)).TryGetProperty("code", out var code) ? code.GetString() : null);
+        Assert.Equal(HttpStatusCode.Accepted, genuine.StatusCode);
     }
 
     [Fact]

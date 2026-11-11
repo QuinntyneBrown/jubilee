@@ -289,6 +289,45 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("Members", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.MemberSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("EndedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("KeyHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTimeOffset>("LastActivityAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("MemberId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Persistent")
+                        .HasColumnType("bit");
+
+                    b.Property<byte[]>("Ticket")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KeyHash")
+                        .IsUnique();
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("Sessions", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -470,6 +509,33 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("ListingId", "Position");
 
                     b.ToTable("Services", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.SignInFailure", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AccountKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTimeOffset>("At")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountKey", "At");
+
+                    b.HasIndex("Address", "At");
+
+                    b.ToTable("SignInFailures", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.StockAlert", b =>

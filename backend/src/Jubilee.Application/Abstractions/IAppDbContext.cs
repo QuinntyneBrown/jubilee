@@ -25,5 +25,9 @@ public interface IAppDbContext
 
     DbSet<OutboxMessage> OutboxMessages { get; }
 
+    DbSet<MemberSession> Sessions { get; }
+
+    DbSet<SignInFailure> SignInFailures { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

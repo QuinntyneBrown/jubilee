@@ -109,7 +109,7 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
 public static class SessionSignIn
 {
     /// <summary>Starts a session for the member: a new identifier, so there is no session fixation (L2-010 AC5).</summary>
-    public static async Task SignInMemberAsync(this HttpContext context, Member member)
+    public static async Task SignInMemberAsync(this HttpContext context, Member member, bool keepSignedIn = false)
     {
         var identity = new ClaimsIdentity(
             [
@@ -122,7 +122,13 @@ public static class SessionSignIn
         await context.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(identity),
-            new AuthenticationProperties { IsPersistent = false });
+            new AuthenticationProperties
+            {
+                IsPersistent = keepSignedIn,
+                ExpiresUtc = keepSignedIn
+                    ? context.RequestServices.GetRequiredService<TimeProvider>().GetUtcNow().Add(SessionPolicy.AbsoluteLifetime)
+                    : null,
+            });
         CsrfToken.Issue(context);
     }
 }

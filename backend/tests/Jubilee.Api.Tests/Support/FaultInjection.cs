@@ -55,6 +55,10 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<OutboxMessage> OutboxMessages => Use(inner.OutboxMessages);
 
+    public DbSet<MemberSession> Sessions => Use(inner.Sessions);
+
+    public DbSet<SignInFailure> SignInFailures => Use(inner.SignInFailures);
+
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         outage.ThrowIfUnavailable();

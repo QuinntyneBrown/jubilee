@@ -90,7 +90,9 @@ public sealed class AgreementRequiredMiddleware(RequestDelegate next)
     public async Task InvokeAsync(HttpContext context, ISender sender)
     {
         var path = context.Request.Path.Value ?? string.Empty;
-        if (context.User.Identity?.IsAuthenticated == true && !Allowed.Contains(path, StringComparer.OrdinalIgnoreCase))
+        if (context.User.Identity?.IsAuthenticated == true
+            && !Allowed.Contains(path, StringComparer.OrdinalIgnoreCase)
+            && !path.StartsWith("/api/auth/", StringComparison.OrdinalIgnoreCase))
         {
             var subject = context.User.ToViewer().Subject;
             var account = subject is null ? null : await sender.Send(new GetMemberAccountQuery(subject), context.RequestAborted);
