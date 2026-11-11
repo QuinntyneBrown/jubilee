@@ -9,7 +9,8 @@ using Jubilee.Api.Middleware;
 
 namespace Jubilee.Api.Tests.Support;
 
-public sealed record SentEmail(string To, string Subject, string Body, string? UnsubscribeUrl = null);
+/// <summary>One sent e-mail: <c>Body</c> is the plain-text part, <c>Html</c> the HTML part.</summary>
+public sealed record SentEmail(string To, string Subject, string Body, string? UnsubscribeUrl = null, string Html = "");
 
 /// <summary>Collects the e-mails the worker would send; can be made to fail.</summary>
 public sealed class FakeEmailSender : IEmailSender
@@ -55,7 +56,8 @@ public sealed class FakeGoogle : IGoogleIdentityClient
 {
     private readonly ConcurrentDictionary<string, (string Nonce, string Challenge)> _sent = new();
 
-    public bool IsConfigured => true;
+    /// <summary>False stands for an environment without <c>Google:ClientId</c> and <c>Google:ClientSecret</c>.</summary>
+    public bool IsConfigured { get; set; } = true;
 
     /// <summary>The identity Google will return for the next code.</summary>
     public GoogleIdentity Identity { get; set; } = new("google-1", "g@example.com", true, "Gina", "Gordon");
