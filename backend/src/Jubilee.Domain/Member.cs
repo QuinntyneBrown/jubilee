@@ -158,12 +158,15 @@ public sealed class Member
     /// <summary>Null until the statement of faith and terms are accepted (L2-003 AC1).</summary>
     public DateTimeOffset? AgreementAcceptedAt { get; private set; }
 
+    /// <summary>The number of the published terms the member agreed to, with the confirmation of being 18 or older (L2-108 AC2).</summary>
+    public int? TermsVersionNumber { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     public string DisplayName => $"{FirstName} {LastName}".Trim();
 
     public static Member Join(
-        EmailAddress email, string firstName, string lastName, string? homeChurch, string passwordHash, DateTimeOffset now) => new()
+        EmailAddress email, string firstName, string lastName, string? homeChurch, string passwordHash, DateTimeOffset now, int termsVersion = 1) => new()
         {
             Id = Guid.NewGuid(),
             Email = email.Value,
@@ -174,6 +177,7 @@ public sealed class Member
             PasswordHash = passwordHash,
             EmailStatus = EmailStatus.Unconfirmed,
             AgreementAcceptedAt = now,
+            TermsVersionNumber = termsVersion,
             CreatedAt = now,
         };
 
@@ -253,7 +257,16 @@ public sealed class Member
         }
     }
 
-    public void AcceptAgreement(DateTimeOffset now) => AgreementAcceptedAt ??= now;
+    public void AcceptAgreement(DateTimeOffset now, int termsVersion = 1)
+    {
+        if (AgreementAcceptedAt is not null)
+        {
+            return;
+        }
+
+        AgreementAcceptedAt = now;
+        TermsVersionNumber = termsVersion;
+    }
 
     /// <summary>True only for a member whose address is confirmed (restricted actions, L2-005).</summary>
     public bool CanTransact() => IsUsable() && EmailStatus == EmailStatus.Confirmed;

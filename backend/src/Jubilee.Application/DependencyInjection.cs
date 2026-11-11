@@ -9,6 +9,7 @@ public static class DependencyInjection
     {
         services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
         services.AddScoped<FeaturedSelector>();
+        services.AddScoped<Content.ContentReader>();
         services.AddScoped<DirectoryGrouping>();
         services.AddScoped<Accounts.AccountEmails>();
         services.AddScoped<Accounts.OutboxDispatcher>();

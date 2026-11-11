@@ -85,6 +85,21 @@ public sealed class ListingViewConfiguration : IEntityTypeConfiguration<ListingV
     }
 }
 
+public sealed class ContentVersionConfiguration : IEntityTypeConfiguration<ContentVersion>
+{
+    public void Configure(EntityTypeBuilder<ContentVersion> builder)
+    {
+        builder.ToTable("ContentVersions");
+        builder.HasKey(v => v.Id);
+        builder.Property(v => v.Id).ValueGeneratedNever();
+        builder.Property(v => v.Slug).HasMaxLength(40).IsRequired();
+        builder.Property(v => v.Title).HasMaxLength(200).IsRequired();
+        builder.Property(v => v.Lead).HasMaxLength(1000);
+        builder.Property(v => v.PublishedBy).HasMaxLength(100).IsRequired();
+        builder.HasIndex(v => new { v.Slug, v.Number }).IsUnique();
+    }
+}
+
 public sealed class ListingReportConfiguration : IEntityTypeConfiguration<ListingReport>
 {
     public void Configure(EntityTypeBuilder<ListingReport> builder)
