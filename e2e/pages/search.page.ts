@@ -20,6 +20,8 @@ export class SearchPage extends ShellPage implements Screen {
   readonly loadingStatus: Locator;
   readonly skeletons: Locator;
   readonly pageSearchBox: Locator;
+  /** The whole search field of the page before a search. */
+  readonly pageSearchField: Locator;
   readonly recentSection: Locator;
   readonly recentChips: Locator;
   readonly clearRecent: Locator;
@@ -44,6 +46,7 @@ export class SearchPage extends ShellPage implements Screen {
     this.loadingStatus = this.main.getByRole('status');
     this.skeletons = this.main.locator('.skeleton');
     this.pageSearchBox = this.main.getByRole('searchbox', { name: 'Search Jubilee' });
+    this.pageSearchField = this.main.getByRole('search');
     this.recentSection = this.main.getByRole('region', { name: 'Your recent searches' });
     this.recentChips = this.recentSection.locator('a.chip');
     this.clearRecent = this.recentSection.getByRole('button', { name: 'Clear recent searches' });

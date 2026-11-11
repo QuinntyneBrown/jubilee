@@ -75,6 +75,7 @@ it changes how the product looks, which a component move must not do.
 | Directory row (`home-1280.png`) | 380 px wide, a smaller tagline, Inter | a wider column, the tagline at `--text-body-sm`, system text face |
 | Back link (`business-services-1280.png`) | a smaller arrow, closer to the words, Inter | the arrow at `--icon-size-md`, `--space-2` from the words, system text face |
 | Hero (`home-1280.png`) | heading on two lines, chips at regular weight, the page 1216 px wide | heading held to `18ch` (three lines), semibold chips, a 1184 px container |
+| Search field (top bar, `home-1280.png`) | 452 px wide, 12 px radius, Inter | a pill (`--radius-full`) that shares the bar with the navigation, system text face |
 
 ## Refreshing
 

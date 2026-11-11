@@ -4,23 +4,14 @@
     <jb-page-header heading="Search" subtitle="Find a business, a service or a product.">
     </jb-page-header>
     <form
-      class="search"
-      role="search"
+      jb-search-field
+      label="Search Jubilee"
+      size="lg"
+      placeholder="Plumber, lawyer, Bibles…"
       style="max-width: 36rem"
-      (submit)="submit($event, sq.element.value)"
-    >
-      <label class="visually-hidden" for="sq">Search Jubilee</label>
-      <svg jb-icon name="search"></svg>
-      <input
-        jb-input
-        controlSize="lg"
-        #sq
-        id="sq"
-        type="search"
-        maxlength="100"
-        placeholder="Plumber, lawyer, Bibles…"
-      />
-    </form>
+      [maxLength]="100"
+      (searched)="submit($event)"
+    ></form>
     @if (state.value.recent.length > 0) {
       <section jb-section labelledBy="recent">
         <div class="cluster cluster--between">

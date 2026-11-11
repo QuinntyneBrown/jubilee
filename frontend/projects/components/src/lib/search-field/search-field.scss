@@ -1,0 +1,21 @@
+// Block: search. The host is the form; the icon sits inside the input's left padding.
+//
+// Knob: --jb-search-icon-color, for a bar that sets the box on ink.
+:host {
+  --jb-input-padding-left: var(--space-10);
+
+  display: block;
+  position: relative;
+  min-width: 0;
+}
+
+.search__icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  translate: 0 -50%;
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  color: var(--jb-search-icon-color, var(--color-fg-subtle));
+  pointer-events: none;
+}

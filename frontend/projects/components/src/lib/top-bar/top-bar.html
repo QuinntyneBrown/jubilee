@@ -5,23 +5,16 @@
   aria-label="jubilee"
   [routerLink]="member() ? '/' : '/welcome'"
 ></a>
-<form class="search" role="search" (submit)="submit($event, q.element.value)">
-  <label class="visually-hidden" for="q">Search businesses and products</label>
-  <svg jb-icon name="search"></svg>
-  <input
-    jb-input
-    #q
-    id="q"
-    type="search"
-    maxlength="100"
-    placeholder="Plumber, lawyer, Bibles…"
-    [value]="query()"
-    [disabled]="offline()"
-    [attr.title]="
-      offline() ? 'Search needs a connection. It works again when you’re back online.' : null
-    "
-  />
-</form>
+<form
+  jb-search-field
+  label="Search businesses and products"
+  placeholder="Plumber, lawyer, Bibles…"
+  [maxLength]="100"
+  [value]="query()"
+  [disabled]="offline()"
+  disabledReason="Search needs a connection. It works again when you’re back online."
+  (searched)="searched.emit($event.trim())"
+></form>
 <span class="topbar__spacer"></span>
 @if (member(); as member) {
   <nav class="topbar__nav" aria-label="Primary">
