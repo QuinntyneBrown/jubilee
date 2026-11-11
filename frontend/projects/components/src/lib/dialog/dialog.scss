@@ -1,0 +1,128 @@
+// Block: dialog. The host covers the viewport and places the panel: a bottom sheet under
+// 640 px, centred from there. The CDK overlay draws the backdrop behind it.
+:host {
+  // A menu item draws its focus ring inside itself; in a dialog it has room outside.
+  --jb-menu-item-focus-offset: var(--focus-ring-offset);
+
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: end center;
+  padding: 0;
+}
+
+.dialog__panel {
+  width: 100%;
+  max-width: 32rem;
+  max-height: calc(100dvh - var(--space-12));
+  overflow: auto;
+  background: var(--color-bg-surface-raised);
+  color: var(--color-fg-default);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-4);
+  animation: slide-up var(--duration-slow) var(--ease-enter);
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog__panel--lg {
+  max-width: 48rem;
+}
+
+.dialog__panel--sm {
+  max-width: 24rem;
+}
+
+@media (min-width: 40rem) {
+  :host {
+    place-items: center;
+    padding: var(--space-6);
+  }
+
+  // The account menu: under the avatar at the right edge of the top bar.
+  :host(.dialog--anchored) {
+    place-items: start end;
+    padding: var(--space-12) var(--space-4) 0;
+  }
+
+  .dialog__panel {
+    border-radius: var(--radius-lg);
+    animation-name: scale-in;
+  }
+}
+
+.dialog__header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-6) 0;
+}
+
+.dialog__heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.dialog__title {
+  font: var(--text-h3);
+  flex: 1;
+}
+
+.dialog__desc {
+  margin-top: var(--space-1);
+  color: var(--color-fg-muted);
+}
+
+.dialog__desc:empty {
+  display: none;
+}
+
+.dialog__icon {
+  display: grid;
+  place-items: center;
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+  border-radius: var(--radius-full);
+  flex: none;
+}
+
+.dialog__icon--danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-icon);
+}
+
+.dialog__icon--info {
+  background: var(--color-info-bg);
+  color: var(--color-info-icon);
+}
+
+.dialog__icon--success {
+  background: var(--color-success-bg);
+  color: var(--color-success-icon);
+}
+
+.dialog__icon--warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-icon);
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    translate: 0 var(--space-4);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog__panel {
+    animation: none;
+  }
+}

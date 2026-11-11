@@ -1,180 +1,160 @@
-<div class="dialog__panel">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-      <svg jb-icon name="wrench"></svg>
+<jb-dialog
+  heading="{{ editing ? 'Edit service' : 'Add a service' }}"
+  description="Changes show on your public listing as soon as you save."
+  icon="wrench"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <form jb-dialog-body class="stack" id="service-editor-form" novalidate (ngSubmit)="save()">
+    @if (view() === 'failed') {
+      <div jb-alert tone="danger" heading="We couldn’t save the service" role="alert">
+        <div>{{ failure() }}</div>
+      </div>
+    }
+    @if (view() === 'discard') {
+      <div jb-alert tone="warning" heading="Discard what you typed?" role="alert">
+        <div>Your changes to this service have not been saved.</div>
+      </div>
+    }
+    <div jb-field label="Service name" controlId="d-name" required [error]="errors().name">
+      <input
+        jb-input
+        name="name"
+        type="text"
+        required
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        [readOnly]="busy()"
+      />
     </div>
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">{{ editing ? 'Edit service' : 'Add a service' }}</h2>
-      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-        Changes show on your public listing as soon as you save.
-      </p>
-    </div>
-    <button
-      jb-button
-      variant="ghost"
-      iconOnly
-      type="button"
-      aria-label="Close"
-      [disabled]="busy()"
-      (click)="close()"
+    <div
+      jb-field
+      label="Short detail"
+      controlId="d-meta"
+      optional
+      hint="Length, place or what to bring. 60 characters at most."
     >
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <form novalidate style="display: contents" (ngSubmit)="save()">
-    <div class="dialog__body stack">
-      @if (view() === 'failed') {
-        <div jb-alert tone="danger" heading="We couldn’t save the service" role="alert">
-          <div>{{ failure() }}</div>
-        </div>
-      }
-      @if (view() === 'discard') {
-        <div jb-alert tone="warning" heading="Discard what you typed?" role="alert">
-          <div>Your changes to this service have not been saved.</div>
-        </div>
-      }
-      <div jb-field label="Service name" controlId="d-name" required [error]="errors().name">
-        <input
-          jb-input
-          name="name"
-          type="text"
-          required
-          [ngModel]="name()"
-          (ngModelChange)="name.set($event)"
-          [readOnly]="busy()"
-        />
-      </div>
-      <div
-        jb-field
-        label="Short detail"
-        controlId="d-meta"
-        optional
-        hint="Length, place or what to bring. 60 characters at most."
-      >
-        <input
-          jb-input
-          name="detail"
-          type="text"
-          maxlength="60"
-          [ngModel]="detail()"
-          (ngModelChange)="detail.set($event)"
-          [readOnly]="busy()"
-        />
-      </div>
-      <div class="form-grid form-grid--2">
-        <div jb-field label="Pricing" controlId="d-pricing">
-          <select
-            jb-select
-            name="pricing"
-            [ngModel]="pricing()"
-            (ngModelChange)="setPricing($event)"
-            [disabled]="busy()"
-          >
-            <option value="free">Free</option>
-            <option value="amount">Fixed price</option>
-            <option value="ask">Ask for a quote</option>
-          </select>
-        </div>
-        @if (pricing() === 'amount') {
-          <div jb-field label="Price (CAD)" controlId="d-price" [error]="errors().price">
-            <input
-              jb-input
-              name="price"
-              type="text"
-              inputmode="decimal"
-              [ngModel]="price()"
-              (ngModelChange)="price.set($event)"
-              [readOnly]="busy()"
-            />
-          </div>
-        }
-      </div>
-      <div jb-field label="Members can" controlId="d-action">
+      <input
+        jb-input
+        name="detail"
+        type="text"
+        maxlength="60"
+        [ngModel]="detail()"
+        (ngModelChange)="detail.set($event)"
+        [readOnly]="busy()"
+      />
+    </div>
+    <div class="form-grid form-grid--2">
+      <div jb-field label="Pricing" controlId="d-pricing">
         <select
           jb-select
-          name="action"
-          [ngModel]="action()"
-          (ngModelChange)="action.set($event)"
+          name="pricing"
+          [ngModel]="pricing()"
+          (ngModelChange)="setPricing($event)"
           [disabled]="busy()"
         >
-          <option value="book">Book a time</option>
+          <option value="free">Free</option>
+          <option value="amount">Fixed price</option>
           <option value="ask">Ask for a quote</option>
         </select>
       </div>
-      @if (action() === 'book') {
-        <div class="form-grid form-grid--2">
-          <div
-            jb-field
-            label="Meeting length (minutes)"
-            controlId="d-duration"
-            hint="15 to 480. Slots follow your listing hours."
-            [error]="errors().duration"
-          >
-            <input
-              jb-input
-              name="duration"
-              type="number"
-              min="15"
-              max="480"
-              [ngModel]="duration()"
-              (ngModelChange)="duration.set('' + $event)"
-              [readOnly]="busy()"
-            />
-          </div>
-          <fieldset
-            jb-field
-            label="Meet by"
-            [error]="errors().modes"
-            [attr.aria-invalid]="errors().modes ? 'true' : null"
-          >
-            <jb-checkbox
-              name="video"
-              [checked]="video()"
-              (checkedChange)="video.set($event)"
-              [disabled]="busy()"
-              >Video call</jb-checkbox
-            >
-            <jb-checkbox
-              name="inPerson"
-              [checked]="inPerson()"
-              (checkedChange)="inPerson.set($event)"
-              [disabled]="busy()"
-              >In person</jb-checkbox
-            >
-          </fieldset>
+      @if (pricing() === 'amount') {
+        <div jb-field label="Price (CAD)" controlId="d-price" [error]="errors().price">
+          <input
+            jb-input
+            name="price"
+            type="text"
+            inputmode="decimal"
+            [ngModel]="price()"
+            (ngModelChange)="price.set($event)"
+            [readOnly]="busy()"
+          />
         </div>
-        @if (inPerson()) {
-          <div
-            jb-field
-            label="Place"
-            controlId="d-place"
-            marker="required for in person"
-            [error]="errors().place"
+      }
+    </div>
+    <div jb-field label="Members can" controlId="d-action">
+      <select
+        jb-select
+        name="action"
+        [ngModel]="action()"
+        (ngModelChange)="action.set($event)"
+        [disabled]="busy()"
+      >
+        <option value="book">Book a time</option>
+        <option value="ask">Ask for a quote</option>
+      </select>
+    </div>
+    @if (action() === 'book') {
+      <div class="form-grid form-grid--2">
+        <div
+          jb-field
+          label="Meeting length (minutes)"
+          controlId="d-duration"
+          hint="15 to 480. Slots follow your listing hours."
+          [error]="errors().duration"
+        >
+          <input
+            jb-input
+            name="duration"
+            type="number"
+            min="15"
+            max="480"
+            [ngModel]="duration()"
+            (ngModelChange)="duration.set('' + $event)"
+            [readOnly]="busy()"
+          />
+        </div>
+        <fieldset
+          jb-field
+          label="Meet by"
+          [error]="errors().modes"
+          [attr.aria-invalid]="errors().modes ? 'true' : null"
+        >
+          <jb-checkbox
+            name="video"
+            [checked]="video()"
+            (checkedChange)="video.set($event)"
+            [disabled]="busy()"
+            >Video call</jb-checkbox
           >
-            <input
-              jb-input
-              name="place"
-              type="text"
-              [ngModel]="place()"
-              (ngModelChange)="place.set($event)"
-              [readOnly]="busy()"
-            />
-          </div>
-        }
+          <jb-checkbox
+            name="inPerson"
+            [checked]="inPerson()"
+            (checkedChange)="inPerson.set($event)"
+            [disabled]="busy()"
+            >In person</jb-checkbox
+          >
+        </fieldset>
+      </div>
+      @if (inPerson()) {
+        <div
+          jb-field
+          label="Place"
+          controlId="d-place"
+          marker="required for in person"
+          [error]="errors().place"
+        >
+          <input
+            jb-input
+            name="place"
+            type="text"
+            [ngModel]="place()"
+            (ngModelChange)="place.set($event)"
+            [readOnly]="busy()"
+          />
+        </div>
       }
-    </div>
-    <div class="dialog__footer">
-      @if (view() === 'discard') {
-        <button jb-button type="button" cdkFocusInitial (click)="keepEditing()">
-          Keep editing
-        </button>
-        <button jb-button variant="danger" type="button" (click)="discard()">Discard</button>
-      } @else {
-        <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
-        <button jb-button variant="primary" type="submit" [busy]="busy()">
-          {{ editing ? 'Save changes' : 'Add service' }}
-        </button>
-      }
-    </div>
+    }
   </form>
-</div>
+  <div jb-dialog-footer>
+    @if (view() === 'discard') {
+      <button jb-button type="button" cdkFocusInitial (click)="keepEditing()">Keep editing</button>
+      <button jb-button variant="danger" type="button" (click)="discard()">Discard</button>
+    } @else {
+      <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button jb-button variant="primary" type="submit" form="service-editor-form" [busy]="busy()">
+        {{ editing ? 'Save changes' : 'Add service' }}
+      </button>
+    }
+  </div>
+</jb-dialog>
