@@ -3,6 +3,7 @@ import { expect, test } from '../fixtures/jb-test';
 import { browseHomeFromMock } from '../fixtures/mock-data';
 import { stubBrowseHome } from '../fixtures/stubs';
 import { BrowsePage } from '../pages/browse.page';
+import { SearchPage } from '../pages/search.page';
 
 // Browse home: L2-021, L2-022, L2-027, L2-118 and L2-164 (criterion 4).
 // "browse" is Joanna, a signed-in member, against the recorded answers of the seeded API (ADR 0009) (the mocks' catalogue).
@@ -265,5 +266,9 @@ test.describe('hero search (L2-164)', () => {
     await jb.open('browse');
     await browse.searchFromHero('bibles');
     await expect(page).toHaveURL(/\/search\?q=bibles$/);
+    // L2-029 AC5: the search page loads the results for the query.
+    const search = new SearchPage(page);
+    await expect(search.heading).toContainText('bibles');
+    await expect(search.loadingStatus).toHaveCount(0);
   });
 });

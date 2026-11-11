@@ -53,6 +53,20 @@ export class App {
     };
   });
 
+  /** The query of the search page, kept in the top bar's search box (L2-029 AC5). */
+  protected readonly searchQuery = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      startWith(null),
+      map(() => {
+        const tree = this.router.parseUrl(this.router.url);
+        const onSearch = tree.root.children['primary']?.segments[0]?.path === 'search';
+        return onSearch ? String(tree.queryParams['q'] ?? '') : '';
+      }),
+    ),
+    { initialValue: '' },
+  );
+
   constructor() {
     if (this.session.member()) this.navigation.load();
     effect(() => {

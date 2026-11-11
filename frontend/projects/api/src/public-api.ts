@@ -9,3 +9,5 @@ export * from './lib/models/listing';
 export * from './lib/models/product';
 export * from './lib/models/navigation';
 export * from './lib/models/session';
+export * from './lib/api/search-api';
+export * from './lib/models/search';

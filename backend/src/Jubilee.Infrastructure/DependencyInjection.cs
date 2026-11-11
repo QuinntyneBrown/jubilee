@@ -70,6 +70,7 @@ public static class DependencyInjection
             });
         }
 
+        services.AddScoped<Application.Search.ISearchIndex, Search.DatabaseSearchIndex>();
         services.AddScoped<DemoDataSeeder>();
         services.AddSingleton<IDirectoryReadCache, DistributedDirectoryReadCache>();
         services.AddSingleton<DirectoryCacheInvalidationInterceptor>();

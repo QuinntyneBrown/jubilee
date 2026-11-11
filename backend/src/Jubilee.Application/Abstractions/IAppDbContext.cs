@@ -17,5 +17,7 @@ public interface IAppDbContext
 
     DbSet<ListingView> ListingViews { get; }
 
+    DbSet<RecentSearch> RecentSearches { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

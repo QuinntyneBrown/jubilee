@@ -4,6 +4,7 @@
     jb-top-bar
     [member]="member()"
     [current]="routeData().section ?? null"
+    [query]="searchQuery()"
     (searched)="search($event)"
   ></header>
 }

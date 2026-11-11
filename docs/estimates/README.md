@@ -1,11 +1,11 @@
 # Estimates
 
 - Overall effort: 363 days
-- Complete: 6%
+- Complete: 7%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [directory](directory.md) | 17 days | 65% |
+| [directory](directory.md) | 17 days | 85% |
 | [trust-content](trust-content.md) | 11 days | 43% |
 | [responsive-design](responsive-design.md) | 6 days | 40% |
 | [design-system](design-system.md) | 6 days | 20% |
@@ -29,7 +29,7 @@
 
 ## Roadmap
 
-1. directory, listings: finish the sign-in prompt on the browse home, then business and product pages and search
+1. directory, listings: finish the sign-in prompt on the browse home, then the remaining business and product page states
 2. accounts, security: join, confirm e-mail, sign in and out, password recovery
 3. messaging, requests: message a business, book a meeting, ask for a quote, request a product
 4. onboarding, church-reference, verification: list a business, the church reference, the review queue

@@ -1,0 +1,200 @@
+@let state = store.state();
+@switch (state.status) {
+  @case ('start') {
+    <div class="page-header">
+      <div>
+        <h1>Search</h1>
+        <p class="subtitle">Find a business, a service or a product.</p>
+      </div>
+    </div>
+    <form class="search" role="search" style="max-width: 36rem" (submit)="submit($event, sq.value)">
+      <label class="visually-hidden" for="sq">Search Jubilee</label>
+      <svg jb-icon name="search"></svg>
+      <input
+        #sq
+        class="input input--lg"
+        id="sq"
+        type="search"
+        maxlength="100"
+        placeholder="Plumber, lawyer, Bibles…"
+      />
+    </form>
+    @if (state.value.recent.length > 0) {
+      <section class="section" aria-labelledby="recent">
+        <div class="cluster cluster--between">
+          <h2 id="recent">Your recent searches</h2>
+          <button class="btn btn--ghost btn--sm" type="button" (click)="store.clearRecent()">
+            Clear recent searches
+          </button>
+        </div>
+        <ul class="chip-row chip-row--plain" style="margin-top: var(--space-3)">
+          @for (recent of state.value.recent; track recent.id) {
+            <li class="cluster">
+              <a class="chip" routerLink="/search" [queryParams]="{ q: recent.query }">{{
+                recent.query
+              }}</a>
+              <button
+                class="btn btn--ghost btn--icon btn--sm"
+                type="button"
+                [attr.aria-label]="'Remove “' + recent.query + '” from recent searches'"
+                (click)="store.removeRecent(recent.id)"
+              >
+                <svg jb-icon name="close"></svg>
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+    <section class="section" aria-labelledby="pop">
+      <h2 id="pop">Popular categories</h2>
+      <ul class="chip-row chip-row--plain" style="margin-top: var(--space-3)">
+        @for (category of state.value.popularCategories; track category.slug) {
+          <li>
+            <a class="chip" [routerLink]="['/c', category.slug]">{{ category.name }}</a>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+  @case ('loading') {
+    <div class="page-header">
+      <div>
+        <h1>{{ state.query ? 'Results for “' + state.query + '”' : 'Search' }}</h1>
+        <p class="subtitle">{{ state.query ? 'Searching…' : 'Loading…' }}</p>
+      </div>
+    </div>
+    <p class="visually-hidden" role="status">Loading results…</p>
+    <ul class="rows" aria-hidden="true">
+      @for (row of [1, 2, 3, 4]; track row) {
+        <li class="row">
+          <div class="row__body">
+            <span class="skeleton skeleton--text skeleton--w50"></span>
+            <span class="skeleton skeleton--text skeleton--w70"></span>
+          </div>
+          <span class="skeleton skeleton--btn" style="width: 5rem"></span>
+        </li>
+      }
+    </ul>
+  }
+  @case ('error') {
+    <div class="page-header">
+      <div>
+        <h1>{{ state.query ? 'Results for “' + state.query + '”' : 'Search' }}</h1>
+        <p class="subtitle">Search is having trouble.</p>
+      </div>
+    </div>
+    <div jb-empty-state icon="alert" heading="We couldn’t load your results" [error]="true">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ state.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="store.load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('results') {
+    @let results = state.value;
+    @if (results.hits.length === 0) {
+      <div class="page-header">
+        <div>
+          <h1>No results for “{{ results.query }}”</h1>
+        </div>
+      </div>
+      <div jb-empty-state icon="search" [heading]="'Nothing matches “' + results.query + '”'">
+        @if (results.suggestion; as suggestion) {
+          Did you mean
+          <a routerLink="/search" [queryParams]="{ q: suggestion.closeTerm }">{{
+            suggestion.closeTerm
+          }}</a
+          >?
+        }
+        @if (results.suggestion?.categorySlug; as slug) {
+          You can also browse {{ categoryName(slug) }}, where it is listed.
+        } @else {
+          Check the spelling, try a shorter word, or browse all categories.
+        }
+        @if (results.suggestion; as suggestion) {
+          <a
+            slot="actions"
+            class="btn btn--primary"
+            routerLink="/search"
+            [queryParams]="{ q: suggestion.closeTerm }"
+            >Search “{{ suggestion.closeTerm }}”</a
+          >
+        }
+        @if (results.suggestion?.categorySlug; as slug) {
+          <a slot="actions" class="btn" [routerLink]="['/c', slug]"
+            >Browse {{ categoryName(slug) }}</a
+          >
+        } @else {
+          <a slot="actions" class="btn" routerLink="/">Browse all categories</a>
+        }
+      </div>
+    } @else {
+      <div class="page-header">
+        <div>
+          <h1>Results for “{{ results.query }}”</h1>
+          <p class="subtitle">{{ summary() }}</p>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Result type">
+        @for (tab of tabs; track tab.kind; let i = $index) {
+          <button
+            class="tab"
+            role="tab"
+            type="button"
+            [id]="'tab-' + tab.kind"
+            [attr.aria-selected]="store.tab() === tab.kind"
+            [attr.aria-controls]="'panel-' + tab.kind"
+            [attr.tabindex]="store.tab() === tab.kind ? null : -1"
+            (click)="store.choose(tab.kind)"
+            (keydown)="moveTab($event, i)"
+          >
+            {{ tab.label }} <span class="badge">{{ count(tab.kind) }}</span>
+          </button>
+        }
+      </div>
+      <div
+        role="tabpanel"
+        [id]="'panel-' + store.tab()"
+        [attr.aria-labelledby]="'tab-' + store.tab()"
+      >
+        @if (shown().length === 0) {
+          <p class="text-caption" style="margin-top: var(--space-4)">
+            Nothing in {{ store.tab() === 'business' ? 'businesses' : store.tab() + 's' }} matches
+            “{{ results.query }}”.
+          </p>
+        } @else {
+          <ul class="rows" style="border-top: 0">
+            @for (hit of shown(); track $index) {
+              <li class="row">
+                <a
+                  [routerLink]="link(hit)"
+                  style="flex: none; width: 6rem"
+                  tabindex="-1"
+                  aria-hidden="true"
+                >
+                  <div class="media media--ink"><svg jb-icon [name]="icon(hit)"></svg></div>
+                </a>
+                <div class="row__body">
+                  <a class="row__title" [routerLink]="link(hit)">{{ hit.name }}</a>
+                  <div class="row__meta">
+                    {{ categoryName(hit.categorySlug) }}
+                    @if (hit.kind !== 'business') {
+                      · {{ hit.businessName }}
+                    }
+                    @if (hit.explanation; as explanation) {
+                      · <span jb-match-explanation [explanation]="explanation"></span>
+                    }
+                  </div>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  }
+}

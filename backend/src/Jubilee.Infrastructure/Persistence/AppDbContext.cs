@@ -17,6 +17,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ListingView> ListingViews => Set<ListingView>();
 
+    public DbSet<RecentSearch> RecentSearches => Set<RecentSearch>();
+
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>

@@ -2359,6 +2359,145 @@
       "code": "product_not_found"
     }
   },
+  "GET /api/search/start": {
+    "status": 200,
+    "body": {
+      "recent": [],
+      "popularCategories": [
+        {
+          "slug": "home-property",
+          "name": "Home & property",
+          "count": 10
+        },
+        {
+          "slug": "media",
+          "name": "Media",
+          "count": 7
+        },
+        {
+          "slug": "legal-immigration",
+          "name": "Legal & immigration",
+          "count": 6
+        },
+        {
+          "slug": "business-tech",
+          "name": "Business & tech",
+          "count": 5
+        },
+        {
+          "slug": "real-estate-living",
+          "name": "Real estate & living",
+          "count": 4
+        }
+      ]
+    }
+  },
+  "GET /api/search?q=%3Cimg%20src=x%20onerror=%22window.pwned=1%22%3E%3Cscript%3Ewindow.pwned=1%3C/script%3E": {
+    "status": 200,
+    "body": {
+      "query": "<img src=x onerror=\"window.pwned=1\"><script>window.pwned=1</script>",
+      "businessCount": 0,
+      "serviceCount": 0,
+      "productCount": 0,
+      "hasMatchExplanations": true,
+      "hits": [],
+      "suggestion": null
+    }
+  },
+  "GET /api/search?q=bibles": {
+    "status": 200,
+    "body": {
+      "query": "bibles",
+      "businessCount": 1,
+      "serviceCount": 0,
+      "productCount": 1,
+      "hasMatchExplanations": true,
+      "hits": [
+        {
+          "kind": "business",
+          "name": "Christian Bookstores",
+          "slug": "christian-bookstores",
+          "productSlug": null,
+          "businessName": "Christian Bookstores",
+          "categorySlug": "shops",
+          "explanation": {
+            "text": "Matches bibles in tagline and 1 product",
+            "highlights": [
+              {
+                "start": 8,
+                "length": 6
+              }
+            ]
+          }
+        },
+        {
+          "kind": "product",
+          "name": "Leather journaling Bible, ESV",
+          "slug": "christian-bookstores",
+          "productSlug": "leather-journaling-bible-esv",
+          "businessName": "Christian Bookstores",
+          "categorySlug": "shops",
+          "explanation": {
+            "text": "Matches bible in name",
+            "highlights": [
+              {
+                "start": 8,
+                "length": 5
+              }
+            ]
+          }
+        }
+      ],
+      "suggestion": null
+    }
+  },
+  "GET /api/search?q=plumber": {
+    "status": 200,
+    "body": {
+      "query": "plumber",
+      "businessCount": 2,
+      "serviceCount": 0,
+      "productCount": 0,
+      "hasMatchExplanations": true,
+      "hits": [
+        {
+          "kind": "business",
+          "name": "WaterWorks Plumbing & Drains",
+          "slug": "waterworks-plumbing-drains",
+          "productSlug": null,
+          "businessName": "WaterWorks Plumbing & Drains",
+          "categorySlug": "home-property",
+          "explanation": {
+            "text": "Matches plumbing in name",
+            "highlights": [
+              {
+                "start": 8,
+                "length": 8
+              }
+            ]
+          }
+        },
+        {
+          "kind": "business",
+          "name": "Plumb Line Handyman",
+          "slug": "plumb-line-handyman",
+          "productSlug": null,
+          "businessName": "Plumb Line Handyman",
+          "categorySlug": "home-property",
+          "explanation": {
+            "text": "Matches plumb in name",
+            "highlights": [
+              {
+                "start": 8,
+                "length": 5
+              }
+            ]
+          }
+        }
+      ],
+      "suggestion": null
+    }
+  },
   "GET /api/session": {
     "status": 200,
     "body": {

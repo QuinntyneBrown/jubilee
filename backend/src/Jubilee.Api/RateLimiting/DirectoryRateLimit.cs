@@ -13,6 +13,15 @@ public sealed class RateLimitOptions
 
     /// <summary>Public directory reads allowed per client IP address per minute.</summary>
     public int DirectoryReadsPerMinute { get; set; } = 120;
+
+    /// <summary>Searches allowed per client IP address per minute (L2-032 AC4).</summary>
+    public int SearchesPerMinute { get; set; } = 60;
+}
+
+/// <summary>Searches have their own budget of 60 a minute per client IP address (L2-032 AC4).</summary>
+public static class SearchRateLimit
+{
+    public const string Policy = "searches";
 }
 
 /// <summary>
@@ -40,7 +49,18 @@ public static class DirectoryRateLimit
                     QueueLimit = 0,
                 });
             });
-            limiter.OnRejected = async (rejected, cancellationToken) =>
+            limiter.AddPolicy(SearchRateLimit.Policy, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter(client, _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.SearchesPerMinute),
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.OnRejected =async (rejected, cancellationToken) =>
             {
                 var retryAfter = rejected.Lease.TryGetMetadata(MetadataName.RetryAfter, out var wait)
                     ? wait
