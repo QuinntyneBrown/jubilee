@@ -1,0 +1,131 @@
+@let requests = state();
+<div class="page-header">
+  <div>
+    <h1>
+      @if (requests.status === 'loaded') {
+        {{ requests.value.listing.name }}
+      } @else {
+        Requests
+      }
+    </h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+</div>
+@switch (requests.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your requests">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ requests.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load(tab())">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to overview</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading requests…</p>
+    <ul class="rows" aria-hidden="true">
+      @for (item of skeleton; track item) {
+        <li class="row">
+          <span class="skeleton skeleton--avatar"></span>
+          <div class="row__body">
+            <span class="skeleton skeleton--text skeleton--w50"></span>
+            <span class="skeleton skeleton--text skeleton--w70"></span>
+          </div>
+          <span class="skeleton skeleton--btn" style="width: 5rem"></span>
+        </li>
+      }
+    </ul>
+  }
+  @case ('loaded') {
+    @if (requests.value.counts.all === 0) {
+      <div jb-empty-state icon="bell" heading="No requests yet">
+        When a member orders a product, books a service or asks for a quote, it lands here for you
+        to confirm or decline.
+        <a
+          slot="actions"
+          class="btn btn--primary"
+          [routerLink]="['/b', requests.value.listing.slug]"
+        >
+          <svg jb-icon name="share"></svg>Share your listing
+        </a>
+      </div>
+    } @else {
+      <div class="tabs" role="tablist" aria-label="Request status">
+        @for (item of tabs; track item.tab) {
+          <button
+            class="tab"
+            role="tab"
+            type="button"
+            [attr.aria-selected]="item.tab === tab()"
+            [attr.tabindex]="item.tab === tab() ? null : -1"
+            (click)="load(item.tab)"
+          >
+            {{ item.label }} <span class="badge">{{ requests.value.counts[item.tab] }}</span>
+          </button>
+        }
+      </div>
+      @if (requests.value.rows.length === 0) {
+        @if (tab() === 'declined') {
+          <div
+            jb-empty-state
+            [compact]="true"
+            icon="check"
+            heading="You haven’t declined any requests"
+          >
+            Declined requests are kept here for 90 days.
+            <button slot="actions" class="btn" type="button" (click)="load('new')">
+              Show new requests
+            </button>
+          </div>
+        } @else {
+          <div jb-empty-state [compact]="true" icon="check" heading="Nothing here right now">
+            No requests are in this list.
+            <button slot="actions" class="btn" type="button" (click)="load('all')">
+              Show all requests
+            </button>
+          </div>
+        }
+      } @else {
+        <ul class="rows">
+          @for (row of requests.value.rows; track row.id) {
+            <li class="row row--stack">
+              <span class="avatar" aria-hidden="true">{{ row.customerInitials }}</span>
+              <div class="row__body">
+                <div class="row__title">{{ row.title }}</div>
+                <div class="row__meta">
+                  {{ row.kindLabel }} · {{ row.customerName }} · {{ sent(row) }}
+                  @if (!isNew(row)) {
+                    · <span class="badge">{{ row.statusLabel }}</span>
+                  }
+                </div>
+                <div class="row__meta">{{ row.detail }}</div>
+              </div>
+              @if (isNew(row)) {
+                <div class="row__actions">
+                  <button
+                    class="btn btn--sm"
+                    type="button"
+                    [attr.aria-label]="'Decline request from ' + row.customerName"
+                    (click)="openDecline(row)"
+                  >
+                    Decline
+                  </button>
+                  <button
+                    class="btn btn--sm btn--primary"
+                    type="button"
+                    [attr.aria-label]="'Confirm request from ' + row.customerName"
+                    (click)="openConfirm(row)"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+}

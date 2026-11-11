@@ -50,6 +50,9 @@ export type StubName =
   | 'conversation'
   | 'conversation-loading'
   | 'conversation-error'
+  | 'incoming'
+  | 'incoming-empty'
+  | 'incoming-error'
   | 'admin-queue'
   | 'admin-queue-empty'
   | 'admin-queue-error'
@@ -389,6 +392,24 @@ export const routes = {
     mock: 'pages/search/no-results.html',
     who: 'member',
     stub: 'search-no-results',
+  },
+  'incoming-requests': {
+    app: '/my-business/requests',
+    mock: 'pages/incoming-requests/default.html',
+    who: 'member',
+    stub: 'incoming',
+  },
+  'incoming-requests.empty': {
+    app: '/my-business/requests',
+    mock: 'pages/incoming-requests/empty.html',
+    who: 'member',
+    stub: 'incoming-empty',
+  },
+  'incoming-requests.error': {
+    app: '/my-business/requests',
+    mock: 'pages/incoming-requests/error.html',
+    who: 'member',
+    stub: 'incoming-error',
   },
   'admin-verifications': {
     app: '/admin/verifications',

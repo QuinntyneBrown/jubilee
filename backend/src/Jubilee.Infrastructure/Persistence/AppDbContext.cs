@@ -55,6 +55,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
 
+    public DbSet<ResponseTimeStat> ResponseTimeStats => Set<ResponseTimeStat>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 

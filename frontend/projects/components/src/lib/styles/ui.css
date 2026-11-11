@@ -436,6 +436,7 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 @keyframes scale-in { from { opacity: 0; scale: 0.96; } }
 @keyframes slide-in-right { from { translate: 100% 0; } }
 @keyframes slide-in-left { from { translate: -100% 0; } }
+@keyframes toast-countdown { from { width: 100%; } to { width: 0; } }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
 @keyframes indeterminate { from { translate: -100% 0; } to { translate: 350% 0; } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }

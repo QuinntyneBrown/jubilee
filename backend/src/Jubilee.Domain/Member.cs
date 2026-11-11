@@ -230,15 +230,20 @@ public sealed class OutboxMessage
 
     public DateTimeOffset? FailedAt { get; private set; }
 
-    public static OutboxMessage Email(Guid? memberId, string to, string subject, string textBody, DateTimeOffset now) => new()
+    /// <summary>Ties the message to what caused it (a request), so it can be withdrawn before it is sent.</summary>
+    public Guid? CorrelationId { get; private set; }
+
+    public static OutboxMessage Email(
+        Guid? memberId, string to, string subject, string textBody, DateTimeOffset now, DateTimeOffset? notBefore = null, Guid? correlationId = null) => new()
     {
+        CorrelationId = correlationId,
         Id = Guid.NewGuid(),
         MemberId = memberId,
         ToAddress = to,
         Subject = subject,
         TextBody = textBody,
         CreatedAt = now,
-        NextAttemptAt = now,
+        NextAttemptAt = notBefore ?? now,
     };
 
     public bool IsDue(DateTimeOffset now) => SentAt is null && FailedAt is null && NextAttemptAt <= now;

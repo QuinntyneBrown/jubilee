@@ -23,6 +23,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<ListingDraftExpiryJob>();
         builder.Services.AddHostedService<ReferenceExpiryJob>();
         builder.Services.AddHostedService<ReferenceRetentionJob>();
+        builder.Services.AddHostedService<ResponseTimeBadgeJob>();
         return builder;
     }
 }
@@ -173,6 +174,40 @@ public sealed class ReferenceRetentionJob(IServiceScopeFactory scopes, ILogger<R
         catch (OperationCanceledException)
         {
             logger.LogInformation("The reference retention job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every hour: recomputes each live listing's median first response and its "Replies fast" badge
+/// (L2-054, L2-182). Safe to repeat.
+/// </summary>
+public sealed class ResponseTimeBadgeJob(IServiceScopeFactory scopes, ILogger<ResponseTimeBadgeJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var updated = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Requests.RecomputeResponseTimesCommand(), stoppingToken);
+                    logger.LogInformation("Recomputed the response time of {Count} listings.", updated);
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Response times could not be recomputed. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The response-time job is stopping.");
         }
     }
 }

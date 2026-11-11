@@ -144,6 +144,50 @@ public sealed class Product
         return Change(wasSoldOut);
     }
 
+    /// <summary>
+    /// An owner confirmed an order: the stock of the chosen option (or of the product) drops by the
+    /// quantity. Untracked stock is left alone; stock below the quantity throws (L2-052 AC4).
+    /// </summary>
+    public void ReduceStock(string? optionLabel, int quantity)
+    {
+        var current = StockOf(optionLabel);
+        if (current is not { } stock)
+        {
+            return;
+        }
+
+        if (stock < quantity)
+        {
+            throw new InsufficientStockException(stock, quantity);
+        }
+
+        Put(optionLabel, stock - quantity);
+    }
+
+    /// <summary>Undoes <see cref="ReduceStock"/>.</summary>
+    public void RestoreStock(string? optionLabel, int quantity)
+    {
+        if (StockOf(optionLabel) is { } stock)
+        {
+            Put(optionLabel, Math.Min(MaxStock, stock + quantity));
+        }
+    }
+
+    private int? StockOf(string? optionLabel) =>
+        Options.Count > 0 ? Options.SingleOrDefault(o => o.Label == optionLabel)?.Stock : Stock;
+
+    private void Put(string? optionLabel, int stock)
+    {
+        if (Options.Count > 0)
+        {
+            Options.Single(o => o.Label == optionLabel).Stock = stock;
+        }
+        else
+        {
+            Stock = stock;
+        }
+    }
+
     internal static int? CheckStock(int? stock) => stock is null or (>= 0 and <= MaxStock)
         ? stock
         : throw new ArgumentOutOfRangeException(nameof(stock), "Stock is a whole number from 0 to 9,999.");
@@ -158,4 +202,13 @@ public sealed class Product
     };
 
     private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+}
+
+/// <summary>An order asks for more than the shop has.</summary>
+public sealed class InsufficientStockException(int available, int requested)
+    : Exception($"Only {available} left; {requested} were asked for.")
+{
+    public int Available { get; } = available;
+
+    public int Requested { get; } = requested;
 }

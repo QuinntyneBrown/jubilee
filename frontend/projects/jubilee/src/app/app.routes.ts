@@ -111,6 +111,17 @@ export const routes: Routes = [
     title: 'List your business · Jubilee',
   },
   {
+    path: 'my-business/requests',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/incoming-requests/incoming-requests.page').then(
+        (m) => m.IncomingRequestsPage,
+      ),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'incoming-requests', section: 'business' }),
+    title: 'Requests · Jubilee',
+  },
+  {
     path: 'admin/verifications',
     pathMatch: 'full',
     loadComponent: () =>

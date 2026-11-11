@@ -71,7 +71,7 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
         if (exception is ConflictException conflict)
         {
             return ProblemWriter.WriteAsync(
-                context, StatusCodes.Status409Conflict, "That can't be done now.", conflict.Message, conflict.Code);
+                context, StatusCodes.Status409Conflict, "That can't be done now.", conflict.Message, conflict.Code, facts: conflict.Facts);
         }
 
         // An endpoint that declares an error reference is a read the page shows a load-error

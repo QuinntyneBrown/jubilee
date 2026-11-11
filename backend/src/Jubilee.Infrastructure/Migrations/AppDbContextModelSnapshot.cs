@@ -795,6 +795,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<int>("Attempts")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("CorrelationId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -826,6 +829,8 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasColumnType("nvarchar(254)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CorrelationId");
 
                     b.HasIndex("SentAt", "NextAttemptAt");
 
@@ -1030,6 +1035,14 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("DeclineMessage")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("DeclineReason")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
                     b.Property<string>("DeliveryLabel")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -1155,11 +1168,36 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
 
+                    b.Property<DateTimeOffset?>("UndoableUntil")
+                        .HasColumnType("datetimeoffset");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RequestId");
 
                     b.ToTable("RequestTransitions", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ResponseTimeStat", b =>
+                {
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ComputedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<TimeSpan?>("MedianFirstResponse")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("RepliesFast")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ResponseCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("ListingId");
+
+                    b.ToTable("ResponseTimeStats", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.ReviewTick", b =>
@@ -1463,6 +1501,15 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasOne("Jubilee.Domain.Request", null)
                         .WithMany("Transitions")
                         .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ResponseTimeStat", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Listing", null)
+                        .WithMany()
+                        .HasForeignKey("ListingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

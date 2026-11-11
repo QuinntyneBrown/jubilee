@@ -51,7 +51,11 @@ public sealed class RequestTransition
 
     public DateTimeOffset At { get; private set; }
 
-    public static RequestTransition Record(Guid requestId, RequestStatus from, RequestStatus to, string actor, DateTimeOffset at) => new()
+    /// <summary>Set on a confirm: until then its actor may undo it (L2-052 AC3).</summary>
+    public DateTimeOffset? UndoableUntil { get; private set; }
+
+    public static RequestTransition Record(
+        Guid requestId, RequestStatus from, RequestStatus to, string actor, DateTimeOffset at, DateTimeOffset? undoableUntil = null) => new()
     {
         Id = Guid.NewGuid(),
         RequestId = requestId,
@@ -59,6 +63,7 @@ public sealed class RequestTransition
         To = to,
         Actor = actor,
         At = at,
+        UndoableUntil = undoableUntil,
     };
 }
 
@@ -73,6 +78,12 @@ public sealed class Request
     public const int MaxDescriptionLength = 2000;
 
     public const int MaxBudgetLength = 60;
+
+    /// <summary>How long after a confirm the owner may undo it.</summary>
+    public static readonly TimeSpan UndoWindow = TimeSpan.FromSeconds(8);
+
+    /// <summary>The reasons an owner picks from when declining (L2-053 AC1).</summary>
+    public static readonly string[] DeclineReasons = ["cant-meet-the-date", "out-of-stock", "outside-what-i-offer", "something-else"];
 
     private readonly List<RequestTransition> _transitions = [];
 
@@ -138,6 +149,12 @@ public sealed class Request
     public string? DeliveryLabel { get; private set; }
 
     public string? ShippingAddress { get; private set; }
+
+    /// <summary>One of <see cref="DeclineReasons"/>; set when the owner declined.</summary>
+    public string? DeclineReason { get; private set; }
+
+    /// <summary>The note the owner wrote to the customer with the decline.</summary>
+    public string? DeclineMessage { get; private set; }
 
     public IReadOnlyList<RequestTransition> Transitions => _transitions;
 
@@ -245,7 +262,19 @@ public sealed class Request
             throw new InvalidTransitionException(Status, RequestStatus.Confirmed);
         }
 
-        MoveTo(RequestStatus.Confirmed, actor, now);
+        MoveTo(RequestStatus.Confirmed, actor, now, now + UndoWindow);
+    }
+
+    /// <summary>Takes back a confirm: only its actor, and only within the undo window (L2-052 AC3).</summary>
+    public void UndoConfirm(string actor, DateTimeOffset now)
+    {
+        var last = _transitions.OrderBy(t => t.At).LastOrDefault();
+        if (Status != RequestStatus.Confirmed || last is not { To: RequestStatus.Confirmed, UndoableUntil: { } until } || last.Actor != actor || now > until)
+        {
+            throw new InvalidTransitionException(Status, RequestStatus.New);
+        }
+
+        MoveTo(RequestStatus.New, actor, now);
     }
 
     /// <summary>The owner declines a new request.</summary>
@@ -257,6 +286,14 @@ public sealed class Request
         }
 
         MoveTo(RequestStatus.Declined, actor, now);
+    }
+
+    /// <summary>The owner declines a new request and tells the customer why (L2-053).</summary>
+    public void Decline(string actor, DateTimeOffset now, string reason, string message)
+    {
+        Decline(actor, now);
+        DeclineReason = reason;
+        DeclineMessage = message.Trim();
     }
 
     /// <summary>The member cancels a new or confirmed request.</summary>
@@ -281,9 +318,9 @@ public sealed class Request
         MoveTo(RequestStatus.Completed, actor, now);
     }
 
-    private void MoveTo(RequestStatus status, string actor, DateTimeOffset now)
+    private void MoveTo(RequestStatus status, string actor, DateTimeOffset now, DateTimeOffset? undoableUntil = null)
     {
-        _transitions.Add(RequestTransition.Record(Id, Status, status, actor, now));
+        _transitions.Add(RequestTransition.Record(Id, Status, status, actor, now, undoableUntil));
         Status = status;
     }
 }

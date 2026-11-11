@@ -12,6 +12,7 @@ import {
   ProductPage,
   ProductWithSizeScreen,
 } from '../pages/product.page';
+import { IncomingRequestsPage } from '../pages/incoming-requests.page';
 import { JoinPage } from '../pages/join.page';
 import { ConversationPage, MessagesPage } from '../pages/messages.page';
 import { SearchPage } from '../pages/search.page';
@@ -28,6 +29,9 @@ export const screens: {
   below?: number;
 }[] = [
   { key: 'welcome', screen: (page) => new WelcomePage(page) },
+  { key: 'incoming-requests', screen: (page) => new IncomingRequestsPage(page) },
+  { key: 'incoming-requests.empty', screen: (page) => new IncomingRequestsPage(page) },
+  { key: 'incoming-requests.error', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'admin-verifications', screen: (page) => new AdminVerificationsPage(page) },
   { key: 'admin-verifications.empty', screen: (page) => new AdminVerificationsPage(page) },
   { key: 'admin-verifications.error', screen: (page) => new AdminVerificationsPage(page) },

@@ -46,7 +46,7 @@ badge computed in `Jubilee Worker`.
   `OwnerGuard`.
 - **`ListIncomingRequestsQuery`** and **`ListIncomingRequestsQueryHandler`** — return the listing's requests for
   a tab, newest first, with the count per tab. The Declined tab returns requests declined in the last 90 days.
-  The page size is `<TO SUPPLY>`.
+  The page size is 50 (ADR 0021).
 - **`IncomingRequestRowDto`** — row projection with customer initials and name, title, `RequestType`, sent time,
   note or delivery choice, and `RequestStatus`.
 - **`Request`** — domain entity in `Jubilee.Domain` that owns the request lifecycle (`L2-043`). `RequestStatus`
@@ -66,7 +66,7 @@ badge computed in `Jubilee Worker`.
   `ResponseTimeStat`. The job is idempotent and records its last success (`L2-182`).
 - **`ResponseTimeCalculator`** — domain service. For a request, the response time runs from `CreatedAt` to the
   owner's first `RequestTransition`. For a message, it runs from the customer's message to the owner's first
-  reply; the exact pairing rule for messages is `<TO SUPPLY>`. `RepliesFast` is true when the median is under 24
+  reply; the pairing rule is in ADR 0021: the owner's first message after a customer message that had no owner message since. `RepliesFast` is true when the median is under 24
   hours and the count is at least 3.
 - **`ResponseTimeStat`** — entity per listing with `MedianFirstResponse`, `ResponseCount`, `RepliesFast` and
   `ComputedAt`. Listing pages and `BusinessCard` read `RepliesFast` to show or remove the "Replies fast" badge.

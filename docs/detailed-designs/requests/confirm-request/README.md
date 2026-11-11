@@ -43,8 +43,8 @@ effects dispatched by `Jubilee Worker`.
   unit of work.
 - **`UndoConfirmRequestCommand`** and **`UndoConfirmRequestCommandHandler`** — the handler calls
   `Request.UndoLastTransition`, restores the stock through `Product.RestoreStock`, and withdraws the customer's
-  notification when its e-mail `OutboxMessage` is not yet dispatched. What the customer is told when the e-mail
-  has already been sent is `<TO SUPPLY>`.
+  notification when its e-mail `OutboxMessage` is not yet dispatched. The e-mail is queued with the same 8-second delay as the undo window, so
+  it is never already sent (ADR 0021).
 - **`Request`** — domain entity in `Jubilee.Domain` that owns the request lifecycle (`L2-043`). `RequestStatus`
   holds `New`, `Confirmed`, `Declined`, `Cancelled` and `Completed`. The allowed transitions are `New` →
   `Confirmed` (the owner confirms), `New` → `Declined` (the owner declines), `New` or `Confirmed` → `Cancelled`
