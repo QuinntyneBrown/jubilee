@@ -46,6 +46,7 @@ Reuse these in every new mock so the story holds across screens. **Today is Tues
 |---|---|
 | `assets/tokens.css` | Design tokens: ink and cream neutrals, gold accent (always with ink text), green for verified, links and success; Archivo for headings, Inter for text; light and dark themes. The only place colours, sizes and durations live. |
 | `assets/ui.css` | The component kit shared by every mock. The Jubilee components (top bar, phone tab bar, hero band, media tiles, business and product cards, directory rows, inbox, timeline) are in the second half. Extend it; never fork per mock. |
+| `../design-system/assets/marketing.css` | The marketing site's stylesheet (`pages/marketing-home`): the `mkt-*` blocks, light only. Its photos and Inter load from the network, as in the Magic Patterns reference. |
 | `assets/mock.css`, `assets/mock.js` | The mock bar, annotation notes and theme switch. Not product UI. |
 
 Both themes pass the design-system contrast checker (WCAG AA). Gold on cream is 1.6:1, so gold

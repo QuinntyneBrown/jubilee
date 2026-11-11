@@ -30,7 +30,7 @@
 .mkt a { color: inherit; text-decoration: none; }
 .mkt ul, .mkt ol { list-style: none; padding: 0; }
 .mkt img { height: 100%; }
-.mkt [id] { scroll-margin-top: var(--layout-topbar-height); }
+.mkt [id] { scroll-margin-top: calc(var(--layout-topbar-height) + var(--space-1)); }
 
 .mkt-wrap { width: 100%; max-width: var(--jb-mkt-max); margin-inline: auto; padding-inline: var(--jb-mkt-gutter); }
 .mkt-ink { color: color-mix(in srgb, var(--color-fg-default) 75%, transparent); }

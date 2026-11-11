@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { APP_URL } from './app-url';
 import { Benefits } from './benefits/benefits';
 import { ForBusinesses } from './for-businesses/for-businesses';
 import { HeroVisual } from './hero-visual/hero-visual';
@@ -14,4 +15,7 @@ import { PitchVideo } from './pitch-video/pitch-video';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
 })
-export class App {}
+export class App {
+  /** The app's browse home (L2-185 AC1). */
+  protected readonly browseUrl = inject(APP_URL) + '/';
+}

@@ -161,6 +161,18 @@ export class MarketingHomePage implements Screen {
     return this.page.locator('body').evaluate((body) => body.dataset['page']);
   }
 
+  paperColour(): Promise<string> {
+    return this.page.locator('body').evaluate((body) => getComputedStyle(body).backgroundColor);
+  }
+
+  fontOf(locator: Locator): Promise<string> {
+    return locator.evaluate((element) => getComputedStyle(element).fontFamily);
+  }
+
+  scrollBehaviour(): Promise<string> {
+    return this.page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior);
+  }
+
   horizontalOverflow(): Promise<number> {
     return this.page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

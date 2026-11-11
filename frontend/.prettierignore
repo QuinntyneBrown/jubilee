@@ -5,3 +5,4 @@ package-lock.json
 # Copied verbatim from docs/design-system; the design system owns their formatting.
 projects/components/src/lib/styles/tokens.css
 projects/components/src/lib/styles/ui.css
+projects/marketing/src/styles/marketing.css
