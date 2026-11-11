@@ -1,80 +1,99 @@
 # 01 · Meet Jubilee
 
-> **Runtime:** 0:42 · **Audience:** Toronto's Christian community, members and business owners · **Prerequisites:** none
+> **Runtime:** 1:04 (64.80 s) · **Format:** 1920×1080, 60 fps · **Audience:** Toronto's Christian community, members and business owners
 
-**Video:** [01-jubilee-pitch.mp4](01-jubilee-pitch.mp4) · [Animated deck](slides.html) · **Audio:** [01-jubilee-pitch.mp3](01-jubilee-pitch.mp3) · [Transcript](script.md) · [Captions](captions.vtt)
+**Video:** [01-jubilee-pitch.mp4](01-jubilee-pitch.mp4) · [Live deck](slides.html) · **Audio:** [01-jubilee-pitch.mp3](01-jubilee-pitch.mp3) · [Transcript](script.md) · [Captions](captions.vtt)
 
 ## Why this video exists
 
-To make people want to sign up: it shows what Jubilee is, what a member can do there and why an
-owner should list, in well under a minute, using the product's own screens.
+To make people want to join and to list: it sets up the trust people already have at church, shows
+the Monday problem, then shows what Jubilee is, why to join, what a member can do, and why and how
+an owner lists, in just over a minute.
 
-## Learning objectives
+## Source of truth
 
-By the end, the viewer can:
-
-- Say what Jubilee is: Toronto's Christian marketplace, a directory of verified Christian-owned businesses.
-- Name the four things a member can do: message, book a meeting, ask for a quote, request a product.
-- Tell that listings are confirmed by a pastor or elder, and that joining and listing are free.
-
-## Key questions
-
-| Question | What a strong answer includes |
-|---|---|
-| Why trust a listing? | Every listing is a Christian-owned business confirmed by a pastor or elder. |
-| What can I do there? | Message the owner, book a meeting, ask for a quote, request a product; the business answers directly. |
-| Why list my business? | It is free, and requests arrive in one place to confirm or decline. |
-
-## Code / assets on screen
-
-Screenshots are taken from `docs/mocks` by `build.mjs --shots` (list in [shots.json](shots.json)).
-
-| Scene | Mocks shown |
-|---|---|
-| Hello Toronto | `pages/welcome` |
-| The directory | `pages/browse`, `pages/category` (phone) |
-| Trust | `pages/business` (Legacy Financial), `pages/shop` (Luzandre.com, phone) |
-| Ask, book or order | `pages/conversation`, `dialogs/book-meeting`, `dialogs/request-quote`, `dialogs/order-request` (phones) |
-| Your requests | `pages/requests`, `pages/notifications` (phone) |
-| Owners | `pages/my-business`, `pages/incoming-requests` and `pages/my-products` (phones) |
-| Community | a wall of the above plus `pages/product`, `pages/search`, `pages/saved`, `pages/request-detail` |
+The film is built from the Magic Patterns project "Jubilee Christian Marketplace": the **Pitch
+Video** prototype (nine scenes and their shared code) and the **Pitch Video Build Spec**. `film.js`
+and `../assets/pitch.js` are a port of that source to plain HTML, CSS and JavaScript, keeping its
+positions, sizes, copy, colours, timings, easing curves and transitions. Where the prototype's code
+and the spec's prose differ, the code wins. Change the design in Magic Patterns first, then here.
 
 ## Run sheet
 
-| Time | Segment | Content |
-|---|---|---|
-| 00:00-00:02 | Intro | Music only, full level: the last bar before the groove. Logo and wordmark. |
-| 00:02-00:06 | Hello Toronto | The groove drops. "Toronto! Meet Jubilee" over the welcome page. |
-| 00:06-00:12 | The directory | 47 counts up; the ten categories pop in. |
-| 00:12-00:17 | Trust | Business and shop profiles; the Verified stamp lands. |
-| 00:17-00:21 | Ask, book or order | Four phones drop in, one per action. |
-| 00:21-00:25 | Your requests | Requests list and notifications; Confirmed, Awaiting reply. |
-| 00:25-00:29 | Owners | "Own a business? List it free." over My business. |
-| 00:29-00:34 | Community | A family, a church, a community. |
-| 00:34-00:39 | Join | "Join free today." |
-| 00:39-00:42 | Outro | Music only, full level, fading out. |
+Nine scenes of three bars each at 100 BPM (1 beat = 0.6 s, 1 bar = 2.4 s, 1 scene = 7.2 s), so every
+cut lands on a downbeat.
 
-## Demo commands
+| # | Scene | Act | In | Out | What happens |
+|---|---|---|---|---|---|
+| 01 | Sunday | Hook | 0:00.00 | 0:07.20 | Warm church photo, slow pull-back. A gold line underlines "trust." Colour drains in the last bar. |
+| 02 | Monday | Hook | 0:07.20 | 0:14.40 | Cold kitchen photo. A feed of stranger search results scrolls faster, then freezes. Gold wipe. |
+| 03 | Meet Jubilee | Hook | 0:14.40 | 0:21.60 | The drop: the gold slab collapses into the logo's crossbar, the J draws, the aurora pulses on the kick. Six borough pins. |
+| 04 | Why join | Why join | 0:21.60 | 0:28.80 | The seal stamps on "vouched"; three reasons land with the narration. |
+| 05 | Shop | What you can do | 0:28.80 | 0:36.00 | Four catalogue products land on the words that name them; the bag fills on every beat. |
+| 06 | Hire & book | What you can do | 0:36.00 | 0:43.20 | A Legacy Financial booking card: the slot hops, is tapped, and "Booked." confirms on the downbeat. |
+| 07 | Why list | Why list | 0:43.20 | 0:50.40 | Key lift, gold aurora. An owner's portrait with three notifications stacking on the beat. |
+| 08 | How to list | Why list | 0:50.40 | 0:57.60 | A gold line runs through three steps; the seal stamps; "List your business free". |
+| 09 | Close | Close | 0:57.60 | 1:04.80 | Confetti on the final hit, the logo builds, "Your community is open for business.", jubilee.to, fade to ink. |
+
+Transitions: a gold crossbar wipe marks each change of act (02→03, 04→05, 06→07); a coloured panel
+marks a change of colour inside an act (03→04, 05→06, 08→09); hard cuts are kept for 01→02 and 07→08.
+
+## What is a stand-in
+
+The picture follows the design. The sound does not yet: the build spec asks for things this
+repository cannot produce, so `tools/video-audio/film_audio.py` synthesizes stand-ins that keep the
+spec's timing.
+
+| Part | The spec asks for | What is here |
+|---|---|---|
+| Music | A composed, warm gospel-pop track: felt piano, Rhodes, a small gospel choir, claps, kick, bass, marimba; supplied as stems | A numpy synthesis of those parts. The grid is exact: 100 BPM, 27 bars, D major lifting to E at bar 19, stop and riser at 12.00, drop at 14.40, marimba notes at 30.60 / 31.20 / 31.80 / 32.40, claps at 33.60–35.40, chime at 40.80, key lift at 43.20, snare pickup at 55.20, final hit at 57.60, soft hit at 62.40, out by 64.80. The timbre is synthetic, and the "choir" is a vowel synth. |
+| Narration | One warm, conversational Canadian-English voice, mid-30s to 40s, recorded wild and fitted | Kokoro-82M text-to-speech, voice `af_heart` (American English), spoken phrase by phrase at the speed that fits each window. |
+| Sound effects | Room tone with chatter, a drip, scroll ticks, stamp, tap, chime, notification dings | Synthesized versions of each. The room tone and drip are the weakest. |
+| Loudness | −14 LUFS integrated, true peak −1 dBTP, voice ducks music 6 dB | −14.0 LUFS as measured by ffmpeg, peaks held to −1 dB before encoding (about −0.7 dB after MP3 encoding), music ducked 6 dB under the voice. True peak is not measured, and there are no stems beyond `music.mp3` and `sfx.mp3`. |
+
+Other things to know:
+
+- **Narration pace.** The spec asks for about 150 words a minute, but several of its windows need
+  more than 200. The windows win, so those lines are spoken fast.
+- **Hard syncs are approximate.** "Bibles" and "gifts" start on 30.60 and 31.20 exactly (they are
+  separate phrases). "vouched" (22.80), "flowers" (32.40) and "tap" (40.20) are placed by estimate,
+  because the voice model gives no word timings; expect them within about a tenth of a second.
+- **Stamp sounds follow the picture.** The spec's hit table puts the stamp at 22.80 and 52.20; in
+  the prototype's code the seal starts to fall then and lands at 23.00 and 52.70, so the thud is
+  there.
+- **Photos and Inter are hotlinked.** The five scene photos and the catalogue images load from
+  `cdn.magicpatterns.com`, and Inter from Google Fonts; neither is in the repository, so the deck
+  and the builder need a network connection. The photos are AI-generated placeholders for a shoot.
+- **Three small departures from the prototype's code**, each for a layout fault it has when run:
+  in scene 02 the two headlines are held on one line and the search bar stays above the scrolling
+  results; in scene 08 the call to action sits 32 px lower so it no longer covers step three.
+- **Captions are burned in**, one caption per sentence or phrase rather than one per line, so each
+  fits on one row.
+
+## Copy to confirm before release
+
+The designer flagged these as made up: "Pastor Ruth", "Grace Church" and "12 people" in scene 07,
+and the "Thursday, March 14" date in scene 06. Product names and prices come from the app's sample
+catalogue. The narration wording is a first draft.
+
+## Rebuild
 
 ```sh
-python tools/video-audio/generate_audio.py docs/videos/01-jubilee-pitch
-node tools/video-build/build.mjs docs/videos/01-jubilee-pitch --shots
-node tools/video-build/build.mjs docs/videos/01-jubilee-pitch
+python tools/video-audio/film_audio.py docs/videos/01-jubilee-pitch
+NODE_PATH=e2e/node_modules node tools/video-build/build.mjs docs/videos/01-jubilee-pitch --check
+NODE_PATH=e2e/node_modules node tools/video-build/build.mjs docs/videos/01-jubilee-pitch
 ```
 
-## Pitfalls
+See [the videos README](../README.md) for the files, the flags and the deck's helpers.
 
-- **The deck is cut to this track.** `music.mp3` is "En La Playa - Trinidad and Tobago Soca" by
-  JuliusH from Pixabay Music (Pixabay Content License), 120 BPM. `data-music-start="14.765"` starts
-  the video on the last bar of the track's intro, so the groove drops on "Toronto!" at 0:02, the
-  track lifts on "Join free today" at 0:34 and the cannons in the last scene fire on the downbeat.
-  A different track needs its own `data-bpm` and `data-music-start`; Pixabay's download button is
-  behind a captcha, so download the file by hand.
-- Captions are off by default; see [the videos README](../README.md).
-- The facts on screen (47 businesses, ten categories, the cast) come from `docs/mocks/README.md`.
-  If the mocks change, re-run `--shots` and check the script.
+## Checks worth repeating after a change
+
+- Frames at 14.40, 22.80–23.00, 30.60–32.40, 40.20, 40.80, 43.20 and 57.60 show their event on the
+  frame where the sound starts (`--frame <seconds> out.png`, or `slides.html?guides=1&t=<seconds>`).
+- Every word sits inside title safe (5% inset) and nothing is under 18 px.
+- No narration runs into the first 0.3 s of the next scene (`--check` prints the caption times).
 
 ## References
 
+- Magic Patterns project: magicpatterns.com/os/vjQEdxvHPvuznVPfxRXYfe (Pitch Video, Pitch Video Build Spec)
 - Kokoro-82M ONNX on Hugging Face: `onnx-community/Kokoro-82M-v1.0-ONNX`
-- The track: pixabay.com/music/world-en-la-playa-trinidad-and-tobago-soca-4662/

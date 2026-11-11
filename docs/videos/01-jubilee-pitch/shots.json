@@ -1,5 +1,0 @@
-{
-  "mocks": "../../mocks",
-  "desktop": ["pages/welcome/default", "pages/browse/default", "pages/category/default", "pages/business/default", "pages/shop/default", "pages/product/default", "pages/conversation/default", "pages/requests/default", "pages/request-detail/default", "pages/my-business/default", "pages/my-products/default", "pages/incoming-requests/default", "pages/search/default", "pages/saved/default", "pages/notifications/default"],
-  "phone": ["pages/category/default", "pages/shop/default", "pages/conversation/default", "dialogs/book-meeting/default", "dialogs/request-quote/default", "dialogs/order-request/default", "pages/notifications/default", "pages/incoming-requests/default", "pages/my-products/default"]
-}
