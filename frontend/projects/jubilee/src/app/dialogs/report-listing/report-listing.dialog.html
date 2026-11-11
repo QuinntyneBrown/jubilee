@@ -1,0 +1,117 @@
+@let found = problems();
+<div class="dialog__panel">
+  @if (view() === 'success') {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="check"></svg>
+      </div>
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">Thanks for telling us</h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          Your report is private. Our verification team reviews it within one business day and may
+          e-mail you with a question.
+        </p>
+      </div>
+      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    <div class="dialog__footer">
+      <button class="btn btn--primary" type="button" cdkFocusInitial (click)="close()">
+        Close
+      </button>
+    </div>
+  } @else {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="flag"></svg>
+      </div>
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">Report {{ data.businessName }}</h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          Reports are private. The business is not told who sent them.
+        </p>
+      </div>
+      <button
+        class="btn btn--ghost btn--icon"
+        type="button"
+        aria-label="Close"
+        [disabled]="busy()"
+        (click)="close()"
+      >
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    <form class="dialog__body stack" id="report-form" novalidate (ngSubmit)="send()">
+      @if (view() === 'failed') {
+        <div class="alert alert--danger" role="alert">
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">{{ failure().title }}</div>
+            <div>{{ failure().text }}</div>
+          </div>
+        </div>
+      }
+      <fieldset
+        [attr.aria-invalid]="found.reason ? 'true' : null"
+        [attr.aria-describedby]="found.reason ? 'd-why-error' : null"
+      >
+        <legend>What’s wrong? <span class="optional text-muted">(required)</span></legend>
+        @for (option of reasons; track option.value; let i = $index) {
+          <label class="choice">
+            <input
+              type="radio"
+              name="why"
+              [id]="'d-why-' + i"
+              [value]="option.value"
+              [checked]="reason() === option.value"
+              [disabled]="busy()"
+              (change)="reason.set(option.value)"
+            />
+            <span class="choice__text">{{ option.label }}</span>
+          </label>
+        }
+        @if (found.reason) {
+          <span class="field__error" id="d-why-error">{{ found.reason }}</span>
+        }
+      </fieldset>
+      <div class="field">
+        <label class="field__label" for="d-detail"
+          >Tell us what happened <span class="optional">(required)</span></label
+        >
+        <textarea
+          class="textarea"
+          id="d-detail"
+          name="description"
+          rows="3"
+          required
+          [attr.maxlength]="max"
+          [readOnly]="busy()"
+          [attr.aria-invalid]="found.description ? 'true' : null"
+          [attr.aria-describedby]="
+            found.description ? 'd-detail-count d-detail-error' : 'd-detail-count'
+          "
+          [ngModel]="description()"
+          (ngModelChange)="description.set($event)"
+        ></textarea>
+        <span class="field__help" id="d-detail-count"
+          >{{ remaining() }} {{ remaining() === 1 ? 'character' : 'characters' }} left</span
+        >
+        @if (found.description) {
+          <span class="field__error" id="d-detail-error">{{ found.description }}</span>
+        }
+      </div>
+    </form>
+    <div class="dialog__footer">
+      <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button
+        class="btn btn--primary"
+        type="submit"
+        form="report-form"
+        [attr.aria-busy]="busy() ? 'true' : null"
+      >
+        Send report
+      </button>
+    </div>
+  }
+</div>

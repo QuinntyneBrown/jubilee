@@ -12,6 +12,7 @@ export * from './lib/models/session';
 export * from './lib/api/search-api';
 export * from './lib/models/search';
 export * from './lib/api/account-api';
+export * from './lib/api/reports-api';
 export * from './lib/models/account';
 export * from './lib/api/password-reset-api';
 export * from './lib/models/password-reset';

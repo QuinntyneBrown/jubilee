@@ -1,0 +1,40 @@
+<div class="dialog__panel dialog__panel--sm">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+      <svg jb-icon name="share"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">Share {{ data.businessName }}</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+        Send this listing to a friend or your small group.
+      </p>
+    </div>
+    <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <div class="dialog__body stack">
+    <div class="field">
+      <label class="field__label" for="d-link">Link</label>
+      <div class="input-group">
+        <input class="input" id="d-link" type="text" [value]="url" readonly />
+        <button class="btn btn--primary" type="button" (click)="copy()">
+          {{ copied() ? 'Copied ✓' : 'Copy' }}
+        </button>
+      </div>
+      <span class="visually-hidden" role="status" aria-live="polite">{{
+        copied() ? 'Link copied' : ''
+      }}</span>
+    </div>
+    <div class="cluster">
+      <a class="btn" [href]="mailto">E-mail</a>
+      <a class="btn" [href]="whatsapp" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      @if (canShare) {
+        <button class="btn" type="button" (click)="more()">More…</button>
+      }
+    </div>
+  </div>
+  <div class="dialog__footer">
+    <button class="btn" type="button" cdkFocusInitial (click)="close()">Done</button>
+  </div>
+</div>
