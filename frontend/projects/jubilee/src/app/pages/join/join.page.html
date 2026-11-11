@@ -37,7 +37,7 @@
       <h1>Join Jubilee</h1>
       <p class="text-muted">Free for everyone in Toronto’s Christian community.</p>
       @if (notice()) {
-        <div jb-alert tone="warning" role="alert">{{ notice() }}</div>
+        <div jb-alert tone="warning" [role]="noticeRole()">{{ notice() }}</div>
       }
       @if (summary().length > 0) {
         <jb-form-summary [errors]="summary()" #summaryBox />
@@ -147,8 +147,12 @@
         >
           Create account
         </button>
-        <p class="divider-text">or</p>
-        <a jb-button block size="lg" [href]="googleUrl">Join with Google</a>
+        @if (google()) {
+          <p class="divider-text">or</p>
+        }
+        @if (google()) {
+          <a jb-button block size="lg" [href]="googleUrl">Join with Google</a>
+        }
       </form>
     }
   }

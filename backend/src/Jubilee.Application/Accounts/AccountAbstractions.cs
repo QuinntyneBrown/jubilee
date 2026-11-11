@@ -55,8 +55,11 @@ public sealed class ValidationFailedException(IReadOnlyDictionary<string, string
 /// <summary>Google's answer about who signed in (L2-003).</summary>
 public sealed record GoogleIdentity(string Subject, string Email, bool EmailVerified, string GivenName, string FamilyName);
 
-/// <summary>A pending Google sign-in, kept between the redirect and the callback (L2-003 AC3).</summary>
-public sealed record OidcTransaction(string State, string Nonce, string CodeVerifier, string ReturnUrl);
+/// <summary>
+/// A pending Google sign-in, kept between the redirect and the callback (L2-003 AC3).
+/// <c>From</c> is the page it started on, <c>join</c> or <c>sign-in</c>, where a failure is shown (L2-003 AC7).
+/// </summary>
+public sealed record OidcTransaction(string State, string Nonce, string CodeVerifier, string ReturnUrl, string From = "sign-in");
 
 public interface IOidcTransactionStore
 {

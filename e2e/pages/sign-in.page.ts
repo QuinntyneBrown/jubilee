@@ -17,6 +17,8 @@ export class SignInPage extends ShellPage implements Screen {
   readonly summary: Locator;
   readonly summaryLinks: Locator;
   readonly notice: Locator;
+  readonly calmNotice: Locator;
+  readonly divider: Locator;
   readonly errorState: Locator;
   readonly tryAgain: Locator;
   readonly toast: Locator;
@@ -35,6 +37,8 @@ export class SignInPage extends ShellPage implements Screen {
     this.summary = this.main.locator('#summary');
     this.summaryLinks = this.summary.getByRole('link');
     this.notice = this.main.locator('.alert--danger:not(.form-summary)');
+    this.calmNotice = this.main.locator('.alert--warning');
+    this.divider = this.main.locator('.divider-text');
     this.errorState = this.main.getByRole('alert').filter({ hasText: 'JB-AUTH-503' });
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.toast = page.locator('.toast-region .toast');

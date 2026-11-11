@@ -181,6 +181,50 @@ test.describe('sign in (L2-006)', () => {
   });
 });
 
+test.describe('continue with Google: off, cancelled or refused (L2-003)', () => {
+  test('AC5: without Google sign-in the page shows no Google button and no "or"', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in.google-unavailable');
+
+    await expect(signIn.signIn).toBeVisible();
+    await expect(signIn.google).toHaveCount(0);
+    await expect(signIn.divider).toHaveCount(0);
+  });
+
+  test('AC6: a visitor who cancelled at Google is told so calmly and keeps their place', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.goto('/sign-in?error=google-cancelled&returnUrl=%2Fb%2Flegacy-financial');
+
+    await expect(signIn.calmNotice).toHaveText(
+      'You didn’t finish with Google. Try again, or use your e-mail and password.',
+    );
+    await expect(signIn.calmNotice).toHaveAttribute('role', 'status');
+    await expect(signIn.notice).toHaveCount(0);
+    await expect(signIn.google).toHaveAttribute(
+      'href',
+      '/api/auth/google/start?returnUrl=%2Fb%2Flegacy-financial',
+    );
+  });
+
+  test('AC4: a Google account without a confirmed e-mail is refused in the words of the requirement', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in.google-refused');
+
+    await expect(signIn.notice).toHaveText(
+      'Use a Google account with a confirmed e-mail, or join with e-mail.',
+    );
+  });
+});
+
 test.describe('throttling (L2-007, L2-137)', () => {
   test('AC1: a locked account is told to wait 15 minutes or reset the password', async ({
     page,
