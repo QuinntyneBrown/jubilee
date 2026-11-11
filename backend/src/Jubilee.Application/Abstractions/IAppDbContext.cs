@@ -27,6 +27,8 @@ public interface IAppDbContext
 
     DbSet<LinkToken> LinkTokens { get; }
 
+    DbSet<PasswordResetRequest> PasswordResetRequests { get; }
+
     DbSet<OutboxMessage> OutboxMessages { get; }
 
     DbSet<Conversation> Conversations { get; }

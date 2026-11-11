@@ -19,17 +19,26 @@ public sealed class TestAuthHandler(
     public const string SchemeName = "Test";
     public const string UserHeader = "X-Test-User";
 
+    /// <summary>Set on a client whose real session cookie should authenticate it.</summary>
+    public const string CookieSessionHeader = "X-Test-Cookie-Session";
+
     /// <summary>The session's subject; without it the subject follows from the name.</summary>
     public const string SubjectHeader = "X-Test-Subject";
 
     /// <summary>A role of the session, for example <c>verifier</c>.</summary>
     public const string RoleHeader = "X-Test-Role";
 
-    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         if (!Request.Headers.TryGetValue(UserHeader, out var values) || string.IsNullOrWhiteSpace(values))
         {
-            return Task.FromResult(AuthenticateResult.NoResult());
+            // A client that asks for it (CookieSessionHeader) is read by its real session cookie, from joining or signing in.
+            if (!Request.Headers.ContainsKey(CookieSessionHeader))
+            {
+                return AuthenticateResult.NoResult();
+            }
+
+            return await Context.AuthenticateAsync(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
         var name = values.ToString();
@@ -48,7 +57,6 @@ public sealed class TestAuthHandler(
         }
 
         var identity = new ClaimsIdentity(claims, SchemeName);
-        return Task.FromResult(
-            AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName)));
+        return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName));
     }
 }

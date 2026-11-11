@@ -73,6 +73,10 @@ export type StubName =
   | 'notifications-read'
   | 'notifications-empty'
   | 'notifications-error'
+  | 'password-reset'
+  | 'reset-password'
+  | 'reset-password-expired'
+  | 'reset-password-error'
   | 'products'
   | 'products-empty'
   | 'products-error'
@@ -556,6 +560,30 @@ export const routes = {
     mock: 'pages/notifications/error.html',
     who: 'member',
     stub: 'notifications-error',
+  },
+  'forgot-password': {
+    app: '/forgot-password',
+    mock: 'pages/forgot-password/default.html',
+    who: 'visitor',
+    stub: 'password-reset',
+  },
+  'reset-password': {
+    app: '/reset-password/e2e-token',
+    mock: 'pages/reset-password/default.html',
+    who: 'visitor',
+    stub: 'reset-password',
+  },
+  'reset-password.expired': {
+    app: '/reset-password/e2e-token',
+    mock: 'pages/reset-password/expired.html',
+    who: 'visitor',
+    stub: 'reset-password-expired',
+  },
+  'reset-password.error': {
+    app: '/reset-password/e2e-token',
+    mock: 'pages/reset-password/error.html',
+    who: 'visitor',
+    stub: 'reset-password-error',
   },
   'my-products': {
     app: '/my-business/products',

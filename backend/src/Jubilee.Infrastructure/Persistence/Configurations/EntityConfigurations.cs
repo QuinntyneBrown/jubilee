@@ -195,6 +195,19 @@ public sealed class LinkTokenConfiguration : IEntityTypeConfiguration<LinkToken>
     }
 }
 
+public sealed class PasswordResetRequestConfiguration : IEntityTypeConfiguration<PasswordResetRequest>
+{
+    public void Configure(EntityTypeBuilder<PasswordResetRequest> builder)
+    {
+        builder.ToTable("PasswordResetRequests");
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.EmailKey).HasMaxLength(254).IsRequired();
+        builder.HasIndex(r => new { r.EmailKey, r.RequestedAt });
+        builder.HasIndex(r => r.ProcessedAt);
+    }
+}
+
 public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage>
 {
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)

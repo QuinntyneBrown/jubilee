@@ -228,6 +228,20 @@ export const routes: Routes = [
     title: 'Join · Jubilee',
   },
   {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./pages/forgot-password/forgot-password.page').then((m) => m.ForgotPasswordPage),
+    data: data({ shell: 'bare', page: 'forgot-password' }),
+    title: 'Reset your password · Jubilee',
+  },
+  {
+    path: 'reset-password/:token',
+    loadComponent: () =>
+      import('./pages/reset-password/reset-password.page').then((m) => m.ResetPasswordPage),
+    data: data({ shell: 'bare', page: 'reset-password' }),
+    title: 'Choose a new password · Jubilee',
+  },
+  {
     path: 'join/agreement',
     loadComponent: () =>
       import('./pages/join-agreement/join-agreement.page').then((m) => m.JoinAgreementPage),
