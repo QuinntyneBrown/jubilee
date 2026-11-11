@@ -1,6 +1,12 @@
 // Block: card-grid, while its cards load. The host is the list.
+@use '../business-card/business-card-base' as card;
 @use '../card-grid/card-grid-base' as base;
 
 :host {
   @include base.grid;
+}
+
+// A placeholder stands where a card will, in a card's shape.
+.biz-card {
+  @include card.card;
 }

@@ -20,6 +20,7 @@ export interface ProductCardView {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'biz-card product-card' },
   templateUrl: './product-card.html',
+  styleUrl: './product-card.scss',
 })
 export class ProductCard {
   readonly product = input.required<ProductCardView>();

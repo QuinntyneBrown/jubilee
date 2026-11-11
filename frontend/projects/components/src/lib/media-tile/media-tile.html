@@ -1,4 +1,14 @@
 @if (tag()) {
   <span class="media__tag">{{ tag() }}</span>
 }
-<svg jb-icon [name]="icon()"></svg>
+@if (photo(); as src) {
+  <img
+    class="media__photo"
+    [src]="src"
+    [alt]="photoAlt()"
+    [attr.width]="photoSize()"
+    [attr.height]="photoSize()"
+  />
+} @else if (icon(); as name) {
+  <svg jb-icon class="media__icon" [name]="name"></svg>
+}

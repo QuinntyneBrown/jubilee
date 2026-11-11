@@ -183,23 +183,15 @@
           How members see you
         </h2>
         @if (tile(); as t) {
-          <div class="biz-card">
-            <div
-              jb-media-tile
-              [tint]="t.tint"
-              [icon]="t.icon"
-              [tag]="r.kind === 'products' ? 'Shop' : 'Business'"
-            ></div>
-            <p class="biz-card__name">{{ r.name }}</p>
-            <p class="biz-card__tagline">{{ r.tagline }}</p>
-            <p class="biz-card__meta">
-              @if (r.stage === 'live') {
-                <span class="verified"><svg jb-icon name="verified"></svg>Verified</span>
-              } @else {
-                <span jb-perk>Pending verification</span>
-              }
-            </p>
-          </div>
+          <div
+            jb-business-card-preview
+            [name]="r.name"
+            [tagline]="r.tagline"
+            [tint]="t.tint"
+            [icon]="t.icon"
+            [tag]="r.kind === 'products' ? 'Shop' : 'Business'"
+            [verified]="r.stage === 'live'"
+          ></div>
         }
       </aside>
     </div>

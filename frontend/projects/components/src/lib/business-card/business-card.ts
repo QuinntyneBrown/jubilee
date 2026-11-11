@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { categoryTile } from '../media-tile/category-tile';
 import { MediaTile } from '../media-tile/media-tile';
 import { VerifiedMark } from '../verified-mark/verified-mark';
-import { Perk } from 'components';
+import { Perk } from '../perk/perk';
 
 /** What a business card shows (L2-027). */
 export interface BusinessCardView {
@@ -23,6 +23,7 @@ export interface BusinessCardView {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'biz-card' },
   templateUrl: './business-card.html',
+  styleUrl: './business-card.scss',
 })
 export class BusinessCard {
   readonly business = input.required<BusinessCardView>();

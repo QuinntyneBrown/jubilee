@@ -37,7 +37,6 @@ import {
   ChoiceCard,
   ChoiceCards,
   Skeleton,
-  Perk,
   Card,
   ItemList,
   ItemListItem,
@@ -45,6 +44,8 @@ import {
   Timeline,
   TimelineStep,
   Price,
+  EmptyState,
+  BusinessCardPreview,
 } from 'components';
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
@@ -136,7 +137,6 @@ function summaryFor(field: FieldName, code: string): string {
     ChoiceCard,
     ChoiceCards,
     Skeleton,
-    Perk,
     Card,
     ItemList,
     ItemListItem,
@@ -144,6 +144,8 @@ function summaryFor(field: FieldName, code: string): string {
     Timeline,
     TimelineStep,
     Price,
+    EmptyState,
+    BusinessCardPreview,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',

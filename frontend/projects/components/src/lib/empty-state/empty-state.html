@@ -1,4 +1,8 @@
-<div class="empty__icon" aria-hidden="true"><svg jb-icon size="lg" [name]="icon()"></svg></div>
+@if (loading()) {
+  <span jb-spinner size="lg"></span>
+} @else if (icon(); as name) {
+  <div class="empty__icon" aria-hidden="true"><svg jb-icon size="lg" [name]="name"></svg></div>
+}
 @if (level() === 1) {
   <h1 class="empty__title">{{ heading() }}</h1>
 } @else if (level() === 2) {
@@ -7,4 +11,6 @@
   <h3 class="empty__title">{{ heading() }}</h3>
 }
 <p class="empty__text"><ng-content /></p>
-<div class="empty__actions"><ng-content select="[slot=actions]" /></div>
+@if (!loading()) {
+  <div class="empty__actions"><ng-content select="[slot=actions]" /></div>
+}

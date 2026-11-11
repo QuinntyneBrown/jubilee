@@ -11,6 +11,7 @@ export * from './lib/brand-mark/brand-mark';
 export * from './lib/breadcrumb/back-link';
 export * from './lib/breadcrumb/breadcrumb';
 export * from './lib/business-card/business-card';
+export * from './lib/business-card/business-card-preview';
 export * from './lib/button/button';
 export * from './lib/button/close-button';
 export * from './lib/button/marketing-button';

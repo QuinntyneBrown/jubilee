@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Icon } from '../icon/icon';
 import { IconName } from '../icon/icons';
+import { Spinner } from '../spinner/spinner';
 
 /**
  * The empty, no-results and load-error block:
@@ -12,24 +13,27 @@ import { IconName } from '../icon/icons';
  *
  * `error` turns it into the load-error variant, announced as an alert. `level` is the heading
  * level: 1 when the block is the whole page, 2 inside a page, 3 inside a section. `compact` is
- * the smaller block that stands in for one section's content.
+ * the smaller block that stands in for one section's content. `loading` draws a spinner in place
+ * of the icon and announces the block as a status, for a page that is working something out.
  */
 @Component({
   selector: 'div[jb-empty-state]',
-  imports: [Icon],
+  imports: [Icon, Spinner],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'empty',
     '[class.empty--error]': 'error()',
     '[class.empty--compact]': 'compact()',
-    '[attr.role]': 'error() ? "alert" : null',
+    '[attr.role]': 'error() ? "alert" : loading() ? "status" : null',
   },
   templateUrl: './empty-state.html',
+  styleUrl: './empty-state.scss',
 })
 export class EmptyState {
-  readonly icon = input.required<IconName>();
+  readonly icon = input<IconName | null>(null);
   readonly heading = input.required<string>();
   readonly level = input<1 | 2 | 3>(2);
-  readonly compact = input(false);
-  readonly error = input(false);
+  readonly compact = input(false, { transform: booleanAttribute });
+  readonly error = input(false, { transform: booleanAttribute });
+  readonly loading = input(false, { transform: booleanAttribute });
 }
