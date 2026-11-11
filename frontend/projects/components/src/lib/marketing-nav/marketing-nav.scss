@@ -1,0 +1,52 @@
+// Block: mkt-nav. The host is the bar.
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  border-bottom: var(--border-width-hairline) solid
+    color-mix(in srgb, var(--color-fg-default) 10%, transparent);
+  background: color-mix(in srgb, var(--jb-mkt-paper) 90%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.mkt-nav__inner {
+  display: flex;
+  width: 100%;
+  max-width: var(--jb-mkt-max);
+  height: var(--layout-topbar-height);
+  margin-inline: auto;
+  padding-inline: var(--jb-mkt-gutter);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.mkt-nav__links {
+  display: none;
+  align-items: center;
+  gap: 1.75rem;
+  font-size: 0.9375rem;
+}
+
+@media (min-width: 64rem) {
+  .mkt-nav__links {
+    display: flex;
+  }
+}
+
+.mkt-nav__link {
+  color: color-mix(in srgb, var(--color-fg-default) 75%, transparent);
+  text-decoration: none;
+  transition: color 150ms ease-out;
+}
+
+.mkt-nav__link:hover {
+  color: var(--color-fg-default);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mkt-nav__link {
+    transition: none;
+  }
+}

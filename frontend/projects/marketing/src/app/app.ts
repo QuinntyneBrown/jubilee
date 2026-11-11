@@ -4,7 +4,11 @@ import {
   FloatingNote,
   Lockup,
   MarketingButton,
+  MarketingFooter,
   MarketingLink,
+  MarketingNav,
+  MarketingNavLink,
+  SkipLink,
   VideoPlayer,
 } from 'components';
 import { APP_URL } from './app-url';
@@ -18,6 +22,9 @@ import { InsideTheApp } from './inside-the-app/inside-the-app';
 @Component({
   selector: 'jb-root',
   imports: [
+    MarketingFooter,
+    MarketingNav,
+    SkipLink,
     MarketingButton,
     MarketingLink,
     Lockup,
@@ -35,6 +42,12 @@ import { InsideTheApp } from './inside-the-app/inside-the-app';
 export class App {
   /** The app's browse home (L2-185 AC1). */
   protected readonly browseUrl = inject(APP_URL) + '/';
+  protected readonly sections: readonly MarketingNavLink[] = [
+    { label: 'Why Jubilee', href: '#why' },
+    { label: 'How it works', href: '#how' },
+    { label: 'Inside the app', href: '#inside' },
+    { label: 'For businesses', href: '#businesses' },
+  ];
   protected readonly glimpse = GLIMPSE;
   protected readonly film = FILM;
 }

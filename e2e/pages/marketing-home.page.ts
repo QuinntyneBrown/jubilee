@@ -203,6 +203,17 @@ export class MarketingHomePage implements Screen {
     return names;
   }
 
+  /** Reaches "Skip to content" with Tab from the top of the page and activates it. */
+  async skipToContent(): Promise<void> {
+    await this.page.keyboard.press('Tab');
+    await this.page.keyboard.press('Enter');
+  }
+
+  /** Whether `main` holds the focus. */
+  mainFocused(): Promise<boolean> {
+    return this.main.evaluate((main) => document.activeElement === main);
+  }
+
   /** Whether the focused element shows a focus ring. */
   focusRingShown(): Promise<boolean> {
     return this.page.evaluate(() => {

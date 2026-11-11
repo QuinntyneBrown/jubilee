@@ -66,6 +66,8 @@ export * from './lib/item-list/item-list-item';
 export * from './lib/item-list/item-list-name';
 export * from './lib/list/list';
 export * from './lib/lockup/lockup';
+export * from './lib/marketing-nav/marketing-footer';
+export * from './lib/marketing-nav/marketing-nav';
 export * from './lib/match-explanation/match-explanation';
 export * from './lib/media-tile/category-tile';
 export * from './lib/media-tile/media-tile';
