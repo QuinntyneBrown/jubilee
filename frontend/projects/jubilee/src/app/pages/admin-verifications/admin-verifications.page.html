@@ -1,0 +1,109 @@
+<div class="page-header">
+  <div>
+    <h1>Verification queue</h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+</div>
+@let queue = state();
+@switch (queue.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load the queue">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ queue.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load(stage())">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the queue…</p>
+    <ul class="rows" aria-hidden="true">
+      @for (item of skeleton; track item) {
+        <li class="row">
+          <div class="row__body">
+            <span class="skeleton skeleton--text skeleton--w50"></span>
+            <span class="skeleton skeleton--text skeleton--w70"></span>
+          </div>
+          <span class="skeleton skeleton--btn" style="width: 5rem"></span>
+        </li>
+      }
+    </ul>
+  }
+  @case ('loaded') {
+    @if (queue.value.total === 0) {
+      <div jb-empty-state icon="check" heading="The queue is clear">
+        Every submitted listing has been reviewed. New submissions appear here as soon as the owner
+        sends them.
+        <button slot="actions" class="btn" type="button" (click)="load(null)">
+          <svg jb-icon name="refresh"></svg>Refresh
+        </button>
+      </div>
+    } @else {
+      <div class="tabs" role="tablist" aria-label="Queue filter">
+        @for (tab of queue.value.tabs; track tab.stage) {
+          <button
+            class="tab"
+            role="tab"
+            type="button"
+            [attr.aria-selected]="tab.stage === stage()"
+            [attr.tabindex]="tab.stage === stage() ? null : -1"
+            (click)="load(tab.stage)"
+          >
+            {{ tab.label }} <span class="badge">{{ tab.count }}</span>
+          </button>
+        }
+      </div>
+      @if (queue.value.rows.length === 0) {
+        <div jb-empty-state [compact]="true" icon="check" heading="Nothing here right now">
+          No listings are in this stage.
+          <button slot="actions" class="btn" type="button" (click)="load('ready-to-review')">
+            Show ready to review
+          </button>
+        </div>
+      } @else {
+        <div class="table-wrap" style="margin-top: var(--space-4)">
+          <table class="table">
+            <caption class="visually-hidden">
+              Listings waiting for verification
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Business</th>
+                <th scope="col">Category</th>
+                <th scope="col">Owner</th>
+                <th scope="col">Church reference</th>
+                <th scope="col">Submitted</th>
+                <th scope="col">Stage</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of queue.value.rows; track row.id) {
+                <tr>
+                  <td>
+                    <a [routerLink]="['/admin/verifications', row.id]">{{ row.name }}</a>
+                  </td>
+                  <td>{{ row.categoryName }}</td>
+                  <td>{{ row.ownerName }}</td>
+                  <td>
+                    <span class="badge" [class]="'badge--' + reference(row).tone">{{
+                      reference(row).label
+                    }}</span>
+                  </td>
+                  <td>
+                    {{ submitted(row) }}
+                    @if (row.overdue) {
+                      <span class="badge badge--warning">Overdue</span>
+                    }
+                  </td>
+                  <td>{{ row.stageLabel }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+}

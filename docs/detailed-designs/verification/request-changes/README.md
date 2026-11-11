@@ -38,8 +38,9 @@ commands and two `Jubilee Worker` jobs.
   returns to the queue when she resubmits." For a resubmitted listing it
   highlights each field named by `ListingSnapshot.ChangedFields`.
 - **`DeclineListingDialog`** — dialog behind the action "Decline listing". It
-  collects the reason for the owner. No mock exists for it; its copy is
-  `<TO SUPPLY>`.
+  collects the reason for the owner. Its mock is `dialogs/decline-listing`; the
+  title reads "Decline {business}?" and the field "Reason for {first name}"
+  (ADR 0020).
 - **`MyBusinessPage`** — owner page. It shows the requested changes and the
   verifier's message, and offers "Resubmit" while the stage is "Changes
   requested".
@@ -52,7 +53,7 @@ commands and two `Jubilee Worker` jobs.
 - **`RequestChangesCommand`** and **`RequestChangesCommandValidator`** — carry
   `ListingId`, `Areas` and `Message`. The validator returns HTTP 422 with the
   field code for an empty `Message`. The maximum message length is
-  `<TO SUPPLY>`.
+  2000 characters (ADR 0020).
 - **`RequestChangesCommandHandler`** — calls `Listing.RequestChanges`, which
   sets the stage to `ChangesRequested` and creates a `ChangeRequest` holding a
   `ListingSnapshot`. The handler appends the `AuditEntry` and writes a
@@ -81,7 +82,7 @@ commands and two `Jubilee Worker` jobs.
   sends the new reference request when one is due.
 - **`ReferenceAnswerPurgeJob`** — scheduled job that permanently deletes the
   reference's answer, note, name and e-mail once `DeleteAfter` has passed. Its
-  schedule is `<TO SUPPLY>`.
+  schedule is daily (`ReferenceRetentionJob`, ADR 0020).
 
 ## Requirements
 

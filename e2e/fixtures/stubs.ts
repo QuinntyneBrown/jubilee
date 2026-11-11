@@ -3,6 +3,7 @@ import { categories } from './categories';
 import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
 import { fulfil, recordedAnswer } from './mock-api';
 import { stubMessaging } from './messaging';
+import { esther, stubAdmin } from './admin';
 import { stubReference } from './reference';
 import type { StubName } from './routes';
 
@@ -219,6 +220,22 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       );
     case 'search-start':
       return stubSearchStart(page, memberSearchStart);
+    case 'admin-queue':
+      return stubAdmin(page);
+    case 'admin-queue-empty':
+      return stubAdmin(page, { queue: 'empty' });
+    case 'admin-queue-error':
+      return stubAdmin(page, { queue: 'fails' });
+    case 'admin-review':
+      return stubAdmin(page);
+    case 'admin-review-approved':
+      return stubAdmin(page, { stage: 'live' });
+    case 'admin-review-changes-requested':
+      return stubAdmin(page, { stage: 'changes-requested' });
+    case 'admin-review-error':
+      return stubAdmin(page, { review: 'fails' });
+    case 'forbidden':
+      return stubAdmin(page, {}, { ...esther, isVerifier: false });
     case 'reference':
       return stubReference(page);
     case 'reference-loading':

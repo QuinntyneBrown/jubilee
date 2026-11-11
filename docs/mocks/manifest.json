@@ -825,7 +825,8 @@
       "states": [
         "default",
         "busy",
-        "failed"
+        "failed",
+        "note-required"
       ],
       "not_applicable": {
         "invalid": "This dialog has no inputs to validate."
@@ -835,6 +836,18 @@
       "id": "request-changes",
       "kind": "dialog",
       "title": "Request changes",
+      "opens_from": "admin-verification",
+      "states": [
+        "default",
+        "busy",
+        "invalid",
+        "failed"
+      ]
+    },
+    {
+      "id": "decline-listing",
+      "kind": "dialog",
+      "title": "Decline listing",
       "opens_from": "admin-verification",
       "states": [
         "default",

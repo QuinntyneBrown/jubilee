@@ -12,6 +12,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 })
 export class UnreadBadge {
   readonly count = input.required<number>();
+  /** What the count counts, in the spoken label: "unread" or "waiting". */
+  readonly noun = input('unread');
   protected readonly text = computed(() => (this.count() > 99 ? '99+' : `${this.count()}`));
-  protected readonly label = computed(() => `${this.count()} unread`);
+  protected readonly label = computed(() => `${this.count()} ${this.noun()}`);
 }

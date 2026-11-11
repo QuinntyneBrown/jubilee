@@ -67,6 +67,8 @@ export class App {
       ownsListing: summary.ownsListing,
       unreadConversationCount: summary.unreadConversationCount,
       unreadNotificationCount: summary.unreadNotificationCount,
+      isVerifier: member.isVerifier,
+      verificationCount: summary.verificationCount ?? 0,
     };
   });
 

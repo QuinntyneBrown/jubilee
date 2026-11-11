@@ -12,6 +12,14 @@
   } @else {
     <a class="tabbar__item" routerLink="/list"><svg jb-icon name="plus"></svg>List</a>
   }
+  @if (member.isVerifier) {
+    <a
+      class="tabbar__item"
+      routerLink="/admin/verifications"
+      [attr.aria-current]="current() === 'verifications' ? 'page' : null"
+      ><svg jb-icon name="shield"></svg>Verify</a
+    >
+  }
   <a
     class="tabbar__item"
     routerLink="/messages"

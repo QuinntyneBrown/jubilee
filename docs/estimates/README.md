@@ -1,7 +1,7 @@
 # Estimates
 
 - Overall effort: 363 days
-- Complete: 7%
+- Complete: 10%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -19,12 +19,12 @@
 | [notifications](notifications.md) | 16 days | 0% |
 | [onboarding](onboarding.md) | 15 days | 83% |
 | [church-reference](church-reference.md) | 10 days | 78% |
-| [verification](verification.md) | 20 days | 0% |
+| [verification](verification.md) | 20 days | 52% |
 | [owner-workspace](owner-workspace.md) | 20 days | 0% |
 | [privacy](privacy.md) | 16 days | 0% |
 | [accessibility](accessibility.md) | 10 days | 0% |
 | [performance](performance.md) | 9 days | 6% |
-| [operations](operations.md) | 30 days | 3% |
+| [operations](operations.md) | 30 days | 9% |
 | [offline](offline.md) | 12 days | 0% |
 
 ## Roadmap

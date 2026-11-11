@@ -10,6 +10,7 @@ export type SessionDto =
       emailStatus?: 'unconfirmed' | 'confirmed';
       emailBounced?: boolean;
       agreementRequired?: boolean;
+      isVerifier?: boolean;
     };
 
 /** A signed-in member, as the chrome and the pages show them. */
@@ -21,4 +22,6 @@ export interface Member {
   emailConfirmed: boolean;
   emailBounced: boolean;
   agreementRequired: boolean;
+  /** On the Jubilee verification team (L2-098). */
+  isVerifier: boolean;
 }
