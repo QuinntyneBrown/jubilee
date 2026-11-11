@@ -28,6 +28,9 @@ $env:Database__Provider = 'Sqlite'
 $env:ConnectionStrings__Jubilee = "DataSource=$database"
 $env:ConnectionStrings__Redis = ''
 $env:Seed__OnStartup = 'true'
+# No outside network in the recording: skip the breached-password lookup.
+$env:Passwords__CheckBreaches = 'false'
+$env:App__PublicBaseUrl = 'http://localhost:4200'
 # The whole suite calls from one address; the per-address limit is covered by the API tests.
 $env:RateLimits__DirectoryReadsPerMinute = '100000'
 

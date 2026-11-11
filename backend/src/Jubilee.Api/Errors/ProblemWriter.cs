@@ -11,13 +11,19 @@ public static class ProblemWriter
         string title,
         string? detail = null,
         string? code = null,
-        string? reference = null)
+        string? reference = null,
+        IReadOnlyDictionary<string, string>? errors = null)
     {
         var problem = new ProblemDetails { Status = status, Title = title, Detail = detail };
         problem.Extensions["correlationId"] = context.TraceIdentifier;
         if (code is not null)
         {
             problem.Extensions["code"] = code;
+        }
+
+        if (errors is not null)
+        {
+            problem.Extensions["errors"] = errors;
         }
 
         if (reference is not null)

@@ -31,6 +31,12 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     /// <summary>Switch that makes the database unavailable.</summary>
     public DatabaseOutage Database { get; } = new();
 
+    public FakeEmailSender Emails { get; } = new();
+
+    public FakeBotChallenge Bot { get; } = new();
+
+    public FakeGoogle Google { get; } = new();
+
     /// <summary>Everything the API logged.</summary>
     public CapturedLogs Logs { get; } = new();
 
@@ -40,6 +46,9 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("Database:Provider", Infrastructure.DependencyInjection.InMemoryProvider);
         builder.UseSetting("ConnectionStrings:Jubilee", _storeName);
         builder.UseSetting("RateLimits:DirectoryReadsPerMinute", "100000");
+        builder.UseSetting("RateLimits:JoinsPerHour", "100000");
+        builder.UseSetting("Email:WebhookSecret", "test-webhook-secret");
+        builder.UseSetting("App:PublicBaseUrl", "https://jubilee.test");
         ConfigureSettings(builder);
         builder.ConfigureServices(services =>
         {
@@ -52,6 +61,14 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             services.PostConfigure<AuthenticationOptions>(o => o.DefaultAuthenticateScheme = TestAuthHandler.SchemeName);
             services.AddScoped<IAppDbContext>(sp => new OutageAwareDbContext(sp.GetRequiredService<AppDbContext>(), Database));
             services.AddSingleton<ILoggerProvider>(Logs);
+            services.RemoveAll<Jubilee.Application.Accounts.IEmailSender>();
+            services.AddSingleton<Jubilee.Application.Accounts.IEmailSender>(Emails);
+            services.RemoveAll<Jubilee.Application.Accounts.IBreachedPasswordChecker>();
+            services.AddSingleton<Jubilee.Application.Accounts.IBreachedPasswordChecker, FakeBreachedPasswordChecker>();
+            services.RemoveAll<Jubilee.Application.Accounts.IBotChallengeVerifier>();
+            services.AddSingleton<Jubilee.Application.Accounts.IBotChallengeVerifier>(Bot);
+            services.RemoveAll<Jubilee.Application.Accounts.IGoogleIdentityClient>();
+            services.AddSingleton<Jubilee.Application.Accounts.IGoogleIdentityClient>(Google);
             services.AddControllers().AddApplicationPart(typeof(FailingController).Assembly);
             ConfigureTestServices(services);
         });
@@ -64,6 +81,9 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     protected virtual void ConfigureTestServices(IServiceCollection services)
     {
     }
+
+    /// <summary>A client that keeps cookies but does not follow redirects, for the Google round trip.</summary>
+    public HttpClient CreateNoRedirectClient() => CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
     public HttpClient CreateMemberClient(string name = "Joanna Adeyemi", string? subject = null, string? role = null)
     {
@@ -114,9 +134,16 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     {
         _clock.Current = new FakeTimeProvider(ListingMother.Now);
         Database.Unavailable = false;
+        Emails.Clear();
+        Emails.Failing = false;
+        Bot.Passes = true;
+        Google.Identity = new("google-1", "g@example.com", true, "Gina", "Gordon");
         Logs.Clear();
         await WithDb(async db =>
         {
+            db.RemoveRange(db.OutboxMessages);
+            db.RemoveRange(db.LinkTokens);
+            db.RemoveRange(db.Members);
             db.RemoveRange(db.RecentSearches);
             db.RemoveRange(db.StockAlerts);
             db.RemoveRange(db.ListingViews);

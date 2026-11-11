@@ -16,6 +16,17 @@ public sealed class RateLimitOptions
 
     /// <summary>Searches allowed per client IP address per minute (L2-032 AC4).</summary>
     public int SearchesPerMinute { get; set; } = 60;
+
+    public int JoinsPerHour { get; set; } = 5;
+
+    public int ConfirmationResendsPerHour { get; set; } = 5;
+}
+
+/// <summary>Account limits per hour: 5 joins per IP address, 5 confirmation resends per member (L2-137 AC1).</summary>
+public static class AccountRateLimit
+{
+    public const string Joins = "joins";
+    public const string Resends = "confirmation-resends";
 }
 
 /// <summary>Searches have their own budget of 60 a minute per client IP address (L2-032 AC4).</summary>
@@ -60,7 +71,29 @@ public static class DirectoryRateLimit
                     QueueLimit = 0,
                 });
             });
-            limiter.OnRejected =async (rejected, cancellationToken) =>
+            limiter.AddPolicy(AccountRateLimit.Joins, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter($"join:{client}", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.JoinsPerHour),
+                    Window = TimeSpan.FromHours(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.AddPolicy(AccountRateLimit.Resends, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var member = context.User.FindFirst("sub")?.Value ?? context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter($"resend:{member}", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.ConfirmationResendsPerHour),
+                    Window = TimeSpan.FromHours(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.OnRejected = async (rejected, cancellationToken) =>
             {
                 var retryAfter = rejected.Lease.TryGetMetadata(MetadataName.RetryAfter, out var wait)
                     ? wait

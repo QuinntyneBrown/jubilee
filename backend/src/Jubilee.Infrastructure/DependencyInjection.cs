@@ -71,6 +71,13 @@ public static class DependencyInjection
         }
 
         services.AddScoped<Application.Search.ISearchIndex, Search.DatabaseSearchIndex>();
+        services.AddSingleton(new Application.Accounts.AccountSettings(configuration["App:PublicBaseUrl"] ?? "http://localhost:4200"));
+        services.AddSingleton<Application.Accounts.IPasswordHasher, Accounts.Argon2idPasswordHasher>();
+        services.AddHttpClient<Application.Accounts.IBreachedPasswordChecker, Accounts.HaveIBeenPwnedChecker>();
+        services.AddHttpClient<Application.Accounts.IBotChallengeVerifier, Accounts.TurnstileBotChallengeVerifier>();
+        services.AddHttpClient<Application.Accounts.IGoogleIdentityClient, Accounts.GoogleIdentityClient>();
+        services.AddSingleton<Application.Accounts.IEmailSender, Accounts.LoggingEmailSender>();
+        services.AddSingleton<Application.Accounts.IOidcTransactionStore, Accounts.CacheOidcTransactionStore>();
         services.AddScoped<DemoDataSeeder>();
         services.AddSingleton<IDirectoryReadCache, DistributedDirectoryReadCache>();
         services.AddSingleton<DirectoryCacheInvalidationInterceptor>();
