@@ -313,6 +313,12 @@ public sealed class CompleteGoogleSignInCommandHandler(IAppDbContext db, TimePro
         }
 
         var byEmail = await db.Members.SingleOrDefaultAsync(m => m.EmailKey == email.Key, cancellationToken);
+        if (byEmail is { IsDeleted: true })
+        {
+            // A deleted account keeps its address for 30 days and can no longer be signed in to (L2-017).
+            return new GoogleSignInResult(GoogleSignInOutcome.EmailNotVerified, null);
+        }
+
         if (byEmail is not null)
         {
             byEmail.LinkGoogle(identity.Subject);

@@ -21,6 +21,11 @@ public sealed class Conversation
 
     public DateTimeOffset CreatedAt { get; private set; }
 
+    /// <summary>The member's account was erased: the business sees a former member (L2-017 AC6).</summary>
+    public void ForgetMember() => MemberName = FormerMember;
+
+    public const string FormerMember = "Former member";
+
     public DateTimeOffset LastMessageAt { get; private set; }
 
     public DateTimeOffset? MemberReadAt { get; private set; }
@@ -109,6 +114,9 @@ public sealed class Message
     public string IdempotencyKey { get; private set; } = string.Empty;
 
     public Guid? AttachmentId { get; private set; }
+
+    /// <summary>The sender's account was erased: what they wrote stays, from a former member (L2-017 AC6).</summary>
+    public void ForgetSender() => SenderName = Conversation.FormerMember;
 
     /// <summary>Written after the member blocked the business: stored, never shown to the member.</summary>
     public bool HiddenFromMember { get; private set; }

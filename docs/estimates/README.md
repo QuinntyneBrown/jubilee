@@ -12,7 +12,7 @@
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 8% |
 | [listings](listings.md) | 16 days | 0% |
-| [accounts](accounts.md) | 45 days | 52% |
+| [accounts](accounts.md) | 45 days | 60% |
 | [security](security.md) | 26 days | 11% |
 | [messaging](messaging.md) | 17 days | 0% |
 | [requests](requests.md) | 34 days | 80% |

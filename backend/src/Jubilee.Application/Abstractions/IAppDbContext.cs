@@ -55,6 +55,8 @@ public interface IAppDbContext
 
     DbSet<ReportAction> ReportActions { get; }
 
+    DbSet<DataExport> DataExports { get; }
+
     DbSet<Request> Requests { get; }
 
     DbSet<RequestTransition> RequestTransitions { get; }

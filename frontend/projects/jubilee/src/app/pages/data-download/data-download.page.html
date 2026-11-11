@@ -1,0 +1,46 @@
+<div class="page-header">
+  <div>
+    <h1>Download your data</h1>
+    <p class="subtitle">
+      @switch (view()) {
+        @case ('downloading') {
+          Preparing the file…
+        }
+        @case ('done') {
+          Your data was downloaded
+        }
+        @case ('unavailable') {
+          This link no longer works
+        }
+      }
+    </p>
+  </div>
+</div>
+@switch (view()) {
+  @case ('downloading') {
+    <div class="card" role="status">
+      <p>
+        Your download starts in a moment. If it does not,
+        <button class="btn btn--sm" type="button" (click)="fetch()">Download again</button>
+      </p>
+    </div>
+  }
+  @case ('done') {
+    <div class="alert alert--success" role="status">
+      <svg jb-icon name="check"></svg>
+      <div class="alert__body">
+        <div class="alert__title">Your data is in your downloads</div>
+        <div>
+          The file is called jubilee-data.json. <a routerLink="/account">Back to your account</a>
+        </div>
+      </div>
+    </div>
+  }
+  @case ('unavailable') {
+    <div jb-empty-state icon="alert" heading="This link has expired or isn’t yours">
+      Download links work for 7 days, and only for the account that asked for them. You can ask for
+      a new one from your account.
+      <a slot="actions" class="btn btn--primary" routerLink="/account">Go to your account</a>
+    </div>
+  }
+}

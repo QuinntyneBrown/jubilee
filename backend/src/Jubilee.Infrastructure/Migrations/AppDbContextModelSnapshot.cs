@@ -272,6 +272,47 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("ConversationReports", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.DataExport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ArchiveJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("MemberId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ReadyAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("RequestedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("TokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("TokenHash");
+
+                    b.ToTable("DataExports", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.DeliveryMethod", b =>
                 {
                     b.Property<Guid>("Id")
@@ -925,6 +966,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(254)
@@ -960,6 +1004,9 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<bool>("EmailTips")
                         .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("ErasedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("FirstName")
                         .IsRequired()

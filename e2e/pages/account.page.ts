@@ -27,6 +27,11 @@ export class AccountPage extends ShellPage implements Screen {
   readonly errorState: Locator;
   readonly tryAgain: Locator;
   readonly tabs: Locator;
+  readonly dataCard: Locator;
+  readonly downloadData: Locator;
+  readonly dataWaiting: Locator;
+  readonly dataFailed: Locator;
+  readonly deleteAccount: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -55,6 +60,11 @@ export class AccountPage extends ShellPage implements Screen {
     this.errorState = this.main.getByRole('alert').filter({ hasText: 'JB-ACC-503' });
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.tabs = this.main.getByRole('navigation', { name: 'Account sections' });
+    this.dataCard = this.main.locator('section[aria-labelledby="dat"]');
+    this.downloadData = this.main.getByRole('button', { name: 'Download my data' });
+    this.dataWaiting = this.dataCard.getByRole('status');
+    this.dataFailed = this.dataCard.getByRole('alert');
+    this.deleteAccount = this.main.getByRole('button', { name: 'Delete my account' });
   }
 
   errorOf(id: 'first' | 'last' | 'phone' | 'postal'): Locator {

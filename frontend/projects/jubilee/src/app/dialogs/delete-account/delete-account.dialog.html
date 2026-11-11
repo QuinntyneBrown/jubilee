@@ -1,0 +1,101 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--danger" aria-hidden="true">
+      <svg jb-icon name="trash"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">Delete your account?</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+        @if (summary(); as account) {
+          {{ account.name }} · {{ account.email }}
+        } @else {
+          Your Jubilee account
+        }
+      </p>
+    </div>
+    <button
+      class="btn btn--ghost btn--icon"
+      type="button"
+      aria-label="Close"
+      [disabled]="busy()"
+      (click)="close()"
+    >
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <form class="dialog__body stack" id="delete-account-form" novalidate (ngSubmit)="remove()">
+    @switch (view()) {
+      @case ('loading') {
+        <p class="text-muted" role="status">Counting what will be deleted…</p>
+      }
+      @case ('unavailable') {
+        <div class="alert alert--danger" role="alert">
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">We couldn’t load your account</div>
+            <div>Nothing was removed. Close this and try again.</div>
+          </div>
+        </div>
+      }
+      @default {
+        @if (view() === 'failed') {
+          <div class="alert alert--danger" role="alert">
+            <svg jb-icon name="alert"></svg>
+            <div class="alert__body">
+              <div class="alert__title">We couldn’t delete your account</div>
+              <div>Nothing was removed. Try again, or write to help&#64;jubilee.example.</div>
+            </div>
+          </div>
+        }
+        @if (summary(); as account) {
+          <ul style="margin: 0; padding-left: var(--space-5)">
+            <li>
+              Your profile, saved list and
+              {{ plural(account.conversations, 'conversation is', 'conversations are') }} deleted.
+            </li>
+            <li>
+              Your {{ plural(account.openRequests, 'open request is', 'open requests are') }}
+              cancelled and the businesses are told.
+            </li>
+            <li>This can’t be undone.</li>
+          </ul>
+        }
+        <div class="field">
+          <label class="field__label" for="d-confirm">
+            Type DELETE to confirm <span class="optional">(required)</span>
+          </label>
+          <input
+            class="input"
+            id="d-confirm"
+            name="confirmation"
+            type="text"
+            required
+            autocomplete="off"
+            [readOnly]="busy()"
+            [attr.aria-invalid]="problem() ? 'true' : null"
+            [attr.aria-describedby]="problem() ? 'd-confirm-error' : null"
+            [ngModel]="typed()"
+            (ngModelChange)="typed.set($event)"
+          />
+          @if (problem()) {
+            <span class="field__error" id="d-confirm-error"
+              >Type DELETE in capital letters to confirm.</span
+            >
+          }
+        </div>
+      }
+    }
+  </form>
+  <div class="dialog__footer">
+    <button class="btn" type="button" [disabled]="busy()" (click)="close()">Keep my account</button>
+    <button
+      class="btn btn--danger"
+      type="submit"
+      form="delete-account-form"
+      [disabled]="busy() || view() === 'loading' || view() === 'unavailable'"
+      [attr.aria-busy]="busy() ? 'true' : null"
+    >
+      Delete account
+    </button>
+  </div>
+</div>

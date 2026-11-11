@@ -18,6 +18,7 @@ import {
 import { EditListingPage } from '../pages/edit-listing.page';
 import { IncomingRequestsPage } from '../pages/incoming-requests.page';
 import { AccountPage } from '../pages/account.page';
+import { DataDownloadPage } from '../pages/data-download.page';
 import { ConfirmEmailChangePage } from '../pages/confirm-email-change.page';
 import { NotificationSettingsPage } from '../pages/notification-settings.page';
 import { SavedPage } from '../pages/saved.page';
@@ -64,6 +65,9 @@ export const screens: {
   { key: 'my-business.paused', screen: (page) => new MyBusinessPage(page) },
   { key: 'account', screen: (page) => new AccountPage(page) },
   { key: 'account.error', screen: (page) => new AccountPage(page) },
+  { key: 'account.data-requested', screen: (page) => new AccountPage(page) },
+  { key: 'data-download.done', screen: (page) => new DataDownloadPage(page) },
+  { key: 'data-download.unavailable', screen: (page) => new DataDownloadPage(page) },
   { key: 'preferences', screen: (page) => new NotificationSettingsPage(page) },
   { key: 'preferences.error', screen: (page) => new NotificationSettingsPage(page) },
   { key: 'confirm-email-change.success', screen: (page) => new ConfirmEmailChangePage(page) },

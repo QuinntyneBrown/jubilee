@@ -305,6 +305,14 @@ export const routes: Routes = [
     title: 'Your account · Jubilee',
   },
   {
+    path: 'account/data/:token',
+    loadComponent: () =>
+      import('./pages/data-download/data-download.page').then((m) => m.DataDownloadPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'data-download', section: 'account' }),
+    title: 'Download your data · Jubilee',
+  },
+  {
     path: 'account/notifications',
     loadComponent: () =>
       import('./pages/notification-settings/notification-settings.page').then(

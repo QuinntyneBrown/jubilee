@@ -3,6 +3,7 @@ import { categories } from './categories';
 import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
 import { fulfil, recordedAnswer } from './mock-api';
 import { stubMessaging } from './messaging';
+import { stubAccountData } from './account-data';
 import { esther, stubAdmin } from './admin';
 import { stubModeration } from './moderation';
 import { stubIncoming } from './incoming-requests';
@@ -349,6 +350,13 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubModeration(page, { reports: 'fails' });
     case 'moderation-featured-error':
       return stubModeration(page, { featured: 'fails' });
+    case 'account-data-requested':
+      await stubProfile(page);
+      return stubAccountData(page, { exportState: 'requested' });
+    case 'data-download-done':
+      return stubAccountData(page);
+    case 'data-download-unavailable':
+      return stubAccountData(page, { download: 'unavailable' });
     case 'forbidden':
       return stubAdmin(page, {}, { ...esther, isVerifier: false });
     case 'reference':

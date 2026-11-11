@@ -35,9 +35,10 @@ builder.Services
                 && Guid.TryParse(principal.FindFirst("sub")?.Value, out var memberId))
             {
                 var db = context.HttpContext.RequestServices.GetRequiredService<Jubilee.Application.Abstractions.IAppDbContext>();
-                var changedAt = await db.Members.Where(m => m.Id == memberId).Select(m => m.PasswordChangedAt)
+                var state = await db.Members.Where(m => m.Id == memberId).Select(m => new { m.PasswordChangedAt, m.DeletedAt })
                     .SingleOrDefaultAsync(context.HttpContext.RequestAborted);
-                if (changedAt is { } changed && ticks < changed.UtcTicks)
+                // A deleted account has no session left (L2-017 AC3).
+                if (state is not null && (state.DeletedAt is not null || (state.PasswordChangedAt is { } changed && ticks < changed.UtcTicks)))
                 {
                     context.RejectPrincipal();
                     await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

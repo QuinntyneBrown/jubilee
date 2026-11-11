@@ -53,6 +53,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<ReportAction> ReportActions => Use(inner.ReportActions);
 
+    public DbSet<DataExport> DataExports => Use(inner.DataExports);
+
     public DbSet<ContentVersion> ContentVersions => Use(inner.ContentVersions);
 
     public DbSet<MaintenanceWindow> MaintenanceWindows => Use(inner.MaintenanceWindows);

@@ -163,6 +163,15 @@ public sealed class Member
 
     public DateTimeOffset CreatedAt { get; private set; }
 
+    /// <summary>When the member deleted the account (L2-017). Every session has ended and nothing can sign in.</summary>
+    public DateTimeOffset? DeletedAt { get; private set; }
+
+    /// <summary>When the personal data was erased, 30 days after deletion (L2-017 AC6, L2-148).</summary>
+    public DateTimeOffset? ErasedAt { get; private set; }
+
+    /// <summary>How long a deleted account keeps its personal data before it is erased.</summary>
+    public static readonly TimeSpan ErasureAfter = TimeSpan.FromDays(30);
+
     public string DisplayName => $"{FirstName} {LastName}".Trim();
 
     public static Member Join(
@@ -193,6 +202,33 @@ public sealed class Member
         EmailStatus = EmailStatus.Confirmed,
         CreatedAt = now,
     };
+
+    /// <summary>The member deleted the account: nothing can sign in to it from now on (L2-017 AC3).</summary>
+    public void Delete(DateTimeOffset now)
+    {
+        DeletedAt ??= now;
+        PasswordHash = null;
+        GoogleSubject = null;
+    }
+
+    public bool IsDeleted => DeletedAt is not null;
+
+    /// <summary>Removes the personal data of a deleted account; the row stays so what others wrote still points somewhere (L2-148).</summary>
+    public void Erase(DateTimeOffset now)
+    {
+        var placeholder = $"deleted-{Id:N}@deleted.invalid";
+        Email = placeholder;
+        EmailKey = placeholder;
+        FirstName = "Former";
+        LastName = "member";
+        HomeChurch = null;
+        Phone = null;
+        PostalCode = null;
+        Pronouns = null;
+        PasswordHash = null;
+        GoogleSubject = null;
+        ErasedAt ??= now;
+    }
 
     /// <summary>Replaces the six profile fields; the caller has validated them (L2-013).</summary>
     public void UpdateProfile(
@@ -347,6 +383,7 @@ public sealed class LinkToken
     public static readonly TimeSpan EmailConfirmationLifetime = TimeSpan.FromHours(24);
     public static readonly TimeSpan PasswordResetLifetime = TimeSpan.FromMinutes(60);
     public static readonly TimeSpan ChangeEmailLifetime = TimeSpan.FromHours(24);
+    public static readonly TimeSpan DataDownloadLifetime = TimeSpan.FromDays(7);
 
     private LinkToken()
     {

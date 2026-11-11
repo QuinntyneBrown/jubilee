@@ -27,11 +27,11 @@ names below are the names the design introduces.
 
 - **`AccountPage`** — Angular page at `/account`. It carries the download
   action and, after a request, a notice that the link arrives by e-mail within
-  24 hours. The label of the action is `<TO SUPPLY>`; the mocks do not show it.
+  24 hours. The action is the button "Download my data" in a "Your data" card (mock `pages/account`, states `data-requested` and `data-failed`).
 - **`DataDownloadPage`** — Angular page that the e-mailed link opens, behind
   `AuthGuard`. A visitor who is not signed in signs in first and returns to the
   same link. The page removes the token from the address bar and starts the file
-  download through `AccountApi`. The route of this page is `<TO SUPPLY>`.
+  download through `AccountApi`. The route of this page is `/account/data/:token` (mock `pages/data-download`).
 - **`AccountApi`** — typed Angular HTTP client. `requestDataExport()` calls
   `POST /api/account/data-exports`; `downloadDataExport(token)` calls
   `GET /api/account/data-exports/{token}`.
@@ -64,8 +64,7 @@ names below are the names the design introduces.
   contains neither (L2-146).
 - **`IExportStore`** — storage adapter for archive files. It writes to a private
   area of object storage that the CDN does not serve; the file is reachable only
-  through `DataExportsController`. Files are encrypted at rest. The bucket and
-  provider are `<TO SUPPLY>`.
+  through `DataExportsController`. Files are encrypted at rest. Until object storage is added, the archive is kept in a private column of `DataExport` that only the download endpoint reads (ADR 0034).
 - **`LinkToken`** — entity for the e-mailed link, with
   `LinkTokenPurpose.DataDownload` and a 7-day expiry. The token has at least 128
   bits of randomness and only its SHA-256 hash is stored (L2-140). The link may
@@ -78,7 +77,7 @@ names below are the names the design introduces.
   It deletes the file of each export whose `ExpiresAt` has passed and sets the
   status to `Expired`.
 
-The limit on how often one member may request an export is `<TO SUPPLY>`.
+A member may request an export 3 times in 24 hours; a fourth is refused with 429 (ADR 0034).
 
 ## Requirements
 
