@@ -1,7 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Icon, Button } from 'components';
+import { Button, DialogFrame, DialogFooter } from 'components';
 
 export interface SignInRequiredData {
   /** For example "Join to be told when it’s back". */
@@ -16,19 +16,14 @@ export interface SignInRequiredData {
  */
 @Component({
   selector: 'jb-sign-in-required-dialog',
-  imports: [RouterLink, Icon, Button],
+  imports: [RouterLink, Button, DialogFrame, DialogFooter],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './sign-in-required.dialog.html',
 })
 export class SignInRequiredDialog {
   private readonly ref = inject(DialogRef);
   protected readonly data = inject<SignInRequiredData>(DIALOG_DATA);
   protected readonly back = { returnUrl: this.data.returnUrl };
-
-  protected closeIfOutside(event: Event): void {
-    if (event.target === event.currentTarget) this.close();
-  }
 
   protected close(): void {
     this.ref.close();

@@ -1,44 +1,27 @@
 @let found = problems();
-<div class="dialog__panel">
+<jb-dialog
+  [heading]="view() === 'sent' ? 'Check your new inbox' : 'Change your e-mail'"
+  [busy]="busy()"
+  (closed)="close()"
+>
   @if (view() === 'sent') {
-    <div class="dialog__header">
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">Check your new inbox</h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          We sent a link to {{ sentTo() }}. It works for 24 hours. We also told your current
-          address. Your e-mail stays the same until you open the link.
-        </p>
-      </div>
-      <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
-    <div class="dialog__footer">
+    <span slot="description"
+      >We sent a link to {{ sentTo() }}. It works for 24 hours. We also told your current address.
+      Your e-mail stays the same until you open the link.</span
+    >
+  } @else {
+    <span slot="description"
+      >We’ll send a link to the new address. Your e-mail stays as it is until you open it.</span
+    >
+  }
+  @if (view() === 'sent') {
+    <div jb-dialog-footer>
       <button jb-button variant="primary" type="button" cdkFocusInitial (click)="close()">
         Done
       </button>
     </div>
   } @else {
-    <div class="dialog__header">
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">Change your e-mail</h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          We’ll send a link to the new address. Your e-mail stays as it is until you open it.
-        </p>
-      </div>
-      <button
-        jb-button
-        variant="ghost"
-        iconOnly
-        type="button"
-        aria-label="Close"
-        [disabled]="busy()"
-        (click)="close()"
-      >
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
-    <form class="dialog__body stack" id="change-email-form" novalidate (ngSubmit)="send()">
+    <form jb-dialog-body class="stack" id="change-email-form" novalidate (ngSubmit)="send()">
       @if (view() === 'failed') {
         <div jb-alert tone="danger" heading="We couldn’t send that" role="alert">
           <div>Your connection dropped before it reached us. Nothing was sent. Try again.</div>
@@ -76,7 +59,7 @@
         </div>
       }
     </form>
-    <div class="dialog__footer">
+    <div jb-dialog-footer>
       <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
       <button
         jb-button
@@ -90,4 +73,4 @@
       </button>
     </div>
   }
-</div>
+</jb-dialog>

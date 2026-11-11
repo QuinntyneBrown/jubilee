@@ -1,19 +1,11 @@
-<div class="dialog__panel dialog__panel--sm">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-      <svg jb-icon name="share"></svg>
-    </div>
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">Share {{ data.businessName }}</h2>
-      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-        Send this listing to a friend or your small group.
-      </p>
-    </div>
-    <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <div class="dialog__body stack">
+<jb-dialog
+  heading="Share {{ data.businessName }}"
+  description="Send this listing to a friend or your small group."
+  icon="share"
+  size="sm"
+  (closed)="close()"
+>
+  <div jb-dialog-body class="stack">
     <div jb-field label="Link" controlId="d-link">
       <jb-input-group>
         <input jb-input type="text" [value]="url" readonly />
@@ -33,7 +25,7 @@
       }
     </div>
   </div>
-  <div class="dialog__footer">
+  <div jb-dialog-footer>
     <button jb-button type="button" cdkFocusInitial (click)="close()">Done</button>
   </div>
-</div>
+</jb-dialog>

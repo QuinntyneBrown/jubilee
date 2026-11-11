@@ -12,7 +12,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BookedRequest, BookingOptions, MeetingMode, REQUESTS_API } from 'api';
 import {
-  Icon,
   Button,
   Alert,
   Field,
@@ -21,6 +20,9 @@ import {
   Select,
   Textarea,
   ChipOption,
+  DialogFrame,
+  DialogBody,
+  DialogFooter,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { ClockService } from '../../services/clock.service';
@@ -46,7 +48,6 @@ const SUBMIT_TIMEOUT_MS = 10_000;
   imports: [
     FormsModule,
     RouterLink,
-    Icon,
     Button,
     Alert,
     Field,
@@ -55,9 +56,11 @@ const SUBMIT_TIMEOUT_MS = 10_000;
     Select,
     Textarea,
     ChipOption,
+    DialogFrame,
+    DialogBody,
+    DialogFooter,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './book-meeting.dialog.html',
 })
 export class BookMeetingDialog implements OnInit {
@@ -212,10 +215,6 @@ export class BookMeetingDialog implements OnInit {
 
   protected close(): void {
     if (!this.busy()) this.ref.close();
-  }
-
-  protected closeIfOutside(event: Event): void {
-    if (event.target === event.currentTarget) this.close();
   }
 }
 

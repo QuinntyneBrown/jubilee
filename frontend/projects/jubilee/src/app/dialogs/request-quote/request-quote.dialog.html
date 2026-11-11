@@ -1,30 +1,34 @@
 @let opts = options();
 @let found = problems();
-<div class="dialog__panel">
+<jb-dialog
+  [heading]="
+    view() === 'success'
+      ? 'Quote request sent to ' + opts?.business?.name
+      : 'Ask ' + (opts ? opts.business.name : 'the business') + ' for a quote'
+  "
+  [icon]="view() === 'success' ? 'verified' : 'message'"
+  [busy]="busy()"
+  (closed)="close()"
+  (outsideClick)="close()"
+>
   @if (view() === 'success') {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="verified"></svg>
-      </div>
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">
-          Quote request sent to {{ opts?.business?.name }}
-        </h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          {{ opts?.ownerFirstName }}
-          @if (opts?.usuallyReplies) {
-            usually replies {{ opts?.usuallyReplies }}.
-          } @else {
-            will reply with a quote.
-          }
-          {{ opts?.ownerFirstName }}’s quote arrives in your messages.
-        </p>
-      </div>
-      <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
-    <div class="dialog__footer">
+    <span slot="description"
+      >{{ opts?.ownerFirstName }}
+      @if (opts?.usuallyReplies) {
+        usually replies {{ opts?.usuallyReplies }}.
+      } @else {
+        will reply with a quote.
+      }
+      {{ opts?.ownerFirstName }}’s quote arrives in your messages.</span
+    >
+  } @else {
+    <span slot="description"
+      >Tell {{ opts ? opts.ownerFirstName : 'them' }} what you have in mind. There’s no obligation
+      to buy.</span
+    >
+  }
+  @if (view() === 'success') {
+    <div jb-dialog-footer>
       <button jb-button type="button" (click)="close()">Close</button>
       <a
         jb-button
@@ -36,50 +40,25 @@
       >
     </div>
   } @else {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="message"></svg>
-      </div>
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">
-          Ask {{ opts ? opts.business.name : 'the business' }} for a quote
-        </h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          Tell {{ opts ? opts.ownerFirstName : 'them' }} what you have in mind. There’s no
-          obligation to buy.
-        </p>
-      </div>
-      <button
-        jb-button
-        variant="ghost"
-        iconOnly
-        type="button"
-        aria-label="Close"
-        [disabled]="busy()"
-        (click)="close()"
-      >
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
     @switch (view()) {
       @case ('loading') {
-        <div class="dialog__body">
+        <div jb-dialog-body>
           <p role="status" class="text-muted">Loading…</p>
         </div>
       }
       @case ('unavailable') {
-        <div class="dialog__body stack">
+        <div jb-dialog-body class="stack">
           <div jb-alert tone="danger" heading="Quotes aren’t available right now" role="alert">
             <div>Nothing is lost. Close this and try again in a moment, or send a message.</div>
           </div>
         </div>
-        <div class="dialog__footer">
+        <div jb-dialog-footer>
           <button jb-button variant="primary" type="button" (click)="close()">Close</button>
         </div>
       }
       @default {
         @if (opts) {
-          <form class="dialog__body stack" id="quote-form" novalidate (ngSubmit)="send()">
+          <form jb-dialog-body class="stack" id="quote-form" novalidate (ngSubmit)="send()">
             @if (view() === 'failed') {
               <div jb-alert tone="danger" [heading]="failure().title" role="alert">
                 <div>{{ failure().text }}</div>
@@ -144,7 +123,7 @@
               />
             </div>
           </form>
-          <div class="dialog__footer">
+          <div jb-dialog-footer>
             <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
             <button jb-button variant="primary" type="submit" form="quote-form" [busy]="busy()">
               Send request
@@ -154,4 +133,4 @@
       }
     }
   }
-</div>
+</jb-dialog>

@@ -1,7 +1,7 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Icon, Button, FieldError } from 'components';
+import { Button, FieldError, DialogFrame, DialogFooter } from 'components';
 import { SessionService } from '../../services/session.service';
 
 /**
@@ -10,9 +10,8 @@ import { SessionService } from '../../services/session.service';
  */
 @Component({
   selector: 'jb-sign-out-dialog',
-  imports: [Icon, Button, FieldError],
+  imports: [Button, FieldError, DialogFrame, DialogFooter],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './sign-out.dialog.html',
 })
 export class SignOutDialog {
@@ -22,10 +21,6 @@ export class SignOutDialog {
 
   protected readonly busy = signal(false);
   protected readonly failed = signal(false);
-
-  protected closeIfOutside(event: Event): void {
-    if (event.target === event.currentTarget) this.close();
-  }
 
   protected close(): void {
     if (!this.busy()) this.ref.close();

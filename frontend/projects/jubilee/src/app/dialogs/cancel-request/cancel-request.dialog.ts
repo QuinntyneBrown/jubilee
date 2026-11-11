@@ -2,7 +2,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CancelDecision, REQUESTS_API } from 'api';
-import { Icon, Button, Alert } from 'components';
+import { Button, Alert, DialogFrame, DialogBody, DialogFooter } from 'components';
 
 export interface CancelRequestData {
   id: string;
@@ -19,9 +19,8 @@ type View = 'form' | 'busy' | 'failed';
 /** CancelRequestDialog (L2-049): the member cancels an open request after seeing the consequence. */
 @Component({
   selector: 'jb-cancel-request-dialog',
-  imports: [Icon, Button, Alert],
+  imports: [Button, Alert, DialogFrame, DialogBody, DialogFooter],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog' },
   templateUrl: './cancel-request.dialog.html',
 })
 export class CancelRequestDialog {

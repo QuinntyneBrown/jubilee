@@ -10,7 +10,16 @@ import {
   OfferFilter,
   SORTS,
 } from 'api';
-import { CountPipe, Icon, Button, Field, Select, Checkbox } from 'components';
+import {
+  CountPipe,
+  Button,
+  Field,
+  Select,
+  Checkbox,
+  DialogFrame,
+  DialogBody,
+  DialogFooter,
+} from 'components';
 import { Subscription } from 'rxjs';
 
 export interface FiltersDialogData {
@@ -34,11 +43,10 @@ export interface FiltersDialogResult {
  */
 @Component({
   selector: 'jb-filters-dialog',
-  imports: [CountPipe, Icon, Button, Field, Select, Checkbox],
+  imports: [CountPipe, Button, Field, Select, Checkbox, DialogFrame, DialogBody, DialogFooter],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // The kit's `.dialog` fills the viewport and places the panel; a press outside the panel
   // closes the sheet, as a press on the backdrop does.
-  host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './filters.dialog.html',
 })
 export class FiltersDialog {
@@ -81,10 +89,6 @@ export class FiltersDialog {
       filters: { offers: this.offers(), areas: this.areas() },
       sort: this.sort(),
     });
-  }
-
-  protected closeIfOutside(event: Event): void {
-    if (event.target === event.currentTarget) this.close();
   }
 
   protected close(): void {

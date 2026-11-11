@@ -244,6 +244,9 @@ export class RequestQuoteDialog {
 /** The dialog that asks a shop for a product (L2-046). */
 export class RequestItemDialog implements Screen {
   readonly root: Locator;
+  /** The parts of the dialog frame. */
+  readonly header: Locator;
+  readonly footer: Locator;
   readonly title: Locator;
   readonly description: Locator;
   readonly summary: Locator;
@@ -266,6 +269,8 @@ export class RequestItemDialog implements Screen {
     this.root = page.getByRole('dialog');
     this.title = this.root.locator('.dialog__title');
     this.description = this.root.locator('#dlg-desc');
+    this.header = this.root.locator('.dialog__header');
+    this.footer = this.root.locator('.dialog__footer');
     this.summary = this.root.locator('.item-list');
     this.methods = this.root.locator('label.choice');
     this.methodGroup = this.root
