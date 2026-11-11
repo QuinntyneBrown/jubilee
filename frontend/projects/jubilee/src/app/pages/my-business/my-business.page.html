@@ -145,9 +145,7 @@
                 <ul class="rows">
                   @for (row of b.needsReply; track row.id) {
                     <li class="row row--stack">
-                      <span class="avatar" aria-hidden="true">{{
-                        initials(row.customerName)
-                      }}</span>
+                      <jb-avatar [name]="row.customerName" />
                       <div class="row__body">
                         <div class="row__title">{{ row.title }}</div>
                         <div class="row__meta">
