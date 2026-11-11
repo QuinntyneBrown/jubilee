@@ -19,6 +19,7 @@ export * from './lib/field/field';
 export * from './lib/field/field-control';
 export * from './lib/field/field-error';
 export * from './lib/field/field-help';
+export * from './lib/bot-challenge/bot-challenge';
 export * from './lib/form-summary/form-summary';
 export * from './lib/format/format';
 export * from './lib/icon/icon';

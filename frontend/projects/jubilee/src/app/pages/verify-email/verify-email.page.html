@@ -11,7 +11,13 @@
     @case ('confirmed') {
       <div jb-empty-state icon="verified" heading="E-mail confirmed" [level]="1">
         {{ thanks() }} You can now message businesses, book meetings and list your own.
-        <a slot="actions" jb-button variant="primary" routerLink="/">Start browsing</a>
+        @if (returnPath(); as path) {
+          <a slot="actions" jb-button variant="primary" [href]="path" (click)="continued()"
+            >Continue where you left off</a
+          >
+        } @else {
+          <a slot="actions" jb-button variant="primary" routerLink="/">Start browsing</a>
+        }
         <a slot="actions" jb-button routerLink="/list">List your business</a>
       </div>
     }

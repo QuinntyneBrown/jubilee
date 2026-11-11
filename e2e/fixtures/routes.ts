@@ -40,6 +40,7 @@ export type StubName =
   | 'verify-email-pending'
   | 'verify-email-loading'
   | 'verify-email-success'
+  | 'verify-email-success-return'
   | 'verify-email-expired'
   | 'verify-email-error'
   | 'email-unconfirmed'
@@ -192,6 +193,12 @@ export const routes = {
     mock: 'pages/verify-email/success.html',
     who: 'visitor',
     stub: 'verify-email-success',
+  },
+  'verify-email.success-return': {
+    app: '/verify-email/e2e-token',
+    mock: 'pages/verify-email/success-return.html',
+    who: 'visitor',
+    stub: 'verify-email-success-return',
   },
   'verify-email.expired': {
     app: '/verify-email/e2e-token',

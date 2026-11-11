@@ -44,9 +44,11 @@ certificates for the three host names.
 
 | `Google__ClientId`, `Google__ClientSecret` | the OAuth client `Jubilee web` (see "Google sign-in" below); the secret exists nowhere else |
 
-Not configured yet, so these features are off or stubbed: `BotChallenge__SecretKey` (Turnstile),
-and a real e-mail sender (the API and the worker still use the logging sender, so no e-mail
-leaves).
+Not configured yet, so this feature is off: the bot challenge of the join form (Cloudflare
+Turnstile). It needs a Turnstile widget for `app.jubilee.to` and two settings: `BotChallenge__SiteKey`
+(public; the join form reads it from `GET /api/session` and shows the challenge) and
+`BotChallenge__SecretKey` (the API verifies the token with it). Set both or neither: with only the
+site key the form sends a token nobody checks, and with only the secret every join is refused. A real e-mail sender is not configured either (the API and the worker still use the logging sender, so no e-mail leaves).
 
 ## Google sign-in
 
