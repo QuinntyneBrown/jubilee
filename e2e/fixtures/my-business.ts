@@ -249,7 +249,12 @@ export async function stubMyBusiness(
       },
     }),
   );
-  await page.route('**/media/**', (r) => r.fulfill({ body: PNG, contentType: 'image/png' }));
+  // Photos are served from /media/; so is the app's bundled font, which must still load.
+  await page.route('**/media/**', (r) =>
+    /\.woff2?(\?|$)/.test(r.request().url())
+      ? r.fallback()
+      : r.fulfill({ body: PNG, contentType: 'image/png' }),
+  );
 
   await page.route(/\/api\/my-business$/, (route: Route) => {
     if (fake.overview === 'fails') return route.fulfill(problem(503, { reference: 'JB-BIZ-503' }));

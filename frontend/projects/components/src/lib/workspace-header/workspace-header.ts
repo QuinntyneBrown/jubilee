@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, input, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Icon, Button, PageHeader, TabItem, Tabs } from 'components';
+import { Button } from '../button/button';
+import { Icon } from '../icon/icon';
+import { PageHeader } from '../page-header/page-header';
+import { TabItem, Tabs } from '../tabs/tabs';
 
 export type WorkspaceSection = 'overview' | 'listing' | 'products' | 'services' | 'requests';
 
@@ -13,6 +16,7 @@ export type WorkspaceSection = 'overview' | 'listing' | 'products' | 'services' 
   imports: [RouterLink, Icon, Button, PageHeader, Tabs],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-header.html',
+  styleUrl: './workspace-header.scss',
 })
 export class WorkspaceHeader {
   readonly heading = input.required<string>();

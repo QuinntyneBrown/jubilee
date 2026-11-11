@@ -32,6 +32,7 @@ import {
   Rows,
   TabListItem,
   TabList,
+  WorkspaceHeader,
 } from 'components';
 import { interval } from 'rxjs';
 import {
@@ -47,7 +48,6 @@ import { LoadState, errorReference } from '../../services/load-state';
 import { threadTime } from '../../services/message-time';
 import { NavigationStore } from '../../services/navigation.store';
 import { ToastService } from '../../toasts/toast.service';
-import { WorkspaceHeader } from '../my-business/workspace-header';
 
 /** How often the page asks for new requests (L2-051 AC3: a new request shows within five seconds). */
 const POLL_MS = 5000;

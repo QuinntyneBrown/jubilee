@@ -2,7 +2,7 @@
   @if (slug(); as slug) {
     <div class="cluster">
       <a jb-button [routerLink]="['/b', slug]">
-        <svg jb-icon name="compass"></svg>{{ live() ? 'View public listing' : 'Preview listing' }}
+        <svg jb-icon name="eye"></svg>{{ live() ? 'View public listing' : 'Preview listing' }}
       </a>
     </div>
   }
