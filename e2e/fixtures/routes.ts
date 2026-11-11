@@ -61,6 +61,14 @@ export type StubName =
   | 'incoming'
   | 'incoming-empty'
   | 'incoming-error'
+  | 'business'
+  | 'business-pending'
+  | 'business-changes'
+  | 'business-empty'
+  | 'business-error'
+  | 'business-paused'
+  | 'editor'
+  | 'editor-error'
   | 'admin-queue'
   | 'admin-queue-empty'
   | 'admin-queue-error'
@@ -466,6 +474,54 @@ export const routes = {
     mock: 'pages/incoming-requests/error.html',
     who: 'member',
     stub: 'incoming-error',
+  },
+  'my-business': {
+    app: '/my-business',
+    mock: 'pages/my-business/default.html',
+    who: 'member',
+    stub: 'business',
+  },
+  'my-business.pending': {
+    app: '/my-business',
+    mock: 'pages/my-business/pending.html',
+    who: 'member',
+    stub: 'business-pending',
+  },
+  'my-business.changes-requested': {
+    app: '/my-business',
+    mock: 'pages/my-business/changes-requested.html',
+    who: 'member',
+    stub: 'business-changes',
+  },
+  'my-business.empty': {
+    app: '/my-business',
+    mock: 'pages/my-business/empty.html',
+    who: 'member',
+    stub: 'business-empty',
+  },
+  'my-business.error': {
+    app: '/my-business',
+    mock: 'pages/my-business/error.html',
+    who: 'member',
+    stub: 'business-error',
+  },
+  'my-business.paused': {
+    app: '/my-business',
+    mock: 'notifications/verification-banner/persistent.html',
+    who: 'member',
+    stub: 'business-paused',
+  },
+  'edit-listing': {
+    app: '/my-business/listing',
+    mock: 'pages/edit-listing/default.html',
+    who: 'member',
+    stub: 'editor',
+  },
+  'edit-listing.error': {
+    app: '/my-business/listing',
+    mock: 'pages/edit-listing/error.html',
+    who: 'member',
+    stub: 'editor-error',
   },
   'admin-verifications': {
     app: '/admin/verifications',

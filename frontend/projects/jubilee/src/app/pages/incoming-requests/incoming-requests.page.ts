@@ -33,6 +33,7 @@ import { LoadState, errorReference } from '../../services/load-state';
 import { threadTime } from '../../services/message-time';
 import { NavigationStore } from '../../services/navigation.store';
 import { ToastService } from '../../toasts/toast.service';
+import { WorkspaceHeader } from '../my-business/workspace-header';
 
 /** How often the page asks for new requests (L2-051 AC3: a new request shows within five seconds). */
 const POLL_MS = 5000;
@@ -50,7 +51,7 @@ const TABS: { tab: IncomingTab; label: string }[] = [
 /** The owner's requests at /my-business/requests (L2-051): confirm or decline what members asked for. */
 @Component({
   selector: 'jb-incoming-requests-page',
-  imports: [RouterLink, EmptyState, Icon],
+  imports: [RouterLink, EmptyState, Icon, WorkspaceHeader],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './incoming-requests.page.html',

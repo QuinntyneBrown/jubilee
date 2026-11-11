@@ -1,0 +1,343 @@
+@let view = state();
+@switch (view.status) {
+  @case ('error') {
+    <jb-workspace-header heading="My business" subtitle="" current="overview" />
+    <div style="margin-top: var(--space-6)">
+      <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your business">
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>{{ view.reference }}</code
+        >.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+      </div>
+    </div>
+  }
+  @case ('loading') {
+    <jb-workspace-header heading="My business" subtitle="Loading…" current="overview" />
+    <div style="margin-top: var(--space-6)">
+      <p class="visually-hidden" role="status">Loading your business…</p>
+      <div class="stat-grid" aria-hidden="true">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <div class="card">
+            <span class="skeleton skeleton--text skeleton--w50"></span>
+            <span class="skeleton skeleton--title"></span>
+          </div>
+        }
+      </div>
+      <section class="section">
+        <span class="skeleton skeleton--title"></span>
+        <ul class="rows" aria-hidden="true">
+          @for (item of skeleton; track item) {
+            <li class="row">
+              <span class="skeleton skeleton--avatar"></span>
+              <div class="row__body">
+                <span class="skeleton skeleton--text skeleton--w50"></span>
+                <span class="skeleton skeleton--text skeleton--w70"></span>
+              </div>
+              <span class="skeleton skeleton--btn" style="width: 5rem"></span>
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+  }
+  @case ('loaded') {
+    @let b = view.value;
+    @if (b.state === 'none') {
+      <div class="page-header">
+        <div>
+          <h1>My business</h1>
+          <p class="subtitle">You haven’t listed a business yet.</p>
+        </div>
+      </div>
+      <div jb-empty-state icon="store" heading="List your business free">
+        Tell members what you offer, name a pastor or elder as your reference, and you’re live once
+        they confirm. It takes about ten minutes.
+        <a slot="actions" class="btn btn--primary" routerLink="/list-business">
+          <svg jb-icon name="plus"></svg>List your business
+        </a>
+        <a slot="actions" class="btn" routerLink="/help">How verification works</a>
+      </div>
+    } @else {
+      @if (b.paused) {
+        <div class="alert banner" role="status">
+          <svg jb-icon name="info"></svg>
+          <div class="alert__body">
+            <span
+              ><strong>Your listing is paused.</strong> It’s hidden from browse and search until you
+              resume it.</span
+            >
+            <span class="alert__actions" style="margin: 0">
+              <button
+                class="btn btn--sm"
+                type="button"
+                [disabled]="resuming()"
+                [attr.aria-busy]="resuming() ? 'true' : null"
+                (click)="resume()"
+              >
+                Resume listing
+              </button>
+            </span>
+          </div>
+        </div>
+        @if (resumeFailed()) {
+          <div class="alert alert--danger" role="alert">
+            <svg jb-icon name="alert"></svg>
+            <div class="alert__body">
+              <div class="alert__title">We couldn’t resume it</div>
+              <div>Your listing is still paused. Try again.</div>
+            </div>
+          </div>
+        }
+      } @else if (b.justApproved && !bannerDismissed()) {
+        <div class="alert banner alert--success" role="status">
+          <svg jb-icon name="check"></svg>
+          <div class="alert__body">
+            <span
+              ><strong>{{ b.name }} is verified and live.</strong> Members can find you in
+              {{ b.categorySlug === 'shops' ? 'Shops' : 'the directory' }}.</span
+            >
+            <span class="alert__actions" style="margin: 0">
+              <a [routerLink]="['/b', b.slug]">View listing</a>
+            </span>
+          </div>
+          <button
+            class="close"
+            type="button"
+            aria-label="Dismiss"
+            (click)="bannerDismissed.set(true)"
+          >
+            <svg jb-icon name="close"></svg>
+          </button>
+        </div>
+      }
+      <jb-workspace-header
+        [heading]="b.name!"
+        [subtitle]="b.subtitle"
+        current="overview"
+        [openRequests]="b.newRequests"
+        [slug]="b.slug"
+        [live]="b.state === 'live' && !b.paused"
+      />
+      <div style="margin-top: var(--space-6)">
+        @if (b.stats; as stats) {
+          <div class="stat-grid">
+            <div class="card stat">
+              <span class="stat__label">Listing views, 7 days</span>
+              <span class="stat__value">{{ stats.views.value }}</span>
+              <span class="stat__delta" [class.stat__delta--up]="stats.views.change > 0">{{
+                viewsDelta(b)
+              }}</span>
+            </div>
+            <div class="card stat">
+              <span class="stat__label">Open requests</span>
+              <span class="stat__value">{{ stats.openRequests }}</span>
+              <span class="stat__delta" [class.stat__delta--up]="stats.newSinceYesterday > 0">{{
+                stats.newSinceYesterday === 0
+                  ? 'None new since yesterday'
+                  : stats.newSinceYesterday + ' new since yesterday'
+              }}</span>
+            </div>
+            <div class="card stat">
+              <span class="stat__label">Unanswered messages</span>
+              <span class="stat__value">{{ stats.unansweredMessages }}</span>
+              <span class="stat__delta">Reply within a day to keep your badge</span>
+            </div>
+            @if (stats.saved !== null) {
+              <div class="card stat">
+                <span class="stat__label">Saved by members</span>
+                <span class="stat__value">{{ stats.saved }}</span>
+                <span class="stat__delta">This week</span>
+              </div>
+            }
+          </div>
+          <div class="split">
+            <section class="section" aria-labelledby="nr">
+              <div class="section-head">
+                <h2 id="nr">Needs your reply</h2>
+                <a routerLink="/my-business/requests">All requests</a>
+              </div>
+              @if (b.needsReply.length === 0) {
+                <div jb-empty-state [compact]="true" icon="check" heading="You’re all caught up">
+                  New requests from members show up here.
+                </div>
+              } @else {
+                <ul class="rows">
+                  @for (row of b.needsReply; track row.id) {
+                    <li class="row row--stack">
+                      <span class="avatar" aria-hidden="true">{{
+                        initials(row.customerName)
+                      }}</span>
+                      <div class="row__body">
+                        <div class="row__title">{{ row.title }}</div>
+                        <div class="row__meta">
+                          {{ row.kindLabel }} · {{ row.customerName }} · {{ sent(row) }}
+                        </div>
+                      </div>
+                      <div class="row__actions">
+                        <button
+                          class="btn btn--sm"
+                          type="button"
+                          [attr.aria-label]="'Decline request from ' + row.customerName"
+                          (click)="openDecline(row)"
+                        >
+                          Decline
+                        </button>
+                        <button
+                          class="btn btn--sm btn--primary"
+                          type="button"
+                          [attr.aria-label]="'Confirm request from ' + row.customerName"
+                          (click)="openConfirm(row)"
+                        >
+                          Confirm
+                        </button>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </section>
+            <aside class="section stack">
+              <div class="card stack">
+                <h2 class="card__title">Your listing</h2>
+                @if (b.summary; as summary) {
+                  <ul class="rows">
+                    <li class="row">
+                      <div class="row__body">
+                        <div class="row__title">
+                          {{ summary.products }}
+                          {{ summary.products === 1 ? 'product' : 'products' }}
+                        </div>
+                        @if (summary.soldOut > 0) {
+                          <div class="row__meta">{{ summary.soldOut }} sold out</div>
+                        }
+                      </div>
+                      <a
+                        class="btn btn--sm"
+                        routerLink="/my-business/products"
+                        aria-label="Manage products"
+                        >Manage</a
+                      >
+                    </li>
+                    <li class="row">
+                      <div class="row__body">
+                        <div class="row__title">
+                          {{ summary.services }}
+                          {{ summary.services === 1 ? 'service' : 'services' }}
+                        </div>
+                      </div>
+                      <a
+                        class="btn btn--sm"
+                        routerLink="/my-business/services"
+                        aria-label="Manage services"
+                        >Manage</a
+                      >
+                    </li>
+                    <li class="row">
+                      <div class="row__body">
+                        <div class="row__title">Church reference</div>
+                        <div class="row__meta">{{ summary.reference }}</div>
+                      </div>
+                    </li>
+                  </ul>
+                }
+                @if (!b.paused) {
+                  <div>
+                    <button class="btn btn--sm btn--ghost" type="button" (click)="openPause(b)">
+                      Pause listing
+                    </button>
+                  </div>
+                }
+              </div>
+            </aside>
+          </div>
+        } @else {
+          @if (b.state === 'changes-requested' && b.verification?.changesRequested; as changes) {
+            <div class="alert alert--warning" role="status">
+              <svg jb-icon name="alert"></svg>
+              <div class="alert__body">
+                <div class="alert__title">
+                  {{ changes.areas.length === 1 ? 'One change needed' : 'Changes needed' }} before
+                  we can publish
+                </div>
+                <div>
+                  {{ changes.message }}
+                  {{ changes.reviewerFirstName }} from the verification team.
+                </div>
+                <div class="alert__actions">
+                  <a class="btn btn--sm btn--primary" routerLink="/my-business/listing"
+                    >Edit listing</a
+                  >
+                </div>
+              </div>
+            </div>
+          } @else if (b.state === 'declined' && b.verification?.declined; as declined) {
+            <div class="alert alert--danger" role="status">
+              <svg jb-icon name="alert"></svg>
+              <div class="alert__body">
+                <div class="alert__title">We couldn’t verify this listing</div>
+                <div>{{ declined.reason }}</div>
+              </div>
+            </div>
+          } @else if (b.state === 'pending-reference' && b.reference; as reference) {
+            <div class="alert" role="status">
+              <svg jb-icon name="info"></svg>
+              <div class="alert__body">
+                <div class="alert__title">Waiting for your church reference</div>
+                <div>
+                  We e-mailed {{ reference.referenceEmail }} at {{ reference.church }}. Once they
+                  answer, we review and publish within two business days.
+                </div>
+              </div>
+            </div>
+          }
+          <div class="split" style="margin-top: var(--space-6)">
+            <section class="card" aria-labelledby="vp">
+              <h2 id="vp" class="card__title">Verification progress</h2>
+              <div style="margin-top: var(--space-4)">
+                <ol class="timeline">
+                  @for (step of steps(b); track step.title) {
+                    <li
+                      [attr.data-complete]="step.mark === 'done' ? '' : null"
+                      [attr.aria-current]="step.mark === 'now' ? 'step' : null"
+                    >
+                      <span class="timeline__dot" aria-hidden="true">{{
+                        step.mark === 'done' ? '✓' : ''
+                      }}</span>
+                      <div>
+                        <div class="timeline__title">{{ step.title }}</div>
+                        <div class="timeline__meta">{{ step.meta }}</div>
+                      </div>
+                    </li>
+                  }
+                </ol>
+              </div>
+            </section>
+            <aside class="split__sticky" aria-labelledby="pv">
+              <h2
+                id="pv"
+                class="text-caption"
+                style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3)"
+              >
+                How members see you
+              </h2>
+              <a
+                jb-business-card
+                [business]="{
+                  name: b.name!,
+                  tagline: b.tagline ?? '',
+                  highlight: null,
+                  categorySlug: b.categorySlug!,
+                  verified: false,
+                }"
+                [routerLink]="['/b', b.slug]"
+              ></a>
+            </aside>
+          </div>
+        }
+      </div>
+    }
+  }
+}

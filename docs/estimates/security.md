@@ -7,5 +7,5 @@
 | limit-abuse | 5 days | 10% |
 | protect-credentials-and-sessions | 4 days | 0% |
 | secure-transport-and-tokens | 3 days | 0% |
-| secure-uploads | 4 days | 0% |
+| secure-uploads | 4 days | 50% |
 | validate-input | 3 days | 0% |

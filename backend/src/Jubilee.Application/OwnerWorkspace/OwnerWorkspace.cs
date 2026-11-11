@@ -25,6 +25,8 @@ public sealed record MyBusinessDto(
     Guid? ListingId,
     string? Name,
     string? Slug,
+    string? Tagline,
+    string? CategorySlug,
     string Subtitle,
     bool Paused,
     DateTimeOffset? PausedAt,
@@ -133,7 +135,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
         var listing = await Workspace.Find(db, request.Subject, false, cancellationToken);
         if (listing is null)
         {
-            return new MyBusinessDto("none", null, null, null, "You haven't listed a business yet", false, null, false, 0, null, [], null, null, null);
+            return new MyBusinessDto("none", null, null, null, null, null, "You haven't listed a business yet", false, null, false, 0, null, [], null, null, null);
         }
 
         var state = Workspace.State(listing);
@@ -201,6 +203,8 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             listing.Id,
             listing.Name,
             listing.Slug,
+            listing.Tagline,
+            listing.CategorySlug,
             subtitle,
             listing.IsPaused,
             listing.PausedAt,

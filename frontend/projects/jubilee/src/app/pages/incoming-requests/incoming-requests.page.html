@@ -1,16 +1,12 @@
 @let requests = state();
-<div class="page-header">
-  <div>
-    <h1>
-      @if (requests.status === 'loaded') {
-        {{ requests.value.listing.name }}
-      } @else {
-        Requests
-      }
-    </h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
-</div>
+<jb-workspace-header
+  [heading]="requests.status === 'loaded' ? requests.value.listing.name : 'Requests'"
+  [subtitle]="subtitle()"
+  current="requests"
+  [openRequests]="requests.status === 'loaded' ? requests.value.counts.new : 0"
+  [slug]="requests.status === 'loaded' ? requests.value.listing.slug : null"
+/>
+<div style="margin-top: var(--space-6)"></div>
 @switch (requests.status) {
   @case ('error') {
     <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your requests">
