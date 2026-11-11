@@ -60,8 +60,8 @@ The feature is a vertical slice from the review page to the database, with
   time.
 - **`ApproveListingCommand`** and **`ApproveListingCommandValidator`** — carry
   `ListingId`, `Note` and `ExpectedVersion`. The validator requires `Note` when
-  `VerificationReview.UntickedItems()` is not empty. The maximum note length is
-  `<TO SUPPLY>`.
+  `VerificationReview.UntickedItems()` is not empty. The note is not limited yet
+  (ADR 0020).
 - **`ApproveListingCommandHandler`** — loads the listing, calls
   `Listing.Approve`, sets `ChurchReference.DeleteAfter` to the decision time
   plus 90 days, appends the `AuditEntry` with verifier, time and checklist

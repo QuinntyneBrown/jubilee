@@ -29,7 +29,8 @@ The feature runs from the Angular admin shell to the Jubilee database.
   a verifier without a second factor to `SecondFactorPage`, and shows
   `ForbiddenPage` to any other signed-in member.
 - **`SecondFactorPage`** — Angular page that collects a TOTP code or a passkey
-  assertion after sign-in. Its route is `<TO SUPPLY>`. It calls
+  assertion after sign-in. Its route is deferred with the second factor
+  (ADR 0020). It calls
   `POST /api/auth/second-factor` through `AccountApi`.
 - **`VerificationQueuePage`** — Angular page at `/admin/verifications`. It shows
   the summary line (for example "4 listings · 2 ready to review · oldest waiting
@@ -61,20 +62,20 @@ The feature runs from the Angular admin shell to the Jubilee database.
   to `Confirmed`, `Waiting`, `CantVouch` or `DoesntKnow`.
 - **`BusinessDayCalendar`** — application service that counts business days
   between two instants. The handler marks a row `Overdue` when a listing has
-  held "Ready to review" for more than 2 business days. The holiday list and
-  time zone are `<TO SUPPLY>`.
+  held "Ready to review" for more than 2 business days. The time zone is Toronto; the holiday
+  list is deferred (ADR 0020).
 - **`VerificationQueueItem`** — read model for one row. `OwnedByViewer` is true
   when the signed-in verifier owns the listing; the review endpoints refuse
   approve and request-changes commands from that verifier with HTTP 403.
 - **`VerifySecondFactorCommandHandler`** — MediatR handler that checks the TOTP
   code or passkey assertion against the member's `SecondFactorCredential` and
   sets `Session.SecondFactorVerifiedAt`. Enrolment of the credential is
-  `<TO SUPPLY>`.
+  deferred (ADR 0020).
 - **`AdminRolesController`** and **`ChangeMemberRoleCommandHandler`** — expose
   `PUT /api/admin/members/{id}/roles` under `AdminPolicy`. The handler calls
   `Member.ChangeRole` and appends an `AuditEntry` with actor, target, before and
   after values and reason in the same unit of work. The page that hosts this
-  action, `MemberRolesPage`, has no mock; its route is `<TO SUPPLY>`.
+  action, `MemberRolesPage`, has no mock; it is deferred (ADR 0020).
 
 ## Requirements
 

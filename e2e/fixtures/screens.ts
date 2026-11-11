@@ -1,7 +1,10 @@
 import type { Page } from '@playwright/test';
+import { AdminVerificationPage } from '../pages/admin-verification.page';
+import { AdminVerificationsPage } from '../pages/admin-verifications.page';
 import { BrowsePage } from '../pages/browse.page';
 import { BusinessLoadingScreen, BusinessPage } from '../pages/business.page';
 import { CategoryFiltersScreen, CategoryPage } from '../pages/category.page';
+import { ForbiddenPage } from '../pages/forbidden.page';
 import { NotFoundPage } from '../pages/not-found.page';
 import {
   ProductInvalidScreen,
@@ -25,6 +28,17 @@ export const screens: {
   below?: number;
 }[] = [
   { key: 'welcome', screen: (page) => new WelcomePage(page) },
+  { key: 'admin-verifications', screen: (page) => new AdminVerificationsPage(page) },
+  { key: 'admin-verifications.empty', screen: (page) => new AdminVerificationsPage(page) },
+  { key: 'admin-verifications.error', screen: (page) => new AdminVerificationsPage(page) },
+  { key: 'admin-verification', screen: (page) => new AdminVerificationPage(page) },
+  { key: 'admin-verification.approved', screen: (page) => new AdminVerificationPage(page) },
+  {
+    key: 'admin-verification.changes-requested',
+    screen: (page) => new AdminVerificationPage(page),
+  },
+  { key: 'admin-verification.error', screen: (page) => new AdminVerificationPage(page) },
+  { key: 'forbidden', screen: (page) => new ForbiddenPage(page) },
   { key: 'browse', screen: (page) => new BrowsePage(page) },
   { key: 'browse.signed-out', screen: (page) => new BrowsePage(page) },
   { key: 'browse.loading', screen: (page) => new BrowsePage(page) },

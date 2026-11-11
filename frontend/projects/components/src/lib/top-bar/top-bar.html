@@ -29,6 +29,17 @@
         <span jb-unread-badge [count]="member.unreadConversationCount"></span>
       }
     </a>
+    @if (member.isVerifier) {
+      <a
+        class="nav-link"
+        routerLink="/admin/verifications"
+        [attr.aria-current]="current() === 'verifications' ? 'page' : null"
+        >Verifications
+        @if (member.verificationCount > 0) {
+          <span jb-unread-badge [count]="member.verificationCount" noun="waiting"></span>
+        }
+      </a>
+    }
   </nav>
   @if (member.ownsListing) {
     <a

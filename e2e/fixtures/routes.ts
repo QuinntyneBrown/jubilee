@@ -49,7 +49,15 @@ export type StubName =
   | 'messages-error'
   | 'conversation'
   | 'conversation-loading'
-  | 'conversation-error';
+  | 'conversation-error'
+  | 'admin-queue'
+  | 'admin-queue-empty'
+  | 'admin-queue-error'
+  | 'admin-review'
+  | 'admin-review-approved'
+  | 'admin-review-changes-requested'
+  | 'admin-review-error'
+  | 'forbidden';
 
 export interface ScreenRoute {
   app: string;
@@ -381,6 +389,54 @@ export const routes = {
     mock: 'pages/search/no-results.html',
     who: 'member',
     stub: 'search-no-results',
+  },
+  'admin-verifications': {
+    app: '/admin/verifications',
+    mock: 'pages/admin-verifications/default.html',
+    who: 'member',
+    stub: 'admin-queue',
+  },
+  'admin-verifications.empty': {
+    app: '/admin/verifications',
+    mock: 'pages/admin-verifications/empty.html',
+    who: 'member',
+    stub: 'admin-queue-empty',
+  },
+  'admin-verifications.error': {
+    app: '/admin/verifications',
+    mock: 'pages/admin-verifications/error.html',
+    who: 'member',
+    stub: 'admin-queue-error',
+  },
+  'admin-verification': {
+    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-verification/default.html',
+    who: 'member',
+    stub: 'admin-review',
+  },
+  'admin-verification.approved': {
+    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-verification/approved.html',
+    who: 'member',
+    stub: 'admin-review-approved',
+  },
+  'admin-verification.changes-requested': {
+    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-verification/changes-requested.html',
+    who: 'member',
+    stub: 'admin-review-changes-requested',
+  },
+  'admin-verification.error': {
+    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-verification/error.html',
+    who: 'member',
+    stub: 'admin-review-error',
+  },
+  forbidden: {
+    app: '/forbidden',
+    mock: 'pages/forbidden/default.html',
+    who: 'member',
+    stub: 'forbidden',
   },
   'not-found': { app: '/no-such-page', mock: 'pages/not-found/default.html', who: 'member' },
 } as const satisfies Record<string, ScreenRoute>;

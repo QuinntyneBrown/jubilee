@@ -9,6 +9,7 @@ public enum ListingStage
     NeedsDecision = 3,
     ChangesRequested = 4,
     Live = 5,
+    Declined = 6,
 }
 
 /// <summary>Offer attributes a member can filter a category by.</summary>

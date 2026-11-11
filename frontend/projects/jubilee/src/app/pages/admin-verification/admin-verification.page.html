@@ -1,0 +1,248 @@
+@let current = state();
+@switch (current.status) {
+  @case ('error') {
+    <div
+      jb-empty-state
+      [error]="true"
+      [level]="1"
+      icon="alert"
+      heading="We couldn’t load this listing"
+    >
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/admin/verifications">Back to the queue</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the listing…</p>
+    <div aria-hidden="true">
+      <span class="skeleton skeleton--text skeleton--w50"></span>
+      <span class="skeleton skeleton--text skeleton--w70"></span>
+    </div>
+  }
+  @case ('loaded') {
+    @let r = current.value;
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a routerLink="/admin/verifications">Verification queue</a></li>
+        <li aria-current="page">{{ r.name }}</li>
+      </ol>
+    </nav>
+    <div class="page-header">
+      <div>
+        <h1>{{ r.name }}</h1>
+        <p class="subtitle">
+          {{ r.categoryName }} · submitted {{ when(r.submittedAt) }} ·
+          <span
+            class="badge"
+            [class.badge--info]="r.stage === 'ready-to-review'"
+            [class.badge--warning]="r.stage !== 'ready-to-review' && r.stage !== 'live'"
+            [class.badge--success]="r.stage === 'live'"
+            >{{ r.stageLabel }}</span
+          >
+        </p>
+      </div>
+      @if (open()) {
+        <div class="cluster">
+          <button class="btn" type="button" (click)="requestChanges(r)">Request changes</button>
+          @if (canDecline()) {
+            <button class="btn btn--danger" type="button" (click)="decline(r)">
+              Decline listing
+            </button>
+          }
+          <button
+            class="btn btn--primary"
+            type="button"
+            [disabled]="!canApprove()"
+            (click)="approve(r)"
+          >
+            <svg jb-icon name="check"></svg>Approve and publish
+          </button>
+        </div>
+      }
+    </div>
+    @if (decided(); as result) {
+      <div class="alert alert--success" role="status">
+        <svg jb-icon name="verified"></svg>
+        <div class="alert__body">
+          <div class="alert__title">
+            {{ result.stage === 'live' ? 'Approved and live' : result.stageLabel }}
+          </div>
+          <div>{{ r.owner.name.split(' ')[0] }} has been e-mailed.</div>
+        </div>
+      </div>
+    } @else if (r.stage === 'live' && r.decision; as decision) {
+      <div class="alert alert--success" role="status">
+        <svg jb-icon name="verified"></svg>
+        <div class="alert__body">
+          <div class="alert__title">Approved and live</div>
+          <div>
+            {{ decision.decidedByName }} approved {{ r.name }} {{ when(decision.decidedAt) }}.
+          </div>
+        </div>
+      </div>
+    } @else if (r.stage === 'changes-requested' && r.decision; as decision) {
+      <div class="alert alert--warning" role="status">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">Waiting on the owner</div>
+          <div>
+            {{ decision.decidedByName }} asked for {{ decision.areas.length }}
+            {{ decision.areas.length === 1 ? 'change' : 'changes' }}
+            {{ when(decision.decidedAt) }}. The listing returns to the queue when they resubmit.
+          </div>
+        </div>
+      </div>
+    } @else if (r.stage === 'declined') {
+      <div class="alert alert--danger" role="status">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">Declined</div>
+          <div>This listing was closed. The owner has been told why.</div>
+        </div>
+      </div>
+    }
+    @if (r.isOwnListing) {
+      <div class="alert alert--info" role="status">
+        <svg jb-icon name="info"></svg>
+        <div class="alert__body">
+          <div class="alert__title">This is your own listing</div>
+          <div>Another member of the team has to decide on it.</div>
+        </div>
+      </div>
+    } @else if (open() && r.cannotDecideBecause; as because) {
+      <div class="alert alert--warning" role="status">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">Not ready to approve</div>
+          <div>{{ because }}</div>
+        </div>
+      </div>
+    }
+    @if (r.changedSinceRequest.length > 0) {
+      <div class="alert alert--info" role="status">
+        <svg jb-icon name="info"></svg>
+        <div class="alert__body">
+          <div class="alert__title">Changed since your request</div>
+          <div>{{ r.changedSinceRequest.join(', ') }}</div>
+        </div>
+      </div>
+    }
+    <div class="split" style="margin-top: var(--space-6)">
+      <div class="stack">
+        <section class="card" aria-labelledby="own">
+          <h2 id="own" class="card__title">Owner</h2>
+          <dl class="dl" style="margin-top: var(--space-4)">
+            <dt>Name</dt>
+            <dd>{{ r.owner.name }}</dd>
+            <dt>E-mail</dt>
+            <dd>
+              {{ r.owner.email }} · {{ r.owner.emailConfirmed ? 'confirmed' : 'not confirmed' }}
+            </dd>
+            <dt>Other listings</dt>
+            <dd>{{ r.owner.otherListings === 0 ? 'None' : r.owner.otherListings }}</dd>
+          </dl>
+        </section>
+        <section class="card" aria-labelledby="ref">
+          <h2 id="ref" class="card__title">Church reference</h2>
+          <dl class="dl" style="margin-top: var(--space-4)">
+            <dt>Church</dt>
+            <dd>{{ r.reference.church }}</dd>
+            @if (noAnswer()) {
+              <dt>Answer</dt>
+              <dd>
+                <span class="badge badge--warning">{{
+                  r.reference.state === 'waiting'
+                    ? 'Waiting'
+                    : r.reference.state === 'expired'
+                      ? 'Expired'
+                      : 'Deleted'
+                }}</span>
+              </dd>
+            } @else {
+              <dt>Answered by</dt>
+              <dd>
+                {{ r.reference.answeredByName }}, {{ r.reference.answeredByRole }} ·
+                {{ when(r.reference.answeredAt ?? r.submittedAt) }}
+              </dd>
+              <dt>Answer</dt>
+              <dd>
+                @if (answer(); as a) {
+                  <span class="badge" [class]="'badge--' + a.tone">{{ a.label }}</span>
+                }
+              </dd>
+              @if (r.reference.note) {
+                <dt>Note</dt>
+                <dd>“{{ r.reference.note }}”</dd>
+              }
+            }
+          </dl>
+          <p class="text-caption" style="margin-top: var(--space-3)">
+            Private. Never shown to the owner or the public; deleted 90 days after a decision.
+          </p>
+        </section>
+        <section class="card" aria-labelledby="chk">
+          <h2 id="chk" class="card__title">Checklist</h2>
+          @if (r.flags.length > 0) {
+            <p class="text-caption" style="margin-top: var(--space-2)">
+              Flagged by the submission: {{ r.flags.join(', ') }}
+            </p>
+          }
+          <div class="stack stack--sm" style="margin-top: var(--space-3)">
+            @for (check of r.checklist; track check.key) {
+              <div>
+                <label class="choice">
+                  <input
+                    type="checkbox"
+                    [name]="check.key"
+                    [checked]="ticked().includes(check.key)"
+                    [disabled]="!open()"
+                    (change)="tick(check.key, $any($event.target).checked)"
+                  />
+                  <span class="choice__text">{{ check.label }}</span>
+                </label>
+              </div>
+            }
+          </div>
+          @if (saveFailed()) {
+            <p class="field__error" role="alert" style="margin-top: var(--space-3)">
+              We couldn’t save that tick. Try again.
+            </p>
+          }
+        </section>
+      </div>
+      <aside class="split__sticky" aria-labelledby="pv">
+        <h2
+          id="pv"
+          class="text-caption"
+          style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3)"
+        >
+          How members see you
+        </h2>
+        @if (tile(); as t) {
+          <div class="biz-card">
+            <div
+              jb-media-tile
+              [tint]="t.tint"
+              [icon]="t.icon"
+              [tag]="r.kind === 'products' ? 'Shop' : 'Business'"
+            ></div>
+            <p class="biz-card__name">{{ r.name }}</p>
+            <p class="biz-card__tagline">{{ r.tagline }}</p>
+            <p class="biz-card__meta">
+              @if (r.stage === 'live') {
+                <span class="verified"><svg jb-icon name="verified"></svg>Verified</span>
+              } @else {
+                <span class="perk">Pending verification</span>
+              }
+            </p>
+          </div>
+        }
+      </aside>
+    </div>
+  }
+}

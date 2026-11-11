@@ -22,6 +22,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<OutboxDispatcherJob>();
         builder.Services.AddHostedService<ListingDraftExpiryJob>();
         builder.Services.AddHostedService<ReferenceExpiryJob>();
+        builder.Services.AddHostedService<ReferenceRetentionJob>();
         return builder;
     }
 }
@@ -135,6 +136,43 @@ public sealed class ReferenceExpiryJob(IServiceScopeFactory scopes, ILogger<Refe
         catch (OperationCanceledException)
         {
             logger.LogInformation("The reference expiry job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Once a day: deletes a church reference's answer, name, role, note and e-mail 90 days after the
+/// listing was approved or declined (L2-146, L2-101 AC5, L2-104 AC2). Safe to repeat.
+/// </summary>
+public sealed class ReferenceRetentionJob(IServiceScopeFactory scopes, ILogger<ReferenceRetentionJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(24));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var deleted = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Verification.DeleteDecidedReferenceDataCommand(), stoppingToken);
+                    if (deleted > 0)
+                    {
+                        logger.LogInformation("Deleted the reference data of {Count} decided listings.", deleted);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Reference data could not be deleted. It will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The reference retention job is stopping.");
         }
     }
 }

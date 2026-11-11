@@ -9,6 +9,8 @@ import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import {
   ACCOUNT_API,
   HttpAccountApi,
+  ADMIN_API,
+  HttpAdminApi,
   DIRECTORY_API,
   LISTINGS_API,
   HttpDirectoryApi,
@@ -48,6 +50,7 @@ export const appConfig: ApplicationConfig = {
     { provide: REQUESTS_API, useClass: HttpRequestsApi },
     { provide: LISTING_DRAFTS_API, useClass: HttpListingDraftsApi },
     { provide: REFERENCE_API, useClass: HttpReferenceApi },
+    { provide: ADMIN_API, useClass: HttpAdminApi },
     provideAppInitializer(() => inject(SessionService).resolve()),
   ],
 };

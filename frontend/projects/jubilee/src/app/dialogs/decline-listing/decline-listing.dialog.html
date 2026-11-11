@@ -1,0 +1,71 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+      <svg jb-icon name="alert"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">Decline {{ data.name }}?</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+        The listing is closed and {{ data.ownerFirstName }} is e-mailed your reason. Use this when
+        the church reference could not vouch for them.
+      </p>
+    </div>
+    <button
+      class="btn btn--ghost btn--icon"
+      type="button"
+      aria-label="Close"
+      [disabled]="busy()"
+      (click)="close()"
+    >
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <form class="dialog__body stack" id="decline-form" novalidate (ngSubmit)="send()">
+    @if (view() === 'failed') {
+      <div class="alert alert--danger" role="alert">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">We couldn’t decline the listing</div>
+          <div>Nothing was sent and your reason is kept. Try again.</div>
+        </div>
+      </div>
+    }
+    <div class="field">
+      <label class="field__label" for="d-reason">
+        Reason for {{ data.ownerFirstName }} <span class="optional">(required)</span>
+      </label>
+      <span class="field__help" id="d-reason-help"
+        >Sent by e-mail and shown on their My business page. Be kind and specific.</span
+      >
+      <textarea
+        class="textarea"
+        id="d-reason"
+        name="reason"
+        rows="4"
+        required
+        [readOnly]="busy()"
+        [attr.aria-invalid]="problem() ? 'true' : null"
+        [attr.aria-describedby]="problem() ? 'd-reason-help d-reason-error' : 'd-reason-help'"
+        [ngModel]="reason()"
+        (ngModelChange)="reason.set($event)"
+      ></textarea>
+      @if (problem()) {
+        <span class="field__error" id="d-reason-error"
+          >Tell the owner why the listing was declined.</span
+        >
+      }
+    </div>
+  </form>
+  <div class="dialog__footer">
+    <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+    <button
+      class="btn btn--danger"
+      type="submit"
+      form="decline-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? 'true' : null"
+    >
+      Decline listing
+    </button>
+  </div>
+</div>

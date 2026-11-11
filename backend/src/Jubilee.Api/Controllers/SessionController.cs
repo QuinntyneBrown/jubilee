@@ -35,7 +35,7 @@ public sealed class SessionController(ISender sender) : ControllerBase
         {
             return new SessionDto(
                 true, account.FirstName, account.DisplayName, account.Initials,
-                account.Email, account.EmailStatus, account.EmailBounced, account.AgreementRequired);
+                account.Email, account.EmailStatus, account.EmailBounced, account.AgreementRequired, User.ToViewer().IsVerifier);
         }
 
         var displayName = (User.FindFirst("name")?.Value ?? User.Identity.Name ?? string.Empty).Trim();
@@ -48,7 +48,7 @@ public sealed class SessionController(ISender sender) : ControllerBase
             _ => words[0][..1] + words[^1][..1],
         };
 
-        return new SessionDto(true, firstName, displayName, initials.ToUpperInvariant(), null, "confirmed", false, false);
+        return new SessionDto(true, firstName, displayName, initials.ToUpperInvariant(), null, "confirmed", false, false, User.ToViewer().IsVerifier);
     }
 }
 
@@ -60,7 +60,8 @@ public sealed record SessionDto(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Email,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? EmailStatus,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? EmailBounced,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? AgreementRequired)
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? AgreementRequired,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? IsVerifier = null)
 {
     public static readonly SessionDto Visitor = new(false, null, null, null, null, null, null, null);
 }

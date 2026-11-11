@@ -47,5 +47,11 @@ public interface IAppDbContext
 
     DbSet<ReferenceAnswer> ReferenceAnswers { get; }
 
+    DbSet<ReviewTick> ReviewTicks { get; }
+
+    DbSet<ListingDecision> ListingDecisions { get; }
+
+    DbSet<AuditRecord> AuditRecords { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -2,6 +2,7 @@ import { Routes, UrlMatchResult, UrlSegment } from '@angular/router';
 import { ChromeSection } from 'components';
 import { guestGuard } from './guards/guest.guard';
 import { memberGuard } from './guards/member.guard';
+import { verifierGuard } from './guards/verifier.guard';
 import { welcomeRedirectGuard } from './guards/welcome-redirect.guard';
 
 /**
@@ -108,6 +109,33 @@ export const routes: Routes = [
     canActivate: [memberGuard],
     data: data({ shell: 'app', page: 'list-business', section: 'business' }),
     title: 'List your business · Jubilee',
+  },
+  {
+    path: 'admin/verifications',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/admin-verifications/admin-verifications.page').then(
+        (m) => m.AdminVerificationsPage,
+      ),
+    canActivate: [verifierGuard],
+    data: data({ shell: 'app', page: 'admin-verifications', section: 'verifications' }),
+    title: 'Verification queue · Jubilee',
+  },
+  {
+    path: 'admin/verifications/:id',
+    loadComponent: () =>
+      import('./pages/admin-verification/admin-verification.page').then(
+        (m) => m.AdminVerificationPage,
+      ),
+    canActivate: [verifierGuard],
+    data: data({ shell: 'app', page: 'admin-verification', section: 'verifications' }),
+    title: 'Review a listing · Jubilee',
+  },
+  {
+    path: 'forbidden',
+    loadComponent: () => import('./pages/forbidden/forbidden.page').then((m) => m.ForbiddenPage),
+    data: data({ shell: 'app', page: 'forbidden' }),
+    title: 'No access · Jubilee',
   },
   {
     path: 'statement-of-faith',

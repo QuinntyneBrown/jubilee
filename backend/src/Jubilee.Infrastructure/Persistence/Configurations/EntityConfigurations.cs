@@ -399,3 +399,71 @@ public sealed class ReferenceAnswerConfiguration : IEntityTypeConfiguration<Refe
         builder.HasOne<Listing>().WithMany().HasForeignKey(a => a.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+internal static class StringLists
+{
+    public static void Store(Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder<List<string>> property) =>
+        property.HasConversion(
+            list => string.Join(',', list),
+            text => text.Length == 0 ? new List<string>() : text.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList(),
+            new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<string>>(
+                (a, b) => a != null && b != null && a.SequenceEqual(b),
+                list => list.Aggregate(0, (hash, item) => HashCode.Combine(hash, item.GetHashCode())),
+                list => list.ToList()));
+}
+
+public sealed class ReviewTickConfiguration : IEntityTypeConfiguration<ReviewTick>
+{
+    public void Configure(EntityTypeBuilder<ReviewTick> builder)
+    {
+        builder.ToTable("ReviewTicks");
+        builder.HasKey(t => t.Id);
+        builder.Property(t => t.Id).ValueGeneratedNever();
+        builder.Property(t => t.Item).HasMaxLength(40).IsRequired();
+        builder.Property(t => t.TickedBy).HasMaxLength(200).IsRequired();
+        builder.Property(t => t.TickedByName).HasMaxLength(200).IsRequired();
+        builder.HasIndex(t => new { t.ListingId, t.Item }).IsUnique();
+        builder.HasOne<Listing>().WithMany().HasForeignKey(t => t.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ListingDecisionConfiguration : IEntityTypeConfiguration<ListingDecision>
+{
+    public void Configure(EntityTypeBuilder<ListingDecision> builder)
+    {
+        builder.ToTable("ListingDecisions");
+        builder.HasKey(d => d.Id);
+        builder.Property(d => d.Id).ValueGeneratedNever();
+        builder.Property(d => d.DecidedBy).HasMaxLength(200).IsRequired();
+        builder.Property(d => d.DecidedByName).HasMaxLength(200).IsRequired();
+        builder.Property(d => d.Note).HasMaxLength(2000);
+        builder.Property(d => d.SnapshotName).HasMaxLength(200);
+        builder.Property(d => d.SnapshotTagline).HasMaxLength(400);
+        builder.Property(d => d.SnapshotCategory).HasMaxLength(60);
+        StringLists.Store(builder.Property(d => d.Areas));
+        StringLists.Store(builder.Property(d => d.Ticked));
+        builder.HasIndex(d => new { d.ListingId, d.DecidedAt });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(d => d.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRecord>
+{
+    public void Configure(EntityTypeBuilder<AuditRecord> builder)
+    {
+        builder.ToTable("AuditRecords");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.Actor).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.ActorName).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.Action).HasMaxLength(80).IsRequired();
+        builder.Property(a => a.TargetType).HasMaxLength(40).IsRequired();
+        builder.Property(a => a.TargetId).HasMaxLength(100).IsRequired();
+        builder.Property(a => a.Before).HasMaxLength(4000);
+        builder.Property(a => a.After).HasMaxLength(4000);
+        builder.Property(a => a.Reason).HasMaxLength(2000);
+        builder.HasIndex(a => a.At);
+        builder.HasIndex(a => new { a.TargetType, a.TargetId });
+        builder.HasIndex(a => a.Actor);
+    }
+}

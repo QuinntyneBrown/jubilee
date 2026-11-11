@@ -215,6 +215,11 @@ public sealed class SubmitReferenceAnswerCommandHandler(IAppDbContext db, TimePr
             listing.Id, link.Id, kind!.Value, name[..Math.Min(name.Length, 200)], role[..Math.Min(role.Length, 200)], request.Note?.Trim(), now));
         link.Close(ReferenceLinkEnd.Answered, now);
         listing.MoveTo(kind == ReferenceAnswerKind.Vouches ? ListingStage.ReadyToReview : ListingStage.NeedsDecision);
+        if (kind == ReferenceAnswerKind.Vouches)
+        {
+            (await db.ListingSubmissions.SingleAsync(s => s.ListingId == listing.Id, cancellationToken)).MarkReady(now);
+        }
+
         await db.SaveChangesAsync(cancellationToken);
     }
 }
