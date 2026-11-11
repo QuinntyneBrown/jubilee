@@ -61,6 +61,8 @@ export * from './lib/media-tile/category-tile';
 export * from './lib/media-tile/media-tile';
 export * from './lib/menu/menu';
 export * from './lib/menu/menu-item';
+export * from './lib/menu/menu-link';
+export * from './lib/menu/menu-list';
 export * from './lib/message-bubble/message-bubble';
 export * from './lib/message-thread/chat';
 export * from './lib/message-thread/chat-head';

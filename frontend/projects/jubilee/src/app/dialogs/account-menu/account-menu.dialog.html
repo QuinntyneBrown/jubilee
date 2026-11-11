@@ -7,54 +7,42 @@
         <div jb-row-meta>{{ data.email }}</div>
       </div>
     </div>
-    <ul jb-list style="margin-inline: calc(-1 * var(--space-3))">
+    <ul jb-menu-list>
       <li>
-        <a class="menu__item" routerLink="/account" cdkFocusInitial (click)="close()">
-          <svg jb-icon name="user"></svg>Your account
+        <a jb-menu-link icon="user" routerLink="/account" cdkFocusInitial (click)="close()"
+          >Your account
         </a>
       </li>
       <li>
-        <a class="menu__item" routerLink="/requests" (click)="close()">
-          <svg jb-icon name="calendar"></svg>Your requests
-        </a>
+        <a jb-menu-link icon="calendar" routerLink="/requests" (click)="close()">Your requests </a>
       </li>
       <li>
-        <a class="menu__item" routerLink="/saved" (click)="close()">
-          <svg jb-icon name="heart"></svg>Saved
-        </a>
+        <a jb-menu-link icon="heart" routerLink="/saved" (click)="close()">Saved </a>
       </li>
       <li>
-        <a class="menu__item" routerLink="/account/notifications" (click)="close()">
-          <svg jb-icon name="bell"></svg>Notifications
+        <a jb-menu-link icon="bell" routerLink="/account/notifications" (click)="close()"
+          >Notifications
         </a>
       </li>
       <li>
         @if (data.ownsListing) {
-          <a class="menu__item" routerLink="/my-business" (click)="close()">
-            <svg jb-icon name="store"></svg>My business
-          </a>
+          <a jb-menu-link icon="store" routerLink="/my-business" (click)="close()">My business </a>
         } @else {
-          <a class="menu__item" routerLink="/list" (click)="close()">
-            <svg jb-icon name="plus"></svg>List your business
-          </a>
+          <a jb-menu-link icon="plus" routerLink="/list" (click)="close()">List your business </a>
         }
       </li>
       @if (data.isVerifier) {
         <li>
-          <a class="menu__item" routerLink="/admin/verifications" (click)="close()">
-            <svg jb-icon name="verified"></svg>Verification queue
+          <a jb-menu-link icon="verified" routerLink="/admin/verifications" (click)="close()"
+            >Verification queue
           </a>
         </li>
       }
       <li>
-        <a class="menu__item" routerLink="/help" (click)="close()">
-          <svg jb-icon name="info"></svg>Help
-        </a>
+        <a jb-menu-link icon="info" routerLink="/help" (click)="close()">Help </a>
       </li>
       <li>
-        <button class="menu__item" type="button" (click)="signOut()">
-          <svg jb-icon name="sign-out"></svg>Sign out
-        </button>
+        <button jb-menu-link icon="sign-out" type="button" (click)="signOut()">Sign out</button>
       </li>
     </ul>
   </div>

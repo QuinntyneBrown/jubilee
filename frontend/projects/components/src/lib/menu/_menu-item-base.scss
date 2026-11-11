@@ -1,0 +1,44 @@
+// What an action of a menu and a link of a menu list share: the item and its states.
+//
+// Knob: --jb-menu-item-focus-offset, for a surface that has room for the ring outside the item
+// (a dialog).
+@mixin item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--control-height-sm);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--color-fg-default);
+  font: var(--text-body-sm);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@mixin hover {
+  background: var(--color-bg-subtle);
+}
+
+@mixin focus {
+  background: var(--color-bg-subtle);
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--jb-menu-item-focus-offset, calc(-1 * var(--focus-ring-width)));
+}
+
+@mixin disabled {
+  color: var(--color-fg-disabled);
+  cursor: not-allowed;
+  background: none;
+}
+
+@mixin danger {
+  color: var(--color-danger-fg);
+}
+
+@mixin icon {
+  color: var(--color-fg-muted);
+}
