@@ -76,10 +76,25 @@ for attempt in $(seq 1 20); do
 done
 
 echo "== Bounces and complaints: Event Grid to $HOOK"
+# Event Grid first asks the endpoint to prove itself, with the secret in the header. An app that
+# is still restarting with its new settings answers 401, so the subscription is tried a few times.
 acs_id=$(az communication show -n "$ACS" -g "$GROUP" --query id -o tsv --only-show-errors)
-az eventgrid event-subscription create --name jubilee-email-delivery --source-resource-id "$acs_id" \
-  --endpoint "$HOOK" --included-event-types Microsoft.Communication.EmailDeliveryReportReceived \
-  --delivery-attribute-mapping X-Webhook-Secret static "$secret" true -o none --only-show-errors
+subscribed=
+for attempt in 1 2 3 4 5; do
+  if az eventgrid event-subscription create --name jubilee-email-delivery --source-resource-id "$acs_id" \
+      --endpoint "$HOOK" --included-event-types Microsoft.Communication.EmailDeliveryReportReceived \
+      --delivery-attribute-mapping X-Webhook-Secret static "$secret" true -o none --only-show-errors 2>/dev/null; then
+    subscribed=1
+    break
+  fi
+  echo "   The app is not ready for the webhook yet (attempt $attempt of 5); waiting a minute."
+  sleep 60
+done
 unset secret
+if [[ -z "$subscribed" ]]; then
+  echo "The webhook could not be subscribed. The settings are in place and e-mail is sent; run this" >&2
+  echo "script again in a few minutes to add the bounce webhook." >&2
+  exit 1
+fi
 
 echo "Done. $APP_APP sends e-mail from $SENDER@$DOMAIN."

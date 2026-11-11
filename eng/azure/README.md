@@ -130,8 +130,10 @@ To set it up, or to repeat it:
    creates what is missing, verifies the records, creates the sender, links the domain, sets the
    three settings without printing them, and subscribes the webhook. Run it again whenever it
    stops for DNS; it changes nothing that is already in place.
-3. Check: join with a real address at `https://app.jubilee.to/join`; the confirmation e-mail
-   arrives within two minutes. `az webapp log tail` shows a failed send, which the outbox retries
+3. Check: ask for a reset link for your own account at `https://app.jubilee.to/forgot-password`,
+   or join with a real address; the e-mail arrives within two minutes. It was set up and checked
+   this way on 11 November 2026: the message reached a Gmail inbox, not spam, with the layout of
+   `docs/mocks/emails/`. `az webapp log tail` shows a failed send, which the outbox retries
    for 24 hours.
 
 A new sending domain starts with a low sending limit; ask Azure support to raise it before a
