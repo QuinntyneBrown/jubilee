@@ -23,6 +23,8 @@ export class TopBar {
   readonly query = input('');
   /** Emits the trimmed query when the search box is submitted. */
   readonly searched = output<string>();
+  /** Emits when the avatar is pressed: the app opens the account menu. */
+  readonly accountMenu = output<HTMLElement>();
 
   protected submit(event: Event, query: string): void {
     event.preventDefault();

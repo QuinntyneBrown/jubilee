@@ -24,6 +24,8 @@
   <a
     class="tabbar__item"
     routerLink="/account"
+    aria-haspopup="dialog"
+    (click)="$event.preventDefault(); accountMenu.emit($any($event.currentTarget))"
     [attr.aria-current]="current() === 'account' ? 'page' : null"
     ><svg jb-icon name="user"></svg>You</a
   >

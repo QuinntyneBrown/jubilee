@@ -10,6 +10,7 @@ export type SessionDto =
       emailStatus?: 'unconfirmed' | 'confirmed';
       emailBounced?: boolean;
       agreementRequired?: boolean;
+      otherSessionCount?: number;
     };
 
 /** A signed-in member, as the chrome and the pages show them. */
@@ -21,4 +22,11 @@ export interface Member {
   emailConfirmed: boolean;
   emailBounced: boolean;
   agreementRequired: boolean;
+}
+
+/** The body of `POST /api/session`. */
+export interface SignInRequest {
+  email: string;
+  password: string;
+  keepSignedIn: boolean;
 }

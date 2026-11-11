@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -21,16 +22,18 @@ import {
 } from 'components';
 import { filter, map, startWith } from 'rxjs';
 import { JbRouteData } from './app.routes';
+import { UserMenuDialog } from './dialogs/user-menu/user-menu.dialog';
 import { ClockService } from './services/clock.service';
 import { NavigationStore } from './services/navigation.store';
 import { SessionService } from './services/session.service';
+import { ToastRegion } from './toasts/toast-region';
 
 const BARE: JbRouteData = { shell: 'bare', page: '' };
 
 /** AppShell: the skip link, the top bar, the routed page in `main`, the footer and the tab bar. */
 @Component({
   selector: 'jb-root',
-  imports: [RouterOutlet, SkipLink, TopBar, SiteFooter, TabBar, VerifyEmailBanner],
+  imports: [RouterOutlet, SkipLink, TopBar, SiteFooter, TabBar, VerifyEmailBanner, ToastRegion],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
 })
@@ -41,6 +44,7 @@ export class App {
   private readonly session = inject(SessionService);
   private readonly navigation = inject(NavigationStore);
   private readonly account = inject(ACCOUNT_API);
+  private readonly dialog = inject(Dialog);
   protected readonly year = inject(ClockService).year();
 
   /** The data of the deepest activated route, read again after every navigation. */
@@ -63,6 +67,7 @@ export class App {
     const summary = this.navigation.summary();
     return {
       displayName: member.displayName,
+      email: member.email,
       initials: member.initials,
       ownsListing: summary.ownsListing,
       unreadConversationCount: summary.unreadConversationCount,
@@ -96,7 +101,10 @@ export class App {
   );
 
   constructor() {
-    if (this.session.member()) this.navigation.load();
+    // The counts load when a member is there at start-up and again when one signs in.
+    effect(() => {
+      if (this.session.member()) this.navigation.load();
+    });
     effect(() => {
       this.document.body.dataset['page'] = this.routeData().page;
     });
@@ -110,6 +118,15 @@ export class App {
           queryParams: { returnUrl: pathname + search },
         });
       }
+    });
+  }
+
+  protected openAccountMenu(opener: HTMLElement): void {
+    this.dialog.open(UserMenuDialog, {
+      ariaLabelledBy: 'dlg-title',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+      restoreFocus: opener,
     });
   }
 

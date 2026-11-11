@@ -56,6 +56,20 @@ export const routes: Routes = [
     title: 'Product · Jubilee',
   },
   {
+    path: 'sign-in',
+    loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
+    canActivate: [guestGuard],
+    data: data({ shell: 'bare', page: 'sign-in' }),
+    title: 'Sign in · Jubilee',
+  },
+  {
+    path: 'session-expired',
+    loadComponent: () =>
+      import('./pages/session-expired/session-expired.page').then((m) => m.SessionExpiredPage),
+    data: data({ shell: 'bare', page: 'session-expired' }),
+    title: 'Signed out · Jubilee',
+  },
+  {
     path: 'join',
     pathMatch: 'full',
     loadComponent: () => import('./pages/join/join.page').then((m) => m.JoinPage),

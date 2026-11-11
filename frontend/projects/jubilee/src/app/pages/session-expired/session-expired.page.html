@@ -1,0 +1,10 @@
+<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
+<div class="auth-card card">
+  <div jb-empty-state icon="clock" heading="You’ve been signed out" [level]="1">
+    For your safety we sign you out after 30 days, or when your password changes. Sign in to pick up
+    where you left off; drafts are kept.
+    <a slot="actions" class="btn btn--primary" routerLink="/sign-in" [queryParams]="signInQuery"
+      >Sign in</a
+    >
+  </div>
+</div>

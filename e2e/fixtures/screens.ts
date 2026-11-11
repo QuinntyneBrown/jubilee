@@ -11,6 +11,7 @@ import {
 } from '../pages/product.page';
 import { JoinPage } from '../pages/join.page';
 import { SearchPage } from '../pages/search.page';
+import { SessionExpiredPage, SignInPage } from '../pages/sign-in.page';
 import { VerifyEmailPage } from '../pages/verify-email.page';
 import { WelcomePage } from '../pages/welcome.page';
 import type { RouteKey } from './routes';
@@ -59,6 +60,8 @@ export const screens: {
   { key: 'search.empty', screen: (page) => new SearchPage(page) },
   { key: 'search.error', screen: (page) => new SearchPage(page) },
   { key: 'search.no-results', screen: (page) => new SearchPage(page) },
+  { key: 'sign-in', screen: (page) => new SignInPage(page) },
+  { key: 'session-expired', screen: (page) => new SessionExpiredPage(page) },
   { key: 'sign-up', screen: (page) => new JoinPage(page) },
   { key: 'join-agreement', screen: (page) => new JoinPage(page) },
   { key: 'verify-email', screen: (page) => new VerifyEmailPage(page) },

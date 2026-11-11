@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
   inject,
@@ -21,13 +21,14 @@ import {
   SESSION_API,
 } from 'api';
 import { routes } from './app.routes';
+import { sessionExpiredInterceptor } from './interceptors/session-expired.interceptor';
 import { SessionService } from './services/session.service';
 
 /** Composition root: every API contract is bound to its implementation here. */
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([sessionExpiredInterceptor])),
     // "Shop products" scrolls to the products (L2-034 AC1).
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     { provide: ACCOUNT_API, useClass: HttpAccountApi },

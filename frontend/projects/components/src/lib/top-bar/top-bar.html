@@ -59,7 +59,11 @@
     }
   </a>
   <!-- The initials are decoration; the name of the link is the hidden sentence (WCAG 2.5.3). -->
-  <a class="avatar avatar--sm avatar--brand only-desktop" routerLink="/account"
+  <a
+    class="avatar avatar--sm avatar--brand only-desktop"
+    routerLink="/account"
+    aria-haspopup="dialog"
+    (click)="$event.preventDefault(); accountMenu.emit($any($event.currentTarget))"
     ><span aria-hidden="true">{{ member.initials }}</span
     ><span class="visually-hidden">Account menu for {{ member.displayName }}</span></a
   >

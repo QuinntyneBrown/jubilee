@@ -1,0 +1,113 @@
+<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
+<div class="auth-card card stack">
+  @if (view() === 'error') {
+    <div jb-empty-state icon="alert" heading="We couldn’t load sign in" [level]="1" [error]="true">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>JB-AUTH-503</code>.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="retry()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/welcome">Back to welcome</a>
+    </div>
+  } @else {
+    <h1>Sign in to Jubilee</h1>
+    @if (notice()) {
+      <div class="alert alert--danger" role="alert">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">{{ notice() }}</div>
+      </div>
+    }
+    @if (summary().length > 0) {
+      <div
+        class="alert alert--danger form-summary"
+        role="alert"
+        id="summary"
+        tabindex="-1"
+        #summaryBox
+      >
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">
+            Fix {{ summary().length }} {{ summary().length === 1 ? 'thing' : 'things' }} to continue
+          </div>
+          <ul class="alert__list">
+            @for (item of summary(); track item.id) {
+              <li>
+                <a [href]="'#' + item.id" (click)="$event.preventDefault(); focusField(item.id)">{{
+                  item.text
+                }}</a>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    }
+    <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
+      <div class="field">
+        <label class="field__label" for="email">E-mail</label>
+        <input
+          class="input"
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          [readOnly]="view() === 'submitting'"
+          [attr.aria-invalid]="errors().email ? 'true' : null"
+          [attr.aria-describedby]="errors().email ? 'email-error' : null"
+        />
+        @if (errors().email; as text) {
+          <span class="field__error" id="email-error">{{ text }}</span>
+        }
+      </div>
+      <div class="field">
+        <label class="field__label" for="password">Password</label>
+        <input
+          class="input"
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          [readOnly]="view() === 'submitting'"
+          [attr.aria-invalid]="errors().password ? 'true' : null"
+          [attr.aria-describedby]="errors().password ? 'password-error' : null"
+        />
+        @if (errors().password; as text) {
+          <span class="field__error" id="password-error">{{ text }}</span>
+        }
+      </div>
+      <div class="cluster cluster--between">
+        <div>
+          <label class="choice">
+            <input
+              type="checkbox"
+              id="remember"
+              [checked]="keep()"
+              (change)="keep.set($any($event.target).checked)"
+              [disabled]="view() === 'submitting'"
+            />
+            <span class="choice__text">Keep me signed in</span>
+          </label>
+        </div>
+        <a routerLink="/forgot-password">Forgot password?</a>
+      </div>
+      <button
+        class="btn btn--primary btn--block btn--lg"
+        type="submit"
+        [attr.aria-busy]="view() === 'submitting' ? 'true' : null"
+      >
+        Sign in
+      </button>
+      <p class="divider-text">or</p>
+      <a class="btn btn--block btn--lg" [href]="googleUrl">Continue with Google</a>
+    </form>
+  }
+</div>
+@if (view() !== 'error') {
+  <p class="auth-foot">
+    New to Jubilee? <a routerLink="/join" [queryParams]="joinQuery">Join free</a>
+  </p>
+}

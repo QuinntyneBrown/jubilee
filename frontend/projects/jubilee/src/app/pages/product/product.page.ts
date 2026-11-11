@@ -19,6 +19,7 @@ import {
 } from '../../dialogs/sign-in-required/sign-in-required.dialog';
 import { ListingHints } from '../../services/listing-hints';
 import { LoadState, errorReference } from '../../services/load-state';
+import { PendingActionService } from '../../services/pending-action.service';
 import { SessionService } from '../../services/session.service';
 import { ProductRequestForm, ProductSelection } from './product-request-form';
 
@@ -41,6 +42,7 @@ export class ProductPage {
   private readonly title = inject(Title);
   private readonly hints = inject(ListingHints);
   private readonly session = inject(SessionService);
+  private readonly pending = inject(PendingActionService);
   private readonly dialog = inject(Dialog);
   private request?: Subscription;
 
@@ -74,6 +76,11 @@ export class ProductPage {
     });
   }
 
+  /** The product's own path: the key of the action started on this page. */
+  private pagePath(): string {
+    return `/b/${this.slug()}/p/${this.productSlug()}`;
+  }
+
   protected load(): void {
     this.request?.unsubscribe();
     this.state.set({ status: 'loading' });
@@ -83,6 +90,16 @@ export class ProductPage {
         this.hints.rememberProducts(product.more);
         this.alertRequested.set(product.stockAlertRequested);
         this.state.set({ status: 'loaded', value: product });
+        // The alert the visitor asked for before signing in is saved without a second press (L2-012 AC2).
+        if (
+          this.session.member() &&
+          !product.stockAlertRequested &&
+          this.pending.take('stock-alert', this.pagePath())
+        ) {
+          this.api
+            .requestStockAlert(product.id)
+            .subscribe({ next: () => this.alertRequested.set(true) });
+        }
         this.title.setTitle(`${product.name} · Jubilee`);
       },
       error: (error: unknown) => {
@@ -102,6 +119,7 @@ export class ProductPage {
    */
   protected askForAlert(product: ProductPageModel, button: HTMLElement): void {
     if (!this.session.member()) {
+      this.pending.remember({ kind: 'stock-alert', returnPath: this.pagePath() });
       this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
         data: { title: 'Join to be told when it’s back', returnUrl: this.router.url },
         ariaLabelledBy: 'dlg-title',

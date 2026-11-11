@@ -1,0 +1,17 @@
+@for (toast of service.toasts(); track toast.id) {
+  <div class="toast" [class]="'toast toast--' + toast.tone">
+    <svg
+      jb-icon
+      [name]="toast.tone === 'success' ? 'verified' : toast.tone === 'info' ? 'info' : 'alert'"
+    ></svg>
+    <div class="toast__body">
+      <div class="toast__title">{{ toast.title }}</div>
+      @if (toast.text) {
+        <div class="toast__text">{{ toast.text }}</div>
+      }
+    </div>
+    <button class="close" type="button" aria-label="Dismiss" (click)="service.dismiss(toast.id)">
+      <svg jb-icon size="sm" name="close"></svg>
+    </button>
+  </div>
+}
