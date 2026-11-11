@@ -18,7 +18,7 @@
 
 - Turnstile widget on the join form (the API verifies a token when one is configured; the form sends none).
 - `/account` (where "Change e-mail" leads) and the unsubscribe and preferences links of e-mails (journey 24).
-- A real e-mail provider (`IEmailSender` logs for now) and reference e-mails (L2-080).
+- Reference e-mails (L2-080). The e-mail provider is in place (ADR 0038, `docs/estimates/operations.md`).
 - Session lifetime and `/session-expired` (L2-010), the `__Host-` cookie prefix, a CSP on the SPA host and the TLS redirect.
 - Return-to-action after joining beyond the return URL (L2-012).
 - Visual states of the join form that need interaction (`invalid`, `submitting`, `success`, `error`) have no `routes.ts` entry; the behaviour spec covers them.

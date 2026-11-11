@@ -24,13 +24,14 @@ e-mails of L2-068). Their text is tested and their links are already absolute.
   no vendor, no second bill and no second sign-in. It signs with DKIM, gives the SPF and DKIM
   records to publish, has no monthly fee, and is called over HTTPS with an HMAC-signed request, so
   the backend takes no new package.
-- **Sending domain `jubilee.to`, sender `no-reply@jubilee.to`.** The domain is a customer-managed
-  domain of the Email Communication Service, verified by a TXT record; SPF, two DKIM CNAME records
-  and a DMARC record with `p=quarantine` are published at Namecheap. The existing `@` TXT record
-  for e-mail forwarding stays; the SPF mechanism of the provider is merged into the one SPF record
-  the domain may have.
+- **Sending domain `notify.jubilee.to`, sender `no-reply@notify.jubilee.to`.** A subdomain,
+  because `jubilee.to` itself already has an SPF record, which Namecheap's e-mail forwarding
+  owns and locks; a domain may have one SPF record, and the provider's cannot be merged into a
+  locked one. The subdomain is a customer-managed domain of the Email Communication Service,
+  verified by a TXT record; its SPF record, two DKIM CNAME records and a DMARC record with
+  `p=quarantine` at `_dmarc.notify.jubilee.to` are published at Namecheap. Nothing at `@` changes.
 - **Configuration keys: `Email:ConnectionString`** (the Communication Services connection string:
-  endpoint and access key) **and `Email:From`** (`no-reply@jubilee.to`). The API and the worker
+  endpoint and access key) **and `Email:From`** (`no-reply@notify.jubilee.to`). The API and the worker
   read the same keys. With no connection string the logging sender is used: nothing leaves the
   system, the recipient and subject are logged, and when `Email:PreviewFolder` is set the HTML and
   the text of each e-mail are written there (L2-179 criterion 7).
