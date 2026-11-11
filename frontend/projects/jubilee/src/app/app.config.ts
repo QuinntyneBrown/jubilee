@@ -13,7 +13,9 @@ import {
   HttpListingsApi,
   HttpNavigationApi,
   HttpSessionApi,
+  HttpSearchApi,
   NAVIGATION_API,
+  SEARCH_API,
   SESSION_API,
 } from 'api';
 import { routes } from './app.routes';
@@ -30,6 +32,7 @@ export const appConfig: ApplicationConfig = {
     { provide: NAVIGATION_API, useClass: HttpNavigationApi },
     { provide: DIRECTORY_API, useClass: HttpDirectoryApi },
     { provide: LISTINGS_API, useClass: HttpListingsApi },
+    { provide: SEARCH_API, useClass: HttpSearchApi },
     provideAppInitializer(() => inject(SessionService).resolve()),
   ],
 };

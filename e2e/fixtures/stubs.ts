@@ -29,6 +29,55 @@ export function stubBrowseHome(page: Page, directory: unknown): Promise<unknown>
   return page.route(home, (route) => route.fulfill({ json: directory }));
 }
 
+const searchResults = '**/api/search?*';
+const searchStart = '**/api/search/start';
+
+/** A search answer that differs from the seed: no hits, so the page shows its no-results state. */
+export function noResults(query: string, suggestion: { closeTerm: string; categorySlug: string } | null) {
+  return {
+    query,
+    businessCount: 0,
+    serviceCount: 0,
+    productCount: 0,
+    hasMatchExplanations: true,
+    hits: [],
+    suggestion,
+  };
+}
+
+/** The empty search page of a member with a history, as the mocks show it. */
+export const memberSearchStart = {
+  recent: ['plumber', 'family lawyer', 'journaling Bible', 'wedding flowers'].map((query, i) => ({
+    id: `00000000-0000-0000-0000-00000000000${i + 1}`,
+    query,
+  })),
+  popularCategories: [
+    ['shops', 'Shops'],
+    ['financial-insurance', 'Financial & insurance'],
+    ['legal-immigration', 'Legal & immigration'],
+    ['home-property', 'Home & property'],
+    ['real-estate-living', 'Real estate & living'],
+    ['health-family', 'Health & family'],
+  ].map(([slug, name]) => ({ slug, name, count: 5 })),
+};
+
+/** Answers every search with `body` (and `status`), whatever the query. */
+export function stubSearch(page: Page, body: unknown, status = 200): Promise<unknown> {
+  return page.route(searchResults, (route) =>
+    route.fulfill(
+      status === 200
+        ? { json: body }
+        : { status, contentType: 'application/problem+json', body: JSON.stringify(body) },
+    ),
+  );
+}
+
+/** Answers the empty search page and the removal of recent searches. */
+export async function stubSearchStart(page: Page, start: unknown): Promise<unknown> {
+  await page.route('**/api/search/recent**', (route) => route.fulfill({ status: 204 }));
+  return page.route(searchStart, (route) => route.fulfill({ json: start }));
+}
+
 /** A request that is still on its way when the test looks at the screen. */
 function pending(route: Route): Promise<void> {
   return new Promise(() => void route);
@@ -140,6 +189,17 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         restockNote: 'Naomi prints the next batch on Mon 23 Nov.',
         stockAlertRequested: name === 'product-alert-requested',
       }));
+    case 'search-loading':
+      return page.route(searchResults, pending);
+    case 'search-error':
+      return page.route(searchResults, (route) => route.fulfill(unavailable('JB-SRCH-503')));
+    case 'search-no-results':
+      return stubSearch(
+        page,
+        noResults('plumbre', { closeTerm: 'plumber', categorySlug: 'home-property' }),
+      );
+    case 'search-start':
+      return stubSearchStart(page, memberSearchStart);
     case 'category-not-found':
       return page.route(categoryListings, (route) =>
         route.fulfill({

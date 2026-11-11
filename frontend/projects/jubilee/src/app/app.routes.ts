@@ -31,6 +31,12 @@ export const routes: Routes = [
     title: 'Jubilee · Toronto’s Christian marketplace',
   },
   {
+    path: 'search',
+    loadComponent: () => import('./pages/search/search.page').then((m) => m.SearchPage),
+    data: data({ shell: 'app', page: 'search', section: 'browse' }),
+    title: 'Search · Jubilee',
+  },
+  {
     path: 'c/:category',
     loadComponent: () => import('./pages/category/category.page').then((m) => m.CategoryPage),
     data: data({ shell: 'app', page: 'category', section: 'browse' }),

@@ -9,6 +9,7 @@ import {
   ProductPage,
   ProductWithSizeScreen,
 } from '../pages/product.page';
+import { SearchPage } from '../pages/search.page';
 import { WelcomePage } from '../pages/welcome.page';
 import type { RouteKey } from './routes';
 import type { Screen } from './visual';
@@ -51,5 +52,10 @@ export const screens: {
   { key: 'product.error', screen: (page) => new ProductPage(page) },
   { key: 'product.sold-out', screen: (page) => new ProductPage(page) },
   { key: 'product.alert-requested', screen: (page) => new ProductPage(page) },
+  { key: 'search', screen: (page) => new SearchPage(page) },
+  { key: 'search.loading', screen: (page) => new SearchPage(page) },
+  { key: 'search.empty', screen: (page) => new SearchPage(page) },
+  { key: 'search.error', screen: (page) => new SearchPage(page) },
+  { key: 'search.no-results', screen: (page) => new SearchPage(page) },
   { key: 'not-found', screen: (page) => new NotFoundPage(page) },
 ];

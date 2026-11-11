@@ -27,7 +27,11 @@ export type StubName =
   | 'product-loading'
   | 'product-error'
   | 'product-sold-out'
-  | 'product-alert-requested';
+  | 'product-alert-requested'
+  | 'search-loading'
+  | 'search-error'
+  | 'search-no-results'
+  | 'search-start';
 
 export interface ScreenRoute {
   app: string;
@@ -190,6 +194,31 @@ export const routes = {
     mock: 'pages/product/alert-requested.html',
     who: 'member',
     stub: 'product-alert-requested',
+  },
+  search: { app: '/search?q=plumber', mock: 'pages/search/default.html', who: 'member' },
+  'search.loading': {
+    app: '/search?q=plumber',
+    mock: 'pages/search/loading.html',
+    who: 'member',
+    stub: 'search-loading',
+  },
+  'search.empty': {
+    app: '/search',
+    mock: 'pages/search/empty.html',
+    who: 'member',
+    stub: 'search-start',
+  },
+  'search.error': {
+    app: '/search?q=plumber',
+    mock: 'pages/search/error.html',
+    who: 'member',
+    stub: 'search-error',
+  },
+  'search.no-results': {
+    app: '/search?q=plumbre',
+    mock: 'pages/search/no-results.html',
+    who: 'member',
+    stub: 'search-no-results',
   },
   'not-found': { app: '/no-such-page', mock: 'pages/not-found/default.html', who: 'member' },
 } as const satisfies Record<string, ScreenRoute>;

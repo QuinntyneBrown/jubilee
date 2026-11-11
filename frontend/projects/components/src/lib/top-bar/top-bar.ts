@@ -19,6 +19,8 @@ import { UnreadBadge } from '../unread-badge/unread-badge';
 export class TopBar {
   readonly member = input.required<ChromeMember | null>();
   readonly current = input<ChromeSection>(null);
+  /** The query to keep in the search box, on the search page. */
+  readonly query = input('');
   /** Emits the trimmed query when the search box is submitted. */
   readonly searched = output<string>();
 

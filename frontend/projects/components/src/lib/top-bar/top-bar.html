@@ -4,7 +4,15 @@
 <form class="search" role="search" (submit)="submit($event, q.value)">
   <label class="visually-hidden" for="q">Search businesses and products</label>
   <svg jb-icon name="search"></svg>
-  <input #q class="input" id="q" type="search" placeholder="Plumber, lawyer, Bibles…" />
+  <input
+    #q
+    class="input"
+    id="q"
+    type="search"
+    maxlength="100"
+    placeholder="Plumber, lawyer, Bibles…"
+    [value]="query()"
+  />
 </form>
 <span class="topbar__spacer"></span>
 @if (member(); as member) {
