@@ -1,0 +1,75 @@
+// What a text control is, whichever element draws it: jb-input, jb-textarea and jb-select
+// include it on their host. A block that holds a control restyles it through the knobs:
+// --jb-input-bg, -fg, -border, -border-hover, -placeholder, -radius, -min-height and
+// -padding-left.
+@mixin control($read-only: true) {
+  :host {
+    --field-bg: var(--jb-input-bg, var(--color-bg-surface));
+    --field-fg: var(--jb-input-fg, var(--color-fg-default));
+    --field-border: var(--jb-input-border, var(--color-border-strong));
+    --field-border-hover: var(--jb-input-border-hover, var(--color-fg-muted));
+
+    width: 100%;
+    min-height: var(--jb-input-min-height, var(--control-height-md));
+    padding: var(--space-2) var(--space-3);
+    padding-left: var(--jb-input-padding-left, var(--space-3));
+    font: var(--text-body);
+    color: var(--field-fg);
+    background: var(--field-bg);
+    border: var(--border-width-hairline) solid var(--field-border);
+    border-radius: var(--jb-input-radius, var(--radius-md));
+    transition:
+      border-color var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
+  }
+
+  :host::placeholder {
+    color: var(--jb-input-placeholder, var(--color-fg-subtle));
+  }
+
+  :host(:hover) {
+    border-color: var(--field-border-hover);
+  }
+
+  :host(:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--color-focus-ring);
+    outline-offset: 0;
+    border-color: var(--color-focus-ring);
+  }
+
+  :host([aria-invalid='true']) {
+    border-color: var(--color-danger-solid);
+    box-shadow: inset 0 0 0 var(--border-width-hairline) var(--color-danger-solid);
+  }
+
+  :host(:disabled) {
+    background: var(--color-bg-subtle);
+    color: var(--color-fg-disabled);
+    cursor: not-allowed;
+    border-color: var(--color-border-default);
+  }
+
+  @if $read-only {
+    :host(:read-only:not(:disabled)) {
+      background: var(--color-bg-surface-sunken);
+    }
+  }
+
+  :host(.input--sm) {
+    min-height: var(--control-height-sm);
+    padding-block: var(--space-1);
+    font-size: var(--font-size-sm);
+  }
+
+  :host(.input--lg) {
+    min-height: var(--jb-input-min-height, var(--control-height-lg));
+    font-size: var(--font-size-lg);
+  }
+
+  @media (forced-colors: active) {
+    :host {
+      forced-color-adjust: none;
+      border: 1px solid CanvasText;
+    }
+  }
+}
