@@ -1,0 +1,71 @@
+@let current = state();
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb">
+    <li><a routerLink="/">Browse</a></li>
+    <li aria-current="page">Help</li>
+  </ol>
+</nav>
+@switch (current.status) {
+  @case ('loaded') {
+    <div class="page-header">
+      <div>
+        <h1>{{ current.value.title }}</h1>
+        <p class="subtitle">{{ current.value.lead }}</p>
+      </div>
+    </div>
+    <div class="split">
+      <div class="accordion">
+        @for (section of current.value.sections; track section.anchor) {
+          <details
+            [id]="section.anchor"
+            [open]="open().has(section.anchor)"
+            (toggle)="toggled(section.anchor, $any($event.target).open)"
+          >
+            <summary [attr.aria-expanded]="open().has(section.anchor)">
+              {{ section.heading }}
+            </summary>
+            <div class="accordion__body">
+              @for (block of body(section.body); track $index) {
+                @if (block.kind === 'paragraph') {
+                  @for (part of block.parts; track $index) {
+                    @if (part.href; as href) {
+                      <a [href]="href">{{ part.text }}</a>
+                    } @else {
+                      {{ part.text }}
+                    }
+                  }
+                }
+              }
+            </div>
+          </details>
+        }
+      </div>
+      <aside class="card stack">
+        <h2>Still stuck?</h2>
+        <p class="text-muted">Write to us and a person answers within one business day.</p>
+        <a class="btn btn--primary" [href]="'mailto:' + address">
+          <svg jb-icon name="mail"></svg>E-mail {{ address }}
+        </a>
+      </aside>
+    </div>
+  }
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load Help">
+      Nothing is lost. Check your connection and try again. If it keeps happening, e-mail
+      <a [href]="'mailto:' + address">{{ address }}</a> and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @default {
+    <div class="stack" style="max-width: 42rem; margin-top: var(--space-6)" aria-hidden="true">
+      <span class="skeleton skeleton--text skeleton--w50"></span>
+      <span class="skeleton skeleton--text"></span>
+      <span class="skeleton skeleton--text skeleton--w70"></span>
+    </div>
+  }
+}

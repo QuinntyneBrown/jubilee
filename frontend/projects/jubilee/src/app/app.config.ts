@@ -8,6 +8,8 @@ import {
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import {
   ACCOUNT_API,
+  HttpContentApi,
+  CONTENT_API,
   HttpReportsApi,
   REPORTS_API,
   HttpProfileApi,
@@ -59,6 +61,7 @@ export const appConfig: ApplicationConfig = {
     // "Shop products" scrolls to the products (L2-034 AC1).
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     { provide: ACCOUNT_API, useClass: HttpAccountApi },
+    { provide: CONTENT_API, useClass: HttpContentApi },
     { provide: REPORTS_API, useClass: HttpReportsApi },
     { provide: PROFILE_API, useClass: HttpProfileApi },
     { provide: PASSWORD_RESET_API, useClass: HttpPasswordResetApi },

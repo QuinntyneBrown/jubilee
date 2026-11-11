@@ -21,7 +21,7 @@ public sealed record ContentDto(
 /// <summary>The first version of each page: the draft text of the mocks, served until staff publish another (ADR 0030).</summary>
 public static class ContentDefaults
 {
-    public static readonly DateTimeOffset PublishedAt = new(2026, 11, 2, 0, 0, 0, TimeSpan.Zero);
+    public static readonly DateTimeOffset PublishedAt = new(2026, 11, 2, 17, 0, 0, TimeSpan.Zero);
 
     public static ContentDto? For(string slug) => slug switch
     {

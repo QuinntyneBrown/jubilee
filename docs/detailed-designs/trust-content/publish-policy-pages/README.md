@@ -41,7 +41,7 @@ content tables in the `Jubilee database`.
   "Church references", "Your choices" with links to notification settings and
   the account page, and "Last updated {date}". The published text names the
   privacy contact and explains how to request access or correction, as PIPEDA
-  requires; the contact's name and address are `<TO SUPPLY>`.
+  requires; the contact is the placeholder address `privacy@jubilee.example` until the owner supplies the real one (ADR 0030).
 - **`HelpPage`** — Angular page at `/help`. It shows the questions "How does a
   business get verified?", "Does Jubilee take payment?", "Is it free?", "Who can
   see my messages?" and "How do I report a listing?" with their answers.
@@ -62,18 +62,17 @@ content tables in the `Jubilee database`.
   unknown slug returns `404`.
 - **`GetPublishedContentQuery`** and **`GetPublishedContentQueryHandler`** —
   return the published version of one document. The handler reads the `Cache`
-  first and falls back to the `Jubilee database`; the cache time to live is
-  `<TO SUPPLY>`.
+  first and falls back to the `Jubilee database`; there is no cache in this slice, so no time to live (ADR 0030).
 - **`PublishContentVersionCommand`** and
   **`PublishContentVersionCommandHandler`** — append a new `ContentVersion`
   with the next number, mark it published, and remove the cached entry in one
   unit of work. No command updates or deletes a version, so previous versions are
-  kept. The staff editing screen is `<TO SUPPLY>`.
+  kept. There is no staff editing screen; an admin publishes through the API (ADR 0030).
 - **`ContentDocument`** — domain entity, one per `ContentSlug`. `Publish`
   assigns the next version number and sets `PublishedVersionNumber`.
 - **`ContentVersion`** and **`ContentSection`** — a version holds an ordered
   list of sections; each section has a heading, an anchor and a body. The body
-  format is `<TO SUPPLY>`; the page renders it as sanitized text and links only.
+  format is plain text: blank-line paragraphs, "- " bullets and `[text](/path)` links to Jubilee pages or `mailto:`; the page never renders markup (ADR 0030).
 - **`TermsAcceptance`** — entity that records `MemberId`, `TermsVersionNumber`,
   `ConfirmedAdult` and `AcceptedAt`. The account creation handler of the
   accounts feature writes it in the same unit of work as the `Member`, using the
