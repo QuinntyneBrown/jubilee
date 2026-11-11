@@ -33,6 +33,11 @@ drawn from.
   after the behaviour specs.
 - A difference is fixed at its source: the component, or the design system and the mock first. A
   threshold is not raised and a region is not masked.
+- Where the design system and the mocks themselves differ from the reference, correcting them
+  changes how the product looks, which is the owner's decision and not part of moving a
+  component. Such a crop carries `knownDifference` in its spec and a row in the "Known
+  differences" table of `docs/design-reference/magic-patterns/README.md`; its comparison is
+  reported as a known failure (`fixme`) until the design system and the mock are corrected.
 - The sweeps are unchanged: `npm run sweeps` and `npm run baseline` stay owner-run.
 
 ## Consequences

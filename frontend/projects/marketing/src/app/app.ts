@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MarketingButton, MarketingLink } from 'components';
 import { APP_URL } from './app-url';
 import { Benefits } from './benefits/benefits';
 import { ForBusinesses } from './for-businesses/for-businesses';
@@ -11,7 +12,17 @@ import { PitchVideo } from './pitch-video/pitch-video';
 /** The marketing site's one page (L2-183), section for section as the design reference has it. */
 @Component({
   selector: 'jb-root',
-  imports: [Lockup, HeroVisual, PitchVideo, Benefits, HowItWorks, InsideTheApp, ForBusinesses],
+  imports: [
+    MarketingButton,
+    MarketingLink,
+    Lockup,
+    HeroVisual,
+    PitchVideo,
+    Benefits,
+    HowItWorks,
+    InsideTheApp,
+    ForBusinesses,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
 })

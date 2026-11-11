@@ -16,6 +16,7 @@ import { ICONS, IconName, IconShape } from './icons';
     '[class.icon--sm]': 'size() === "sm"',
   },
   templateUrl: './icon.html',
+  styleUrl: './icon.scss',
 })
 export class Icon {
   readonly name = input.required<IconName>();

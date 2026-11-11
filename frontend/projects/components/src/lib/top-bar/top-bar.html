@@ -47,21 +47,26 @@
   </nav>
   @if (member.ownsListing) {
     <a
-      class="btn btn--primary btn--sm only-desktop"
+      jb-button
+      variant="primary"
+      size="sm"
+      class="only-desktop"
       routerLink="/my-business"
       [attr.aria-current]="current() === 'business' ? 'page' : null"
       ><svg jb-icon name="store"></svg>My business</a
     >
   } @else {
-    <a class="btn btn--primary btn--sm only-desktop" routerLink="/list"
+    <a jb-button variant="primary" size="sm" class="only-desktop" routerLink="/list"
       ><svg jb-icon name="plus"></svg>List your business</a
     >
   }
-  <a class="btn btn--ghost btn--icon only-narrow" routerLink="/search" aria-label="Search"
+  <a jb-button variant="ghost" iconOnly class="only-narrow" routerLink="/search" aria-label="Search"
     ><svg jb-icon name="search"></svg
   ></a>
   <a
-    class="btn btn--ghost btn--icon"
+    jb-button
+    variant="ghost"
+    iconOnly
     routerLink="/notifications"
     [attr.aria-current]="current() === 'notifications' ? 'page' : null"
     [attr.aria-label]="
@@ -92,8 +97,8 @@
     >
     <a class="nav-link" routerLink="/sign-in">Sign in</a>
   </nav>
-  <a class="btn btn--ghost btn--icon only-narrow" routerLink="/search" aria-label="Search"
+  <a jb-button variant="ghost" iconOnly class="only-narrow" routerLink="/search" aria-label="Search"
     ><svg jb-icon name="search"></svg
   ></a>
-  <a class="btn btn--primary btn--sm" routerLink="/join">Join free</a>
+  <a jb-button variant="primary" size="sm" routerLink="/join">Join free</a>
 }

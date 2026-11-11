@@ -45,6 +45,13 @@ export interface ReferenceCrop {
   /** A file of `docs/design-reference/magic-patterns/`. */
   frame: string;
   clip: { x: number; y: number; width: number; height: number };
+  /**
+   * Set while the design system and the mocks still differ from the reference here: what
+   * differs, as listed in `docs/design-reference/magic-patterns/README.md`. The comparison is
+   * then reported as a known failure (`fixme`) instead of failing the run. The threshold stays;
+   * the entry goes when the design system and the mock are corrected.
+   */
+  knownDifference?: string;
 }
 
 /**
@@ -113,6 +120,7 @@ export function parity(component: string, { cases, reference }: ParityOptions): 
           });
           return;
         }
+        test.fixme(!!crop.knownDifference, crop.knownDifference);
         await page.setViewportSize({ width: crop.width, height: 800 });
         await jb.open(item.route, { theme: 'light' });
         const screen = item.screen(page);

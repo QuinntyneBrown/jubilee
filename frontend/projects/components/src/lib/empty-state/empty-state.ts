@@ -7,7 +7,7 @@ import { IconName } from '../icon/icons';
  *
  *     <div jb-empty-state icon="store" heading="No businesses are listed yet">
  *       Text of the block.
- *       <a slot="actions" class="btn btn--primary" routerLink="/list">List your business</a>
+ *       <a slot="actions" jb-button variant="primary" routerLink="/list">List your business</a>
  *     </div>
  *
  * `error` turns it into the load-error variant, announced as an alert. `level` is the heading

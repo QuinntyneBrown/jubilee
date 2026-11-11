@@ -1,0 +1,15 @@
+// Block: mkt-link. The host is the link.
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+  font-size: 1.0625rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+// With the block class, so that the page's reset of link decoration does not win.
+:host(.mkt-link) {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { formatServicePrice } from '../format/format';
+import { Button } from '../button/button';
 
 /** What a service row shows (L2-033 AC2). */
 export interface ServiceRowView {
@@ -19,7 +20,7 @@ export interface ServiceRowView {
  */
 @Component({
   selector: 'li[jb-service-row]',
-  imports: [RouterLink],
+  imports: [RouterLink, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'row' },
   templateUrl: './service-row.html',

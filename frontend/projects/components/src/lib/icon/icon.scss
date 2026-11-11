@@ -1,0 +1,22 @@
+// Block: icon. The host is the svg element.
+// The block around an icon sizes, colours and places it through the knobs.
+:host {
+  width: var(--jb-icon-size, var(--icon-size-md));
+  height: var(--jb-icon-size, var(--icon-size-md));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+:host(.icon--sm) {
+  width: var(--jb-icon-size, var(--icon-size-sm));
+  height: var(--jb-icon-size, var(--icon-size-sm));
+}
+
+:host(.icon--lg) {
+  width: var(--jb-icon-size, var(--icon-size-lg));
+  height: var(--jb-icon-size, var(--icon-size-lg));
+}
