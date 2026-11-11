@@ -15,6 +15,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<StockAlert> StockAlerts => Set<StockAlert>();
 
+    public DbSet<SavedItem> SavedItems => Set<SavedItem>();
+
     public DbSet<ListingView> ListingViews => Set<ListingView>();
 
     public DbSet<ListingPhoto> ListingPhotos => Set<ListingPhoto>();

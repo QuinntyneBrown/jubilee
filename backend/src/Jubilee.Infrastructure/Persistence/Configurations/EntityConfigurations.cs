@@ -85,6 +85,20 @@ public sealed class ListingViewConfiguration : IEntityTypeConfiguration<ListingV
     }
 }
 
+public sealed class SavedItemConfiguration : IEntityTypeConfiguration<SavedItem>
+{
+    public void Configure(EntityTypeBuilder<SavedItem> builder)
+    {
+        builder.ToTable("SavedItems");
+        builder.HasKey(i => i.Id);
+        builder.Property(i => i.Id).ValueGeneratedNever();
+        builder.Property(i => i.MemberSubject).HasMaxLength(200).IsRequired();
+        builder.Property(i => i.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.HasIndex(i => new { i.MemberSubject, i.Kind, i.TargetId }).IsUnique();
+        builder.HasIndex(i => i.TargetId);
+    }
+}
+
 public sealed class StockAlertConfiguration : IEntityTypeConfiguration<StockAlert>
 {
     public void Configure(EntityTypeBuilder<StockAlert> builder)

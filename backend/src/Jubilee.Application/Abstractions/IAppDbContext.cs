@@ -15,6 +15,8 @@ public interface IAppDbContext
 
     DbSet<StockAlert> StockAlerts { get; }
 
+    DbSet<SavedItem> SavedItems { get; }
+
     DbSet<ListingView> ListingViews { get; }
 
     DbSet<ListingPhoto> ListingPhotos { get; }

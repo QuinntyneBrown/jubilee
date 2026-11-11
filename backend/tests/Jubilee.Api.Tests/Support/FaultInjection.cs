@@ -45,6 +45,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<StockAlert> StockAlerts => Use(inner.StockAlerts);
 
+    public DbSet<SavedItem> SavedItems => Use(inner.SavedItems);
+
     public DbSet<ListingView> ListingViews => Use(inner.ListingViews);
 
     public DbSet<ListingPhoto> ListingPhotos => Use(inner.ListingPhotos);
