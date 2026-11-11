@@ -1,5 +1,5 @@
 <p>
-  <a class="btn btn--ghost btn--sm" routerLink="/admin/reports"
+  <a jb-button variant="ghost" size="sm" routerLink="/admin/reports"
     ><svg jb-icon name="arrow-left"></svg>Reports</a
   >
 </p>
@@ -14,17 +14,19 @@
     @if (notFound()) {
       <div jb-empty-state icon="alert" heading="This report doesn’t exist">
         It may have been removed. Go back to the reports to find the one you need.
-        <a slot="actions" class="btn btn--primary" routerLink="/admin/reports">Back to reports</a>
+        <a slot="actions" jb-button variant="primary" routerLink="/admin/reports"
+          >Back to reports</a
+        >
       </div>
     } @else {
       <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this report">
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>{{ current.reference }}</code
         >.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <a slot="actions" class="btn" routerLink="/admin/reports">Back to reports</a>
+        <a slot="actions" jb-button routerLink="/admin/reports">Back to reports</a>
       </div>
     }
   }
@@ -159,31 +161,42 @@
             keeps it in review until you lift it.
           </p>
           <div class="cluster" style="margin-top: var(--space-4)">
-            <button #dismiss class="btn" type="button" (click)="act('dismiss', dismiss)">
+            <button #dismiss jb-button type="button" (click)="act('dismiss', dismiss.element)">
               Dismiss report
             </button>
             <button
               #toReporter
-              class="btn"
+              jb-button
               type="button"
-              (click)="act('message-reporter', toReporter)"
+              (click)="act('message-reporter', toReporter.element)"
             >
               Message reporter
             </button>
-            <button #toOwner class="btn" type="button" (click)="act('message-owner', toOwner)">
+            <button
+              #toOwner
+              jb-button
+              type="button"
+              (click)="act('message-owner', toOwner.element)"
+            >
               Message owner
             </button>
             @if (report.listing.state === 'on-hold') {
-              <button #lift class="btn" type="button" (click)="act('lift-hold', lift)">
+              <button #lift jb-button type="button" (click)="act('lift-hold', lift.element)">
                 Lift hold
               </button>
             } @else if (report.listing.state !== 'removed') {
-              <button #hold class="btn" type="button" (click)="act('hold', hold)">
+              <button #hold jb-button type="button" (click)="act('hold', hold.element)">
                 Place on hold
               </button>
             }
             @if (report.listing.state !== 'removed') {
-              <button #remove class="btn btn--danger" type="button" (click)="act('remove', remove)">
+              <button
+                #remove
+                jb-button
+                variant="danger"
+                type="button"
+                (click)="act('remove', remove.element)"
+              >
                 Remove listing
               </button>
             }

@@ -12,7 +12,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BookedRequest, QuoteOptions, REQUESTS_API } from 'api';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { ClockService } from '../../services/clock.service';
 import { isoDay, newKey } from '../../services/message-time';
@@ -36,7 +36,7 @@ const SUBMIT_TIMEOUT_MS = 10_000;
  */
 @Component({
   selector: 'jb-request-quote-dialog',
-  imports: [FormsModule, RouterLink, Icon],
+  imports: [FormsModule, RouterLink, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './request-quote.dialog.html',

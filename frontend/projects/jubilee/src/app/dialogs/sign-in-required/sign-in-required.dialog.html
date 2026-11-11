@@ -10,14 +10,15 @@
         place. We’ll bring you straight back here.
       </p>
     </div>
-    <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+    <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
       <svg jb-icon name="close"></svg>
     </button>
   </div>
   <div class="dialog__footer">
-    <a class="btn" routerLink="/sign-in" [queryParams]="back" (click)="close()">Sign in</a>
+    <a jb-button routerLink="/sign-in" [queryParams]="back" (click)="close()">Sign in</a>
     <a
-      class="btn btn--primary"
+      jb-button
+      variant="primary"
       routerLink="/join"
       [queryParams]="back"
       cdkFocusInitial

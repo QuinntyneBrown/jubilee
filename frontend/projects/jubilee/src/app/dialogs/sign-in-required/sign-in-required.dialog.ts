@@ -1,7 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 
 export interface SignInRequiredData {
   /** For example "Join to be told when it’s back". */
@@ -16,7 +16,7 @@ export interface SignInRequiredData {
  */
 @Component({
   selector: 'jb-sign-in-required-dialog',
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './sign-in-required.dialog.html',

@@ -58,10 +58,10 @@
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ current.reference }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
     </div>
   }
   @case ('loaded') {
@@ -104,32 +104,41 @@
         }
         <div class="detail-head__actions">
           @if (isOwner) {
-            <a class="btn btn--primary btn--lg" routerLink="/my-business/edit"
+            <a jb-button variant="primary" size="lg" routerLink="/my-business/edit"
               ><svg jb-icon name="edit"></svg>Edit listing</a
             >
-            <a class="btn btn--icon" [routerLink]="link('share')" aria-label="Share listing"
+            <a jb-button iconOnly [routerLink]="link('share')" aria-label="Share listing"
               ><svg jb-icon name="share"></svg
             ></a>
           } @else {
             @if (isShop && hasProducts) {
-              <a class="btn btn--primary btn--lg" [routerLink]="[]" fragment="products"
+              <a jb-button variant="primary" size="lg" [routerLink]="[]" fragment="products"
                 ><svg jb-icon name="bag"></svg>Shop products</a
               >
             } @else if (!isShop && hasServices) {
-              <a jbRequiresConnection class="btn btn--primary btn--lg" [routerLink]="link('book')"
+              <a
+                jbRequiresConnection
+                jb-button
+                variant="primary"
+                size="lg"
+                [routerLink]="link('book')"
                 ><svg jb-icon name="calendar"></svg>Book a meeting</a
               >
             } @else {
               <a
                 jbRequiresConnection
-                class="btn btn--primary btn--lg"
+                jb-button
+                variant="primary"
+                size="lg"
                 [routerLink]="link('message')"
                 ><svg jb-icon name="message"></svg>Send a message</a
               >
             }
             <a
               jbRequiresConnection
-              class="btn btn--icon btn--lg"
+              jb-button
+              iconOnly
+              size="lg"
               [routerLink]="link('message')"
               aria-label="Message"
               style="width: var(--control-height-lg)"
@@ -138,18 +147,22 @@
             <button
               #saveButton
               jbRequiresConnection
-              class="btn btn--icon btn--lg"
+              jb-button
+              iconOnly
+              size="lg"
               type="button"
               [attr.aria-label]="saved() ? 'Saved. Remove from saved' : 'Save'"
               [attr.aria-pressed]="saved()"
               [style.color]="saved() ? 'var(--color-danger-solid)' : null"
               style="width: var(--control-height-lg)"
-              (click)="toggleSave(listing, saveButton)"
+              (click)="toggleSave(listing, saveButton.element)"
             >
               <svg jb-icon name="heart"></svg>
             </button>
             <a
-              class="btn btn--icon btn--lg"
+              jb-button
+              iconOnly
+              size="lg"
               [routerLink]="link('share')"
               aria-label="Share"
               style="width: var(--control-height-lg)"
@@ -191,7 +204,7 @@
             } @else {
               <div jb-empty-state icon="bag" heading="No products yet" [level]="3" [compact]="true">
                 {{ listing.name }} is setting up shop. Message them to ask what’s coming.
-                <a slot="actions" class="btn btn--primary" [routerLink]="link('message')"
+                <a slot="actions" jb-button variant="primary" [routerLink]="link('message')"
                   ><svg jb-icon name="message"></svg>Send a message</a
                 >
               </div>
@@ -230,7 +243,7 @@
               >
                 {{ listing.name }} is new on Jubilee and hasn’t added services. You can still
                 message them to ask what they offer.
-                <a slot="actions" class="btn btn--primary" [routerLink]="link('message')"
+                <a slot="actions" jb-button variant="primary" [routerLink]="link('message')"
                   ><svg jb-icon name="message"></svg>Send a message</a
                 >
               </div>

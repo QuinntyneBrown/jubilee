@@ -24,6 +24,7 @@ import {
   ServiceRow,
   VerifiedBusinessLabel,
   categoryTile,
+  Button,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
@@ -91,6 +92,7 @@ interface DetailRow {
     ProductCard,
     ServiceRow,
     VerifiedBusinessLabel,
+    Button,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
