@@ -329,7 +329,11 @@ public sealed partial class ChurchReferenceTests : IClassFixture<JubileeApiFacto
         var response = await Open(token);
 
         Assert.Equal(HttpStatusCode.Gone, response.StatusCode);
-        Assert.Equal("REFERENCE_LINK_CLOSED", (await Json(response)).GetProperty("code").GetString());
+        var problem = await Json(response);
+        Assert.Equal("REFERENCE_LINK_CLOSED", problem.GetProperty("code").GetString());
+        Assert.Equal(
+            "Reference links work once, for 14 days. If Naomi still needs a reference, Naomi can send you a new request from the listing.",
+            problem.GetProperty("detail").GetString());
     }
 
     [Fact]

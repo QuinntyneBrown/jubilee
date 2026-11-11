@@ -127,7 +127,8 @@
         "invalid",
         "submitting",
         "success",
-        "expired"
+        "expired",
+        "reported"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."

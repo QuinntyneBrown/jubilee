@@ -79,7 +79,7 @@ sender and one retention rule.
   reference address cannot enter a mailing list.
 - **Log redaction** — the structured logger excludes the `Note`, the answer
   and full e-mail addresses from log lines. The period after which deleted
-  reference data leaves encrypted backups is `<TO SUPPLY>`.
+  reference data leaves encrypted backups is 35 days, the life of a backup (ADR 0019).
 
 ## Requirements
 

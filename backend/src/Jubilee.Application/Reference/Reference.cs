@@ -103,23 +103,27 @@ internal static class ReferenceRequests
     public static async Task<(ReferenceLink Link, Listing Listing, string OwnerName, string OwnerFirstName)> Resolve(
         IAppDbContext db, string? token, DateTimeOffset now, CancellationToken cancellationToken)
     {
-        var closed = new GoneException(ReferenceTokens.ClosedCode, "This request is closed.");
+        var generic = "Reference links work once, for 14 days. If the owner still needs a reference, they can send you a new request from their listing.";
         if (string.IsNullOrWhiteSpace(token) || token.Length > 200)
         {
-            throw new NotFoundException(ReferenceTokens.ClosedCode, "This request is closed.");
+            throw new NotFoundException(ReferenceTokens.ClosedCode, generic);
         }
 
         var hash = ReferenceTokens.Hash(token);
         var link = await db.ReferenceLinks.SingleOrDefaultAsync(l => l.TokenHash == hash, cancellationToken)
-            ?? throw new NotFoundException(ReferenceTokens.ClosedCode, "This request is closed.");
-        if (!link.IsOpen(now))
+            ?? throw new NotFoundException(ReferenceTokens.ClosedCode, generic);
+        var listing = await db.Listings.SingleOrDefaultAsync(l => l.Id == link.ListingId && l.DeletedAt == null, cancellationToken);
+        if (listing is null)
         {
-            throw closed;
+            throw new GoneException(ReferenceTokens.ClosedCode, generic);
         }
 
-        var listing = await db.Listings.SingleOrDefaultAsync(l => l.Id == link.ListingId && l.DeletedAt == null, cancellationToken)
-            ?? throw closed;
         var (name, first) = await OwnerNames(db, listing.OwnerId, cancellationToken);
+        if (!link.IsOpen(now))
+        {
+            throw new GoneException(ReferenceTokens.ClosedCode, new OwnerWording(first).Closed);
+        }
+
         return (link, listing, name, first);
     }
 

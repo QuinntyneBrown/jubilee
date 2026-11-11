@@ -55,24 +55,24 @@ with a scheduled job in `Jubilee Worker`.
   verify {business}. Your reference told us they don't know you. Name another
   pastor or elder to try again." with "Change reference".
 - **`GetVerificationStatusQueryHandler`** — serves
-  `GET /api/listings/{listingId}/verification-status`. The
+  `GET /api/listings/{listingId}/reference`. The
   `VerificationStatusDto` holds the stage, the banner state, the church and the
   request time. It holds no answer text, reference name, role or note. The
-  source of the `{reference}` label shown to the owner is `<TO SUPPLY>`; the
-  onboarding form collects only the church and the e-mail.
+  `{reference}` label shown to the owner is the e-mail address the owner typed,
+  because the onboarding form collects only the church and the e-mail (ADR 0019).
 - **`ReferenceFollowUpJob`** — hosted job in `Jubilee Worker`. When 7 days
   pass without an answer, it sets the banner state `ReferenceSilent7Days`. When
   the link expires after 14 days with no answer and no change, it sets
   `ReferenceLinkExpired` and queues an e-mail to the owner. The job is
   idempotent and runs at most once per schedule across instances (L2-182). The
-  schedule interval is `<TO SUPPLY>`.
+  schedule interval is 24 hours (ADR 0019).
 - **`SendReferenceReminderCommandHandler`** — serves
-  `POST /api/listings/{listingId}/reference/reminder`. `ChurchReference.CanRemind`
+  `POST /api/listings/{listingId}/reference/remind`. `ChurchReference.CanRemind`
   allows one reminder per `72 hours`; an earlier press returns HTTP 429 with
   code `REFERENCE_REMINDER_LIMIT`. The reminder carries the same link when it
   is still valid, or a new link. `LinkToken` stores only a SHA-256 hash
-  (L2-140), so the mechanism that reproduces the same link in a reminder is
-  `<TO SUPPLY>`.
+  (L2-140), so a reminder always carries a new link and closes the one that was open
+  (ADR 0019).
 - **`ChangeReferenceDialog`** — dialog with "Church" and "Pastor's e-mail". It
   applies the reference rules of L2-074 and shows messages under the fields.
 - **`ChangeReferenceCommandHandler`** — serves
