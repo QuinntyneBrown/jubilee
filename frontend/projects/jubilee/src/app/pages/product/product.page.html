@@ -40,10 +40,10 @@
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ current.reference }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" [routerLink]="['/b', slug()]"
+      <a slot="actions" jb-button [routerLink]="['/b', slug()]"
         >Back to {{ shopName() ?? 'the shop' }}</a
       >
     </div>
@@ -65,13 +65,15 @@
           <h1>{{ product.name }}</h1>
           <button
             #saveButton
-            class="btn btn--icon btn--lg"
+            jb-button
+            iconOnly
+            size="lg"
             type="button"
             [attr.aria-label]="saved() ? 'Saved. Remove from saved' : 'Save'"
             [attr.aria-pressed]="saved()"
             [style.color]="saved() ? 'var(--color-danger-solid)' : null"
             style="width: var(--control-height-lg)"
-            (click)="toggleSave(product, saveButton)"
+            (click)="toggleSave(product, saveButton.element)"
           >
             <svg jb-icon name="heart"></svg>
           </button>

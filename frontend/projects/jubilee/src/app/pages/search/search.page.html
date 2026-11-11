@@ -23,7 +23,7 @@
       <section class="section" aria-labelledby="recent">
         <div class="cluster cluster--between">
           <h2 id="recent">Your recent searches</h2>
-          <button class="btn btn--ghost btn--sm" type="button" (click)="store.clearRecent()">
+          <button jb-button variant="ghost" size="sm" type="button" (click)="store.clearRecent()">
             Clear recent searches
           </button>
         </div>
@@ -34,7 +34,10 @@
                 recent.query
               }}</a>
               <button
-                class="btn btn--ghost btn--icon btn--sm"
+                jb-button
+                variant="ghost"
+                iconOnly
+                size="sm"
                 type="button"
                 [attr.aria-label]="'Remove “' + recent.query + '” from recent searches'"
                 (click)="store.removeRecent(recent.id)"
@@ -88,10 +91,10 @@
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ state.reference }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="store.load()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="store.load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
     </div>
   }
   @case ('results') {
@@ -118,18 +121,19 @@
         @if (results.suggestion; as suggestion) {
           <a
             slot="actions"
-            class="btn btn--primary"
+            jb-button
+            variant="primary"
             routerLink="/search"
             [queryParams]="{ q: suggestion.closeTerm }"
             >Search “{{ suggestion.closeTerm }}”</a
           >
         }
         @if (results.suggestion?.categorySlug; as slug) {
-          <a slot="actions" class="btn" [routerLink]="['/c', slug]"
+          <a slot="actions" jb-button [routerLink]="['/c', slug]"
             >Browse {{ categoryName(slug) }}</a
           >
         } @else {
-          <a slot="actions" class="btn" routerLink="/">Browse all categories</a>
+          <a slot="actions" jb-button routerLink="/">Browse all categories</a>
         }
       </div>
     } @else {

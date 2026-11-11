@@ -19,9 +19,12 @@
         </button>
       }
     </div>
-    <button class="close" type="button" aria-label="Dismiss" (click)="toasts.dismiss(toast.id)">
-      <svg jb-icon name="close"></svg>
-    </button>
+    <button
+      jb-close-button
+      type="button"
+      aria-label="Dismiss"
+      (click)="toasts.dismiss(toast.id)"
+    ></button>
     @if (toast.durationMs > 0) {
       <span
         class="toast__progress"

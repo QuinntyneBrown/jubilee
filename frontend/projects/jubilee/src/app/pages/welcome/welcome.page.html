@@ -11,8 +11,8 @@
       }
     </p>
     <div class="cluster" style="margin-top: var(--space-6)">
-      <a class="btn btn--primary btn--lg" routerLink="/join">Join free</a>
-      <a class="btn btn--ghost btn--lg" routerLink="/">Browse businesses</a>
+      <a jb-button variant="primary" size="lg" routerLink="/join">Join free</a>
+      <a jb-button variant="ghost" size="lg" routerLink="/">Browse businesses</a>
     </div>
     <ul class="chip-row">
       @for (category of categories; track category.slug) {
@@ -75,7 +75,12 @@
         pastor confirms.
       </p>
     </div>
-    <a class="btn btn--primary btn--lg" routerLink="/join" [queryParams]="{ returnUrl: '/list' }"
+    <a
+      jb-button
+      variant="primary"
+      size="lg"
+      routerLink="/join"
+      [queryParams]="{ returnUrl: '/list' }"
       ><svg jb-icon name="plus"></svg>List your business</a
     >
   </section>

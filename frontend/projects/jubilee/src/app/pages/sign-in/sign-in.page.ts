@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BrandMark, EmptyState, Icon } from 'components';
+import { BrandMark, EmptyState, Icon, Button } from 'components';
 import { sanitiseReturnUrl } from '../../services/return-url';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../toasts/toast.service';
@@ -27,7 +27,7 @@ const GOOGLE_ERRORS: Record<string, string> = {
 /** SignInPage (L2-006, L2-007): e-mail and password, or Google, then back to where the visitor was. */
 @Component({
   selector: 'jb-sign-in-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon],
+  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './sign-in.page.html',

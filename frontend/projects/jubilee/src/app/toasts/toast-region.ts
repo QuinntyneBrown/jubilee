@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Icon, IconName } from 'components';
+import { Icon, IconName, CloseButton } from 'components';
 import { ToastService, ToastTone } from './toast.service';
 
 const ICON: Record<ToastTone, IconName> = {
@@ -12,7 +12,7 @@ const ICON: Record<ToastTone, IconName> = {
 /** The live region the toasts rise in; it sits above the tab bar on a phone. */
 @Component({
   selector: 'jb-toast-region',
-  imports: [Icon],
+  imports: [Icon, CloseButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'toast-region', role: 'status', 'aria-live': 'polite' },
   templateUrl: './toast-region.html',

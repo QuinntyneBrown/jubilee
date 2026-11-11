@@ -4,10 +4,10 @@
     <div jb-empty-state icon="alert" heading="We couldn’t load sign in" [level]="1" [error]="true">
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>JB-AUTH-503</code>.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="retry()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="retry()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/welcome">Back to welcome</a>
+      <a slot="actions" jb-button routerLink="/welcome">Back to welcome</a>
     </div>
   } @else {
     <h1>Sign in to Jubilee</h1>
@@ -95,14 +95,17 @@
         <a routerLink="/forgot-password">Forgot password?</a>
       </div>
       <button
-        class="btn btn--primary btn--block btn--lg"
+        jb-button
+        variant="primary"
+        block
+        size="lg"
         type="submit"
-        [attr.aria-busy]="view() === 'submitting' ? 'true' : null"
+        [busy]="view() === 'submitting'"
       >
         Sign in
       </button>
       <p class="divider-text">or</p>
-      <a class="btn btn--block btn--lg" [href]="googleUrl">Continue with Google</a>
+      <a jb-button block size="lg" [href]="googleUrl">Continue with Google</a>
     </form>
   }
 </div>
