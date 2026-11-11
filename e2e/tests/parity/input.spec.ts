@@ -1,4 +1,5 @@
 import { parity } from '../../fixtures/parity';
+import { ForgotPasswordPage } from '../../pages/forgot-password.page';
 import { SignInPage } from '../../pages/sign-in.page';
 
 // jb-input: at rest with a value, and refused.
@@ -13,10 +14,10 @@ parity('input', {
     },
     {
       name: 'invalid',
-      route: 'sign-in.invalid',
-      screen: (page) => new SignInPage(page),
-      region: (screen: SignInPage) => screen.email,
-      arrange: (screen: SignInPage) => screen.sendInvalidEmail('joanna.adeyemi@', 'longpassword1'),
+      route: 'forgot-password.invalid',
+      screen: (page) => new ForgotPasswordPage(page),
+      region: (screen: ForgotPasswordPage) => screen.email,
+      arrange: (screen: ForgotPasswordPage) => screen.sendMalformedAndReturn('joanna.adeyemi'),
     },
   ],
   reference: {

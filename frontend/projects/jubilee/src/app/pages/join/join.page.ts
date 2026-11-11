@@ -11,7 +11,9 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ACCOUNT_API, JoinRequest } from 'api';
 import {
-  BrandMark,
+  AuthLayout,
+  AuthLink,
+  GoogleMark,
   EmptyState,
   Icon,
   Button,
@@ -20,7 +22,9 @@ import {
   FieldError,
   Field,
   Input,
+  PasswordInput,
   Checkbox,
+  DividerText,
   BotChallenge,
   Card,
 } from 'components';
@@ -66,7 +70,7 @@ function message(field: FieldName, code: string, passwordLength: number): string
     case 'EMAIL_INVALID':
       return 'Enter a valid e-mail address, like name@example.com.';
     case 'EMAIL_TAKEN':
-      return 'An account already uses this e-mail. Sign in instead, or use another address.';
+      return 'An account already uses this e-mail. Log in instead, or use another address.';
     case 'PASSWORD_TOO_SHORT':
       return `Use at least ${MIN_PASSWORD} characters. This one has ${passwordLength}.`;
     case 'PASSWORD_BREACHED':
@@ -84,7 +88,9 @@ function message(field: FieldName, code: string, passwordLength: number): string
   imports: [
     FormsModule,
     RouterLink,
-    BrandMark,
+    AuthLayout,
+    AuthLink,
+    GoogleMark,
     EmptyState,
     Icon,
     Button,
@@ -93,12 +99,13 @@ function message(field: FieldName, code: string, passwordLength: number): string
     Field,
     FieldError,
     Input,
+    PasswordInput,
     Checkbox,
+    DividerText,
     BotChallenge,
     Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'auth-layout' },
   templateUrl: './join.page.html',
 })
 export class JoinPage {
@@ -112,6 +119,8 @@ export class JoinPage {
 
   protected readonly max = MAX;
   protected readonly view = signal<View>('form');
+  /** The form is on screen: ready, or being sent. */
+  protected readonly form = computed(() => this.view() === 'form' || this.view() === 'submitting');
   protected readonly firstName = signal('');
   protected readonly lastName = signal('');
   protected readonly email = signal('');

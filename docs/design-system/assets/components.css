@@ -177,8 +177,7 @@ hr, .divider { border: 0; border-top: var(--border-width-hairline) solid var(--c
 .choice input:disabled, .choice input[data-state="disabled"] { background: var(--color-bg-subtle); border-color: var(--color-border-default); cursor: not-allowed; }
 .choice input:disabled + *, .choice input[data-state="disabled"] + * { color: var(--color-fg-disabled); }
 .choice input[aria-invalid="true"], .choice input[data-state="invalid"] { border-color: var(--color-danger-solid); box-shadow: inset 0 0 0 var(--border-width-hairline) var(--color-danger-solid); }
-.choice__text { display: flex; flex-direction: column; gap: var(--space-0-5); }
-.choice__text small { color: var(--color-fg-muted); }
+.choice__text small { display: block; margin-top: var(--space-0-5); color: var(--color-fg-muted); }
 .switch { display: inline-flex; align-items: center; gap: var(--space-3); cursor: pointer; min-height: var(--target-min); }
 .switch input { appearance: none; margin: 0; flex: none; width: var(--target-comfortable); height: var(--target-min); border-radius: var(--radius-full); background: var(--color-border-strong); position: relative; cursor: pointer; transition: background-color var(--duration-base) var(--ease-standard); }
 .switch input::before { content: ""; position: absolute; top: var(--space-0-5); left: var(--space-0-5); width: var(--icon-size-md); height: var(--icon-size-md); border-radius: var(--radius-full); background: var(--color-bg-surface); box-shadow: var(--shadow-1); transition: translate var(--duration-base) var(--ease-standard); }
@@ -741,9 +740,67 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .auth-brand .brand-mark { width: var(--icon-size-lg); height: var(--icon-size-lg); }
 .auth-card h1 { font-size: var(--font-size-2xl); }
 .auth-foot { font: var(--text-body-sm); color: var(--color-fg-muted); text-align: center; }
-.divider-text { display: flex; align-items: center; gap: var(--space-3); font: var(--text-caption); color: var(--color-fg-muted); }
+.divider-text { display: flex; align-items: center; gap: var(--space-4); max-width: none; font: var(--text-body-sm); color: var(--color-fg-muted); }
 .divider-text::before, .divider-text::after { content: ""; flex: 1; border-top: var(--border-width-hairline) solid var(--color-border-default); }
 .status-page { min-height: 70dvh; display: grid; place-items: center; }
+
+/* ---------- Log in and Sign up: the split frame (ADR 0038) ------------------------------------------- */
+/* Lockup: the mark and the wordmark. The default size is the brand link of the bare pages. */
+.lockup { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tighter); color: var(--color-fg-default); text-decoration: none; }
+.lockup:hover { color: var(--color-fg-default); }
+.lockup .brand-mark { width: var(--icon-size-lg); height: var(--icon-size-lg); }
+.lockup--lg, .lockup--xl { gap: 0.12em; line-height: 1; }
+.lockup--lg { font-size: var(--font-size-5xl); }
+.lockup--xl { font-size: calc(var(--font-size-5xl) + var(--space-1)); }
+.lockup--lg .brand-mark, .lockup--xl .brand-mark { width: 1.1em; height: 1.1em; }
+.lockup--lg .lockup__word, .lockup--xl .lockup__word { margin-top: -0.06em; }
+.lockup--on-ink, .lockup--on-ink:hover { color: var(--color-fg-on-brand); }
+
+/* Under 64rem the lockup sits above the card; from 64rem a brand panel takes 5/12 of the screen. */
+.auth-layout--split { display: block; place-items: stretch; align-content: stretch; gap: 0; padding: 0; }
+.auth-layout__panel { display: none; }
+.auth-layout--split .auth-layout__body { display: flex; flex-direction: column; align-items: center; padding: var(--space-10) var(--space-5) var(--space-16); }
+.auth-layout--split .auth-card { display: flex; flex-direction: column; gap: var(--space-6); max-width: 28.75rem; margin-top: var(--space-10); padding: var(--space-8) var(--space-6); background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-xl); box-shadow: var(--shadow-1); }
+.auth-layout--split .auth-card__head { margin-bottom: var(--space-1); }
+.auth-layout--split .auth-card__title { font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); }
+.auth-card__lead { margin-top: var(--space-2); color: var(--color-fg-muted); }
+.auth-layout--split .auth-foot { margin-top: var(--space-6); }
+.auth-link { font-weight: var(--font-weight-semibold); color: var(--color-fg-default); text-decoration: underline var(--border-width-thick) var(--color-accent); text-underline-offset: 0.25em; }
+.auth-link:hover { color: var(--color-fg-default); text-decoration-color: currentColor; }
+@media (min-width: 40rem) {
+  .auth-layout--split .auth-layout__body { padding-top: var(--space-16); }
+  .auth-layout--split .auth-card { padding: var(--space-10); }
+}
+@media (min-width: 64rem) {
+  .auth-layout--split { display: grid; grid-template-columns: 5fr 7fr; height: 100dvh; }
+  .auth-layout__panel { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: clamp(var(--space-12), 5vw, var(--space-16)); background: var(--color-bg-brand); color: var(--color-fg-on-brand); }
+  .auth-layout__headline { font: var(--text-display); font-weight: var(--font-weight-bold); font-size: clamp(var(--font-size-4xl), 3.75vw, var(--font-size-5xl)); letter-spacing: var(--letter-spacing-tight); text-wrap: balance; }
+  .auth-layout__lead { max-width: 24rem; margin-top: var(--space-5); font: var(--text-body-lg); color: var(--color-fg-on-brand-muted); }
+  .auth-layout__legal { font: var(--text-body-sm); color: var(--color-fg-on-brand-muted); }
+  .auth-layout--split .auth-layout__body { padding: var(--space-8) var(--space-12); background: var(--color-bg-surface); overflow-y: auto; }
+  /* Centred, and still reachable from the top when the form is taller than the screen. */
+  .auth-layout--split .auth-layout__body::before, .auth-layout--split .auth-layout__body::after { content: ""; flex: 1; }
+  .auth-layout--split .auth-brand { display: none; }
+  .auth-layout--split .auth-card { gap: var(--space-5); max-width: 32.5rem; margin-top: 0; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+  .auth-layout--split .auth-card__head { margin-bottom: var(--space-2); }
+  .auth-layout--split .auth-foot { margin-top: var(--space-5); }
+}
+
+/* An action on the line of a field's label ("Forgot password?"). */
+.field:has(> .field__action) { position: relative; }
+.field__action { position: absolute; top: 0; right: 0; font: var(--text-label); }
+
+/* A password control with the button that shows what was typed. */
+.password-input { position: relative; display: flex; }
+.password-input > .input { padding-right: var(--control-height-md); }
+.password-input__toggle { position: absolute; inset-block: 0; right: 0; width: var(--control-height-md); display: grid; place-items: center; padding: 0; color: var(--color-fg-muted); background: none; border: 0; border-radius: var(--radius-md); cursor: pointer; transition: color var(--duration-fast) var(--ease-standard); }
+.password-input__toggle:hover { color: var(--color-fg-default); }
+
+/* Google's "G", unaltered, in the Google button. */
+.google-mark { width: var(--icon-size-md); height: var(--icon-size-md); flex: none; }
+
+/* A pair of fields that sits side by side from 64rem only. */
+@media (min-width: 64rem) { .form-grid--2-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* ---------- Fixes found in the screenshot sweep ------------------------------------------------------ */
 .detail-head__actions { flex-wrap: wrap; }

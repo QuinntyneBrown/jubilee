@@ -2,16 +2,26 @@ import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { ShellPage } from './shell.page';
 
-/** The sign-in page: e-mail and password, "Keep me signed in", Google, and the errors of a refusal. */
+/** The Log in screen: Google first, then e-mail and password, "Keep me logged in", and the errors of a refusal. */
 export class SignInPage extends ShellPage implements Screen {
   readonly heading: Locator;
+  /** The line under the heading. */
+  readonly lead: Locator;
   readonly email: Locator;
   readonly password: Locator;
+  readonly passwordLabel: Locator;
+  /** The button inside the password control: "Show password", then "Hide password". */
+  readonly showPassword: Locator;
+  readonly hidePassword: Locator;
+  /** The password control with its button. */
+  readonly passwordControl: Locator;
   readonly keepSignedIn: Locator;
   /** The checkbox with its text. */
   readonly keepSignedInChoice: Locator;
   readonly signIn: Locator;
   readonly google: Locator;
+  /** Google's "G" in the Google button. */
+  readonly googleMark: Locator;
   readonly forgotPassword: Locator;
   readonly joinFree: Locator;
   readonly summary: Locator;
@@ -22,18 +32,39 @@ export class SignInPage extends ShellPage implements Screen {
   readonly errorState: Locator;
   readonly tryAgain: Locator;
   readonly toast: Locator;
+  /** The brand panel beside the form, from 1024 px (L2-187). */
+  readonly brandPanel: Locator;
+  /** The mark and wordmark that lead to the welcome page: in the panel, or above the card. */
+  readonly lockup: Locator;
+  readonly panelLockup: Locator;
+  /** The card that holds the form under 1024 px; from 1024 px it has no edge. */
+  readonly card: Locator;
+  /** What the brand panel says, in its display face. */
+  readonly panelHeadline: Locator;
 
   constructor(page: Page) {
     super(page);
+    this.brandPanel = this.main.locator('.auth-layout__panel');
+    this.lockup = this.main.getByRole('link', { name: 'Jubilee home' });
+    this.panelLockup = this.brandPanel.getByRole('link', { name: 'Jubilee home' });
+    this.card = this.frameCard;
+    this.panelHeadline = this.brandPanel.locator('.auth-layout__headline');
     this.heading = this.main.getByRole('heading', { level: 1 });
-    this.email = this.main.getByLabel('E-mail');
-    this.password = this.main.getByLabel('Password');
-    this.keepSignedIn = this.main.getByRole('checkbox', { name: 'Keep me signed in' });
-    this.keepSignedInChoice = this.main.locator('.choice').filter({ hasText: 'Keep me signed in' });
-    this.signIn = this.main.getByRole('button', { name: 'Sign in' });
-    this.google = this.main.getByRole('link', { name: 'Continue with Google' });
+    this.lead = this.main.locator('.auth-card__lead');
+    this.email = this.main.getByLabel('Email', { exact: true });
+    this.password = this.main.getByLabel('Password', { exact: true });
+    this.passwordLabel = this.main.locator('label', { hasText: 'Password' });
+    this.showPassword = this.main.getByRole('button', { name: 'Show password' });
+    this.hidePassword = this.main.getByRole('button', { name: 'Hide password' });
+    this.passwordControl = this.main.locator('.password-input');
+    this.keepSignedIn = this.main.getByRole('checkbox', { name: 'Keep me logged in' });
+    this.keepSignedInChoice = this.main.locator('.choice').filter({ hasText: 'Keep me logged in' });
+    this.signIn = this.main.getByRole('button', { name: 'Log in', exact: true });
+    // A link in the app; the mock draws it as a button.
+    this.google = this.main.locator('.btn', { hasText: 'Continue with Google' });
+    this.googleMark = this.google.locator('.google-mark');
     this.forgotPassword = this.main.getByRole('link', { name: 'Forgot password?' });
-    this.joinFree = this.main.getByRole('link', { name: 'Join free' });
+    this.joinFree = this.main.getByRole('link', { name: 'Create a free account' });
     this.summary = this.main.locator('#summary');
     this.summaryLinks = this.summary.getByRole('link');
     this.notice = this.main.locator('.alert--danger:not(.form-summary)');
@@ -56,11 +87,19 @@ export class SignInPage extends ShellPage implements Screen {
       .first();
   }
 
-  /** Ticks "Keep me signed in" and leaves it, so that it is shown at rest. */
+  /** Ticks "Keep me logged in" and leaves it, so that it is shown at rest. */
   async keepAndLeave(): Promise<void> {
     // By keyboard: a pointer left over the box would show it hovered.
     await this.keepSignedIn.press('Space');
     await this.keepSignedIn.blur();
+  }
+
+  /** Fills the form as the mock draws it: the e-mail last, which keeps the focus as it has there. */
+  async fillAsDrawn(): Promise<void> {
+    await this.password.fill('longpassword1');
+    // By keyboard: a pointer left over the box would show it hovered.
+    await this.keepSignedIn.press('Space');
+    await this.email.fill('joanna.adeyemi@example.com');
   }
 
   /** Types into a control and leaves it, so that it is shown at rest. */
@@ -94,6 +133,28 @@ export class SignInPage extends ShellPage implements Screen {
 
   regions(): Region[] {
     return [{ name: 'main', locator: this.main }];
+  }
+}
+
+/** Log in after a request that failed; the state has no address, so the screen sends the form. */
+export class SignInErrorScreen extends SignInPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    // The mock is drawn in the state already.
+    if (await this.errorState.isVisible()) return;
+    await this.signInWith('joanna.adeyemi@example.com', 'longpassword1');
+    await this.errorState.waitFor();
+  }
+}
+
+/** Log in while its form is on the way. */
+export class SignInSubmittingScreen extends SignInPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if ((await this.signIn.getAttribute('aria-busy')) === 'true') return;
+    await this.fillAsDrawn();
+    await this.signIn.click();
+    await this.main.locator('.btn[aria-busy="true"]').waitFor();
   }
 }
 

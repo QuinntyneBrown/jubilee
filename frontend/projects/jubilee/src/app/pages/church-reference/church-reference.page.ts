@@ -6,7 +6,7 @@ import { Meta } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { REFERENCE_API, ReferenceAnswerValue, ReferenceRequestView } from 'api';
 import {
-  BrandMark,
+  AuthLayout,
   Icon,
   Button,
   Alert,
@@ -36,7 +36,7 @@ const MESSAGES: Record<string, string> = {
   imports: [
     FormsModule,
     RouterLink,
-    BrandMark,
+    AuthLayout,
     Icon,
     Button,
     Alert,
@@ -49,7 +49,6 @@ const MESSAGES: Record<string, string> = {
     Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'auth-layout' },
   templateUrl: './church-reference.page.html',
 })
 export class ChurchReferencePage {

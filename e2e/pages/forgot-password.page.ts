@@ -6,6 +6,8 @@ import { ShellPage } from './shell.page';
 export class ForgotPasswordPage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly email: Locator;
+  /** The whole field of the e-mail: label, control and error. */
+  readonly emailField: Locator;
   readonly send: Locator;
   readonly summary: Locator;
   readonly summaryLinks: Locator;
@@ -21,6 +23,7 @@ export class ForgotPasswordPage extends ShellPage implements Screen {
     super(page);
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.email = this.main.getByLabel('E-mail');
+    this.emailField = this.main.locator('.field').filter({ has: page.getByLabel('E-mail') });
     this.send = this.main.getByRole('button', { name: 'Send reset link' });
     this.summary = this.main.locator('#summary');
     this.summaryLinks = this.summary.getByRole('link');
@@ -43,6 +46,19 @@ export class ForgotPasswordPage extends ShellPage implements Screen {
       }
       summary.blur();
     });
+  }
+
+  /** Sends an address that is not one, then returns to the field, as the mock draws the state. */
+  async sendMalformedAndReturn(address: string): Promise<void> {
+    await this.email.fill(address);
+    await this.send.click();
+    await this.summary.evaluate(async (summary: HTMLElement) => {
+      // The page moves focus to the summary a moment after it shows it.
+      while (document.activeElement !== summary) {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+    });
+    await this.email.focus();
   }
 
   async ready(): Promise<void> {

@@ -1,0 +1,200 @@
+// Block: auth-layout. The host is the frame of a page on the bare shell. Its parts are the
+// brand link (auth-brand, a jb-lockup), the card (auth-card) and the line under it (auth-foot).
+
+// ---------- The centred card: every bare page but Log in and Sign up -------------------------
+:host {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-6);
+  min-height: 100dvh;
+  padding: var(--space-6) var(--layout-margin);
+}
+
+// The three parts of the frame are laid out by the host.
+.auth-layout__body {
+  display: contents;
+}
+
+.auth-card {
+  // A title the page projects, its own h1 or the title of its jb-empty-state, is set at the
+  // size of the frame's own title.
+  --jb-h1-size: var(--font-size-2xl);
+  --jb-empty-title-size: var(--font-size-2xl);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 26rem;
+  padding: var(--space-6);
+  background: var(--color-bg-surface);
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+}
+
+.auth-card__title {
+  font-size: var(--font-size-2xl);
+}
+
+.auth-card__lead {
+  margin-top: var(--space-2);
+  color: var(--color-fg-muted);
+}
+
+.auth-foot {
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+  text-align: center;
+}
+
+// A last line inside the card, in the same voice as the line under it.
+.auth-card__note {
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+  text-align: center;
+}
+
+// A page that projects no line leaves no gap for one.
+.auth-foot:empty,
+.auth-card__note:empty {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  .auth-card {
+    forced-color-adjust: none;
+    border: var(--border-width-hairline) solid CanvasText;
+  }
+}
+
+// ---------- The split frame: Log in and Sign up (ADR 0038) -----------------------------------
+// Under 64rem the lockup sits above the card; from 64rem a brand panel takes 5/12 of the screen.
+:host(.auth-layout--split) {
+  display: block;
+  // The lockup stays at the top however short the card is: nothing here is centred.
+  place-items: stretch;
+  align-content: stretch;
+  gap: 0;
+  padding: 0;
+}
+
+:host(.auth-layout--split) .auth-layout__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-10) var(--space-5) var(--space-16);
+}
+
+:host(.auth-layout--split) .auth-card {
+  gap: var(--space-6);
+  max-width: 28.75rem;
+  margin-top: var(--space-10);
+  padding: var(--space-8) var(--space-6);
+  border-radius: var(--radius-xl);
+}
+
+:host(.auth-layout--split) .auth-card__head {
+  margin-bottom: var(--space-1);
+}
+
+:host(.auth-layout--split) .auth-card__title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+}
+
+:host(.auth-layout--split) .auth-foot {
+  margin-top: var(--space-6);
+}
+
+.auth-layout__panel {
+  display: none;
+}
+
+@media (min-width: 40rem) {
+  :host(.auth-layout--split) .auth-layout__body {
+    padding-top: var(--space-16);
+  }
+
+  :host(.auth-layout--split) .auth-card {
+    padding: var(--space-10);
+  }
+}
+
+@media (min-width: 64rem) {
+  :host(.auth-layout--split) {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    height: 100dvh;
+  }
+
+  .auth-layout__panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    // 48 px at 1024 px, 64 px from 1280 px.
+    padding: clamp(var(--space-12), 5vw, var(--space-16));
+    background: var(--color-bg-brand);
+    color: var(--color-fg-on-brand);
+  }
+
+  .auth-layout__headline {
+    max-width: none;
+    font: var(--text-display);
+    font-weight: var(--font-weight-bold);
+    // 38 px at 1024 px, 48 px from 1280 px.
+    font-size: clamp(var(--font-size-4xl), 3.75vw, var(--font-size-5xl));
+    letter-spacing: var(--letter-spacing-tight);
+    text-wrap: balance;
+  }
+
+  .auth-layout__lead {
+    max-width: 24rem;
+    margin-top: var(--space-5);
+    font: var(--text-body-lg);
+    color: var(--color-fg-on-brand-muted);
+  }
+
+  .auth-layout__legal {
+    font: var(--text-body-sm);
+    color: var(--color-fg-on-brand-muted);
+  }
+
+  :host(.auth-layout--split) .auth-layout__body {
+    padding: var(--space-8) var(--space-12);
+    background: var(--color-bg-surface);
+    overflow-y: auto;
+  }
+
+  // Centred, and still reachable from the top when the form is taller than the screen.
+  :host(.auth-layout--split) .auth-layout__body::before,
+  :host(.auth-layout--split) .auth-layout__body::after {
+    content: '';
+    flex: 1;
+  }
+
+  :host(.auth-layout--split) .auth-brand {
+    display: none;
+  }
+
+  :host(.auth-layout--split) .auth-card {
+    gap: var(--space-5);
+    max-width: 32.5rem;
+    margin-top: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  :host(.auth-layout--split) .auth-card__head {
+    margin-bottom: var(--space-2);
+  }
+
+  :host(.auth-layout--split) .auth-foot {
+    margin-top: var(--space-5);
+  }
+}

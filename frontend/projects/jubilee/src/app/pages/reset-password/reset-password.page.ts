@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
 import {
-  BrandMark,
+  AuthLayout,
   EmptyState,
   Icon,
   Button,
@@ -64,7 +64,7 @@ function text(code: string, length: number): string {
   imports: [
     FormsModule,
     RouterLink,
-    BrandMark,
+    AuthLayout,
     EmptyState,
     Icon,
     Button,
@@ -75,7 +75,6 @@ function text(code: string, length: number): string {
     Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'auth-layout' },
   templateUrl: './reset-password.page.html',
 })
 export class ResetPasswordPage implements OnInit {

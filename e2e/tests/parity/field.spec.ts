@@ -1,19 +1,20 @@
 import { parity } from '../../fixtures/parity';
+import { ForgotPasswordPage } from '../../pages/forgot-password.page';
 import { JoinPage } from '../../pages/join.page';
 import { SignInPage } from '../../pages/sign-in.page';
 
-// jb-field: the label alone, with its marker and hint, and with an error.
+// jb-field: the label with an action on its line, with a hint under the control, and with an error.
 parity('field', {
   cases: [
     {
-      name: 'label',
+      name: 'label-with-action',
       route: 'sign-in',
       screen: (page) => new SignInPage(page),
       region: (screen: SignInPage) => screen.fieldOf('Password'),
       arrange: (screen: SignInPage) => screen.typeAndLeave(screen.password, 'longpassword1'),
     },
     {
-      name: 'required-with-hint',
+      name: 'hint-under-the-control',
       route: 'sign-up',
       screen: (page) => new JoinPage(page),
       region: (screen: JoinPage) => screen.fieldOf('Password'),
@@ -21,16 +22,16 @@ parity('field', {
     },
     {
       name: 'error',
-      route: 'sign-in.invalid',
-      screen: (page) => new SignInPage(page),
-      region: (screen: SignInPage) => screen.fieldOf('E-mail'),
-      arrange: (screen: SignInPage) => screen.sendInvalidEmail('joanna.adeyemi@', 'longpassword1'),
+      route: 'forgot-password.invalid',
+      screen: (page) => new ForgotPasswordPage(page),
+      region: (screen: ForgotPasswordPage) => screen.emailField,
+      arrange: (screen: ForgotPasswordPage) => screen.sendMalformedAndReturn('joanna.adeyemi'),
     },
   ],
   reference: {
     crops: [
       {
-        case: 'label',
+        case: 'label-with-action',
         width: 1280,
         frame: 'list-your-business-1280.png',
         clip: { x: 96, y: 388, width: 705, height: 80 },

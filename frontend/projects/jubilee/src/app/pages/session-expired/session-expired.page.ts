@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { BrandMark, EmptyState, Button, Card } from 'components';
+import { AuthLayout, EmptyState, Button } from 'components';
 import { sanitiseReturnUrl } from '../../services/return-url';
 
 /** SessionExpiredPage (L2-010 AC3, L2-116): the session ended; signing in returns to the same page. */
 @Component({
   selector: 'jb-session-expired-page',
-  imports: [RouterLink, BrandMark, EmptyState, Button, Card],
+  imports: [RouterLink, AuthLayout, EmptyState, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'auth-layout' },
   templateUrl: './session-expired.page.html',
 })
 export class SessionExpiredPage {

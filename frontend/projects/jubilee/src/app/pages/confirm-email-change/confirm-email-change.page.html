@@ -1,5 +1,4 @@
-<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
-<div jb-card class="auth-card stack">
+<jb-auth-layout>
   @switch (view()) {
     @case ('loading') {
       <div class="empty" role="status">
@@ -47,4 +46,4 @@
       </div>
     }
   }
-</div>
+</jb-auth-layout>

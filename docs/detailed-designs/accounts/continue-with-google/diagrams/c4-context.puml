@@ -7,7 +7,7 @@ Person(visitor, "Visitor", "Joins or signs in with a Google account")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 System_Ext(google, "Google Identity", "OpenID Connect provider")
 
-Rel(visitor, jubilee, "Chooses Join with Google or Continue with Google in", "HTTPS")
+Rel(visitor, jubilee, "Chooses Sign up with Google or Continue with Google in", "HTTPS")
 Rel(visitor, google, "Signs in and consents at", "HTTPS")
 Rel(jubilee, google, "Redirects to - exchanges the code with - reads signing keys from", "OpenID Connect")
 @enduml

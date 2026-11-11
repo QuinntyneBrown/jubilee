@@ -1,5 +1,4 @@
-<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
-<div jb-card class="auth-card">
+<jb-auth-layout>
   <div jb-empty-state icon="settings" heading="Jubilee is being updated" [level]="1">
     @if (backByText; as when) {
       We’re back by {{ when }}.
@@ -11,4 +10,4 @@
       <svg jb-icon name="refresh"></svg>Check again
     </button>
   </div>
-</div>
+</jb-auth-layout>

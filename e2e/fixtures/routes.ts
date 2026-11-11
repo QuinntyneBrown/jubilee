@@ -37,6 +37,11 @@ export type StubName =
   | 'reference-error'
   | 'reference-expired'
   | 'google-sign-in-off'
+  | 'sign-in-failing'
+  | 'sign-in-pending'
+  | 'join-created'
+  | 'join-failing'
+  | 'join-pending'
   | 'verify-email-pending'
   | 'verify-email-loading'
   | 'verify-email-success'
@@ -155,6 +160,21 @@ export const routes = {
     mock: 'pages/sign-in/google-refused.html',
     who: 'visitor',
   },
+  // Log in after its form was sent: the page object's screen for the state sends it. The mock
+  // also draws `loading` and `success`, which the app does not have: the shell waits for the
+  // session before it shows a page, and a member who signs in is taken on with a toast.
+  'sign-in.error': {
+    app: '/sign-in',
+    mock: 'pages/sign-in/error.html',
+    who: 'visitor',
+    stub: 'sign-in-failing',
+  },
+  'sign-in.submitting': {
+    app: '/sign-in',
+    mock: 'pages/sign-in/submitting.html',
+    who: 'visitor',
+    stub: 'sign-in-pending',
+  },
   'session-expired': {
     app: '/session-expired',
     mock: 'pages/session-expired/default.html',
@@ -176,6 +196,27 @@ export const routes = {
     app: '/join?error=google-email',
     mock: 'pages/sign-up/google-refused.html',
     who: 'visitor',
+  },
+  // Sign up after its form was sent, as for Log in. The mock also draws `loading`, which the app
+  // does not have.
+  'sign-up.invalid': { app: '/join', mock: 'pages/sign-up/invalid.html', who: 'visitor' },
+  'sign-up.error': {
+    app: '/join',
+    mock: 'pages/sign-up/error.html',
+    who: 'visitor',
+    stub: 'join-failing',
+  },
+  'sign-up.submitting': {
+    app: '/join',
+    mock: 'pages/sign-up/submitting.html',
+    who: 'visitor',
+    stub: 'join-pending',
+  },
+  'sign-up.success': {
+    app: '/join',
+    mock: 'pages/sign-up/success.html',
+    who: 'visitor',
+    stub: 'join-created',
   },
   'join-agreement': {
     app: '/join/agreement',

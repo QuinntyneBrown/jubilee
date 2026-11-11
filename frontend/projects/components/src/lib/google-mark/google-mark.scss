@@ -1,0 +1,7 @@
+// Block: google-mark. The host is the svg element. Only its size is set here: its colours are
+// the drawing's own.
+:host {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  flex: none;
+}

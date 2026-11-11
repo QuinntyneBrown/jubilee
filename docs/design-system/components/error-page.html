@@ -58,6 +58,7 @@
       <li><a href="../components/tooltip.html">Tooltip</a></li>
       <li><a href="../components/divider.html">Divider</a></li>
       <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/list.html">List</a></li>
       <li><a href="../components/description-list.html">Description list</a></li>
@@ -72,6 +73,7 @@
       <li><a href="../components/message-thread.html">Message thread</a></li>
       <li><a href="../components/notification-item.html">Notification item</a></li>
       <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -104,7 +106,7 @@
       <p>Use an error page when the route itself fails. For a region that fails to load inside a working page, use an <a href="../components/empty-state.html">Empty state</a> with <code>.empty--error</code>; for a lasting condition while the page still works (slow or offline with a cache), use a <a href="../components/alert.html">banner</a>.</p>
       <ul>
         <li><b>In-app</b> (404 not found, 403 forbidden): inside the normal top bar, footer and tab bar, so the person can navigate away. <code>main.container.page &gt; .status-page &gt; .empty</code>.</li>
-        <li><b>Bare</b> (500 server error, offline, maintenance, session expired): the app shell may be unavailable, so the page uses the auth layout: logo, then the empty state in an <code>.auth-card</code>. <code>main.auth-layout &gt; .auth-card.card &gt; .empty</code>.</li>
+        <li><b>Bare</b> (500 server error, offline, maintenance, session expired): the app shell may be unavailable, so the page uses the default <a href="../components/auth-layout.html">Auth layout</a>: logo, then the empty state in an <code>.auth-card</code>. <code>main.auth-layout &gt; .auth-card.card &gt; .empty</code>.</li>
       </ul>
     </section>
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
