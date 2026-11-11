@@ -64,6 +64,18 @@ public sealed class Member
 
     public string? HomeChurch { get; private set; }
 
+    /// <summary>Ten digits, or null (L2-013). A request copies it when it is sent.</summary>
+    public string? Phone { get; private set; }
+
+    /// <summary>Canadian postal code in the form <c>M4C 1A1</c>, or null (L2-013).</summary>
+    public string? PostalCode { get; private set; }
+
+    /// <summary>Optional; words the copy other people read about the member (L2-013).</summary>
+    public string? Pronouns { get; private set; }
+
+    /// <summary>Null until the member first saves the profile.</summary>
+    public DateTimeOffset? ProfileSavedAt { get; private set; }
+
     /// <summary>Null for an account that joined with Google and has set no password.</summary>
     public string? PasswordHash { get; private set; }
 
@@ -82,6 +94,22 @@ public sealed class Member
     public bool EmailNewBusinesses { get; private set; }
 
     public bool EmailTips { get; private set; }
+
+    /// <summary>"One daily summary" instead of "As it happens" (L2-016 AC1). Kept now; the daily summary job reads it.</summary>
+    public bool EmailDailySummary { get; private set; }
+
+    public void SetEmailFrequency(bool dailySummary) => EmailDailySummary = dailySummary;
+
+    /// <summary>What the member chose for a category, ignoring bounces; null for an unknown category.</summary>
+    public bool? EmailPreference(string category) => category switch
+    {
+        EmailCategories.Messages => EmailMessages,
+        EmailCategories.Requests => EmailRequests,
+        EmailCategories.Reminders => EmailReminders,
+        EmailCategories.NewBusinesses => EmailNewBusinesses,
+        EmailCategories.Tips => EmailTips,
+        _ => null,
+    };
 
     /// <summary>
     /// Whether an e-mail of this category may be sent: the member turned it on and the address has not bounced
@@ -162,6 +190,19 @@ public sealed class Member
         CreatedAt = now,
     };
 
+    /// <summary>Replaces the six profile fields; the caller has validated them (L2-013).</summary>
+    public void UpdateProfile(
+        string firstName, string lastName, string? phone, string? postalCode, string? homeChurch, string? pronouns, DateTimeOffset now)
+    {
+        FirstName = firstName.Trim();
+        LastName = lastName.Trim();
+        Phone = phone;
+        PostalCode = postalCode;
+        HomeChurch = string.IsNullOrWhiteSpace(homeChurch) ? null : homeChurch.Trim();
+        Pronouns = string.IsNullOrWhiteSpace(pronouns) ? null : pronouns.Trim();
+        ProfileSavedAt = now;
+    }
+
     public void ConfirmEmail()
     {
         EmailStatus = EmailStatus.Confirmed;
@@ -178,6 +219,15 @@ public sealed class Member
 
         Email = email.Value;
         EmailKey = email.Key;
+        EmailBounced = false;
+    }
+
+    /// <summary>The new address was confirmed by its link: it replaces the old one (L2-014 AC3).</summary>
+    public void ChangeEmail(EmailAddress email)
+    {
+        Email = email.Value;
+        EmailKey = email.Key;
+        EmailStatus = EmailStatus.Confirmed;
         EmailBounced = false;
     }
 
@@ -224,12 +274,56 @@ public static class EmailCategories
     public const string NewBusinesses = "new-businesses";
 
     public const string Tips = "tips";
+
+    /// <summary>The commercial categories, under CASL (L2-149): consent to them is recorded.</summary>
+    public static bool IsPromotional(string category) => category is NewBusinesses or Tips;
+}
+
+public enum ConsentMethod
+{
+    SettingsSwitch = 0,
+    UnsubscribeLink = 1,
+    OneClickUnsubscribe = 2,
+}
+
+/// <summary>
+/// One consent to a promotional category, given or withdrawn, with the time and method (L2-149 AC3). Append-only:
+/// nothing in the application changes or removes one.
+/// </summary>
+public sealed class ConsentRecord
+{
+    private ConsentRecord()
+    {
+    }
+
+    public Guid Id { get; private set; }
+
+    public Guid MemberId { get; private set; }
+
+    public string Category { get; private set; } = string.Empty;
+
+    public bool Given { get; private set; }
+
+    public ConsentMethod Method { get; private set; }
+
+    public DateTimeOffset OccurredAt { get; private set; }
+
+    public static ConsentRecord Of(Guid memberId, string category, bool given, ConsentMethod method, DateTimeOffset now) => new()
+    {
+        Id = Guid.NewGuid(),
+        MemberId = memberId,
+        Category = category,
+        Given = given,
+        Method = method,
+        OccurredAt = now,
+    };
 }
 
 public enum LinkTokenPurpose
 {
     EmailConfirmation = 0,
     PasswordReset = 1,
+    ChangeEmail = 2,
 }
 
 /// <summary>
@@ -239,6 +333,7 @@ public sealed class LinkToken
 {
     public static readonly TimeSpan EmailConfirmationLifetime = TimeSpan.FromHours(24);
     public static readonly TimeSpan PasswordResetLifetime = TimeSpan.FromMinutes(60);
+    public static readonly TimeSpan ChangeEmailLifetime = TimeSpan.FromHours(24);
 
     private LinkToken()
     {
@@ -252,19 +347,24 @@ public sealed class LinkToken
 
     public string TokenHash { get; private set; } = string.Empty;
 
+    /// <summary>For a change of e-mail: the address the link confirms.</summary>
+    public string? TargetEmail { get; private set; }
+
     public DateTimeOffset ExpiresAt { get; private set; }
 
     public DateTimeOffset? UsedAt { get; private set; }
 
     public DateTimeOffset? SupersededAt { get; private set; }
 
-    public static LinkToken Issue(Guid memberId, LinkTokenPurpose purpose, string tokenHash, DateTimeOffset now, TimeSpan lifetime) => new()
+    public static LinkToken Issue(
+        Guid memberId, LinkTokenPurpose purpose, string tokenHash, DateTimeOffset now, TimeSpan lifetime, string? targetEmail = null) => new()
     {
         Id = Guid.NewGuid(),
         MemberId = memberId,
         Purpose = purpose,
         TokenHash = tokenHash,
         ExpiresAt = now + lifetime,
+        TargetEmail = targetEmail,
     };
 
     public bool IsRedeemable(DateTimeOffset now) => UsedAt is null && SupersededAt is null && now < ExpiresAt;

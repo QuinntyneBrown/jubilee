@@ -17,6 +17,8 @@ public interface IAppDbContext
 
     DbSet<SavedItem> SavedItems { get; }
 
+    DbSet<ConsentRecord> ConsentRecords { get; }
+
     DbSet<ListingView> ListingViews { get; }
 
     DbSet<ListingPhoto> ListingPhotos { get; }

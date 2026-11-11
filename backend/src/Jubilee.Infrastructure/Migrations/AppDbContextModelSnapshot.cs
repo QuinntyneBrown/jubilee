@@ -78,6 +78,37 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("AuditRecords", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.ConsentRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<bool>("Given")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("MemberId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId", "OccurredAt");
+
+                    b.ToTable("ConsentRecords", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.Conversation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -267,6 +298,10 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset?>("SupersededAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TargetEmail")
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
@@ -710,6 +745,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<bool>("EmailBounced")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("EmailDailySummary")
+                        .HasColumnType("bit");
+
                     b.Property<string>("EmailKey")
                         .IsRequired()
                         .HasMaxLength(254)
@@ -759,6 +797,21 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(400)
                         .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)");
+
+                    b.Property<DateTimeOffset?>("ProfileSavedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Pronouns")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
 
@@ -1507,6 +1560,15 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasFilter("[NotifiedAt] IS NULL");
 
                     b.ToTable("StockAlerts", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ConsentRecord", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Member", null)
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Conversation", b =>
