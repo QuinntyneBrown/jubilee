@@ -1,0 +1,42 @@
+@use '../marketing-section/marketing-type' as type;
+
+// Block: mkt-step. The host is the list item; the ring that starts its rule is drawn on the
+// white surface the steps sit on.
+:host {
+  display: block;
+  position: relative;
+  border-top: var(--border-width-thick) solid var(--color-fg-default);
+  padding-top: var(--space-6);
+}
+
+:host::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 0;
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--radius-full);
+  border: var(--border-width-thick) solid var(--color-fg-default);
+  background: var(--color-bg-surface);
+}
+
+.mkt-step__n {
+  font-family: var(--font-family-display);
+  font-stretch: var(--font-stretch-wide);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--jb-mkt-accent-text);
+}
+
+.mkt-step__heading {
+  @include type.small-heading;
+
+  margin-top: var(--space-2);
+}
+
+.mkt-step__text {
+  @include type.body-text;
+
+  margin-top: var(--space-2);
+}

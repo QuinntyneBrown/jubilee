@@ -1,0 +1,22 @@
+<div class="mkt-heading__text">
+  @if (level() === 1) {
+    <h1 class="mkt-heading__title" [attr.id]="headingId()">
+      <ng-container [ngTemplateOutlet]="words" />
+    </h1>
+  } @else {
+    <h2 class="mkt-heading__title" [attr.id]="headingId()">
+      <ng-container [ngTemplateOutlet]="words" />
+    </h2>
+  }
+  @if (lead(); as lead) {
+    <p class="mkt-heading__lead">{{ lead }}</p>
+  }
+  <div class="mkt-heading__actions"><ng-content select="[slot=actions]" /></div>
+  @if (note(); as note) {
+    <p class="mkt-heading__note">{{ note }}</p>
+  }
+</div>
+<div class="mkt-heading__aside"><ng-content select="[slot=aside]" /></div>
+<ng-template #words
+  >{{ text() }} <span class="mkt-heading__accent">{{ accent() }}</span></ng-template
+>

@@ -56,6 +56,16 @@ export class MarketingHomePage implements Screen {
   /** The lockup that signs the footer. */
   readonly footerLockup: Locator;
   readonly headings: Locator;
+  /** The heading of each section with what belongs to it: its lead, actions, note or aside. */
+  readonly openingHeading: Locator;
+  readonly filmHeading: Locator;
+  readonly whyHeading: Locator;
+  readonly howHeading: Locator;
+  readonly insideHeading: Locator;
+  readonly forBusinessesHeading: Locator;
+  readonly ruleList: Locator;
+  readonly stepList: Locator;
+  readonly pointList: Locator;
 
   private readonly requests: string[] = [];
 
@@ -68,10 +78,10 @@ export class MarketingHomePage implements Screen {
 
     this.opening = this.main.locator('section#top');
     this.heading = this.opening.getByRole('heading', { level: 1 });
-    this.lead = this.opening.locator('.mkt-hero__lead');
+    this.lead = this.opening.locator('h1 + p');
     this.startBrowsing = this.opening.getByRole('link', { name: 'Start browsing' });
     this.watchTheFilm = this.opening.getByRole('link', { name: 'Watch the film' });
-    this.note = this.opening.locator('.mkt-hero__note');
+    this.note = this.opening.locator('.mkt-hero__note, .mkt-heading__note');
 
     this.glimpse = this.opening.getByRole('group', { name: 'A glimpse of the app' });
     this.glimpseSearch = this.glimpse.locator('.mkt-glimpse__search');
@@ -91,8 +101,10 @@ export class MarketingHomePage implements Screen {
 
     this.why = this.main.locator('section#why');
     this.benefits = this.why.locator('.mkt-rules > li');
+    this.ruleList = this.why.locator('.mkt-rules');
     this.how = this.main.locator('section#how');
     this.steps = this.how.locator('.mkt-step');
+    this.stepList = this.how.locator('.mkt-steps');
     this.inside = this.main.locator('section#inside');
     this.seeAll = this.inside.getByRole('link', { name: /^See all/ });
     this.cards = this.inside.locator('a.mkt-card');
@@ -105,14 +117,25 @@ export class MarketingHomePage implements Screen {
     this.cardVerifiedIcons = this.cardVerified.locator('svg');
     this.forBusinesses = this.main.locator('section#businesses');
     this.points = this.forBusinesses.locator('.mkt-points > li');
+    this.pointList = this.forBusinesses.locator('.mkt-points');
     this.listYourBusiness = this.forBusinesses.getByRole('link', {
       name: 'List your business free',
     });
-    this.closing = this.main.locator('section.mkt-closing');
+    this.closing = this.main.locator(
+      'section.mkt-closing, section[aria-labelledby="closing-title"] > .mkt-section__inner',
+    );
     this.closingStartBrowsing = this.closing.getByRole('link', { name: 'Start browsing' });
     this.footer = page.locator('footer.mkt-footer');
     this.footerLockup = this.footer.getByRole('img', { name: 'Jubilee' });
     this.headings = this.main.getByRole('heading', { level: 2 });
+    this.openingHeading = this.opening.locator('.mkt-hero__text, .mkt-heading');
+    this.filmHeading = this.film.getByRole('heading', { level: 2 });
+    this.whyHeading = this.why.locator('.mkt-why__inner > div, .mkt-heading');
+    this.howHeading = this.how.getByRole('heading', { level: 2 });
+    this.insideHeading = this.inside.locator('.mkt-inside__head, .mkt-heading');
+    this.forBusinessesHeading = this.forBusinesses.locator(
+      '.mkt-owners__inner > div, .mkt-heading',
+    );
   }
 
   chapter(title: string): Locator {

@@ -1,0 +1,148 @@
+@use 'marketing-type' as type;
+
+// Block: mkt-heading. The host holds the heading with what follows it, and the aside.
+:host {
+  display: block;
+  min-width: 0;
+}
+
+:host(.mkt-heading--measure) .mkt-heading__text {
+  max-width: 42rem;
+}
+
+.mkt-heading__title {
+  @include type.display-face;
+
+  font-size: var(--font-size-4xl);
+  line-height: 1.02;
+}
+
+@media (min-width: 40rem) {
+  .mkt-heading__title {
+    font-size: var(--font-size-5xl);
+  }
+}
+
+.mkt-heading__accent {
+  color: var(--jb-marketing-heading-accent, var(--jb-mkt-accent));
+}
+
+.mkt-heading__lead {
+  margin-top: var(--space-5);
+  font-size: var(--font-size-lg);
+  line-height: 1.625;
+  color: var(
+    --jb-marketing-heading-lead,
+    color-mix(in srgb, var(--color-fg-default) 75%, transparent)
+  );
+}
+
+:host(.mkt-heading--lead-narrow) .mkt-heading__lead {
+  max-width: 28rem;
+}
+
+:host(.mkt-heading--lead-medium) .mkt-heading__lead {
+  max-width: 32rem;
+}
+
+:host(.mkt-heading--lead-wide) .mkt-heading__lead {
+  max-width: 36rem;
+}
+
+.mkt-heading__actions {
+  margin-top: var(--space-8);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-8);
+}
+
+.mkt-heading__actions:empty,
+.mkt-heading__aside:empty {
+  display: none;
+}
+
+.mkt-heading__note {
+  margin-top: var(--space-6);
+  font-size: 0.8125rem;
+  color: var(--color-fg-subtle);
+}
+
+// display: the page's heading
+:host(.mkt-heading--display) .mkt-heading__title {
+  // 2.75rem, eased down under 393px so the longest word, "businesses,", fits a 360px phone.
+  font-size: min(2.75rem, 11.2vw);
+  line-height: 0.98;
+}
+
+:host(.mkt-heading--display) .mkt-heading__lead {
+  margin-top: var(--space-6);
+}
+
+@media (min-width: 40rem) {
+  :host(.mkt-heading--display) .mkt-heading__title {
+    font-size: 3.75rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  :host(.mkt-heading--display) .mkt-heading__title {
+    font-size: 4.25rem;
+  }
+}
+
+// film: centred over the film
+:host(.mkt-heading--film) .mkt-heading__title {
+  text-align: center;
+  font-size: var(--font-size-3xl);
+  line-height: 1.2;
+}
+
+@media (min-width: 40rem) {
+  :host(.mkt-heading--film) .mkt-heading__title {
+    font-size: var(--font-size-5xl);
+    line-height: 1;
+  }
+}
+
+// closing: centred and larger, its action under it
+:host(.mkt-heading--closing) .mkt-heading__title {
+  max-width: 48rem;
+  margin-inline: auto;
+}
+
+:host(.mkt-heading--closing) .mkt-heading__actions {
+  margin-top: var(--space-10);
+  justify-content: center;
+}
+
+@media (min-width: 40rem) {
+  :host(.mkt-heading--closing) .mkt-heading__title {
+    font-size: 3.75rem;
+  }
+}
+
+// split: the aside under the heading, and at its far end from the tablet layout
+:host(.mkt-heading--split) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.mkt-heading__aside {
+  display: flex;
+  flex: none;
+  align-self: flex-start;
+}
+
+@media (min-width: 48rem) {
+  :host(.mkt-heading--split) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .mkt-heading__aside {
+    align-self: auto;
+  }
+}

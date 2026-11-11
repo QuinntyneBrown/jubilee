@@ -1,19 +1,17 @@
-<section id="inside" class="mkt-wrap mkt-inside" aria-labelledby="inside-title">
-  <div class="mkt-inside__head">
-    <div class="mkt-inside__text">
-      <h2 id="inside-title" class="mkt-h2">
-        Shops and services, <span class="mkt-accent">side by side.</span>
-      </h2>
-      <p class="mkt-lead">
-        From a Sunday altar bouquet to a retirement plan, the people behind every page share your
-        values.
-      </p>
-    </div>
-    <a jb-marketing-link class="mkt-inside__all" [href]="browseUrl">
+<section jb-marketing-section id="inside" aria-labelledby="inside-title">
+  <jb-marketing-heading
+    split
+    measure
+    headingId="inside-title"
+    text="Shops and services,"
+    accent="side by side."
+    lead="From a Sunday altar bouquet to a retirement plan, the people behind every page share your values."
+  >
+    <a slot="aside" jb-marketing-link [href]="browseUrl">
       See all {{ count }} businesses
       <svg jb-icon name="arrow-up-right"></svg>
     </a>
-  </div>
+  </jb-marketing-heading>
   <ul jb-photo-card-grid>
     @for (business of cards; track business.name; let first = $first) {
       <li jb-photo-card-grid-item [lead]="first">

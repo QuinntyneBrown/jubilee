@@ -1,0 +1,23 @@
+@use '../marketing-section/marketing-type' as type;
+
+// Element: one item of the mkt-rules block. The host is the list item.
+:host {
+  display: block;
+  padding-block: 1.75rem;
+}
+
+:host(:not(:first-child)) {
+  border-top: var(--border-width-hairline) solid
+    color-mix(in srgb, var(--color-fg-default) 15%, transparent);
+}
+
+.mkt-rules__heading {
+  @include type.small-heading;
+}
+
+.mkt-rules__text {
+  @include type.body-text;
+
+  margin-top: var(--space-2);
+  max-width: 36rem;
+}

@@ -1,0 +1,25 @@
+// The type the marketing blocks share: the display face, a block's small heading and its text.
+@mixin display-face {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-stretch: var(--font-stretch-wide);
+  letter-spacing: -0.025em;
+}
+
+@mixin small-heading {
+  @include display-face;
+
+  font-size: var(--font-size-xl);
+  line-height: 1.4;
+
+  @media (min-width: 40rem) {
+    font-size: var(--font-size-2xl);
+    line-height: 1.33;
+  }
+}
+
+@mixin body-text {
+  font-size: 1.0625rem;
+  line-height: 1.625;
+  color: color-mix(in srgb, var(--color-fg-default) 70%, transparent);
+}

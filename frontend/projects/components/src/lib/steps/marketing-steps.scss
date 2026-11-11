@@ -1,0 +1,15 @@
+// Block: mkt-steps. The host is the list.
+:host {
+  margin-top: var(--space-12);
+  display: grid;
+  gap: var(--space-10);
+  list-style: none;
+  padding: 0;
+}
+
+@media (min-width: 48rem) {
+  :host {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-8);
+  }
+}

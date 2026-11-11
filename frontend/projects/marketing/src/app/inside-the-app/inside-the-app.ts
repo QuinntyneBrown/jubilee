@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
   Icon,
+  MarketingHeading,
   MarketingLink,
+  MarketingSection,
   PhotoBusinessCard,
   PhotoCardGrid,
   PhotoCardGridItem,
@@ -12,7 +14,15 @@ import { BUSINESS_COUNT, INSIDE_CARDS } from '../content';
 /** "Shops and services, side by side.": five business cards (L2-183 AC5). */
 @Component({
   selector: 'jb-inside-the-app',
-  imports: [Icon, MarketingLink, PhotoBusinessCard, PhotoCardGrid, PhotoCardGridItem],
+  imports: [
+    MarketingHeading,
+    MarketingSection,
+    Icon,
+    MarketingLink,
+    PhotoBusinessCard,
+    PhotoCardGrid,
+    PhotoCardGridItem,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './inside-the-app.html',
 })
