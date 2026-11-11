@@ -122,6 +122,8 @@ export interface ScreenRoute {
    * app learnt from the list it was opened from.
    */
   via?: string;
+  /** The marketing site (ADR 0013): `app` is a path of that site, not of the app. */
+  site?: 'marketing';
 }
 
 export const routes = {
@@ -826,6 +828,18 @@ export const routes = {
     stub: 'forbidden',
   },
   'not-found': { app: '/no-such-page', mock: 'pages/not-found/default.html', who: 'member' },
+  'marketing-home': {
+    app: '/',
+    mock: 'pages/marketing-home/default.html',
+    who: 'visitor',
+    site: 'marketing',
+  },
+  'marketing-home.playing': {
+    app: '/',
+    mock: 'pages/marketing-home/playing.html',
+    who: 'visitor',
+    site: 'marketing',
+  },
 } as const satisfies Record<string, ScreenRoute>;
 
 export type RouteKey = keyof typeof routes;

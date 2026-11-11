@@ -6,6 +6,8 @@ import { applyStub } from './stubs';
 
 export const BASELINE = process.env['JB_BASELINE'] === '1';
 export type Theme = 'light' | 'dark';
+/** Where `npm run start:marketing` serves the marketing site (ADR 0013). */
+export const MARKETING_URL = 'http://localhost:4201';
 
 export interface OpenOptions {
   theme?: Theme;
@@ -26,6 +28,15 @@ export class Jb {
     if (BASELINE) {
       const theme = options.theme ?? 'light';
       await this.page.goto(`${route.mock}?chrome=0&theme=${theme}`);
+      return;
+    }
+    if ('site' in route && route.site === 'marketing') {
+      // The site's photos and Inter live on other hosts; a spec never depends on them.
+      await this.page.route(
+        (url) => url.hostname !== 'localhost',
+        (r) => r.abort(),
+      );
+      await this.goto(`${MARKETING_URL}${route.app}`, options.theme, options.now);
       return;
     }
     await this.signInAs(options.who ?? route.who, options.navigation);

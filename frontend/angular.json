@@ -105,6 +105,87 @@
           }
         }
       }
+    },
+    "marketing": {
+      "projectType": "application",
+      "root": "projects/marketing",
+      "sourceRoot": "projects/marketing/src",
+      "prefix": "jb",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/marketing/src/main.ts",
+            "tsConfig": "projects/marketing/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "jubilee-icon.svg",
+                "input": "projects/jubilee/public"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/marketing/public"
+              }
+            ],
+            "styles": [
+              "projects/components/src/lib/styles/tokens.css",
+              "projects/components/src/lib/styles/ui.css",
+              "projects/marketing/src/styles/marketing.css",
+              "projects/marketing/src/styles.css"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "projects/marketing/src/environments/environment.ts",
+                  "with": "projects/marketing/src/environments/environment.development.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "marketing:build:production"
+            },
+            "development": {
+              "buildTarget": "marketing:build:development"
+            }
+          },
+          "defaultConfiguration": "development",
+          "options": {
+            "port": 4201
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/marketing/**/*.ts", "projects/marketing/**/*.html"]
+          }
+        }
+      }
     }
   },
   "schematics": {

@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * One suite, two targets (AGENTS.md):
- * - default: the Angular app on :4200. It never reaches the API: every /api request is answered
+ * - default: the Angular app on :4200 and the marketing site on :4201. It never reaches the API: every /api request is answered
  *   from fixtures/api/responses.json by Playwright API mocking (ADR 0009). JB_RECORD_API=1
  *   (`npm run record-api`) instead lets the API started by eng/Start-E2eApi.ps1 answer, and
  *   records its answers;
@@ -36,6 +36,13 @@ const appServers = [
   {
     command: 'npm start --prefix ../frontend -- --port 4200',
     url: 'http://localhost:4200',
+    reuseExistingServer: !ci,
+    timeout: 240_000,
+  },
+  {
+    // The marketing site (ADR 0013), a second application of the same workspace.
+    command: 'npm run start:marketing --prefix ../frontend',
+    url: 'http://localhost:4201',
     reuseExistingServer: !ci,
     timeout: 240_000,
   },
