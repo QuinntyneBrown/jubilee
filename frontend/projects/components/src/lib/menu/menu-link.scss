@@ -1,0 +1,29 @@
+// Element: menu__item, as a line of a menu list. The host is the link, or the button.
+@use './menu-item-base' as item;
+
+:host {
+  @include item.item;
+}
+
+:host(:hover),
+:host([data-state='hover']) {
+  @include item.hover;
+}
+
+:host(:focus-visible),
+:host([data-state='focus']) {
+  @include item.focus;
+}
+
+:host([aria-disabled='true']),
+:host(:disabled) {
+  @include item.disabled;
+}
+
+:host(.menu__item--danger) {
+  @include item.danger;
+}
+
+.menu__icon {
+  @include item.icon;
+}

@@ -1,0 +1,9 @@
+// Block: menu-list. The host is the list.
+:host {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-inline: calc(-1 * var(--space-3));
+  display: flex;
+  flex-direction: column;
+}

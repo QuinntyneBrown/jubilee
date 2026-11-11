@@ -163,16 +163,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .drawer__title { font: var(--text-h4); flex: 1; }
 .drawer__body { padding: var(--space-6); overflow: auto; flex: 1; }
 .drawer__footer { display: flex; gap: var(--space-3); justify-content: flex-end; padding: var(--space-4) var(--space-6); border-top: var(--border-width-hairline) solid var(--color-border-default); }
-.menu__item { display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: var(--control-height-sm); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-sm); background: none; color: var(--color-fg-default); font: var(--text-body-sm); text-align: left; text-decoration: none; cursor: pointer; }
-.menu__item:hover, .menu__item[data-state="hover"] { background: var(--color-bg-subtle); }
-.menu__item:focus-visible, .menu__item[data-state="focus"] { background: var(--color-bg-subtle); outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--jb-menu-item-focus-offset, calc(-1 * var(--focus-ring-width))); }
-.menu--sheet .menu__item { min-height: var(--target-comfortable); }
-.menu__item[aria-disabled="true"], .menu__item[data-state="disabled"] { color: var(--color-fg-disabled); cursor: not-allowed; background: none; }
-.menu__item[aria-checked="true"]::after, .menu__item[data-state="checked"]::after { content: "✓"; margin-left: auto; color: var(--color-fg-default); }
-.menu__label { font: var(--text-overline); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-fg-subtle); padding: var(--space-2) var(--space-3) var(--space-1); }
-.menu__item--danger { color: var(--color-danger-fg); }
-.menu__item kbd { margin-left: auto; font-size: var(--font-size-xs); }
-.menu__divider { border-top: var(--border-width-hairline) solid var(--color-border-default); margin: var(--space-1) 0; }
 .popover { position: absolute; z-index: var(--z-popover); width: max-content; max-width: min(20rem, 90vw); padding: var(--space-4); background: var(--color-bg-surface-raised); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-3); }
 .tooltip { position: absolute; z-index: var(--z-tooltip); padding: var(--space-1) var(--space-2); background: var(--color-bg-inverse); color: var(--color-fg-inverse); border-radius: var(--radius-sm); font: var(--text-caption); width: max-content; max-width: min(16rem, calc(100vw - 2 * var(--layout-margin))); box-shadow: var(--shadow-2); }
 .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; translate: -50% 0; border: var(--space-1) solid transparent; border-top-color: var(--color-bg-inverse); }
