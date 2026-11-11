@@ -38,7 +38,9 @@
       },
       "filters": {
         "offers": [],
-        "areas": ["scarborough"]
+        "areas": [
+          "scarborough"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -99,7 +101,9 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls"],
+        "offers": [
+          "emergency-calls"
+        ],
         "areas": []
       },
       "sort": "name",
@@ -152,7 +156,9 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls"],
+        "offers": [
+          "emergency-calls"
+        ],
         "areas": []
       },
       "sort": "newest",
@@ -205,7 +211,9 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls"],
+        "offers": [
+          "emergency-calls"
+        ],
         "areas": []
       },
       "sort": "recommended",
@@ -258,8 +266,13 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls", "open-saturdays"],
-        "areas": ["etobicoke"]
+        "offers": [
+          "emergency-calls",
+          "open-saturdays"
+        ],
+        "areas": [
+          "etobicoke"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -302,8 +315,13 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls", "open-saturdays"],
-        "areas": ["scarborough"]
+        "offers": [
+          "emergency-calls",
+          "open-saturdays"
+        ],
+        "areas": [
+          "scarborough"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -349,7 +367,10 @@
         "count": 3
       },
       "filters": {
-        "offers": ["emergency-calls", "open-saturdays"],
+        "offers": [
+          "emergency-calls",
+          "open-saturdays"
+        ],
         "areas": []
       },
       "sort": "recommended",
@@ -402,8 +423,12 @@
         "count": 3
       },
       "filters": {
-        "offers": ["free-quote"],
-        "areas": ["east-york"]
+        "offers": [
+          "free-quote"
+        ],
+        "areas": [
+          "east-york"
+        ]
       },
       "sort": "name",
       "page": 1,
@@ -464,8 +489,12 @@
         "count": 3
       },
       "filters": {
-        "offers": ["free-quote"],
-        "areas": ["east-york"]
+        "offers": [
+          "free-quote"
+        ],
+        "areas": [
+          "east-york"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -526,7 +555,9 @@
         "count": 3
       },
       "filters": {
-        "offers": ["free-quote"],
+        "offers": [
+          "free-quote"
+        ],
         "areas": []
       },
       "sort": "newest",
@@ -624,8 +655,12 @@
         "count": 3
       },
       "filters": {
-        "offers": ["open-saturdays"],
-        "areas": ["scarborough"]
+        "offers": [
+          "open-saturdays"
+        ],
+        "areas": [
+          "scarborough"
+        ]
       },
       "sort": "recommended",
       "page": 1,
@@ -1869,7 +1904,9 @@
       "viewerRelation": "visitor",
       "ownerName": "Trevor Chew, CKA®, CFP®, CLU®",
       "tagline": "Build a Legacy. Protect a Legacy. Leave a Legacy.",
-      "credentials": ["CKA® · CFP® · CLU®"],
+      "credentials": [
+        "CKA® · CFP® · CLU®"
+      ],
       "highlight": "Free first meeting",
       "about": "Financial planning grounded in biblical stewardship: budgeting and debt, retirement, insurance and estate planning, and a generosity plan your family can keep for generations.",
       "coverPhoto": null,
