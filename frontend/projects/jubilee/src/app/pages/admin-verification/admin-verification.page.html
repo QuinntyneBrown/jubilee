@@ -32,20 +32,17 @@
         <li aria-current="page">{{ r.name }}</li>
       </ol>
     </nav>
-    <div class="page-header">
-      <div>
-        <h1>{{ r.name }}</h1>
-        <p class="subtitle">
-          {{ r.categoryName }} · submitted {{ when(r.submittedAt) }} ·
-          <span
-            jb-badge
-            [tone]="
-              r.stage === 'ready-to-review' ? 'info' : r.stage === 'live' ? 'success' : 'warning'
-            "
-            >{{ r.stageLabel }}</span
-          >
-        </p>
-      </div>
+    <jb-page-header [heading]="r.name">
+      <ng-container ngProjectAs="[slot=subtitle]">
+        {{ r.categoryName }} · submitted {{ when(r.submittedAt) }} ·
+        <span
+          jb-badge
+          [tone]="
+            r.stage === 'ready-to-review' ? 'info' : r.stage === 'live' ? 'success' : 'warning'
+          "
+          >{{ r.stageLabel }}</span
+        >
+      </ng-container>
       @if (open()) {
         <div class="cluster">
           <button jb-button type="button" (click)="requestChanges(r)">Request changes</button>
@@ -65,7 +62,7 @@
           </button>
         </div>
       }
-    </div>
+    </jb-page-header>
     @if (decided(); as result) {
       <div
         jb-alert

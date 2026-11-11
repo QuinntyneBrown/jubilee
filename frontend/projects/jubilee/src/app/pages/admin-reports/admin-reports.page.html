@@ -1,9 +1,4 @@
-<div class="page-header">
-  <div>
-    <h1>Reports</h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
-</div>
+<jb-page-header heading="Reports" [subtitle]="subtitle()"> </jb-page-header>
 <nav jb-team-nav current="reports"></nav>
 @let reports = state();
 @switch (reports.status) {

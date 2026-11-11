@@ -1,9 +1,4 @@
-<div class="page-header">
-  <div>
-    <h1>Messages</h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
-</div>
+<jb-page-header heading="Messages" [subtitle]="subtitle()"> </jb-page-header>
 @let inbox = store.state();
 @if (inbox.status === 'error') {
   <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your messages">

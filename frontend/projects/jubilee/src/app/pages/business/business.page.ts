@@ -32,6 +32,8 @@ import {
   Tag,
   Card,
   Rows,
+  DetailHead,
+  DetailHeadActions,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
@@ -107,6 +109,8 @@ interface DetailRow {
     Tag,
     Card,
     Rows,
+    DetailHead,
+    DetailHeadActions,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

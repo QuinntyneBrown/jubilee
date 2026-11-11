@@ -16,6 +16,7 @@ export const VERIFICATION_HELP = { path: '/help', fragment: 'how-does-a-business
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'detail-head__kicker' },
   templateUrl: './verified-business-label.html',
+  styleUrl: './verified-business-label.scss',
 })
 export class VerifiedBusinessLabel {
   readonly category = input.required<{ slug: string; name: string }>();

@@ -7,12 +7,8 @@
 </nav>
 @switch (current.status) {
   @case ('loaded') {
-    <div class="page-header">
-      <div>
-        <h1>{{ current.value.title }}</h1>
-        <p class="subtitle">{{ current.value.lead }}</p>
-      </div>
-    </div>
+    <jb-page-header [heading]="current.value.title" [subtitle]="current.value.lead">
+    </jb-page-header>
     <div class="split">
       <div class="accordion">
         @for (section of current.value.sections; track section.anchor) {

@@ -38,6 +38,8 @@ export class BusinessPage extends ShellPage implements Screen {
   readonly backLink: Locator;
   readonly mediaTile: Locator;
   readonly mediaLabel: Locator;
+  /** The head of the page: kicker, name, what the business offers and its actions. */
+  readonly detailHead: Locator;
   readonly kicker: Locator;
   readonly kickerIcon: Locator;
   readonly verifiedLabel: Locator;
@@ -82,6 +84,7 @@ export class BusinessPage extends ShellPage implements Screen {
     this.backLink = this.main.locator('a.back-link');
     this.mediaTile = this.main.locator('.split .media').first();
     this.mediaLabel = this.mediaTile.locator('.media__tag');
+    this.detailHead = this.main.locator('.detail-head');
     this.kicker = this.main.locator('.detail-head__kicker');
     this.kickerIcon = this.kicker.locator('svg');
     this.verifiedLabel = this.kicker.getByRole('link', { name: 'Verified Christian business' });

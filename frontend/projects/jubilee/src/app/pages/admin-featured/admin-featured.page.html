@@ -1,11 +1,8 @@
-<div class="page-header">
-  <div>
-    <h1>Featured businesses</h1>
-    <p class="subtitle">
-      Up to {{ max }} live businesses show on the welcome and browse pages for 7 days.
-    </p>
-  </div>
-</div>
+<jb-page-header
+  heading="Featured businesses"
+  [subtitle]="'Up to ' + max + ' live businesses show on the welcome and browse pages for 7 days.'"
+>
+</jb-page-header>
 <nav jb-team-nav current="featured"></nav>
 @let weeks = state();
 @switch (weeks.status) {

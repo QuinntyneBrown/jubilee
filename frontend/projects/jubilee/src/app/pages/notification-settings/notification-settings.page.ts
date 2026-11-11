@@ -24,6 +24,7 @@ import {
   RowTitle,
   Rows,
   Row,
+  PageHeader,
 } from 'components';
 import { Observable } from 'rxjs';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -101,6 +102,7 @@ const ROWS: SettingRow[] = [
     RowMeta,
     RowTitle,
     Rows,
+    PageHeader,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

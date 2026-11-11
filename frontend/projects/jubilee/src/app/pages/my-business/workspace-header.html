@@ -1,8 +1,4 @@
-<div class="page-header">
-  <div>
-    <h1>{{ heading() }}</h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
+<jb-page-header [heading]="heading()" [subtitle]="subtitle()">
   @if (slug(); as slug) {
     <div class="cluster">
       <a jb-button [routerLink]="['/b', slug]">
@@ -10,7 +6,7 @@
       </a>
     </div>
   }
-</div>
+</jb-page-header>
 <nav class="tabs" aria-label="My business sections">
   <a
     class="tab"

@@ -52,6 +52,8 @@
 }
 
 :host(.btn--primary) {
+  // Knob: --jb-btn-primary-flex, set by a block whose primary action takes the room.
+  flex: var(--jb-btn-primary-flex, var(--jb-btn-flex, initial));
   --btn-bg: var(--color-accent);
   --btn-fg: var(--color-fg-on-accent);
   --btn-border: var(--color-accent-border);

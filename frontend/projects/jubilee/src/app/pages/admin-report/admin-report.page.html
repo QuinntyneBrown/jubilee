@@ -6,11 +6,7 @@
 @let current = state();
 @switch (current.status) {
   @case ('error') {
-    <div class="page-header">
-      <div>
-        <h1>Report</h1>
-      </div>
-    </div>
+    <jb-page-header heading="Report"> </jb-page-header>
     @if (notFound()) {
       <div jb-empty-state icon="alert" heading="This report doesn’t exist">
         It may have been removed. Go back to the reports to find the one you need.
@@ -31,45 +27,33 @@
     }
   }
   @case ('loading') {
-    <div class="page-header">
-      <div>
-        <h1>Report</h1>
-        <p class="subtitle">Loading the report…</p>
-      </div>
-    </div>
+    <jb-page-header heading="Report" subtitle="Loading the report…"> </jb-page-header>
     <p class="visually-hidden" role="status">Loading the report…</p>
     <ul jb-row-list-skeleton [count]="3"></ul>
   }
   @case ('loaded') {
     @let report = current.value;
-    <div class="page-header">
-      <div>
-        <h1>{{ title(report) }}</h1>
-        <p class="subtitle">
-          {{ report.entries[0].reason }} · received {{ received(report) }} ·
-          @if (report.overdue) {
-            <span jb-badge tone="warning">Overdue</span>
-          }
-          <span
-            jb-badge
-            [tone]="
-              report.status === 'in-review'
-                ? 'info'
-                : report.status === 'resolved'
-                  ? 'success'
-                  : null
-            "
-            >{{
-              report.status === 'in-review'
-                ? 'In review'
-                : report.status === 'resolved'
-                  ? 'Resolved'
-                  : 'Open'
-            }}</span
-          >
-        </p>
-      </div>
-    </div>
+    <jb-page-header [heading]="title(report)">
+      <ng-container ngProjectAs="[slot=subtitle]">
+        {{ report.entries[0].reason }} · received {{ received(report) }} ·
+        @if (report.overdue) {
+          <span jb-badge tone="warning">Overdue</span>
+        }
+        <span
+          jb-badge
+          [tone]="
+            report.status === 'in-review' ? 'info' : report.status === 'resolved' ? 'success' : null
+          "
+          >{{
+            report.status === 'in-review'
+              ? 'In review'
+              : report.status === 'resolved'
+                ? 'Resolved'
+                : 'Open'
+          }}</span
+        >
+      </ng-container>
+    </jb-page-header>
     <nav jb-team-nav current="reports"></nav>
     <div class="stack" style="margin-top: var(--space-4)">
       <section jb-card heading="Report" headingId="rep">

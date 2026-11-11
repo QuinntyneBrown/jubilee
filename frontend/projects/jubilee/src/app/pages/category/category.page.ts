@@ -2,7 +2,6 @@ import { Dialog } from '@angular/cdk/dialog';
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   computed,
   effect,
   inject,
@@ -22,6 +21,7 @@ import {
   Field,
   Select,
   Chip,
+  PageHeader,
 } from 'components';
 import { combineLatest } from 'rxjs';
 import {
@@ -72,6 +72,7 @@ function businesses(count: number): string {
     Field,
     Select,
     Chip,
+    PageHeader,
   ],
   providers: [CategoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,7 +87,7 @@ export class CategoryPage {
 
   protected readonly chips = CHIPS;
   protected readonly sorts = SORTS;
-  private readonly heading = viewChild<ElementRef<HTMLElement>>('heading');
+  private readonly heading = viewChild<PageHeader>('heading');
   private readonly slug = toSignal(this.route.paramMap, { requireSync: true });
 
   /** The category as the catalogue knows it; the API is the authority on unknown slugs. */
@@ -142,7 +143,7 @@ export class CategoryPage {
       const state = this.store.state();
       if (state.status !== 'loaded') return;
       if (shownPage !== null && shownPage !== state.value.page) {
-        this.heading()?.nativeElement.focus();
+        this.heading()?.focus();
       }
       shownPage = state.value.page;
     });

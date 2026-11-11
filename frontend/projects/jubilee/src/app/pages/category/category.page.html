@@ -6,12 +6,7 @@
     <li aria-current="page">{{ name }}</li>
   </ol>
 </nav>
-<div class="page-header">
-  <div>
-    <h1 #heading tabindex="-1">{{ name }}</h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
-</div>
+<jb-page-header #heading focusable [heading]="name" [subtitle]="subtitle()"> </jb-page-header>
 @switch (state.status) {
   @case ('loading') {
     <p class="visually-hidden" role="status">Loading businesses…</p>

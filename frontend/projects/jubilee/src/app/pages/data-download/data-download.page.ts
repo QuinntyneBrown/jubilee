@@ -2,7 +2,7 @@ import { DOCUMENT, Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ACCOUNT_DATA_API } from 'api';
-import { EmptyState, Button, Alert, Card } from 'components';
+import { EmptyState, Button, Alert, Card, PageHeader } from 'components';
 
 type View = 'downloading' | 'done' | 'unavailable';
 
@@ -12,7 +12,7 @@ type View = 'downloading' | 'done' | 'unavailable';
  */
 @Component({
   selector: 'jb-data-download-page',
-  imports: [RouterLink, EmptyState, Button, Alert, Card],
+  imports: [RouterLink, EmptyState, Button, Alert, Card, PageHeader],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './data-download.page.html',
 })

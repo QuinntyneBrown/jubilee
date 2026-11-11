@@ -25,6 +25,7 @@ import {
   RowMeta,
   RowTitle,
   Rows,
+  PageHeader,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -55,6 +56,7 @@ const MAX = 5;
     RowMeta,
     RowTitle,
     Rows,
+    PageHeader,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-featured.page.html',

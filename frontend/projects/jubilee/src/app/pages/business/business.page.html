@@ -69,7 +69,7 @@
           <div jb-media-tile [tint]="media.tint" [icon]="media.icon" [tag]="media.label"></div>
         }
       </div>
-      <div class="detail-head split__sticky">
+      <div jb-detail-head class="split__sticky">
         <p jb-verified-business-label [category]="listing.category"></p>
         <h1>{{ listing.name }}</h1>
         @if (listing.ownerName) {
@@ -85,7 +85,7 @@
             }
           </div>
         }
-        <div class="detail-head__actions">
+        <div jb-detail-head-actions>
           @if (isOwner) {
             <a jb-button variant="primary" size="lg" routerLink="/my-business/edit"
               ><svg jb-icon name="edit"></svg>Edit listing</a
