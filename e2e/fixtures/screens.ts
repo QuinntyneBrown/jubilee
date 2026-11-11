@@ -14,6 +14,8 @@ import {
 } from '../pages/product.page';
 import { EditListingPage } from '../pages/edit-listing.page';
 import { IncomingRequestsPage } from '../pages/incoming-requests.page';
+import { ForgotPasswordPage } from '../pages/forgot-password.page';
+import { ResetPasswordPage } from '../pages/reset-password.page';
 import { NotificationsPage } from '../pages/notifications.page';
 import { MyProductsPage } from '../pages/my-products.page';
 import { MyServicesPage } from '../pages/my-services.page';
@@ -53,6 +55,10 @@ export const screens: {
   { key: 'my-business.empty', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.error', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.paused', screen: (page) => new MyBusinessPage(page) },
+  { key: 'forgot-password', screen: (page) => new ForgotPasswordPage(page) },
+  { key: 'reset-password', screen: (page) => new ResetPasswordPage(page) },
+  { key: 'reset-password.expired', screen: (page) => new ResetPasswordPage(page) },
+  { key: 'reset-password.error', screen: (page) => new ResetPasswordPage(page) },
   { key: 'notifications', screen: (page) => new NotificationsPage(page) },
   { key: 'notifications.read', screen: (page) => new NotificationsPage(page) },
   { key: 'notifications.empty', screen: (page) => new NotificationsPage(page) },

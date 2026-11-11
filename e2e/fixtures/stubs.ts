@@ -6,6 +6,7 @@ import { stubMessaging } from './messaging';
 import { esther, stubAdmin } from './admin';
 import { stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
+import { stubPasswordReset } from './password-reset';
 import { NOTIFICATIONS, stubNotifications } from './notifications';
 import { stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
@@ -270,6 +271,13 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMyBusiness(page);
     case 'editor-error':
       return stubMyBusiness(page, { editor: 'fails' });
+    case 'password-reset':
+    case 'reset-password':
+      return void (await stubPasswordReset(page));
+    case 'reset-password-expired':
+      return void (await stubPasswordReset(page, { link: 'expired' }));
+    case 'reset-password-error':
+      return void (await stubPasswordReset(page, { link: 'fails' }));
     case 'notifications':
       return void (await stubNotifications(page));
     case 'notifications-read':

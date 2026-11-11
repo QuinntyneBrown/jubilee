@@ -74,6 +74,8 @@ with link issuing and e-mail in `Jubilee Worker`.
 - **`Member`** — domain entity. `ChangePassword(passwordHash, now)` replaces the
   hash and records `PasswordChangedAt`.
 
+As built (ADR 0026): the request is recorded as a `PasswordResetRequest` row and `PasswordResetLinks` in the Worker issues the link, counting the limit from those rows instead of a cache counter; sessions end because the session cookie carries the time the session began and `Member.PasswordChangedAt` is later (there is no session store to call `EndAllForMember` on); the error codes of the reset are on `newPassword` and `repeatPassword`.
+
 After the change the page shows "Password changed. You're signed out everywhere
 else. Sign in with your new password." The reset does not sign the visitor in.
 
