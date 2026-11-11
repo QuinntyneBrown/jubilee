@@ -1,0 +1,165 @@
+{
+  "voice": "af_heart",
+  "bpm": 90,
+  "scenes": 10,
+  "note": "Film seconds; ten scenes of 8 s (three bars at 90 BPM). Each segment is spoken inside [start, end], at the slowest speed that fits. 'caption' starts a new caption (written to captions.vtt only; the film has none burned in).",
+  "lines": [
+    {
+      "scene": 1,
+      "segments": [
+        {
+          "text": "Every week in Toronto, believers ask the same question: who can we trust to do the work?",
+          "start": 0.7,
+          "end": 7.4,
+          "caption": "Every week in Toronto, believers ask the same question: who can we trust to do the work?"
+        }
+      ]
+    },
+    {
+      "scene": 2,
+      "segments": [
+        {
+          "text": "Jubilee is Toronto's Christian marketplace.",
+          "start": 8.4,
+          "end": 11.1,
+          "caption": "Jubilee is Toronto’s Christian marketplace."
+        },
+        {
+          "text": "Every business is Christian-owned, and vouched for by a pastor.",
+          "start": 11.3,
+          "end": 15.5,
+          "caption": "Every business is Christian-owned, and vouched for by a pastor."
+        }
+      ]
+    },
+    {
+      "scene": 3,
+      "segments": [
+        {
+          "text": "Members find a business, message it, book a meeting or ask for a quote, then pay the business directly.",
+          "start": 16.4,
+          "end": 23.6,
+          "caption": "Members find a business, message it, book a meeting or ask for a quote, then pay the business directly."
+        }
+      ]
+    },
+    {
+      "scene": 4,
+      "segments": [
+        {
+          "text": "Two hundred founding businesses open the beta on February first.",
+          "start": 24.4,
+          "end": 28.0,
+          "caption": "Two hundred founding businesses open the beta on February first."
+        },
+        {
+          "text": "Everyone else joins on April sixth, twenty twenty-seven.",
+          "start": 28.2,
+          "end": 31.6,
+          "caption": "Everyone else joins on April sixth, 2027."
+        }
+      ]
+    },
+    {
+      "scene": 5,
+      "segments": [
+        {
+          "text": "A basic listing is free, forever.",
+          "start": 32.4,
+          "end": 34.5,
+          "caption": "A basic listing is free, forever."
+        },
+        {
+          "text": "Plus is twenty-nine dollars a month. Pro, seventy-nine.",
+          "start": 34.6,
+          "end": 37.6,
+          "caption": "Plus is $29 a month. Pro, $79."
+        },
+        {
+          "text": "Founding businesses get Plus free for a year.",
+          "start": 37.7,
+          "end": 39.75,
+          "caption": "Founding businesses get Plus free for a year."
+        }
+      ]
+    },
+    {
+      "scene": 6,
+      "segments": [
+        {
+          "text": "In September, homes arrive: rooms, apartments and sublets.",
+          "start": 40.4,
+          "end": 44.0,
+          "caption": "In September, homes arrive: rooms, apartments and sublets."
+        },
+        {
+          "text": "Free for renters. Landlords pay thirty-nine dollars a listing.",
+          "start": 44.2,
+          "end": 47.6,
+          "caption": "Free for renters. Landlords pay $39 a listing."
+        }
+      ]
+    },
+    {
+      "scene": 7,
+      "segments": [
+        {
+          "text": "In May twenty twenty-eight, short-term and monthly stays follow,",
+          "start": 48.4,
+          "end": 52.1,
+          "caption": "In May 2028, short-term and monthly stays follow,"
+        },
+        {
+          "text": "booked and paid through Jubilee, for an eleven percent fee.",
+          "start": 52.25,
+          "end": 55.6,
+          "caption": "booked and paid through Jubilee, for an eleven percent fee."
+        }
+      ]
+    },
+    {
+      "scene": 8,
+      "segments": [
+        {
+          "text": "Revenue grows to three point one million dollars by twenty thirty-one. We break even in twenty thirty.",
+          "start": 56.4,
+          "end": 63.4,
+          "caption": "Revenue grows to $3.1 million by 2031. We break even in 2030."
+        }
+      ]
+    },
+    {
+      "scene": 9,
+      "segments": [
+        {
+          "text": "We're raising a seven hundred and fifty thousand dollar pre-seed.",
+          "start": 64.4,
+          "end": 68.2,
+          "caption": "We’re raising a $750,000 pre-seed."
+        },
+        {
+          "text": "Next come Jubilee Pay, events, and cities beyond Toronto.",
+          "start": 68.35,
+          "end": 71.6,
+          "caption": "Next come Jubilee Pay, events, and cities beyond Toronto."
+        }
+      ]
+    },
+    {
+      "scene": 10,
+      "segments": [
+        {
+          "text": "Jubilee.",
+          "start": 72.5,
+          "end": 73.4,
+          "caption": "Jubilee. Your community is open for business."
+        },
+        {
+          "text": "Your community is open for business.",
+          "start": 73.6,
+          "end": 77.0
+        }
+      ]
+    }
+  ]
+}

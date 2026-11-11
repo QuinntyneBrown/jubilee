@@ -5,6 +5,7 @@ One folder per video. The text files are the source; the media is generated from
 | # | Video | Runtime | What it is |
 |---|---|---|---|
 | 01 | [Meet Jubilee](01-jubilee-pitch/README.md) | 1:04 | The pitch film for Toronto's Christian community: why join, what you can do, why list. Nine scenes cut to a 100 BPM grid, built from the Magic Patterns design. |
+| 02 | [The Jubilee plan](02-business-plan/README.md) | 1:20 | The business plan, short: launch dates, how businesses pay, homes and stays, revenue, the raise and the roadmap. Ten picture-led scenes, narrated, no captions. |
 
 ## How a pitch film is built
 
@@ -28,9 +29,11 @@ docs/videos/NN-topic/
 pip install kokoro-onnx numpy
 python tools/video-audio/film_audio.py docs/videos/NN-topic                 # voice, music, effects, mix, timing.js
 python tools/video-audio/film_audio.py docs/videos/NN-topic --keep-voice    # the same, reusing narration.wav
+python tools/video-audio/narrated_audio.py docs/videos/NN-topic             # a film without its own score: voice and a quiet piano bed
 node tools/video-build/build.mjs docs/videos/NN-topic --check               # print the schedule and the captions
 node tools/video-build/build.mjs docs/videos/NN-topic --frame 22.8 f.png    # look at one frame (film seconds)
 node tools/video-build/build.mjs docs/videos/NN-topic                       # captions.vtt + mp4
+node tools/video-build/build.mjs docs/videos/NN-topic --no-captions --fps 30 --crf 20   # no captions, a smaller file
 ```
 
 - **The builder** needs Node with Playwright (Chromium) and ffmpeg with libx264 (`FFMPEG_PATH`
@@ -43,12 +46,16 @@ node tools/video-build/build.mjs docs/videos/NN-topic                       # ca
   brief asks for a composed track and a recorded voice; when those exist, replace
   `NN-topic.mp3` with the real mix (same length, same hit points) and rebuild the MP4.
   The script is specific to video 01: its score follows that film's bar-by-bar brief.
+  `narrated_audio.py` reuses its narration for any other film (`bpm` and `scenes` in
+  `narration.json` set the length) and lays a quiet synthesized piano bed under it.
 - **Voice.** The model and voice are looked for in `KOKORO_DIR`, `.cache/kokoro` and the Hugging
   Face cache, and downloaded once from `onnx-community/Kokoro-82M-v1.0-ONNX` otherwise. Free, no
   key. `--voice` or `KOKORO_VOICE` picks another voice.
 - **Captions** are burned into the MP4, as the build spec asks (for silent autoplay on the
   marketing site). `--no-captions` renders without them; `captions.vtt` is written either way. In
   the deck, the Captions button or `c` toggles them, and `slides.html?captions=0` starts without.
+  A deck whose `<body>` has `data-captions="off"` starts without them (`?captions=1` shows them).
+- **Size.** `--fps` and `--crf` (default 60 and 16) trade smoothness and quality for file size.
 
 ## The deck
 
