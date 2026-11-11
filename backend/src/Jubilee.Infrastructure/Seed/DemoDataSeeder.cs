@@ -60,6 +60,13 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
                 listing.SetMeetingArea("North York");
             }
 
+            if (slug == "luzandre" && !await db.DeliveryMethods.AnyAsync(d => d.ListingId == listing.Id, cancellationToken))
+            {
+                listing.SetFreeShippingOver(7500);
+                db.DeliveryMethods.Add(DeliveryMethod.Create(listing.Id, 1, DeliveryKind.Ship, "Ship to me", 900, "Canada Post, $9 flat · 3–6 business days"));
+                db.DeliveryMethods.Add(DeliveryMethod.Create(listing.Id, 2, DeliveryKind.Pickup, "Pick up in Leslieville", 0, "Free · Naomi sends the address when it’s ready"));
+            }
+
             if (listing.About is null && listing.OwnerName is null)
             {
                 listing.Describe(demo.Profile);

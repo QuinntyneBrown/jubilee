@@ -177,6 +177,11 @@ public sealed class Listing
 
     public void SetMeetingDays(int days) => MeetingDays = days;
 
+    /// <summary>At or above this item amount a shop ships free; null when it never does (L2-046 AC4).</summary>
+    public int? FreeShippingOverCents { get; private set; }
+
+    public void SetFreeShippingOver(int? cents) => FreeShippingOverCents = cents is > 0 ? cents : null;
+
     public void SetMeetingArea(string? area) => MeetingArea = string.IsNullOrWhiteSpace(area) ? null : area.Trim();
 
     /// <summary>When the owner is away until (L2-062); null when not away.</summary>

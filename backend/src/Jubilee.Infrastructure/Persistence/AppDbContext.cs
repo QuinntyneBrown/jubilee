@@ -39,6 +39,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<RequestTransition> RequestTransitions => Set<RequestTransition>();
 
+    public DbSet<DeliveryMethod> DeliveryMethods => Set<DeliveryMethod>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
