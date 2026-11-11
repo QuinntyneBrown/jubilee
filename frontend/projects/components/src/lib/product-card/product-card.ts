@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { PricePipe } from '../format/format';
 import { IconName } from '../icon/icons';
 import { TileTint } from '../media-tile/category-tile';
 import { MediaTile } from '../media-tile/media-tile';
+import { Price } from '../price/price';
 
 /** What a product card shows (L2-027): photo or tile, product name, shop name and price. */
 export interface ProductCardView {
@@ -16,7 +16,7 @@ export interface ProductCardView {
 /** The product card: `<a jb-product-card [product]="p" [routerLink]="…"></a>`. */
 @Component({
   selector: 'a[jb-product-card]',
-  imports: [MediaTile, PricePipe],
+  imports: [MediaTile, Price],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'biz-card product-card' },
   templateUrl: './product-card.html',

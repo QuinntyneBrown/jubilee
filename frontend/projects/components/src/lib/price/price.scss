@@ -1,0 +1,10 @@
+// Block: price. The host is the price.
+:host {
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+:host(.price--lg) {
+  font-size: var(--font-size-2xl);
+}

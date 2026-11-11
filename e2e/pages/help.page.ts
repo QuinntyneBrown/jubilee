@@ -4,6 +4,8 @@ import type { Locator, Page } from '@playwright/test';
 export class HelpPage {
   readonly title: Locator;
   readonly questions: Locator;
+  /** The frame all the questions sit in. */
+  readonly accordion: Locator;
   readonly contactLine: Locator;
   readonly emailLink: Locator;
   readonly errorState: Locator;
@@ -16,12 +18,18 @@ export class HelpPage {
     this.main = page.locator('main');
     this.title = this.main.getByRole('heading', { level: 1 });
     this.questions = this.main.locator('.accordion summary');
+    this.accordion = this.main.locator('.accordion');
     this.contactLine = this.main.getByText(
       'Write to us and a person answers within one business day.',
     );
     this.emailLink = this.main.getByRole('link', { name: 'E-mail help@jubilee.example' });
     this.errorState = this.main.getByRole('heading', { name: 'We couldn’t load Help' });
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
+  }
+
+  /** Resolves when the questions are drawn. */
+  async ready(): Promise<void> {
+    await this.questions.first().waitFor();
   }
 
   question(name: string): Locator {

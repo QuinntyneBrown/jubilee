@@ -5,29 +5,26 @@
     <jb-page-header [heading]="current.value.title" [subtitle]="current.value.lead">
     </jb-page-header>
     <div class="split">
-      <div class="accordion">
+      <div jb-accordion>
         @for (section of current.value.sections; track section.anchor) {
           <details
+            jb-accordion-item
             [id]="section.anchor"
+            [heading]="section.heading"
             [open]="open().has(section.anchor)"
-            (toggle)="toggled(section.anchor, $any($event.target).open)"
+            (openChange)="toggled(section.anchor, $event)"
           >
-            <summary [attr.aria-expanded]="open().has(section.anchor)">
-              {{ section.heading }}
-            </summary>
-            <div class="accordion__body">
-              @for (block of body(section.body); track $index) {
-                @if (block.kind === 'paragraph') {
-                  @for (part of block.parts; track $index) {
-                    @if (part.href; as href) {
-                      <a [href]="href">{{ part.text }}</a>
-                    } @else {
-                      {{ part.text }}
-                    }
+            @for (block of body(section.body); track $index) {
+              @if (block.kind === 'paragraph') {
+                @for (part of block.parts; track $index) {
+                  @if (part.href; as href) {
+                    <a [href]="href">{{ part.text }}</a>
+                  } @else {
+                    {{ part.text }}
                   }
                 }
               }
-            </div>
+            }
           </details>
         }
       </div>

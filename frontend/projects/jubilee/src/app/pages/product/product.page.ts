@@ -17,7 +17,6 @@ import {
   EmptyState,
   Icon,
   MediaTile,
-  PricePipe,
   ProductCard,
   Button,
   Skeleton,
@@ -28,6 +27,7 @@ import {
   BreadcrumbItem,
   DescriptionList,
   DescriptionItem,
+  Price,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { RequestItemData, RequestItemDialog } from '../../dialogs/request-item/request-item.dialog';
@@ -54,7 +54,6 @@ import { ProductRequestForm, ProductSelection } from './product-request-form';
     EmptyState,
     Icon,
     MediaTile,
-    PricePipe,
     ProductCard,
     ProductRequestForm,
     Button,
@@ -65,6 +64,7 @@ import { ProductRequestForm, ProductSelection } from './product-request-form';
     Breadcrumb,
     DescriptionList,
     DescriptionItem,
+    Price,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

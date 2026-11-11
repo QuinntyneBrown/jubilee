@@ -2,7 +2,17 @@ import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CONTENT_API, ContentPage, parseBody } from 'api';
-import { EmptyState, Icon, Button, Skeleton, Card, PageHeader, Breadcrumb } from 'components';
+import {
+  EmptyState,
+  Icon,
+  Button,
+  Skeleton,
+  Card,
+  PageHeader,
+  Breadcrumb,
+  Accordion,
+  AccordionItem,
+} from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 
 /** Where a person who is still stuck writes (L2-110 AC1). */
@@ -14,9 +24,20 @@ export const HELP_ADDRESS = 'help@jubilee.example';
  */
 @Component({
   selector: 'jb-help-page',
-  imports: [EmptyState, Icon, RouterLink, Button, Skeleton, Card, PageHeader, Breadcrumb],
+  imports: [
+    EmptyState,
+    Icon,
+    RouterLink,
+    Button,
+    Skeleton,
+    Card,
+    PageHeader,
+    Breadcrumb,
+    Accordion,
+    AccordionItem,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'container page' },
+  host: { class: 'jb-page container page' },
   templateUrl: './help.page.html',
 })
 export class HelpPage implements OnInit {

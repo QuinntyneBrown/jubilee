@@ -30,6 +30,7 @@ import {
   ItemListName,
   DescriptionList,
   DescriptionItem,
+  Price,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from '../../services/message-time';
@@ -80,6 +81,7 @@ function money(cents: number): string {
     ItemListName,
     DescriptionList,
     DescriptionItem,
+    Price,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './request-item.dialog.html',
