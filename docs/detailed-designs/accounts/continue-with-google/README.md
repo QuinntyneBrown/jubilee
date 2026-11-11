@@ -4,8 +4,11 @@
 
 Jubilee is Toronto's Christian marketplace. A visitor can create an account or
 sign in with a Google account as an alternative to an e-mail and password. The
-`/join` page offers "Join with Google" and the `/sign-in` page offers "Continue
-with Google"; both start the same flow.
+`/join` page, the Sign up screen, offers "Sign up with Google" and the
+`/sign-in` page, the Log in screen, offers "Continue with Google"; both start
+the same flow. When Google sign-in is configured, the Google button comes
+first on each page, above the form, and a divider reading "or use email"
+separates it from the form (`L2-003`).
 
 The flow uses *OpenID Connect* — identity layer on OAuth 2.0 in which the
 provider returns a signed *ID token* describing the signed-in person. `Jubilee
@@ -29,11 +32,16 @@ whose e-mail Google has not verified is refused.
 The feature is a vertical slice from the Google buttons to the `Jubilee
 database`, with `Google Identity` as the external identity provider.
 
-- **`JoinPage`** and **`SignInPage`** — Angular pages. The Google button
-  navigates the browser to `GET /api/auth/google/start` with the sanitised
-  return path. On a refused sign-in `SignInPage` shows the sign-in error state,
-  or the message "Use a Google account with a confirmed e-mail, or join with
-  e-mail." for the outcome `EmailNotVerified`.
+- **`JoinPage`** and **`SignInPage`** — Angular pages at `/join` and
+  `/sign-in`. When Google sign-in is configured, each page shows its Google
+  button first, above the form: "Sign up with Google" on `/join` and "Continue
+  with Google" on `/sign-in`. The button is a `jb-button` that carries
+  `jb-google-mark`, Google's "G", to the left of its label. The
+  `jb-divider-text` "or use email" separates the button from the form. The
+  Google button navigates the browser to `GET /api/auth/google/start` with the
+  sanitised return path. On a refused sign-in `SignInPage` shows the sign-in
+  error state, or the message "Use a Google account with a confirmed e-mail,
+  or join with e-mail." for the outcome `EmailNotVerified`.
 - **`GoogleSignInController`** — ASP.NET Core controller in `Jubilee.Api` with
   two endpoints. `Start` creates the `OidcTransaction` and redirects to Google
   with `state`, `nonce` and the PKCE code challenge (method `S256`).
@@ -79,9 +87,12 @@ for a failure, `?error=google-email` for an unverified e-mail and
 (`error=access_denied`), which the page words calmly. A callback whose `state`
 is unknown goes to `/sign-in`. Without `Google:ClientId` and
 `Google:ClientSecret` the session answer carries `googleSignIn: false` and
-the join and sign-in pages show no Google button; a start request made all the
-same is returned in the same way (ADR 0037). The redirect URI is
-`App:PublicBaseUrl` followed by `/api/auth/google/callback`. The rule for a Google sign-in whose verified e-mail matches
+the join and sign-in pages show neither the Google button nor the "or use
+email" divider; a start request made all the same is returned in the same way
+(ADR 0037). The place and the words of the Google button on the two pages
+follow ADR 0038, which leaves the flow as ADR 0037 defines it. The redirect
+URI is `App:PublicBaseUrl` followed by `/api/auth/google/callback`.
+The rule for a Google sign-in whose verified e-mail matches
 an account that is still unconfirmed is: link it and remove the account's password (ADR 0012); `L2-003`
 defines linking for a confirmed account.
 

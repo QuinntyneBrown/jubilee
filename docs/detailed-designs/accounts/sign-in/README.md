@@ -2,11 +2,21 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace. A visitor signs in at `/sign-in`
-with the e-mail and password of an account and may tick "Keep me signed in". A
-successful sign-in starts a *session* — server-side record that identifies the
-member on later requests through an opaque cookie. The lifetime of that session
-is the subject of the manage session feature (`L2-010`).
+Jubilee is Toronto's Christian marketplace. A visitor signs in at `/sign-in`,
+the Log in screen, with the e-mail and password of an account and may tick
+"Keep me logged in". A successful sign-in starts a *session* — server-side
+record that identifies the member on later requests through an opaque cookie.
+The lifetime of that session is the subject of the manage session feature
+(`L2-010`).
+
+The Log in screen shares one frame with the Sign up screen (`/join`), drawn
+from the Magic Patterns design (`L2-187`, ADR 0038). Under 1024 px the
+*lockup* — mark and wordmark of Jubilee drawn as one unit — is centred above a
+card that holds the form. From 1024 px a dark brand panel on the left holds the
+lockup and the form is on the right with no card. When Google sign-in is
+configured, "Continue with Google" comes first, above the form; that flow is
+the subject of the continue with Google feature (`L2-003`). The "Password"
+control offers to show the password being typed.
 
 Two protections surround the form. *Throttling* slows password guessing: 5
 failed sign-ins for one account within 15 minutes block that account's sign-in
@@ -25,13 +35,42 @@ the started action continues.
 The feature is a vertical slice from the sign-in page and prompt to the `Cache`
 that holds sessions and counters.
 
-- **`SignInPage`** — Angular page at `/sign-in` with "E-mail", "Password",
-  "Keep me signed in", "Sign in", "Forgot password?" linking to
-  `/forgot-password` and "Join free" linking to `/join`. A malformed e-mail
-  shows "Enter the e-mail address you joined with, like name@example.com".
-  While the request is in flight the fields are read-only, the button shows a
-  busy state, and a second press sends nothing. A `GuestGuard` redirects a
-  signed-in member to `/`. A load failure shows error reference `JB-AUTH-503`.
+- **`SignInPage`** — Angular page at `/sign-in`, the Log in screen. It composes
+  `jb-auth-layout` with `split` and passes the `heading` "Welcome back" and the
+  `lead` "Log in to message businesses and manage your listing." The form has
+  "Email" (placeholder "you@example.com"), "Password", the checkbox "Keep me
+  logged in" and the button "Log in". "Forgot password?" sits on the line of
+  the "Password" label and links to `/forgot-password`. "Keep me logged in" is
+  not ticked until the visitor ticks it (ADR 0038). Under the form "New to
+  Jubilee?" offers "Create a free account" linking to `/join`. When Google
+  sign-in is configured, the button "Continue with Google", carrying
+  `jb-google-mark`, comes first, above the form, and the `jb-divider-text` "or
+  use email" separates it from the form; when it is not configured, neither
+  the button nor the divider is shown (`L2-003`). The page builds the form
+  from `jb-field`, `jb-input`, `jb-password-input`, `jb-checkbox`, `jb-button`,
+  `jb-alert` and `jb-form-summary` of the `components` library, and the link
+  under the form is a `jb-auth-link`. A malformed e-mail shows "Enter the
+  e-mail address you joined with, like name@example.com". While the request is
+  in flight the fields are read-only, the button shows a busy state, and a
+  second press sends nothing. A `GuestGuard` redirects a signed-in member to
+  `/`. A load failure shows error reference `JB-AUTH-503`.
+- **`jb-auth-layout`** — frame component of the `components` library, used
+  with `split` by the Log in and Sign up screens (`L2-187`). It takes the
+  `heading` and the `lead` of the page as inputs and projects the form. Under
+  1024 px it shows `jb-lockup` centred above a card that holds the form, and
+  the link to the other screen is under the card. From 1024 px it shows a dark
+  brand panel on the left with `jb-lockup`, "Hire, shop and book with your
+  church family.", "Christian-owned businesses across Toronto, all in one
+  place." and "© Jubilee · Toronto", and the form on the right with no card.
+  The lockup links to `/welcome`.
+- **`jb-password-input`** — component of the `components` library. It wraps
+  the password control and adds a button inside it named "Show password".
+  Pressed, the button shows the password as typed and is named "Hide
+  password"; pressed again, it hides the password and is named "Show password"
+  (`L2-187`). The typed value is kept, focus stays on the button, and the form
+  is not submitted. The button follows the password in the tab order and works
+  with Enter and with Space. It changes only the `type` of the control in the
+  browser; nothing is sent to `Jubilee API`.
 - **`AccountApi`** — typed HTTP client. `signIn(email, password, keepSignedIn)`
   sends `POST /api/session`.
 - **`RateLimitMiddleware`** — ASP.NET Core middleware. It reads the failed
@@ -85,12 +124,13 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-006` | `L1-001` | The system shall let a visitor sign in at `/sign-in` with e-mail and password, optionally staying signed in. |
+| `L2-006` | `L1-001` | The system shall let a visitor sign in at `/sign-in`, the Log in screen, with e-mail and password, optionally staying signed in. |
 | `L2-007` | `L1-001` | Repeated failed sign-ins shall be slowed and then temporarily blocked to stop password guessing. |
 | `L2-012` | `L1-001` | When a visitor tries an action that requires an account (message, book, ask, order, save), the system shall prompt the visitor to join or sign in and shall bring the visitor straight back. |
 | `L2-141` | `L1-019` | The sign-in endpoint shall respond with the same status, body shape and timing for existing and non-existing e-mails. |
 | `L2-137` | `L1-019` | The server shall respond `429` with `Retry-After` when the sign-in limits of `L2-007` are exceeded, and the UI shall show "You're doing that a lot. Try again in {n} minutes." |
-| `L2-010` | `L1-001` | A new session identifier shall be issued when a member signs in, and the session shall last 30 days when "Keep me signed in" is ticked. |
+| `L2-010` | `L1-001` | A new session identifier shall be issued when a member signs in, and the session shall last 30 days when "Keep me logged in" is ticked. |
+| `L2-187` | `L1-001` | The Log in screen (`/sign-in`) and the Sign up screen (`/join`) shall share one frame: a brand panel beside the form from 1024 px, and a card under the lockup below that width. Both screens shall offer to show the password being typed. |
 
 ## Diagrams
 
@@ -114,7 +154,8 @@ the `Jubilee database` and keeps counters and sessions in the `Cache`.
 `SignInRequiredDialog` records the started action and opens `SignInPage`. In
 the API the request passes `RateLimitMiddleware` and `SessionController` to
 `SignInCommandHandler`, which uses `ISignInAttemptTracker`, `IPasswordHasher`
-and `ISessionStore`.
+and `ISessionStore`. The `jb-*` components that `SignInPage` composes are
+presentation and are not drawn.
 
 ![C4 component view for signing in](diagrams/c4-component.png)
 
@@ -131,6 +172,8 @@ one `PendingAction` and uses `ReturnUrlService`.
 The IP limit is checked first, then the account lock (`L2-007`). A wrong
 password and an unknown e-mail take the same path and receive the same answer
 (`L2-141`). A success resets the counter and issues a new session identifier.
+Showing or hiding the password changes only the control in the browser and
+adds no message to the sequence (`L2-187`).
 
 ![Sequence diagram for signing in with e-mail and password](diagrams/sequence-sign-in.png)
 

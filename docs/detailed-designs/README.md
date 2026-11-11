@@ -49,10 +49,10 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Delete account](accounts/delete-account/README.md) | `L2-017`, `L2-129`, `L2-128`, `L2-180`, `L2-143` |
 | [Download data](accounts/download-data/README.md) | `L2-018`, `L2-140`, `L2-146`, `L2-133`, `L2-182` |
 | [Edit profile](accounts/edit-profile/README.md) | `L2-013`, `L2-019`, `L2-126`, `L2-133`, `L2-118` |
-| [Join with e-mail](accounts/join-with-email/README.md) | `L2-001`, `L2-002`, `L2-134`, `L2-137`, `L2-140`, `L2-141` |
+| [Join with e-mail](accounts/join-with-email/README.md) | `L2-001`, `L2-002`, `L2-134`, `L2-137`, `L2-140`, `L2-141`, `L2-187` |
 | [Manage session](accounts/manage-session/README.md) | `L2-010`, `L2-011`, `L2-116`, `L2-135` |
 | [Reset password](accounts/reset-password/README.md) | `L2-008`, `L2-009`, `L2-134`, `L2-140`, `L2-141`, `L2-137` |
-| [Sign in](accounts/sign-in/README.md) | `L2-006`, `L2-007`, `L2-012`, `L2-141`, `L2-137`, `L2-010` |
+| [Sign in](accounts/sign-in/README.md) | `L2-006`, `L2-007`, `L2-012`, `L2-141`, `L2-137`, `L2-010`, `L2-187` |
 
 ### church-reference
 

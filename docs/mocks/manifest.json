@@ -18,7 +18,7 @@
     {
       "id": "sign-in",
       "kind": "page",
-      "title": "Sign in",
+      "title": "Log in",
       "route": "/sign-in",
       "states": [
         "default",
@@ -38,7 +38,7 @@
     {
       "id": "sign-up",
       "kind": "page",
-      "title": "Join",
+      "title": "Sign up",
       "route": "/join",
       "states": [
         "default",
