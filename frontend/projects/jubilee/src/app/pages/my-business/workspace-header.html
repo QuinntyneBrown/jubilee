@@ -5,7 +5,7 @@
   </div>
   @if (slug(); as slug) {
     <div class="cluster">
-      <a class="btn" [routerLink]="['/b', slug]">
+      <a jb-button [routerLink]="['/b', slug]">
         <svg jb-icon name="compass"></svg>{{ live() ? 'View public listing' : 'Preview listing' }}
       </a>
     </div>

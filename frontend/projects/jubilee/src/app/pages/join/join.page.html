@@ -5,10 +5,10 @@
       <div jb-empty-state icon="message" heading="Check your e-mail" [level]="1">
         We sent a link to <strong>{{ sentTo() }}</strong
         >. Open it within 24 hours to confirm your address.
-        <a slot="actions" class="btn btn--primary" routerLink="/verify-email"
+        <a slot="actions" jb-button variant="primary" routerLink="/verify-email"
           >Open verification page</a
         >
-        <button slot="actions" class="btn" type="button" (click)="resend()">Send it again</button>
+        <button slot="actions" jb-button type="button" (click)="resend()">Send it again</button>
       </div>
       @if (resent()) {
         <p class="text-muted" role="status">We sent a new link to {{ sentTo() }}.</p>
@@ -27,10 +27,10 @@
       >
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>JB-AUTH-503</code>.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="retry()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="retry()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <a slot="actions" class="btn" routerLink="/welcome">Back to welcome</a>
+        <a slot="actions" jb-button routerLink="/welcome">Back to welcome</a>
       </div>
     }
     @default {
@@ -205,14 +205,17 @@
           }
         </div>
         <button
-          class="btn btn--primary btn--block btn--lg"
+          jb-button
+          variant="primary"
+          block
+          size="lg"
           type="submit"
-          [attr.aria-busy]="view() === 'submitting' ? 'true' : null"
+          [busy]="view() === 'submitting'"
         >
           Create account
         </button>
         <p class="divider-text">or</p>
-        <a class="btn btn--block btn--lg" [href]="googleUrl">Join with Google</a>
+        <a jb-button block size="lg" [href]="googleUrl">Join with Google</a>
       </form>
     }
   }

@@ -10,7 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ListingChanges, ListingEditor, ListingPhoto, MY_BUSINESS_API } from 'api';
-import { BusinessCard, EmptyState, Icon } from 'components';
+import { BusinessCard, EmptyState, Icon, Button, CloseButton } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 import { WorkspaceHeader } from '../my-business/workspace-header';
 
@@ -30,7 +30,16 @@ type Saving = 'idle' | 'saving';
 /** The listing editor at /my-business/listing (L2-087, L2-088): the words, the photos and the live preview. */
 @Component({
   selector: 'jb-edit-listing-page',
-  imports: [BusinessCard, EmptyState, FormsModule, Icon, RouterLink, WorkspaceHeader],
+  imports: [
+    BusinessCard,
+    EmptyState,
+    FormsModule,
+    Icon,
+    RouterLink,
+    WorkspaceHeader,
+    Button,
+    CloseButton,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './edit-listing.page.html',

@@ -13,10 +13,10 @@
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ requests.reference }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="load(tab())">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load(tab())">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/">Back to overview</a>
+      <a slot="actions" jb-button routerLink="/">Back to overview</a>
     </div>
   }
   @case ('loading') {
@@ -41,7 +41,8 @@
         to confirm or decline.
         <a
           slot="actions"
-          class="btn btn--primary"
+          jb-button
+          variant="primary"
           [routerLink]="['/b', requests.value.listing.slug]"
         >
           <svg jb-icon name="share"></svg>Share your listing
@@ -71,14 +72,14 @@
             heading="You haven’t declined any requests"
           >
             Declined requests are kept here for 90 days.
-            <button slot="actions" class="btn" type="button" (click)="load('new')">
+            <button slot="actions" jb-button type="button" (click)="load('new')">
               Show new requests
             </button>
           </div>
         } @else {
           <div jb-empty-state [compact]="true" icon="check" heading="Nothing here right now">
             No requests are in this list.
-            <button slot="actions" class="btn" type="button" (click)="load('all')">
+            <button slot="actions" jb-button type="button" (click)="load('all')">
               Show all requests
             </button>
           </div>
@@ -101,7 +102,8 @@
               @if (isNew(row)) {
                 <div class="row__actions">
                   <button
-                    class="btn btn--sm"
+                    jb-button
+                    size="sm"
                     type="button"
                     [attr.aria-label]="'Decline request from ' + row.customerName"
                     (click)="openDecline(row)"
@@ -109,7 +111,9 @@
                     Decline
                   </button>
                   <button
-                    class="btn btn--sm btn--primary"
+                    jb-button
+                    size="sm"
+                    variant="primary"
                     type="button"
                     [attr.aria-label]="'Confirm request from ' + row.customerName"
                     (click)="openConfirm(row)"

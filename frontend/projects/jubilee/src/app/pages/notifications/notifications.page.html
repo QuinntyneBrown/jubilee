@@ -6,17 +6,12 @@
   <div class="cluster">
     @if (list(); as notifications) {
       @if (notifications.unread > 0) {
-        <button
-          class="btn"
-          type="button"
-          [attr.aria-busy]="marking() ? 'true' : null"
-          (click)="markAll()"
-        >
+        <button jb-button type="button" [busy]="marking()" (click)="markAll()">
           <svg jb-icon name="check"></svg>Mark all as read
         </button>
       }
     }
-    <a class="btn btn--ghost" routerLink="/account/notifications"
+    <a jb-button variant="ghost" routerLink="/account/notifications"
       ><svg jb-icon name="settings"></svg>Settings</a
     >
   </div>
@@ -27,10 +22,10 @@
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ errorReference() }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
     </div>
   }
   @case ('loading') {
@@ -52,7 +47,7 @@
       @if (notifications.items.length === 0) {
         <div jb-empty-state icon="bell" heading="No notifications yet">
           We’ll tell you here when a business replies, confirms a booking or answers a quote.
-          <a slot="actions" class="btn btn--primary" routerLink="/">Browse businesses</a>
+          <a slot="actions" jb-button variant="primary" routerLink="/">Browse businesses</a>
         </div>
       } @else {
         <ul class="list card card--list">

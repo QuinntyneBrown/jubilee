@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HELP_API } from 'api';
-import { EmptyState } from 'components';
+import { EmptyState, Button } from 'components';
 import { NavigationTrail } from '../../services/navigation-trail';
 import { newKey } from '../../services/message-time';
 import { ToastService } from '../../toasts/toast.service';
@@ -12,7 +12,7 @@ import { ToastService } from '../../toasts/toast.service';
  */
 @Component({
   selector: 'jb-forbidden-page',
-  imports: [RouterLink, EmptyState],
+  imports: [RouterLink, EmptyState, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './forbidden.page.html',

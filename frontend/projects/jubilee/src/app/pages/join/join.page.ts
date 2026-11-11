@@ -11,7 +11,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ACCOUNT_API, JoinRequest } from 'api';
-import { BrandMark, EmptyState, Icon } from 'components';
+import { BrandMark, EmptyState, Icon, Button } from 'components';
 import { SessionService } from '../../services/session.service';
 
 type Field = 'firstName' | 'lastName' | 'email' | 'password' | 'agreement';
@@ -66,7 +66,7 @@ function message(field: Field, code: string, passwordLength: number): string {
 /** JoinPage (L2-001 to L2-003): create an account with e-mail or Google. */
 @Component({
   selector: 'jb-join-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon],
+  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './join.page.html',

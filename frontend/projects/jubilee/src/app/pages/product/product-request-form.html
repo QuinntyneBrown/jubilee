@@ -62,7 +62,7 @@
 }
 <div class="detail-head__actions">
   @if (!item.soldOut) {
-    <button class="btn btn--primary btn--lg" type="button" (click)="submit()">
+    <button jb-button variant="primary" size="lg" type="button" (click)="submit()">
       <svg jb-icon name="bag"></svg>Request this item
     </button>
   } @else if (alertRequested()) {
@@ -76,15 +76,19 @@
   } @else {
     <button
       #alertButton
-      class="btn btn--primary btn--lg"
+      jb-button
+      variant="primary"
+      size="lg"
       type="button"
-      (click)="alertAsked.emit(alertButton)"
+      (click)="alertAsked.emit(alertButton.element)"
     >
       <svg jb-icon name="bell"></svg>Tell me when it’s back
     </button>
   }
   <a
-    class="btn btn--icon btn--lg"
+    jb-button
+    iconOnly
+    size="lg"
     [routerLink]="['/b', item.shop.slug, 'message']"
     [attr.aria-label]="'Message ' + item.shop.name"
     style="width: var(--control-height-lg)"

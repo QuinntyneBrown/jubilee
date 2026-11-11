@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CONTENT_API, ContentPage, ContentSlug, parseBody } from 'api';
-import { EmptyState, Icon } from 'components';
+import { EmptyState, Icon, Button } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 
 /**
@@ -11,7 +11,7 @@ import { LoadState, errorReference } from '../../services/load-state';
  */
 @Component({
   selector: 'jb-policy-page',
-  imports: [DatePipe, EmptyState, Icon, RouterLink],
+  imports: [DatePipe, EmptyState, Icon, RouterLink, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'container page' },
   templateUrl: './policy.page.html',

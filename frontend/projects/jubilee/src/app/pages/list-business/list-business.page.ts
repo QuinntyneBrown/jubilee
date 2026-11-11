@@ -20,7 +20,7 @@ import {
   SubmittedListing,
 } from 'api';
 import { FormsModule } from '@angular/forms';
-import { Icon, MediaTile, categoryTile, formatPrice } from 'components';
+import { Icon, MediaTile, categoryTile, formatPrice, Button } from 'components';
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
 import { clockTime, newKey } from '../../services/message-time';
@@ -87,7 +87,7 @@ function summaryFor(field: Field, code: string): string {
  */
 @Component({
   selector: 'jb-list-business-page',
-  imports: [FormsModule, RouterLink, Icon, MediaTile],
+  imports: [FormsModule, RouterLink, Icon, MediaTile, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',
 })

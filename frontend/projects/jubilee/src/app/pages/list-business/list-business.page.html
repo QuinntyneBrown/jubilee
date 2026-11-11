@@ -8,8 +8,8 @@
           Nothing more to do right now. We’ll e-mail you the moment you’re live.
         </p>
         <div class="empty__actions">
-          <a class="btn btn--primary" routerLink="/my-business">Go to My business</a>
-          <a class="btn" routerLink="/my-business">
+          <a jb-button variant="primary" routerLink="/my-business">Go to My business</a>
+          <a jb-button routerLink="/my-business">
             {{ done.kind === 'services' ? 'Add more services' : 'Add more products' }}
           </a>
         </div>
@@ -73,10 +73,10 @@
               and quote <code>JB-LST-503</code>.
             </p>
             <div class="empty__actions">
-              <button class="btn btn--primary" type="button" (click)="load()">
+              <button jb-button variant="primary" type="button" (click)="load()">
                 <svg jb-icon name="refresh"></svg>Try again
               </button>
-              <a class="btn" routerLink="/">Back to browse</a>
+              <a jb-button routerLink="/">Back to browse</a>
             </div>
           </div>
         } @else {
@@ -285,7 +285,10 @@
                       }
                     </span>
                     <button
-                      class="btn btn--icon btn--ghost btn--sm"
+                      jb-button
+                      iconOnly
+                      variant="ghost"
+                      size="sm"
                       type="button"
                       [attr.aria-label]="'Remove ' + item.name"
                       (click)="removeItem($index)"
@@ -295,7 +298,7 @@
                   </li>
                 }
                 <li>
-                  <button class="btn btn--link" type="button" (click)="addItem()">
+                  <button jb-button variant="link" type="button" (click)="addItem()">
                     <svg jb-icon name="plus"></svg
                     >{{ isServices() ? 'Add a service' : 'Add a product' }}
                   </button>
@@ -376,7 +379,8 @@
             </div>
             <div class="form-actions form-actions--bordered">
               <button
-                class="btn btn--ghost"
+                jb-button
+                variant="ghost"
                 type="button"
                 [disabled]="busy()"
                 (click)="saveDraft()"
@@ -384,10 +388,12 @@
                 Save draft
               </button>
               <button
-                class="btn btn--primary btn--lg"
+                jb-button
+                variant="primary"
+                size="lg"
                 type="submit"
                 [disabled]="session.unconfirmed()"
-                [attr.aria-busy]="busy() ? 'true' : null"
+                [busy]="busy()"
               >
                 <svg jb-icon name="verified"></svg>Submit for verification
               </button>

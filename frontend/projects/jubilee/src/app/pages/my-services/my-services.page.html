@@ -6,10 +6,10 @@
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>{{ errorReference() }}</code
         >.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
           Try again
         </button>
-        <a slot="actions" class="btn" href="/my-business">Back to overview</a>
+        <a slot="actions" jb-button href="/my-business">Back to overview</a>
       </div>
     </div>
   }
@@ -43,14 +43,14 @@
         @if (list.rows.length === 0) {
           <div jb-empty-state icon="wrench" heading="No services yet">
             Add a service so members can book a time or ask for a quote.
-            <button slot="actions" class="btn btn--primary" type="button" (click)="add(list)">
+            <button slot="actions" jb-button variant="primary" type="button" (click)="add(list)">
               Add service
             </button>
           </div>
         } @else {
           <div class="cluster cluster--between" style="margin-bottom: var(--space-4)">
             <p class="text-muted">{{ summary() }}</p>
-            <button class="btn btn--primary" type="button" (click)="add(list)">
+            <button jb-button variant="primary" type="button" (click)="add(list)">
               <svg jb-icon name="plus"></svg>Add service
             </button>
           </div>
@@ -71,7 +71,10 @@
                 }}</span>
                 <div class="row__actions">
                   <button
-                    class="btn btn--icon btn--ghost btn--sm"
+                    jb-button
+                    iconOnly
+                    variant="ghost"
+                    size="sm"
                     type="button"
                     [attr.aria-label]="'Move ' + service.name + ' up'"
                     [disabled]="first || moving()"
@@ -80,7 +83,10 @@
                     <svg jb-icon name="arrow-up"></svg>
                   </button>
                   <button
-                    class="btn btn--icon btn--ghost btn--sm"
+                    jb-button
+                    iconOnly
+                    variant="ghost"
+                    size="sm"
                     type="button"
                     [attr.aria-label]="'Move ' + service.name + ' down'"
                     [disabled]="last || moving()"
@@ -89,7 +95,10 @@
                     <svg jb-icon name="arrow-down"></svg>
                   </button>
                   <button
-                    class="btn btn--icon btn--ghost btn--sm"
+                    jb-button
+                    iconOnly
+                    variant="ghost"
+                    size="sm"
                     type="button"
                     [attr.aria-label]="'Edit ' + service.name"
                     (click)="edit(service)"
@@ -97,7 +106,10 @@
                     <svg jb-icon name="edit"></svg>
                   </button>
                   <button
-                    class="btn btn--icon btn--ghost btn--sm"
+                    jb-button
+                    iconOnly
+                    variant="ghost"
+                    size="sm"
                     type="button"
                     [attr.aria-label]="'Delete ' + service.name"
                     (click)="remove(service)"

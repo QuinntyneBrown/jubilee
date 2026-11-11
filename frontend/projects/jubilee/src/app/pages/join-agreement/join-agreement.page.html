@@ -40,11 +40,7 @@
         <span class="field__error" id="agree-error">Agree to the statement of faith to join.</span>
       }
     </div>
-    <button
-      class="btn btn--primary btn--block btn--lg"
-      type="submit"
-      [attr.aria-busy]="busy() ? 'true' : null"
-    >
+    <button jb-button variant="primary" block size="lg" type="submit" [busy]="busy()">
       Continue
     </button>
   </form>
