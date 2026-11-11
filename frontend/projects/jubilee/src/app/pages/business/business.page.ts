@@ -38,6 +38,7 @@ import {
 } from '../../dialogs/sign-in-required/sign-in-required.dialog';
 import { ListingHints } from '../../services/listing-hints';
 import { LoadState, errorReference } from '../../services/load-state';
+import { SavedStore } from '../../services/saved.store';
 import { SessionService } from '../../services/session.service';
 
 const REPLIES: Record<ReplyTimeBand, string> = {
@@ -94,6 +95,7 @@ export class BusinessPage {
   private request?: Subscription;
   private readonly session = inject(SessionService);
   private readonly dialog = inject(Dialog);
+  private readonly savedStore = inject(SavedStore);
   private slug = '';
   /** Which dialog the address asks for: /b/:slug/message or /b/:slug/book. */
   private readonly composing = signal<'message' | 'book' | 'quote' | null>(null);
@@ -102,6 +104,15 @@ export class BusinessPage {
   protected readonly state = signal<LoadState<ListingPage>>({ status: 'loading' });
   private readonly slugValue = signal('');
   protected readonly placeholders = [1, 2, 3, 4];
+
+  /** Whether the member has saved this business (L2-041). */
+  protected readonly saved = computed(() => {
+    const state = this.state();
+    return (
+      state.status === 'loaded' &&
+      this.savedStore.isSaved({ kind: 'business', slug: state.value.slug, name: state.value.name })
+    );
+  });
 
   /** What the page calls the listing: a shop, or a business. Known before it loads when the
    * listing was reached from a list (L2-034 AC4). */
@@ -155,6 +166,25 @@ export class BusinessPage {
           else this.compose(state.value);
         }
         if (!composing) this.composeRef?.close();
+      });
+    });
+    effect(() => {
+      // Hearts need to know what is saved; a visitor has no list. Coming back from sign-in with ?save=1
+      // saves the item the visitor pressed the heart for (L2-012).
+      const state = this.state();
+      const member = this.session.member();
+      untracked(() => {
+        if (!member) return;
+        this.savedStore.load();
+        if (state.status === 'loaded' && this.route.snapshot.queryParamMap.get('save') === '1') {
+          const target = {
+            kind: 'business',
+            slug: state.value.slug,
+            name: state.value.name,
+          } as const;
+          if (!this.savedStore.isSaved(target)) this.savedStore.save(target);
+          void this.router.navigate([], { queryParams: { save: null }, replaceUrl: true });
+        }
       });
     });
     inject(DestroyRef).onDestroy(() => {
@@ -281,6 +311,22 @@ export class BusinessPage {
         });
     this.composeRef = ref;
     ref.closed.subscribe(leave);
+  }
+
+  /** The heart (L2-041): a member saves or unsaves at once; a visitor is asked to join or sign in first. */
+  protected toggleSave(listing: ListingPage, button: HTMLElement): void {
+    if (!this.session.member()) {
+      this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+        data: { title: `Join to save ${listing.name}`, returnUrl: `/b/${listing.slug}?save=1` },
+        ariaLabelledBy: 'dlg-title',
+        ariaDescribedBy: 'dlg-desc',
+        ariaModal: true,
+        backdropClass: 'backdrop',
+        restoreFocus: button,
+      });
+      return;
+    }
+    this.savedStore.toggle({ kind: 'business', slug: listing.slug, name: listing.name });
   }
 
   /** The route of an action of a later journey on this listing (ADR 0007). */

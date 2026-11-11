@@ -14,6 +14,7 @@ import {
 } from '../pages/product.page';
 import { EditListingPage } from '../pages/edit-listing.page';
 import { IncomingRequestsPage } from '../pages/incoming-requests.page';
+import { SavedPage } from '../pages/saved.page';
 import { ForgotPasswordPage } from '../pages/forgot-password.page';
 import { ResetPasswordPage } from '../pages/reset-password.page';
 import { NotificationsPage } from '../pages/notifications.page';
@@ -55,6 +56,9 @@ export const screens: {
   { key: 'my-business.empty', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.error', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.paused', screen: (page) => new MyBusinessPage(page) },
+  { key: 'saved', screen: (page) => new SavedPage(page) },
+  { key: 'saved.empty', screen: (page) => new SavedPage(page) },
+  { key: 'saved.error', screen: (page) => new SavedPage(page) },
   { key: 'forgot-password', screen: (page) => new ForgotPasswordPage(page) },
   { key: 'reset-password', screen: (page) => new ResetPasswordPage(page) },
   { key: 'reset-password.expired', screen: (page) => new ResetPasswordPage(page) },

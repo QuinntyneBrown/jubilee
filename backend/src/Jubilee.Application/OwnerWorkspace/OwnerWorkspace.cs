@@ -193,7 +193,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
                 fresh.Count,
                 fresh.Count(r => r.CreatedAt > now.AddDays(-1)),
                 conversations,
-                null);
+                await SavedByMembers(listing.Id, cancellationToken));
 
             var products = await db.Products.AsNoTracking().Where(p => p.ListingId == listing.Id).ToListAsync(cancellationToken);
             var services = await db.Services.AsNoTracking().CountAsync(s => s.ListingId == listing.Id, cancellationToken);
@@ -238,6 +238,15 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             summary,
             reference,
             verification);
+    }
+
+    /// <summary>How many different members saved the business or one of its products: a count, never who (L2-041 AC6).</summary>
+    private async Task<int> SavedByMembers(Guid listingId, CancellationToken cancellationToken)
+    {
+        var productIds = await db.Products.AsNoTracking().Where(p => p.ListingId == listingId).Select(p => p.Id).ToListAsync(cancellationToken);
+        return await db.SavedItems.AsNoTracking()
+            .Where(i => (i.Kind == SavedItemKind.Business && i.TargetId == listingId) || (i.Kind == SavedItemKind.Product && productIds.Contains(i.TargetId)))
+            .Select(i => i.MemberSubject).Distinct().CountAsync(cancellationToken);
     }
 }
 

@@ -1,0 +1,73 @@
+<div class="page-header">
+  <div>
+    <h1>Saved</h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+</div>
+@let current = state();
+@switch (current.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your saved list">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading saved items…</p>
+    <ul class="card-grid" aria-hidden="true">
+      @for (item of placeholders; track item) {
+        <li class="biz-card">
+          <span class="skeleton skeleton--media"></span>
+          <span class="skeleton skeleton--text skeleton--w70"></span>
+          <span class="skeleton skeleton--text"></span>
+          <span class="skeleton skeleton--text skeleton--w50"></span>
+        </li>
+      }
+    </ul>
+  }
+  @case ('loaded') {
+    @if (list(); as saved) {
+      @if (saved.items.length === 0) {
+        <div jb-empty-state icon="heart" heading="Save businesses to find them again">
+          Tap the heart on any listing or product. Your saved list is private.
+          <a slot="actions" class="btn btn--primary" routerLink="/">Browse businesses</a>
+        </div>
+      } @else {
+        <ul class="card-grid">
+          @for (item of saved.items; track item.id) {
+            <li class="saved-card">
+              @if (item.available && item.business; as business) {
+                <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>
+              } @else if (item.available && item.product; as product) {
+                <a
+                  jb-product-card
+                  [product]="product"
+                  [routerLink]="['/b', product.businessSlug, 'p', product.slug]"
+                ></a>
+              } @else {
+                <div class="biz-card" aria-label="{{ item.name }}, no longer available">
+                  <h3 class="biz-card__name">{{ item.name }}</h3>
+                  <p class="biz-card__tagline">No longer available</p>
+                </div>
+              }
+              <button
+                #removeButton
+                class="btn btn--icon btn--sm"
+                type="button"
+                [attr.aria-label]="'Remove ' + item.name + ' from saved'"
+                (click)="remove(item, null)"
+              >
+                <svg jb-icon name="close"></svg>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+}

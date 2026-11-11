@@ -1392,6 +1392,37 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("ReviewTicks", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.SavedItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("MemberSubject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("SavedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TargetId");
+
+                    b.HasIndex("MemberSubject", "Kind", "TargetId")
+                        .IsUnique();
+
+                    b.ToTable("SavedItems", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.Service", b =>
                 {
                     b.Property<Guid>("Id")

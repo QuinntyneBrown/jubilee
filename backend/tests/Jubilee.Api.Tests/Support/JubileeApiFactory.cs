@@ -169,6 +169,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.Members);
             db.RemoveRange(db.RecentSearches);
             db.RemoveRange(db.StockAlerts);
+            db.RemoveRange(db.SavedItems);
             db.RemoveRange(db.ListingViews);
             db.RemoveRange(db.ListingPhotos);
             db.RemoveRange(db.FeaturedSlots);

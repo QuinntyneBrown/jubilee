@@ -22,6 +22,7 @@ import {
 } from '../../dialogs/sign-in-required/sign-in-required.dialog';
 import { ListingHints } from '../../services/listing-hints';
 import { LoadState, errorReference } from '../../services/load-state';
+import { SavedStore } from '../../services/saved.store';
 import { SessionService } from '../../services/session.service';
 import { ProductRequestForm, ProductSelection } from './product-request-form';
 
@@ -45,6 +46,7 @@ export class ProductPage {
   private readonly hints = inject(ListingHints);
   private readonly session = inject(SessionService);
   private readonly dialog = inject(Dialog);
+  private readonly savedStore = inject(SavedStore);
   private request?: Subscription;
   private composeRef?: { close: () => void };
   private readonly requesting = signal(false);
@@ -53,6 +55,20 @@ export class ProductPage {
   protected readonly productSlug = signal('');
   protected readonly state = signal<LoadState<ProductPageModel>>({ status: 'loading' });
   protected readonly alertRequested = signal(false);
+
+  /** Whether the member has saved this product (L2-041). */
+  protected readonly saved = computed(() => {
+    const state = this.state();
+    return (
+      state.status === 'loaded' &&
+      this.savedStore.isSaved({
+        kind: 'product',
+        shopSlug: state.value.shop.slug,
+        slug: state.value.slug,
+        name: state.value.name,
+      })
+    );
+  });
 
   /** The shop's name, known before the product loads when it was reached from a list. */
   protected readonly shopName = computed(() => {
@@ -86,6 +102,25 @@ export class ProductPage {
         if (!requesting) this.composeRef?.close();
       });
     });
+    effect(() => {
+      // Coming back from sign-in with ?save=1 saves the product the visitor pressed the heart for (L2-012).
+      const state = this.state();
+      const member = this.session.member();
+      untracked(() => {
+        if (!member) return;
+        this.savedStore.load();
+        if (state.status === 'loaded' && this.route.snapshot.queryParamMap.get('save') === '1') {
+          const target = {
+            kind: 'product',
+            shopSlug: state.value.shop.slug,
+            slug: state.value.slug,
+            name: state.value.name,
+          } as const;
+          if (!this.savedStore.isSaved(target)) this.savedStore.save(target);
+          void this.router.navigate([], { queryParams: { save: null }, replaceUrl: true });
+        }
+      });
+    });
     inject(DestroyRef).onDestroy(() => {
       urls.unsubscribe();
       params.unsubscribe();
@@ -112,6 +147,30 @@ export class ProductPage {
         }
         this.state.set({ status: 'error', reference: errorReference(error, 'JB-PRD-503') });
       },
+    });
+  }
+
+  /** The heart (L2-041): a member saves or unsaves at once; a visitor is asked to join or sign in first. */
+  protected toggleSave(product: ProductPageModel, button: HTMLElement): void {
+    if (!this.session.member()) {
+      this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+        data: {
+          title: `Join to save ${product.name}`,
+          returnUrl: `/b/${product.shop.slug}/p/${product.slug}?save=1`,
+        },
+        ariaLabelledBy: 'dlg-title',
+        ariaDescribedBy: 'dlg-desc',
+        ariaModal: true,
+        backdropClass: 'backdrop',
+        restoreFocus: button,
+      });
+      return;
+    }
+    this.savedStore.toggle({
+      kind: 'product',
+      shopSlug: product.shop.slug,
+      slug: product.slug,
+      name: product.name,
     });
   }
 
