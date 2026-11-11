@@ -32,8 +32,7 @@ export const FILM_STILL = photo('film-still');
 /** The number of verified businesses the page speaks of. */
 export const BUSINESS_COUNT = 47;
 
-/** The search results in the glimpse of the app: "Home repairs near Leslieville". */
-export const GLIMPSE_RESULTS: readonly MarketingBusiness[] = [
+const GLIMPSE_RESULTS: readonly MarketingBusiness[] = [
   {
     name: 'WaterWorks Plumbing & Drains',
     tagline: 'Treating Every Customer As Family',
@@ -59,6 +58,13 @@ export const GLIMPSE_RESULTS: readonly MarketingBusiness[] = [
     photo: PHOTOS.roofing,
   },
 ];
+
+/** The glimpse of the app beside the opening: a search and the four businesses it found. */
+export const GLIMPSE = {
+  search: 'Home repairs near Leslieville',
+  caption: 'Home & property · 11 verified',
+  results: GLIMPSE_RESULTS,
+} as const;
 
 /** The cards of "Shops and services, side by side."; the first one is the featured card. */
 export const INSIDE_CARDS: readonly MarketingBusiness[] = [
