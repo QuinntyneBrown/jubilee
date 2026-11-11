@@ -1,0 +1,18 @@
+<label class="choice-card">
+  <input
+    type="radio"
+    [name]="name()"
+    [attr.id]="controlId()"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    [attr.aria-invalid]="invalid() ? 'true' : null"
+    (change)="selected.emit()"
+  />
+  @if (icon(); as icon) {
+    <span class="choice-card__icon" aria-hidden="true"><svg jb-icon [name]="icon"></svg></span>
+  }
+  <span>
+    <span class="choice-card__title">{{ heading() }}</span>
+    <span class="choice-card__text"><ng-content /></span>
+  </span>
+</label>

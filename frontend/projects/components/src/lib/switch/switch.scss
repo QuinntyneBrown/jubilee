@@ -1,0 +1,53 @@
+// Block: switch. The host holds the native checkbox, drawn as a track with a thumb.
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  min-height: var(--target-min);
+}
+
+input {
+  appearance: none;
+  margin: 0;
+  flex: none;
+  width: var(--target-comfortable);
+  height: var(--target-min);
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+  position: relative;
+  cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease-standard);
+}
+
+// The thumb.
+input::before {
+  content: '';
+  position: absolute;
+  top: var(--space-0-5);
+  left: var(--space-0-5);
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-1);
+  transition: translate var(--duration-base) var(--ease-standard);
+}
+
+input:checked {
+  background: var(--color-accent);
+  box-shadow: inset 0 0 0 var(--border-width-hairline) var(--color-accent-border);
+}
+
+input:checked::before {
+  translate: var(--icon-size-md) 0;
+}
+
+input:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 var(--border-width-hairline) var(--color-fg-muted);
+}
+
+input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
