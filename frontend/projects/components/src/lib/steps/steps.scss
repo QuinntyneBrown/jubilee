@@ -1,0 +1,15 @@
+// Block: steps. The host is the list; it counts its steps.
+:host {
+  display: grid;
+  gap: var(--space-6);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: step;
+}
+
+@media (min-width: 48rem) {
+  :host {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

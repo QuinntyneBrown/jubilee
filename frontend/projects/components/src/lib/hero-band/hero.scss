@@ -1,0 +1,38 @@
+// Block: hero. The host is the section.
+@use './on-brand' as brand;
+
+:host {
+  @include brand.knobs;
+
+  --jb-chip-selected-border: var(--color-accent);
+
+  display: block;
+  background: var(--color-bg-brand);
+  color: var(--color-fg-on-brand);
+  padding-block: var(--space-6) var(--space-8);
+}
+
+.hero__greeting {
+  font: var(--text-body-sm);
+  color: var(--color-fg-on-brand-muted);
+  margin-bottom: var(--space-1);
+}
+
+h1 {
+  max-width: 18ch;
+}
+
+.hero__sub {
+  color: var(--color-fg-on-brand-muted);
+  margin-top: var(--space-3);
+}
+
+@media (min-width: 64rem) {
+  :host {
+    padding-block: var(--space-10) var(--space-10);
+  }
+
+  h1 {
+    font-size: var(--font-size-5xl);
+  }
+}

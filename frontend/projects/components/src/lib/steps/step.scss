@@ -1,0 +1,19 @@
+// Block: steps, one step. Its number is drawn from the list's counter.
+:host {
+  counter-increment: step;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+:host::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-fg-on-accent);
+  font: var(--text-h4);
+}

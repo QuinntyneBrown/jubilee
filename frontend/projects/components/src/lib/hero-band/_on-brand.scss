@@ -1,0 +1,15 @@
+// What a block of brand ink gives the components inside it: chips, ghost buttons and the focus
+// ring drawn for a dark ground in both themes.
+@mixin knobs {
+  --color-focus-ring: var(--color-focus-ring-on-brand);
+  --jb-chip-bg: var(--color-bg-on-brand-subtle);
+  --jb-chip-border: var(--color-border-on-brand);
+  --jb-chip-fg: var(--color-fg-on-brand);
+  --jb-chip-bg-hover: var(--color-border-on-brand);
+  --jb-chip-min-height: var(--control-height-md);
+  --jb-chip-padding-inline: var(--space-4);
+  --jb-btn-ghost-fg: var(--color-fg-on-brand);
+  --jb-btn-ghost-border: var(--color-border-on-brand);
+  --jb-btn-ghost-bg-hover: var(--color-bg-on-brand-subtle);
+  --jb-btn-ghost-bg-active: var(--color-border-on-brand);
+}
