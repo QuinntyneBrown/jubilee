@@ -79,7 +79,18 @@ export default defineConfig({
     trace: 'off',
   },
   // Chromium only (AGENTS.md).
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        // Parity compares pixels: without this flag Chromium draws text with coloured (LCD)
+        // edges on some layers and grey edges on others, so the same text can differ between
+        // the mock and the app by how the page happens to be layered.
+        ...(parity ? { launchOptions: { args: ['--disable-lcd-text'] } } : {}),
+      },
+    },
+  ],
   webServer: mocks ? [mocksServer] : recording ? [apiServer, ...appServers] : appServers,
   globalTeardown: recording ? './fixtures/record-api-teardown.ts' : undefined,
 });

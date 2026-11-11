@@ -12,7 +12,16 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BookedRequest, DeliveryMethod, OrderOptions, REQUESTS_API } from 'api';
-import { Icon, MediaTile, formatPrice, Button, Alert, Field, Textarea } from 'components';
+import {
+  Icon,
+  MediaTile,
+  formatPrice,
+  Button,
+  Alert,
+  Field,
+  Textarea,
+  RadioGroup,
+} from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from '../../services/message-time';
 
@@ -43,7 +52,7 @@ function money(cents: number): string {
  */
 @Component({
   selector: 'jb-request-item-dialog',
-  imports: [FormsModule, RouterLink, Icon, MediaTile, Button, Alert, Field, Textarea],
+  imports: [FormsModule, RouterLink, Icon, MediaTile, Button, Alert, Field, Textarea, RadioGroup],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './request-item.dialog.html',
@@ -57,6 +66,13 @@ export class RequestItemDialog implements OnInit {
   protected readonly view = signal<View>('loading');
   protected readonly options = signal<OrderOptions | null>(null);
   protected readonly methodId = signal('');
+  protected readonly deliveryOptions = computed(() =>
+    (this.options()?.deliveryMethods ?? []).map((method) => ({
+      value: method.id,
+      label: method.label,
+      hint: method.detail,
+    })),
+  );
   protected readonly address = signal('');
   protected readonly note = signal('');
   protected readonly addressProblem = signal('');

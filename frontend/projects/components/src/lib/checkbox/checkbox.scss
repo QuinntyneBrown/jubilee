@@ -1,0 +1,8 @@
+// Block: choice, as a checkbox. The host holds the label.
+@use './choice';
+
+:host {
+  display: block;
+}
+
+@include choice.choice('.choice');

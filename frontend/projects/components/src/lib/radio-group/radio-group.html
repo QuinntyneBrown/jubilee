@@ -1,0 +1,28 @@
+<legend>
+  {{ legend() }}
+  @if (required()) {
+    <span class="optional text-muted">(required)</span>
+  }
+</legend>
+@for (option of options(); track option.value; let i = $index) {
+  <label class="choice">
+    <input
+      type="radio"
+      [name]="groupName()"
+      [id]="controlId() + '-' + i"
+      [value]="option.value"
+      [checked]="value() === option.value"
+      [attr.aria-invalid]="error() ? 'true' : null"
+      (change)="valueChange.emit(option.value)"
+    />
+    <span class="choice__text"
+      >{{ option.label }}
+      @if (option.hint) {
+        <small>{{ option.hint }}</small>
+      }
+    </span>
+  </label>
+}
+@if (error(); as error) {
+  <span jb-field-error [id]="errorId()">{{ error }}</span>
+}

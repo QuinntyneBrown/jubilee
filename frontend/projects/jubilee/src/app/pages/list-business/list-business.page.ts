@@ -33,6 +33,7 @@ import {
   Field,
   Input,
   Select,
+  Checkbox,
 } from 'components';
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
@@ -120,6 +121,7 @@ function summaryFor(field: FieldName, code: string): string {
     FieldHelp,
     Input,
     Select,
+    Checkbox,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',

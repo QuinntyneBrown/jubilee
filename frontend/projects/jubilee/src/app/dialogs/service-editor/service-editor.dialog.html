@@ -127,26 +127,20 @@
             [error]="errors().modes"
             [attr.aria-invalid]="errors().modes ? 'true' : null"
           >
-            <label class="choice">
-              <input
-                type="checkbox"
-                name="video"
-                [ngModel]="video()"
-                (ngModelChange)="video.set($event)"
-                [disabled]="busy()"
-              />
-              <span>Video call</span>
-            </label>
-            <label class="choice">
-              <input
-                type="checkbox"
-                name="inPerson"
-                [ngModel]="inPerson()"
-                (ngModelChange)="inPerson.set($event)"
-                [disabled]="busy()"
-              />
-              <span>In person</span>
-            </label>
+            <jb-checkbox
+              name="video"
+              [checked]="video()"
+              (checkedChange)="video.set($event)"
+              [disabled]="busy()"
+              >Video call</jb-checkbox
+            >
+            <jb-checkbox
+              name="inPerson"
+              [checked]="inPerson()"
+              (checkedChange)="inPerson.set($event)"
+              [disabled]="busy()"
+              >In person</jb-checkbox
+            >
           </fieldset>
         </div>
         @if (inPerson()) {

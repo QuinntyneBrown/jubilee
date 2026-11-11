@@ -12,21 +12,16 @@
   }
   <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
     <div>
-      <label class="choice">
-        <input
-          type="checkbox"
-          id="agree"
-          [checked]="agreed()"
-          (change)="agreed.set($any($event.target).checked)"
-          [attr.aria-invalid]="invalid() ? 'true' : null"
-          [attr.aria-describedby]="invalid() ? 'agree-error' : null"
-        />
-        <span class="choice__text"
-          >I am 18 or older and I agree to Jubilee’s
-          <a href="/statement-of-faith" target="_blank" rel="noopener">statement of faith</a> and
-          <a href="/terms" target="_blank" rel="noopener">terms</a>.</span
-        >
-      </label>
+      <jb-checkbox
+        controlId="agree"
+        [checked]="agreed()"
+        (checkedChange)="agreed.set($event)"
+        [invalid]="!!invalid()"
+        [describedBy]="invalid() ? 'agree-error' : null"
+        >I am 18 or older and I agree to Jubilee’s
+        <a href="/statement-of-faith" target="_blank" rel="noopener">statement of faith</a> and
+        <a href="/terms" target="_blank" rel="noopener">terms</a>.</jb-checkbox
+      >
       @if (invalid()) {
         <span jb-field-error id="agree-error">Agree to the statement of faith to join.</span>
       }

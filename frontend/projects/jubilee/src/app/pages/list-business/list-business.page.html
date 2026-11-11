@@ -300,25 +300,18 @@
               </div>
             </fieldset>
             <div>
-              <label class="choice">
-                <input
-                  type="checkbox"
-                  id="agree"
-                  name="agreed"
-                  [disabled]="busy()"
-                  [checked]="agreed()"
-                  [attr.aria-invalid]="errors().agreed ? 'true' : null"
-                  [attr.aria-describedby]="errors().agreed ? 'agree-error' : null"
-                  (change)="agreed.set($any($event.target).checked); clear('agreed'); touched()"
-                />
-                <span class="choice__text"
-                  >I agree to Jubilee’s
-                  <a href="/statement-of-faith" target="_blank" rel="noopener"
-                    >statement of faith</a
-                  >
-                  and to deal honestly with every customer.</span
-                >
-              </label>
+              <jb-checkbox
+                controlId="agree"
+                name="agreed"
+                [disabled]="busy()"
+                [checked]="agreed()"
+                [invalid]="!!errors().agreed"
+                [describedBy]="errors().agreed ? 'agree-error' : null"
+                (checkedChange)="agreed.set($event); clear('agreed'); touched()"
+                >I agree to Jubilee’s
+                <a href="/statement-of-faith" target="_blank" rel="noopener">statement of faith</a>
+                and to deal honestly with every customer.</jb-checkbox
+              >
               @if (errors().agreed; as message) {
                 <span jb-field-error id="agree-error">{{ message }}</span>
               }

@@ -97,21 +97,6 @@ hr, .divider { border: 0; border-top: var(--border-width-hairline) solid var(--c
 .search { position: relative; min-width: 0; }
 .search { --jb-input-padding-left: var(--space-10); }
 .search .icon { position: absolute; left: var(--space-3); top: 50%; translate: 0 -50%; width: var(--icon-size-md); height: var(--icon-size-md); color: var(--color-fg-subtle); pointer-events: none; }
-.choice { display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer; font: var(--text-body); padding-block: var(--space-1); min-height: var(--target-min); }
-.choice input { appearance: none; flex: none; width: var(--icon-size-md); height: var(--icon-size-md); margin: var(--space-0-5) 0 0; border: var(--border-width-hairline) solid var(--color-border-strong); background: var(--color-bg-surface); display: grid; place-content: center; cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard); }
-.choice input[type="checkbox"] { border-radius: var(--radius-xs); }
-.choice input[type="radio"] { border-radius: var(--radius-full); }
-.choice input:checked, .choice input[data-state="checked"] { background: var(--color-accent); border-color: var(--color-accent-border); }
-.choice input:hover:not(:disabled), .choice input[data-state="hover"] { border-color: var(--color-fg-muted); }
-.choice input[type="checkbox"]:checked::before, .choice input[type="checkbox"][data-state="checked"]::before { content: ""; width: 0.75rem; height: 0.75rem; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); background: var(--color-fg-on-accent); }
-.choice input[type="checkbox"]:indeterminate::before, .choice input[type="checkbox"][data-state="indeterminate"]::before { content: ""; width: var(--space-3); height: var(--border-width-thick); background: var(--color-fg-on-accent); }
-.choice input[type="checkbox"]:indeterminate, .choice input[type="checkbox"][data-state="indeterminate"] { background: var(--color-accent); border-color: var(--color-accent-border); }
-.choice input[type="radio"]:checked::before, .choice input[type="radio"][data-state="checked"]::before { content: ""; width: var(--indicator-size); height: var(--indicator-size); border-radius: var(--radius-full); background: var(--color-fg-on-accent); }
-.choice input:disabled, .choice input[data-state="disabled"] { background: var(--color-bg-subtle); border-color: var(--color-border-default); cursor: not-allowed; }
-.choice input:disabled + *, .choice input[data-state="disabled"] + * { color: var(--color-fg-disabled); }
-.choice input[aria-invalid="true"], .choice input[data-state="invalid"] { border-color: var(--color-danger-solid); box-shadow: inset 0 0 0 var(--border-width-hairline) var(--color-danger-solid); }
-.choice__text { display: flex; flex-direction: column; gap: var(--space-0-5); }
-.choice__text small { color: var(--color-fg-muted); }
 .switch { display: inline-flex; align-items: center; gap: var(--space-3); cursor: pointer; min-height: var(--target-min); }
 .switch input { appearance: none; margin: 0; flex: none; width: var(--target-comfortable); height: var(--target-min); border-radius: var(--radius-full); background: var(--color-border-strong); position: relative; cursor: pointer; transition: background-color var(--duration-base) var(--ease-standard); }
 .switch input::before { content: ""; position: absolute; top: var(--space-0-5); left: var(--space-0-5); width: var(--icon-size-md); height: var(--icon-size-md); border-radius: var(--radius-full); background: var(--color-bg-surface); box-shadow: var(--shadow-1); transition: translate var(--duration-base) var(--ease-standard); }

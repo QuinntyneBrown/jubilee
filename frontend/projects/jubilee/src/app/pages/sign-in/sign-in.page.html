@@ -42,16 +42,13 @@
       </div>
       <div class="cluster cluster--between">
         <div>
-          <label class="choice">
-            <input
-              type="checkbox"
-              id="remember"
-              [checked]="keep()"
-              (change)="keep.set($any($event.target).checked)"
-              [disabled]="view() === 'submitting'"
-            />
-            <span class="choice__text">Keep me signed in</span>
-          </label>
+          <jb-checkbox
+            controlId="remember"
+            [checked]="keep()"
+            (checkedChange)="keep.set($event)"
+            [disabled]="view() === 'submitting'"
+            >Keep me signed in</jb-checkbox
+          >
         </div>
         <a routerLink="/forgot-password">Forgot password?</a>
       </div>

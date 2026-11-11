@@ -67,31 +67,17 @@
           <div jb-alert tone="danger" role="alert">We couldn’t send that. Try again.</div>
         }
         <form class="stack" novalidate (submit)="$event.preventDefault(); send()">
-          <fieldset [disabled]="busy()">
-            <legend>
-              {{ request.question }} <span class="optional text-muted">(required)</span>
-            </legend>
-            @for (option of request.answers; track option.value; let i = $index) {
-              <label class="choice">
-                <input
-                  type="radio"
-                  name="know"
-                  [id]="'know-' + i"
-                  [value]="option.value"
-                  [checked]="answer() === option.value"
-                  [attr.aria-invalid]="codes().answer ? 'true' : null"
-                  [attr.aria-describedby]="codes().answer ? 'know-error' : null"
-                  (change)="answer.set(option.value); clear('answer')"
-                />
-                <span class="choice__text"
-                  >{{ option.label }}<small>{{ option.hint }}</small></span
-                >
-              </label>
-            }
-            @if (codes().answer) {
-              <span jb-field-error id="know-error">{{ problems()[0].message }}</span>
-            }
-          </fieldset>
+          <fieldset
+            jb-radio-group
+            [legend]="request.question"
+            required
+            controlId="know"
+            [options]="request.answers"
+            [value]="answer()"
+            (valueChange)="answer.set($event); clear('answer')"
+            [disabled]="busy()"
+            [error]="codes().answer ? problems()[0].message : null"
+          ></fieldset>
           <div
             jb-field
             label="Your name"

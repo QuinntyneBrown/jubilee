@@ -1,0 +1,13 @@
+<label class="choice">
+  <input
+    type="checkbox"
+    [attr.id]="controlId()"
+    [attr.name]="name()"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    [attr.aria-invalid]="invalid() ? 'true' : null"
+    [attr.aria-describedby]="describedBy()"
+    (change)="toggle($event)"
+  />
+  <span class="choice__text"><ng-content /></span>
+</label>
