@@ -16,11 +16,11 @@
 
 ## Not yet built (journey 4)
 
-- Turnstile widget on the join form (the API verifies a token when one is configured; the form sends none).
+- A Turnstile widget and its keys in Azure: the join form shows the bot challenge and sends its token once `BotChallenge__SiteKey` and `BotChallenge__SecretKey` are set (`jb-bot-challenge`, `join.spec.ts`).
 - `/account` (where "Change e-mail" leads) and the unsubscribe and preferences links of e-mails (journey 24).
 - Reference e-mails (L2-080). The e-mail provider is in place (ADR 0038, `docs/estimates/operations.md`).
 - Session lifetime and `/session-expired` (L2-010), the `__Host-` cookie prefix, a CSP on the SPA host and the TLS redirect.
-- Return-to-action after joining beyond the return URL (L2-012).
+- Return-to-action after joining: after confirming, the member is offered the page they were going to (L2-012 AC5); the action itself (the message dialog) is not reopened.
 - Visual states of the join form that need interaction (`invalid`, `submitting`, `success`, `error`) have no `routes.ts` entry; the behaviour spec covers them.
 
 reset-password (ADR 0026): the forgot-password and reset-password pages, the queued request with the 3-an-hour limit, hashed single-use 60-minute links, the reset that ends earlier sessions, the security e-mail and the smallest password sign-in are done with tests. Deferred: a 429 for reset requests, the on-call alert and the session list (journey 20).

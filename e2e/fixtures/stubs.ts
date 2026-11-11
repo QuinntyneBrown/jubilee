@@ -397,6 +397,15 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return page.route(confirmation, pending);
     case 'verify-email-success':
       return stubConfirmation(page, { outcome: 'confirmed', firstName: 'Joanna' });
+    case 'verify-email-success-return':
+      // The browser remembers where the visitor was going when they were asked to join (L2-012 AC5).
+      await page.addInitScript(() => {
+        localStorage.setItem(
+          'jubilee-return-after-join',
+          JSON.stringify({ path: '/b/legacy-financial', at: Date.now() }),
+        );
+      });
+      return stubConfirmation(page, { outcome: 'confirmed', firstName: 'Joanna' });
     case 'verify-email-expired':
       return stubConfirmation(page, { outcome: 'expired', firstName: null });
     case 'verify-email-error':

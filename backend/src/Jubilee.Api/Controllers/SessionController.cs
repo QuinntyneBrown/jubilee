@@ -17,8 +17,11 @@ public sealed record SignInRequest(string? Email, string? Password, bool KeepSig
 
 [ApiController]
 [Route("api/session")]
-public sealed class SessionController(ISender sender, IGoogleIdentityClient google) : ControllerBase
+public sealed class SessionController(ISender sender, IGoogleIdentityClient google, IConfiguration configuration) : ControllerBase
 {
+    /// <summary>The public site key of the bot challenge, when one is configured (<c>BotChallenge:SiteKey</c>, L2-137 AC2).</summary>
+    private string? ChallengeSiteKey => configuration["BotChallenge:SiteKey"] is { Length: > 0 } key ? key : null;
+
     /// <summary>Signs in with e-mail and password (L2-006). Throttled (L2-007); the answer does not reveal whether the e-mail has an account (L2-141).</summary>
     [HttpPost]
     [AllowAnonymous]
@@ -92,7 +95,7 @@ public sealed class SessionController(ISender sender, IGoogleIdentityClient goog
 
         if (User.Identity?.IsAuthenticated != true)
         {
-            return SessionDto.Visitor(google.IsConfigured);
+            return SessionDto.Visitor(google.IsConfigured, ChallengeSiteKey);
         }
 
         // A member of the accounts table: the e-mail status is read from the database every time,
@@ -133,9 +136,10 @@ public sealed record SessionDto(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? AgreementRequired,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? OtherSessionCount,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? IsVerifier = null,
-    bool GoogleSignIn = false)
+    bool GoogleSignIn = false,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? BotChallengeSiteKey = null)
 {
     /// <summary>A visitor. <paramref name="googleSignIn"/> says whether the Google buttons can be shown (L2-003 AC5).</summary>
-    public static SessionDto Visitor(bool googleSignIn) =>
-        new(false, null, null, null, null, null, null, null, null, GoogleSignIn: googleSignIn);
+    public static SessionDto Visitor(bool googleSignIn, string? botChallengeSiteKey = null) =>
+        new(false, null, null, null, null, null, null, null, null, GoogleSignIn: googleSignIn, BotChallengeSiteKey: botChallengeSiteKey);
 }
