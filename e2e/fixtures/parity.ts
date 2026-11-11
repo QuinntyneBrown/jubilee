@@ -72,7 +72,10 @@ export interface ParityOptions {
   reference: Reference;
 }
 
-/** Brings the region to the middle of the viewport, clear of the fixed bars at its edges. */
+/**
+ * Brings the region to the middle of the viewport, clear of the fixed bars at its edges. The
+ * pages scroll smoothly, so the jump is made instant: the shot is never taken mid-scroll.
+ */
 async function centre(region: Locator): Promise<void> {
   // The bundled face must be drawn before a region is measured or captured.
   await region.page().evaluate(() => document.fonts.ready.then(() => undefined));
