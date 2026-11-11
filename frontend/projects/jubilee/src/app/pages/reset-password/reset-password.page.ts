@@ -12,14 +12,14 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
-import { BrandMark, EmptyState, Icon, Button, FormSummary } from 'components';
+import { BrandMark, EmptyState, Icon, Button, FormSummary, FieldControl, Field } from 'components';
 
 type View = 'loading' | 'form' | 'submitting' | 'success' | 'expired' | 'error';
-type Field = 'password' | 'confirm';
+type FieldName = 'password' | 'confirm';
 
 const MIN_PASSWORD = 10;
 const MAX_PASSWORD = 128;
-const IDS: Record<Field, string> = { password: 'password', confirm: 'confirm' };
+const IDS: Record<FieldName, string> = { password: 'password', confirm: 'confirm' };
 const SUMMARY: Record<string, string> = {
   PASSWORD_TOO_SHORT: 'Use at least 10 characters',
   PASSWORD_BREACHED: 'Choose a password that has not been in a data breach',
@@ -51,7 +51,17 @@ function text(code: string, length: number): string {
  */
 @Component({
   selector: 'jb-reset-password-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, FormSummary],
+  imports: [
+    FormsModule,
+    RouterLink,
+    BrandMark,
+    EmptyState,
+    Icon,
+    Button,
+    FormSummary,
+    Field,
+    FieldControl,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './reset-password.page.html',
@@ -66,10 +76,12 @@ export class ResetPasswordPage implements OnInit {
   protected readonly accountEmail = signal('');
   protected readonly password = signal('');
   protected readonly repeat = signal('');
-  protected readonly errors = signal<Partial<Record<Field, { code: string; text: string }>>>({});
+  protected readonly errors = signal<Partial<Record<FieldName, { code: string; text: string }>>>(
+    {},
+  );
 
   protected readonly summary = computed(() =>
-    (Object.keys(this.errors()) as Field[]).map((field) => ({
+    (Object.keys(this.errors()) as FieldName[]).map((field) => ({
       id: IDS[field],
       text: SUMMARY[this.errors()[field]?.code ?? ''] ?? 'Check this field',
     })),
@@ -97,7 +109,7 @@ export class ResetPasswordPage implements OnInit {
 
   protected submit(): void {
     if (this.view() === 'submitting') return;
-    const errors: Partial<Record<Field, { code: string; text: string }>> = {};
+    const errors: Partial<Record<FieldName, { code: string; text: string }>> = {};
     const length = this.password().length;
     if (length === 0) errors.password = { code: 'REQUIRED', text: text('REQUIRED', 0) };
     else if (length < MIN_PASSWORD)
@@ -133,9 +145,9 @@ export class ResetPasswordPage implements OnInit {
     if (failure.status === 410) {
       this.view.set('expired');
     } else if (failure.status === 422 && failure.error?.errors) {
-      const mapped: Partial<Record<Field, { code: string; text: string }>> = {};
+      const mapped: Partial<Record<FieldName, { code: string; text: string }>> = {};
       for (const [key, code] of Object.entries<string>(failure.error.errors)) {
-        const field: Field = key === 'repeatPassword' ? 'confirm' : 'password';
+        const field: FieldName = key === 'repeatPassword' ? 'confirm' : 'password';
         mapped[field] = { code, text: text(code, this.password().length) };
       }
       this.errors.set(mapped);

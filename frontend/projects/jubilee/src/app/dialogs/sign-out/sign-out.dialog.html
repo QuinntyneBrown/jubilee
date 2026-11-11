@@ -9,7 +9,7 @@
         You’ll stay signed in on your other device. An unsent message draft is kept on this phone.
       </p>
       @if (failed()) {
-        <p class="field__error" role="alert">We couldn’t sign you out. Try again.</p>
+        <p jb-field-error role="alert">We couldn’t sign you out. Try again.</p>
       }
     </div>
     <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">

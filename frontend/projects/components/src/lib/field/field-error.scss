@@ -1,0 +1,14 @@
+// Element: field__error. The host is the span or the paragraph.
+:host {
+  display: flex;
+  gap: var(--space-1);
+  align-items: flex-start;
+  font: var(--text-body-sm);
+  color: var(--color-danger-fg);
+}
+
+// The sign says "error" without colour; the text after it is what is read.
+:host::before {
+  content: '⚠' / '';
+  flex: none;
+}

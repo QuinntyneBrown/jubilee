@@ -14,10 +14,9 @@
     </button>
   </div>
   <div class="dialog__body stack">
-    <div class="field">
-      <label class="field__label" for="d-link">Link</label>
+    <div jb-field label="Link" controlId="d-link">
       <div class="input-group">
-        <input class="input" id="d-link" type="text" [value]="url" readonly />
+        <input class="input" jbFieldControl type="text" [value]="url" readonly />
         <button jb-button variant="primary" type="button" (click)="copy()">
           {{ copied() ? 'Copied ✓' : 'Copy' }}
         </button>

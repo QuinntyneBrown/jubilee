@@ -10,29 +10,39 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ACCOUNT_API, JoinRequest } from 'api';
-import { BrandMark, EmptyState, Icon, Button, Alert, FormSummary } from 'components';
+import {
+  BrandMark,
+  EmptyState,
+  Icon,
+  Button,
+  Alert,
+  FormSummary,
+  FieldControl,
+  FieldError,
+  Field,
+} from 'components';
 import { SessionService } from '../../services/session.service';
 
-type Field = 'firstName' | 'lastName' | 'email' | 'password' | 'agreement';
+type FieldName = 'firstName' | 'lastName' | 'email' | 'password' | 'agreement';
 type View = 'form' | 'submitting' | 'success' | 'error';
 
 const MAX = { name: 50, email: 254, password: 128, church: 100 };
 const MIN_PASSWORD = 10;
-const IDS: Record<Field, string> = {
+const IDS: Record<FieldName, string> = {
   firstName: 'first',
   lastName: 'last',
   email: 'email',
   password: 'password',
   agreement: 'agree',
 };
-const REQUIRED_TEXT: Record<Field, string> = {
+const REQUIRED_TEXT: Record<FieldName, string> = {
   firstName: 'Enter your first name.',
   lastName: 'Enter your last name.',
   email: 'Enter your e-mail address.',
   password: 'Enter a password.',
   agreement: 'Agree to the statement of faith to join.',
 };
-const SUMMARY_TEXT: Record<Field, string> = {
+const SUMMARY_TEXT: Record<FieldName, string> = {
   firstName: 'Enter your first name',
   lastName: 'Enter your last name',
   email: 'Enter a valid e-mail address',
@@ -41,7 +51,7 @@ const SUMMARY_TEXT: Record<Field, string> = {
 };
 
 /** The text of a field error, by the code the API answers with (L2-001). */
-function message(field: Field, code: string, passwordLength: number): string {
+function message(field: FieldName, code: string, passwordLength: number): string {
   switch (code) {
     case 'REQUIRED':
       return REQUIRED_TEXT[field];
@@ -65,7 +75,19 @@ function message(field: Field, code: string, passwordLength: number): string {
 /** JoinPage (L2-001 to L2-003): create an account with e-mail or Google. */
 @Component({
   selector: 'jb-join-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert, FormSummary],
+  imports: [
+    FormsModule,
+    RouterLink,
+    BrandMark,
+    EmptyState,
+    Icon,
+    Button,
+    Alert,
+    FormSummary,
+    Field,
+    FieldControl,
+    FieldError,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './join.page.html',
@@ -84,7 +106,7 @@ export class JoinPage {
   protected readonly password = signal('');
   protected readonly homeChurch = signal('');
   protected readonly agreed = signal(false);
-  protected readonly errors = signal<Partial<Record<Field, string>>>({});
+  protected readonly errors = signal<Partial<Record<FieldName, string>>>({});
   protected readonly sentTo = signal('');
   protected readonly notice = signal<string | null>(null);
   protected readonly resent = signal(false);
@@ -93,7 +115,7 @@ export class JoinPage {
   }`;
 
   protected readonly summary = computed(() =>
-    (Object.keys(this.errors()) as Field[]).map((field) => ({
+    (Object.keys(this.errors()) as FieldName[]).map((field) => ({
       field,
       id: IDS[field],
       text: (this.errors()[field] ?? '').startsWith('An account already')
@@ -104,7 +126,7 @@ export class JoinPage {
 
   protected submit(): void {
     if (this.view() === 'submitting') return;
-    const errors: Partial<Record<Field, string>> = {};
+    const errors: Partial<Record<FieldName, string>> = {};
     if (!this.firstName().trim()) errors.firstName = message('firstName', 'REQUIRED', 0);
     if (!this.lastName().trim()) errors.lastName = message('lastName', 'REQUIRED', 0);
     if (!this.email().trim()) errors.email = message('email', 'REQUIRED', 0);
@@ -144,9 +166,9 @@ export class JoinPage {
   private failed(error: HttpErrorResponse): void {
     this.view.set('form');
     if (error.status === 422 && error.error?.errors) {
-      const mapped: Partial<Record<Field, string>> = {};
+      const mapped: Partial<Record<FieldName, string>> = {};
       for (const [key, code] of Object.entries<string>(error.error.errors)) {
-        const field = (key === 'challenge' ? 'email' : key) as Field;
+        const field = (key === 'challenge' ? 'email' : key) as FieldName;
         if (field in IDS) mapped[field] = message(field, code, this.password().length);
       }
       this.errors.set(mapped);

@@ -5,9 +5,18 @@ import { FormsModule } from '@angular/forms';
 import { Meta } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { REFERENCE_API, ReferenceAnswerValue, ReferenceRequestView } from 'api';
-import { BrandMark, Icon, Button, Alert, FormSummary } from 'components';
+import {
+  BrandMark,
+  Icon,
+  Button,
+  Alert,
+  FormSummary,
+  FieldControl,
+  FieldError,
+  Field,
+} from 'components';
 
-type Field = 'answer' | 'name' | 'role' | 'note';
+type FieldName = 'answer' | 'name' | 'role' | 'note';
 
 const NOTE_LIMIT = 1000;
 
@@ -21,7 +30,18 @@ const MESSAGES: Record<string, string> = {
 /** ChurchReferencePage (L2-081, L2-082): a pastor or elder confirms or declines the owner, without an account. */
 @Component({
   selector: 'jb-church-reference-page',
-  imports: [FormsModule, RouterLink, BrandMark, Icon, Button, Alert, FormSummary],
+  imports: [
+    FormsModule,
+    RouterLink,
+    BrandMark,
+    Icon,
+    Button,
+    Alert,
+    FormSummary,
+    Field,
+    FieldControl,
+    FieldError,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './church-reference.page.html',
@@ -46,11 +66,11 @@ export class ChurchReferencePage {
   protected readonly note = signal('');
   protected readonly busy = signal(false);
   protected readonly failed = signal(false);
-  protected readonly codes = signal<Partial<Record<Field, string>>>({});
+  protected readonly codes = signal<Partial<Record<FieldName, string>>>({});
   protected readonly thanks = signal('');
 
   protected readonly problems = computed(() =>
-    (['answer', 'name', 'role', 'note'] as Field[])
+    (['answer', 'name', 'role', 'note'] as FieldName[])
       .filter((field) => this.codes()[field])
       .map((field) => ({
         field,
@@ -66,7 +86,7 @@ export class ChurchReferencePage {
     this.load();
   }
 
-  private summaryFor(field: Field): string {
+  private summaryFor(field: FieldName): string {
     const first = this.view()?.ownerFirstName ?? 'the owner';
     switch (field) {
       case 'answer':
@@ -106,7 +126,7 @@ export class ChurchReferencePage {
   protected send(): void {
     if (this.busy()) return;
     this.failed.set(false);
-    const codes: Partial<Record<Field, string>> = {};
+    const codes: Partial<Record<FieldName, string>> = {};
     if (!this.answer()) codes.answer = 'ANSWER_REQUIRED';
     if (!this.name().trim()) codes.name = 'NAME_REQUIRED';
     if (!this.role().trim()) codes.role = 'ROLE_REQUIRED';
@@ -134,7 +154,7 @@ export class ChurchReferencePage {
         error: (error) => {
           this.busy.set(false);
           if (error instanceof HttpErrorResponse && error.status === 422 && error.error?.errors) {
-            this.codes.set(error.error.errors as Partial<Record<Field, string>>);
+            this.codes.set(error.error.errors as Partial<Record<FieldName, string>>);
             setTimeout(() => document.getElementById('summary')?.focus());
             return;
           }
@@ -157,7 +177,7 @@ export class ChurchReferencePage {
     });
   }
 
-  protected clear(field: Field): void {
+  protected clear(field: FieldName): void {
     if (!this.codes()[field]) return;
     this.codes.update((codes) => ({ ...codes, [field]: undefined }));
   }

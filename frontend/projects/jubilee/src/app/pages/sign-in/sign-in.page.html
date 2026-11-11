@@ -18,41 +18,29 @@
       <jb-form-summary [errors]="summary()" #summaryBox />
     }
     <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
-      <div class="field">
-        <label class="field__label" for="email">E-mail</label>
+      <div jb-field label="E-mail" controlId="email" [error]="errors().email">
         <input
           class="input"
-          id="email"
+          jbFieldControl
           name="email"
           type="email"
           autocomplete="email"
           [ngModel]="email()"
           (ngModelChange)="email.set($event)"
           [readOnly]="view() === 'submitting'"
-          [attr.aria-invalid]="errors().email ? 'true' : null"
-          [attr.aria-describedby]="errors().email ? 'email-error' : null"
         />
-        @if (errors().email; as text) {
-          <span class="field__error" id="email-error">{{ text }}</span>
-        }
       </div>
-      <div class="field">
-        <label class="field__label" for="password">Password</label>
+      <div jb-field label="Password" controlId="password" [error]="errors().password">
         <input
           class="input"
-          id="password"
+          jbFieldControl
           name="password"
           type="password"
           autocomplete="current-password"
           [ngModel]="password()"
           (ngModelChange)="password.set($event)"
           [readOnly]="view() === 'submitting'"
-          [attr.aria-invalid]="errors().password ? 'true' : null"
-          [attr.aria-describedby]="errors().password ? 'password-error' : null"
         />
-        @if (errors().password; as text) {
-          <span class="field__error" id="password-error">{{ text }}</span>
-        }
       </div>
       <div class="cluster cluster--between">
         <div>

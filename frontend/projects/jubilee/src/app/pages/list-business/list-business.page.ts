@@ -20,15 +20,27 @@ import {
   SubmittedListing,
 } from 'api';
 import { FormsModule } from '@angular/forms';
-import { Icon, MediaTile, categoryTile, formatPrice, Button, Alert, FormSummary } from 'components';
+import {
+  Icon,
+  MediaTile,
+  categoryTile,
+  formatPrice,
+  Button,
+  Alert,
+  FormSummary,
+  FieldControl,
+  FieldError,
+  FieldHelp,
+  Field,
+} from 'components';
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
 import { clockTime, newKey } from '../../services/message-time';
 
-type Field = 'name' | 'tagline' | 'categorySlug' | 'church' | 'pastorEmail' | 'agreed';
+type FieldName = 'name' | 'tagline' | 'categorySlug' | 'church' | 'pastorEmail' | 'agreed';
 
 /** The element each field's summary link and first-invalid focus go to. */
-const FIELD_ID: Record<Field, string> = {
+const FIELD_ID: Record<FieldName, string> = {
   name: 'name',
   tagline: 'tagline',
   categorySlug: 'cat',
@@ -37,12 +49,19 @@ const FIELD_ID: Record<Field, string> = {
   agreed: 'agree',
 };
 
-const FIELD_ORDER: Field[] = ['name', 'tagline', 'categorySlug', 'church', 'pastorEmail', 'agreed'];
+const FIELD_ORDER: FieldName[] = [
+  'name',
+  'tagline',
+  'categorySlug',
+  'church',
+  'pastorEmail',
+  'agreed',
+];
 const AUTOSAVE_MS = 10_000;
 const TAGLINE_MAX = 90;
 
-/** Field-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
-export function messageFor(field: Field, code: string): string {
+/** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
+export function messageFor(field: FieldName, code: string): string {
   if (code.startsWith('TOO_LONG')) {
     const n = code.split(':')[1] ?? '';
     return `Shorten this to ${TAGLINE_MAX} characters. It has ${n}.`;
@@ -66,7 +85,7 @@ export function messageFor(field: Field, code: string): string {
 }
 
 /** The summary's shorter wording ("Enter your business name"). */
-function summaryFor(field: Field, code: string): string {
+function summaryFor(field: FieldName, code: string): string {
   if (code.startsWith('TOO_LONG') || code === 'OWN_EMAIL') return messageFor(field, code);
   const text = messageFor(field, code);
   switch (field) {
@@ -87,7 +106,19 @@ function summaryFor(field: Field, code: string): string {
  */
 @Component({
   selector: 'jb-list-business-page',
-  imports: [FormsModule, RouterLink, Icon, MediaTile, Button, Alert, FormSummary],
+  imports: [
+    FormsModule,
+    RouterLink,
+    Icon,
+    MediaTile,
+    Button,
+    Alert,
+    FormSummary,
+    Field,
+    FieldControl,
+    FieldError,
+    FieldHelp,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',
 })
@@ -114,7 +145,7 @@ export class ListBusinessPage {
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
 
-  protected readonly errors = signal<Partial<Record<Field, string>>>({});
+  protected readonly errors = signal<Partial<Record<FieldName, string>>>({});
   protected readonly summary = computed(() =>
     FIELD_ORDER.filter((f) => this.errors()[f]).map((f) => ({
       field: f,
@@ -135,7 +166,7 @@ export class ListBusinessPage {
   protected readonly taglineCount = computed(() => this.tagline().length);
 
   private draftId: string | null = null;
-  private codes: Partial<Record<Field, string>> = {};
+  private codes: Partial<Record<FieldName, string>> = {};
   private readonly key = newKey();
   private timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -250,8 +281,8 @@ export class ListBusinessPage {
       });
   }
 
-  private check(): Partial<Record<Field, string>> {
-    const codes: Partial<Record<Field, string>> = {};
+  private check(): Partial<Record<FieldName, string>> {
+    const codes: Partial<Record<FieldName, string>> = {};
     if (!this.name().trim()) codes.name = 'REQUIRED';
     const tagline = this.tagline().trim();
     if (!tagline) codes.tagline = 'REQUIRED';
@@ -264,9 +295,9 @@ export class ListBusinessPage {
     return codes;
   }
 
-  private show(codes: Partial<Record<Field, string>>): void {
+  private show(codes: Partial<Record<FieldName, string>>): void {
     this.codes = codes;
-    const errors: Partial<Record<Field, string>> = {};
+    const errors: Partial<Record<FieldName, string>> = {};
     for (const field of FIELD_ORDER) {
       const code = codes[field];
       if (code) errors[field] = messageFor(field, code);
@@ -302,7 +333,7 @@ export class ListBusinessPage {
         error: (error) => {
           this.busy.set(false);
           if (error instanceof HttpErrorResponse && error.status === 422 && error.error?.errors) {
-            this.show(error.error.errors as Partial<Record<Field, string>>);
+            this.show(error.error.errors as Partial<Record<FieldName, string>>);
             return;
           }
           this.failed.set(this.problemText(error));
@@ -317,7 +348,7 @@ export class ListBusinessPage {
     return 'We couldn’t save that. Try again.';
   }
 
-  protected clear(field: Field): void {
+  protected clear(field: FieldName): void {
     if (!this.errors()[field]) return;
     this.errors.update((e) => ({ ...e, [field]: undefined }));
   }

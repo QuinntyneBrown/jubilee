@@ -12,7 +12,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ACCOUNT_DATA_API, Account, PROFILE_API, ProfileForm } from 'api';
-import { EmptyState, Icon, Button, Alert, FormSummary } from 'components';
+import { EmptyState, Icon, Button, Alert, FormSummary, FieldControl, Field } from 'components';
 import { Observable, map } from 'rxjs';
 import { ChangeEmailData, ChangeEmailDialog } from '../../dialogs/change-email/change-email.dialog';
 import {
@@ -27,15 +27,15 @@ import { clockTime, dayLabel, fullDate, monthYear } from '../../services/message
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../toasts/toast.service';
 
-type Field = 'firstName' | 'lastName' | 'phone' | 'postalCode';
+type FieldName = 'firstName' | 'lastName' | 'phone' | 'postalCode';
 
 interface Problem {
-  field: Field;
+  field: FieldName;
   id: string;
   text: string;
 }
 
-const FIELD_IDS: Record<Field, string> = {
+const FIELD_IDS: Record<FieldName, string> = {
   firstName: 'first',
   lastName: 'last',
   phone: 'phone',
@@ -58,7 +58,17 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-account-page',
-  imports: [FormsModule, RouterLink, EmptyState, Icon, Button, Alert, FormSummary],
+  imports: [
+    FormsModule,
+    RouterLink,
+    EmptyState,
+    Icon,
+    Button,
+    Alert,
+    FormSummary,
+    Field,
+    FieldControl,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page', '(window:beforeunload)': 'warnOnClose($event)' },
   templateUrl: './account.page.html',
@@ -243,7 +253,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
   private check(): Problem[] {
     const found: Problem[] = [];
     const form = this.current();
-    const add = (field: Field, code: string) =>
+    const add = (field: FieldName, code: string) =>
       found.push({ field, id: FIELD_IDS[field], text: MESSAGES[`${field}:${code}`] });
     if (!form.firstName) add('firstName', 'REQUIRED');
     if (!form.lastName) add('lastName', 'REQUIRED');
@@ -257,7 +267,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
     if (error instanceof HttpErrorResponse && error.status === 422) {
       const errors = (error.error as { errors?: Record<string, string> } | null)?.errors ?? {};
       const found: Problem[] = [];
-      for (const field of Object.keys(FIELD_IDS) as Field[]) {
+      for (const field of Object.keys(FIELD_IDS) as FieldName[]) {
         if (errors[field])
           found.push({
             field,
@@ -272,7 +282,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
     this.failed.set(true);
   }
 
-  protected problem(field: Field): string | null {
+  protected problem(field: FieldName): string | null {
     return this.problems().find((p) => p.field === field)?.text ?? null;
   }
 

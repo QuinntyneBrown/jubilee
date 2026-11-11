@@ -19,29 +19,23 @@
       }
     </div>
     @if (optionError(); as error) {
-      <span class="field__error" id="option-error">{{ error }}</span>
+      <span jb-field-error id="option-error">{{ error }}</span>
     }
   </fieldset>
 }
-<div class="field" style="max-width: 8rem">
-  <label class="field__label" for="qty">Quantity</label>
+<div jb-field label="Quantity" controlId="qty" [error]="quantityError()" style="max-width: 8rem">
   <input
     #quantityInput
     class="input"
-    id="qty"
+    jbFieldControl
     type="number"
     inputmode="numeric"
     [min]="item.minimumQuantity"
     [max]="max()"
     [value]="quantity()"
     [disabled]="item.soldOut"
-    [attr.aria-invalid]="quantityError() ? 'true' : null"
-    [attr.aria-describedby]="quantityError() ? 'qty-error' : null"
     (input)="quantity.set(quantityInput.value)"
   />
-  @if (quantityError(); as error) {
-    <span class="field__error" id="qty-error">{{ error }}</span>
-  }
 </div>
 @if (item.soldOut) {
   <div

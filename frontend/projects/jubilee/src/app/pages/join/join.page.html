@@ -44,13 +44,10 @@
       }
       <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
         <div class="form-grid form-grid--2">
-          <div class="field">
-            <label class="field__label" for="first"
-              >First name <span class="optional">(required)</span></label
-            >
+          <div jb-field label="First name" controlId="first" required [error]="errors().firstName">
             <input
               class="input"
-              id="first"
+              jbFieldControl
               name="firstName"
               type="text"
               required
@@ -59,20 +56,12 @@
               [ngModel]="firstName()"
               (ngModelChange)="firstName.set($event)"
               [readOnly]="view() === 'submitting'"
-              [attr.aria-invalid]="errors().firstName ? 'true' : null"
-              [attr.aria-describedby]="errors().firstName ? 'first-error' : null"
             />
-            @if (errors().firstName; as text) {
-              <span class="field__error" id="first-error">{{ text }}</span>
-            }
           </div>
-          <div class="field">
-            <label class="field__label" for="last"
-              >Last name <span class="optional">(required)</span></label
-            >
+          <div jb-field label="Last name" controlId="last" required [error]="errors().lastName">
             <input
               class="input"
-              id="last"
+              jbFieldControl
               name="lastName"
               type="text"
               required
@@ -81,21 +70,13 @@
               [ngModel]="lastName()"
               (ngModelChange)="lastName.set($event)"
               [readOnly]="view() === 'submitting'"
-              [attr.aria-invalid]="errors().lastName ? 'true' : null"
-              [attr.aria-describedby]="errors().lastName ? 'last-error' : null"
             />
-            @if (errors().lastName; as text) {
-              <span class="field__error" id="last-error">{{ text }}</span>
-            }
           </div>
         </div>
-        <div class="field">
-          <label class="field__label" for="email"
-            >E-mail <span class="optional">(required)</span></label
-          >
+        <div jb-field label="E-mail" controlId="email" required [error]="errors().email">
           <input
             class="input"
-            id="email"
+            jbFieldControl
             name="email"
             type="email"
             required
@@ -104,21 +85,19 @@
             [ngModel]="email()"
             (ngModelChange)="email.set($event)"
             [readOnly]="view() === 'submitting'"
-            [attr.aria-invalid]="errors().email ? 'true' : null"
-            [attr.aria-describedby]="errors().email ? 'email-error' : null"
           />
-          @if (errors().email; as text) {
-            <span class="field__error" id="email-error">{{ text }}</span>
-          }
         </div>
-        <div class="field">
-          <label class="field__label" for="password"
-            >Password <span class="optional">(required)</span></label
-          >
-          <span class="field__help" id="password-help">At least 10 characters.</span>
+        <div
+          jb-field
+          label="Password"
+          controlId="password"
+          required
+          hint="At least 10 characters."
+          [error]="errors().password"
+        >
           <input
             class="input"
-            id="password"
+            jbFieldControl
             name="password"
             type="password"
             required
@@ -127,28 +106,20 @@
             [ngModel]="password()"
             (ngModelChange)="password.set($event)"
             [readOnly]="view() === 'submitting'"
-            [attr.aria-invalid]="errors().password ? 'true' : null"
-            [attr.aria-describedby]="
-              errors().password ? 'password-help password-error' : 'password-help'
-            "
           />
-          @if (errors().password; as text) {
-            <span class="field__error" id="password-error">{{ text }}</span>
-          }
         </div>
-        <div class="field">
-          <label class="field__label" for="church"
-            >Home church <span class="optional">(optional)</span></label
-          >
-          <span class="field__help" id="church-help"
-            >Shown to no one. Helps us recommend businesses near you.</span
-          >
+        <div
+          jb-field
+          label="Home church"
+          controlId="church"
+          optional
+          hint="Shown to no one. Helps us recommend businesses near you."
+        >
           <input
             class="input"
-            id="church"
+            jbFieldControl
             name="homeChurch"
             type="text"
-            aria-describedby="church-help"
             [attr.maxlength]="max.church"
             [ngModel]="homeChurch()"
             (ngModelChange)="homeChurch.set($event)"
@@ -173,7 +144,7 @@
             >
           </label>
           @if (errors().agreement; as text) {
-            <span class="field__error" id="agree-error">{{ text }}</span>
+            <span jb-field-error id="agree-error">{{ text }}</span>
           }
         </div>
         <button

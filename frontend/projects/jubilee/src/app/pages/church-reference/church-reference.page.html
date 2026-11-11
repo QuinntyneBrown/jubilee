@@ -89,74 +89,64 @@
               </label>
             }
             @if (codes().answer) {
-              <span class="field__error" id="know-error">{{ problems()[0].message }}</span>
+              <span jb-field-error id="know-error">{{ problems()[0].message }}</span>
             }
           </fieldset>
-          <div class="field">
-            <label class="field__label" for="name"
-              >Your name <span class="optional">(required)</span></label
-            >
+          <div
+            jb-field
+            label="Your name"
+            controlId="name"
+            required
+            [error]="codes().name ? 'Enter your name.' : null"
+          >
             <input
               class="input"
-              id="name"
+              jbFieldControl
               name="name"
               type="text"
               autocomplete="name"
               required
               [readOnly]="busy()"
-              [attr.aria-invalid]="codes().name ? 'true' : null"
-              [attr.aria-describedby]="codes().name ? 'name-error' : null"
               [ngModel]="name()"
               (ngModelChange)="name.set($event); clear('name')"
             />
-            @if (codes().name) {
-              <span class="field__error" id="name-error">Enter your name.</span>
-            }
           </div>
-          <div class="field">
-            <label class="field__label" for="role"
-              >Your role <span class="optional">(required)</span></label
-            >
+          <div
+            jb-field
+            label="Your role"
+            controlId="role"
+            required
+            [error]="codes().role ? 'Enter your role at the church, like pastor or elder.' : null"
+          >
             <input
               class="input"
-              id="role"
+              jbFieldControl
               name="role"
               type="text"
               placeholder="Pastor, elder, deacon…"
               required
               [readOnly]="busy()"
-              [attr.aria-invalid]="codes().role ? 'true' : null"
-              [attr.aria-describedby]="codes().role ? 'role-error' : null"
               [ngModel]="role()"
               (ngModelChange)="role.set($event); clear('role')"
             />
-            @if (codes().role) {
-              <span class="field__error" id="role-error"
-                >Enter your role at the church, like pastor or elder.</span
-              >
-            }
           </div>
-          <div class="field">
-            <label class="field__label" for="note"
-              >Anything we should know <span class="optional">(optional)</span></label
-            >
-            <span class="field__help" id="note-help"
-              >Only the Jubilee verification team reads this.</span
-            >
+          <div
+            jb-field
+            label="Anything we should know"
+            controlId="note"
+            optional
+            hint="Only the Jubilee verification team reads this."
+            [error]="codes().note ? 'Shorten this to ' + noteLimit + ' characters.' : null"
+          >
             <textarea
               class="textarea"
-              id="note"
+              jbFieldControl
               name="note"
               rows="3"
-              aria-describedby="note-help"
               [readOnly]="busy()"
-              [attr.aria-invalid]="codes().note ? 'true' : null"
               [ngModel]="note()"
               (ngModelChange)="note.set($event); clear('note')"
             ></textarea>
-            @if (codes().note) {
-              <span class="field__error">Shorten this to {{ noteLimit }} characters.</span>
-            }
           </div>
           <button jb-button variant="primary" block size="lg" type="submit" [busy]="busy()">
             Send my answer

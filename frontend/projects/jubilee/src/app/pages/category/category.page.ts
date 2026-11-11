@@ -19,6 +19,8 @@ import {
   Pagination,
   formatCount,
   Button,
+  Field,
+  FieldControl,
 } from 'components';
 import { combineLatest } from 'rxjs';
 import {
@@ -58,7 +60,17 @@ function businesses(count: number): string {
  */
 @Component({
   selector: 'jb-category-page',
-  imports: [RouterLink, BusinessCard, CardGridSkeleton, EmptyState, Icon, Pagination, Button],
+  imports: [
+    RouterLink,
+    BusinessCard,
+    CardGridSkeleton,
+    EmptyState,
+    Icon,
+    Pagination,
+    Button,
+    Field,
+    FieldControl,
+  ],
   providers: [CategoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

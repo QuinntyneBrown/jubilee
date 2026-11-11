@@ -77,11 +77,10 @@
           </li>
         }
       </ul>
-      <div class="field" style="max-width: 16rem">
-        <label class="field__label" for="digest">How often</label>
+      <div jb-field label="How often" controlId="digest" style="max-width: 16rem">
         <select
           class="select"
-          id="digest"
+          jbFieldControl
           [disabled]="waiting().has('frequency')"
           (change)="setFrequency($any($event.target).value)"
         >
