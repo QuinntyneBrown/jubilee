@@ -49,6 +49,7 @@ export class BusinessPage extends ShellPage implements Screen {
   readonly actions: Locator;
   readonly primaryAction: Locator;
   readonly messageLink: Locator;
+  readonly bookLink: Locator;
   readonly saveButton: Locator;
   readonly shareLink: Locator;
   readonly highlight: Locator;
@@ -91,6 +92,7 @@ export class BusinessPage extends ShellPage implements Screen {
     this.credentialTags = this.main.locator('.detail-head .tag');
     this.actions = this.main.locator('.detail-head__actions');
     this.primaryAction = this.actions.locator('.btn--primary');
+    this.bookLink = this.actions.getByRole('link', { name: 'Book a meeting' });
     this.messageLink = this.actions.getByRole('link', { name: 'Message', exact: true });
     this.saveButton = this.actions.getByRole('button', { name: 'Save' });
     this.shareLink = this.actions.getByRole('link', { name: /^Share/ });

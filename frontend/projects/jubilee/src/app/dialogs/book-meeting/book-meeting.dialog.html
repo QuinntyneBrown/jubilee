@@ -1,0 +1,204 @@
+@let opts = options();
+<div class="dialog__panel">
+  @if (view() === 'success') {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="verified"></svg>
+      </div>
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">Request sent to {{ opts?.business?.name }}</h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          {{ opts?.ownerFirstName }}
+          @if (opts?.usuallyConfirms) {
+            usually confirms {{ opts?.usuallyConfirms }}.
+          } @else {
+            will confirm it or suggest another time.
+          }
+          You’ll get a notification and an e-mail, and the request is in Your requests.
+        </p>
+      </div>
+      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    <div class="dialog__footer">
+      <button class="btn" type="button" (click)="close()">Close</button>
+      <a
+        class="btn btn--primary"
+        [routerLink]="['/requests', booked()?.id]"
+        cdkFocusInitial
+        (click)="close()"
+        >View request</a
+      >
+    </div>
+  } @else {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="calendar"></svg>
+      </div>
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">
+          Book a meeting{{ opts ? ' with ' + opts.business.name : '' }}
+        </h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          @if (opts) {
+            Ask for a time. {{ opts.ownerFirstName }} confirms it or suggests another; nothing is
+            charged.
+          } @else {
+            Ask for a time. Nothing is charged.
+          }
+        </p>
+      </div>
+      <button
+        class="btn btn--ghost btn--icon"
+        type="button"
+        aria-label="Close"
+        [disabled]="busy()"
+        (click)="close()"
+      >
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    @switch (view()) {
+      @case ('loading') {
+        <div class="dialog__body">
+          <p role="status" class="text-muted">Loading the times…</p>
+        </div>
+      }
+      @case ('unavailable') {
+        <div class="dialog__body stack">
+          <div class="alert alert--danger" role="alert">
+            <svg jb-icon name="alert"></svg>
+            <div class="alert__body">
+              <div class="alert__title">Booking isn’t available right now</div>
+              <div>Nothing is lost. Close this and try again in a moment, or send a message.</div>
+            </div>
+          </div>
+        </div>
+        <div class="dialog__footer">
+          <button class="btn btn--primary" type="button" (click)="close()">Close</button>
+        </div>
+      }
+      @default {
+        @if (opts) {
+          <form class="dialog__body stack" id="book-form" (ngSubmit)="send()">
+            @if (view() === 'failed') {
+              <div class="alert alert--danger" role="alert">
+                <svg jb-icon name="alert"></svg>
+                <div class="alert__body">
+                  <div class="alert__title">{{ failure().title }}</div>
+                  <div>{{ failure().text }}</div>
+                </div>
+              </div>
+            }
+            <div class="field">
+              <label class="field__label" for="d-svc">Service</label>
+              <select
+                class="select"
+                id="d-svc"
+                name="service"
+                [disabled]="busy()"
+                [ngModel]="serviceId()"
+                (ngModelChange)="pickService($event)"
+              >
+                @for (service of opts.services; track service.id) {
+                  <option [value]="service.id">{{ serviceLabel(service) }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-grid form-grid--2">
+              <div class="field">
+                <label class="field__label" for="d-date"
+                  >Day <span class="optional">(required)</span></label
+                >
+                <input
+                  class="input"
+                  id="d-date"
+                  name="day"
+                  type="date"
+                  [min]="today"
+                  [max]="lastDay"
+                  required
+                  [readOnly]="busy()"
+                  [attr.aria-invalid]="dayProblem() ? 'true' : null"
+                  [attr.aria-describedby]="dayProblem() ? 'd-date-error' : null"
+                  [ngModel]="day()"
+                  (ngModelChange)="pickDay($event)"
+                />
+                @if (dayProblem()) {
+                  <span class="field__error" id="d-date-error">{{ dayProblem() }}</span>
+                }
+              </div>
+              <div class="field">
+                <label class="field__label" for="d-how">How</label>
+                <select
+                  class="select"
+                  id="d-how"
+                  name="how"
+                  [disabled]="busy()"
+                  [ngModel]="mode()"
+                  (ngModelChange)="pickMode($event)"
+                >
+                  <option value="video">Video call</option>
+                  @if (opts.area) {
+                    <option value="in-person">In person, {{ opts.area }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+            <fieldset [attr.aria-describedby]="timeProblem() ? 'd-time-error' : null">
+              <legend>Time</legend>
+              @if (day() && !loadingSlots() && slots().length === 0 && !dayProblem()) {
+                <p class="text-muted">No times are left on that day. Choose another day.</p>
+              }
+              <div class="cluster" style="gap: var(--space-2)">
+                @for (slot of slots(); track slot) {
+                  <label class="chip" style="position: relative">
+                    <input
+                      type="radio"
+                      name="time"
+                      class="visually-hidden"
+                      [value]="slot"
+                      [checked]="time() === slot"
+                      [disabled]="busy()"
+                      (change)="time.set(slot); timeProblem.set('')"
+                    />{{ label(slot) }}
+                  </label>
+                }
+              </div>
+              @if (timeProblem()) {
+                <span class="field__error" id="d-time-error">{{ timeProblem() }}</span>
+              }
+            </fieldset>
+            <div class="field">
+              <label class="field__label" for="d-note"
+                >What would you like to talk about? <span class="optional">(optional)</span></label
+              >
+              <textarea
+                class="textarea"
+                id="d-note"
+                name="note"
+                rows="3"
+                maxlength="1000"
+                [readOnly]="busy()"
+                [ngModel]="note()"
+                (ngModelChange)="note.set($event)"
+              ></textarea>
+            </div>
+          </form>
+          <div class="dialog__footer">
+            <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+            <button
+              class="btn btn--primary"
+              type="submit"
+              form="book-form"
+              [attr.aria-busy]="busy() ? 'true' : null"
+            >
+              Send request
+            </button>
+          </div>
+        }
+      }
+    }
+  }
+</div>

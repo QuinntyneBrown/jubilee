@@ -155,6 +155,11 @@ export const routes = {
     mock: 'dialogs/new-message/default.html',
     who: 'member',
   },
+  'book-meeting': {
+    app: '/b/legacy-financial/book',
+    mock: 'dialogs/book-meeting/default.html',
+    who: 'member',
+  },
   welcome: { app: '/welcome', mock: 'pages/welcome/default.html', who: 'visitor' },
   browse: { app: '/', mock: 'pages/browse/default.html', who: 'member' },
   'browse.signed-out': { app: '/', mock: 'pages/browse/signed-out.html', who: 'visitor' },

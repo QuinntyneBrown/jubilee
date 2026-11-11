@@ -25,6 +25,7 @@ import {
   categoryTile,
 } from 'components';
 import { Subscription } from 'rxjs';
+import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
 import {
   NewMessageData,
   NewMessageDialog,
@@ -93,8 +94,8 @@ export class BusinessPage {
   private readonly session = inject(SessionService);
   private readonly dialog = inject(Dialog);
   private slug = '';
-  /** True while the address is /b/:slug/message: "Send a message" opens the message dialog. */
-  private readonly composing = signal(false);
+  /** Which dialog the address asks for: /b/:slug/message or /b/:slug/book. */
+  private readonly composing = signal<'message' | 'book' | null>(null);
   private composeRef?: { close: () => void };
 
   protected readonly state = signal<LoadState<ListingPage>>({ status: 'loading' });
@@ -137,13 +138,20 @@ export class BusinessPage {
       this.load();
     });
     const urls = this.route.url.subscribe((segments) =>
-      this.composing.set(segments.at(-1)?.path === 'message'),
+      this.composing.set(
+        segments.length === 3 && ['message', 'book'].includes(segments[2].path)
+          ? (segments[2].path as 'message' | 'book')
+          : null,
+      ),
     );
     effect(() => {
       const state = this.state();
       const composing = this.composing();
       untracked(() => {
-        if (composing && state.status === 'loaded' && !this.composeRef) this.compose(state.value);
+        if (composing && state.status === 'loaded' && !this.composeRef) {
+          if (composing === 'book') this.openBooking(state.value);
+          else this.compose(state.value);
+        }
         if (!composing) this.composeRef?.close();
       });
     });
@@ -228,6 +236,40 @@ export class BusinessPage {
         leave();
       }
     });
+  }
+
+  /**
+   * "Book a meeting" (L2-044): a member asks for a time in a dialog; a visitor is asked to join
+   * or sign in first and comes back to the same service.
+   */
+  private openBooking(listing: ListingPage): void {
+    const service = this.route.snapshot.queryParamMap.get('service');
+    const back = `/b/${this.slug}/book${service ? `?service=${service}` : ''}`;
+    const leave = (): void => {
+      this.composeRef = undefined;
+      setTimeout(() => {
+        if (!this.router.getCurrentNavigation() && this.composing()) {
+          void this.router.navigate(['/b', this.slug], { replaceUrl: true });
+        }
+      });
+    };
+    const ref = this.session.member()
+      ? this.dialog.open<void, BookMeetingData>(BookMeetingDialog, {
+          data: { slug: listing.slug, serviceId: service },
+          ariaLabelledBy: 'dlg-title',
+          ariaDescribedBy: 'dlg-desc',
+          ariaModal: true,
+          backdropClass: 'backdrop',
+        })
+      : this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+          data: { title: `Join to book ${listing.name}`, returnUrl: back },
+          ariaLabelledBy: 'dlg-title',
+          ariaDescribedBy: 'dlg-desc',
+          ariaModal: true,
+          backdropClass: 'backdrop',
+        });
+    this.composeRef = ref;
+    ref.closed.subscribe(leave);
   }
 
   /** The route of an action of a later journey on this listing (ADR 0007). */

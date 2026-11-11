@@ -77,3 +77,22 @@ export function initialsOf(name: string): string {
   const words = name.split(/[\s&]+/).filter((w) => /^[\p{L}\p{N}]/u.test(w));
   return (words[0]?.[0] ?? '?').concat(words[1]?.[0] ?? '').toUpperCase();
 }
+
+/** "13:30" as "1:30 p.m.", the way the mocks write a time. */
+export function slotLabel(slot: string): string {
+  const [hours, minutes] = slot.split(':').map(Number);
+  const suffix = hours < 12 ? 'a.m.' : 'p.m.';
+  return `${hours % 12 === 0 ? 12 : hours % 12}:${String(minutes).padStart(2, '0')} ${suffix}`;
+}
+
+const DAY_FORMAT = new Intl.DateTimeFormat('en-CA', {
+  timeZone: ZONE,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+/** A date as "2026-11-12" in Toronto, the value of a date field. */
+export function isoDay(date: Date): string {
+  return DAY_FORMAT.format(date);
+}
