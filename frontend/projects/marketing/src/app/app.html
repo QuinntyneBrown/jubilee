@@ -59,7 +59,14 @@
     <h2 id="film-title" class="mkt-film__title">
       See Jubilee <span class="mkt-accent">in action.</span>
     </h2>
-    <jb-pitch-video />
+    <jb-video-player
+      label="Jubilee pitch film"
+      playLabel="Play the Jubilee film"
+      [src]="film.src"
+      [still]="film.still"
+      [length]="film.length"
+      [chapters]="film.chapters"
+    />
   </section>
 
   <jb-benefits />

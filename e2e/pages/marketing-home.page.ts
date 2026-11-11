@@ -25,6 +25,9 @@ export class MarketingHomePage implements Screen {
 
   readonly film: Locator;
   readonly video: Locator;
+  /** The still or the film, with the chapters under it. */
+  readonly player: Locator;
+  readonly chapterList: Locator;
   readonly play: Locator;
   readonly filmLength: Locator;
   readonly chapters: Locator;
@@ -79,6 +82,8 @@ export class MarketingHomePage implements Screen {
 
     this.film = this.main.locator('section#film');
     this.video = this.film.locator('video.mkt-player__video');
+    this.player = this.film.locator('.mkt-player');
+    this.chapterList = this.film.getByRole('list', { name: 'Chapters' });
     this.play = this.film.getByRole('button', { name: 'Play the Jubilee film' });
     this.filmLength = this.film.locator('.mkt-player__length');
     this.chapters = this.film.getByRole('list', { name: 'Chapters' }).getByRole('button');

@@ -27,7 +27,21 @@ const PHOTOS = {
 };
 
 /** The still shown before the pitch film plays. */
-export const FILM_STILL = photo('film-still');
+/**
+ * The pitch film (L2-184). Its narration is burned into the picture as captions (AC5), so it
+ * has no caption track. The chapters are its acts: the hook, why join and what you can do, then
+ * listing a business.
+ */
+export const FILM = {
+  src: 'media/jubilee-pitch.mp4',
+  still: photo('film-still'),
+  length: '1:04',
+  chapters: [
+    { at: 0, time: '0:00', title: 'Why we built Jubilee' },
+    { at: 21.6, time: '0:21', title: 'Finding someone you can trust' },
+    { at: 43.2, time: '0:43', title: 'Growing your business' },
+  ],
+} as const;
 
 /** The number of verified businesses the page speaks of. */
 export const BUSINESS_COUNT = 47;
