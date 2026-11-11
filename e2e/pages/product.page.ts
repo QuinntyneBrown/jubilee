@@ -22,6 +22,8 @@ export class ProductPage extends ShellPage implements Screen {
   readonly quantity: Locator;
   readonly quantityError: Locator;
   readonly requestButton: Locator;
+  /** The actions of the head: request, message, save. */
+  readonly actions: Locator;
   readonly messageLink: Locator;
   readonly paymentNote: Locator;
   readonly soldOutAlert: Locator;
@@ -60,6 +62,7 @@ export class ProductPage extends ShellPage implements Screen {
     this.quantity = this.main.getByLabel('Quantity');
     this.quantityError = this.main.locator('#qty-error');
     this.requestButton = this.main.getByRole('button', { name: 'Request this item' });
+    this.actions = this.main.locator('.detail-head__actions');
     this.messageLink = this.main.locator('.detail-head__actions .btn--icon');
     this.paymentNote = this.main.locator('.detail-head > .text-caption');
     this.soldOutAlert = this.main.locator('.detail-head .alert');

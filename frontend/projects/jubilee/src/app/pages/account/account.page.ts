@@ -27,6 +27,7 @@ import {
   RowMeta,
   RowTitle,
   Rows,
+  PageHeader,
 } from 'components';
 import { Observable, map } from 'rxjs';
 import { ChangeEmailData, ChangeEmailDialog } from '../../dialogs/change-email/change-email.dialog';
@@ -90,6 +91,7 @@ const MESSAGES: Record<string, string> = {
     RowMeta,
     RowTitle,
     Rows,
+    PageHeader,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page', '(window:beforeunload)': 'warnOnClose($event)' },

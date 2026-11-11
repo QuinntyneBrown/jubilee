@@ -1,9 +1,4 @@
-<div class="page-header">
-  <div>
-    <h1>Verification queue</h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
-</div>
+<jb-page-header heading="Verification queue" [subtitle]="subtitle()"> </jb-page-header>
 <nav jb-team-nav current="verifications"></nav>
 @let queue = state();
 @switch (queue.status) {

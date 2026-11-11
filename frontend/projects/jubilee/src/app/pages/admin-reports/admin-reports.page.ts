@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ADMIN_API, ReportFilter, ReportList, ReportListItem } from 'api';
-import { EmptyState, Icon, Button, RowListSkeleton, Badge } from 'components';
+import { EmptyState, Icon, Button, RowListSkeleton, Badge, PageHeader } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { threadTime } from '../../services/message-time';
@@ -30,7 +30,7 @@ const STATUS: Record<string, string> = {
 /** The reports at /admin/reports (L2-105): listing and conversation reports, oldest first, overdue marked. */
 @Component({
   selector: 'jb-admin-reports-page',
-  imports: [RouterLink, EmptyState, Icon, TeamNav, Button, RowListSkeleton, Badge],
+  imports: [RouterLink, EmptyState, Icon, TeamNav, Button, RowListSkeleton, Badge, PageHeader],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-reports.page.html',
 })

@@ -1,8 +1,4 @@
-<div class="page-header">
-  <div>
-    <h1>Notifications</h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
+<jb-page-header heading="Notifications" [subtitle]="subtitle()">
   <div class="cluster">
     @if (list(); as notifications) {
       @if (notifications.unread > 0) {
@@ -15,7 +11,7 @@
       ><svg jb-icon name="settings"></svg>Settings</a
     >
   </div>
-</div>
+</jb-page-header>
 @switch (state().status) {
   @case ('error') {
     <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your notifications">

@@ -89,8 +89,6 @@ hr, .divider { border: 0; border-top: var(--border-width-hairline) solid var(--c
 .span-full { grid-column: 1 / -1; }
 .sidebar-layout { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 100dvh; }
 @media (min-width: 64rem) { .sidebar-layout { grid-template-columns: var(--layout-sidebar-width) minmax(0, 1fr); } }
-.page-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-block: var(--space-6) var(--space-6); }
-.page-header .subtitle { color: var(--color-fg-muted); margin-top: var(--space-1); }
 .section { margin-block: var(--space-8); }
 
 /* ---------- Forms ----------------------------------------------------------- */
@@ -391,11 +389,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
   .split--even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .split__sticky { position: sticky; top: calc(var(--layout-topbar-height) + var(--space-6)); }
 }
-.detail-head { display: flex; flex-direction: column; gap: var(--space-3); }
-.detail-head__kicker { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); font: var(--text-body-sm); color: var(--color-fg-muted); }
-.detail-head__kicker .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
-.detail-head__actions { display: flex; gap: var(--space-2); align-items: center; }
-.detail-head__actions .btn--primary { flex: 1; }
 @media (max-width: 39.99rem) { .dl { grid-template-columns: minmax(0, 1fr); gap: 0; } .dl dd { margin-bottom: var(--space-3); } }
 .prose { max-width: var(--layout-measure); }
 .prose h2 { margin-top: var(--space-8); }
@@ -472,6 +465,4 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .status-page { min-height: 70dvh; display: grid; place-items: center; }
 
 /* ---------- Fixes found in the screenshot sweep ------------------------------------------------------ */
-.detail-head__actions { flex-wrap: wrap; }
-@media (max-width: 39.99rem) { .detail-head__actions .btn--primary { flex-basis: 100%; } }
 .empty__text, .toast__text { overflow-wrap: anywhere; }

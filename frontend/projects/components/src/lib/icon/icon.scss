@@ -3,6 +3,7 @@
 :host {
   width: var(--jb-icon-size, var(--icon-size-md));
   height: var(--jb-icon-size, var(--icon-size-md));
+  color: var(--jb-icon-color, inherit);
   fill: none;
   stroke: currentColor;
   stroke-width: 2;

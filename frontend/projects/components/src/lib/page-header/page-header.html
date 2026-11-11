@@ -1,0 +1,5 @@
+<div class="page-header__body">
+  <h1 #title [attr.tabindex]="focusable() ? -1 : null">{{ heading() }}</h1>
+  <p class="subtitle">{{ subtitle() }}<ng-content select="[slot=subtitle]" /></p>
+</div>
+<ng-content />

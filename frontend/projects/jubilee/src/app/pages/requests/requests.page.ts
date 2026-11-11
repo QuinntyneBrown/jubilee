@@ -29,6 +29,7 @@ import {
   RowMeta,
   RowTitle,
   Rows,
+  PageHeader,
 } from 'components';
 import { interval } from 'rxjs';
 import { ClockService } from '../../services/clock.service';
@@ -65,6 +66,7 @@ const ICON: Record<string, IconName> = { booking: 'calendar', quote: 'message', 
     RowMeta,
     RowTitle,
     Rows,
+    PageHeader,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

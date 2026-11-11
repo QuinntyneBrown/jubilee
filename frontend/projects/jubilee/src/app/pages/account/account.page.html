@@ -1,9 +1,4 @@
-<div class="page-header">
-  <div>
-    <h1>Your account</h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
-</div>
+<jb-page-header heading="Your account" [subtitle]="subtitle()"> </jb-page-header>
 <nav class="tabs" aria-label="Account sections">
   <a class="tab" routerLink="/account" aria-current="page">Profile</a>
   <a class="tab" routerLink="/account/notifications">Notification settings</a>

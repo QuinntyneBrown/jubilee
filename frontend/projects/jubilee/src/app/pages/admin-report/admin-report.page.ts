@@ -23,6 +23,7 @@ import {
   RowMeta,
   RowTitle,
   Rows,
+  PageHeader,
 } from 'components';
 import {
   ReportActionData,
@@ -71,6 +72,7 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
     RowMeta,
     RowTitle,
     Rows,
+    PageHeader,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-report.page.html',

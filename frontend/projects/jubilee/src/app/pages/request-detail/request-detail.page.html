@@ -37,15 +37,12 @@
         <li aria-current="page">{{ r.title }}</li>
       </ol>
     </nav>
-    <div class="page-header">
-      <div>
-        <h1>{{ r.title }}</h1>
-        <p class="subtitle">
-          {{ r.kindLabel }} · {{ r.business }} ·
-          <span jb-badge [tone]="tone[r.status]">{{ r.statusLabel }}</span>
-        </p>
-      </div>
-    </div>
+    <jb-page-header [heading]="r.title">
+      <ng-container ngProjectAs="[slot=subtitle]">
+        {{ r.kindLabel }} · {{ r.business }} ·
+        <span jb-badge [tone]="tone[r.status]">{{ r.statusLabel }}</span>
+      </ng-container>
+    </jb-page-header>
     <div jb-alert [tone]="r.callout.tone" [heading]="r.callout.title">
       @if (r.callout.text) {
         <div>{{ r.callout.text }}</div>

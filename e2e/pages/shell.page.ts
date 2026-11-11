@@ -5,6 +5,8 @@ import type { Region } from '../fixtures/visual';
 export class ShellPage {
   readonly skipLink: Locator;
   readonly main: Locator;
+  /** The title block of the page: its heading, its subtitle and its actions. */
+  readonly pageHeader: Locator;
   readonly topBar: Locator;
   readonly brand: Locator;
   readonly primaryNav: Locator;
@@ -24,6 +26,7 @@ export class ShellPage {
   constructor(protected readonly page: Page) {
     this.skipLink = page.locator('a.skip-link');
     this.main = page.locator('main#main');
+    this.pageHeader = this.main.locator('.page-header');
     this.topBar = page.locator('header.topbar');
     this.brand = this.topBar.locator('.topbar__brand');
     this.primaryNav = this.topBar.getByRole('navigation', { name: 'Primary', exact: true });

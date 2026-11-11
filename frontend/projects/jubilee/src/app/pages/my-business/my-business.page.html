@@ -35,12 +35,8 @@
   @case ('loaded') {
     @let b = view.value;
     @if (b.state === 'none') {
-      <div class="page-header">
-        <div>
-          <h1>My business</h1>
-          <p class="subtitle">You haven’t listed a business yet.</p>
-        </div>
-      </div>
+      <jb-page-header heading="My business" subtitle="You haven’t listed a business yet.">
+      </jb-page-header>
       <div jb-empty-state icon="store" heading="List your business free">
         Tell members what you offer, name a pastor or elder as your reference, and you’re live once
         they confirm. It takes about ten minutes.

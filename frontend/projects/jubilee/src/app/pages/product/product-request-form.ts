@@ -20,6 +20,7 @@ import {
   Input,
   ChipOption,
   InlineStatus,
+  DetailHeadActions,
 } from 'components';
 
 /** A valid selection, handed to the order request (L2-035 AC2). */
@@ -36,7 +37,18 @@ export interface ProductSelection {
  */
 @Component({
   selector: 'jb-product-request-form',
-  imports: [RouterLink, Icon, Button, Alert, Field, FieldError, Input, ChipOption, InlineStatus],
+  imports: [
+    RouterLink,
+    Icon,
+    Button,
+    Alert,
+    Field,
+    FieldError,
+    Input,
+    ChipOption,
+    InlineStatus,
+    DetailHeadActions,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { style: 'display: contents' },
   templateUrl: './product-request-form.html',

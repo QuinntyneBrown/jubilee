@@ -70,6 +70,7 @@ it changes how the product looks, which a component move must not do.
 | Avatar in the top bar (`home-1280.png`) | 36 px across | `--avatar-size-sm`, 32 px |
 | Unread count in the top bar (`home-1280.png`) | 20 px circle, numeral in Inter | badge height, label face, 1 px wider |
 | Service row (`business-services-1280.png`) | in a 768 px column, 77 px tall around a 42 px Book button, Inter | in a 704 px column, 79 px tall around a 32 px button (`--control-height-sm`), system text face |
+| Head of a business (`business-services-1280.png`) | a 420 px column, two round actions (message, save) beside Book a meeting, Inter | a 440 px column, a third action (Share), system text face |
 
 ## Refreshing
 

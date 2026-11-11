@@ -1,21 +1,18 @@
-<div class="page-header">
-  <div>
-    <h1>Download your data</h1>
-    <p class="subtitle">
-      @switch (view()) {
-        @case ('downloading') {
-          Preparing the file…
-        }
-        @case ('done') {
-          Your data was downloaded
-        }
-        @case ('unavailable') {
-          This link no longer works
-        }
+<jb-page-header heading="Download your data">
+  <ng-container ngProjectAs="[slot=subtitle]">
+    @switch (view()) {
+      @case ('downloading') {
+        Preparing the file…
       }
-    </p>
-  </div>
-</div>
+      @case ('done') {
+        Your data was downloaded
+      }
+      @case ('unavailable') {
+        This link no longer works
+      }
+    }
+  </ng-container>
+</jb-page-header>
 @switch (view()) {
   @case ('downloading') {
     <div jb-card role="status">
