@@ -39,7 +39,7 @@
             [attr.tabindex]="item.tab === tab() ? null : -1"
             (click)="load(item.tab)"
           >
-            {{ item.label }} <span class="badge">{{ requests.value.counts[item.count] }}</span>
+            {{ item.label }} <span jb-badge>{{ requests.value.counts[item.count] }}</span>
           </button>
         }
       </div>
@@ -62,9 +62,7 @@
                 <div class="row__meta">{{ row.kindLabel }} · {{ row.business }}</div>
                 <div class="row__meta">{{ row.detail ?? sent(row) }}</div>
               </div>
-              <span class="badge" [class]="tone(row) ? 'badge badge--' + tone(row) : 'badge'">{{
-                row.statusLabel
-              }}</span>
+              <span jb-badge [tone]="tone(row)">{{ row.statusLabel }}</span>
             </li>
           }
         </ul>

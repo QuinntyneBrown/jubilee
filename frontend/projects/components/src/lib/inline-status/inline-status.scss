@@ -1,0 +1,24 @@
+// Block: inline-status. The host is the status.
+//
+// Knob: --jb-inline-status-margin-end, set by a block that pushes its actions away from the
+// status (form-actions).
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-inline-end: var(--jb-inline-status-margin-end, 0);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+:host(.inline-status--success) {
+  color: var(--color-success-fg);
+}
+
+:host(.inline-status--danger) {
+  color: var(--color-danger-fg);
+}
+
+:host(.inline-status--lg) {
+  min-height: var(--control-height-lg);
+}

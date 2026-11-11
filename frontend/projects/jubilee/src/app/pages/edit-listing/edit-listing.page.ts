@@ -25,6 +25,7 @@ import {
   Select,
   Textarea,
   Skeleton,
+  InlineStatus,
 } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 import { WorkspaceHeader } from '../my-business/workspace-header';
@@ -63,6 +64,7 @@ type Saving = 'idle' | 'saving';
     Select,
     Textarea,
     Skeleton,
+    InlineStatus,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

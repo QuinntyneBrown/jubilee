@@ -294,7 +294,7 @@
             />
           </div>
           <div class="form-actions">
-            <span class="inline-status" style="margin-right: auto">{{
+            <span jb-inline-status>{{
               busy() ? 'Saving…' : 'Changes are published when you save'
             }}</span>
             <button jb-button type="button" [disabled]="busy()" (click)="discard()">

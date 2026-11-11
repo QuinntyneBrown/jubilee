@@ -30,7 +30,11 @@
       [attr.aria-current]="current() === 'messages' ? 'page' : null"
       >Messages
       @if (member.unreadConversationCount > 0) {
-        <span jb-unread-badge [count]="member.unreadConversationCount"></span>
+        <span
+          jb-badge
+          [count]="member.unreadConversationCount"
+          [label]="member.unreadConversationCount + ' unread'"
+        ></span>
       }
     </a>
     @if (member.isVerifier) {
@@ -40,7 +44,11 @@
         [attr.aria-current]="current() === 'verifications' ? 'page' : null"
         >Verifications
         @if (member.verificationCount > 0) {
-          <span jb-unread-badge [count]="member.verificationCount" noun="waiting"></span>
+          <span
+            jb-badge
+            [count]="member.verificationCount"
+            [label]="member.verificationCount + ' waiting'"
+          ></span>
         }
       </a>
     }

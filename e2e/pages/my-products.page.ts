@@ -17,6 +17,9 @@ export class MyProductsPage extends ShellPage implements Screen {
   readonly loading: Locator;
   readonly announcement: Locator;
 
+  /** The state of each product: "Listed" or "Sold out". */
+  readonly statusBadges: Locator;
+
   constructor(page: Page) {
     super(page);
     this.heading = this.main.getByRole('heading', { level: 1 });
@@ -24,6 +27,7 @@ export class MyProductsPage extends ShellPage implements Screen {
     this.summary = this.main.locator('p.text-muted').first();
     this.add = this.main.getByRole('button', { name: 'Add product' }).first();
     this.rows = this.main.locator('table.table tbody tr');
+    this.statusBadges = this.rows.locator('.badge');
     this.limit = this.main.getByText('You can list up to 100 products.');
     this.empty = this.main.locator('.empty');
     this.reference = this.main.locator('code');

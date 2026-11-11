@@ -38,10 +38,10 @@
         <p class="subtitle">
           {{ r.categoryName }} · submitted {{ when(r.submittedAt) }} ·
           <span
-            class="badge"
-            [class.badge--info]="r.stage === 'ready-to-review'"
-            [class.badge--warning]="r.stage !== 'ready-to-review' && r.stage !== 'live'"
-            [class.badge--success]="r.stage === 'live'"
+            jb-badge
+            [tone]="
+              r.stage === 'ready-to-review' ? 'info' : r.stage === 'live' ? 'success' : 'warning'
+            "
             >{{ r.stageLabel }}</span
           >
         </p>
@@ -131,7 +131,7 @@
             @if (noAnswer()) {
               <dt>Answer</dt>
               <dd>
-                <span class="badge badge--warning">{{
+                <span jb-badge tone="warning">{{
                   r.reference.state === 'waiting'
                     ? 'Waiting'
                     : r.reference.state === 'expired'
@@ -148,7 +148,7 @@
               <dt>Answer</dt>
               <dd>
                 @if (answer(); as a) {
-                  <span class="badge" [class]="'badge--' + a.tone">{{ a.label }}</span>
+                  <span jb-badge [tone]="a.tone">{{ a.label }}</span>
                 }
               </dd>
               @if (r.reference.note) {
@@ -210,7 +210,7 @@
               @if (r.stage === 'live') {
                 <span class="verified"><svg jb-icon name="verified"></svg>Verified</span>
               } @else {
-                <span class="perk">Pending verification</span>
+                <span jb-perk>Pending verification</span>
               }
             </p>
           </div>

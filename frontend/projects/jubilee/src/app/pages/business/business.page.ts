@@ -28,6 +28,8 @@ import {
   Alert,
   RowListSkeleton,
   Skeleton,
+  Perk,
+  Tag,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
@@ -99,6 +101,8 @@ interface DetailRow {
     Alert,
     RowListSkeleton,
     Skeleton,
+    Perk,
+    Tag,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

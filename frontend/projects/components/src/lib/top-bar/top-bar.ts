@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { BrandMark } from '../brand-mark/brand-mark';
 import { Icon } from '../icon/icon';
 import { ChromeMember, ChromeSection } from '../navigation';
-import { UnreadBadge } from '../unread-badge/unread-badge';
+import { Badge } from '../badge/badge';
 import { Button } from '../button/button';
 import { Input } from '../input/input';
 import { Avatar } from 'components';
@@ -14,7 +14,7 @@ import { Avatar } from 'components';
  */
 @Component({
   selector: 'header[jb-top-bar]',
-  imports: [RouterLink, BrandMark, Icon, UnreadBadge, Button, Input, Avatar],
+  imports: [RouterLink, BrandMark, Icon, Badge, Button, Input, Avatar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'topbar topbar--ink' },
   templateUrl: './top-bar.html',

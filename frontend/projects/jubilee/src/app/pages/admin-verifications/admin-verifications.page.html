@@ -42,7 +42,7 @@
             [attr.tabindex]="tab.stage === stage() ? null : -1"
             (click)="load(tab.stage)"
           >
-            {{ tab.label }} <span class="badge">{{ tab.count }}</span>
+            {{ tab.label }} <span jb-badge>{{ tab.count }}</span>
           </button>
         }
       </div>
@@ -78,14 +78,12 @@
                   <td>{{ row.categoryName }}</td>
                   <td>{{ row.ownerName }}</td>
                   <td>
-                    <span class="badge" [class]="'badge--' + reference(row).tone">{{
-                      reference(row).label
-                    }}</span>
+                    <span jb-badge [tone]="reference(row).tone">{{ reference(row).label }}</span>
                   </td>
                   <td>
                     {{ submitted(row) }}
                     @if (row.overdue) {
-                      <span class="badge badge--warning">Overdue</span>
+                      <span jb-badge tone="warning">Overdue</span>
                     }
                   </td>
                   <td>{{ row.stageLabel }}</td>
