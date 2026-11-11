@@ -1,5 +1,5 @@
 import { expect, test } from '../fixtures/jb-test';
-import { stubMessaging } from '../fixtures/messaging';
+import { nextInboxRead, stubMessaging } from '../fixtures/messaging';
 import { goOffline, goOnline, restoreJubilee, waitForSnapshot } from '../fixtures/offline';
 import { BrowsePage } from '../pages/browse.page';
 import { ConnectionBannerRegion } from '../pages/connection-banner';
@@ -223,16 +223,20 @@ test.describe('messages written offline (L2-120)', () => {
 
   test('AC4: a conversation already opened can still be read offline', async ({ page, jb }) => {
     const conversation = new ConversationPage(page);
+    const messages = new MessagesPage(page);
     await jb.signInAs('member');
     await stubMessaging(page);
     await jb.goto('/messages/c-legacy');
     await conversation.ready();
     await expect(conversation.bubbles).toHaveCount(3);
     await waitForSnapshot(page, 'conversation:c-legacy');
+    // The inbox reads again when Messages opens; the connection drops after that read, not before
+    // or during it. The rows are already on screen beside the conversation, so they prove nothing.
+    const inboxRead = nextInboxRead(page);
     await conversation.backLink.click();
+    await messages.ready();
+    await inboxRead;
     await expect(conversation.list.rows).toHaveCount(4);
-    // The inbox reads again when the page opens; the connection drops after that read, not during it.
-    await page.waitForLoadState('networkidle');
 
     await goOffline(page);
     await conversation.list.row('Legacy Financial').click();
