@@ -263,6 +263,9 @@ public sealed class RequestConfiguration : IEntityTypeConfiguration<Request>
         builder.Property(r => r.Note).HasMaxLength(Request.MaxDescriptionLength);
         builder.Property(r => r.Budget).HasMaxLength(Request.MaxBudgetLength);
         builder.Property(r => r.Phone).HasMaxLength(10);
+        builder.Property(r => r.OptionLabel).HasMaxLength(100);
+        builder.Property(r => r.DeliveryLabel).HasMaxLength(200);
+        builder.Property(r => r.ShippingAddress).HasMaxLength(500);
         builder.Property(r => r.Kind).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Mode).HasConversion<string>().HasMaxLength(16);
@@ -285,5 +288,20 @@ public sealed class RequestTransitionConfiguration : IEntityTypeConfiguration<Re
         builder.Property(t => t.From).HasConversion<string>().HasMaxLength(16);
         builder.Property(t => t.To).HasConversion<string>().HasMaxLength(16);
         builder.Property(t => t.Actor).HasMaxLength(200).IsRequired();
+    }
+}
+
+public sealed class DeliveryMethodConfiguration : IEntityTypeConfiguration<DeliveryMethod>
+{
+    public void Configure(EntityTypeBuilder<DeliveryMethod> builder)
+    {
+        builder.ToTable("DeliveryMethods");
+        builder.HasKey(d => d.Id);
+        builder.Property(d => d.Id).ValueGeneratedNever();
+        builder.Property(d => d.Label).HasMaxLength(100).IsRequired();
+        builder.Property(d => d.Estimate).HasMaxLength(200).IsRequired();
+        builder.Property(d => d.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.HasIndex(d => new { d.ListingId, d.Position });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(d => d.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }

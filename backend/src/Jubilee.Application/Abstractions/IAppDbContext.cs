@@ -37,5 +37,7 @@ public interface IAppDbContext
 
     DbSet<RequestTransition> RequestTransitions { get; }
 
+    DbSet<DeliveryMethod> DeliveryMethods { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

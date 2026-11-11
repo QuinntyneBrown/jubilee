@@ -1,4 +1,5 @@
 import { expect, test } from '../fixtures/jb-test';
+import { stubOrder } from '../fixtures/order';
 import { BrowsePage } from '../pages/browse.page';
 import { BusinessPage } from '../pages/business.page';
 import { CategoryPage } from '../pages/category.page';
@@ -89,6 +90,7 @@ test('a member chooses a size and a quantity and requests a product with the key
 }) => {
   const product = new ProductPage(page);
   await product.setWidth(1280);
+  await stubOrder(page);
   await jb.open('product');
 
   // Space chooses the first size, the arrow keys move to the next one

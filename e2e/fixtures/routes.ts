@@ -165,6 +165,11 @@ export const routes = {
     mock: 'dialogs/request-quote/default.html',
     who: 'member',
   },
+  'order-request': {
+    app: '/b/luzandre/p/faith-heavyweight-tee-charcoal/request?option=M&quantity=1',
+    mock: 'dialogs/order-request/default.html',
+    who: 'member',
+  },
   welcome: { app: '/welcome', mock: 'pages/welcome/default.html', who: 'visitor' },
   browse: { app: '/', mock: 'pages/browse/default.html', who: 'member' },
   'browse.signed-out': { app: '/', mock: 'pages/browse/signed-out.html', who: 'visitor' },

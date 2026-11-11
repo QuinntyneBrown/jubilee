@@ -33,7 +33,7 @@ dispatched by `Jubilee Worker`.
   total {amount} + tax" immediately when the option, quantity or delivery method changes, and applies free
   shipping over the shop's threshold. The estimate is display only.
 - **`RequestsApi`** — typed Angular HTTP client. `getOrderDefaults` calls `GET
-  /api/requests/orders/defaults?productId=` and returns the delivery methods, the free-shipping threshold, the
+  /api/listings/{shop}/products/{product}/order` and returns the delivery methods, the free-shipping threshold, the
   last shipping address, and the shop's typical reply time and lead time. `requestItem` calls `POST
   /api/requests/orders` with an `Idempotency-Key` header from `IdempotencyKeyFactory`.
 - **`RequestsController`** — ASP.NET Core controller in `Jubilee.Api`. It authenticates the session cookie,
@@ -53,8 +53,8 @@ dispatched by `Jubilee Worker`.
   confirming it does (`L2-052`).
 - **`OrderPricingService`** — domain service. It computes the unit price, item amount, shipping amount and
   estimated total from stored `Product`, `ProductOption` and `DeliveryMethod` data, and sets shipping to zero at
-  or above the free-shipping threshold. The dialog's `OrderEstimate` mirrors the same rules. Tax calculation is
-  `<TO SUPPLY>`.
+  or above the free-shipping threshold. The dialog's `OrderEstimate` mirrors the same rules. Tax is never calculated: the estimate
+  reads "{amount} + tax" and the shop adds tax when it confirms (ADR 0017).
 - **`Request`** — domain entity in `Jubilee.Domain` that owns the request lifecycle (`L2-043`). `RequestStatus`
   holds `New`, `Confirmed`, `Declined`, `Cancelled` and `Completed`. The allowed transitions are `New` →
   `Confirmed` (the owner confirms), `New` → `Declined` (the owner declines), `New` or `Confirmed` → `Cancelled`

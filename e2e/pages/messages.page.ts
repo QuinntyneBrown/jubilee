@@ -240,3 +240,46 @@ export class RequestQuoteDialog {
     this.viewRequest = this.root.getByRole('link', { name: 'View request' });
   }
 }
+
+/** The dialog that asks a shop for a product (L2-046). */
+export class RequestItemDialog {
+  readonly root: Locator;
+  readonly title: Locator;
+  readonly description: Locator;
+  readonly summary: Locator;
+  readonly methods: Locator;
+  readonly address: Locator;
+  readonly note: Locator;
+  readonly itemAmount: Locator;
+  readonly shippingAmount: Locator;
+  readonly total: Locator;
+  readonly fieldError: Locator;
+  readonly alert: Locator;
+  readonly send: Locator;
+  readonly cancel: Locator;
+  readonly keepShopping: Locator;
+  readonly viewRequest: Locator;
+
+  constructor(page: Page) {
+    this.root = page.getByRole('dialog');
+    this.title = this.root.locator('.dialog__title');
+    this.description = this.root.locator('#dlg-desc');
+    this.summary = this.root.locator('.item-list');
+    this.methods = this.root.locator('label.choice');
+    this.address = this.root.getByLabel('Shipping address');
+    this.note = this.root.getByLabel(/^Note to/);
+    this.itemAmount = this.root.locator('dl.dl dd').nth(0);
+    this.shippingAmount = this.root.locator('dl.dl dd').nth(1);
+    this.total = this.root.locator('dl.dl dd').nth(2);
+    this.fieldError = this.root.locator('.field__error');
+    this.alert = this.root.getByRole('alert');
+    this.send = this.root.getByRole('button', { name: 'Send request' });
+    this.cancel = this.root.getByRole('button', { name: 'Cancel' });
+    this.keepShopping = this.root.getByRole('link', { name: 'Keep shopping' });
+    this.viewRequest = this.root.getByRole('link', { name: 'View request' });
+  }
+
+  method(label: string): Locator {
+    return this.methods.filter({ hasText: label });
+  }
+}

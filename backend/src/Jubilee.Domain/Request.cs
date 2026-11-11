@@ -121,6 +121,24 @@ public sealed class Request
     /// <summary>Ten digits, shared with the business for this request only.</summary>
     public string? Phone { get; private set; }
 
+    /// <summary>An order request: the chosen option, for example "M"; null without options.</summary>
+    public string? OptionLabel { get; private set; }
+
+    public int? Quantity { get; private set; }
+
+    /// <summary>The prices as the server computed them from stored data (L2-046 AC6).</summary>
+    public int? UnitPriceCents { get; private set; }
+
+    public int? ItemCents { get; private set; }
+
+    public int? ShippingCents { get; private set; }
+
+    public int? TotalCents { get; private set; }
+
+    public string? DeliveryLabel { get; private set; }
+
+    public string? ShippingAddress { get; private set; }
+
     public IReadOnlyList<RequestTransition> Transitions => _transitions;
 
     public static Request Book(
@@ -181,6 +199,42 @@ public sealed class Request
             NeededBy = neededBy,
             Budget = string.IsNullOrWhiteSpace(budget) ? null : budget.Trim(),
             Phone = phone,
+        };
+
+    public static Request AskForOrder(
+        string memberSubject,
+        string memberName,
+        Guid listingId,
+        Guid productId,
+        string productName,
+        string? optionLabel,
+        int quantity,
+        OrderAmounts amounts,
+        string deliveryLabel,
+        string? shippingAddress,
+        string? note,
+        string idempotencyKey,
+        DateTimeOffset now) => new()
+        {
+            Id = Guid.NewGuid(),
+            Kind = RequestKind.Order,
+            MemberSubject = memberSubject,
+            MemberName = memberName,
+            ListingId = listingId,
+            Status = RequestStatus.New,
+            CreatedAt = now,
+            IdempotencyKey = idempotencyKey,
+            ServiceId = productId,
+            ServiceName = productName,
+            OptionLabel = optionLabel,
+            Quantity = quantity,
+            UnitPriceCents = amounts.UnitCents,
+            ItemCents = amounts.ItemCents,
+            ShippingCents = amounts.ShippingCents,
+            TotalCents = amounts.TotalCents,
+            DeliveryLabel = deliveryLabel,
+            ShippingAddress = shippingAddress,
+            Note = string.IsNullOrWhiteSpace(note) ? null : note.Trim(),
         };
 
     /// <summary>The owner confirms a new request.</summary>

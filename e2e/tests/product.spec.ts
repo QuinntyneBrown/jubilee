@@ -1,4 +1,5 @@
 import { expect, test } from '../fixtures/jb-test';
+import { stubOrder } from '../fixtures/order';
 import { ProductPage } from '../pages/product.page';
 
 // Product page: L2-035, L2-118. "product" is the charcoal tee of Luzandre.com in the recorded answers of the seeded API (ADR 0009).
@@ -65,6 +66,7 @@ test.describe('product page (L2-035)', () => {
     jb,
   }) => {
     const product = new ProductPage(page);
+    await stubOrder(page);
     await jb.open('product');
 
     await product.choose('M');
@@ -80,6 +82,7 @@ test.describe('product page (L2-035)', () => {
     jb,
   }) => {
     const product = new ProductPage(page);
+    await stubOrder(page);
     await jb.open('product');
 
     await product.quantity.fill('30');
