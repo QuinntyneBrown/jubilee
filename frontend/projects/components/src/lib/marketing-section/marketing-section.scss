@@ -1,0 +1,106 @@
+// Block: mkt-section. The host is the section; its inner box keeps the page's width and gutters.
+:host {
+  display: block;
+}
+
+:host(.mkt-section--surface) {
+  background: var(--color-bg-surface);
+}
+
+:host(.mkt-section--ink) {
+  background: var(--jb-mkt-ink);
+  color: var(--jb-mkt-paper);
+  // What sits on ink: the focus ring, and the accent and lead of a heading.
+  --color-focus-ring: var(--color-focus-ring-on-brand);
+  --jb-marketing-heading-accent: var(--color-accent);
+  --jb-marketing-heading-lead: color-mix(in srgb, var(--jb-mkt-paper) 75%, transparent);
+}
+
+:host(.mkt-section--divided) {
+  border-top: var(--border-width-hairline) solid
+    color-mix(in srgb, var(--color-fg-default) 10%, transparent);
+}
+
+.mkt-section__inner {
+  width: 100%;
+  max-width: var(--jb-mkt-max);
+  margin-inline: auto;
+  padding: var(--space-20) var(--jb-mkt-gutter);
+}
+
+@media (min-width: 64rem) {
+  .mkt-section__inner {
+    padding-block: 7rem;
+  }
+}
+
+// opening: the heading, and beside it from the desktop layout a picture
+:host(.mkt-section--opening) .mkt-section__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-12);
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-20);
+}
+
+@media (min-width: 48rem) {
+  :host(.mkt-section--opening) .mkt-section__inner {
+    padding-top: var(--space-20);
+  }
+}
+
+@media (min-width: 64rem) {
+  :host(.mkt-section--opening) .mkt-section__inner {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: var(--space-16);
+    padding-bottom: 7rem;
+  }
+}
+
+// film: close under the opening
+:host(.mkt-section--film) .mkt-section__inner {
+  padding-top: 0;
+  padding-bottom: var(--space-24);
+}
+
+@media (min-width: 64rem) {
+  :host(.mkt-section--film) .mkt-section__inner {
+    padding-bottom: 8rem;
+  }
+}
+
+// split and pitch: a heading and a list, side by side from the desktop layout
+:host(.mkt-section--split) .mkt-section__inner {
+  display: grid;
+  gap: var(--space-10);
+}
+
+:host(.mkt-section--pitch) .mkt-section__inner {
+  display: grid;
+  gap: var(--space-12);
+}
+
+@media (min-width: 64rem) {
+  :host(.mkt-section--split) .mkt-section__inner {
+    grid-template-columns: 1fr 1.3fr;
+    gap: var(--space-20);
+  }
+
+  :host(.mkt-section--pitch) .mkt-section__inner {
+    grid-template-columns: 1.1fr 1fr;
+    gap: var(--space-20);
+  }
+}
+
+// closing: centred, with more room
+:host(.mkt-section--closing) .mkt-section__inner {
+  padding-block: var(--space-24);
+  text-align: center;
+}
+
+@media (min-width: 64rem) {
+  :host(.mkt-section--closing) .mkt-section__inner {
+    padding-block: 8rem;
+  }
+}

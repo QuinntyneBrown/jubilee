@@ -7,28 +7,26 @@
   </a>
 </header>
 <main id="main" tabindex="-1">
-  <section id="top" class="mkt-wrap mkt-hero" aria-labelledby="top-title">
-    <div class="mkt-hero__text">
-      <h1 id="top-title" class="mkt-hero__title">
-        Toronto’s Christian businesses, <span class="mkt-accent">in one place.</span>
-      </h1>
-      <p class="mkt-lead mkt-hero__lead">
-        Jubilee is where Toronto’s Christian community finds shops, advisors and trades it can
-        trust. Every business is vouched for by a church, so you can shop, hire and recommend with
-        confidence.
-      </p>
-      <div class="mkt-hero__actions">
-        <a jb-marketing-button [href]="browseUrl">
-          Start browsing
-          <svg jb-icon name="arrow-up-right"></svg>
-        </a>
-        <a jb-marketing-link iconSize="sm" href="#film">
-          Watch the film
-          <svg jb-icon name="arrow-down"></svg>
-        </a>
-      </div>
-      <p class="mkt-hero__note">Free for members · Every business church-verified</p>
-    </div>
+  <section jb-marketing-section id="top" layout="opening" aria-labelledby="top-title">
+    <jb-marketing-heading
+      [level]="1"
+      size="display"
+      headingId="top-title"
+      text="Toronto’s Christian businesses,"
+      accent="in one place."
+      lead="Jubilee is where Toronto’s Christian community finds shops, advisors and trades it can trust. Every business is vouched for by a church, so you can shop, hire and recommend with confidence."
+      leadWidth="wide"
+      note="Free for members · Every business church-verified"
+    >
+      <a slot="actions" jb-marketing-button [href]="browseUrl">
+        Start browsing
+        <svg jb-icon name="arrow-up-right"></svg>
+      </a>
+      <a slot="actions" jb-marketing-link iconSize="sm" href="#film">
+        Watch the film
+        <svg jb-icon name="arrow-down"></svg>
+      </a>
+    </jb-marketing-heading>
     <div
       jb-app-glimpse
       label="A glimpse of the app"
@@ -41,10 +39,13 @@
     </div>
   </section>
 
-  <section id="film" class="mkt-wrap mkt-film" aria-labelledby="film-title">
-    <h2 id="film-title" class="mkt-film__title">
-      See Jubilee <span class="mkt-accent">in action.</span>
-    </h2>
+  <section jb-marketing-section id="film" layout="film" aria-labelledby="film-title">
+    <jb-marketing-heading
+      size="film"
+      headingId="film-title"
+      text="See Jubilee"
+      accent="in action."
+    />
     <jb-video-player
       label="Jubilee pitch film"
       playLabel="Play the Jubilee film"
@@ -60,14 +61,18 @@
   <jb-inside-the-app />
   <jb-for-businesses />
 
-  <section class="mkt-wrap mkt-closing" aria-labelledby="closing-title">
-    <h2 id="closing-title" class="mkt-h2 mkt-closing__title">
-      Your community is <span class="mkt-accent">open for business.</span>
-    </h2>
-    <a jb-marketing-button [href]="browseUrl">
-      Start browsing
-      <svg jb-icon name="arrow-up-right"></svg>
-    </a>
+  <section jb-marketing-section layout="closing" aria-labelledby="closing-title">
+    <jb-marketing-heading
+      size="closing"
+      headingId="closing-title"
+      text="Your community is"
+      accent="open for business."
+    >
+      <a slot="actions" jb-marketing-button [href]="browseUrl">
+        Start browsing
+        <svg jb-icon name="arrow-up-right"></svg>
+      </a>
+    </jb-marketing-heading>
   </section>
 </main>
 <footer jb-marketing-footer>

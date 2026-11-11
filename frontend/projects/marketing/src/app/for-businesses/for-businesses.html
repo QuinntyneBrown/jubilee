@@ -1,30 +1,37 @@
-<section id="businesses" class="mkt-owners" aria-labelledby="businesses-title">
-  <div class="mkt-wrap mkt-owners__inner">
-    <div>
-      <h2 id="businesses-title" class="mkt-h2">
-        Run a Christian-owned business? <span class="mkt-accent">Be found.</span>
-      </h2>
-      <p class="mkt-owners__lead">
-        Reach believers across Toronto who would rather buy from someone who shares their faith.
-      </p>
-      <a jb-marketing-button variant="gold" [href]="listUrl">
-        List your business free
-        <svg jb-icon name="arrow-up-right"></svg>
-      </a>
-    </div>
-    <ul class="mkt-points">
-      <li>
-        <h3>Customers who already trust you</h3>
-        <p>Your church’s word travels with your listing, so first conversations start warm.</p>
-      </li>
-      <li>
-        <h3>A page that sells for you</h3>
-        <p>Show your products or services, prices and story. Update it whenever you like.</p>
-      </li>
-      <li>
-        <h3>Free to join</h3>
-        <p>No listing fees and no cut of your sales. Just honest business, done well.</p>
-      </li>
-    </ul>
-  </div>
+<section
+  jb-marketing-section
+  id="businesses"
+  tone="ink"
+  layout="pitch"
+  aria-labelledby="businesses-title"
+>
+  <jb-marketing-heading
+    headingId="businesses-title"
+    text="Run a Christian-owned business?"
+    accent="Be found."
+    lead="Reach believers across Toronto who would rather buy from someone who shares their faith."
+    leadWidth="medium"
+  >
+    <a slot="actions" jb-marketing-button variant="gold" [href]="listUrl">
+      List your business free
+      <svg jb-icon name="arrow-up-right"></svg>
+    </a>
+  </jb-marketing-heading>
+  <ul jb-point-list>
+    <li
+      jb-point
+      heading="Customers who already trust you"
+      text="Your church’s word travels with your listing, so first conversations start warm."
+    ></li>
+    <li
+      jb-point
+      heading="A page that sells for you"
+      text="Show your products or services, prices and story. Update it whenever you like."
+    ></li>
+    <li
+      jb-point
+      heading="Free to join"
+      text="No listing fees and no cut of your sales. Just honest business, done well."
+    ></li>
+  </ul>
 </section>

@@ -6,9 +6,11 @@ import {
   Lockup,
   MarketingButton,
   MarketingFooter,
+  MarketingHeading,
   MarketingLink,
   MarketingNav,
   MarketingNavLink,
+  MarketingSection,
   SkipLink,
   VideoPlayer,
 } from 'components';
@@ -23,6 +25,8 @@ import { InsideTheApp } from './inside-the-app/inside-the-app';
 @Component({
   selector: 'jb-root',
   imports: [
+    MarketingHeading,
+    MarketingSection,
     Icon,
     MarketingFooter,
     MarketingNav,

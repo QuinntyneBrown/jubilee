@@ -1,0 +1,8 @@
+// Block: mkt-points. The host is the list.
+:host {
+  display: block;
+  list-style: none;
+  padding: 0;
+  border-block: var(--border-width-hairline) solid
+    color-mix(in srgb, var(--jb-mkt-paper) 15%, transparent);
+}
