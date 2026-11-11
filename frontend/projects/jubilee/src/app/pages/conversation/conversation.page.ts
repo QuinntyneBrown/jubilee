@@ -31,6 +31,7 @@ import {
   MessageBubble,
   RequestCard as RequestCardItem,
   Textarea,
+  Badge,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -112,6 +113,7 @@ type Entry =
     Textarea,
     Chip,
     Avatar,
+    Badge,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './conversation.page.html',

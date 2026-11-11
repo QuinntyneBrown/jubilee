@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Badge, BadgeTone } from '../badge/badge';
 
 /** Where a request stands (L2-043). */
 export type RequestCardStatus = 'new' | 'confirmed' | 'declined' | 'cancelled' | 'completed';
 
-const TONE: Record<RequestCardStatus, string> = {
-  new: 'badge--warning',
-  confirmed: 'badge--success',
-  declined: 'badge--danger',
+const TONE: Record<RequestCardStatus, BadgeTone | ''> = {
+  new: 'warning',
+  confirmed: 'success',
+  declined: 'danger',
   cancelled: '',
   completed: '',
 };
@@ -23,7 +24,7 @@ const TONE: Record<RequestCardStatus, string> = {
  */
 @Component({
   selector: 'li[jb-request-card]',
-  imports: [RouterLink],
+  imports: [RouterLink, Badge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'request-card' },
   templateUrl: './request-card.html',
