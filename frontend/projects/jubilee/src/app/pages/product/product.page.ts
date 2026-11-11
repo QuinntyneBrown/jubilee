@@ -13,7 +13,7 @@ import {
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LISTINGS_API, ProductPage as ProductPageModel } from 'api';
-import { EmptyState, Icon, MediaTile, PricePipe, ProductCard, Button } from 'components';
+import { EmptyState, Icon, MediaTile, PricePipe, ProductCard, Button, Skeleton } from 'components';
 import { Subscription } from 'rxjs';
 import { RequestItemData, RequestItemDialog } from '../../dialogs/request-item/request-item.dialog';
 import {
@@ -43,6 +43,7 @@ import { ProductRequestForm, ProductSelection } from './product-request-form';
     ProductCard,
     ProductRequestForm,
     Button,
+    Skeleton,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

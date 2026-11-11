@@ -9,7 +9,16 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DECLINE_REASONS, INCOMING_REQUESTS_API, IncomingRequestRow, RequestDecision } from 'api';
-import { Icon, Button, Alert, Field, Select, Textarea } from 'components';
+import {
+  Button,
+  Alert,
+  Field,
+  Select,
+  Textarea,
+  DialogFrame,
+  DialogBody,
+  DialogFooter,
+} from 'components';
 import { requestNoun } from '../confirm-request/confirm-request.dialog';
 
 export interface DeclineRequestData {
@@ -24,9 +33,18 @@ const MAX_MESSAGE = 1000;
 /** DeclineRequestDialog (L2-053): the owner declines with a reason and a kind note. */
 @Component({
   selector: 'jb-decline-request-dialog',
-  imports: [FormsModule, Icon, Button, Alert, Field, Select, Textarea],
+  imports: [
+    FormsModule,
+    Button,
+    Alert,
+    Field,
+    Select,
+    Textarea,
+    DialogFrame,
+    DialogBody,
+    DialogFooter,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog' },
   templateUrl: './decline-request.dialog.html',
 })
 export class DeclineRequestDialog {

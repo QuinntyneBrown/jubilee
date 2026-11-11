@@ -8,14 +8,14 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SAVED_API, SavedItem } from 'api';
-import { BusinessCard, EmptyState, Icon, ProductCard, Button } from 'components';
+import { BusinessCard, EmptyState, Icon, ProductCard, Button, Skeleton } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 import { SavedStore } from '../../services/saved.store';
 
 /** The saved page at /saved (L2-042): what the member saved, newest first, private to them. */
 @Component({
   selector: 'jb-saved-page',
-  imports: [RouterLink, BusinessCard, EmptyState, Icon, ProductCard, Button],
+  imports: [RouterLink, BusinessCard, EmptyState, Icon, ProductCard, Button, Skeleton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './saved.page.html',

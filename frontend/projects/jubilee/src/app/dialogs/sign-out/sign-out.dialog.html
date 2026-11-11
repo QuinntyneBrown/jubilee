@@ -1,22 +1,14 @@
-<div class="dialog__panel">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-      <svg jb-icon name="sign-out"></svg>
-    </div>
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">Sign out of Jubilee?</h2>
-      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-        You’ll stay signed in on your other device. An unsent message draft is kept on this phone.
-      </p>
-      @if (failed()) {
-        <p jb-field-error role="alert">We couldn’t sign you out. Try again.</p>
-      }
-    </div>
-    <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <div class="dialog__footer">
+<jb-dialog
+  heading="Sign out of Jubilee?"
+  description="You’ll stay signed in on your other device. An unsent message draft is kept on this phone."
+  icon="sign-out"
+  (closed)="close()"
+  (outsideClick)="close()"
+>
+  @if (failed()) {
+    <p jb-field-error slot="status" role="alert">We couldn’t sign you out. Try again.</p>
+  }
+  <div jb-dialog-footer>
     <button jb-button type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
       Stay signed in
     </button>
@@ -24,4 +16,4 @@
       Sign out
     </button>
   </div>
-</div>
+</jb-dialog>

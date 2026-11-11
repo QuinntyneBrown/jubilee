@@ -1,52 +1,26 @@
-<div class="dialog__panel">
-  @if (view() === 'success') {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="check"></svg>
-      </div>
-      <div class="dialog__heading">
-        <h2 class="dialog__title" id="dlg-title">Thanks for telling us</h2>
-        <p id="dlg-desc" class="dialog__desc">
-          Your report is private. Our verification team reviews it within one business day.
-          @if (data.canBlock && block()) {
-            {{ data.businessName }} is blocked.
-          }
-        </p>
-      </div>
-      <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
-    <div class="dialog__footer">
+@if (view() === 'success') {
+  <jb-dialog heading="Thanks for telling us" icon="check" (closed)="close()">
+    <span slot="description"
+      >Your report is private. Our verification team reviews it within one business day.
+      @if (data.canBlock && block()) {
+        {{ data.businessName }} is blocked.
+      }
+    </span>
+    <div jb-dialog-footer>
       <button jb-button variant="primary" type="button" cdkFocusInitial (click)="close()">
         Close
       </button>
     </div>
-  } @else {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="flag"></svg>
-      </div>
-      <div class="dialog__heading">
-        <h2 class="dialog__title" id="dlg-title">Report this conversation</h2>
-        <p id="dlg-desc" class="dialog__desc">
-          Reports are private. Our verification team reads this conversation only while the report
-          is open.
-        </p>
-      </div>
-      <button
-        jb-button
-        variant="ghost"
-        iconOnly
-        type="button"
-        aria-label="Close"
-        [disabled]="busy()"
-        (click)="close()"
-      >
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
-    <form class="dialog__body stack" id="report-form" novalidate (ngSubmit)="send()">
+  </jb-dialog>
+} @else {
+  <jb-dialog
+    heading="Report this conversation"
+    description="Reports are private. Our verification team reads this conversation only while the report is open."
+    icon="flag"
+    [busy]="busy()"
+    (closed)="close()"
+  >
+    <form jb-dialog-body class="stack" id="report-form" novalidate (ngSubmit)="send()">
       @if (view() === 'failed') {
         <div jb-alert tone="danger" heading="We couldn’t send that" role="alert">
           <div>{{ failure() }}</div>
@@ -84,11 +58,11 @@
         >
       }
     </form>
-    <div class="dialog__footer">
+    <div jb-dialog-footer>
       <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
       <button jb-button variant="primary" type="submit" form="report-form" [busy]="busy()">
         Send report
       </button>
     </div>
-  }
-</div>
+  </jb-dialog>
+}

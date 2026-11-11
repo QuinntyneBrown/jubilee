@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ACCOUNT_API } from 'api';
-import { BrandMark, EmptyState, Icon, Button } from 'components';
+import { BrandMark, EmptyState, Icon, Button, Spinner } from 'components';
 import { SessionService } from '../../services/session.service';
 
 type View =
@@ -25,7 +25,7 @@ type View =
  */
 @Component({
   selector: 'jb-verify-email-page',
-  imports: [RouterLink, BrandMark, EmptyState, Icon, Button],
+  imports: [RouterLink, BrandMark, EmptyState, Icon, Button, Spinner],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './verify-email.page.html',

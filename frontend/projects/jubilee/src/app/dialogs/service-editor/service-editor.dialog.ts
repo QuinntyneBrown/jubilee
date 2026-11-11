@@ -10,7 +10,17 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CATALOGUE_API, OwnerService, ServicePricing } from 'api';
-import { Icon, Button, Alert, Field, Input, Select, Checkbox } from 'components';
+import {
+  Button,
+  Alert,
+  Field,
+  Input,
+  Select,
+  Checkbox,
+  DialogFrame,
+  DialogBody,
+  DialogFooter,
+} from 'components';
 import { timeout } from 'rxjs';
 import { failureText, guardClose } from '../guard-close';
 
@@ -33,9 +43,19 @@ const SAVE_TIMEOUT_MS = 10_000;
 /** ServiceEditorDialog (L2-094): add or change a service, its price and how members can ask for it. */
 @Component({
   selector: 'jb-service-editor-dialog',
-  imports: [FormsModule, Icon, Button, Alert, Field, Input, Select, Checkbox],
+  imports: [
+    FormsModule,
+    Button,
+    Alert,
+    Field,
+    Input,
+    Select,
+    Checkbox,
+    DialogFrame,
+    DialogBody,
+    DialogFooter,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog' },
   templateUrl: './service-editor.dialog.html',
 })
 export class ServiceEditorDialog {

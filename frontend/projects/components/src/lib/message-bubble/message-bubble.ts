@@ -6,6 +6,7 @@ import {
   input,
   output,
 } from '@angular/core';
+import { Skeleton } from '../skeleton/skeleton';
 
 /** Where a message stands: confirmed by the server, on its way, or not sent. */
 export type BubbleState = 'sent' | 'pending' | 'failed';
@@ -23,6 +24,7 @@ export type BubbleState = 'sent' | 'pending' | 'failed';
  */
 @Component({
   selector: 'li[jb-message-bubble]',
+  imports: [Skeleton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'bubble',

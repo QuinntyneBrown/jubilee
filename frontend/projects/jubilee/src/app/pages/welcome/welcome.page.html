@@ -14,10 +14,10 @@
       <a jb-button variant="primary" size="lg" routerLink="/join">Join free</a>
       <a jb-button variant="ghost" size="lg" routerLink="/">Browse businesses</a>
     </div>
-    <ul class="chip-row">
+    <ul jb-chip-row>
       @for (category of categories; track category.slug) {
         <li>
-          <a class="chip" [routerLink]="['/c', category.slug]">{{ category.name }}</a>
+          <a jb-chip [routerLink]="['/c', category.slug]">{{ category.name }}</a>
         </li>
       }
     </ul>

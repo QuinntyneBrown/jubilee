@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AwayPeriod, MY_BUSINESS_API } from 'api';
-import { Alert, Button, Field, Icon, Input } from 'components';
+import { Alert, Button, DialogBody, DialogFooter, DialogFrame, Field, Input } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { isoDay } from '../../services/message-time';
 
@@ -35,9 +35,8 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-away-period-dialog',
-  imports: [FormsModule, Icon, Button, Alert, Field, Input],
+  imports: [FormsModule, Button, Alert, Field, Input, DialogFrame, DialogBody, DialogFooter],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog' },
   templateUrl: './away-period.dialog.html',
 })
 export class AwayPeriodDialog {

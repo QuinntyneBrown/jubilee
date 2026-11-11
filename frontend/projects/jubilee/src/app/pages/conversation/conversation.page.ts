@@ -21,7 +21,9 @@ import { ChatMessage, Conversation, MESSAGES_API, RepliesBand, RequestCard } fro
 import {
   Alert,
   AttachPhoto,
+  Avatar,
   Button,
+  Chip,
   EmptyState,
   Icon,
   Menu,
@@ -33,7 +35,7 @@ import {
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { MessagesStore } from '../../services/messages.store';
-import { clockTime, dayHeading, dayKey, initialsOf, newKey } from '../../services/message-time';
+import { clockTime, dayHeading, dayKey, newKey } from '../../services/message-time';
 import { NavigationStore } from '../../services/navigation.store';
 import { RealtimeService } from '../../services/realtime.service';
 import { ConnectionService } from '../../services/offline/connection.service';
@@ -108,6 +110,8 @@ type Entry =
     AttachPhoto,
     RequestCardItem,
     Textarea,
+    Chip,
+    Avatar,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './conversation.page.html',
@@ -213,7 +217,7 @@ export class ConversationPage implements OnInit {
       delivered = now;
       this.refresh();
     });
-    // A reply, or a change to a request of this conversation, arrives over the event stream (ADR 0038).
+    // A reply, or a change to a request of this conversation, arrives over the event stream (ADR 0039).
     this.realtime.received.pipe(takeUntilDestroyed()).subscribe((item) => {
       if (this.state().status !== 'loaded') return;
       if (item.kind === 'message' && item.target === `/messages/${this.id()}`) this.refresh(true);
@@ -232,10 +236,6 @@ export class ConversationPage implements OnInit {
       this.open();
     });
     this.store.load('');
-  }
-
-  protected initials(name: string): string {
-    return initialsOf(name);
   }
 
   protected open(): void {
@@ -471,7 +471,7 @@ export class ConversationPage implements OnInit {
     this.text.set('');
     this.attached.set(null);
     // Offline, or with Jubilee out of reach, a text message is kept on the device and sent later
-    // (L2-120). A message with a photo is not queued (ADR 0038): it fails and offers "Try again".
+    // (L2-120). A message with a photo is not queued (ADR 0039): it fails and offers "Try again".
     if (!outgoing.photo && this.connection.cannotDeliver()) {
       void this.queue.enqueue(this.id(), body, outgoing.key);
       return;

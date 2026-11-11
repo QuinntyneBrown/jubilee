@@ -19,18 +19,7 @@
   }
   @case ('loading') {
     <p class="visually-hidden" role="status">Loading your requests…</p>
-    <ul class="rows" aria-hidden="true">
-      @for (item of skeleton; track item) {
-        <li class="row">
-          <span class="skeleton skeleton--avatar"></span>
-          <div class="row__body">
-            <span class="skeleton skeleton--text skeleton--w50"></span>
-            <span class="skeleton skeleton--text skeleton--w70"></span>
-          </div>
-          <span class="skeleton skeleton--btn" style="width: 5rem"></span>
-        </li>
-      }
-    </ul>
+    <ul jb-row-list-skeleton [count]="4" leading="avatar" action></ul>
   }
   @case ('loaded') {
     @if (requests.value.counts.all === 0) {
@@ -65,7 +54,7 @@
         <ul class="rows">
           @for (row of rows(); track row.id) {
             <li class="row row--stack">
-              <span class="avatar" aria-hidden="true"><svg jb-icon [name]="icon(row)"></svg></span>
+              <jb-avatar><svg jb-icon [name]="icon(row)"></svg></jb-avatar>
               <div class="row__body">
                 <div class="row__title">
                   <a [routerLink]="['/requests', row.id]">{{ row.title }}</a>

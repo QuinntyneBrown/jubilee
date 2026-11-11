@@ -1,20 +1,12 @@
-<div class="dialog__panel dialog__panel--sm">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-      <svg jb-icon name="user"></svg>
-    </div>
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">{{ data.title }}</h2>
-      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-        Jubilee is free. An account lets businesses reply to you and keeps your bookings in one
-        place. We’ll bring you straight back here.
-      </p>
-    </div>
-    <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <div class="dialog__footer">
+<jb-dialog
+  heading="{{ data.title }}"
+  description="Jubilee is free. An account lets businesses reply to you and keeps your bookings in one place. We’ll bring you straight back here."
+  icon="user"
+  size="sm"
+  (closed)="close()"
+  (outsideClick)="close()"
+>
+  <div jb-dialog-footer>
     <a jb-button routerLink="/sign-in" [queryParams]="back" (click)="close()">Sign in</a>
     <a
       jb-button
@@ -26,4 +18,4 @@
       >Join free</a
     >
   </div>
-</div>
+</jb-dialog>

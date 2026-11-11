@@ -16,7 +16,7 @@ export interface PreparedPhoto {
 }
 
 /**
- * Checks and shrinks a photo on the device before it is sent (L2-060 AC2, AC3; ADR 0038). The
+ * Checks and shrinks a photo on the device before it is sent (L2-060 AC2, AC3; ADR 0039). The
  * file is a JPEG or PNG by its first bytes, whatever it is called. Over 5 MB it is drawn to a
  * canvas and encoded as JPEG, at lower quality and then smaller, until it fits. The server
  * decides again; this is for feedback and for the member's data plan.

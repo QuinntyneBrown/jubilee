@@ -8,6 +8,8 @@ export class IncomingRequestsPage extends ShellPage implements Screen {
   readonly subtitle: Locator;
   readonly statusTabs: Locator;
   readonly rows: Locator;
+  /** The avatar that starts each row. */
+  readonly rowAvatars: Locator;
   readonly empty: Locator;
   readonly alert: Locator;
   readonly reference: Locator;
@@ -21,6 +23,7 @@ export class IncomingRequestsPage extends ShellPage implements Screen {
     this.subtitle = this.main.locator('.subtitle');
     this.statusTabs = this.main.getByRole('tablist', { name: 'Request status' });
     this.rows = this.main.locator('ul.rows > li');
+    this.rowAvatars = this.rows.locator('.avatar');
     this.empty = this.main.locator('.empty');
     this.alert = this.main.getByRole('alert');
     this.reference = this.main.locator('code');

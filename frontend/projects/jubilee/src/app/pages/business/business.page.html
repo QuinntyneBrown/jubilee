@@ -5,45 +5,32 @@
     <h1 class="visually-hidden">Loading this {{ thing() }}</h1>
     <p class="visually-hidden" role="status">Loading this {{ thing() }}…</p>
     <div class="split" aria-hidden="true">
-      <div><span class="skeleton skeleton--media"></span></div>
+      <div><span jb-skeleton shape="media"></span></div>
       <div class="stack">
-        <span class="skeleton skeleton--text skeleton--w50"></span>
-        <span class="skeleton skeleton--h1"></span>
-        <span class="skeleton skeleton--text"></span>
-        <span class="skeleton skeleton--text"></span>
-        <span
-          class="skeleton skeleton--btn"
-          style="width: 100%; height: var(--control-height-lg)"
-        ></span>
+        <span jb-skeleton shape="text" width="50"></span>
+        <span jb-skeleton shape="h1"></span>
+        <span jb-skeleton shape="text"></span>
+        <span jb-skeleton shape="text"></span>
+        <span jb-skeleton shape="button" size="block"></span>
       </div>
     </div>
     <section class="section">
-      <span class="skeleton skeleton--title"></span>
+      <span jb-skeleton shape="title"></span>
       @if (thing() === 'shop') {
         <div style="margin-top: var(--space-4)">
           <ul class="card-grid" aria-hidden="true">
             @for (placeholder of placeholders; track placeholder) {
               <li class="biz-card">
-                <span class="skeleton skeleton--square"></span>
-                <span class="skeleton skeleton--text skeleton--w70"></span>
-                <span class="skeleton skeleton--text"></span>
-                <span class="skeleton skeleton--text skeleton--w50"></span>
+                <span jb-skeleton shape="square"></span>
+                <span jb-skeleton shape="text" width="70"></span>
+                <span jb-skeleton shape="text"></span>
+                <span jb-skeleton shape="text" width="50"></span>
               </li>
             }
           </ul>
         </div>
       } @else {
-        <ul class="rows" aria-hidden="true">
-          @for (placeholder of placeholders; track placeholder) {
-            <li class="row">
-              <div class="row__body">
-                <span class="skeleton skeleton--text skeleton--w50"></span>
-                <span class="skeleton skeleton--text skeleton--w70"></span>
-              </div>
-              <span class="skeleton skeleton--btn" style="width: 5rem"></span>
-            </li>
-          }
-        </ul>
+        <ul jb-row-list-skeleton [count]="4" action></ul>
       }
     </section>
   }

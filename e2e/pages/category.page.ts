@@ -22,6 +22,8 @@ export class CategoryPage extends ShellPage implements Screen {
   readonly next: Locator;
   readonly loadingStatus: Locator;
   readonly skeletons: Locator;
+  /** The cards drawn while the category loads. */
+  readonly loadingCards: Locator;
   readonly emptyState: Locator;
   readonly errorState: Locator;
   readonly errorReference: Locator;
@@ -47,6 +49,7 @@ export class CategoryPage extends ShellPage implements Screen {
     this.next = this.pagination.getByRole('link', { name: 'Next page' });
     this.loadingStatus = this.main.getByRole('status');
     this.skeletons = this.main.locator('.skeleton');
+    this.loadingCards = this.main.locator('ul.card-grid > li.biz-card:has(.skeleton)');
     this.emptyState = this.main.locator('.empty:not(.empty--error)');
     this.errorState = this.main.getByRole('alert');
     this.errorReference = this.errorState.locator('code');

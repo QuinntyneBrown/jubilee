@@ -24,9 +24,9 @@ PNG only, up to `5 MB` and 8,000 × 8,000 pixels.
 The listing, product and messaging slices call this path for their photos and
 store the returned `MediaObject` identifier. A message photo is also checked by
 its first bytes and shrunk on the device before it is sent; that check is for
-feedback only and the server still decides (ADR 0038). A message photo is served
+feedback only and the server still decides (ADR 0039). A message photo is served
 by a signed link valid for `5 minutes`, renewed for a participant only through
-`GET /api/conversations/{id}/attachments/{attachmentId}` (ADR 0014, ADR 0038).
+`GET /api/conversations/{id}/attachments/{attachmentId}` (ADR 0014, ADR 0039).
 
 ## Description
 

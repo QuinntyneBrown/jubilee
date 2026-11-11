@@ -1,22 +1,25 @@
 @let opts = options();
 @let est = estimate();
-<div class="dialog__panel">
+<jb-dialog
+  [heading]="view() === 'success' ? 'Request sent to ' + opts?.shop?.name : 'Request this item'"
+  [icon]="view() === 'success' ? 'verified' : 'bag'"
+  [busy]="busy()"
+  (closed)="close()"
+  (outsideClick)="close()"
+>
   @if (view() === 'success') {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="verified"></svg>
-      </div>
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">Request sent to {{ opts?.shop?.name }}</h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          {{ sentText() }}
-        </p>
-      </div>
-      <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
-    <div class="dialog__footer">
+    <span slot="description">{{ sentText() }}</span>
+  } @else {
+    <span slot="description">
+      @if (opts) {
+        No payment now. {{ opts.shop.name }} confirms and you pay them directly.
+      } @else {
+        No payment now. The shop confirms and you pay them directly.
+      }
+    </span>
+  }
+  @if (view() === 'success') {
+    <div jb-dialog-footer>
       <a jb-button [routerLink]="['/b', opts?.shop?.slug]" (click)="close()">Keep shopping</a>
       <a
         jb-button
@@ -28,51 +31,25 @@
       >
     </div>
   } @else {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="bag"></svg>
-      </div>
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">Request this item</h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          @if (opts) {
-            No payment now. {{ opts.shop.name }} confirms and you pay them directly.
-          } @else {
-            No payment now. The shop confirms and you pay them directly.
-          }
-        </p>
-      </div>
-      <button
-        jb-button
-        variant="ghost"
-        iconOnly
-        type="button"
-        aria-label="Close"
-        [disabled]="busy()"
-        (click)="close()"
-      >
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
     @switch (view()) {
       @case ('loading') {
-        <div class="dialog__body">
+        <div jb-dialog-body>
           <p role="status" class="text-muted">Loading…</p>
         </div>
       }
       @case ('unavailable') {
-        <div class="dialog__body stack">
+        <div jb-dialog-body class="stack">
           <div jb-alert tone="danger" heading="Requests aren’t available right now" role="alert">
             <div>Nothing is lost. Close this and try again in a moment, or send a message.</div>
           </div>
         </div>
-        <div class="dialog__footer">
+        <div jb-dialog-footer>
           <button jb-button variant="primary" type="button" (click)="close()">Close</button>
         </div>
       }
       @default {
         @if (opts) {
-          <form class="dialog__body stack" id="order-form" novalidate (ngSubmit)="send()">
+          <form jb-dialog-body class="stack" id="order-form" novalidate (ngSubmit)="send()">
             @if (view() === 'failed') {
               <div jb-alert tone="danger" [heading]="failure().title" role="alert">
                 <div>{{ failure().text }}</div>
@@ -155,7 +132,7 @@
               </dl>
             }
           </form>
-          <div class="dialog__footer">
+          <div jb-dialog-footer>
             <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
             <button jb-button variant="primary" type="submit" form="order-form" [busy]="busy()">
               Send request
@@ -165,4 +142,4 @@
       }
     }
   }
-</div>
+</jb-dialog>

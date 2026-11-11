@@ -178,7 +178,7 @@ Every inconsistency found while extracting, and how the system resolved it. *Ope
 ## Changelog
 
 - **1.0 — 10 Nov 2026.** First extraction from docs/mocks. Value changes against the mocks' draft tokens are listed in the drift log above.
-- **1.1 — 11 Nov 2026.** Messaging finished (ADR 0038). [Menu](components/menu.html): the menu anchored to its trigger, `.menu--end` and items with a leading icon, from the conversation's "More" menu. [Message thread](components/message-thread.html): the photo in a bubble (`.bubble__photo`, `.bubble__photo--missing`), the composer's photo control (`.attach`) and the request card (`.request-card`), which replaces `.chat__card.card`. [Iconography](foundations/iconography.html): `bell-off` added and `more` drawn as the mocks draw it, three dots in a column. No token was added or changed. The report, block and away period dialogs use existing components only.
+- **1.1 — 11 Nov 2026.** Messaging finished (ADR 0039). [Menu](components/menu.html): the menu anchored to its trigger, `.menu--end` and items with a leading icon, from the conversation's "More" menu. [Message thread](components/message-thread.html): the photo in a bubble (`.bubble__photo`, `.bubble__photo--missing`), the composer's photo control (`.attach`) and the request card (`.request-card`), which replaces `.chat__card.card`. [Iconography](foundations/iconography.html): `bell-off` added and `more` drawn as the mocks draw it, three dots in a column. No token was added or changed. The report, block and away period dialogs use existing components only.
 
 ## Verification
 

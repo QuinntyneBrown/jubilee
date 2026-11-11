@@ -51,7 +51,7 @@ The feature is a vertical slice from the Messages page to the database.
 - **`MessagesStore`** — signal store holding the rows, the totals and the search
   term. It reads the list again on each `notification` event of kind `message`
   that `RealtimeService` publishes from the event stream (`GET /api/events`,
-  ADR 0025, ADR 0038), so rows reorder and unread marks change without a reload.
+  ADR 0025, ADR 0039), so rows reorder and unread marks change without a reload.
   No event type is added to the stream for messaging.
 - **Unread count** — the navigation badge follows the `counts` event of the same
   stream, which `RealtimeService` applies to `NavigationStore`. Reading an open

@@ -9,7 +9,16 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MESSAGES_API } from 'api';
-import { Alert, Button, Checkbox, Field, Icon, Textarea } from 'components';
+import {
+  Alert,
+  Button,
+  DialogBody,
+  DialogFooter,
+  DialogFrame,
+  Checkbox,
+  Field,
+  Textarea,
+} from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 
 export interface ReportConversationData {
@@ -33,9 +42,18 @@ const SUBMIT_TIMEOUT_MS = 10_000;
  */
 @Component({
   selector: 'jb-report-conversation-dialog',
-  imports: [FormsModule, Icon, Button, Alert, Field, Textarea, Checkbox],
+  imports: [
+    FormsModule,
+    Button,
+    Alert,
+    Field,
+    Textarea,
+    Checkbox,
+    DialogFrame,
+    DialogBody,
+    DialogFooter,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog' },
   templateUrl: './report-conversation.dialog.html',
 })
 export class ReportConversationDialog {

@@ -47,6 +47,8 @@ it changes how the product looks, which a component move must not do.
 | Input and select (`list-your-business-1280.png`) | 50 px tall, 12 px radius, the browser's own select arrow, Inter | 44 px tall (`--control-height-md`), `--radius-md`, a drawn arrow, system text face |
 | Checkbox (`list-your-business-1280.png`) | the browser's own 16 px box in green, Inter 14 px text | a drawn 20 px box in the accent colour, system text face at 16 px |
 | Choice cards ("What do you offer?", `list-your-business-1280.png`) | 16 px radius, 2 px ink border when chosen, 40 px icon disc, Inter, other copy | `--radius-lg`, hairline border doubled by a shadow, avatar-size disc, system text face |
+| Category chips on the hero (`home-1280.png`) | about 36 px tall, Inter at a medium weight | 44 px tall (`--control-height-md`), semibold label, system text face |
+| Avatar in the top bar (`home-1280.png`) | 36 px across | `--avatar-size-sm`, 32 px |
 
 ## Refreshing
 

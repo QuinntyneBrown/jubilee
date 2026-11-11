@@ -1,28 +1,11 @@
-<div class="dialog__panel">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-      <svg jb-icon name="clock"></svg>
-    </div>
-    <div class="dialog__heading">
-      <h2 class="dialog__title" id="dlg-title">Set an away period</h2>
-      <p id="dlg-desc" class="dialog__desc">
-        Members who message you see that you’re away and when you’re back. Your listing stays
-        public.
-      </p>
-    </div>
-    <button
-      jb-button
-      variant="ghost"
-      iconOnly
-      type="button"
-      aria-label="Close"
-      [disabled]="busy()"
-      (click)="close()"
-    >
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <form class="dialog__body stack" id="away-form" novalidate (ngSubmit)="save()">
+<jb-dialog
+  heading="Set an away period"
+  description="Members who message you see that you’re away and when you’re back. Your listing stays public."
+  icon="clock"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <form jb-dialog-body class="stack" id="away-form" novalidate (ngSubmit)="save()">
     @if (view() === 'failed') {
       <div jb-alert tone="danger" heading="We couldn’t save that" role="alert">
         <div>Your away period has not changed. Try again.</div>
@@ -43,7 +26,7 @@
       />
     </div>
   </form>
-  <div class="dialog__footer">
+  <div jb-dialog-footer>
     @if (data.awayUntil) {
       <button jb-button variant="ghost" type="button" [disabled]="busy()" (click)="clear()">
         Clear away period
@@ -52,4 +35,4 @@
     <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
     <button jb-button variant="primary" type="submit" form="away-form" [busy]="busy()">Save</button>
   </div>
-</div>
+</jb-dialog>

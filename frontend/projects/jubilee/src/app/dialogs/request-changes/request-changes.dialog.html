@@ -1,27 +1,11 @@
-<div class="dialog__panel">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-      <svg jb-icon name="edit"></svg>
-    </div>
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">Ask {{ data.ownerFirstName }} for changes</h2>
-      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-        The listing stays unpublished and comes back to the queue when they resubmit.
-      </p>
-    </div>
-    <button
-      jb-button
-      variant="ghost"
-      iconOnly
-      type="button"
-      aria-label="Close"
-      [disabled]="busy()"
-      (click)="close()"
-    >
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <form class="dialog__body stack" id="changes-form" novalidate (ngSubmit)="send()">
+<jb-dialog
+  heading="Ask {{ data.ownerFirstName }} for changes"
+  description="The listing stays unpublished and comes back to the queue when they resubmit."
+  icon="edit"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <form jb-dialog-body class="stack" id="changes-form" novalidate (ngSubmit)="send()">
     @if (view() === 'failed') {
       <div jb-alert tone="danger" heading="We couldn’t send the request" role="alert">
         <div>Nothing was sent and your message is kept. Try again.</div>
@@ -65,7 +49,7 @@
       ></textarea>
     </div>
   </form>
-  <div class="dialog__footer">
+  <div jb-dialog-footer>
     <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
     <button
       jb-button
@@ -78,4 +62,4 @@
       Send request
     </button>
   </div>
-</div>
+</jb-dialog>

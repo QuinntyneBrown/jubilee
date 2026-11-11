@@ -28,7 +28,7 @@ its events; none of them opens a connection of its own. The conversation page
 and the inbox consume the existing `notification` and `counts` events of the
 stream `GET /api/events` and add no event type: a `message` or `request`
 notification makes the open conversation and the inbox list read again, and the
-`counts` event corrects the unread count (ADR 0025, ADR 0038).
+`counts` event corrects the unread count (ADR 0025, ADR 0039).
 
 ## Description
 

@@ -55,14 +55,11 @@
           <div class="form" aria-hidden="true">
             @for (n of [1, 2, 3, 4, 5, 6]; track n) {
               <div jb-field>
-                <span class="skeleton skeleton--text skeleton--w30"></span>
-                <span
-                  class="skeleton skeleton--rect"
-                  style="height: var(--control-height-md)"
-                ></span>
+                <span jb-skeleton shape="text" width="30"></span>
+                <span jb-skeleton shape="input"></span>
               </div>
             }
-            <span class="skeleton skeleton--btn"></span>
+            <span jb-skeleton shape="button"></span>
           </div>
         } @else if (loadFailed()) {
           <div class="empty empty--error" role="alert">
