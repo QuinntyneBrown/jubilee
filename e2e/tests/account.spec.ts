@@ -590,6 +590,7 @@ test.describe('the account menu (L2-019)', () => {
     await jb.signInAs('member');
     await jb.goto('/');
     await account.avatar.click();
+    await expect(menu.item('Your account')).toBeFocused();
 
     await page.keyboard.press('ArrowDown');
     await expect(menu.item('Your requests')).toBeFocused();
