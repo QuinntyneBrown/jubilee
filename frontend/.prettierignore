@@ -2,8 +2,7 @@
 /.angular
 /node_modules
 package-lock.json
-# tokens.css is copied verbatim from docs/design-system. ui.css and marketing.css keep the design
-# system's one-rule-per-line form while their blocks move into the components (ADR 0035).
+# tokens.css is copied verbatim from docs/design-system. ui.css keeps the design system's
+# one-rule-per-line form while its blocks move into the components (ADR 0035).
 projects/components/src/lib/styles/tokens.css
 projects/components/src/lib/styles/ui.css
-projects/marketing/src/styles/marketing.css

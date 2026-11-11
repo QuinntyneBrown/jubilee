@@ -43,8 +43,9 @@ and no API client (ADR 0013).
 Nothing is loaded from another host. `npm run media:sync` copies the photos from
 `docs/assets/photos/` into `photos/` and the film from
 `docs/videos/01-jubilee-pitch/01-jubilee-pitch.mp4` to `media/jubilee-pitch.mp4`; Inter is
-bundled beside Archivo (`docs/design-system/assets/fonts/Inter.woff2`) and declared by
-`marketing.css`.
+bundled beside Archivo (`docs/design-system/assets/fonts/Inter.woff2`, copied to
+`frontend/projects/components/src/lib/assets/fonts/`) and declared by the marketing foundations,
+`frontend/projects/components/src/lib/styles/marketing.css`.
 
 ## Requirements
 

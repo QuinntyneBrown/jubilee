@@ -130,7 +130,7 @@
             "styles": [
               "projects/components/src/lib/styles/tokens.css",
               "projects/components/src/lib/styles/ui.css",
-              "projects/marketing/src/styles/marketing.css",
+              "projects/components/src/lib/styles/marketing.css",
               "projects/marketing/src/styles.css"
             ]
           },
