@@ -13,6 +13,7 @@
     <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="SkiaSharp" />
     <Using Include="Xunit" />
   </ItemGroup>
 </Project>

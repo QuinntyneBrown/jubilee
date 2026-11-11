@@ -31,6 +31,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     /// <summary>Switch that makes the database unavailable.</summary>
     public DatabaseOutage Database { get; } = new();
 
+    public InMemoryMediaStore Media { get; } = new();
+
     public FakeEmailSender Emails { get; } = new();
 
     public FakeBotChallenge Bot { get; } = new();
@@ -62,6 +64,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             services.PostConfigure<AuthenticationOptions>(o => o.DefaultAuthenticateScheme = TestAuthHandler.SchemeName);
             services.AddScoped<IAppDbContext>(sp => new OutageAwareDbContext(sp.GetRequiredService<AppDbContext>(), Database));
             services.AddSingleton<ILoggerProvider>(Logs);
+            services.RemoveAll<Jubilee.Application.Abstractions.IMediaStore>();
+            services.AddSingleton<Jubilee.Application.Abstractions.IMediaStore>(Media);
             services.RemoveAll<Jubilee.Application.Accounts.IEmailSender>();
             services.AddSingleton<Jubilee.Application.Accounts.IEmailSender>(Emails);
             services.RemoveAll<Jubilee.Application.Accounts.IBreachedPasswordChecker>();
@@ -137,6 +141,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         Database.Unavailable = false;
         Emails.Clear();
         Emails.Failing = false;
+        Media.Clear();
         Bot.Passes = true;
         Google.Identity = new("google-1", "g@example.com", true, "Gina", "Gordon");
         Logs.Clear();
@@ -163,6 +168,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.RecentSearches);
             db.RemoveRange(db.StockAlerts);
             db.RemoveRange(db.ListingViews);
+            db.RemoveRange(db.ListingPhotos);
             db.RemoveRange(db.FeaturedSlots);
             db.RemoveRange(db.Services);
             db.RemoveRange(db.Products);
