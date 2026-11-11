@@ -367,6 +367,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubReference(page, { outcome: 'load-fails' });
     case 'reference-expired':
       return stubReference(page, { outcome: 'closed' });
+    case 'google-sign-in-off':
+      return stubSession(page, visitorWithoutGoogle);
     case 'verify-email-pending':
       return stubSession(page, unconfirmedSession);
     case 'verify-email-loading':
@@ -395,6 +397,9 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       );
   }
 }
+
+/** A visitor where Google sign-in is not configured: the pages show no Google button (L2-003 AC5). */
+export const visitorWithoutGoogle = { signedIn: false, googleSignIn: false };
 
 /** Joanna as the session endpoint returns her while her address is not yet confirmed (L2-005). */
 export const unconfirmedSession = {

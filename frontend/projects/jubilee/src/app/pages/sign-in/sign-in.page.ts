@@ -10,18 +10,13 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BrandMark, EmptyState, Icon, Button, Alert, FormSummary } from 'components';
+import { googleNotice } from '../../services/google-notice';
 import { sanitiseReturnUrl } from '../../services/return-url';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../toasts/toast.service';
 
 type Field = 'email' | 'password';
 type View = 'form' | 'submitting' | 'error';
-
-const GOOGLE_ERRORS: Record<string, string> = {
-  google: 'We couldn’t sign you in with Google. Try again, or use your e-mail and password.',
-  'google-email':
-    'Google didn’t confirm that e-mail address. Use your e-mail and password instead.',
-};
 
 /** SignInPage (L2-006, L2-007): e-mail and password, or Google, then back to where the visitor was. */
 @Component({
@@ -46,9 +41,10 @@ export class SignInPage {
   protected readonly password = signal('');
   protected readonly keep = signal(false);
   protected readonly errors = signal<Partial<Record<Field, string>>>({});
-  protected readonly notice = signal<string | null>(
-    GOOGLE_ERRORS[this.query.get('error') ?? ''] ?? null,
-  );
+  protected readonly google = this.session.googleSignIn;
+  protected readonly notice = signal<string | null>(googleNotice(this.query.get('error')));
+  /** A visitor who cancelled at Google made no mistake: the notice is calm and is not an alert (L2-003 AC6). */
+  protected readonly cancelled = signal(this.query.get('error') === 'google-cancelled');
 
   protected readonly summary = computed(() => {
     const errors = this.errors();
@@ -74,6 +70,7 @@ export class SignInPage {
     if (!this.password()) errors.password = 'Enter your password.';
     this.errors.set(errors);
     this.notice.set(null);
+    this.cancelled.set(false);
     if (Object.keys(errors).length > 0) {
       this.focusSummary();
       return;

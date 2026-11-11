@@ -31,6 +31,10 @@ $env:Seed__OnStartup = 'true'
 # No outside network in the recording: skip the breached-password lookup.
 $env:Passwords__CheckBreaches = 'false'
 $env:App__PublicBaseUrl = 'http://localhost:4200'
+# Placeholders, not credentials: they make the API report Google sign-in as available, so the
+# recorded session shows the Google buttons as the mocks do (L2-003 AC5). No spec follows them to Google.
+$env:Google__ClientId = 'e2e-placeholder'
+$env:Google__ClientSecret = 'e2e-placeholder'
 # The whole suite calls from one address; the per-address limit is covered by the API tests.
 $env:RateLimits__DirectoryReadsPerMinute = '100000'
 

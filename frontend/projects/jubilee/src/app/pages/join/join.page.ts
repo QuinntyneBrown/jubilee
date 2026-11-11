@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ACCOUNT_API, JoinRequest } from 'api';
 import { BrandMark, EmptyState, Icon, Button, Alert, FormSummary } from 'components';
+import { googleNotice } from '../../services/google-notice';
+import { sanitiseReturnUrl } from '../../services/return-url';
 import { SessionService } from '../../services/session.service';
 
 type Field = 'firstName' | 'lastName' | 'email' | 'password' | 'agreement';
@@ -73,7 +75,8 @@ function message(field: Field, code: string, passwordLength: number): string {
 export class JoinPage {
   private readonly api = inject(ACCOUNT_API);
   private readonly session = inject(SessionService);
-  private readonly returnUrl = inject(ActivatedRoute).snapshot.queryParamMap.get('returnUrl');
+  private readonly query = inject(ActivatedRoute).snapshot.queryParamMap;
+  private readonly returnUrl = sanitiseReturnUrl(this.query.get('returnUrl'));
   private readonly summaryRef = viewChild(FormSummary);
 
   protected readonly max = MAX;
@@ -86,10 +89,15 @@ export class JoinPage {
   protected readonly agreed = signal(false);
   protected readonly errors = signal<Partial<Record<Field, string>>>({});
   protected readonly sentTo = signal('');
-  protected readonly notice = signal<string | null>(null);
+  protected readonly notice = signal<string | null>(googleNotice(this.query.get('error')));
+  /** A visitor who cancelled at Google made no mistake: the notice is not an alert (L2-003 AC6). */
+  protected readonly noticeRole = signal<'alert' | 'status'>(
+    this.query.get('error') === 'google-cancelled' ? 'status' : 'alert',
+  );
   protected readonly resent = signal(false);
-  protected readonly googleUrl = `/api/auth/google/start${
-    this.returnUrl ? `?returnUrl=${encodeURIComponent(this.returnUrl)}` : ''
+  protected readonly google = this.session.googleSignIn;
+  protected readonly googleUrl = `/api/auth/google/start?from=join${
+    this.returnUrl === '/' ? '' : `&returnUrl=${encodeURIComponent(this.returnUrl)}`
   }`;
 
   protected readonly summary = computed(() =>
@@ -116,6 +124,7 @@ export class JoinPage {
     if (!this.agreed()) errors.agreement = message('agreement', 'AGREEMENT_REQUIRED', 0);
     this.errors.set(errors);
     this.notice.set(null);
+    this.noticeRole.set('alert');
     if (Object.keys(errors).length > 0) {
       this.focusSummary();
       return;
