@@ -1,0 +1,98 @@
+// Block: toast. The host is the toast, on the inverse ground in both themes.
+:host {
+  --toast-bg: var(--color-bg-inverse);
+  --toast-fg: var(--color-fg-inverse);
+  --toast-icon: var(--color-info-icon-inverse);
+  --jb-close-hover-mix: 12%;
+  --color-focus-ring: currentColor;
+
+  position: relative;
+  overflow: hidden;
+  pointer-events: auto;
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-4);
+  background: var(--toast-bg);
+  color: var(--toast-fg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-3);
+  animation: slide-up var(--duration-base) var(--ease-enter);
+}
+
+:host([data-state='leaving']) {
+  animation: fade-out var(--duration-base) var(--ease-exit) forwards;
+}
+
+:host(.toast--success) {
+  --toast-icon: var(--color-success-icon-inverse);
+}
+
+:host(.toast--warning) {
+  --toast-icon: var(--color-warning-icon-inverse);
+}
+
+:host(.toast--danger) {
+  --toast-icon: var(--color-danger-icon-inverse);
+}
+
+.toast__icon {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  flex: none;
+  margin-top: var(--space-0-5);
+  color: var(--toast-icon);
+}
+
+.toast__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.toast__title {
+  font: var(--text-label);
+}
+
+.toast__text {
+  font: var(--text-body-sm);
+  overflow-wrap: anywhere;
+}
+
+.toast__action {
+  align-self: flex-start;
+  font: var(--text-label);
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: var(--space-1) 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+// The bar that counts the toast down; it holds while the toast is paused.
+.toast__progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: var(--border-width-thick);
+  background: currentColor;
+  opacity: 0.4;
+  width: 60%;
+  animation: toast-countdown var(--jb-toast-duration) linear forwards;
+}
+
+:host(.toast--paused) .toast__progress {
+  animation-play-state: paused;
+}
+
+@keyframes toast-countdown {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0;
+  }
+}

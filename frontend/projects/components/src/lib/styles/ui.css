@@ -186,18 +186,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .toast-region { position: fixed; z-index: var(--z-toast); bottom: var(--space-4); left: var(--space-4); right: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); pointer-events: none; }
 @media (min-width: 40rem) { .toast-region { left: auto; width: 24rem; bottom: var(--space-6); right: var(--space-6); } }
 .toast-region--top { bottom: auto; top: var(--space-4); }
-.toast { --toast-bg: var(--color-bg-inverse); --toast-fg: var(--color-fg-inverse); --toast-icon: var(--color-info-icon-inverse); pointer-events: auto; display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-4); background: var(--toast-bg); color: var(--toast-fg); border-radius: var(--radius-md); box-shadow: var(--shadow-3); animation: slide-up var(--duration-base) var(--ease-enter); }
-.toast .icon { width: var(--icon-size-md); height: var(--icon-size-md); flex: none; margin-top: var(--space-0-5); color: var(--toast-icon); }
-.toast .close .icon { color: inherit; margin: 0; }
-.toast--success { --toast-icon: var(--color-success-icon-inverse); } .toast--warning { --toast-icon: var(--color-warning-icon-inverse); } .toast--danger { --toast-icon: var(--color-danger-icon-inverse); }
-.toast__body { flex: 1; display: flex; flex-direction: column; gap: var(--space-0-5); }
-.toast__title { font: var(--text-label); } .toast__text { font: var(--text-body-sm); }
-.toast__action { align-self: flex-start; font: var(--text-label); color: inherit; background: none; border: 0; padding: var(--space-1) 0; text-decoration: underline; cursor: pointer; }
-.toast { --jb-close-hover-mix: 12%; }
-.toast :focus-visible { outline-color: currentColor; }
-.toast__progress { position: absolute; left: 0; bottom: 0; height: var(--border-width-thick); background: currentColor; opacity: 0.4; width: 60%; }
-.toast { position: relative; overflow: hidden; }
-.toast[data-state="leaving"] { animation: fade-out var(--duration-base) var(--ease-exit) forwards; }
 .progress { width: 100%; height: var(--indicator-size); border-radius: var(--radius-full); background: var(--color-bg-subtle-hover); overflow: hidden; }
 .progress__bar { height: 100%; width: var(--value, 0%); background: var(--color-fg-accent); border-radius: inherit; transition: width var(--duration-slow) var(--ease-standard); }
 .progress--indeterminate .progress__bar { width: 40%; animation: indeterminate var(--duration-loop) var(--ease-standard) infinite; }
@@ -229,7 +217,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 @keyframes scale-in { from { opacity: 0; scale: 0.96; } }
 @keyframes slide-in-right { from { translate: 100% 0; } }
 @keyframes slide-in-left { from { translate: -100% 0; } }
-@keyframes toast-countdown { from { width: 100%; } to { width: 0; } }
 @keyframes indeterminate { from { translate: -100% 0; } to { translate: 350% 0; } }
 /* Transitions and reveals already collapse to 0.01ms through the duration
    tokens. Looping decoration stops here; the spinner keeps turning because it
@@ -385,4 +372,4 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 /* ---------- Auth and bare pages ---------------------------------------------------------------------- */
 
 /* ---------- Fixes found in the screenshot sweep ------------------------------------------------------ */
-.empty__text, .toast__text { overflow-wrap: anywhere; }
+.empty__text { overflow-wrap: anywhere; }
