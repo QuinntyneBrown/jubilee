@@ -21,7 +21,7 @@ public sealed class GetWelcomeQueryHandler(
 
     private async Task<WelcomeDto> BuildAsync(CancellationToken cancellationToken)
     {
-        var count = await db.Listings.WherePublic().CountAsync(cancellationToken);
+        var count = await db.Listings.WherePublic().WhereBusiness().CountAsync(cancellationToken);
         var featured = await featuredSelector.SelectAsync(clock.GetUtcNow(), FeaturedLimit, cancellationToken);
         return new WelcomeDto(count, CategoryLinkDto.All, [.. featured.Select(BusinessCardDto.From)]);
     }

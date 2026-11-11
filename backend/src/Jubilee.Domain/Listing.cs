@@ -98,7 +98,7 @@ public sealed class Listing
     {
         if (Category.Find(categorySlug) is null)
         {
-            throw new ArgumentException($"'{categorySlug}' is not one of the ten categories.", nameof(categorySlug));
+            throw new ArgumentException($"'{categorySlug}' is not one of the eleven categories.", nameof(categorySlug));
         }
 
         return new Listing
@@ -109,7 +109,7 @@ public sealed class Listing
             SortName = Domain.SortName.From(name),
             Tagline = tagline,
             CategorySlug = categorySlug,
-            Kind = categorySlug == Category.ShopsSlug ? ListingKind.Shop : ListingKind.Services,
+            Kind = Category.KindOf(categorySlug),
             Stage = ListingStage.Draft,
             CreatedAt = now,
         };
@@ -187,7 +187,7 @@ public sealed class Listing
         if (CategorySlug != categorySlug)
         {
             CategorySlug = categorySlug;
-            Kind = categorySlug == Category.ShopsSlug ? ListingKind.Shop : ListingKind.Services;
+            Kind = Category.KindOf(categorySlug);
         }
 
         About = Clean(about);
@@ -203,6 +203,20 @@ public sealed class Listing
 
         RefreshRecommendedScore(now);
         return reworded;
+    }
+
+    /// <summary>The rental details of a space; null for a business (L2-190).</summary>
+    public SpaceDetails? Space { get; private set; }
+
+    /// <summary>Replaces the rental details of a space (L2-190, L2-200).</summary>
+    public void DescribeSpace(SpaceDetails details)
+    {
+        if (Kind != ListingKind.Space)
+        {
+            throw new InvalidOperationException("Only a space has rental details.");
+        }
+
+        Space = details;
     }
 
     public void Delete(DateTimeOffset now) => DeletedAt ??= now;

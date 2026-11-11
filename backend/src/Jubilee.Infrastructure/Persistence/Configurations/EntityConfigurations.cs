@@ -35,6 +35,13 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.Delivery).HasMaxLength(200);
         builder.Property(l => l.MadeToOrder).HasMaxLength(200);
         builder.HasIndex(l => new { l.CategorySlug, l.Stage });
+
+        // A space's rental details are one JSON column; a business has none (ADR 0040).
+        builder.OwnsOne(l => l.Space, s =>
+        {
+            s.ToJson("Space");
+            s.Ignore(x => x.MinimumStayLabel);
+        });
     }
 }
 

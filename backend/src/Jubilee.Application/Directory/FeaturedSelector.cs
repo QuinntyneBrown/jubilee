@@ -21,6 +21,7 @@ public sealed class FeaturedSelector(IAppDbContext db)
         if (!await currentSlots.AnyAsync(cancellationToken))
         {
             return await publicListings
+                .WhereBusiness()
                 .OrderByDescending(l => l.ApprovedAt)
                 .ThenBy(l => l.SortName)
                 .Take(limit)

@@ -40,6 +40,33 @@ public static class ListingMother
         return listing;
     }
 
+    /// <summary>A live space in "Rooms & rentals" (L2-188), approved like any listing.</summary>
+    public static Listing Space(
+        string slug,
+        SpaceTerm term = SpaceTerm.LongTerm,
+        int rent = 1850,
+        string neighbourhood = "The Annex",
+        DateTimeOffset? approvedAt = null,
+        string address = "12 Brunswick Ave, Toronto ON M5S 2L7",
+        string? name = null,
+        string? household = null)
+    {
+        var listing = Public(slug, Category.RoomsSlug, name, approvedAt, default, default, highlight: null);
+        listing.DescribeSpace(SpaceDetails.Create(
+            term,
+            rent,
+            available: "Mar 1",
+            minimumStay: SpaceTerms.MinimumStayChoices(term)[0],
+            neighbourhood,
+            address,
+            place: "Basement apartment",
+            facts: ["1 bedroom", "1 bath", "Separate entrance"],
+            included: ["Utilities", "Wi-Fi"],
+            household: household ?? (SpaceTerms.AsksForHousehold(term) ? "Ruth and Kwame with our daughter." : null),
+            rules: ["No smoking"]));
+        return listing;
+    }
+
     public static Listing NonPublic(NonPublicState state, string? slug = null, string category = "home-property")
     {
         slug ??= $"hidden-{state}".ToLowerInvariant();

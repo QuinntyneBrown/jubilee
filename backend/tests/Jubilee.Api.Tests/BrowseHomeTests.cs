@@ -15,7 +15,7 @@ public class BrowseHomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task L2_021_AC2_home_has_the_count_the_ten_categories_and_up_to_five_featured()
+    public async Task L2_021_AC2_home_has_the_count_the_eleven_categories_and_up_to_five_featured()
     {
         var listings = Enumerable.Range(1, 7)
             .Select(i => ListingMother.Public($"biz-{i}", "media", approvedAt: ListingMother.Now.AddDays(-i)))
@@ -25,7 +25,7 @@ public class BrowseHomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
         var json = await _factory.GetJson("/api/directory/home");
 
         Assert.Equal(7, json.GetProperty("liveBusinessCount").GetInt32());
-        Assert.Equal(10, json.GetProperty("categories").GetArrayLength());
+        Assert.Equal(11, json.GetProperty("categories").GetArrayLength());
         Assert.Equal(["biz-1", "biz-2", "biz-3", "biz-4", "biz-5"], json.GetProperty("featured").Slugs());
     }
 

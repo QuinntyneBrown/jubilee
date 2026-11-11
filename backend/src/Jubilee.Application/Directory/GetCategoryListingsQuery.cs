@@ -7,12 +7,13 @@ using Microsoft.EntityFrameworkCore;
 namespace Jubilee.Application.Directory;
 
 /// <summary>One page of a category for a category query: filters, sort order and page number.</summary>
-public sealed record GetCategoryListingsQuery(string Slug, CategoryFilterSet Filters, ListingSort Sort, int Page)
+/// <remarks><paramref name="Term"/> narrows "Rooms & rentals" to one term (L2-193 AC2); other categories ignore it.</remarks>
+public sealed record GetCategoryListingsQuery(string Slug, CategoryFilterSet Filters, ListingSort Sort, int Page, SpaceTerm? Term = null)
     : IRequest<CategoryPageResult>
 {
-    /// <summary>Builds the query from the untrusted route and query-string values.</summary>
-    public static GetCategoryListingsQuery FromUntrusted(string slug, string? offers, string? areas, string? sort, string? page) =>
-        new(slug, CategoryFilterSet.Parse(offers, areas), ListingSortPolicy.Parse(sort), PageWindow.ParseRequestedPage(page));
+    /// <summary>Builds the query from the untrusted route and query-string values; an unknown term is ignored.</summary>
+    public static GetCategoryListingsQuery FromUntrusted(string slug, string? offers, string? areas, string? sort, string? page, string? term = null) =>
+        new(slug, CategoryFilterSet.Parse(offers, areas), ListingSortPolicy.Parse(sort), PageWindow.ParseRequestedPage(page), WireValues.ParseTerm(term));
 }
 
 public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectoryReadCache cache)
@@ -34,13 +35,19 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
             string.Join(',', request.Filters.OfferValues),
             string.Join(',', request.Filters.AreaValues),
             WireValues.Of(request.Sort),
-            Math.Max(1, request.Page));
+            Math.Max(1, request.Page),
+            request.Term is { } term ? WireValues.Of(term) : string.Empty);
         return cache.GetOrCreateAsync(key, ct => BuildAsync(category, request, ct), cancellationToken);
     }
 
     private async Task<CategoryPageResult> BuildAsync(
         Category category, GetCategoryListingsQuery request, CancellationToken cancellationToken)
     {
+        if (category.Slug == Category.RoomsSlug)
+        {
+            return await BuildSpacesAsync(category, request, cancellationToken);
+        }
+
         var inCategory = CategoryQueries.PublicListingsIn(db, category);
         var matches = request.Filters.Apply(inCategory);
 
@@ -75,7 +82,39 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
             PageWindow.PageSize,
             window.PageCount,
             [.. listings.Select(BusinessCardDto.From)],
-            suggestions);
+            suggestions,
+            Term: null,
+            Spaces: []);
+    }
+
+    /// <summary>"Rooms & rentals": space cards, newest first, narrowed by term; no business filters or sort (L2-193).</summary>
+    private async Task<CategoryPageResult> BuildSpacesAsync(
+        Category category, GetCategoryListingsQuery request, CancellationToken cancellationToken)
+    {
+        var inCategory = CategoryQueries.PublicListingsIn(db, category);
+        var totalCount = await inCategory.CountAsync(cancellationToken);
+
+        // The term is inside the JSON column, so the (small) category is narrowed in memory.
+        var all = await inCategory.OrderByDescending(l => l.ApprovedAt).ThenBy(l => l.SortName).ToListAsync(cancellationToken);
+        var matches = all.Where(l => l.Space is not null && (request.Term is null || l.Space.Term == request.Term)).ToList();
+
+        var window = PageWindow.Clamp(request.Page, matches.Count);
+        var page = matches.Skip(window.Skip).Take(PageWindow.PageSize);
+
+        return new CategoryPageResult(
+            CategoryLinkDto.From(category),
+            totalCount,
+            matches.Count,
+            Fact: null,
+            new AppliedFiltersDto([], []),
+            WireValues.Of(ListingSort.Newest),
+            window.Page,
+            PageWindow.PageSize,
+            window.PageCount,
+            Businesses: [],
+            Suggestions: [],
+            request.Term is { } term ? WireValues.Of(term) : null,
+            [.. page.Select(SpaceCardDto.From)]);
     }
 }
 

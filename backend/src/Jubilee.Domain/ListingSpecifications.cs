@@ -35,4 +35,12 @@ public static class PublicListingFilter
     public static bool IsSatisfiedBy(Listing listing) => Compiled(listing);
 
     public static IQueryable<Listing> WherePublic(this IQueryable<Listing> listings) => listings.Where(Criteria);
+
+    /// <summary>Businesses only: services and shops, never a space (L2-192 AC6).</summary>
+    public static IQueryable<Listing> WhereBusiness(this IQueryable<Listing> listings) =>
+        listings.Where(l => l.CategorySlug != Category.RoomsSlug);
+
+    /// <summary>Spaces only: the listings in "Rooms & rentals" (L2-188 AC3).</summary>
+    public static IQueryable<Listing> WhereSpace(this IQueryable<Listing> listings) =>
+        listings.Where(l => l.CategorySlug == Category.RoomsSlug);
 }

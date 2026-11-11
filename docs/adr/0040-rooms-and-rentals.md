@@ -32,9 +32,11 @@ address lives.
 - **The rental fields are an owned type, `SpaceDetails`, on `Listing` and on `ListingDraft`.** It
   holds the term, the rent in whole dollars, the availability text, the minimum stay as a count,
   the neighbourhood, the place ("The space"), up to four key facts, what's included, the household
-  text, up to eight house rules and the exact address. EF maps it with `OwnsOne` into the listing's
-  table (nullable columns, `Space_` prefix), the lists as JSON columns like `Credentials`. A
-  services listing or shop has no `SpaceDetails`.
+  text, up to eight house rules and the exact address. EF maps it with `OwnsOne(...).ToJson("Space")`
+  into one nullable JSON column of the listing's (and the draft's) table, so the term and its
+  lists travel together and a business, which has no `SpaceDetails`, leaves it null. The category
+  page filters the term in memory over the category's public listings, which is small; a computed
+  column can index it if the category grows.
 - **The term is an enum, `SpaceTerm`** (`ShortStay`, `LongTerm`, `Room`, `Roommate`), stored as an
   int and sent as the wire values `short-stay`, `long-term`, `room` and `roommate`
   (`WireValues`). The term decides the price unit (night for a Short stay, month otherwise), the
@@ -77,7 +79,7 @@ address lives.
 
 ## Consequences
 
-- One migration adds the `Space_*` columns to `Listings` and `ListingDrafts` and the space request
+- Migrations add the `Space` JSON column to `Listings` and `ListingDrafts` and the space request
   columns to `Requests`. SQLite and InMemory take the schema from the model.
 - Code that switched on two listing kinds or three request kinds must handle the new value; the
   compiler finds the switch expressions, and the words come from `SpaceTerms`.

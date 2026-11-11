@@ -35,6 +35,28 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
             }
         }
 
+        // Spaces are newer than every business: each is approved an hour before the one above it.
+        for (var i = 0; i < Spaces.Length; i++)
+        {
+            var demo = Spaces[i];
+            if (!listings.ContainsKey(demo.Slug))
+            {
+                var approvedAt = now.AddHours(-(i + 1));
+                var listing = Listing.Create(demo.Slug, demo.Name, demo.Tagline, Category.RoomsSlug, approvedAt.AddDays(-14));
+                listing.Describe(new ListingProfile(demo.Host, [], demo.About, null, null, null, null, null));
+                listing.DescribeSpace(demo.Details());
+                listing.Approve(SeededBy, approvedAt);
+                listing.RefreshRecommendedScore(now);
+                if (Owners.TryGetValue(demo.Slug, out var owner))
+                {
+                    listing.AssignOwner(owner);
+                }
+
+                listings[demo.Slug] = listing;
+                db.Listings.Add(listing);
+            }
+        }
+
         foreach (var hidden in HiddenListings)
         {
             if (!listings.ContainsKey(hidden.Listing.Slug))

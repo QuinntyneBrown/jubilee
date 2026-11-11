@@ -28,6 +28,23 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
     }
 
     [Fact]
+    public async Task L2_188_the_demo_rooms_and_rentals_has_a_space_for_every_term_newest_first()
+    {
+        var spaces = (await factory.GetJson("/api/categories/rooms-rentals/listings")).GetProperty("spaces");
+
+        Assert.Equal(
+            [
+                ("roncesvalles-guest-suite", "short-stay", 120, "night"),
+                ("annex-basement-apartment", "long-term", 1850, "month"),
+                ("leslieville-family-room", "room", 950, "month"),
+                ("east-york-roommate", "roommate", 1100, "month"),
+                ("scarborough-furnished-condo", "long-term", 2400, "month"),
+            ],
+            spaces.EnumerateArray().Select(s => (
+                s.GetProperty("slug").GetString()!, s.GetProperty("term").GetString()!, s.GetProperty("rent").GetInt32(), s.GetProperty("per").GetString()!)));
+    }
+
+    [Fact]
     public async Task The_demo_home_features_the_five_businesses_of_the_mock_with_their_highlights()
     {
         var featured = (await factory.GetJson("/api/directory/home")).GetProperty("featured");

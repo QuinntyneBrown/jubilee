@@ -22,7 +22,7 @@ public sealed class GetBrowseHomeQueryHandler(
 
     private async Task<BrowseHomeDto> BuildAsync(CancellationToken cancellationToken)
     {
-        var count = await db.Listings.WherePublic().CountAsync(cancellationToken);
+        var count = await db.Listings.WherePublic().WhereBusiness().CountAsync(cancellationToken);
         var featured = await featuredSelector.SelectAsync(clock.GetUtcNow(), FeaturedLimit, cancellationToken);
         var products = await ShopProductsAsync(cancellationToken);
         var groups = await grouping.BuildAsync(cancellationToken);

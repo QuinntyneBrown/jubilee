@@ -15,7 +15,8 @@ public sealed class DirectoryGrouping(IAppDbContext db)
 
     public async Task<IReadOnlyList<CategoryGroupDto>> BuildAsync(CancellationToken cancellationToken)
     {
-        var publicListings = db.Listings.AsNoTracking().WherePublic();
+        // Spaces have their own shelf and are not part of the businesses' groups (L2-192 AC6).
+        var publicListings = db.Listings.AsNoTracking().WherePublic().WhereBusiness();
         var counts = await publicListings
             .GroupBy(l => l.CategorySlug)
             .Select(g => new { Slug = g.Key, Count = g.Count() })

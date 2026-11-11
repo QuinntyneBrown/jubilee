@@ -296,11 +296,12 @@ public class VerifiedMarkTests
 public class CategoryCatalogueTests
 {
     [Fact]
-    public void L2_023_AC5_the_ten_categories_are_fixed_and_ordered()
+    public void L2_023_AC5_L2_188_AC4_the_eleven_categories_are_fixed_and_ordered()
     {
         Assert.Equal(
             [
                 ("shops", "Shops"),
+                ("rooms-rentals", "Rooms & rentals"),
                 ("financial-insurance", "Financial & insurance"),
                 ("legal-immigration", "Legal & immigration"),
                 ("home-property", "Home & property"),

@@ -28,8 +28,9 @@ public sealed class CategoriesController(ISender sender) : ControllerBase
         [FromQuery] string? areas,
         [FromQuery] string? sort,
         [FromQuery] string? page,
+        [FromQuery] string? term,
         CancellationToken cancellationToken) =>
-        Ok(await sender.Send(GetCategoryListingsQuery.FromUntrusted(slug, offers, areas, sort, page), cancellationToken));
+        Ok(await sender.Send(GetCategoryListingsQuery.FromUntrusted(slug, offers, areas, sort, page, term), cancellationToken));
 
     [HttpGet("count")]
     public async Task<ActionResult<CategoryCountDto>> GetCount(
