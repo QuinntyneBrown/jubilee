@@ -1,0 +1,29 @@
+// Block: dot. The host is the dot.
+:host {
+  width: var(--indicator-size);
+  height: var(--indicator-size);
+  border-radius: var(--radius-full);
+  background: currentColor;
+  flex: none;
+}
+
+:host(.dot--pulse) {
+  animation: pulse var(--duration-loop) var(--ease-standard) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host(.dot--pulse) {
+    animation: none;
+  }
+}
