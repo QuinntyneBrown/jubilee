@@ -30,6 +30,8 @@ import {
   RowTitle,
   Rows,
   PageHeader,
+  TabListItem,
+  TabList,
 } from 'components';
 import { interval } from 'rxjs';
 import { ClockService } from '../../services/clock.service';
@@ -67,6 +69,7 @@ const ICON: Record<string, IconName> = { booking: 'calendar', quote: 'message', 
     RowTitle,
     Rows,
     PageHeader,
+    TabList,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -78,7 +81,14 @@ export class RequestsPage implements OnInit {
   private readonly toasts = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly tabs = TABS;
+  protected readonly tabs = computed<TabListItem<MemberRequestTab>[]>(() => {
+    const state = this.state();
+    return TABS.map((item) => ({
+      key: item.tab,
+      label: item.label,
+      count: state.status === 'loaded' ? state.value.counts[item.count] : null,
+    }));
+  });
   protected readonly skeleton = [1, 2, 3, 4];
   protected readonly state = signal<LoadState<MemberRequests>>({ status: 'loading' });
   protected readonly tab = signal<MemberRequestTab>('all');

@@ -55,6 +55,28 @@ test.describe('track requests: the list (L2-047)', () => {
     await expect(requests.row('Autumn table')).toContainText('Completed');
   });
 
+  test('L2-158 AC1: the arrow keys select the request type tabs, which a keyboard reaches no other way', async ({
+    page,
+    jb,
+  }) => {
+    // Given the tabs with "All" selected: only the selected tab is in the tab order.
+    const requests = new RequestsPage(page);
+    await requests.setWidth(1280);
+    await stubMemberRequests(page);
+    await jb.goto('/requests');
+
+    // When the right arrow is pressed on it, then the next tab is selected and its list loads.
+    await requests.typeTab(/^All/).press('ArrowRight');
+    await expect(requests.typeTab(/^Bookings/)).toHaveAttribute('aria-selected', 'true');
+    await expect(requests.rows).toHaveCount(1);
+
+    // When the left arrow is pressed twice, then the selection wraps to the last tab.
+    await requests.typeTab(/^Bookings/).press('ArrowLeft');
+    await expect(requests.typeTab(/^All/)).toHaveAttribute('aria-selected', 'true');
+    await requests.typeTab(/^All/).press('ArrowLeft');
+    await expect(requests.typeTab(/^Declined/)).toHaveAttribute('aria-selected', 'true');
+  });
+
   test('L2-047 AC3: open requests come before closed ones', async ({ page, jb }) => {
     const requests = new RequestsPage(page);
     await requests.setWidth(1280);

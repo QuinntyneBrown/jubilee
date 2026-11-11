@@ -10,13 +10,14 @@ import {
   Chip,
   ChipRow,
   Skeleton,
-  Badge,
   Row,
   RowMeta,
   RowTitle,
   Rows,
   PageHeader,
   Section,
+  TabListItem,
+  TabList,
 } from 'components';
 import { SearchStore } from '../../services/search.store';
 
@@ -52,13 +53,13 @@ function plural(count: number, one: string, many: string): string {
     Chip,
     ChipRow,
     Skeleton,
-    Badge,
     Row,
     RowMeta,
     RowTitle,
     Rows,
     PageHeader,
     Section,
+    TabList,
   ],
   providers: [SearchStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,7 +70,9 @@ export class SearchPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   protected readonly store = inject(SearchStore);
-  protected readonly tabs = TABS;
+  protected readonly tabs = computed<TabListItem<SearchResultKind>[]>(() =>
+    TABS.map((tab) => ({ key: tab.kind, label: tab.label, count: this.count(tab.kind) })),
+  );
 
   protected readonly summary = computed(() => {
     const state = this.store.state();
@@ -114,16 +117,6 @@ export class SearchPage {
 
   protected icon(hit: SearchHit): 'wrench' | 'bag' | 'store' {
     return hit.kind === 'product' ? 'bag' : hit.kind === 'service' ? 'wrench' : 'store';
-  }
-
-  /** The tabs move with the arrow keys; only the selected one is in the tab order. */
-  protected moveTab(event: KeyboardEvent, index: number): void {
-    const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
-    if (!step) return;
-    event.preventDefault();
-    const next = TABS[(index + step + TABS.length) % TABS.length];
-    this.store.choose(next.kind);
-    queueMicrotask(() => document.getElementById(`tab-${next.kind}`)?.focus());
   }
 
   protected submit(event: Event, query: string): void {

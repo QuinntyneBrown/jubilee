@@ -1,0 +1,11 @@
+@for (item of items(); track item.key) {
+  <a
+    class="tab"
+    [routerLink]="item.link"
+    [attr.aria-current]="item.key === current() ? 'page' : null"
+    >{{ item.label }}
+    @if (item.count; as count) {
+      <span jb-badge [count]="count.value" [label]="count.label"></span>
+    }
+  </a>
+}

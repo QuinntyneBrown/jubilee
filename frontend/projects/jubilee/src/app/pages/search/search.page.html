@@ -134,23 +134,14 @@
     } @else {
       <jb-page-header [heading]="'Results for “' + results.query + '”'" [subtitle]="summary()">
       </jb-page-header>
-      <div class="tabs" role="tablist" aria-label="Result type">
-        @for (tab of tabs; track tab.kind; let i = $index) {
-          <button
-            class="tab"
-            role="tab"
-            type="button"
-            [id]="'tab-' + tab.kind"
-            [attr.aria-selected]="store.tab() === tab.kind"
-            [attr.aria-controls]="'panel-' + tab.kind"
-            [attr.tabindex]="store.tab() === tab.kind ? null : -1"
-            (click)="store.choose(tab.kind)"
-            (keydown)="moveTab($event, i)"
-          >
-            {{ tab.label }} <span jb-badge>{{ count(tab.kind) }}</span>
-          </button>
-        }
-      </div>
+      <div
+        jb-tab-list
+        label="Result type"
+        panelPrefix="panel-"
+        [items]="tabs()"
+        [selected]="store.tab()"
+        (selectedChange)="store.choose($event)"
+      ></div>
       <div
         role="tabpanel"
         [id]="'panel-' + store.tab()"

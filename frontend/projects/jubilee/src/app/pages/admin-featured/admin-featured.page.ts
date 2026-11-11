@@ -26,12 +26,13 @@ import {
   RowTitle,
   Rows,
   PageHeader,
+  Tabs,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { dayLabel, isoDay } from '../../services/message-time';
 import { ToastService } from '../../toasts/toast.service';
-import { TeamNav } from '../admin-team-nav/team-nav';
+import { TEAM_TABS } from '../admin-team-nav/team-tabs';
 
 const MAX = 5;
 
@@ -43,7 +44,6 @@ const MAX = 5;
     RouterLink,
     EmptyState,
     Icon,
-    TeamNav,
     Button,
     Alert,
     Field,
@@ -57,11 +57,13 @@ const MAX = 5;
     RowTitle,
     Rows,
     PageHeader,
+    Tabs,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-featured.page.html',
 })
 export class AdminFeaturedPage implements OnInit {
+  protected readonly teamTabs = TEAM_TABS;
   private readonly api = inject(ADMIN_API);
   private readonly clock = inject(ClockService);
   private readonly toasts = inject(ToastService);

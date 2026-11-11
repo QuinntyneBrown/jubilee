@@ -1,5 +1,5 @@
 <jb-page-header heading="Reports" [subtitle]="subtitle()"> </jb-page-header>
-<nav jb-team-nav current="reports"></nav>
+<nav jb-tabs label="Verification team" [items]="teamTabs" current="reports"></nav>
 @let reports = state();
 @switch (reports.status) {
   @case ('error') {
@@ -18,20 +18,14 @@
     <ul jb-row-list-skeleton [count]="4" action></ul>
   }
   @case ('loaded') {
-    <div class="tabs" role="tablist" aria-label="Report status" style="margin-top: var(--space-4)">
-      @for (tab of filters; track tab.key) {
-        <button
-          class="tab"
-          role="tab"
-          type="button"
-          [attr.aria-selected]="tab.key === filter()"
-          [attr.tabindex]="tab.key === filter() ? null : -1"
-          (click)="load(tab.key)"
-        >
-          {{ tab.label }}
-        </button>
-      }
-    </div>
+    <div
+      jb-tab-list
+      label="Report status"
+      [items]="filters"
+      [selected]="filter()"
+      (selectedChange)="load($event)"
+      style="margin-top: var(--space-4)"
+    ></div>
     @if (reports.value.items.length === 0) {
       @if (filter() === 'unresolved') {
         <div jb-empty-state icon="check" heading="No reports to review">

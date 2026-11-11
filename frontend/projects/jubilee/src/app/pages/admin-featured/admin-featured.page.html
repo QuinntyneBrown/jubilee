@@ -3,7 +3,7 @@
   [subtitle]="'Up to ' + max + ' live businesses show on the welcome and browse pages for 7 days.'"
 >
 </jb-page-header>
-<nav jb-team-nav current="featured"></nav>
+<nav jb-tabs label="Verification team" [items]="teamTabs" current="featured"></nav>
 @let weeks = state();
 @switch (weeks.status) {
   @case ('error') {

@@ -30,6 +30,8 @@ import {
   RowMeta,
   RowTitle,
   Rows,
+  TabListItem,
+  TabList,
 } from 'components';
 import { interval } from 'rxjs';
 import {
@@ -77,6 +79,7 @@ const TABS: { tab: IncomingTab; label: string }[] = [
     RowMeta,
     RowTitle,
     Rows,
+    TabList,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -91,7 +94,14 @@ export class IncomingRequestsPage implements OnInit {
   private readonly navigation = inject(NavigationStore);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly tabs = TABS;
+  protected readonly tabs = computed<TabListItem<IncomingTab>[]>(() => {
+    const state = this.state();
+    return TABS.map((item) => ({
+      key: item.tab,
+      label: item.label,
+      count: state.status === 'loaded' ? state.value.counts[item.tab] : null,
+    }));
+  });
   protected readonly skeleton = [1, 2, 3];
   protected readonly state = signal<LoadState<IncomingRequests>>({ status: 'loading' });
   protected readonly tab = signal<IncomingTab>('new');

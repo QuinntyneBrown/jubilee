@@ -1,5 +1,5 @@
 <jb-page-header heading="Verification queue" [subtitle]="subtitle()"> </jb-page-header>
-<nav jb-team-nav current="verifications"></nav>
+<nav jb-tabs label="Verification team" [items]="teamTabs" current="verifications"></nav>
 @let queue = state();
 @switch (queue.status) {
   @case ('error') {
@@ -27,20 +27,13 @@
         </button>
       </div>
     } @else {
-      <div class="tabs" role="tablist" aria-label="Queue filter">
-        @for (tab of queue.value.tabs; track tab.stage) {
-          <button
-            class="tab"
-            role="tab"
-            type="button"
-            [attr.aria-selected]="tab.stage === stage()"
-            [attr.tabindex]="tab.stage === stage() ? null : -1"
-            (click)="load(tab.stage)"
-          >
-            {{ tab.label }} <span jb-badge>{{ tab.count }}</span>
-          </button>
-        }
-      </div>
+      <div
+        jb-tab-list
+        label="Queue filter"
+        [items]="stageTabs()"
+        [selected]="stage()"
+        (selectedChange)="load($event)"
+      ></div>
       @if (queue.value.rows.length === 0) {
         <div jb-empty-state [compact]="true" icon="check" heading="Nothing here right now">
           No listings are in this stage.

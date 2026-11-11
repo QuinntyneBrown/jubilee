@@ -24,6 +24,7 @@ import {
   RowTitle,
   Rows,
   PageHeader,
+  Tabs,
 } from 'components';
 import {
   ReportActionData,
@@ -32,7 +33,7 @@ import {
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { clockTime, dayHeading, dayKey, threadTime } from '../../services/message-time';
-import { TeamNav } from '../admin-team-nav/team-nav';
+import { TEAM_TABS } from '../admin-team-nav/team-tabs';
 
 const REASON_STATE: Record<string, string> = {
   live: 'Live',
@@ -61,7 +62,6 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
     RouterLink,
     EmptyState,
     Icon,
-    TeamNav,
     Button,
     Alert,
     MessageBubble,
@@ -73,11 +73,13 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
     RowTitle,
     Rows,
     PageHeader,
+    Tabs,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-report.page.html',
 })
 export class AdminReportPage implements OnInit {
+  protected readonly teamTabs = TEAM_TABS;
   private readonly api = inject(ADMIN_API);
   private readonly route = inject(ActivatedRoute);
   private readonly dialog = inject(Dialog);
