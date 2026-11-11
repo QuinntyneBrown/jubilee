@@ -11,6 +11,7 @@ import {
   Card,
   DescriptionList,
   DescriptionItem,
+  Price,
 } from 'components';
 
 export interface ConfirmRequestData {
@@ -36,6 +37,7 @@ export function requestNoun(kind: IncomingRequestRow['kind']): string {
     Card,
     DescriptionList,
     DescriptionItem,
+    Price,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './confirm-request.dialog.html',

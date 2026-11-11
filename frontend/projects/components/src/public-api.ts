@@ -1,3 +1,5 @@
+export * from './lib/accordion/accordion';
+export * from './lib/accordion/accordion-item';
 export * from './lib/alert/alert';
 export * from './lib/attach-photo/attach-photo';
 export * from './lib/auth-layout/auth-layout';
@@ -80,6 +82,7 @@ export * from './lib/page-header/page-header';
 export * from './lib/pagination/pagination';
 export * from './lib/password-input/password-input';
 export * from './lib/perk/perk';
+export * from './lib/price/price';
 export * from './lib/product-card/product-card';
 export * from './lib/radio-group/radio-group';
 export * from './lib/request-card/request-card';

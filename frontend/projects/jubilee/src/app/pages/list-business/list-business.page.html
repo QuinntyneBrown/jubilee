@@ -197,7 +197,7 @@
                         <span class="text-muted"> · {{ item.detail }}</span>
                       }
                     </span>
-                    <span class="price">
+                    <span jb-price>
                       @if (item.priceKind === 'amount' && item.priceCents !== null) {
                         {{ format(item.priceCents) }}
                       } @else if (item.priceKind === 'free') {

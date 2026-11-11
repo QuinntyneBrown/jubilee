@@ -13,7 +13,7 @@ import { LoadState, errorReference } from '../../services/load-state';
   selector: 'jb-policy-page',
   imports: [DatePipe, EmptyState, Icon, RouterLink, Button, Skeleton, Breadcrumb],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'container page' },
+  host: { class: 'jb-page container page' },
   templateUrl: './policy.page.html',
 })
 export class PolicyPage implements OnInit {

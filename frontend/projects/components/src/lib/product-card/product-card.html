@@ -3,4 +3,4 @@
 @if (showShop()) {
   <p class="biz-card__tagline">{{ product().shopName }}</p>
 }
-<p class="price">{{ product().priceCents | jbPrice: product().perUnit }}</p>
+<p jb-price [amount]="product().priceCents" [perUnit]="product().perUnit"></p>

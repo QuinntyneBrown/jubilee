@@ -66,9 +66,7 @@
           </button>
         </div>
         <p>
-          <span class="price" style="font-size: var(--font-size-2xl)">{{
-            product.priceCents | jbPrice: product.perUnit
-          }}</span>
+          <span jb-price size="lg" [amount]="product.priceCents" [perUnit]="product.perUnit"></span>
           @if (product.deliveryLine) {
             <span class="text-muted">· {{ product.deliveryLine }}</span>
           }
