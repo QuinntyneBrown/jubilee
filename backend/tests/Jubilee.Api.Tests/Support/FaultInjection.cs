@@ -49,6 +49,10 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<ConsentRecord> ConsentRecords => Use(inner.ConsentRecords);
 
+    public DbSet<ListingReport> ListingReports => Use(inner.ListingReports);
+
+    public DbSet<ListingReportEntry> ListingReportEntries => Use(inner.ListingReportEntries);
+
     public DbSet<ListingView> ListingViews => Use(inner.ListingViews);
 
     public DbSet<ListingPhoto> ListingPhotos => Use(inner.ListingPhotos);

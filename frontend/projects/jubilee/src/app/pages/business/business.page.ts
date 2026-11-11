@@ -26,7 +26,15 @@ import {
 } from 'components';
 import { Subscription } from 'rxjs';
 import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
+import {
+  ReportListingData,
+  ReportListingDialog,
+} from '../../dialogs/report-listing/report-listing.dialog';
 import { RequestQuoteDialog } from '../../dialogs/request-quote/request-quote.dialog';
+import {
+  ShareListingData,
+  ShareListingDialog,
+} from '../../dialogs/share-listing/share-listing.dialog';
 import {
   NewMessageData,
   NewMessageDialog,
@@ -98,7 +106,9 @@ export class BusinessPage {
   private readonly savedStore = inject(SavedStore);
   private slug = '';
   /** Which dialog the address asks for: /b/:slug/message or /b/:slug/book. */
-  private readonly composing = signal<'message' | 'book' | 'quote' | null>(null);
+  private readonly composing = signal<'message' | 'book' | 'quote' | 'share' | 'report' | null>(
+    null,
+  );
   private composeRef?: { close: () => void };
 
   protected readonly state = signal<LoadState<ListingPage>>({ status: 'loading' });
@@ -151,8 +161,9 @@ export class BusinessPage {
     });
     const urls = this.route.url.subscribe((segments) =>
       this.composing.set(
-        segments.length === 3 && ['message', 'book', 'quote'].includes(segments[2].path)
-          ? (segments[2].path as 'message' | 'book' | 'quote')
+        segments.length === 3 &&
+          ['message', 'book', 'quote', 'share', 'report'].includes(segments[2].path)
+          ? (segments[2].path as 'message' | 'book' | 'quote' | 'share' | 'report')
           : null,
       ),
     );
@@ -163,6 +174,8 @@ export class BusinessPage {
         if (composing && state.status === 'loaded' && !this.composeRef) {
           if (composing === 'book' || composing === 'quote')
             this.openRequest(state.value, composing);
+          else if (composing === 'share') this.openShare(state.value);
+          else if (composing === 'report') this.openReport(state.value);
           else this.compose(state.value);
         }
         if (!composing) this.composeRef?.close();
@@ -311,6 +324,50 @@ export class BusinessPage {
         });
     this.composeRef = ref;
     ref.closed.subscribe(leave);
+  }
+
+  /** "Share" (L2-038): anyone, signed in or not, gets the listing's link. */
+  private openShare(listing: ListingPage): void {
+    const ref = this.dialog.open<void, ShareListingData>(ShareListingDialog, {
+      data: { slug: listing.slug, businessName: listing.name },
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+    });
+    this.composeRef = ref;
+    ref.closed.subscribe(() => this.leaveDialog());
+  }
+
+  /** "Report this listing" (L2-039): a member reports it privately; a visitor is asked to sign in first (AC6). */
+  private openReport(listing: ListingPage): void {
+    const ref = this.session.member()
+      ? this.dialog.open<void, ReportListingData>(ReportListingDialog, {
+          data: { slug: listing.slug, businessName: listing.name },
+          ariaLabelledBy: 'dlg-title',
+          ariaDescribedBy: 'dlg-desc',
+          ariaModal: true,
+          backdropClass: 'backdrop',
+        })
+      : this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+          data: { title: `Join to report ${listing.name}`, returnUrl: `/b/${this.slug}/report` },
+          ariaLabelledBy: 'dlg-title',
+          ariaDescribedBy: 'dlg-desc',
+          ariaModal: true,
+          backdropClass: 'backdrop',
+        });
+    this.composeRef = ref;
+    ref.closed.subscribe(() => this.leaveDialog());
+  }
+
+  /** The dialog closed: the address goes back to the listing, unless a link in the dialog navigates on its own. */
+  private leaveDialog(): void {
+    this.composeRef = undefined;
+    setTimeout(() => {
+      if (!this.router.getCurrentNavigation() && this.composing()) {
+        void this.router.navigate(['/b', this.slug], { replaceUrl: true });
+      }
+    });
   }
 
   /** The heart (L2-041): a member saves or unsaves at once; a visitor is asked to join or sign in first. */
