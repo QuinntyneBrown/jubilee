@@ -52,10 +52,9 @@
     </div>
     <div class="split" style="margin-top: var(--space-6)">
       <section jb-card heading="Details" headingId="rd">
-        <dl class="dl" style="margin-top: var(--space-4)">
+        <dl jb-description-list style="margin-top: var(--space-4)">
           @for (line of r.details; track line.label) {
-            <dt>{{ line.label }}</dt>
-            <dd>{{ line.value }}</dd>
+            <div jb-description-item [term]="line.label" [value]="line.value"></div>
           }
         </dl>
         <div jb-card-footer start>

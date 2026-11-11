@@ -97,10 +97,9 @@
               <p style="margin-top: var(--space-2)">{{ product.description }}</p>
             }
             @if (product.attributes.length) {
-              <dl class="dl" style="margin-top: var(--space-4)">
+              <dl jb-description-list style="margin-top: var(--space-4)">
                 @for (attribute of product.attributes; track $index) {
-                  <dt>{{ attribute.label }}</dt>
-                  <dd>{{ attribute.value }}</dd>
+                  <div jb-description-item [term]="attribute.label" [value]="attribute.value"></div>
                 }
               </dl>
             }

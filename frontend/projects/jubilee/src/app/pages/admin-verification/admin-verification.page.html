@@ -106,24 +106,21 @@
     <div class="split" style="margin-top: var(--space-6)">
       <div class="stack">
         <section jb-card heading="Owner" headingId="own">
-          <dl class="dl" style="margin-top: var(--space-4)">
-            <dt>Name</dt>
-            <dd>{{ r.owner.name }}</dd>
-            <dt>E-mail</dt>
-            <dd>
+          <dl jb-description-list style="margin-top: var(--space-4)">
+            <div jb-description-item term="Name" [value]="r.owner.name"></div>
+            <div jb-description-item term="E-mail">
               {{ r.owner.email }} · {{ r.owner.emailConfirmed ? 'confirmed' : 'not confirmed' }}
-            </dd>
-            <dt>Other listings</dt>
-            <dd>{{ r.owner.otherListings === 0 ? 'None' : r.owner.otherListings }}</dd>
+            </div>
+            <div jb-description-item term="Other listings">
+              {{ r.owner.otherListings === 0 ? 'None' : r.owner.otherListings }}
+            </div>
           </dl>
         </section>
         <section jb-card heading="Church reference" headingId="ref">
-          <dl class="dl" style="margin-top: var(--space-4)">
-            <dt>Church</dt>
-            <dd>{{ r.reference.church }}</dd>
+          <dl jb-description-list style="margin-top: var(--space-4)">
+            <div jb-description-item term="Church" [value]="r.reference.church"></div>
             @if (noAnswer()) {
-              <dt>Answer</dt>
-              <dd>
+              <div jb-description-item term="Answer">
                 <span jb-badge tone="warning">{{
                   r.reference.state === 'waiting'
                     ? 'Waiting'
@@ -131,22 +128,19 @@
                       ? 'Expired'
                       : 'Deleted'
                 }}</span>
-              </dd>
+              </div>
             } @else {
-              <dt>Answered by</dt>
-              <dd>
+              <div jb-description-item term="Answered by">
                 {{ r.reference.answeredByName }}, {{ r.reference.answeredByRole }} ·
                 {{ when(r.reference.answeredAt ?? r.submittedAt) }}
-              </dd>
-              <dt>Answer</dt>
-              <dd>
+              </div>
+              <div jb-description-item term="Answer">
                 @if (answer(); as a) {
                   <span jb-badge [tone]="a.tone">{{ a.label }}</span>
                 }
-              </dd>
+              </div>
               @if (r.reference.note) {
-                <dt>Note</dt>
-                <dd>“{{ r.reference.note }}”</dd>
+                <div jb-description-item term="Note">“{{ r.reference.note }}”</div>
               }
             }
           </dl>

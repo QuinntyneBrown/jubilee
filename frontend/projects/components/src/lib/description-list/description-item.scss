@@ -1,0 +1,23 @@
+// Block: dl, one term and its value.
+:host {
+  display: contents;
+}
+
+dt {
+  font: var(--text-label);
+  color: var(--color-fg-muted);
+}
+
+dd {
+  margin: 0;
+}
+
+.dl__value--lines {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 39.99rem) {
+  dd {
+    margin-bottom: var(--space-3);
+  }
+}

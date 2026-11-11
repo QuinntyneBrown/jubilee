@@ -25,6 +25,8 @@ import {
   Card,
   PageHeader,
   Breadcrumb,
+  DescriptionList,
+  DescriptionItem,
 } from 'components';
 import {
   ApproveListingDialog,
@@ -71,6 +73,8 @@ const WAITING_STATES: ReferenceState[] = ['waiting', 'expired', 'deleted'];
     Card,
     PageHeader,
     Breadcrumb,
+    DescriptionList,
+    DescriptionItem,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-verification.page.html',

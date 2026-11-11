@@ -57,25 +57,21 @@
     <nav jb-tabs label="Verification team" [items]="teamTabs" current="reports"></nav>
     <div class="stack" style="margin-top: var(--space-4)">
       <section jb-card heading="Report" headingId="rep">
-        <dl class="dl" style="margin-top: var(--space-4)">
-          <dt>Business</dt>
-          <dd>
+        <dl jb-description-list style="margin-top: var(--space-4)">
+          <div jb-description-item term="Business">
             <a [routerLink]="['/b', report.listing.slug]">{{ report.listing.name }}</a> ·
             {{ listingState(report) }}
-          </dd>
+          </div>
           @for (entry of report.entries; track entry.at) {
-            <dt>Reason</dt>
-            <dd>{{ entry.reason }}</dd>
-            <dt>What they wrote</dt>
-            <dd>{{ entry.description }}</dd>
+            <div jb-description-item term="Reason" [value]="entry.reason"></div>
+            <div jb-description-item term="What they wrote" [value]="entry.description"></div>
           }
-          <dt>Reporter</dt>
-          <dd>
+          <div jb-description-item term="Reporter">
             {{ report.reporterName }}
             <span class="text-caption"
               >Visible to the verification team only. The owner is never told.</span
             >
-          </dd>
+          </div>
         </dl>
       </section>
       @if (report.conversation; as conversation) {

@@ -237,10 +237,9 @@
       </div>
       <div jb-section>
         <aside jb-card heading="Details" headingId="det">
-          <dl class="dl" style="margin-top: var(--space-4)">
+          <dl jb-description-list style="margin-top: var(--space-4)">
             @for (detail of details(); track detail.term) {
-              <dt>{{ detail.term }}</dt>
-              <dd>{{ detail.value }}</dd>
+              <div jb-description-item [term]="detail.term" [value]="detail.value"></div>
             }
           </dl>
         </aside>

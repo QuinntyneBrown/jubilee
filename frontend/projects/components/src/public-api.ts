@@ -25,6 +25,8 @@ export * from './lib/choice-card/choice-card';
 export * from './lib/choice-card/choice-cards';
 export * from './lib/composer/composer';
 export * from './lib/connection-banner/connection-banner';
+export * from './lib/description-list/description-item';
+export * from './lib/description-list/description-list';
 export * from './lib/dialog/dialog';
 export * from './lib/dialog/dialog-body';
 export * from './lib/dialog/dialog-footer';
