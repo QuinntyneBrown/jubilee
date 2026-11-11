@@ -69,7 +69,7 @@ uses.
   search indexing and real-time events run here, outside the `300 ms` write
   target.
 - **`SearchQueryHandler`** — MediatR handler for `GET /api/search?q=`. It
-  queries `ISearchIndex` (product `<TO SUPPLY>`) and returns grouped results.
+  queries `ISearchIndex` (query-time analysis over `Jubilee database`, ADR 0011) and returns grouped results.
   The index is sized for `10,000` listings and `100,000` products.
 - **`EventsHub` backplane** — the SignalR hub shares a Redis backplane in
   `Cache`, so an event published on any API instance reaches a connection held

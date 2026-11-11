@@ -18,7 +18,7 @@ Container_Boundary(api, "Jubilee API") {
   Component(fallback, "DatabaseNameSearch", "Infrastructure service", "Name search used when the index is down")
   Component(recent, "RecentSearchService", "Application service", "Records and lists and deletes recent searches")
 }
-ContainerDb(index, "Search index", "<TO SUPPLY>", "Search documents")
+ContainerDb(index, "Search index", "Query-time analysis over SQL Server", "Search documents")
 ContainerDb(cache, "Cache", "Redis", "Rate-limit counters")
 ContainerDb(db, "Jubilee database", "SQL Server", "Listing and RecentSearch rows")
 

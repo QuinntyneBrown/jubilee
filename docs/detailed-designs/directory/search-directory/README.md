@@ -21,8 +21,8 @@ The feature uses the following local terms.
 - **recent search** — query that a signed-in member submitted, stored on the server and shown on the empty search page
 - **empty search page** — state of `/search` when the query is absent or contains only whitespace
 
-Full-text search runs against the `Search index`, whose product is
-`<TO SUPPLY>`. When the index is unavailable, the feature falls back to a name
+Full-text search runs against the `Search index`, which is a query-time
+analysis of the public listings in `Jubilee database` (ADR 0011). When the index is unavailable, the feature falls back to a name
 search in `Jubilee database` and omits match explanations (`L2-181`).
 
 ## Description
@@ -48,9 +48,10 @@ The feature is a vertical slice from the search box to the search index.
 - **`SearchApi`** — typed Angular HTTP client for `GET /api/search`,
   `GET /api/search/start`, `DELETE /api/search/recent/{id}` and
   `DELETE /api/search/recent`.
-- **`RateLimitMiddleware`** — middleware in `Jubilee.Api`. It counts requests to
-  `GET /api/search` per IP address in `Cache` and returns HTTP 429 once one IP
-  address has sent more than 60 searches in a minute.
+- **`RateLimitMiddleware`** — the `searches` policy of ASP.NET Core's rate limiter
+  in `Jubilee.Api`. It counts requests to `GET /api/search` per IP address and
+  returns HTTP 429 once one IP address has sent more than 60 searches in a
+  minute (ADR 0011).
 - **`SearchController`** — ASP.NET Core controller. `GET /api/search` and
   `GET /api/search/start` are anonymous; the two `DELETE` endpoints require a
   session. A failed search returns 503 `ProblemDetails` with `JB-SRCH-503`.
@@ -67,7 +68,7 @@ The feature is a vertical slice from the search box to the search index.
   stemming, case folding and accent folding, so "plumber", "plumbing" and
   "Plumbers" return the same businesses, and "café" matches "cafe". The index
   holds documents for live listings only.
-- **`DatabaseNameSearch`** — infrastructure service that matches the query
+- **`DatabaseNameSearch`** — application service that matches the query
   against live listing names in `Jubilee database`. Its results set
   `HasMatchExplanations` to `false`.
 - **`SearchResults`**, **`SearchHit`** and **`SearchSuggestion`** — result
@@ -79,11 +80,11 @@ The feature is a vertical slice from the search box to the search index.
   service for a member's search history. The service lists the 5 newest entries
   newest first, removes one entry, and clears all entries. Removal deletes the
   rows from `Jubilee database`. A visitor has no stored history.
-- **`SearchIndexingJob`** — hosted job in `Jubilee.Worker`. It consumes outbox
-  messages raised by listing, service and product changes and writes or deletes
-  the matching index documents (`L2-182`).
-- **Popular categories** — list shown on the empty search page. The rule that
-  selects the categories is `<TO SUPPLY>`.
+- **`SearchIndexingJob`** — hosted job in `Jubilee.Worker` that consumes outbox
+  messages and writes or deletes index documents (`L2-182`). Deferred (ADR
+  0011): the index reads the database, so it is always current.
+- **Popular categories** — list shown on the empty search page: the 5
+  categories with the most public listings, leaving out empty ones.
 
 ## Requirements
 
