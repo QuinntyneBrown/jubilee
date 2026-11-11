@@ -67,6 +67,10 @@ export const test = base.extend<{ jb: Jb }, { apiRecording: void }>({
   // recording, and one without a recorded answer fails the test.
   page: async ({ page }, use) => {
     const unanswered: string[] = [];
+    // A write that gets no answer is not retried for a minute in a test (L2-121); a spec that needs the waits sets them.
+    await page.addInitScript(() => {
+      (globalThis as { __jbTimings?: object }).__jbTimings = { retryWindow: 0 };
+    });
     if (!BASELINE) await installMockApi(page, unanswered);
     await use(page);
     expect(unanswered, 'API requests without a recorded answer (ADR 0009)').toEqual([]);

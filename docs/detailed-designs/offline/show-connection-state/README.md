@@ -49,7 +49,7 @@ probe endpoint.
   connection is slow. Pages may take longer to load." On the browse home the
   `Offline` variant carries the saved-directory sentence of L2-119.
 - **`ReachabilityProbe`** — sends `GET /api/health/ping` with a timeout of
-  `<TO SUPPLY>`. A response of any status below `500` proves the service is
+  5 seconds (ADR 0032). A response of any status below `500` proves the service is
   reachable. A network error while `navigator.onLine` is true, or a `502`,
   `503` or `504` response, yields `ServiceUnreachable`.
 - **`BackoffSchedule`** — produces the waiting times `5 s`, `10 s`, `20 s`,
@@ -70,11 +70,11 @@ probe endpoint.
 - **`RealtimeClient`** — client of `EventsHub`. It reports a dropped persistent
   connection to `ConnectionService` and reconnects on the same `BackoffSchedule`.
 - **`StatusLink`** — "Check status" opens the status page in a new tab. The
-  status page address and its hosting are `<TO SUPPLY>`; the page is hosted
+  status page address is a configured constant, `https://status.jubilee.example` until the page is hosted (ADR 0032); the page is hosted
   apart from `Jubilee API` so that it stays available during an outage.
 - **`HealthController`** — `Jubilee API` controller. `GET /api/health/ping`
-  returns `204 No Content`, needs no session and reads no data. Its rate limit
-  is `<TO SUPPLY>`.
+  returns `204 No Content`, needs no session and reads no data. It has no rate
+  limit of its own: the probe is made at most once at a time per tab, backing off to a minute (ADR 0032).
 
 ## Requirements
 

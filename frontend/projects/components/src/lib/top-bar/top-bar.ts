@@ -21,6 +21,8 @@ export class TopBar {
   readonly current = input<ChromeSection>(null);
   /** The query to keep in the search box, on the search page. */
   readonly query = input('');
+  /** True while the device is offline: search needs a connection, so the box is disabled (L2-122). */
+  readonly offline = input(false);
   /** Emits the trimmed query when the search box is submitted. */
   readonly searched = output<string>();
   /** Emits the avatar button when the member opens the account menu (L2-019). */

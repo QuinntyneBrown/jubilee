@@ -1,0 +1,50 @@
+<svg
+  jb-icon
+  [name]="kind() === 'back-online' ? 'check' : kind() === 'offline' ? 'wifi-off' : 'alert'"
+></svg>
+<div class="alert__body">
+  @switch (kind()) {
+    @case ('offline') {
+      <span
+        ><strong>You’re offline.</strong>
+        {{ detail() ?? 'Messages you write are sent when you reconnect.' }}</span
+      >
+      <span class="alert__actions"
+        ><button class="btn btn--sm" type="button" (click)="retry.emit()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button></span
+      >
+    }
+    @case ('unreachable') {
+      <span
+        ><strong>We can’t reach Jubilee.</strong> This is on our side. Your messages are kept and
+        will send when we’re back.
+        @if (countdown() !== null) {
+          <strong>Reconnecting…</strong> Trying again in {{ countdown() }}
+          {{ countdown() === 1 ? 'second' : 'seconds' }}.
+        }
+      </span>
+      <span class="alert__actions"
+        ><a class="btn btn--sm" [href]="statusUrl()" target="_blank" rel="noopener noreferrer"
+          >Check status</a
+        ></span
+      >
+    }
+    @case ('slow') {
+      <span><strong>Your connection is slow.</strong> Pages may take longer to load.</span>
+    }
+    @case ('back-online') {
+      <span
+        ><strong>You’re back online.</strong>
+        @if (sent() > 0) {
+          {{ sent() }} saved {{ sent() === 1 ? 'message was' : 'messages were' }} sent.
+        }
+      </span>
+    }
+  }
+</div>
+@if (kind() === 'back-online') {
+  <button class="close" type="button" aria-label="Dismiss" (click)="dismiss.emit()">
+    <svg jb-icon name="close"></svg>
+  </button>
+}

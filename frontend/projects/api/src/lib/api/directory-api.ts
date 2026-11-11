@@ -1,6 +1,7 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { OWN_OFFLINE_FALLBACK } from './http-context';
 import {
   BrowseHome,
   CategoryFilters,
@@ -29,7 +30,9 @@ export class HttpDirectoryApi implements DirectoryApi {
   }
 
   getHome(): Observable<BrowseHome> {
-    return this.http.get<BrowseHome>('/api/directory/home');
+    return this.http.get<BrowseHome>('/api/directory/home', {
+      context: new HttpContext().set(OWN_OFFLINE_FALLBACK, true),
+    });
   }
 
   getCategory(slug: string, query: CategoryQuery): Observable<CategoryPage> {

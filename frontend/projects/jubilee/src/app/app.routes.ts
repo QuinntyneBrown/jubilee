@@ -230,6 +230,13 @@ export const routes: Routes = [
     title: 'Being updated · Jubilee',
   },
   {
+    path: 'offline',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/offline/offline.page').then((m) => m.OfflinePage),
+    data: data({ shell: 'bare', page: 'offline' }),
+    title: 'You’re offline · Jubilee',
+  },
+  {
     path: 'forbidden',
     loadComponent: () => import('./pages/forbidden/forbidden.page').then((m) => m.ForbiddenPage),
     data: data({ shell: 'app', page: 'forbidden' }),

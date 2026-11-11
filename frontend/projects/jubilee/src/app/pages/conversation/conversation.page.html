@@ -91,6 +91,28 @@
                   ><span class="bubble__meta">{{ entry.time }}</span>
                 </li>
               }
+              @case ('queued') {
+                @if (entry.queued.state === 'waiting') {
+                  <li class="bubble bubble--me bubble--pending">
+                    <span class="visually-hidden">You: </span
+                    ><span style="white-space: pre-wrap">{{ entry.queued.body }}</span
+                    ><span class="bubble__meta" role="status">Waiting to send</span>
+                  </li>
+                } @else {
+                  <li class="bubble bubble--me bubble--failed" role="alert">
+                    <span class="visually-hidden">You: </span
+                    ><span style="white-space: pre-wrap">{{ entry.queued.body }}</span
+                    ><span class="bubble__meta"
+                      >Not sent. It could not be delivered within a day.
+                      <button type="button" (click)="retryQueued(entry.queued)">Try again</button>
+                      ·
+                      <button type="button" (click)="discardQueued(entry.queued)">
+                        Delete
+                      </button></span
+                    >
+                  </li>
+                }
+              }
               @case ('outgoing') {
                 @if (entry.outgoing.status === 'sending') {
                   <li class="bubble bubble--me bubble--pending">

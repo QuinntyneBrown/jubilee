@@ -21,6 +21,11 @@ import { LoadState, errorReference } from '../../services/load-state';
 import { MessagesStore } from '../../services/messages.store';
 import { clockTime, dayHeading, dayKey, initialsOf, newKey } from '../../services/message-time';
 import { NavigationStore } from '../../services/navigation.store';
+import { ConnectionService } from '../../services/offline/connection.service';
+import { OfflineNavigation } from '../../services/offline/offline-navigation';
+import { OfflineSnapshotStore } from '../../services/offline/offline-snapshot.store';
+import { OutgoingMessageQueue, QueuedMessage } from '../../services/offline/outgoing-message.queue';
+import { QueueDrainer } from '../../services/offline/queue-drainer';
 import { InboxList } from '../messages/inbox-list';
 
 const REPLIES: Record<RepliesBand, string> = {
@@ -42,7 +47,8 @@ interface Outgoing {
 type Entry =
   | { kind: 'day'; id: string; label: string }
   | { kind: 'message'; id: string; message: ChatMessage; time: string }
-  | { kind: 'outgoing'; id: string; outgoing: Outgoing };
+  | { kind: 'outgoing'; id: string; outgoing: Outgoing }
+  | { kind: 'queued'; id: string; queued: QueuedMessage };
 
 /**
  * A conversation at /messages/:id (L2-057, L2-058): the latest messages, a composer, and an
@@ -63,6 +69,11 @@ export class ConversationPage implements OnInit {
   private readonly store = inject(MessagesStore);
   private readonly navigation = inject(NavigationStore);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly connection = inject(ConnectionService);
+  private readonly queue = inject(OutgoingMessageQueue);
+  private readonly drainer = inject(QueueDrainer);
+  private readonly snapshots = inject(OfflineSnapshotStore);
+  private readonly offlinePage = inject(OfflineNavigation);
 
   protected readonly starters = STARTERS;
   protected readonly state = signal<LoadState<Conversation>>({ status: 'loading' });
@@ -99,6 +110,11 @@ export class ConversationPage implements OnInit {
       }
       entries.push({ kind: 'message', id: message.id, message, time: clockTime(message.sentAt) });
     }
+    for (const queued of this.queue.items()) {
+      if (queued.conversationId === this.id()) {
+        entries.push({ kind: 'queued', id: `queued-${queued.sequence}`, queued });
+      }
+    }
     for (const outgoing of this.outgoing()) {
       entries.push({ kind: 'outgoing', id: outgoing.key, outgoing });
     }
@@ -106,6 +122,14 @@ export class ConversationPage implements OnInit {
   });
 
   constructor() {
+    // Messages sent from the queue while this conversation is open appear in it (L2-120 AC2).
+    let delivered = this.drainer.delivered();
+    effect(() => {
+      const now = this.drainer.delivered();
+      if (now === delivered) return;
+      delivered = now;
+      this.refresh();
+    });
     // Keep the newest message in view after the log changes.
     effect(() => {
       this.entries();
@@ -133,11 +157,16 @@ export class ConversationPage implements OnInit {
         this.messages.set(conversation.messages);
         this.hasMore.set(conversation.hasMore);
         this.state.set({ status: 'loaded', value: conversation });
+        void this.snapshots.save(`conversation:${this.id()}`, conversation);
         // Opening marks the conversation read, so the counts change.
         this.store.load();
         this.navigation.load();
       },
       error: (error: unknown) => {
+        if (this.isOfflineFailure(error)) {
+          void this.showSaved();
+          return;
+        }
         // A conversation that is not yours is not found, whoever asks (L2-057 AC6).
         if (error instanceof HttpErrorResponse && error.status === 404) {
           void this.router.navigate(['/404'], { skipLocationChange: true });
@@ -146,6 +175,45 @@ export class ConversationPage implements OnInit {
         this.state.set({ status: 'error', reference: errorReference(error, 'JB-MSG-502') });
       },
     });
+  }
+
+  private isOfflineFailure(error: unknown): boolean {
+    return (
+      (error instanceof HttpErrorResponse && error.status === 0) || this.connection.isOffline()
+    );
+  }
+
+  /** With no connection, the copy of this conversation saved when it was last opened (L2-119). */
+  private async showSaved(): Promise<void> {
+    const saved = await this.snapshots.read<Conversation>(`conversation:${this.id()}`);
+    if (!saved) {
+      if (this.connection.isOffline()) this.offlinePage.show();
+      else this.state.set({ status: 'error', reference: errorReference(null, 'JB-MSG-502') });
+      return;
+    }
+    this.messages.set(saved.data.messages);
+    this.hasMore.set(saved.data.hasMore);
+    this.state.set({ status: 'loaded', value: saved.data });
+  }
+
+  /** Reads the latest messages again without a loading state. */
+  private refresh(): void {
+    this.api.open(this.id()).subscribe({
+      next: (conversation) => {
+        this.messages.set(conversation.messages);
+        this.hasMore.set(conversation.hasMore);
+        void this.snapshots.save(`conversation:${this.id()}`, conversation);
+      },
+      error: () => undefined,
+    });
+  }
+
+  protected retryQueued(queued: QueuedMessage): void {
+    void this.queue.retry(queued).then(() => this.drainer.drain(false));
+  }
+
+  protected discardQueued(queued: QueuedMessage): void {
+    void this.queue.remove(queued);
   }
 
   protected loadEarlier(): void {
@@ -178,8 +246,13 @@ export class ConversationPage implements OnInit {
     const body = this.text().trim();
     if (!body) return;
     const outgoing: Outgoing = { key: newKey(), body, status: 'sending', problem: '' };
-    this.outgoing.update((list) => [...list, outgoing]);
     this.text.set('');
+    // Offline, or with Jubilee out of reach, the message is kept on the device and sent later (L2-120).
+    if (this.connection.cannotDeliver()) {
+      void this.queue.enqueue(this.id(), body, outgoing.key);
+      return;
+    }
+    this.outgoing.update((list) => [...list, outgoing]);
     this.deliver(outgoing);
   }
 
@@ -201,8 +274,19 @@ export class ConversationPage implements OnInit {
         );
         this.store.load();
       },
-      error: (error: unknown) =>
-        this.update(outgoing.key, { status: 'failed', problem: problemOf(error) }),
+      error: (error: unknown) => {
+        if (
+          error instanceof HttpErrorResponse &&
+          error.status === 0 &&
+          this.connection.cannotDeliver()
+        ) {
+          // No answer and the connection is down: keep it, with the same key, for the queue to send.
+          this.outgoing.update((list) => list.filter((item) => item.key !== outgoing.key));
+          void this.queue.enqueue(this.id(), outgoing.body, outgoing.key);
+          return;
+        }
+        this.update(outgoing.key, { status: 'failed', problem: problemOf(error) });
+      },
     });
   }
 

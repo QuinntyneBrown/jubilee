@@ -1,0 +1,11 @@
+<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
+<div class="auth-card card">
+  <div jb-empty-state icon="wifi-off" heading="You’re offline" [level]="1">
+    Jubilee needs a connection to load this page. Messages you already opened are still readable,
+    and anything you send is kept and delivered when you’re back.
+    <button slot="actions" class="btn btn--primary" type="button" (click)="tryAgain()">
+      <svg jb-icon name="refresh"></svg>Try again
+    </button>
+    <a slot="actions" class="btn" routerLink="/messages">Open messages</a>
+  </div>
+</div>

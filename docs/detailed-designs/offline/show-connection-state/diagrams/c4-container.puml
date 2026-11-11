@@ -8,7 +8,7 @@ System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Detects the connection state. Shows the banner and the slow-request toast")
   Container(api, "Jubilee API", "ASP.NET Core", "Probe endpoint /api/health/ping and real-time hub")
 }
-System_Ext(status, "Status page", "Public service status. Address and hosting <TO SUPPLY>")
+System_Ext(status, "Status page", "Public service status. Hosted apart from the API; address in ADR 0032")
 Rel(member, web, "Uses", "HTTPS")
 Rel(web, api, "Probes reachability of", "JSON/HTTPS")
 Rel(web, api, "Holds a persistent connection to", "WebSocket or server-sent events")

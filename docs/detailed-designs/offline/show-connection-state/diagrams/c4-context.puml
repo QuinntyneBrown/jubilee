@@ -7,7 +7,7 @@ Person(visitor, "Visitor", "Anyone not signed in")
 Person(member, "Member", "Signed-in account holder")
 Person(owner, "Owner", "Member who owns a business listing")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace. Reports the connection state in a banner and recovers automatically")
-System_Ext(status, "Status page", "Public service status. Address and hosting <TO SUPPLY>")
+System_Ext(status, "Status page", "Public service status. Hosted apart from the API; address in ADR 0032")
 
 Rel(visitor, jubilee, "Sees the connection state in")
 Rel(member, jubilee, "Sees the connection state in")

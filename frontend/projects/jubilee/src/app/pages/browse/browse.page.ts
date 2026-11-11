@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CATEGORIES } from 'api';
 import {
@@ -11,6 +18,9 @@ import {
   ProductCard,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
+import { RequiresConnection } from '../../directives/requires-connection';
+import { clockTime } from '../../services/message-time';
+import { ConnectionService } from '../../services/offline/connection.service';
 import { DirectoryStore } from '../../services/directory.store';
 import { SessionService } from '../../services/session.service';
 
@@ -22,6 +32,7 @@ import { SessionService } from '../../services/session.service';
 @Component({
   selector: 'jb-browse-page',
   imports: [
+    RequiresConnection,
     RouterLink,
     BusinessCard,
     CardGridSkeleton,
@@ -55,6 +66,26 @@ export class BrowsePage {
 
   constructor() {
     this.store.load();
+    const connection = inject(ConnectionService);
+    // The banner says which directory is on show while offline (L2-119 AC1), and the page reads the
+    // directory again when the connection returns (L2-119 AC2).
+    effect(() => {
+      const savedAt = this.store.savedAt();
+      connection.detail.set(
+        savedAt
+          ? `Showing the directory saved at ${clockTime(savedAt)}. Search and messages will work again when you’re connected.`
+          : null,
+      );
+    });
+    let seen = connection.returned();
+    effect(() => {
+      const now = connection.returned();
+      if (now !== seen) {
+        seen = now;
+        this.store.load();
+      }
+    });
+    inject(DestroyRef).onDestroy(() => connection.detail.set(null));
   }
 
   protected search(event: Event, query: string): void {

@@ -53,6 +53,7 @@ import {
   SESSION_API,
 } from 'api';
 import { routes } from './app.routes';
+import { connectionInterceptor } from './services/offline/connection.interceptor';
 import { errorInterceptor } from './services/error.interceptor';
 import { NavigationTrail } from './services/navigation-trail';
 import { SessionService } from './services/session.service';
@@ -61,7 +62,7 @@ import { SessionService } from './services/session.service';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptors([errorInterceptor])),
+    provideHttpClient(withInterceptors([connectionInterceptor, errorInterceptor])),
     // Starts watching navigation at once, so the forbidden page knows which page was asked for (L2-114).
     provideAppInitializer(() => {
       inject(NavigationTrail);

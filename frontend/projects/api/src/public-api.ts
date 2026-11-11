@@ -14,6 +14,7 @@ export * from './lib/models/search';
 export * from './lib/api/account-api';
 export * from './lib/api/content-api';
 export * from './lib/api/help-api';
+export * from './lib/api/http-context';
 export * from './lib/api/reports-api';
 export * from './lib/models/account';
 export * from './lib/api/password-reset-api';

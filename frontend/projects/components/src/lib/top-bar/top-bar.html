@@ -12,6 +12,10 @@
     maxlength="100"
     placeholder="Plumber, lawyer, Bibles…"
     [value]="query()"
+    [disabled]="offline()"
+    [attr.title]="
+      offline() ? 'Search needs a connection. It works again when you’re back online.' : null
+    "
   />
 </form>
 <span class="topbar__spacer"></span>
