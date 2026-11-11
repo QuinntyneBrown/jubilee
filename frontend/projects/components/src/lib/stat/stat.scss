@@ -1,0 +1,38 @@
+// Block: stat. The host is a card that holds one figure.
+@use '../card/card-base' as card;
+
+:host {
+  @include card.surface;
+
+  display: block;
+}
+
+:host(.stat) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.stat__label {
+  font: var(--text-label);
+  color: var(--color-fg-muted);
+}
+
+.stat__value {
+  font: var(--text-h2);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__delta {
+  font: var(--text-body-sm);
+  display: inline-flex;
+  gap: var(--space-1);
+}
+
+.stat__delta--up {
+  color: var(--color-success-fg);
+}
+
+.stat__delta--down {
+  color: var(--color-danger-fg);
+}

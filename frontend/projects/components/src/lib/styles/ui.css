@@ -98,11 +98,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .form-actions { --jb-inline-status-margin-end: auto; }
 
 /* ---------- Surfaces ------------------------------------------------------- */
-.stat { display: flex; flex-direction: column; gap: var(--space-1); }
-.stat__label { font: var(--text-label); color: var(--color-fg-muted); }
-.stat__value { font: var(--text-h2); font-variant-numeric: tabular-nums; }
-.stat__delta { font: var(--text-body-sm); display: inline-flex; gap: var(--space-1); }
-.stat__delta--up { color: var(--color-success-fg); } .stat__delta--down { color: var(--color-danger-fg); }
 
 /* ---------- Badges, chips, avatars ---------------------------------------- */
 
@@ -339,9 +334,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 @media (min-width: 40rem) { .form-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 64rem) { .form-grid--2-lg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .form { display: flex; flex-direction: column; gap: var(--space-6); }
-.stat-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (min-width: 64rem) { .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.stat-grid { --jb-card-padding: var(--space-4); }
 
 /* ---------- Messages -------------------------------------------------------------------- */
 

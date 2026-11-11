@@ -1,0 +1,14 @@
+// Block: stat-grid. The host is the grid; its cards are padded tighter than a card alone.
+:host {
+  --jb-card-padding: var(--space-4);
+
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 64rem) {
+  :host {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
