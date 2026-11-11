@@ -78,7 +78,16 @@ public static class DependencyInjection
         services.AddHttpClient<Application.Accounts.IBreachedPasswordChecker, Accounts.HaveIBeenPwnedChecker>();
         services.AddHttpClient<Application.Accounts.IBotChallengeVerifier, Accounts.TurnstileBotChallengeVerifier>();
         services.AddHttpClient<Application.Accounts.IGoogleIdentityClient, Accounts.GoogleIdentityClient>();
-        services.AddSingleton<Application.Accounts.IEmailSender, Emails.LoggingEmailSender>();
+        // The e-mail provider when it is configured (ADR 0038); otherwise nothing leaves the system (L2-179 AC7).
+        if (string.IsNullOrWhiteSpace(configuration["Email:ConnectionString"]))
+        {
+            services.AddSingleton<Application.Accounts.IEmailSender, Emails.LoggingEmailSender>();
+        }
+        else
+        {
+            services.AddHttpClient<Application.Accounts.IEmailSender, Emails.AzureCommunicationEmailSender>();
+        }
+
         services.AddSingleton<Application.Notifications.IUnsubscribeLinks>(
             new Application.Notifications.HmacUnsubscribeLinks(configuration["Email:UnsubscribeKey"] ?? "development-only-unsubscribe-key"));
         services.AddSingleton<Application.Accounts.IOidcTransactionStore, Accounts.CacheOidcTransactionStore>();
