@@ -50,7 +50,7 @@ effects dispatched by `Jubilee Worker`.
   `Conversation`, and writes the owner's notification, e-mail and real-time event to the outbox in one unit of
   work.
 - **`IAvailabilityService`** — application service that computes the slots of a day in `America/Toronto` from
-  the listing's hours and the service's duration. The storage model of business hours is `<TO SUPPLY>`.
+  the listing's hours and the service's duration. Business hours are stored as `Listing.MeetingDays`, a weekday bitmask (Monday to Friday by default), and offered through the default slots 09:00, 10:00, 13:30, 16:00 and 19:00 (ADR 0015).
 - **`Request`** — domain entity in `Jubilee.Domain` that owns the request lifecycle (`L2-043`). `RequestStatus`
   holds `New`, `Confirmed`, `Declined`, `Cancelled` and `Completed`. The allowed transitions are `New` →
   `Confirmed` (the owner confirms), `New` → `Declined` (the owner declines), `New` or `Confirmed` → `Cancelled`

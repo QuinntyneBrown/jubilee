@@ -33,5 +33,9 @@ public interface IAppDbContext
 
     DbSet<ConversationReport> ConversationReports { get; }
 
+    DbSet<Request> Requests { get; }
+
+    DbSet<RequestTransition> RequestTransitions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

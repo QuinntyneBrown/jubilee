@@ -168,3 +168,42 @@ export class NewMessageDialog {
     this.close = this.root.getByRole('button', { name: 'Close' });
   }
 }
+
+/** The dialog that asks a business for a meeting (L2-044). */
+export class BookMeetingDialog {
+  readonly root: Locator;
+  readonly title: Locator;
+  readonly description: Locator;
+  readonly service: Locator;
+  readonly day: Locator;
+  readonly how: Locator;
+  readonly times: Locator;
+  readonly note: Locator;
+  readonly fieldError: Locator;
+  readonly alert: Locator;
+  readonly send: Locator;
+  readonly cancel: Locator;
+  readonly close: Locator;
+  readonly viewRequest: Locator;
+
+  constructor(page: Page) {
+    this.root = page.getByRole('dialog');
+    this.title = this.root.locator('.dialog__title');
+    this.description = this.root.locator('#dlg-desc');
+    this.service = this.root.getByLabel('Service');
+    this.day = this.root.getByLabel('Day');
+    this.how = this.root.getByLabel('How');
+    this.times = this.root.locator('label.chip');
+    this.note = this.root.getByLabel('What would you like to talk about?');
+    this.fieldError = this.root.locator('.field__error');
+    this.alert = this.root.getByRole('alert');
+    this.send = this.root.getByRole('button', { name: 'Send request' });
+    this.cancel = this.root.getByRole('button', { name: 'Cancel' });
+    this.close = this.root.getByRole('button', { name: 'Close' }).first();
+    this.viewRequest = this.root.getByRole('link', { name: 'View request' });
+  }
+
+  time(label: string): Locator {
+    return this.times.filter({ hasText: label });
+  }
+}

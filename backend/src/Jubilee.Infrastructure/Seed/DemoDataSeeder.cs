@@ -55,6 +55,11 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
                 listing.AssignOwner(owner);
             }
 
+            if (slug == "legacy-financial" && listing.MeetingArea is null)
+            {
+                listing.SetMeetingArea("North York");
+            }
+
             if (listing.About is null && listing.OwnerName is null)
             {
                 listing.Describe(demo.Profile);

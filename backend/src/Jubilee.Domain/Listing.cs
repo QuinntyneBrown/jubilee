@@ -165,6 +165,20 @@ public sealed class Listing
 
     public void SetAreasServed(AreaServed areasServed) => AreasServed = areasServed;
 
+    /// <summary>Days of the week the business meets, as <see cref="DayOfWeek"/> bits; Monday to Friday until the owner says otherwise.</summary>
+    public int MeetingDays { get; private set; } = WeekdayBits;
+
+    /// <summary>Where an in-person meeting happens, for example "North York"; null when only video is offered.</summary>
+    public string? MeetingArea { get; private set; }
+
+    public const int WeekdayBits = (1 << (int)DayOfWeek.Monday) | (1 << (int)DayOfWeek.Tuesday) | (1 << (int)DayOfWeek.Wednesday) | (1 << (int)DayOfWeek.Thursday) | (1 << (int)DayOfWeek.Friday);
+
+    public bool MeetsOn(DayOfWeek day) => (MeetingDays & (1 << (int)day)) != 0;
+
+    public void SetMeetingDays(int days) => MeetingDays = days;
+
+    public void SetMeetingArea(string? area) => MeetingArea = string.IsNullOrWhiteSpace(area) ? null : area.Trim();
+
     /// <summary>When the owner is away until (L2-062); null when not away.</summary>
     public DateTimeOffset? AwayUntil { get; private set; }
 
