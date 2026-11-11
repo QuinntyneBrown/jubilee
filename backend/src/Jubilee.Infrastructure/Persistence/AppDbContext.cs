@@ -21,6 +21,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ContentVersion> ContentVersions => Set<ContentVersion>();
 
+    public DbSet<MaintenanceWindow> MaintenanceWindows => Set<MaintenanceWindow>();
+
+    public DbSet<AccessRequest> AccessRequests => Set<AccessRequest>();
+
     public DbSet<ListingReport> ListingReports => Set<ListingReport>();
 
     public DbSet<ListingReportEntry> ListingReportEntries => Set<ListingReportEntry>();

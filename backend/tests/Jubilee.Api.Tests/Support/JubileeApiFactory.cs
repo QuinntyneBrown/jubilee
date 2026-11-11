@@ -39,6 +39,9 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
 
     public FakeGoogle Google { get; } = new();
 
+    /// <summary>The maintenance switch. Off at the start of every test; <see cref="Reset"/> turns it off.</summary>
+    public FakeMaintenance Maintenance { get; } = new();
+
     /// <summary>Everything the API logged.</summary>
     public CapturedLogs Logs { get; } = new();
 
@@ -64,6 +67,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             services.PostConfigure<AuthenticationOptions>(o => o.DefaultAuthenticateScheme = TestAuthHandler.SchemeName);
             services.AddScoped<IAppDbContext>(sp => new OutageAwareDbContext(sp.GetRequiredService<AppDbContext>(), Database));
             services.AddSingleton<ILoggerProvider>(Logs);
+            services.RemoveAll<Jubilee.Application.Maintenance.IMaintenanceState>();
+            services.AddSingleton<Jubilee.Application.Maintenance.IMaintenanceState>(Maintenance);
             services.RemoveAll<Jubilee.Application.Abstractions.IMediaStore>();
             services.AddSingleton<Jubilee.Application.Abstractions.IMediaStore>(Media);
             services.RemoveAll<Jubilee.Application.Accounts.IEmailSender>();
@@ -139,6 +144,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     {
         _clock.Current = new FakeTimeProvider(ListingMother.Now);
         Database.Unavailable = false;
+        Maintenance.Off();
         Emails.Clear();
         Emails.Failing = false;
         Media.Clear();
@@ -172,6 +178,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.SavedItems);
             db.RemoveRange(db.ConsentRecords);
             db.RemoveRange(db.ContentVersions);
+            db.RemoveRange(db.MaintenanceWindows);
+            db.RemoveRange(db.AccessRequests);
             db.RemoveRange(db.ListingReportEntries);
             db.RemoveRange(db.ListingReports);
             db.RemoveRange(db.ListingViews);

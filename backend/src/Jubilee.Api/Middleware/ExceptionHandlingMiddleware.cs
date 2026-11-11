@@ -96,13 +96,15 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 reference: reference);
         }
 
+        var unhandled = ErrorReferences.ForUnhandled(context.TraceIdentifier);
         logger.LogError(
             exception,
-            "Unhandled error serving {Method} {Path}. CorrelationId {CorrelationId}",
+            "{Reference}: unhandled error serving {Method} {Path}. CorrelationId {CorrelationId}",
+            unhandled,
             context.Request.Method,
             context.Request.Path.Value,
             context.TraceIdentifier);
         return ProblemWriter.WriteAsync(
-            context, StatusCodes.Status500InternalServerError, "Something went wrong.", code: "unexpected_error");
+            context, StatusCodes.Status500InternalServerError, "Something went wrong.", code: "unexpected_error", reference: unhandled);
     }
 }

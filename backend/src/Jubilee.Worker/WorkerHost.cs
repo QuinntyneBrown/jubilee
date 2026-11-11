@@ -28,6 +28,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<BookingCompletionJob>();
         builder.Services.AddHostedService<MeetingReminderJob>();
         builder.Services.AddHostedService<UnansweredRequestJob>();
+        builder.Services.AddHostedService<MaintenanceWatcherJob>();
         return builder;
     }
 }
@@ -353,6 +354,39 @@ public sealed class UnansweredRequestJob(IServiceScopeFactory scopes, ILogger<Un
         catch (OperationCanceledException)
         {
             logger.LogInformation("The unanswered request job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Watches the maintenance switch (L2-117 AC2). When it turns on a window opens; when it turns off the window closes and the
+/// e-mailed links that were valid when it began are extended by its length, once.
+/// </summary>
+public sealed class MaintenanceWatcherJob(IServiceScopeFactory scopes, ILogger<MaintenanceWatcherJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    await scope.ServiceProvider.GetRequiredService<Jubilee.Application.Maintenance.MaintenanceWindowService>()
+                        .ObserveAsync(stoppingToken);
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The maintenance switch could not be observed. It will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            // The host is stopping.
         }
     }
 }

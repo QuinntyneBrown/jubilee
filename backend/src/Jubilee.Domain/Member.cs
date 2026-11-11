@@ -385,6 +385,9 @@ public sealed class LinkToken
     public void Redeem(DateTimeOffset now) => UsedAt = now;
 
     public void Supersede(DateTimeOffset now) => SupersededAt ??= now;
+
+    /// <summary>Moves the expiry forward by the length of a maintenance window (L2-117 AC2).</summary>
+    public void Extend(TimeSpan by) => ExpiresAt += by;
 }
 
 /// <summary>

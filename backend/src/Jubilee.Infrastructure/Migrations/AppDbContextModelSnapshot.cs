@@ -22,6 +22,37 @@ namespace Jubilee.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Jubilee.Domain.AccessRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MemberSubject")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberSubject", "IdempotencyKey")
+                        .IsUnique();
+
+                    b.ToTable("AccessRequests", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.AuditRecord", b =>
                 {
                     b.Property<Guid>("Id")
@@ -836,6 +867,27 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("ListingId", "VisitorKey", "ViewedAt");
 
                     b.ToTable("ListingViews", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.MaintenanceWindow", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("BackBy")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("EndedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("StartedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EndedAt");
+
+                    b.ToTable("MaintenanceWindows", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Member", b =>
