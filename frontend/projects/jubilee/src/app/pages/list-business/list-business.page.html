@@ -15,29 +15,19 @@
         </div>
       </div>
       <div jb-card heading="What happens next">
-        <ol class="timeline" style="text-align: left; margin-top: var(--space-4)">
-          <li data-complete>
-            <span class="timeline__dot" aria-hidden="true">✓</span>
-            <div>
-              <div class="timeline__title">You submitted {{ done.name }}</div>
-            </div>
-          </li>
-          <li aria-current="step">
-            <span class="timeline__dot" aria-hidden="true"></span>
-            <div>
-              <div class="timeline__title">Your pastor confirms you</div>
-              <div class="timeline__meta">
-                We e-mailed {{ done.pastorEmail }} at {{ done.church }} just now
-              </div>
-            </div>
-          </li>
-          <li>
-            <span class="timeline__dot" aria-hidden="true"></span>
-            <div>
-              <div class="timeline__title">We review and publish</div>
-              <div class="timeline__meta">Within two business days of their answer</div>
-            </div>
-          </li>
+        <ol jb-timeline style="text-align: left; margin-top: var(--space-4)">
+          <li jb-timeline-step state="complete" [heading]="'You submitted ' + done.name"></li>
+          <li
+            jb-timeline-step
+            state="current"
+            heading="Your pastor confirms you"
+            [text]="'We e-mailed ' + done.pastorEmail + ' at ' + done.church + ' just now'"
+          ></li>
+          <li
+            jb-timeline-step
+            heading="We review and publish"
+            text="Within two business days of their answer"
+          ></li>
         </ol>
       </div>
     </div>

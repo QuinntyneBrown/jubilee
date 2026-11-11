@@ -90,21 +90,14 @@
       </section>
       <section jb-card heading="Progress" headingId="rp">
         <div style="margin-top: var(--space-4)">
-          <ol class="timeline">
+          <ol jb-timeline>
             @for (step of r.timeline; track $index) {
               <li
-                [attr.data-complete]="step.state === 'complete' ? '' : null"
-                [attr.data-stopped]="step.state === 'stopped' ? '' : null"
-                [attr.aria-current]="step.state === 'current' ? 'step' : null"
-              >
-                <span class="timeline__dot" aria-hidden="true">{{
-                  step.state === 'complete' ? '✓' : step.state === 'stopped' ? '×' : ''
-                }}</span>
-                <div>
-                  <div class="timeline__title">{{ step.title }}</div>
-                  <div class="timeline__meta">{{ step.meta ?? asked(step.at) }}</div>
-                </div>
-              </li>
+                jb-timeline-step
+                [heading]="step.title"
+                [text]="step.meta ?? asked(step.at)"
+                [state]="step.state"
+              ></li>
             }
           </ol>
         </div>

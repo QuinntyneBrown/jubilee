@@ -290,20 +290,14 @@
           <div class="split" style="margin-top: var(--space-6)">
             <section jb-card heading="Verification progress" headingId="vp">
               <div style="margin-top: var(--space-4)">
-                <ol class="timeline">
+                <ol jb-timeline>
                   @for (step of steps(b); track step.title) {
                     <li
-                      [attr.data-complete]="step.mark === 'done' ? '' : null"
-                      [attr.aria-current]="step.mark === 'now' ? 'step' : null"
-                    >
-                      <span class="timeline__dot" aria-hidden="true">{{
-                        step.mark === 'done' ? '✓' : ''
-                      }}</span>
-                      <div>
-                        <div class="timeline__title">{{ step.title }}</div>
-                        <div class="timeline__meta">{{ step.meta }}</div>
-                      </div>
-                    </li>
+                      jb-timeline-step
+                      [heading]="step.title"
+                      [text]="step.meta"
+                      [state]="step.state"
+                    ></li>
                   }
                 </ol>
               </div>

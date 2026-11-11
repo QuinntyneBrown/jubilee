@@ -1,0 +1,8 @@
+// Block: timeline. The host is the list.
+:host {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
