@@ -85,6 +85,20 @@ public sealed class ListingViewConfiguration : IEntityTypeConfiguration<ListingV
     }
 }
 
+public sealed class ConsentRecordConfiguration : IEntityTypeConfiguration<ConsentRecord>
+{
+    public void Configure(EntityTypeBuilder<ConsentRecord> builder)
+    {
+        builder.ToTable("ConsentRecords");
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.Category).HasMaxLength(32).IsRequired();
+        builder.Property(r => r.Method).HasConversion<string>().HasMaxLength(24);
+        builder.HasIndex(r => new { r.MemberId, r.OccurredAt });
+        builder.HasOne<Member>().WithMany().HasForeignKey(r => r.MemberId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
 public sealed class SavedItemConfiguration : IEntityTypeConfiguration<SavedItem>
 {
     public void Configure(EntityTypeBuilder<SavedItem> builder)
@@ -187,6 +201,9 @@ public sealed class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.Property(m => m.FirstName).HasMaxLength(50).IsRequired();
         builder.Property(m => m.LastName).HasMaxLength(50).IsRequired();
         builder.Property(m => m.HomeChurch).HasMaxLength(100);
+        builder.Property(m => m.Phone).HasMaxLength(10);
+        builder.Property(m => m.PostalCode).HasMaxLength(7);
+        builder.Property(m => m.Pronouns).HasMaxLength(40);
         builder.Property(m => m.PasswordHash).HasMaxLength(400);
         builder.Property(m => m.EmailStatus).HasConversion<string>().HasMaxLength(16);
         builder.Property(m => m.GoogleSubject).HasMaxLength(100);
@@ -204,6 +221,7 @@ public sealed class LinkTokenConfiguration : IEntityTypeConfiguration<LinkToken>
         builder.Property(t => t.Id).ValueGeneratedNever();
         builder.Property(t => t.Purpose).HasConversion<string>().HasMaxLength(32);
         builder.Property(t => t.TokenHash).HasMaxLength(64).IsRequired();
+        builder.Property(t => t.TargetEmail).HasMaxLength(EmailAddress.MaxLength);
         builder.HasIndex(t => t.TokenHash).IsUnique();
         builder.HasOne<Member>().WithMany().HasForeignKey(t => t.MemberId).OnDelete(DeleteBehavior.Cascade);
     }

@@ -238,6 +238,7 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .chip .remove:hover { background: var(--color-bg-subtle-hover); }
 .avatar { display: inline-grid; place-items: center; width: var(--avatar-size-md); height: var(--avatar-size-md); text-decoration: none; border-radius: var(--radius-full); background: var(--color-accent-subtle); color: var(--color-fg-accent); font: var(--text-label); overflow: hidden; flex: none; }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
+button.avatar { border: 0; padding: 0; cursor: pointer; }
 .avatar--sm { width: var(--avatar-size-sm); height: var(--avatar-size-sm); font-size: var(--font-size-xs); } .avatar--lg { width: var(--avatar-size-lg); height: var(--avatar-size-lg); font-size: var(--font-size-lg); }
 .avatar--brand { background: var(--color-success-solid); color: var(--color-fg-inverse); font-weight: var(--font-weight-semibold); }
 .avatar-group { display: flex; } .avatar-group .avatar { box-shadow: 0 0 0 var(--border-width-thick) var(--color-bg-surface); margin-left: calc(-1 * var(--space-2)); } .avatar-group .avatar:first-child { margin-left: 0; }

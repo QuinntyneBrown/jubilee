@@ -24,7 +24,7 @@ export class ShellPage {
     this.searchBox = this.topBar.getByRole('searchbox', { name: 'Search businesses and products' });
     this.searchLink = this.topBar.getByRole('link', { name: 'Search', exact: true });
     this.notifications = this.topBar.getByRole('link', { name: /^Notifications/ });
-    this.avatar = this.topBar.locator('a.avatar');
+    this.avatar = this.topBar.locator('.avatar');
     this.footer = page.locator('footer.footer');
     this.tabBar = page.getByRole('navigation', { name: 'Primary, phone' });
   }

@@ -12,7 +12,7 @@
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 8% |
 | [listings](listings.md) | 16 days | 0% |
-| [accounts](accounts.md) | 45 days | 0% |
+| [accounts](accounts.md) | 45 days | 52% |
 | [security](security.md) | 26 days | 11% |
 | [messaging](messaging.md) | 17 days | 0% |
 | [requests](requests.md) | 34 days | 80% |
@@ -21,7 +21,7 @@
 | [church-reference](church-reference.md) | 10 days | 78% |
 | [verification](verification.md) | 20 days | 52% |
 | [owner-workspace](owner-workspace.md) | 20 days | 90% |
-| [privacy](privacy.md) | 16 days | 0% |
+| [privacy](privacy.md) | 16 days | 9% |
 | [accessibility](accessibility.md) | 10 days | 0% |
 | [performance](performance.md) | 9 days | 6% |
 | [operations](operations.md) | 30 days | 9% |

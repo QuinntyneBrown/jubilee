@@ -6,6 +6,7 @@
     [current]="routeData().section ?? null"
     [query]="searchQuery()"
     (searched)="search($event)"
+    (accountMenu)="openAccountMenu($event)"
   ></header>
 }
 @if (routeData().shell === 'app' && unconfirmed(); as member) {

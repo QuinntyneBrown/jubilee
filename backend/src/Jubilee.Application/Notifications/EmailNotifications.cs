@@ -75,7 +75,7 @@ public sealed class HmacUnsubscribeLinks(string key) : IUnsubscribeLinks
 /// <summary>Turns one category off from the link in an e-mail. A link that does not verify is a 404.</summary>
 public sealed record UnsubscribeCommand(string Token) : IRequest;
 
-public sealed class UnsubscribeCommandHandler(IAppDbContext db, IUnsubscribeLinks links) : IRequestHandler<UnsubscribeCommand>
+public sealed class UnsubscribeCommandHandler(IAppDbContext db, IUnsubscribeLinks links, TimeProvider clock) : IRequestHandler<UnsubscribeCommand>
 {
     public async Task Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
     {
@@ -86,7 +86,7 @@ public sealed class UnsubscribeCommandHandler(IAppDbContext db, IUnsubscribeLink
 
         var member = await db.Members.SingleOrDefaultAsync(m => m.Id == memberId, cancellationToken)
             ?? throw new NotFoundException("UNSUBSCRIBE_LINK_INVALID", "This link doesn’t work.");
-        if (!member.SetEmailPreference(category, false))
+        if (!Consent.TrySet(db, member, category, false, ConsentMethod.OneClickUnsubscribe, clock.GetUtcNow()))
         {
             throw new NotFoundException("UNSUBSCRIBE_LINK_INVALID", "This link doesn’t work.");
         }

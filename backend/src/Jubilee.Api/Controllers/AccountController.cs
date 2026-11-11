@@ -45,6 +45,20 @@ public sealed record SignInBody(string? Email, string? Password);
 
 public sealed record ResetLinkResponse(string State, string? Email);
 
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record ProfileBody(string? FirstName, string? LastName, string? Phone, string? PostalCode, string? HomeChurch, string? Pronouns);
+
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record PreferenceBody(string? Setting, bool? Enabled, string? Frequency);
+
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record EmailChangeBody(string? Email, string? CurrentPassword);
+
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record ChangePasswordBody(string? CurrentPassword, string? NewPassword, string? RepeatPassword);
+
+public sealed record EmailChangeResponse(string Outcome);
+
 public sealed record JoinResponse(string Email);
 
 public sealed record ConfirmEmailResponse(string Outcome, string? FirstName);
@@ -160,6 +174,70 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     public async Task<IActionResult> ChangeUnconfirmedEmail(ChangeEmailRequest request, CancellationToken cancellationToken)
     {
         await sender.Send(new ChangeUnconfirmedEmailCommand(MemberId(), request.Email), cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>The account page: profile, e-mail state and when the password changed (L2-013, L2-015).</summary>
+    [HttpGet]
+    [ErrorReference("JB-ACC-503")]
+    public async Task<ActionResult<AccountDto>> Get(CancellationToken cancellationToken) =>
+        Ok(await sender.Send(new GetAccountQuery(MemberId()), cancellationToken));
+
+    [HttpPut("profile")]
+    [ErrorReference("JB-ACC-503")]
+    public async Task<ActionResult<AccountDto>> SaveProfile(ProfileBody request, CancellationToken cancellationToken)
+    {
+        await sender.Send(
+            new UpdateProfileCommand(MemberId(), request.FirstName, request.LastName, request.Phone, request.PostalCode, request.HomeChurch, request.Pronouns),
+            cancellationToken);
+        return Ok(await sender.Send(new GetAccountQuery(MemberId()), cancellationToken));
+    }
+
+    /// <summary>The five e-mail switches and how often (L2-016).</summary>
+    [HttpGet("notification-preferences")]
+    [ErrorReference("JB-PREF-503")]
+    public async Task<ActionResult<NotificationPreferencesDto>> GetPreferences(CancellationToken cancellationToken) =>
+        Ok(await sender.Send(new GetNotificationPreferencesQuery(MemberId()), cancellationToken));
+
+    [HttpPatch("notification-preferences")]
+    [ErrorReference("JB-PREF-503")]
+    public async Task<ActionResult<NotificationPreferencesDto>> SetPreference(PreferenceBody request, CancellationToken cancellationToken)
+    {
+        await sender.Send(new UpdateNotificationPreferenceCommand(MemberId(), request.Setting, request.Enabled, request.Frequency), cancellationToken);
+        return Ok(await sender.Send(new GetNotificationPreferencesQuery(MemberId()), cancellationToken));
+    }
+
+    [HttpPost("email-change")]
+    [ErrorReference("JB-ACC-503")]
+    public async Task<IActionResult> RequestEmailChange(EmailChangeBody request, CancellationToken cancellationToken)
+    {
+        await sender.Send(new RequestEmailChangeCommand(MemberId(), request.Email, request.CurrentPassword), cancellationToken);
+        return Accepted();
+    }
+
+    /// <summary>Opens the link sent to the new address. The link is the credential, so it may be opened on another device.</summary>
+    [HttpPost("email-change/confirm")]
+    [AllowAnonymous]
+    [ErrorReference("JB-VERIFY-502")]
+    public async Task<ActionResult<EmailChangeResponse>> ConfirmEmailChange(ConfirmEmailRequest request, CancellationToken cancellationToken)
+    {
+        NoReferrer();
+        var outcome = await sender.Send(new ConfirmEmailChangeCommand(request.Token), cancellationToken);
+        return Ok(new EmailChangeResponse(outcome switch
+        {
+            EmailChangeOutcome.Confirmed => "confirmed",
+            EmailChangeOutcome.EmailInUse => "email-in-use",
+            _ => "expired",
+        }));
+    }
+
+    /// <summary>Changes the password and ends every other session; this session starts again so it goes on (L2-015, L2-134 AC3).</summary>
+    [HttpPut("password")]
+    [ErrorReference("JB-ACC-503")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordBody request, CancellationToken cancellationToken)
+    {
+        var member = await sender.Send(new ChangePasswordCommand(MemberId(), request.CurrentPassword, request.NewPassword, request.RepeatPassword), cancellationToken);
+        await HttpContext.SignInMemberAsync(member);
         return NoContent();
     }
 

@@ -36,3 +36,5 @@ export * from './lib/models/catalogue';
 export * from './lib/models/member-requests';
 export * from './lib/api/notifications-api';
 export * from './lib/models/notifications';
+export * from './lib/api/profile-api';
+export * from './lib/models/profile';

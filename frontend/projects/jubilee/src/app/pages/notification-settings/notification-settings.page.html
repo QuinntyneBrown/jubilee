@@ -1,0 +1,101 @@
+<div class="page-header">
+  <div>
+    <h1>Your account</h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+</div>
+<nav class="tabs" aria-label="Account sections">
+  <a class="tab" routerLink="/account">Profile</a>
+  <a class="tab" routerLink="/account/notifications" aria-current="page">Notification settings</a>
+  <a class="tab" routerLink="/saved">Saved</a>
+  <a class="tab" routerLink="/requests">Your requests</a>
+</nav>
+@let current = state();
+@switch (current.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your settings">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loading') {
+    <div class="card stack" style="max-width: 42rem; margin-top: var(--space-6)" aria-hidden="true">
+      <span class="skeleton skeleton--text skeleton--w50"></span>
+      <span class="skeleton skeleton--text"></span>
+      <span class="skeleton skeleton--text skeleton--w70"></span>
+    </div>
+    <p class="visually-hidden" role="status">Loading your settings…</p>
+  }
+  @case ('loaded') {
+    @let preferences = current.value;
+    <section
+      class="card stack"
+      style="max-width: 42rem; margin-top: var(--space-6)"
+      aria-labelledby="em"
+    >
+      <div class="cluster cluster--between">
+        <h2 id="em" class="card__title">E-mail me about</h2>
+        @switch (status().kind) {
+          @case ('saving') {
+            <span class="inline-status" role="status"
+              ><span class="dot dot--pulse"></span>Saving…</span
+            >
+          }
+          @case ('saved') {
+            <span class="inline-status inline-status--success" role="status"
+              ><span class="dot"></span>Saved at {{ $any(status()).at }}</span
+            >
+          }
+          @default {
+            <span class="inline-status">Changes save as you make them</span>
+          }
+        }
+      </div>
+      <ul class="rows">
+        @for (row of rows; track row.id) {
+          <li class="row">
+            <label class="row__body" [for]="row.id">
+              <span class="row__title" style="display: block">{{ row.title }}</span>
+              <span class="row__meta">{{ row.meta }}</span>
+            </label>
+            <span class="switch">
+              <input
+                type="checkbox"
+                role="switch"
+                [id]="row.id"
+                [checked]="on(preferences, row)"
+                [disabled]="waiting().has(row.setting)"
+                [attr.aria-busy]="waiting().has(row.setting) ? 'true' : null"
+                (change)="toggle(row, $any($event.target).checked)"
+              />
+            </span>
+          </li>
+        }
+      </ul>
+      <div class="field" style="max-width: 16rem">
+        <label class="field__label" for="digest">How often</label>
+        <select
+          class="select"
+          id="digest"
+          [disabled]="waiting().has('frequency')"
+          (change)="setFrequency($any($event.target).value)"
+        >
+          <option value="as-it-happens" [selected]="preferences.frequency === 'as-it-happens'">
+            As it happens
+          </option>
+          <option value="daily-summary" [selected]="preferences.frequency === 'daily-summary'">
+            One daily summary
+          </option>
+        </select>
+      </div>
+    </section>
+    <p class="text-caption" style="margin-top: var(--space-4); max-width: 42rem">
+      We always e-mail you about sign-in and security, whatever you choose here.
+    </p>
+  }
+}

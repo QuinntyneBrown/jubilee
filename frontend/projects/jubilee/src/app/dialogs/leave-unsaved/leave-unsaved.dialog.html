@@ -1,0 +1,27 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--danger" aria-hidden="true">
+      <svg jb-icon name="alert"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">Leave without saving?</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+        You changed your profile and haven’t saved it. If you leave now, the changes are lost.
+      </p>
+    </div>
+    <button
+      class="btn btn--ghost btn--icon"
+      type="button"
+      aria-label="Close"
+      (click)="decide(false)"
+    >
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <div class="dialog__footer">
+    <button class="btn" type="button" cdkFocusInitial (click)="decide(false)">Keep editing</button>
+    <button class="btn btn--danger" type="button" (click)="decide(true)">
+      Leave without saving
+    </button>
+  </div>
+</div>

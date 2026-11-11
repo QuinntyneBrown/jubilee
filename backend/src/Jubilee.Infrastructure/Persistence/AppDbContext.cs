@@ -17,6 +17,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<SavedItem> SavedItems => Set<SavedItem>();
 
+    public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();
+
     public DbSet<ListingView> ListingViews => Set<ListingView>();
 
     public DbSet<ListingPhoto> ListingPhotos => Set<ListingPhoto>();

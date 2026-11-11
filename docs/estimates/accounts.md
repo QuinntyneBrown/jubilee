@@ -2,13 +2,13 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| change-credentials | 5 days | 0% |
-| choose-notification-settings | 4 days | 0% |
+| change-credentials | 5 days | 90% |
+| choose-notification-settings | 4 days | 70% |
 | confirm-email | 5 days | 80% |
 | continue-with-google | 3 days | 75% |
 | delete-account | 4 days | 0% |
 | download-data | 4 days | 0% |
-| edit-profile | 3 days | 0% |
+| edit-profile | 3 days | 90% |
 | join-with-email | 4 days | 90% |
 | manage-session | 5 days | 0% |
 | reset-password | 4 days | 90% |

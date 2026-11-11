@@ -77,6 +77,12 @@ export type StubName =
   | 'reset-password'
   | 'reset-password-expired'
   | 'reset-password-error'
+  | 'profile'
+  | 'profile-error'
+  | 'preferences-error'
+  | 'confirm-email-change'
+  | 'confirm-email-change-expired'
+  | 'confirm-email-change-in-use'
   | 'saved'
   | 'saved-empty'
   | 'saved-error'
@@ -587,6 +593,38 @@ export const routes = {
     mock: 'pages/reset-password/error.html',
     who: 'visitor',
     stub: 'reset-password-error',
+  },
+  account: { app: '/account', mock: 'pages/account/default.html', who: 'member', stub: 'profile' },
+  'account.error': { app: '/account', mock: 'pages/account/error.html', who: 'member', stub: 'profile-error' },
+  preferences: {
+    app: '/account/notifications',
+    mock: 'pages/preferences/default.html',
+    who: 'member',
+    stub: 'profile',
+  },
+  'preferences.error': {
+    app: '/account/notifications',
+    mock: 'pages/preferences/error.html',
+    who: 'member',
+    stub: 'preferences-error',
+  },
+  'confirm-email-change.success': {
+    app: '/confirm-email-change/e2e-token',
+    mock: 'pages/confirm-email-change/success.html',
+    who: 'visitor',
+    stub: 'confirm-email-change',
+  },
+  'confirm-email-change.expired': {
+    app: '/confirm-email-change/e2e-token',
+    mock: 'pages/confirm-email-change/expired.html',
+    who: 'visitor',
+    stub: 'confirm-email-change-expired',
+  },
+  'confirm-email-change.in-use': {
+    app: '/confirm-email-change/e2e-token',
+    mock: 'pages/confirm-email-change/in-use.html',
+    who: 'visitor',
+    stub: 'confirm-email-change-in-use',
   },
   saved: { app: '/saved', mock: 'pages/saved/default.html', who: 'member', stub: 'saved' },
   'saved.empty': { app: '/saved', mock: 'pages/saved/empty.html', who: 'member', stub: 'saved-empty' },

@@ -1,0 +1,105 @@
+@let found = problems();
+<div class="dialog__panel">
+  @if (view() === 'sent') {
+    <div class="dialog__header">
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">Check your new inbox</h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          We sent a link to {{ sentTo() }}. It works for 24 hours. We also told your current
+          address. Your e-mail stays the same until you open the link.
+        </p>
+      </div>
+      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    <div class="dialog__footer">
+      <button class="btn btn--primary" type="button" cdkFocusInitial (click)="close()">Done</button>
+    </div>
+  } @else {
+    <div class="dialog__header">
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">Change your e-mail</h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          We’ll send a link to the new address. Your e-mail stays as it is until you open it.
+        </p>
+      </div>
+      <button
+        class="btn btn--ghost btn--icon"
+        type="button"
+        aria-label="Close"
+        [disabled]="busy()"
+        (click)="close()"
+      >
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    <form class="dialog__body stack" id="change-email-form" novalidate (ngSubmit)="send()">
+      @if (view() === 'failed') {
+        <div class="alert alert--danger" role="alert">
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">We couldn’t send that</div>
+            <div>Your connection dropped before it reached us. Nothing was sent. Try again.</div>
+          </div>
+        </div>
+      }
+      <div class="field">
+        <label class="field__label" for="ce-email">New e-mail</label>
+        <input
+          class="input"
+          id="ce-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          cdkFocusInitial
+          [readOnly]="busy()"
+          [attr.aria-invalid]="found.email ? 'true' : null"
+          [attr.aria-describedby]="found.email ? 'ce-email-error' : null"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+        />
+        @if (found.email) {
+          <span class="field__error" id="ce-email-error">{{ found.email }}</span>
+        }
+      </div>
+      @if (data.hasPassword) {
+        <div class="field">
+          <label class="field__label" for="ce-password">Current password</label>
+          <span class="field__help" id="ce-password-help"
+            >We ask so nobody else can change it.</span
+          >
+          <input
+            class="input"
+            id="ce-password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            [readOnly]="busy()"
+            [attr.aria-invalid]="found.currentPassword ? 'true' : null"
+            [attr.aria-describedby]="
+              found.currentPassword ? 'ce-password-help ce-password-error' : 'ce-password-help'
+            "
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+          />
+          @if (found.currentPassword) {
+            <span class="field__error" id="ce-password-error">{{ found.currentPassword }}</span>
+          }
+        </div>
+      }
+    </form>
+    <div class="dialog__footer">
+      <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button
+        class="btn btn--primary"
+        type="submit"
+        form="change-email-form"
+        [disabled]="busy()"
+        [attr.aria-busy]="busy() ? 'true' : null"
+      >
+        {{ busy() ? 'Sending…' : 'Send confirmation link' }}
+      </button>
+    </div>
+  }
+</div>
