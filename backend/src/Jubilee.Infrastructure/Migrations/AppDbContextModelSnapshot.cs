@@ -753,6 +753,9 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTimeOffset?>("PasswordChangedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(400)
                         .HasColumnType("nvarchar(400)");
@@ -949,6 +952,31 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("SentAt", "NextAttemptAt");
 
                     b.ToTable("OutboxMessages", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.PasswordResetRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EmailKey")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<DateTimeOffset?>("ProcessedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("RequestedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProcessedAt");
+
+                    b.HasIndex("EmailKey", "RequestedAt");
+
+                    b.ToTable("PasswordResetRequests", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Product", b =>

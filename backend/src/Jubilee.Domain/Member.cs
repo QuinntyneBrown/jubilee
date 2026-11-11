@@ -122,6 +122,9 @@ public sealed class Member
         }
     }
 
+    /// <summary>When the password last changed; a session that began before this has ended (L2-134 AC3).</summary>
+    public DateTimeOffset? PasswordChangedAt { get; private set; }
+
     public string? GoogleSubject { get; private set; }
 
     /// <summary>Null until the statement of faith and terms are accepted (L2-003 AC1).</summary>
@@ -180,6 +183,13 @@ public sealed class Member
 
     public void MarkEmailBounced() => EmailBounced = true;
 
+    /// <summary>Replaces the password hash; every session that began before <paramref name="now"/> ends (L2-134 AC3).</summary>
+    public void ChangePassword(string passwordHash, DateTimeOffset now)
+    {
+        PasswordHash = passwordHash;
+        PasswordChangedAt = now;
+    }
+
     /// <summary>Links Google to an account whose address Google has verified. Google proves the address, so it is confirmed.</summary>
     public void LinkGoogle(string googleSubject)
     {
@@ -219,6 +229,7 @@ public static class EmailCategories
 public enum LinkTokenPurpose
 {
     EmailConfirmation = 0,
+    PasswordReset = 1,
 }
 
 /// <summary>
@@ -227,6 +238,7 @@ public enum LinkTokenPurpose
 public sealed class LinkToken
 {
     public static readonly TimeSpan EmailConfirmationLifetime = TimeSpan.FromHours(24);
+    public static readonly TimeSpan PasswordResetLifetime = TimeSpan.FromMinutes(60);
 
     private LinkToken()
     {
@@ -356,4 +368,33 @@ public static class ReturnUrl
 
         return value.Any(char.IsControl) || value.Contains('\\') ? "/" : value;
     }
+}
+
+/// <summary>
+/// A visitor asked for a reset link for an address. Taking the request reads no account, so it takes the same
+/// time for any address; the worker decides afterwards whether a link is sent (L2-141 AC1).
+/// </summary>
+public sealed class PasswordResetRequest
+{
+    private PasswordResetRequest()
+    {
+    }
+
+    public Guid Id { get; private set; }
+
+    /// <summary>The lower-cased address, which the limit of 3 an hour counts by (L2-137).</summary>
+    public string EmailKey { get; private set; } = string.Empty;
+
+    public DateTimeOffset RequestedAt { get; private set; }
+
+    public DateTimeOffset? ProcessedAt { get; private set; }
+
+    public static PasswordResetRequest Record(EmailAddress email, DateTimeOffset now) => new()
+    {
+        Id = Guid.NewGuid(),
+        EmailKey = email.Key,
+        RequestedAt = now,
+    };
+
+    public void MarkProcessed(DateTimeOffset now) => ProcessedAt = now;
 }

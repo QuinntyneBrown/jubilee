@@ -20,6 +20,7 @@ public static class WorkerHost
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddHostedService<OutboxDispatcherJob>();
+        builder.Services.AddHostedService<PasswordResetJob>();
         builder.Services.AddHostedService<ListingDraftExpiryJob>();
         builder.Services.AddHostedService<ReferenceExpiryJob>();
         builder.Services.AddHostedService<ReferenceRetentionJob>();
@@ -66,6 +67,37 @@ public sealed class OutboxDispatcherJob(IServiceScopeFactory scopes, IConfigurat
         catch (OperationCanceledException)
         {
             logger.LogInformation("Jubilee Worker stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every few seconds: turns the password reset requests the API recorded into links and e-mails. Only this job reads
+/// the account for a request, so the API answers the same for any address (L2-141 AC1).
+/// </summary>
+public sealed class PasswordResetJob(IServiceScopeFactory scopes, ILogger<PasswordResetJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    await scope.ServiceProvider.GetRequiredService<PasswordResetLinks>().IssueAsync(stoppingToken);
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Password reset requests could not be processed. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
 }
