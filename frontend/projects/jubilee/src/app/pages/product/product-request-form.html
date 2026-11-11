@@ -53,12 +53,8 @@
       <svg jb-icon name="bag"></svg>Request this item
     </button>
   } @else if (alertRequested()) {
-    <p
-      class="inline-status inline-status--success"
-      role="status"
-      style="min-height: var(--control-height-lg)"
-    >
-      <svg jb-icon name="verified"></svg>We’ll tell you when it’s back
+    <p jb-inline-status tone="success" icon="verified" live size="lg">
+      We’ll tell you when it’s back
     </p>
   } @else {
     <button

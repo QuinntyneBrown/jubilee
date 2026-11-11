@@ -175,7 +175,7 @@
           />
         </div>
         <div class="form-actions">
-          <span class="inline-status" style="margin-right: auto">{{ lastSaved() }}</span>
+          <span jb-inline-status>{{ lastSaved() }}</span>
           <button jb-button type="button" [disabled]="!dirty() || saving()" (click)="discard()">
             Discard changes
           </button>
