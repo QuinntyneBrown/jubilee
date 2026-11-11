@@ -26,7 +26,6 @@ import {
   Checkbox,
   DividerText,
   BotChallenge,
-  Card,
 } from 'components';
 import { googleNotice } from '../../services/google-notice';
 import { ReturnAfterJoinService } from '../../services/return-after-join.service';
@@ -103,7 +102,6 @@ function message(field: FieldName, code: string, passwordLength: number): string
     Checkbox,
     DividerText,
     BotChallenge,
-    Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './join.page.html',
