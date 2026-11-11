@@ -33,6 +33,7 @@ export * from './lib/media-tile/category-tile';
 export * from './lib/media-tile/media-tile';
 export * from './lib/navigation';
 export * from './lib/pagination/pagination';
+export * from './lib/password-input/password-input';
 export * from './lib/product-card/product-card';
 export * from './lib/radio-group/radio-group';
 export * from './lib/select/select';

@@ -20,6 +20,7 @@ import {
   FormSummary,
   Field,
   Input,
+  PasswordInput,
   Checkbox,
   DividerText,
 } from 'components';
@@ -47,6 +48,7 @@ type View = 'form' | 'submitting' | 'error';
     FormSummary,
     Field,
     Input,
+    PasswordInput,
     Checkbox,
     DividerText,
   ],

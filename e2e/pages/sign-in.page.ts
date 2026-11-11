@@ -10,6 +10,11 @@ export class SignInPage extends ShellPage implements Screen {
   readonly email: Locator;
   readonly password: Locator;
   readonly passwordLabel: Locator;
+  /** The button inside the password control: "Show password", then "Hide password". */
+  readonly showPassword: Locator;
+  readonly hidePassword: Locator;
+  /** The password control with its button. */
+  readonly passwordControl: Locator;
   readonly keepSignedIn: Locator;
   /** The checkbox with its text. */
   readonly keepSignedInChoice: Locator;
@@ -49,6 +54,9 @@ export class SignInPage extends ShellPage implements Screen {
     this.email = this.main.getByLabel('Email', { exact: true });
     this.password = this.main.getByLabel('Password', { exact: true });
     this.passwordLabel = this.main.locator('label', { hasText: 'Password' });
+    this.showPassword = this.main.getByRole('button', { name: 'Show password' });
+    this.hidePassword = this.main.getByRole('button', { name: 'Hide password' });
+    this.passwordControl = this.main.locator('.password-input');
     this.keepSignedIn = this.main.getByRole('checkbox', { name: 'Keep me logged in' });
     this.keepSignedInChoice = this.main.locator('.choice').filter({ hasText: 'Keep me logged in' });
     this.signIn = this.main.getByRole('button', { name: 'Log in', exact: true });

@@ -1,7 +1,7 @@
 // What a text control is, whichever element draws it: jb-input, jb-textarea and jb-select
 // include it on their host. A block that holds a control restyles it through the knobs:
-// --jb-input-bg, -fg, -border, -border-hover, -placeholder, -radius, -min-height and
-// -padding-left.
+// --jb-input-bg, -fg, -border, -border-hover, -placeholder, -radius, -min-height,
+// -padding-left and -padding-right.
 @mixin control($read-only: true) {
   :host {
     --field-bg: var(--jb-input-bg, var(--color-bg-surface));
@@ -13,6 +13,7 @@
     min-height: var(--jb-input-min-height, var(--control-height-md));
     padding: var(--space-2) var(--space-3);
     padding-left: var(--jb-input-padding-left, var(--space-3));
+    padding-right: var(--jb-input-padding-right, var(--space-3));
     font: var(--text-body);
     color: var(--field-fg);
     background: var(--field-bg);

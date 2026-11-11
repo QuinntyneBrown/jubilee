@@ -290,6 +290,97 @@ test.describe('the Log in frame (L2-187)', () => {
   }
 });
 
+test.describe('show password on Log in (L2-187)', () => {
+  for (const width of [360, 1280]) {
+    test(`AC4: the button inside the control shows the password, then hides it, at ${width} px`, async ({
+      page,
+      jb,
+    }) => {
+      const signIn = new SignInPage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-in');
+      await signIn.password.fill('correct horse 13');
+
+      // Inside the control, at its right edge.
+      expect(await signIn.rightEdge(signIn.showPassword)).toBeLessThanOrEqual(
+        await signIn.rightEdge(signIn.password),
+      );
+      expect(await signIn.leftEdge(signIn.showPassword)).toBeGreaterThan(
+        await signIn.leftEdge(signIn.password),
+      );
+      expect(await signIn.topEdge(signIn.showPassword)).toBeGreaterThanOrEqual(
+        await signIn.topEdge(signIn.password),
+      );
+
+      await signIn.showPassword.click();
+      await expect(signIn.password).toHaveAttribute('type', 'text');
+      await expect(signIn.hidePassword).toBeVisible();
+      await expect(signIn.showPassword).toHaveCount(0);
+
+      await signIn.hidePassword.click();
+      await expect(signIn.password).toHaveAttribute('type', 'password');
+      await expect(signIn.showPassword).toBeVisible();
+    });
+  }
+
+  test('AC5: showing keeps what was typed, keeps the focus on the button and sends nothing', async ({
+    page,
+    jb,
+  }) => {
+    const seen = await stubSignIn(page, 200, session);
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+    await signIn.email.fill('joanna.adeyemi@example.com');
+    await signIn.password.fill('correct horse 13');
+
+    await signIn.showPassword.click();
+
+    await expect(signIn.password).toHaveValue('correct horse 13');
+    await expect(signIn.hidePassword).toBeFocused();
+    await signIn.hidePassword.click();
+    await expect(signIn.password).toHaveValue('correct horse 13');
+    await expect(signIn.showPassword).toBeFocused();
+    expect(seen).toHaveLength(0);
+    await expect.poll(() => signIn.dataPage()).toBe('sign-in');
+  });
+
+  test('AC6: by keyboard the button comes after the password and works with Enter and with Space', async ({
+    page,
+    jb,
+  }) => {
+    const seen = await stubSignIn(page, 200, session);
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+    await signIn.password.fill('correct horse 13');
+
+    await signIn.password.press('Tab');
+    await expect(signIn.showPassword).toBeFocused();
+
+    await page.keyboard.press('Enter');
+    await expect(signIn.password).toHaveAttribute('type', 'text');
+    await expect(signIn.hidePassword).toBeFocused();
+
+    await page.keyboard.press('Space');
+    await expect(signIn.password).toHaveAttribute('type', 'password');
+    await expect(signIn.showPassword).toBeFocused();
+    expect(seen).toHaveLength(0);
+  });
+
+  test('AC5: the password still signs in after it was shown', async ({ page, jb }) => {
+    const seen = await stubSignIn(page, 200, session);
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+    await signIn.email.fill('joanna.adeyemi@example.com');
+    await signIn.password.fill('correct horse 13');
+    await signIn.showPassword.click();
+
+    await signIn.signIn.click();
+
+    await expect.poll(() => seen.length).toBe(1);
+    expect(seen[0]).toMatchObject({ password: 'correct horse 13' });
+  });
+});
+
 test.describe('continue with Google: off, cancelled or refused (L2-003)', () => {
   test('AC5: without Google sign-in the page shows no Google button and no "or use email"', async ({
     page,

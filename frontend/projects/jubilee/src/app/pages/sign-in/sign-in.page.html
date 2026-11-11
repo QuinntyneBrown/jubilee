@@ -43,15 +43,17 @@
       </div>
       <div jb-field label="Password" controlId="password" [error]="errors().password">
         <a slot="action" routerLink="/forgot-password">Forgot password?</a>
-        <input
-          jb-input
-          name="password"
-          type="password"
-          autocomplete="current-password"
-          [ngModel]="password()"
-          (ngModelChange)="password.set($event)"
-          [readOnly]="view() === 'submitting'"
-        />
+        <jb-password-input>
+          <input
+            jb-input
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            [readOnly]="view() === 'submitting'"
+          />
+        </jb-password-input>
       </div>
       <div>
         <jb-checkbox
