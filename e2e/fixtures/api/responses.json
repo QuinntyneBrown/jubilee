@@ -1291,6 +1291,134 @@
       "suggestions": []
     }
   },
+  "GET /api/content/help": {
+    "status": 200,
+    "body": {
+      "slug": "help",
+      "title": "Help",
+      "lead": "Answers to the questions members ask most.",
+      "version": 1,
+      "publishedAt": "2026-11-02T17:00:00+00:00",
+      "sections": [
+        {
+          "heading": "How does a business get verified?",
+          "anchor": "how-does-a-business-get-verified",
+          "body": "The owner names a pastor or elder. We e-mail that person a private form. When they confirm, our team reviews the listing and publishes it, usually within two business days."
+        },
+        {
+          "heading": "Does Jubilee take payment?",
+          "anchor": "does-jubilee-take-payment",
+          "body": "No. You send a booking, quote or order request, the business confirms it, and you pay the business directly in the way they offer."
+        },
+        {
+          "heading": "Is it free?",
+          "anchor": "is-it-free",
+          "body": "Yes. Joining, messaging and listing a business are all free."
+        },
+        {
+          "heading": "Who can see my messages?",
+          "anchor": "who-can-see-my-messages",
+          "body": "Only you and the business you are writing to. Our team reads a conversation only when one of you reports it."
+        },
+        {
+          "heading": "How do I report a listing?",
+          "anchor": "how-do-i-report-a-listing",
+          "body": "Open the listing and choose Report at the bottom of the page. Reports are private and reviewed within one business day."
+        }
+      ]
+    }
+  },
+  "GET /api/content/privacy": {
+    "status": 200,
+    "body": {
+      "slug": "privacy",
+      "title": "Privacy",
+      "lead": "We collect only what the marketplace needs to work, and we never sell it.",
+      "version": 1,
+      "publishedAt": "2026-11-02T17:00:00+00:00",
+      "sections": [
+        {
+          "heading": "What we keep",
+          "anchor": "what-we-keep",
+          "body": "- Your name, e-mail, and optional phone and neighbourhood.\n- Messages and requests you send, so both sides can see them.\n- For businesses: listing details and the church reference you name."
+        },
+        {
+          "heading": "Church references",
+          "anchor": "church-references",
+          "body": "A reference’s answer is seen only by the Jubilee verification team. It is never shown to the business owner or the public, and we delete it 90 days after a decision."
+        },
+        {
+          "heading": "Your choices",
+          "anchor": "your-choices",
+          "body": "Change what we e-mail you in [notification settings](/account/notifications), and download or delete your account from [your account](/account)."
+        },
+        {
+          "heading": "Privacy contact and your rights",
+          "anchor": "privacy-contact",
+          "body": "To see or correct the personal information we hold about you, write to our privacy contact at [privacy@jubilee.example](mailto:privacy@jubilee.example). We answer within 30 days, as Canada’s privacy law (PIPEDA) requires."
+        }
+      ]
+    }
+  },
+  "GET /api/content/statement-of-faith": {
+    "status": 200,
+    "body": {
+      "slug": "statement-of-faith",
+      "title": "Statement of faith",
+      "lead": "Jubilee is open to everyone as a customer. Businesses that list here agree to the commitments below, and a pastor or elder confirms them.",
+      "version": 1,
+      "publishedAt": "2026-11-02T17:00:00+00:00",
+      "sections": [
+        {
+          "heading": "What we believe",
+          "anchor": "what-we-believe",
+          "body": "We believe in one God — Father, Son and Holy Spirit — and that Jesus Christ is Lord. We hold the Bible to be God’s word and our guide for faith and for work."
+        },
+        {
+          "heading": "How we do business",
+          "anchor": "how-we-do-business",
+          "body": "- We tell the truth about what we sell, what it costs and when it will be ready.\n- We treat every customer with the same care, whatever their background or belief.\n- We keep our word, and we put it right when we fall short.\n- We see profit as something to steward: for our families, our churches and our city."
+        },
+        {
+          "heading": "How a listing is confirmed",
+          "anchor": "how-a-listing-is-confirmed",
+          "body": "Each owner names a pastor or elder who knows them. We contact that person privately before the listing goes live. Read more in [Help](/help)."
+        }
+      ]
+    }
+  },
+  "GET /api/content/terms": {
+    "status": 200,
+    "body": {
+      "slug": "terms",
+      "title": "Terms of use",
+      "lead": "These terms cover using Jubilee as a member and as a listed business. Jubilee introduces buyers and businesses; the agreement to buy is between the two of you.",
+      "version": 1,
+      "publishedAt": "2026-11-02T17:00:00+00:00",
+      "sections": [
+        {
+          "heading": "Your account",
+          "anchor": "your-account",
+          "body": "You need to be 18 or older and use your real name. Keep your password to yourself and tell us if someone else has used your account."
+        },
+        {
+          "heading": "Listings",
+          "anchor": "listings",
+          "body": "Businesses are responsible for the accuracy of their listing, prices and credentials. We may pause a listing while we look into a report."
+        },
+        {
+          "heading": "Requests and payment",
+          "anchor": "requests-and-payment",
+          "body": "Bookings, quotes and order requests are sent to the business, which confirms or declines them. Jubilee does not take payment or hold funds; you pay the business directly."
+        },
+        {
+          "heading": "Conduct",
+          "anchor": "conduct",
+          "body": "Be honest and kind in messages. We remove accounts that harass, mislead or spam other members."
+        }
+      ]
+    }
+  },
   "GET /api/directory/home": {
     "status": 200,
     "body": {

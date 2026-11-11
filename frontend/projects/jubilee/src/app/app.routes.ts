@@ -219,15 +219,25 @@ export const routes: Routes = [
     data: data({ shell: 'app', page: 'forbidden' }),
     title: 'No access · Jubilee',
   },
+  ...(
+    [
+      ['statement-of-faith', 'Statement of faith'],
+      ['terms', 'Terms of use'],
+      ['privacy', 'Privacy'],
+    ] as const
+  ).map(([slug, title]) => ({
+    path: slug,
+    pathMatch: 'full' as const,
+    loadComponent: () => import('./pages/policy/policy.page').then((m) => m.PolicyPage),
+    data: { ...data({ shell: 'app', page: slug }), slug },
+    title: `${title} · Jubilee`,
+  })),
   {
-    path: 'statement-of-faith',
+    path: 'help',
     pathMatch: 'full',
-    loadComponent: () =>
-      import('./pages/statement-of-faith/statement-of-faith.page').then(
-        (m) => m.StatementOfFaithPage,
-      ),
-    data: data({ shell: 'app', page: 'statement-of-faith' }),
-    title: 'Statement of faith · Jubilee',
+    loadComponent: () => import('./pages/help/help.page').then((m) => m.HelpPage),
+    data: data({ shell: 'app', page: 'help' }),
+    title: 'Help · Jubilee',
   },
   {
     path: 'join',

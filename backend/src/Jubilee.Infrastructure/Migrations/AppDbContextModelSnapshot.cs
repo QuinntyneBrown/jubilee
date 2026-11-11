@@ -109,6 +109,49 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("ConsentRecords", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.ContentVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Lead")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("PublishedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("PublishedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("SectionsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug", "Number")
+                        .IsUnique();
+
+                    b.ToTable("ContentVersions", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.Conversation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -881,6 +924,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<string>("Pronouns")
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
+
+                    b.Property<int?>("TermsVersionNumber")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

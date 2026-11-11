@@ -51,6 +51,7 @@ public sealed class JoinWithEmailCommandHandler(
     IPasswordHasher hasher,
     IBreachedPasswordChecker breaches,
     AccountEmails emails,
+    Jubilee.Application.Content.ContentReader content,
     TimeProvider clock) : IRequestHandler<JoinWithEmailCommand, Member>
 {
     public const int MaxNameLength = 50;
@@ -122,7 +123,7 @@ public sealed class JoinWithEmailCommandHandler(
             throw new ValidationFailedException(errors);
         }
 
-        var member = Member.Join(email!, request.FirstName!, request.LastName!, request.HomeChurch, hasher.Hash(password), clock.GetUtcNow());
+        var member = Member.Join(email!, request.FirstName!, request.LastName!, request.HomeChurch, hasher.Hash(password), clock.GetUtcNow(), await content.TermsVersion(cancellationToken));
         db.Members.Add(member);
         await emails.QueueConfirmationAsync(member, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
@@ -269,13 +270,13 @@ public sealed class RecordEmailBounceCommandHandler(IAppDbContext db) : IRequest
 /// <summary>Accepts the statement of faith and terms after joining with Google (L2-003 AC1).</summary>
 public sealed record AcceptAgreementCommand(Guid MemberId) : IRequest;
 
-public sealed class AcceptAgreementCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<AcceptAgreementCommand>
+public sealed class AcceptAgreementCommandHandler(IAppDbContext db, TimeProvider clock, Jubilee.Application.Content.ContentReader content) : IRequestHandler<AcceptAgreementCommand>
 {
     public async Task Handle(AcceptAgreementCommand request, CancellationToken cancellationToken)
     {
         var member = await db.Members.SingleOrDefaultAsync(m => m.Id == request.MemberId, cancellationToken)
             ?? throw new NotFoundException("member_not_found", "There is no such member.");
-        member.AcceptAgreement(clock.GetUtcNow());
+        member.AcceptAgreement(clock.GetUtcNow(), await content.TermsVersion(cancellationToken));
         await db.SaveChangesAsync(cancellationToken);
     }
 }

@@ -1,0 +1,69 @@
+@let current = state();
+@switch (current.status) {
+  @case ('loaded') {
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a routerLink="/">Browse</a></li>
+        <li aria-current="page">{{ current.value.title }}</li>
+      </ol>
+    </nav>
+    <article class="prose" style="margin-top: var(--space-4)">
+      <h1>{{ current.value.title }}</h1>
+      @if (current.value.lead) {
+        <p class="lead">{{ current.value.lead }}</p>
+      }
+      @for (section of current.value.sections; track section.anchor) {
+        <h2 [id]="section.anchor">{{ section.heading }}</h2>
+        @for (block of body(section.body); track $index) {
+          @if (block.kind === 'list') {
+            <ul>
+              @for (item of block.items; track $index) {
+                <li>
+                  @for (part of item; track $index) {
+                    @if (part.href; as href) {
+                      <a [href]="href">{{ part.text }}</a>
+                    } @else {
+                      {{ part.text }}
+                    }
+                  }
+                </li>
+              }
+            </ul>
+          } @else {
+            <p>
+              @for (part of block.parts; track $index) {
+                @if (part.href; as href) {
+                  <a [href]="href">{{ part.text }}</a>
+                } @else {
+                  {{ part.text }}
+                }
+              }
+            </p>
+          }
+        }
+      }
+      <p class="text-caption" style="margin-top: var(--space-8)">
+        Last updated
+        {{ current.value.publishedAt | date: 'd MMMM y' : 'America/Toronto' : 'en-CA' }}
+      </p>
+    </article>
+  }
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this page">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ current.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @default {
+    <div class="stack" style="max-width: 42rem; margin-top: var(--space-6)" aria-hidden="true">
+      <span class="skeleton skeleton--text skeleton--w50"></span>
+      <span class="skeleton skeleton--text"></span>
+      <span class="skeleton skeleton--text skeleton--w70"></span>
+    </div>
+  }
+}
