@@ -66,6 +66,8 @@ export class BrowsePage extends ShellPage implements Screen {
   readonly featureGrid: Locator;
   readonly shops: Locator;
   readonly productCards: Locator;
+  /** The row of product cards that scrolls sideways. */
+  readonly scroller: Locator;
   readonly allShops: Locator;
   readonly directory: Locator;
   readonly directoryHeading: Locator;
@@ -101,6 +103,7 @@ export class BrowsePage extends ShellPage implements Screen {
     this.featureGrid = this.featured.locator('ul.feature-grid');
     this.shops = this.main.getByRole('region', { name: 'From the shops' });
     this.productCards = this.shops.locator('a.product-card');
+    this.scroller = this.shops.locator('ul.scroller');
     this.allShops = this.shops.getByRole('link', { name: 'All shops' });
     this.directory = this.main.locator('section.section:has(.dir-groups)');
     this.directoryHeading = this.directory.getByRole('heading', { level: 2 });

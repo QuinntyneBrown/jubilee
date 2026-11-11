@@ -14,8 +14,11 @@ import {
   Icon,
   ProductCard,
   Button,
-  Skeleton,
   PageHeader,
+  CardGrid,
+  CardGridSkeleton,
+  SavedCard,
+  UnavailableCard,
 } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 import { SavedStore } from '../../services/saved.store';
@@ -23,7 +26,19 @@ import { SavedStore } from '../../services/saved.store';
 /** The saved page at /saved (L2-042): what the member saved, newest first, private to them. */
 @Component({
   selector: 'jb-saved-page',
-  imports: [RouterLink, BusinessCard, EmptyState, Icon, ProductCard, Button, Skeleton, PageHeader],
+  imports: [
+    RouterLink,
+    BusinessCard,
+    EmptyState,
+    Icon,
+    ProductCard,
+    Button,
+    PageHeader,
+    CardGrid,
+    CardGridSkeleton,
+    SavedCard,
+    UnavailableCard,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './saved.page.html',

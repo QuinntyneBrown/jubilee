@@ -1,0 +1,12 @@
+// Block: card-grid. The host is the list.
+@use './card-grid-base' as base;
+
+:host {
+  @include base.grid;
+}
+
+@media (min-width: 64rem) {
+  :host(.card-grid--3) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

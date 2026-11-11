@@ -1,0 +1,11 @@
+// Block: dir-groups. The host lays the groups out.
+:host {
+  display: grid;
+  gap: 0 var(--space-12);
+}
+
+@media (min-width: 64rem) {
+  :host {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

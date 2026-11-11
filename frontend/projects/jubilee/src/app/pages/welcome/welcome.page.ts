@@ -13,6 +13,7 @@ import {
   Band,
   Steps,
   Step,
+  CardGrid,
 } from 'components';
 
 /**
@@ -35,6 +36,7 @@ import {
     Band,
     Steps,
     Step,
+    CardGrid,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page' },

@@ -28,6 +28,7 @@ import {
   DescriptionList,
   DescriptionItem,
   Price,
+  CardGrid,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { RequestItemData, RequestItemDialog } from '../../dialogs/request-item/request-item.dialog';
@@ -65,6 +66,7 @@ import { ProductRequestForm, ProductSelection } from './product-request-form';
     DescriptionList,
     DescriptionItem,
     Price,
+    CardGrid,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

@@ -48,7 +48,7 @@
         [actionLabel]="'Browse all ' + (welcome.liveBusinessCount | jbCount)"
         actionLink="/"
       >
-        <ul class="card-grid">
+        <ul jb-card-grid>
           @for (business of welcome.featured; track business.slug) {
             <li>
               <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>

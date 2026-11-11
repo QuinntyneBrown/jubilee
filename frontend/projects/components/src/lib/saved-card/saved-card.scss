@@ -1,0 +1,16 @@
+// Block: saved-card. The host is the list item; the remove button sits over the card's corner
+// on the surface colour, so it reads over a photo.
+:host {
+  display: block;
+  position: relative;
+}
+
+.saved-card__remove {
+  --jb-btn-bg: var(--color-bg-surface);
+  --jb-btn-border: var(--color-border-default);
+
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: flex;
+}

@@ -18,16 +18,7 @@
       <span jb-skeleton shape="title"></span>
       @if (thing() === 'shop') {
         <div style="margin-top: var(--space-4)">
-          <ul class="card-grid" aria-hidden="true">
-            @for (placeholder of placeholders; track placeholder) {
-              <li class="biz-card">
-                <span jb-skeleton shape="square"></span>
-                <span jb-skeleton shape="text" width="70"></span>
-                <span jb-skeleton shape="text"></span>
-                <span jb-skeleton shape="text" width="50"></span>
-              </li>
-            }
-          </ul>
+          <ul jb-card-grid-skeleton shape="square" [count]="placeholders.length"></ul>
         </div>
       } @else {
         <ul jb-row-list-skeleton [count]="4" action></ul>
@@ -169,7 +160,7 @@
               >
             }
             @if (hasProducts) {
-              <ul class="card-grid card-grid--3">
+              <ul jb-card-grid columns="3">
                 @for (product of listing.products; track product.slug) {
                   <li>
                     <a
@@ -254,7 +245,7 @@
         actionLabel="See all"
         [actionLink]="['/c', listing.category.slug]"
       >
-        <ul class="card-grid">
+        <ul jb-card-grid>
           @for (business of listing.related; track business.slug) {
             <li>
               <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>
