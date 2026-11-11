@@ -9,7 +9,9 @@ import {
   ProductPage,
   ProductWithSizeScreen,
 } from '../pages/product.page';
+import { JoinPage } from '../pages/join.page';
 import { SearchPage } from '../pages/search.page';
+import { VerifyEmailPage } from '../pages/verify-email.page';
 import { WelcomePage } from '../pages/welcome.page';
 import type { RouteKey } from './routes';
 import type { Screen } from './visual';
@@ -57,5 +59,14 @@ export const screens: {
   { key: 'search.empty', screen: (page) => new SearchPage(page) },
   { key: 'search.error', screen: (page) => new SearchPage(page) },
   { key: 'search.no-results', screen: (page) => new SearchPage(page) },
+  { key: 'sign-up', screen: (page) => new JoinPage(page) },
+  { key: 'join-agreement', screen: (page) => new JoinPage(page) },
+  { key: 'verify-email', screen: (page) => new VerifyEmailPage(page) },
+  { key: 'verify-email.loading', screen: (page) => new VerifyEmailPage(page) },
+  { key: 'verify-email.success', screen: (page) => new VerifyEmailPage(page) },
+  { key: 'verify-email.expired', screen: (page) => new VerifyEmailPage(page) },
+  { key: 'verify-email.error', screen: (page) => new VerifyEmailPage(page) },
+  { key: 'verify-email-banner', screen: (page) => new BrowsePage(page) },
+  { key: 'verify-email-banner.danger', screen: (page) => new BrowsePage(page) },
   { key: 'not-found', screen: (page) => new NotFoundPage(page) },
 ];

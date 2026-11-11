@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { ChromeSection } from 'components';
+import { guestGuard } from './guards/guest.guard';
 import { welcomeRedirectGuard } from './guards/welcome-redirect.guard';
 
 /**
@@ -53,6 +54,35 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/product/product.page').then((m) => m.ProductPage),
     data: data({ shell: 'app', page: 'product', section: 'browse' }),
     title: 'Product · Jubilee',
+  },
+  {
+    path: 'join',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/join/join.page').then((m) => m.JoinPage),
+    canActivate: [guestGuard],
+    data: data({ shell: 'bare', page: 'sign-up' }),
+    title: 'Join · Jubilee',
+  },
+  {
+    path: 'join/agreement',
+    loadComponent: () =>
+      import('./pages/join-agreement/join-agreement.page').then((m) => m.JoinAgreementPage),
+    data: data({ shell: 'bare', page: 'join-agreement' }),
+    title: 'One more step · Jubilee',
+  },
+  {
+    path: 'verify-email',
+    loadComponent: () =>
+      import('./pages/verify-email/verify-email.page').then((m) => m.VerifyEmailPage),
+    data: data({ shell: 'bare', page: 'verify-email' }),
+    title: 'Confirm your e-mail · Jubilee',
+  },
+  {
+    path: 'verify-email/:token',
+    loadComponent: () =>
+      import('./pages/verify-email/verify-email.page').then((m) => m.VerifyEmailPage),
+    data: data({ shell: 'bare', page: 'verify-email' }),
+    title: 'Confirm your e-mail · Jubilee',
   },
   {
     path: '**',

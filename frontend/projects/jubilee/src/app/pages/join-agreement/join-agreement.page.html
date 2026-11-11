@@ -1,0 +1,51 @@
+<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
+<div class="auth-card card stack">
+  <h1>One more step</h1>
+  <p class="text-muted">Joining with Google. Agree to continue.</p>
+  @if (invalid()) {
+    <div class="alert alert--danger form-summary" role="alert" id="summary" tabindex="-1">
+      <svg jb-icon name="alert"></svg>
+      <div class="alert__body">
+        <div class="alert__title">Fix 1 thing to continue</div>
+        <ul class="alert__list">
+          <li><a href="#agree">Agree to the statement of faith to join</a></li>
+        </ul>
+      </div>
+    </div>
+  }
+  @if (failed()) {
+    <div class="alert alert--danger" role="alert">
+      <svg jb-icon name="alert"></svg>
+      <div class="alert__body">We couldn’t save that. Try again.</div>
+    </div>
+  }
+  <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
+    <div>
+      <label class="choice">
+        <input
+          type="checkbox"
+          id="agree"
+          [checked]="agreed()"
+          (change)="agreed.set($any($event.target).checked)"
+          [attr.aria-invalid]="invalid() ? 'true' : null"
+          [attr.aria-describedby]="invalid() ? 'agree-error' : null"
+        />
+        <span class="choice__text"
+          >I agree to Jubilee’s
+          <a href="/statement-of-faith" target="_blank" rel="noopener">statement of faith</a> and
+          <a href="/terms" target="_blank" rel="noopener">terms</a>.</span
+        >
+      </label>
+      @if (invalid()) {
+        <span class="field__error" id="agree-error">Agree to the statement of faith to join.</span>
+      }
+    </div>
+    <button
+      class="btn btn--primary btn--block btn--lg"
+      type="submit"
+      [attr.aria-busy]="busy() ? 'true' : null"
+    >
+      Continue
+    </button>
+  </form>
+</div>

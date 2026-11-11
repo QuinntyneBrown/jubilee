@@ -20,3 +20,4 @@ export * from './lib/unread-badge/unread-badge';
 export * from './lib/verified-business-label/verified-business-label';
 export * from './lib/verified-mark/verified-mark';
 export * from './lib/match-explanation/match-explanation';
+export * from './lib/verify-email-banner/verify-email-banner';

@@ -1,0 +1,71 @@
+<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
+<div class="auth-card card stack">
+  @switch (view().kind) {
+    @case ('loading') {
+      <div class="empty" role="status">
+        <span class="spinner spinner--lg" aria-hidden="true"></span>
+        <h1 class="empty__title">Confirming your e-mail…</h1>
+        <p class="empty__text">This takes a moment.</p>
+      </div>
+    }
+    @case ('confirmed') {
+      <div jb-empty-state icon="verified" heading="E-mail confirmed" [level]="1">
+        {{ thanks() }} You can now message businesses, book meetings and list your own.
+        <a slot="actions" class="btn btn--primary" routerLink="/">Start browsing</a>
+        <a slot="actions" class="btn" routerLink="/list-business">List your business</a>
+      </div>
+    }
+    @case ('expired') {
+      <div jb-empty-state icon="info" heading="This link has expired" [level]="1">
+        Verification links work for 24 hours.
+        @if (member(); as signedIn) {
+          We can send a fresh one to {{ signedIn.email }}.
+        }
+        @if (member()) {
+          <button slot="actions" class="btn btn--primary" type="button" (click)="resend()">
+            Send a new link
+          </button>
+        } @else {
+          <a slot="actions" class="btn btn--primary" routerLink="/sign-in"
+            >Sign in for a new link</a
+          >
+        }
+      </div>
+    }
+    @case ('error') {
+      <div
+        jb-empty-state
+        icon="alert"
+        heading="We couldn’t load your verification"
+        [level]="1"
+        [error]="true"
+      >
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>JB-VERIFY-502</code>.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="confirm()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" class="btn" routerLink="/welcome">Back to welcome</a>
+      </div>
+    }
+    @default {
+      <div jb-empty-state icon="message" heading="Confirm your e-mail" [level]="1">
+        We sent a link to <strong>{{ member()?.email }}</strong
+        >. Open it on this device to finish joining.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="resend()">
+          Send it again
+        </button>
+        <a slot="actions" class="btn" routerLink="/account">Use another e-mail</a>
+      </div>
+      @if (sent()) {
+        <p class="text-muted" role="status">We sent a new link to {{ member()?.email }}.</p>
+      }
+      @if (sendFailed()) {
+        <p class="text-muted" role="alert">We couldn’t send it. Try again in a moment.</p>
+      }
+    }
+  }
+</div>
+@if (view().kind === 'pending') {
+  <p class="auth-foot">Wrong account? <a routerLink="/sign-out">Sign out</a></p>
+}

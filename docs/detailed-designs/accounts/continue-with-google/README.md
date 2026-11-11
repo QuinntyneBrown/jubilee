@@ -42,7 +42,7 @@ database`, with `Google Identity` as the external identity provider.
 - **`OidcTransaction`** and **`IOidcTransactionStore`** — pending sign-in record
   holding `State`, `Nonce`, `CodeVerifier` and `ReturnUrl`, kept in the `Cache`
   keyed by `state`. `Consume` reads and deletes in one step, so a callback can
-  be used once. The lifetime of a pending transaction is `<TO SUPPLY>`.
+  be used once. A pending transaction lives 10 minutes (ADR 0012).
 - **`IGoogleIdentityClient`** — infrastructure adapter. `Redeem` exchanges the
   code with the code verifier, validates the ID token signature, issuer,
   audience, expiry and `nonce`, and returns a `GoogleIdentity`.
@@ -73,8 +73,8 @@ database`, with `Google Identity` as the external identity provider.
 A mismatch of `state` or `nonce`, a failed code exchange and an invalid ID
 token all end in a redirect to `/sign-in` with the sign-in error state; no
 session is issued. The rule for a Google sign-in whose verified e-mail matches
-an account that is still unconfirmed is `<TO SUPPLY>`; `L2-003` defines linking
-only for a confirmed account.
+an account that is still unconfirmed is: link it and remove the account's password (ADR 0012); `L2-003`
+defines linking for a confirmed account.
 
 ## Requirements
 

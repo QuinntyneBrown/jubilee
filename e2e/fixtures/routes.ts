@@ -31,7 +31,14 @@ export type StubName =
   | 'search-loading'
   | 'search-error'
   | 'search-no-results'
-  | 'search-start';
+  | 'search-start'
+  | 'verify-email-pending'
+  | 'verify-email-loading'
+  | 'verify-email-success'
+  | 'verify-email-expired'
+  | 'verify-email-error'
+  | 'email-unconfirmed'
+  | 'email-bounced';
 
 export interface ScreenRoute {
   app: string;
@@ -46,6 +53,54 @@ export interface ScreenRoute {
 }
 
 export const routes = {
+  'sign-up': { app: '/join', mock: 'pages/sign-up/default.html', who: 'visitor' },
+  'join-agreement': {
+    app: '/join/agreement',
+    mock: 'pages/join-agreement/default.html',
+    who: 'member',
+  },
+  'verify-email': {
+    app: '/verify-email',
+    mock: 'pages/verify-email/default.html',
+    who: 'member',
+    stub: 'verify-email-pending',
+  },
+  'verify-email.loading': {
+    app: '/verify-email/e2e-token',
+    mock: 'pages/verify-email/loading.html',
+    who: 'visitor',
+    stub: 'verify-email-loading',
+  },
+  'verify-email.success': {
+    app: '/verify-email/e2e-token',
+    mock: 'pages/verify-email/success.html',
+    who: 'visitor',
+    stub: 'verify-email-success',
+  },
+  'verify-email.expired': {
+    app: '/verify-email/e2e-token',
+    mock: 'pages/verify-email/expired.html',
+    who: 'visitor',
+    stub: 'verify-email-expired',
+  },
+  'verify-email.error': {
+    app: '/verify-email/e2e-token',
+    mock: 'pages/verify-email/error.html',
+    who: 'visitor',
+    stub: 'verify-email-error',
+  },
+  'verify-email-banner': {
+    app: '/',
+    mock: 'notifications/verify-email-banner/persistent.html',
+    who: 'member',
+    stub: 'email-unconfirmed',
+  },
+  'verify-email-banner.danger': {
+    app: '/',
+    mock: 'notifications/verify-email-banner/danger.html',
+    who: 'member',
+    stub: 'email-bounced',
+  },
   welcome: { app: '/welcome', mock: 'pages/welcome/default.html', who: 'visitor' },
   browse: { app: '/', mock: 'pages/browse/default.html', who: 'member' },
   'browse.signed-out': { app: '/', mock: 'pages/browse/signed-out.html', who: 'visitor' },
