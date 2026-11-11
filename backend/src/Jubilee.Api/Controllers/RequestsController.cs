@@ -1,4 +1,5 @@
 using System.Text;
+using Jubilee.Api.Errors;
 using Jubilee.Api.Middleware;
 using Jubilee.Application.Requests;
 using MediatR;
@@ -103,6 +104,24 @@ public sealed class RequestsController(ISender sender) : ControllerBase
             cancellationToken);
         return StatusCode(StatusCodes.Status201Created, sent);
     }
+
+    [HttpGet]
+    [ErrorReference("JB-REQ-501")]
+    public Task<MemberRequestsDto> List([FromQuery] string? tab, [FromQuery] string? cursor, CancellationToken cancellationToken) =>
+        sender.Send(new ListRequestsQuery(Subject, tab, cursor), cancellationToken);
+
+    [HttpGet("{id:guid}")]
+    [ErrorReference("JB-REQ-502")]
+    public Task<MemberRequestDetailDto> Get(Guid id, CancellationToken cancellationToken) =>
+        sender.Send(new GetRequestQuery(Subject, id), cancellationToken);
+
+    [HttpPost("{id:guid}/cancel")]
+    public Task<MemberRequestDecisionDto> Cancel(Guid id, CancellationToken cancellationToken) =>
+        sender.Send(new CancelRequestCommand(Subject, id), cancellationToken);
+
+    [HttpPost("{id:guid}/cancel/undo")]
+    public Task<MemberRequestDecisionDto> UndoCancel(Guid id, CancellationToken cancellationToken) =>
+        sender.Send(new UndoCancelRequestCommand(Subject, id), cancellationToken);
 
     [HttpGet("{id:guid}/calendar.ics")]
     public async Task<IActionResult> Calendar(Guid id, CancellationToken cancellationToken)
