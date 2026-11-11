@@ -33,6 +33,18 @@ export class ForgotPasswordPage extends ShellPage implements Screen {
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
   }
 
+  /** Sends the form empty, then leaves the summary so that it is shown at rest. */
+  async sendEmpty(): Promise<void> {
+    await this.send.click();
+    await this.summary.evaluate(async (summary: HTMLElement) => {
+      // The page moves focus to the summary a moment after it shows it.
+      while (document.activeElement !== summary) {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      summary.blur();
+    });
+  }
+
   async ready(): Promise<void> {
     await this.main.locator('h1').first().waitFor();
   }
