@@ -18,10 +18,12 @@ import {
   CloseButton,
   Alert,
   FormSummary,
-  FieldControl,
   FieldError,
   FieldHelp,
   Field,
+  Input,
+  Select,
+  Textarea,
 } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 import { WorkspaceHeader } from '../my-business/workspace-header';
@@ -54,9 +56,11 @@ type Saving = 'idle' | 'saving';
     Alert,
     FormSummary,
     Field,
-    FieldControl,
     FieldError,
     FieldHelp,
+    Input,
+    Select,
+    Textarea,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

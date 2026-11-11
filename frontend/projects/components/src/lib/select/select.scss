@@ -1,0 +1,17 @@
+// Block: select. The host is the native select, with the arrow drawn in its own colour.
+@use '../input/control';
+
+@include control.control($read-only: false);
+
+:host {
+  appearance: none;
+  padding-right: var(--space-10);
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - var(--space-4) - var(--space-0-5)) 50%,
+    calc(100% - var(--space-3) - var(--border-width-hairline)) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}

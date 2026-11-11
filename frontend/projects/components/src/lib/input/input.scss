@@ -1,0 +1,4 @@
+// Block: input. The host is the native input.
+@use './control';
+
+@include control.control;

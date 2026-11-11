@@ -11,7 +11,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BookedRequest, BookingOptions, MeetingMode, REQUESTS_API } from 'api';
-import { Icon, Button, Alert, Field, FieldControl, FieldError } from 'components';
+import { Icon, Button, Alert, Field, FieldError, Input, Select, Textarea } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { ClockService } from '../../services/clock.service';
 import { isoDay, newKey, slotLabel } from '../../services/message-time';
@@ -33,7 +33,18 @@ const SUBMIT_TIMEOUT_MS = 10_000;
  */
 @Component({
   selector: 'jb-book-meeting-dialog',
-  imports: [FormsModule, RouterLink, Icon, Button, Alert, Field, FieldControl, FieldError],
+  imports: [
+    FormsModule,
+    RouterLink,
+    Icon,
+    Button,
+    Alert,
+    Field,
+    FieldError,
+    Input,
+    Select,
+    Textarea,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './book-meeting.dialog.html',

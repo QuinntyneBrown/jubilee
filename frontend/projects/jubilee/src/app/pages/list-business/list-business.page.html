@@ -144,8 +144,7 @@
             </fieldset>
             <div jb-field label="Business name" controlId="name" required [error]="errors().name">
               <input
-                class="input"
-                jbFieldControl
+                jb-input
                 name="name"
                 type="text"
                 maxlength="120"
@@ -169,8 +168,7 @@
               [error]="errors().tagline"
             >
               <input
-                class="input"
-                jbFieldControl
+                jb-input
                 name="tagline"
                 type="text"
                 required
@@ -182,8 +180,7 @@
             <div class="form-grid form-grid--2">
               <div jb-field label="Category" controlId="cat" [error]="errors().categorySlug">
                 <select
-                  class="select"
-                  jbFieldControl
+                  jb-select
                   name="category"
                   [ngModel]="categorySlug()"
                   (ngModelChange)="categorySlug.set($event); clear('categorySlug'); touched()"
@@ -195,8 +192,7 @@
               </div>
               <div jb-field [label]="placeLabel()" controlId="area">
                 <input
-                  class="input"
-                  jbFieldControl
+                  jb-input
                   name="place"
                   type="text"
                   [readOnly]="busy()"
@@ -276,8 +272,7 @@
                   [error]="errors().church"
                 >
                   <input
-                    class="input"
-                    jbFieldControl
+                    jb-input
                     name="church"
                     type="text"
                     required
@@ -293,8 +288,7 @@
                   [error]="errors().pastorEmail"
                 >
                   <input
-                    class="input"
-                    jbFieldControl
+                    jb-input
                     name="pastorEmail"
                     type="email"
                     placeholder="name@church.ca"

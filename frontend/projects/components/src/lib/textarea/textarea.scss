@@ -1,0 +1,9 @@
+// Block: textarea. The host is the native textarea.
+@use '../input/control';
+
+@include control.control;
+
+:host {
+  min-height: var(--jb-textarea-min-height, calc(var(--control-height-md) * 2.5));
+  resize: var(--jb-textarea-resize, vertical);
+}

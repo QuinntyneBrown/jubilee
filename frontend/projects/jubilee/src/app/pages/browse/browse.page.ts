@@ -17,6 +17,7 @@ import {
   Icon,
   ProductCard,
   Button,
+  Input,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { RequiresConnection } from '../../directives/requires-connection';
@@ -43,6 +44,7 @@ import { SessionService } from '../../services/session.service';
     Icon,
     ProductCard,
     Button,
+    Input,
   ],
   providers: [DirectoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

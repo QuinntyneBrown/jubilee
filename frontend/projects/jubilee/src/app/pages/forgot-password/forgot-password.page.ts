@@ -3,16 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
-import {
-  BrandMark,
-  EmptyState,
-  Icon,
-  Button,
-  Alert,
-  FormSummary,
-  Field,
-  FieldControl,
-} from 'components';
+import { BrandMark, EmptyState, Icon, Button, Alert, FormSummary, Field, Input } from 'components';
 
 type View = 'form' | 'submitting' | 'success' | 'error';
 
@@ -34,7 +25,7 @@ const MALFORMED = 'Enter an e-mail address like name@example.com';
     Alert,
     FormSummary,
     Field,
-    FieldControl,
+    Input,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },

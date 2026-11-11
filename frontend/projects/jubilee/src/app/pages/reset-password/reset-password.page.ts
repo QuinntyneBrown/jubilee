@@ -12,7 +12,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
-import { BrandMark, EmptyState, Icon, Button, FormSummary, FieldControl, Field } from 'components';
+import { BrandMark, EmptyState, Icon, Button, FormSummary, Field, Input } from 'components';
 
 type View = 'loading' | 'form' | 'submitting' | 'success' | 'expired' | 'error';
 type FieldName = 'password' | 'confirm';
@@ -60,7 +60,7 @@ function text(code: string, length: number): string {
     Button,
     FormSummary,
     Field,
-    FieldControl,
+    Input,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },

@@ -1,0 +1,11 @@
+// Block: addon, the fixed text of an input-group. The host is the span.
+:host {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--space-3);
+  background: var(--color-bg-subtle);
+  border: var(--border-width-hairline) solid var(--color-border-strong);
+  border-radius: var(--jb-addon-radius, 0);
+  color: var(--color-fg-muted);
+  font: var(--text-body-sm);
+}

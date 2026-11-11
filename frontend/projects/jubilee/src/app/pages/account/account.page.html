@@ -73,8 +73,7 @@
         <div class="form-grid form-grid--2">
           <div jb-field label="First name" controlId="first" [error]="problem('firstName')">
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="first"
               type="text"
               autocomplete="given-name"
@@ -85,8 +84,7 @@
           </div>
           <div jb-field label="Last name" controlId="last" [error]="problem('lastName')">
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="last"
               type="text"
               autocomplete="family-name"
@@ -112,7 +110,7 @@
           >
             Change e-mail
           </button>
-          <input class="input" jbFieldControl type="email" [value]="account.email" readonly />
+          <input jb-input type="email" [value]="account.email" readonly />
         </div>
         <div class="form-grid form-grid--2">
           <div
@@ -124,8 +122,7 @@
             [error]="problem('phone')"
           >
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="phone"
               type="tel"
               autocomplete="tel"
@@ -142,8 +139,7 @@
             [error]="problem('postalCode')"
           >
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="postal"
               type="text"
               autocomplete="postal-code"
@@ -154,8 +150,7 @@
         </div>
         <div jb-field label="Home church" controlId="church" optional>
           <input
-            class="input"
-            jbFieldControl
+            jb-input
             name="church"
             type="text"
             maxlength="100"
@@ -171,8 +166,7 @@
           hint="Used in messages we write about you, such as a church reference request."
         >
           <input
-            class="input"
-            jbFieldControl
+            jb-input
             name="pronouns"
             type="text"
             maxlength="40"

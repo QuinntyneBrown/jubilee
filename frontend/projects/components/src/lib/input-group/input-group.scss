@@ -1,0 +1,49 @@
+// Block: input-group. Its parts hold what is projected and square the corners where the
+// control meets its prefix or suffix, through the radius knobs of jb-input, jb-button and
+// jb-input-addon.
+:host {
+  display: flex;
+  align-items: stretch;
+}
+
+.input-group__prefix,
+.input-group__suffix {
+  display: flex;
+}
+
+.input-group__prefix:empty,
+.input-group__suffix:empty {
+  display: none;
+}
+
+.input-group__prefix {
+  --jb-btn-radius: var(--radius-md) 0 0 var(--radius-md);
+  --jb-addon-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.input-group__suffix {
+  --jb-btn-radius: 0 var(--radius-md) var(--radius-md) 0;
+  --jb-addon-radius: 0 var(--radius-md) var(--radius-md) 0;
+
+  margin-left: calc(-1 * var(--border-width-hairline));
+}
+
+.input-group__control {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.input-group__prefix:not(:empty) + .input-group__control {
+  --jb-input-radius: 0 var(--radius-md) var(--radius-md) 0;
+
+  margin-left: calc(-1 * var(--border-width-hairline));
+}
+
+.input-group__control:has(+ .input-group__suffix:not(:empty)) {
+  --jb-input-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.input-group__prefix:not(:empty) + .input-group__control:has(+ .input-group__suffix:not(:empty)) {
+  --jb-input-radius: 0;
+}

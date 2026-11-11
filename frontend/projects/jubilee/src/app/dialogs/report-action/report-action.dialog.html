@@ -36,8 +36,7 @@
         [error]="textProblem() ? 'Write the message to send.' : null"
       >
         <textarea
-          class="textarea"
-          jbFieldControl
+          jb-textarea
           name="messageText"
           rows="4"
           required
@@ -56,8 +55,7 @@
       [error]="noteProblem() ? 'Write a note about what you decided and why.' : null"
     >
       <textarea
-        class="textarea"
-        jbFieldControl
+        jb-textarea
         name="resolutionNote"
         rows="3"
         required

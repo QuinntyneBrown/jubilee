@@ -88,8 +88,7 @@
             }
             <div jb-field label="Service" controlId="d-svc">
               <select
-                class="select"
-                jbFieldControl
+                jb-select
                 name="service"
                 [disabled]="busy()"
                 [ngModel]="serviceId()"
@@ -103,8 +102,7 @@
             <div class="form-grid form-grid--2">
               <div jb-field label="Day" controlId="d-date" required [error]="dayProblem()">
                 <input
-                  class="input"
-                  jbFieldControl
+                  jb-input
                   name="day"
                   type="date"
                   [min]="today"
@@ -117,8 +115,7 @@
               </div>
               <div jb-field label="How" controlId="d-how">
                 <select
-                  class="select"
-                  jbFieldControl
+                  jb-select
                   name="how"
                   [disabled]="busy()"
                   [ngModel]="mode()"
@@ -157,8 +154,7 @@
             </fieldset>
             <div jb-field label="What would you like to talk about?" controlId="d-note" optional>
               <textarea
-                class="textarea"
-                jbFieldControl
+                jb-textarea
                 name="note"
                 rows="3"
                 maxlength="1000"

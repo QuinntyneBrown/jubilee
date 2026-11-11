@@ -35,8 +35,7 @@
       }
       <div jb-field label="Product name" controlId="d-name" required [error]="errors().name">
         <input
-          class="input"
-          jbFieldControl
+          jb-input
           name="name"
           type="text"
           required
@@ -48,8 +47,7 @@
       <div class="form-grid form-grid--2">
         <div jb-field label="Price (CAD)" controlId="d-price" required [error]="errors().price">
           <input
-            class="input"
-            jbFieldControl
+            jb-input
             name="price"
             type="text"
             inputmode="decimal"
@@ -68,8 +66,7 @@
             [error]="errors().stock"
           >
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="stock"
               type="number"
               min="0"
@@ -83,8 +80,7 @@
       </div>
       <div jb-field label="Description" controlId="d-desc" optional [error]="errors().description">
         <textarea
-          class="textarea"
-          jbFieldControl
+          jb-textarea
           name="description"
           rows="3"
           maxlength="1000"

@@ -15,12 +15,12 @@
   </div>
   <div class="dialog__body stack">
     <div jb-field label="Link" controlId="d-link">
-      <div class="input-group">
-        <input class="input" jbFieldControl type="text" [value]="url" readonly />
-        <button jb-button variant="primary" type="button" (click)="copy()">
+      <jb-input-group>
+        <input jb-input type="text" [value]="url" readonly />
+        <button slot="suffix" jb-button variant="primary" type="button" (click)="copy()">
           {{ copied() ? 'Copied ✓' : 'Copy' }}
         </button>
-      </div>
+      </jb-input-group>
       <span class="visually-hidden" role="status" aria-live="polite">{{
         copied() ? 'Link copied' : ''
       }}</span>

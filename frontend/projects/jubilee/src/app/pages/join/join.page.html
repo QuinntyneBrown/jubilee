@@ -46,8 +46,7 @@
         <div class="form-grid form-grid--2">
           <div jb-field label="First name" controlId="first" required [error]="errors().firstName">
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="firstName"
               type="text"
               required
@@ -60,8 +59,7 @@
           </div>
           <div jb-field label="Last name" controlId="last" required [error]="errors().lastName">
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="lastName"
               type="text"
               required
@@ -75,8 +73,7 @@
         </div>
         <div jb-field label="E-mail" controlId="email" required [error]="errors().email">
           <input
-            class="input"
-            jbFieldControl
+            jb-input
             name="email"
             type="email"
             required
@@ -96,8 +93,7 @@
           [error]="errors().password"
         >
           <input
-            class="input"
-            jbFieldControl
+            jb-input
             name="password"
             type="password"
             required
@@ -116,8 +112,7 @@
           hint="Shown to no one. Helps us recommend businesses near you."
         >
           <input
-            class="input"
-            jbFieldControl
+            jb-input
             name="homeChurch"
             type="text"
             [attr.maxlength]="max.church"

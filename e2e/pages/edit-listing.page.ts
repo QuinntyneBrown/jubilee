@@ -93,6 +93,14 @@ export class EditListingPage extends ShellPage implements Screen {
     return this.form.getByRole('button', { name: `Remove photo ${position}` });
   }
 
+  /** Types the "About" text and leaves the control, so that it is shown at rest. */
+  async typeAboutAndLeave(text: string): Promise<void> {
+    await this.about.fill(text);
+    await this.about.blur();
+    // Typing leaves the text scrolled to its end.
+    await this.about.evaluate((control) => (control.scrollTop = 0));
+  }
+
   async ready(): Promise<void> {
     await this.heading.waitFor();
   }

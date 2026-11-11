@@ -72,6 +72,11 @@ export interface ParityOptions {
   reference: Reference;
 }
 
+/** Brings the region to the middle of the viewport, clear of the fixed bars at its edges. */
+async function centre(region: Locator): Promise<void> {
+  await region.first().evaluate((element) => element.scrollIntoView({ block: 'center' }));
+}
+
 function baselineOf(component: string, file: string): string[] {
   return ['parity', component, file];
 }
@@ -94,6 +99,7 @@ export function parity(component: string, { cases, reference }: ParityOptions): 
             const screen = item.screen(page);
             await screen.ready();
             if (!BASELINE) await item.arrange?.(screen);
+            await centre(item.region(screen));
             await expect(item.region(screen), `${item.name} of ${component}`).toHaveScreenshot(
               baselineOf(component, `${item.name}-${width}-${theme}.png`),
               { maxDiffPixelRatio: MOCK_THRESHOLD },
@@ -132,6 +138,7 @@ export function parity(component: string, { cases, reference }: ParityOptions): 
         const screen = item.screen(page);
         await screen.ready();
         await item.arrange?.(screen);
+        await centre(item.region(screen));
         await expect(
           item.region(screen),
           `${crop.case} of ${component} against ${crop.frame}`,

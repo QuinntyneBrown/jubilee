@@ -25,16 +25,15 @@
 }
 <div jb-field label="Quantity" controlId="qty" [error]="quantityError()" style="max-width: 8rem">
   <input
+    jb-input
     #quantityInput
-    class="input"
-    jbFieldControl
     type="number"
     inputmode="numeric"
     [min]="item.minimumQuantity"
     [max]="max()"
     [value]="quantity()"
     [disabled]="item.soldOut"
-    (input)="quantity.set(quantityInput.value)"
+    (input)="quantity.set(quantityInput.element.value)"
   />
 </div>
 @if (item.soldOut) {

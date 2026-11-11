@@ -79,8 +79,7 @@
       </ul>
       <div jb-field label="How often" controlId="digest" style="max-width: 16rem">
         <select
-          class="select"
-          jbFieldControl
+          jb-select
           [disabled]="waiting().has('frequency')"
           (change)="setFrequency($any($event.target).value)"
         >

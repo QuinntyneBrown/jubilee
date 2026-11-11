@@ -139,7 +139,7 @@
       <form class="composer" #composer (submit)="send($event)">
         <label class="visually-hidden" for="msg">Message {{ conversation.business.name }}</label>
         <textarea
-          class="textarea"
+          jb-textarea
           id="msg"
           name="message"
           rows="1"

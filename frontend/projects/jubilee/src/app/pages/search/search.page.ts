@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CATEGORIES, SearchHit, SearchResultKind } from 'api';
-import { EmptyState, Icon, MatchExplanation, Button } from 'components';
+import { EmptyState, Icon, MatchExplanation, Button, Input } from 'components';
 import { SearchStore } from '../../services/search.store';
 
 interface SearchTab {
@@ -26,7 +26,7 @@ function plural(count: number, one: string, many: string): string {
  */
 @Component({
   selector: 'jb-search-page',
-  imports: [RouterLink, EmptyState, Icon, MatchExplanation, Button],
+  imports: [RouterLink, EmptyState, Icon, MatchExplanation, Button, Input],
   providers: [SearchStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
