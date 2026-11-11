@@ -13,6 +13,8 @@ import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/ro
 import { ACCOUNT_API } from 'api';
 import {
   ChromeMember,
+  ConnectionBanner,
+  ConnectionBannerKind,
   SiteFooter,
   SkipLink,
   TabBar,
@@ -23,6 +25,8 @@ import {
 import { filter, map, startWith } from 'rxjs';
 import { JbRouteData } from './app.routes';
 import { AccountMenuData, AccountMenuDialog } from './dialogs/account-menu/account-menu.dialog';
+import { ConnectionService, STATUS_URL } from './services/offline/connection.service';
+import { QueueDrainer } from './services/offline/queue-drainer';
 import { ClockService } from './services/clock.service';
 import { NavigationStore } from './services/navigation.store';
 import { RealtimeService } from './services/realtime.service';
@@ -34,7 +38,16 @@ const BARE: JbRouteData = { shell: 'bare', page: '' };
 /** AppShell: the skip link, the top bar, the routed page in `main`, the footer and the tab bar. */
 @Component({
   selector: 'jb-root',
-  imports: [RouterOutlet, SkipLink, TopBar, SiteFooter, TabBar, VerifyEmailBanner, ToastRegion],
+  imports: [
+    ConnectionBanner,
+    RouterOutlet,
+    SkipLink,
+    TopBar,
+    SiteFooter,
+    TabBar,
+    VerifyEmailBanner,
+    ToastRegion,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
 })
@@ -47,6 +60,15 @@ export class App {
   private readonly realtime = inject(RealtimeService);
   private readonly account = inject(ACCOUNT_API);
   private readonly dialog = inject(Dialog);
+  protected readonly connection = inject(ConnectionService);
+  private readonly drainer = inject(QueueDrainer);
+  protected readonly statusUrl = STATUS_URL;
+  /** The banner on show, if any: the connection's condition, or the notice that it came back. */
+  protected readonly banner = computed<ConnectionBannerKind | null>(() => {
+    const state = this.connection.state();
+    if (state === 'offline' || state === 'unreachable' || state === 'slow') return state;
+    return this.connection.backOnline() !== null ? 'back-online' : null;
+  });
   protected readonly year = inject(ClockService).year();
 
   /** The data of the deepest activated route, read again after every navigation. */
@@ -108,6 +130,7 @@ export class App {
   );
 
   constructor() {
+    this.drainer.start();
     if (this.session.member()) this.navigation.load();
     // The open connection runs for a signed-in member only (L2-070).
     effect(() => {

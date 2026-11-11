@@ -2643,5 +2643,9 @@
   "POST /api/listings/luzandre/views": {
     "status": 204,
     "body": null
+  },
+  "GET /api/health/ping": {
+    "status": 204,
+    "body": null
   }
 }

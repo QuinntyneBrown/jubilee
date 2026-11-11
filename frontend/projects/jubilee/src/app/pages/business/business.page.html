@@ -116,15 +116,19 @@
                 ><svg jb-icon name="bag"></svg>Shop products</a
               >
             } @else if (!isShop && hasServices) {
-              <a class="btn btn--primary btn--lg" [routerLink]="link('book')"
+              <a jbRequiresConnection class="btn btn--primary btn--lg" [routerLink]="link('book')"
                 ><svg jb-icon name="calendar"></svg>Book a meeting</a
               >
             } @else {
-              <a class="btn btn--primary btn--lg" [routerLink]="link('message')"
+              <a
+                jbRequiresConnection
+                class="btn btn--primary btn--lg"
+                [routerLink]="link('message')"
                 ><svg jb-icon name="message"></svg>Send a message</a
               >
             }
             <a
+              jbRequiresConnection
               class="btn btn--icon btn--lg"
               [routerLink]="link('message')"
               aria-label="Message"
@@ -133,6 +137,7 @@
             ></a>
             <button
               #saveButton
+              jbRequiresConnection
               class="btn btn--icon btn--lg"
               type="button"
               [attr.aria-label]="saved() ? 'Saved. Remove from saved' : 'Save'"

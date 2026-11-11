@@ -5,6 +5,7 @@
     [member]="member()"
     [current]="routeData().section ?? null"
     [query]="searchQuery()"
+    [offline]="connection.isOffline()"
     (searched)="search($event)"
     (accountMenu)="openAccountMenu($event)"
   ></header>
@@ -24,6 +25,18 @@
     state="confirmed"
     [email]="session.member()?.email ?? ''"
     (dismiss)="dismissConfirmed()"
+  ></div>
+}
+@if (banner(); as kind) {
+  <div
+    jb-connection-banner
+    [kind]="kind"
+    [detail]="connection.detail()"
+    [countdown]="connection.countdown()"
+    [sent]="connection.backOnline() ?? 0"
+    [statusUrl]="statusUrl"
+    (retry)="connection.check()"
+    (dismiss)="connection.dismissBackOnline()"
   ></div>
 }
 <main id="main" tabindex="-1"><router-outlet /></main>

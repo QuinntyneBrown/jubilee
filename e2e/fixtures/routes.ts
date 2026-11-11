@@ -268,6 +268,7 @@ export const routes = {
     mock: 'pages/maintenance/default.html',
     who: 'visitor',
   },
+  offline: { app: '/offline', mock: 'pages/offline/default.html', who: 'visitor' },
   terms: { app: '/terms', mock: 'pages/terms/default.html', who: 'visitor' },
   privacy: { app: '/privacy', mock: 'pages/privacy/default.html', who: 'visitor' },
   help: { app: '/help', mock: 'pages/help/default.html', who: 'visitor' },

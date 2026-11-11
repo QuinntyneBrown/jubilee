@@ -397,7 +397,8 @@
         "error",
         "sending",
         "failed",
-        "away"
+        "away",
+        "queued"
       ]
     },
     {

@@ -39,7 +39,7 @@ the service worker stores.
   `conversations` for `GET /api/conversations/{conversationId}` with
   `maxSize: 20`. Both data groups use the `freshness` strategy: network first,
   cache when the network fails. The network timeout before the cache answers is
-  `<TO SUPPLY>`.
+  5 seconds (ADR 0032).
 - **`conversations` data group** — least-recently-used cache holding the last
   `20` opened conversations. Opening a twenty-first conversation evicts the
   conversation opened longest ago.
@@ -64,7 +64,7 @@ the service worker stores.
 - **`RequiresConnectionDirective`** — attribute directive `jbRequiresConnection`
   placed on search, save, request and send controls. Offline, it sets
   `aria-disabled="true"`, blocks activation, and links an explanation through
-  `aria-describedby`. The explanation copy is `<TO SUPPLY>`. The message composer
+  `aria-describedby`. The explanation copy is “Needs a connection. It works again when you’re back online.” (ADR 0032). The message composer
   does not carry the directive.
 - **`OfflineNavigationHandler`** — router error handler. A route whose data
   request fails while `ConnectionService.isOffline()` is true is replaced by

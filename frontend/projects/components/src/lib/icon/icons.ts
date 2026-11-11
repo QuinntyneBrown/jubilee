@@ -18,6 +18,11 @@ const rect = (x: number, y: number, width: number, height: number, rx: number): 
 /** The icons of the design system (docs/design-system/foundations/iconography.html). */
 export const ICONS = {
   alert: [path('M12 4 2.500 20h19zM12 10v4M12 17h.01')],
+  'wifi-off': [
+    path(
+      'M3 3l18 18M5 12a10 10 0 0 1 4-2.500M19 12a10 10 0 0 0-5-3M8.500 15.500a5 5 0 0 1 7 0M12 19h.01',
+    ),
+  ],
   'arrow-down': [path('M12 5v14m0 0 6-6m-6 6-6-6')],
   'arrow-left': [path('M19 12H5m0 0 6-6m-6 6 6 6')],
   'arrow-up': [path('M12 19V5m0 0-6 6m6-6 6 6')],

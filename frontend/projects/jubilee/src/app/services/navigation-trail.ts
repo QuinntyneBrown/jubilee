@@ -23,7 +23,7 @@ export class NavigationTrail {
 
 /** The pages the app shows when something went wrong; none of them is a place to come back to. */
 export function isSystemPage(url: string): boolean {
-  return /^\/(forbidden|error|maintenance)(\/|\?|$)/.test(url);
+  return /^\/(forbidden|error|maintenance|offline)(\/|\?|$)/.test(url);
 }
 
 const BACKSLASH = String.fromCharCode(92);

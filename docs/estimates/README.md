@@ -25,7 +25,7 @@
 | [accessibility](accessibility.md) | 10 days | 0% |
 | [performance](performance.md) | 9 days | 6% |
 | [operations](operations.md) | 30 days | 9% |
-| [offline](offline.md) | 12 days | 0% |
+| [offline](offline.md) | 12 days | 83% |
 
 ## Roadmap
 

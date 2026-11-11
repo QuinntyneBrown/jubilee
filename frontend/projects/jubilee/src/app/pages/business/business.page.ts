@@ -1,3 +1,4 @@
+import { RequiresConnection } from '../../directives/requires-connection';
 import { Dialog } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -80,6 +81,7 @@ interface DetailRow {
 @Component({
   selector: 'jb-business-page',
   imports: [
+    RequiresConnection,
     RouterLink,
     BusinessCard,
     CountPipe,

@@ -14,7 +14,7 @@ public sealed class MaintenanceMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context, IMaintenanceState state, TimeProvider clock)
     {
-        if (!state.Enabled || context.Request.Path.StartsWithSegments("/api/health"))
+        if (!state.Enabled || string.Equals(context.Request.Path.Value?.TrimEnd('/'), "/api/health", StringComparison.OrdinalIgnoreCase))
         {
             await next(context);
             return;
