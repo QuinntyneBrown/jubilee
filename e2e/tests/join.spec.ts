@@ -1,7 +1,12 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures/jb-test';
 import { stubConfirmation, stubResend, stubSession, unconfirmedSession } from '../fixtures/stubs';
-import { JoinPage } from '../pages/join.page';
+import {
+  JoinErrorScreen,
+  JoinPage,
+  JoinSubmittingScreen,
+  JoinSuccessScreen,
+} from '../pages/join.page';
 import { VerifyEmailBannerRegion, VerifyEmailPage } from '../pages/verify-email.page';
 
 // Join Jubilee: L2-001 to L2-005. The API is answered by Playwright mocking (ADR 0009); the
@@ -328,6 +333,78 @@ test.describe('join with e-mail (L2-001)', () => {
     await expect(join.errorState).toContainText('JB-AUTH-503');
     await join.errorState.getByRole('button', { name: 'Try again' }).click();
     await expect(join.createAccount).toBeVisible();
+  });
+});
+
+test.describe('the other states of Sign up, in the frame (L2-001, L2-002, L2-003, L2-187)', () => {
+  test('"Check your e-mail" is the only heading, with neither the lead nor the link under the card', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinSuccessScreen(page);
+    await jb.open('sign-up.success');
+    await join.ready();
+
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    await expect(join.heading).toHaveText('Check your e-mail');
+    await expect(join.sentText).toContainText('joanna.adeyemi@example.com');
+    await expect(join.lead).toHaveCount(0);
+    await expect(join.signInLink).toHaveCount(0);
+    await expect(join.frameFoot).toBeHidden();
+  });
+
+  test('a failed request leaves one heading and no link under the card', async ({ page, jb }) => {
+    const join = new JoinErrorScreen(page);
+    await jb.open('sign-up.error');
+    await join.ready();
+
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    await expect(join.heading).toHaveText('We couldn’t load the join form');
+    await expect(join.lead).toHaveCount(0);
+    await expect(join.signInLink).toHaveCount(0);
+  });
+
+  test('a notice from Google stands between the heading and the Google button', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up.google-cancelled');
+
+    expect(await join.topEdge(join.notice)).toBeGreaterThanOrEqual(
+      await join.bottomEdge(join.lead),
+    );
+    expect(await join.bottomEdge(join.notice)).toBeLessThanOrEqual(await join.topEdge(join.google));
+  });
+
+  test('the error summary stands above the Google button and takes the focus', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up.invalid');
+
+    await join.createAccount.click();
+
+    await expect(join.summary).toBeFocused();
+    expect(await join.bottomEdge(join.summary)).toBeLessThanOrEqual(
+      await join.topEdge(join.google),
+    );
+    await expect(join.heading).toHaveText('Join Jubilee');
+  });
+
+  test('while the form is being sent the frame keeps its heading and its link', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinSubmittingScreen(page);
+    await jb.open('sign-up.submitting');
+    await join.ready();
+
+    await expect(join.createAccount).toHaveAttribute('aria-busy', 'true');
+    await expect(join.email).toHaveAttribute('readonly', '');
+    await expect(join.heading).toHaveText('Join Jubilee');
+    await expect(join.signInLink).toBeVisible();
   });
 });
 

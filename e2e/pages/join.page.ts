@@ -129,3 +129,47 @@ export class JoinPage extends ShellPage implements Screen {
     return [{ name: 'main', locator: this.main }];
   }
 }
+
+/** What Joanna types to join, as the mocks draw it. */
+const joanna = {
+  first: 'Joanna',
+  last: 'Adeyemi',
+  email: 'joanna.adeyemi@example.com',
+  password: 'longpassword1',
+  church: 'Grace Toronto Church',
+  agree: true,
+};
+
+/** Sign up after the account was created; the state has no address, so the screen sends the form. */
+export class JoinSuccessScreen extends JoinPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    // The mock is drawn in the state already.
+    if (await this.sentHeading.isVisible()) return;
+    await this.fill(joanna);
+    await this.createAccount.click();
+    await this.sentHeading.waitFor();
+  }
+}
+
+/** Sign up after a request that failed. */
+export class JoinErrorScreen extends JoinPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.errorState.isVisible()) return;
+    await this.fill(joanna);
+    await this.createAccount.click();
+    await this.errorState.waitFor();
+  }
+}
+
+/** Sign up while its form is on the way. */
+export class JoinSubmittingScreen extends JoinPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if ((await this.createAccount.getAttribute('aria-busy')) === 'true') return;
+    await this.fill(joanna);
+    await this.createAccount.click();
+    await this.main.locator('.btn[aria-busy="true"]').waitFor();
+  }
+}

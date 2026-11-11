@@ -3,7 +3,13 @@ import { joanna } from '../fixtures/cast';
 import { expect, test } from '../fixtures/jb-test';
 import { SearchPage } from '../pages/search.page';
 import { ProductPage } from '../pages/product.page';
-import { AccountMenuRegion, SessionExpiredPage, SignInPage } from '../pages/sign-in.page';
+import {
+  AccountMenuRegion,
+  SessionExpiredPage,
+  SignInErrorScreen,
+  SignInPage,
+  SignInSubmittingScreen,
+} from '../pages/sign-in.page';
 
 // Sign in and out: L2-006, L2-007, L2-010, L2-011, L2-012, L2-116. The API is answered by
 // Playwright mocking (ADR 0009); the requests the app makes are captured to prove what it sends.
@@ -288,6 +294,83 @@ test.describe('the Log in frame (L2-187)', () => {
       await expect.poll(() => signIn.dataPage()).toBe('welcome');
     });
   }
+});
+
+test.describe('the other states of Log in, in the frame (L2-006, L2-003, L2-187)', () => {
+  test('a failed request leaves one heading, and neither the lead nor the link under the card', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInErrorScreen(page);
+    await jb.open('sign-in.error');
+    await signIn.ready();
+
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    await expect(signIn.heading).toHaveText('We couldn’t load sign in');
+    await expect(signIn.lead).toHaveCount(0);
+    await expect(signIn.joinFree).toHaveCount(0);
+    await expect(signIn.frameFoot).toBeHidden();
+    await expect(signIn.lockup).toBeVisible();
+  });
+
+  test('under 1024 px the lockup stays at the top when the card is short', async ({ page, jb }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    const form = new SignInPage(page);
+    await jb.open('sign-in');
+    const top = await form.topEdge(form.lockup);
+
+    const failed = new SignInErrorScreen(page);
+    await jb.open('sign-in.error');
+    await failed.ready();
+
+    // The error state is shorter than the screen; the frame does not centre it.
+    expect(await failed.topEdge(failed.lockup)).toBe(top);
+  });
+
+  test('a notice from Google stands between the heading and the Google button', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in.google-cancelled');
+
+    expect(await signIn.topEdge(signIn.calmNotice)).toBeGreaterThanOrEqual(
+      await signIn.bottomEdge(signIn.lead),
+    );
+    expect(await signIn.bottomEdge(signIn.calmNotice)).toBeLessThanOrEqual(
+      await signIn.topEdge(signIn.google),
+    );
+  });
+
+  test('the error summary stands above the Google button and takes the focus', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+
+    await signIn.signInWith('joanna.adeyemi@', 'longpassword1');
+
+    await expect(signIn.summary).toBeFocused();
+    expect(await signIn.bottomEdge(signIn.summary)).toBeLessThanOrEqual(
+      await signIn.topEdge(signIn.google),
+    );
+    await expect(signIn.heading).toHaveText('Welcome back');
+  });
+
+  test('while the form is being sent the frame keeps its heading and its link', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInSubmittingScreen(page);
+    await jb.open('sign-in.submitting');
+    await signIn.ready();
+
+    await expect(signIn.signIn).toHaveAttribute('aria-busy', 'true');
+    await expect(signIn.email).toHaveAttribute('readonly', '');
+    await expect(signIn.heading).toHaveText('Welcome back');
+    await expect(signIn.joinFree).toBeVisible();
+  });
 });
 
 test.describe('show password on Log in (L2-187)', () => {

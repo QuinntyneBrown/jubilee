@@ -30,11 +30,11 @@ import { MyServicesPage } from '../pages/my-services.page';
 import { MyBusinessPage } from '../pages/my-business.page';
 import { RequestDetailPage } from '../pages/request-detail.page';
 import { RequestsPage } from '../pages/requests.page';
-import { JoinPage } from '../pages/join.page';
+import { JoinErrorScreen, JoinPage, JoinSuccessScreen } from '../pages/join.page';
 import { MarketingHomePage } from '../pages/marketing-home.page';
 import { ConversationPage, MessagesPage } from '../pages/messages.page';
 import { SearchPage } from '../pages/search.page';
-import { SessionExpiredPage, SignInPage } from '../pages/sign-in.page';
+import { SessionExpiredPage, SignInErrorScreen, SignInPage } from '../pages/sign-in.page';
 import { VerifyEmailPage } from '../pages/verify-email.page';
 import { WelcomePage } from '../pages/welcome.page';
 import type { RouteKey } from './routes';
@@ -157,8 +157,11 @@ export const screens: {
   { key: 'search.error', screen: (page) => new SearchPage(page) },
   { key: 'search.no-results', screen: (page) => new SearchPage(page) },
   { key: 'sign-in', screen: (page) => new SignInPage(page) },
+  { key: 'sign-in.error', screen: (page) => new SignInErrorScreen(page) },
   { key: 'session-expired', screen: (page) => new SessionExpiredPage(page) },
   { key: 'sign-up', screen: (page) => new JoinPage(page) },
+  { key: 'sign-up.error', screen: (page) => new JoinErrorScreen(page) },
+  { key: 'sign-up.success', screen: (page) => new JoinSuccessScreen(page) },
   { key: 'join-agreement', screen: (page) => new JoinPage(page) },
   { key: 'verify-email', screen: (page) => new VerifyEmailPage(page) },
   { key: 'verify-email.loading', screen: (page) => new VerifyEmailPage(page) },

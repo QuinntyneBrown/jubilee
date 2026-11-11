@@ -136,6 +136,28 @@ export class SignInPage extends ShellPage implements Screen {
   }
 }
 
+/** Log in after a request that failed; the state has no address, so the screen sends the form. */
+export class SignInErrorScreen extends SignInPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    // The mock is drawn in the state already.
+    if (await this.errorState.isVisible()) return;
+    await this.signInWith('joanna.adeyemi@example.com', 'longpassword1');
+    await this.errorState.waitFor();
+  }
+}
+
+/** Log in while its form is on the way. */
+export class SignInSubmittingScreen extends SignInPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if ((await this.signIn.getAttribute('aria-busy')) === 'true') return;
+    await this.fillAsDrawn();
+    await this.signIn.click();
+    await this.main.locator('.btn[aria-busy="true"]').waitFor();
+  }
+}
+
 /** The session-expired page. */
 export class SessionExpiredPage extends ShellPage implements Screen {
   readonly heading: Locator;

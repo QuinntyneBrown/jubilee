@@ -1,6 +1,7 @@
 import { parity } from '../../fixtures/parity';
 import { ForgotPasswordPage } from '../../pages/forgot-password.page';
-import { SessionExpiredPage, SignInPage } from '../../pages/sign-in.page';
+import { JoinSuccessScreen } from '../../pages/join.page';
+import { SessionExpiredPage, SignInErrorScreen, SignInPage } from '../../pages/sign-in.page';
 
 // jb-auth-layout: the centred card of the bare pages, and the split frame of Log in and Sign up
 // with its brand panel, its card under 1024 px and the link under the form (jb-auth-link).
@@ -44,6 +45,18 @@ parity('auth-layout', {
       route: 'sign-in',
       screen: (page) => new SignInPage(page),
       region: (screen: SignInPage) => screen.frameFoot,
+    },
+    {
+      name: 'split-error-state',
+      route: 'sign-in.error',
+      screen: (page) => new SignInErrorScreen(page),
+      region: (screen: SignInErrorScreen) => screen.card,
+    },
+    {
+      name: 'split-success-state',
+      route: 'sign-up.success',
+      screen: (page) => new JoinSuccessScreen(page),
+      region: (screen: JoinSuccessScreen) => screen.frameCard,
     },
   ],
   reference: {

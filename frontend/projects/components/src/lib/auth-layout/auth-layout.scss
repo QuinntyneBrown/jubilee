@@ -73,6 +73,10 @@
 // Under 64rem the lockup sits above the card; from 64rem a brand panel takes 5/12 of the screen.
 :host(.auth-layout--split) {
   display: block;
+  // The lockup stays at the top however short the card is: nothing here is centred.
+  place-items: stretch;
+  align-content: stretch;
+  gap: 0;
   padding: 0;
 }
 
@@ -122,9 +126,6 @@
   :host(.auth-layout--split) {
     display: grid;
     grid-template-columns: 5fr 7fr;
-    place-items: stretch;
-    align-content: stretch;
-    gap: 0;
     height: 100dvh;
   }
 
