@@ -1,0 +1,78 @@
+// Block: choice-card. The host is one cell of jb-choice-cards; the label is the card and the
+// radio covers it, so the whole card is the target.
+:host {
+  display: block;
+}
+
+.choice-card {
+  position: relative;
+  display: flex;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-4);
+  border: var(--border-width-hairline) solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  cursor: pointer;
+}
+
+.choice-card input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.choice-card:hover {
+  border-color: var(--color-fg-muted);
+}
+
+.choice-card:has(input:checked) {
+  border-color: var(--color-fg-default);
+  box-shadow: 0 0 0 var(--border-width-hairline) var(--color-fg-default);
+}
+
+.choice-card:has(input[aria-invalid='true']) {
+  border-color: var(--color-danger-solid);
+}
+
+.choice-card:has(input:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.choice-card:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.choice-card__icon {
+  display: grid;
+  place-items: center;
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-subtle);
+  flex: none;
+}
+
+.choice-card:has(input:checked) .choice-card__icon {
+  background: var(--color-accent);
+  color: var(--color-fg-on-accent);
+}
+
+.choice-card__title {
+  display: block;
+  font: var(--text-label);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.choice-card__text {
+  display: block;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}

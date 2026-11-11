@@ -69,6 +69,7 @@ export type StubName =
   | 'business-paused'
   | 'editor'
   | 'order'
+  | 'listing-draft'
   | 'editor-error'
   | 'notifications'
   | 'notifications-read'
@@ -274,6 +275,7 @@ export const routes = {
     app: '/list',
     mock: 'pages/list-business/default.html',
     who: 'member',
+    stub: 'listing-draft',
   },
   'statement-of-faith': {
     app: '/statement-of-faith',
