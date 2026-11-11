@@ -114,7 +114,7 @@
         actionLabel="Visit shop"
         [actionLink]="['/b', product.shop.slug]"
       >
-        <ul class="card-grid">
+        <ul jb-card-grid>
           @for (other of product.more; track other.slug) {
             <li>
               <a

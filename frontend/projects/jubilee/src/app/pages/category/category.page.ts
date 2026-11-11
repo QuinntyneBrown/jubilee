@@ -23,6 +23,7 @@ import {
   Chip,
   PageHeader,
   Breadcrumb,
+  CardGrid,
 } from 'components';
 import { combineLatest } from 'rxjs';
 import {
@@ -75,6 +76,7 @@ function businesses(count: number): string {
     Chip,
     PageHeader,
     Breadcrumb,
+    CardGrid,
   ],
   providers: [CategoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

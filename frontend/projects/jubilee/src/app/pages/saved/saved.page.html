@@ -14,16 +14,7 @@
   }
   @case ('loading') {
     <p class="visually-hidden" role="status">Loading saved items…</p>
-    <ul class="card-grid" aria-hidden="true">
-      @for (item of placeholders; track item) {
-        <li class="biz-card">
-          <span jb-skeleton shape="media"></span>
-          <span jb-skeleton shape="text" width="70"></span>
-          <span jb-skeleton shape="text"></span>
-          <span jb-skeleton shape="text" width="50"></span>
-        </li>
-      }
-    </ul>
+    <ul jb-card-grid-skeleton [count]="placeholders.length"></ul>
   }
   @case ('loaded') {
     @if (list(); as saved) {
@@ -33,9 +24,9 @@
           <a slot="actions" jb-button variant="primary" routerLink="/">Browse businesses</a>
         </div>
       } @else {
-        <ul class="card-grid">
+        <ul jb-card-grid>
           @for (item of saved.items; track item.id) {
-            <li class="saved-card">
+            <li jb-saved-card>
               @if (item.available && item.business; as business) {
                 <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>
               } @else if (item.available && item.product; as product) {
@@ -45,13 +36,11 @@
                   [routerLink]="['/b', product.businessSlug, 'p', product.slug]"
                 ></a>
               } @else {
-                <div class="biz-card" aria-label="{{ item.name }}, no longer available">
-                  <h3 class="biz-card__name">{{ item.name }}</h3>
-                  <p class="biz-card__tagline">No longer available</p>
-                </div>
+                <div jb-unavailable-card [name]="item.name"></div>
               }
               <button
                 #removeButton
+                slot="remove"
                 jb-button
                 iconOnly
                 size="sm"

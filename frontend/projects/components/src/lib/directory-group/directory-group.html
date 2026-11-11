@@ -1,0 +1,11 @@
+<div class="dir-group__head">
+  <h3 class="dir-group__heading" [id]="headingId()">{{ heading() }}</h3>
+  <span class="dir-group__count"
+    ><span aria-hidden="true">{{ count() }}</span
+    ><span class="visually-hidden">{{ countLabel() }}</span></span
+  >
+</div>
+<ng-content />
+@if (moreLabel(); as label) {
+  <a class="dir-more" [routerLink]="moreLink()">{{ label }}</a>
+}

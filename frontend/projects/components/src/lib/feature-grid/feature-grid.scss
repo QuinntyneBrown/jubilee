@@ -1,5 +1,7 @@
-// Block: feature-grid, a card-grid whose first card is drawn large. The grid itself is
-// card-grid's; this block places its items.
+// Block: feature-grid, a card-grid whose first card is drawn large. The grid is card-grid's;
+// this block's items place themselves in it.
+@use '../card-grid/card-grid-base' as base;
+
 :host {
-  display: grid;
+  @include base.grid;
 }

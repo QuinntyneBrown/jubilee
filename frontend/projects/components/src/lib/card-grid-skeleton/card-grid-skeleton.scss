@@ -1,0 +1,6 @@
+// Block: card-grid, while its cards load. The host is the list.
+@use '../card-grid/card-grid-base' as base;
+
+:host {
+  @include base.grid;
+}

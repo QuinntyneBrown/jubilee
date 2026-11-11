@@ -15,6 +15,8 @@ export class ShellPage {
   readonly descriptionLists: Locator;
   /** The framed tables in the page. */
   readonly tables: Locator;
+  /** The grids of business and product cards in the page. */
+  readonly cardGrids: Locator;
   readonly topBar: Locator;
   readonly brand: Locator;
   readonly primaryNav: Locator;
@@ -41,6 +43,7 @@ export class ShellPage {
     this.statusPage = this.main.locator('.status-page');
     this.descriptionLists = this.main.locator('dl.dl');
     this.tables = this.main.locator('.table-wrap');
+    this.cardGrids = this.main.locator('ul.card-grid');
     this.topBar = page.locator('header.topbar');
     this.brand = this.topBar.locator('.topbar__brand');
     this.primaryNav = this.topBar.getByRole('navigation', { name: 'Primary', exact: true });

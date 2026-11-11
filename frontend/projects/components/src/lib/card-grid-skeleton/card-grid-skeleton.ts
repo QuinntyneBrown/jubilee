@@ -12,8 +12,11 @@ import { Skeleton } from 'components';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'card-grid', 'aria-hidden': 'true' },
   templateUrl: './card-grid-skeleton.html',
+  styleUrl: './card-grid-skeleton.scss',
 })
 export class CardGridSkeleton {
   readonly count = input(4);
+  /** The shape of a card's picture: wide for a business, square for a product. */
+  readonly shape = input<'media' | 'square'>('media');
   protected readonly cards = computed(() => Array.from({ length: this.count() }, (_, i) => i));
 }

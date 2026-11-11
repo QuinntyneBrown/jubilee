@@ -38,6 +38,8 @@ import {
   BackLink,
   DescriptionList,
   DescriptionItem,
+  CardGrid,
+  CardGridSkeleton,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
@@ -119,6 +121,8 @@ interface DetailRow {
     BackLink,
     DescriptionList,
     DescriptionItem,
+    CardGrid,
+    CardGridSkeleton,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

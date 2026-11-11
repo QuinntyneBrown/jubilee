@@ -109,12 +109,12 @@
             actionLabel="All shops"
             [actionLink]="['/c', 'shops']"
           >
-            <ul class="scroller">
+            <ul jb-scroller>
               @for (
                 product of directory.products;
                 track product.businessSlug + '/' + product.slug
               ) {
-                <li>
+                <li jb-scroller-item>
                   <a
                     jb-product-card
                     [product]="product"
@@ -130,19 +130,19 @@
           [heading]="'All ' + (directory.liveBusinessCount | jbCount) + ' businesses'"
           headingId="all"
         >
-          <div class="dir-groups">
+          <div jb-directory-groups>
             @for (group of directory.groups; track group.slug) {
-              <section class="dir-group" [attr.aria-labelledby]="'g-' + group.slug">
-                <div class="dir-group__head">
-                  <h3 [id]="'g-' + group.slug">{{ group.name }}</h3>
-                  <span class="dir-group__count"
-                    ><span aria-hidden="true">{{ group.count | jbCount }}</span
-                    ><span class="visually-hidden"
-                      >{{ group.count | jbCount }}
-                      {{ group.count === 1 ? 'business' : 'businesses' }}</span
-                    ></span
-                  >
-                </div>
+              <section
+                jb-directory-group
+                [heading]="group.name"
+                [headingId]="'g-' + group.slug"
+                [count]="group.count | jbCount"
+                [countLabel]="
+                  (group.count | jbCount) + (group.count === 1 ? ' business' : ' businesses')
+                "
+                [moreLabel]="group.hasMore ? 'See all ' + (group.count | jbCount) : null"
+                [moreLink]="['/c', group.slug]"
+              >
                 <ul jb-list>
                   @for (business of group.businesses; track business.slug) {
                     <li>
@@ -154,11 +154,6 @@
                     </li>
                   }
                 </ul>
-                @if (group.hasMore) {
-                  <a class="dir-more" [routerLink]="['/c', group.slug]"
-                    >See all {{ group.count | jbCount }}</a
-                  >
-                }
               </section>
             }
           </div>

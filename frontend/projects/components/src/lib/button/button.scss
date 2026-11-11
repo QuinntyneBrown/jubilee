@@ -1,8 +1,11 @@
 // Block: btn. The host is the native button or link.
+//
+// Knobs: --jb-btn-bg and --jb-btn-border, set by a block that puts a plain button over a picture
+// (saved-card).
 :host {
-  --btn-bg: var(--color-bg-surface);
+  --btn-bg: var(--jb-btn-bg, var(--color-bg-surface));
   --btn-fg: var(--color-fg-default);
-  --btn-border: var(--color-border-strong);
+  --btn-border: var(--jb-btn-border, var(--color-border-strong));
   --btn-bg-hover: var(--color-bg-subtle);
   --btn-bg-active: var(--color-bg-subtle-hover);
   // An icon in a button follows the size of its label.

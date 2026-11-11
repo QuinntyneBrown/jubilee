@@ -28,6 +28,10 @@ import {
   FeatureGrid,
   FeatureGridItem,
   SearchField,
+  Scroller,
+  ScrollerItem,
+  DirectoryGroup,
+  DirectoryGroups,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { REQUIRES_CONNECTION } from '../../directives/requires-connection';
@@ -64,6 +68,10 @@ import { SessionService } from '../../services/session.service';
     FeatureGrid,
     FeatureGridItem,
     SearchField,
+    Scroller,
+    ScrollerItem,
+    DirectoryGroup,
+    DirectoryGroups,
   ],
   providers: [DirectoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

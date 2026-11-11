@@ -1,0 +1,11 @@
+// Element: one place in the scroller block. The host is the list item.
+:host {
+  flex: 0 0 9.5rem;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 48rem) {
+  :host {
+    flex-basis: 13rem;
+  }
+}

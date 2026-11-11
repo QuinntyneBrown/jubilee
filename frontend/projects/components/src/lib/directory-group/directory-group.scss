@@ -1,0 +1,33 @@
+// Block: dir-group. The host is the section.
+:host {
+  display: block;
+  margin-top: var(--space-8);
+  min-width: 0;
+}
+
+.dir-group__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.dir-group__heading {
+  font: var(--text-label);
+  font-weight: var(--font-weight-semibold);
+}
+
+.dir-group__count {
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.dir-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-comfortable);
+  font: var(--text-label);
+}

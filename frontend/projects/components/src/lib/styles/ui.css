@@ -262,9 +262,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .media__tag { position: absolute; top: var(--space-3); left: var(--space-3); padding: var(--space-0-5) var(--space-2); border-radius: var(--radius-full); background: var(--color-bg-surface); color: var(--color-fg-default); font: var(--text-caption); font-weight: var(--font-weight-semibold); box-shadow: var(--shadow-1); }
 
 /* ---------- Business and product cards ------------------------------------------ */
-.card-grid { display: grid; gap: var(--space-6) var(--space-4); grid-template-columns: repeat(2, minmax(0, 1fr)); list-style: none; padding: 0; margin: 0; }
-@media (min-width: 48rem) { .card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-8) var(--space-6); } }
-@media (min-width: 64rem) { .card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .card-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .biz-card { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; color: inherit; text-decoration: none; border-radius: var(--radius-lg); }
 .biz-card:hover .biz-card__name, .biz-card[data-state="hover"] .biz-card__name { text-decoration: underline; }
 .biz-card:hover .media, .biz-card[data-state="hover"] .media { box-shadow: var(--shadow-2); }
@@ -273,20 +270,8 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .biz-card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); font: var(--text-body-sm); }
 .product-card .biz-card__name { font: var(--text-label); }
 .product-card .biz-card__tagline { font: var(--text-caption); }
-.scroller { display: flex; gap: var(--space-4); overflow-x: auto; scroll-snap-type: x proximity; padding: var(--space-1) var(--space-1) var(--space-3); margin-inline: calc(-1 * var(--space-1)); list-style: none; }
-.scroller > * { flex: 0 0 9.5rem; scroll-snap-align: start; }
-@media (min-width: 48rem) { .scroller > * { flex-basis: 13rem; } }
-.saved-card { position: relative; }
-.saved-card .btn--icon { position: absolute; top: var(--space-2); right: var(--space-2); --btn-bg: var(--color-bg-surface); --btn-border: var(--color-border-default); }
 
 /* ---------- Directory rows -------------------------------------------------------- */
-.dir-groups { display: grid; gap: 0 var(--space-12); }
-@media (min-width: 64rem) { .dir-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.dir-group { margin-top: var(--space-8); min-width: 0; }
-.dir-group__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); padding-bottom: var(--space-2); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
-.dir-group__head h3 { font: var(--text-label); font-weight: var(--font-weight-semibold); }
-.dir-group__count { font: var(--text-body-sm); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
-.dir-more { display: inline-flex; align-items: center; min-height: var(--target-comfortable); font: var(--text-label); }
 
 /* ---------- Detail layouts ---------------------------------------------------------- */
 .split { display: grid; gap: var(--space-6); }
