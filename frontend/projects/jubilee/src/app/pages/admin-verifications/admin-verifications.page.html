@@ -4,6 +4,7 @@
     <p class="subtitle">{{ subtitle() }}</p>
   </div>
 </div>
+<nav jb-team-nav current="verifications"></nav>
 @let queue = state();
 @switch (queue.status) {
   @case ('error') {

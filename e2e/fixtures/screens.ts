@@ -1,4 +1,7 @@
 import type { Page } from '@playwright/test';
+import { AdminFeaturedPage } from '../pages/admin-featured.page';
+import { AdminReportPage } from '../pages/admin-report.page';
+import { AdminReportsPage } from '../pages/admin-reports.page';
 import { AdminVerificationPage } from '../pages/admin-verification.page';
 import { AdminVerificationsPage } from '../pages/admin-verifications.page';
 import { BrowsePage } from '../pages/browse.page';
@@ -95,6 +98,14 @@ export const screens: {
     screen: (page) => new AdminVerificationPage(page),
   },
   { key: 'admin-verification.error', screen: (page) => new AdminVerificationPage(page) },
+  { key: 'admin-reports', screen: (page) => new AdminReportsPage(page) },
+  { key: 'admin-reports.empty', screen: (page) => new AdminReportsPage(page) },
+  { key: 'admin-reports.error', screen: (page) => new AdminReportsPage(page) },
+  { key: 'admin-report', screen: (page) => new AdminReportPage(page) },
+  { key: 'admin-report.conversation', screen: (page) => new AdminReportPage(page) },
+  { key: 'admin-report.error', screen: (page) => new AdminReportPage(page) },
+  { key: 'admin-featured', screen: (page) => new AdminFeaturedPage(page) },
+  { key: 'admin-featured.error', screen: (page) => new AdminFeaturedPage(page) },
   { key: 'forbidden', screen: (page) => new ForbiddenPage(page) },
   { key: 'browse', screen: (page) => new BrowsePage(page) },
   { key: 'browse.signed-out', screen: (page) => new BrowsePage(page) },

@@ -184,6 +184,27 @@ public sealed class ConversationReport
 
     public DateTimeOffset CreatedAt { get; private set; }
 
+    public ReportStatus Status { get; private set; }
+
+    public string? ResolutionNote { get; private set; }
+
+    public DateTimeOffset? ResolvedAt { get; private set; }
+
+    public void StartReview()
+    {
+        if (Status == ReportStatus.Open)
+        {
+            Status = ReportStatus.InReview;
+        }
+    }
+
+    public void Resolve(string note, DateTimeOffset now)
+    {
+        Status = ReportStatus.Resolved;
+        ResolutionNote = note;
+        ResolvedAt = now;
+    }
+
     public static ConversationReport File(Guid conversationId, string reporterSubject, string reason, DateTimeOffset now) => new()
     {
         Id = Guid.NewGuid(),

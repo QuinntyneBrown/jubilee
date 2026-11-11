@@ -39,17 +39,42 @@ public sealed class ListingReport
 
     public string ReporterSubject { get; private set; } = string.Empty;
 
+    /// <summary>The name of the reporter when they reported, for the verification team only (L2-105 AC1).</summary>
+    public string ReporterName { get; private set; } = string.Empty;
+
     public ReportStatus Status { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
 
+    /// <summary>The note a verifier wrote when resolving the report (L2-105 AC2).</summary>
+    public string? ResolutionNote { get; private set; }
+
+    public DateTimeOffset? ResolvedAt { get; private set; }
+
     public IReadOnlyList<ListingReportEntry> Entries => _entries;
 
-    public static ListingReport Open(Guid listingId, string reporterSubject, DateTimeOffset now) => new()
+    /// <summary>An open report moves to review when a verifier opens it; later opens change nothing.</summary>
+    public void StartReview()
+    {
+        if (Status == ReportStatus.Open)
+        {
+            Status = ReportStatus.InReview;
+        }
+    }
+
+    public void Resolve(string note, DateTimeOffset now)
+    {
+        Status = ReportStatus.Resolved;
+        ResolutionNote = note;
+        ResolvedAt = now;
+    }
+
+    public static ListingReport Open(Guid listingId, string reporterSubject, string reporterName, DateTimeOffset now) => new()
     {
         Id = Guid.NewGuid(),
         ListingId = listingId,
         ReporterSubject = reporterSubject,
+        ReporterName = reporterName,
         Status = ReportStatus.Open,
         CreatedAt = now,
     };

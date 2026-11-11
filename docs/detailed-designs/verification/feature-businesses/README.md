@@ -23,8 +23,8 @@ The slice has an admin write path and a public read path.
 
 - **`FeaturedBusinessesPage`** — Angular admin page. It lets a verifier search
   live listings, order up to five of them, and pick the start date. It stops the
-  selection at five. No mock exists; its route (`/admin/featured` in this
-  design) and copy are `<TO SUPPLY>`.
+  selection at five. No mock exists; its route is `/admin/featured`; the mock
+  is `pages/admin-featured` and the copy is in it (ADR 0033).
 - **`FeaturedStrip`** — Angular component used by `WelcomePage` and
   `BrowsePage`. It renders "Featured this week" with one `BusinessCard` per
   returned business, in slot order, and renders nothing when the list is empty.
@@ -37,21 +37,19 @@ The slice has an admin write path and a public read path.
 - **`SetFeaturedWeekCommand`** and **`SetFeaturedWeekCommandValidator`** — carry
   `StartDate` and `ListingIds`. The validator returns HTTP 422 when the list
   holds more than five entries, holds a duplicate, or names a listing whose
-  stage is not `Live`. Whether a start date in the past is accepted and how
-  overlapping weeks resolve are `<TO SUPPLY>`.
+  stage is not `Live`. A start date before today (Toronto) is refused (`START_IN_PAST`), and a week that starts within six days of
+  another week is refused (`WEEK_OVERLAPS`); saving the same start date replaces that week (ADR 0033).
 - **`SetFeaturedWeekCommandHandler`** — creates or replaces the `FeaturedWeek`,
   appends an `AuditEntry` with the before and after selection, saves both in
   one unit of work, and removes the cached featured list from the `Cache`.
 - **`FeaturedWeek`** — domain entity. `EndDate` is `StartDate` plus 7 days;
   `SetSlots` enforces `MaxSlots = 5` and assigns positions; `IsActiveOn(date)`
-  is true from the start date for 7 days. The time zone that defines the day
-  boundary is `<TO SUPPLY>`.
+  is true from the start date for 7 days. The day boundary is midnight in Toronto (ADR 0033).
 - **`FeaturedSlot`** — value object with `ListingId` and `Position`.
 - **`DirectoryController`** — exposes the public `GET /api/featured`.
 - **`GetFeaturedListingsQueryHandler`** — reads the week active on the current
   date, joins its slots to listings, and returns only listings whose stage is
-  `Live`. It caches the result in the `Cache`; the cache lifetime is
-  `<TO SUPPLY>`. Pausing or removing a listing invalidates the cached list.
+  `Live`. It caches the result in the `Cache`; the cache lifetime is not needed yet: the list is read on each request (ADR 0033). Pausing or removing a listing invalidates the cached list.
 - **`FeaturedBusinessDto`** — public read model with the fields `BusinessCard`
   renders: name, slug, tagline, photo URL and position.
 

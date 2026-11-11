@@ -1,0 +1,195 @@
+<p>
+  <a class="btn btn--ghost btn--sm" routerLink="/admin/reports"
+    ><svg jb-icon name="arrow-left"></svg>Reports</a
+  >
+</p>
+@let current = state();
+@switch (current.status) {
+  @case ('error') {
+    <div class="page-header">
+      <div>
+        <h1>Report</h1>
+      </div>
+    </div>
+    @if (notFound()) {
+      <div jb-empty-state icon="alert" heading="This report doesn’t exist">
+        It may have been removed. Go back to the reports to find the one you need.
+        <a slot="actions" class="btn btn--primary" routerLink="/admin/reports">Back to reports</a>
+      </div>
+    } @else {
+      <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this report">
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>{{ current.reference }}</code
+        >.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" class="btn" routerLink="/admin/reports">Back to reports</a>
+      </div>
+    }
+  }
+  @case ('loading') {
+    <div class="page-header">
+      <div>
+        <h1>Report</h1>
+        <p class="subtitle">Loading the report…</p>
+      </div>
+    </div>
+    <p class="visually-hidden" role="status">Loading the report…</p>
+    <ul class="rows" aria-hidden="true">
+      @for (item of skeleton; track item) {
+        <li class="row">
+          <div class="row__body">
+            <span class="skeleton skeleton--text skeleton--w50"></span>
+            <span class="skeleton skeleton--text skeleton--w70"></span>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  @case ('loaded') {
+    @let report = current.value;
+    <div class="page-header">
+      <div>
+        <h1>{{ title(report) }}</h1>
+        <p class="subtitle">
+          {{ report.entries[0].reason }} · received {{ received(report) }} ·
+          @if (report.overdue) {
+            <span class="badge badge--warning">Overdue</span>
+          }
+          <span
+            class="badge"
+            [class.badge--info]="report.status === 'in-review'"
+            [class.badge--success]="report.status === 'resolved'"
+            >{{
+              report.status === 'in-review'
+                ? 'In review'
+                : report.status === 'resolved'
+                  ? 'Resolved'
+                  : 'Open'
+            }}</span
+          >
+        </p>
+      </div>
+    </div>
+    <nav jb-team-nav current="reports"></nav>
+    <div class="stack" style="margin-top: var(--space-4)">
+      <section class="card" aria-labelledby="rep">
+        <h2 id="rep" class="card__title">Report</h2>
+        <dl class="dl" style="margin-top: var(--space-4)">
+          <dt>Business</dt>
+          <dd>
+            <a [routerLink]="['/b', report.listing.slug]">{{ report.listing.name }}</a> ·
+            {{ listingState(report) }}
+          </dd>
+          @for (entry of report.entries; track entry.at) {
+            <dt>Reason</dt>
+            <dd>{{ entry.reason }}</dd>
+            <dt>What they wrote</dt>
+            <dd>{{ entry.description }}</dd>
+          }
+          <dt>Reporter</dt>
+          <dd>
+            {{ report.reporterName }}
+            <span class="text-caption"
+              >Visible to the verification team only. The owner is never told.</span
+            >
+          </dd>
+        </dl>
+      </section>
+      @if (report.conversation; as conversation) {
+        <section class="card" aria-labelledby="conv">
+          <h2 id="conv" class="card__title">Reported conversation</h2>
+          <p class="text-caption" style="margin-top: var(--space-2)">
+            You can read this conversation only because this report is open. Your access is
+            recorded.
+          </p>
+          <ul class="chat__log" aria-label="Messages" style="margin-top: var(--space-3)">
+            @for (
+              message of conversation.messages;
+              track message.at + message.body;
+              let i = $index
+            ) {
+              @if (newDay(report, i)) {
+                <li class="chat__day">{{ dayOf(message.at) }}</li>
+              }
+              <li class="bubble" [class.bubble--me]="!message.fromOwner">
+                <span class="visually-hidden">{{ message.from }}: </span
+                ><span style="white-space: pre-wrap">{{ message.body }}</span
+                ><span class="bubble__meta">{{ timeOf(message.at) }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+      <section class="card" aria-labelledby="hist">
+        <h2 id="hist" class="card__title">History</h2>
+        @if (report.actions.length === 0) {
+          <p class="text-muted" style="margin-top: var(--space-3)">No action has been taken yet.</p>
+        } @else {
+          <ul class="rows" style="margin-top: var(--space-3)">
+            @for (action of report.actions; track action.at) {
+              <li class="row">
+                <div class="row__body">
+                  <p class="row__title">{{ actionTitle(action.kind) }}</p>
+                  <p class="row__meta">
+                    {{ action.by }} · {{ when(action.at) }} · “{{ action.resolutionNote }}”
+                    @if (action.messageText) {
+                      <br />Message: “{{ action.messageText }}”
+                    }
+                  </p>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+      @if (report.status === 'resolved') {
+        <p class="alert alert--info" role="status">
+          <svg jb-icon name="info"></svg>
+          <span class="alert__body"
+            >This report is resolved. No more actions can be taken on it.</span
+          >
+        </p>
+      } @else {
+        <section class="card" aria-labelledby="act">
+          <h2 id="act" class="card__title">Resolve</h2>
+          <p class="text-muted" style="margin-top: var(--space-2)">
+            Every action needs a resolution note. Dismissing or removing resolves the report; a hold
+            keeps it in review until you lift it.
+          </p>
+          <div class="cluster" style="margin-top: var(--space-4)">
+            <button #dismiss class="btn" type="button" (click)="act('dismiss', dismiss)">
+              Dismiss report
+            </button>
+            <button
+              #toReporter
+              class="btn"
+              type="button"
+              (click)="act('message-reporter', toReporter)"
+            >
+              Message reporter
+            </button>
+            <button #toOwner class="btn" type="button" (click)="act('message-owner', toOwner)">
+              Message owner
+            </button>
+            @if (report.listing.state === 'on-hold') {
+              <button #lift class="btn" type="button" (click)="act('lift-hold', lift)">
+                Lift hold
+              </button>
+            } @else if (report.listing.state !== 'removed') {
+              <button #hold class="btn" type="button" (click)="act('hold', hold)">
+                Place on hold
+              </button>
+            }
+            @if (report.listing.state !== 'removed') {
+              <button #remove class="btn btn--danger" type="button" (click)="act('remove', remove)">
+                Remove listing
+              </button>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+}

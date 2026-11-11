@@ -30,6 +30,7 @@ export * from './lib/models/listing-drafts';
 export * from './lib/api/reference-api';
 export * from './lib/models/reference';
 export * from './lib/api/admin-api';
+export * from './lib/models/moderation';
 export * from './lib/models/verification';
 export * from './lib/api/incoming-requests-api';
 export * from './lib/models/incoming-requests';

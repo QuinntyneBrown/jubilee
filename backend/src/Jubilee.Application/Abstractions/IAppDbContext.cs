@@ -53,6 +53,8 @@ public interface IAppDbContext
 
     DbSet<ConversationReport> ConversationReports { get; }
 
+    DbSet<ReportAction> ReportActions { get; }
+
     DbSet<Request> Requests { get; }
 
     DbSet<RequestTransition> RequestTransitions { get; }

@@ -24,7 +24,7 @@ public sealed class ListingReportsController(ISender sender) : ControllerBase
     {
         var key = Request.Headers["Idempotency-Key"].ToString();
         var reported = await sender.Send(
-            new ReportListingCommand(User.ToViewer().Subject!, slug, request.Reason, request.Description, key), cancellationToken);
+            new ReportListingCommand(User.ToViewer().Subject!, slug, request.Reason, request.Description, key, User.FindFirst("name")?.Value), cancellationToken);
         return StatusCode(StatusCodes.Status201Created, reported);
     }
 }

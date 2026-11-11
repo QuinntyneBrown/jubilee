@@ -22,8 +22,8 @@ it, and each such access is written to the audit log.
 
 The slice adds two admin pages, one controller, three handlers and the outbox
 handling in `Jubilee Worker`. No mocks exist for the admin reports pages; their
-routes (`/admin/reports` and `/admin/reports/:id` in this design) and copy are
-`<TO SUPPLY>`.
+routes are `/admin/reports` and `/admin/reports/:id`; the mocks are `pages/admin-reports`, `pages/admin-report`
+and `dialogs/report-action`, and the copy is in them (ADR 0033).
 
 - **`AdminReportsPage`** — Angular page that lists reports with listing, reason,
   description, reporter, time and status, and marks overdue reports. It adds a
@@ -48,12 +48,12 @@ routes (`/admin/reports` and `/admin/reports/:id` in this design) and copy are
 - **`ApplyReportActionCommand`** and **`ApplyReportActionCommandValidator`** —
   carry `ReportId`, `Kind`, `ResolutionNote` and `MessageText`. The validator
   returns HTTP 422 for an empty `ResolutionNote`, and for an empty `MessageText`
-  on `MessageReporter` or `MessageOwner`. Length limits are `<TO SUPPLY>`.
+  on `MessageReporter` or `MessageOwner`. The note is at most 1000 characters and the message at most 2000 (ADR 0033).
 - **`ApplyReportActionCommandHandler`** — loads the report and its listing,
   applies the action, records a `ReportActionEntry`, appends the `AuditEntry`,
   and writes the matching `OutboxMessage` in one unit of work. `Dismiss` and
   `RemoveListing` set the report to `Resolved`; the other three actions leave
-  it `InReview`. The action that lifts a hold is `<TO SUPPLY>`.
+  it `InReview`. `LiftHold` lifts a hold and resolves the report (ADR 0033).
 - **`Listing.PlaceOnHold`** and **`Listing.Remove`** — domain methods. A held
   listing has the stage `OnHold` and is excluded from every public query; a
   removed listing has the stage `Removed`.

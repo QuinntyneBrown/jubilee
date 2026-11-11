@@ -180,6 +180,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.ContentVersions);
             db.RemoveRange(db.MaintenanceWindows);
             db.RemoveRange(db.AccessRequests);
+            db.RemoveRange(db.ReportActions);
             db.RemoveRange(db.ListingReportEntries);
             db.RemoveRange(db.ListingReports);
             db.RemoveRange(db.ListingViews);
