@@ -12,7 +12,6 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Dialog } from '@angular/cdk/dialog';
 import { CdkMenuTrigger } from '@angular/cdk/menu';
@@ -30,12 +29,12 @@ import {
   MenuItem,
   MessageBubble,
   RequestCard as RequestCardItem,
-  Textarea,
   Badge,
   Chat,
   ChatHead,
   MessageThread,
   MessageDay,
+  Composer,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -101,7 +100,6 @@ type Entry =
 @Component({
   selector: 'jb-conversation-page',
   imports: [
-    FormsModule,
     RouterLink,
     CdkMenuTrigger,
     EmptyState,
@@ -114,7 +112,6 @@ type Entry =
     MessageBubble,
     AttachPhoto,
     RequestCardItem,
-    Textarea,
     Chip,
     Avatar,
     Badge,
@@ -122,6 +119,7 @@ type Entry =
     ChatHead,
     MessageThread,
     MessageDay,
+    Composer,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './conversation.page.html',
@@ -163,7 +161,7 @@ export class ConversationPage implements OnInit {
   private readonly renewedLinks = signal<Record<string, string | null>>({});
   protected readonly menuPosition = MENU_POSITION;
 
-  private readonly composer = viewChild<ElementRef<HTMLElement>>('composer');
+  private readonly composer = viewChild('composer', { read: ElementRef<HTMLElement> });
   private readonly more = viewChild('more', { read: ElementRef<HTMLElement> });
 
   protected readonly conversation = computed(() => {
@@ -458,15 +456,7 @@ export class ConversationPage implements OnInit {
     this.text.set(starter);
   }
 
-  protected onEnter(event: Event): void {
-    const key = event as KeyboardEvent;
-    if (key.shiftKey || key.isComposing) return;
-    key.preventDefault();
-    this.send();
-  }
-
-  protected send(event?: Event): void {
-    event?.preventDefault();
+  protected send(): void {
     const body = this.text().trim();
     const attached = this.attached();
     // A photo needs no text (L2-060 AC6); without either there is nothing to send.

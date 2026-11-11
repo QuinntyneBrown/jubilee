@@ -1,0 +1,25 @@
+<ng-content select="[slot=leading]" />
+<label class="visually-hidden" [attr.for]="id">{{ label() }}</label>
+<textarea
+  jb-textarea
+  #area
+  name="message"
+  rows="1"
+  [id]="id"
+  [placeholder]="placeholder()"
+  [attr.maxlength]="maxLength()"
+  [disabled]="disabled()"
+  [value]="value()"
+  (input)="value.set(area.element.value)"
+  (keydown.enter)="onEnter($event)"
+></textarea>
+<button
+  jb-button
+  variant="primary"
+  iconOnly
+  type="submit"
+  aria-label="Send"
+  [disabled]="disabled()"
+>
+  <svg jb-icon name="send"></svg>
+</button>

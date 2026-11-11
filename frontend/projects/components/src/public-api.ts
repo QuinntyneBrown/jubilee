@@ -23,6 +23,7 @@ export * from './lib/chip/chip-option';
 export * from './lib/chip/chip-row';
 export * from './lib/choice-card/choice-card';
 export * from './lib/choice-card/choice-cards';
+export * from './lib/composer/composer';
 export * from './lib/connection-banner/connection-banner';
 export * from './lib/dialog/dialog';
 export * from './lib/dialog/dialog-body';
