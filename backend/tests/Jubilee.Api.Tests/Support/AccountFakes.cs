@@ -19,14 +19,14 @@ public sealed class FakeEmailSender : IEmailSender
 
     public bool Failing { get; set; }
 
-    public Task SendAsync(string to, string subject, string textBody, CancellationToken cancellationToken, string? unsubscribeUrl = null)
+    public Task SendAsync(Jubilee.Application.Emails.EmailMessage message, CancellationToken cancellationToken)
     {
         if (Failing)
         {
             throw new InvalidOperationException("The provider is down.");
         }
 
-        Sent.Enqueue(new SentEmail(to, subject, textBody, unsubscribeUrl));
+        Sent.Enqueue(new SentEmail(message.To, message.Subject, message.TextBody, message.UnsubscribeUrl, message.HtmlBody));
         return Task.CompletedTask;
     }
 

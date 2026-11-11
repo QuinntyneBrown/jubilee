@@ -23,11 +23,10 @@ public interface IBotChallengeVerifier
     Task<bool> VerifyAsync(string? token, string? remoteIp, CancellationToken cancellationToken);
 }
 
-/// <summary>Sends one e-mail through the transactional e-mail provider.</summary>
+/// <summary>Sends one e-mail through the transactional e-mail provider. A failure is thrown: the outbox retries it (L2-179 AC3).</summary>
 public interface IEmailSender
 {
-    /// <param name="unsubscribeUrl">Set for notification e-mails: sent as <c>List-Unsubscribe</c> with one-click POST (RFC 8058).</param>
-    Task SendAsync(string to, string subject, string textBody, CancellationToken cancellationToken, string? unsubscribeUrl = null);
+    Task SendAsync(Emails.EmailMessage message, CancellationToken cancellationToken);
 }
 
 /// <summary>Where the app is served, for the links in e-mails (<c>App:PublicBaseUrl</c>).</summary>
@@ -55,8 +54,11 @@ public sealed class ValidationFailedException(IReadOnlyDictionary<string, string
 /// <summary>Google's answer about who signed in (L2-003).</summary>
 public sealed record GoogleIdentity(string Subject, string Email, bool EmailVerified, string GivenName, string FamilyName);
 
-/// <summary>A pending Google sign-in, kept between the redirect and the callback (L2-003 AC3).</summary>
-public sealed record OidcTransaction(string State, string Nonce, string CodeVerifier, string ReturnUrl);
+/// <summary>
+/// A pending Google sign-in, kept between the redirect and the callback (L2-003 AC3).
+/// <c>From</c> is the page it started on, <c>join</c> or <c>sign-in</c>, where a failure is shown (L2-003 AC7).
+/// </summary>
+public sealed record OidcTransaction(string State, string Nonce, string CodeVerifier, string ReturnUrl, string From = "sign-in");
 
 public interface IOidcTransactionStore
 {
