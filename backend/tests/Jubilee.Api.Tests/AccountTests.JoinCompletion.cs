@@ -142,7 +142,8 @@ public partial class AccountTests
         await JoinedMember("bounce@example.com");
 
         var response = await PostEvents(
-            $$"""[{"id":"2","eventType":"Microsoft.Communication.EmailDeliveryReportReceived","data":{"recipient":"bounce@example.com","status":"{{status}}"}}]""");
+            """[{"id":"2","eventType":"Microsoft.Communication.EmailDeliveryReportReceived","data":{"recipient":"bounce@example.com","status":"STATUS"}}]"""
+                .Replace("STATUS", status));
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Equal(bounced, (await MemberByEmail("bounce@example.com")).EmailBounced);
