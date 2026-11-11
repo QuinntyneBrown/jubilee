@@ -1,6 +1,9 @@
 // Block: lockup. The host is the link, or the span. The wordmark is always Archivo bold at
 // 110 % width with the tightest tracking; the mark is jb-brand-mark, sized as an element of
 // this block.
+//
+// Knobs: --jb-lockup-size, the size of the word where a bar sets its own (top bar);
+// --jb-lockup-on-ink, the colour on ink where a site has its own paper (marketing).
 :host {
   display: inline-flex;
   align-items: center;
@@ -8,7 +11,7 @@
   font-family: var(--font-family-display);
   font-weight: var(--font-weight-bold);
   font-stretch: var(--font-stretch-wide);
-  font-size: var(--font-size-3xl);
+  font-size: var(--jb-lockup-size, var(--font-size-3xl));
   letter-spacing: var(--letter-spacing-tighter);
   color: var(--color-fg-default);
   text-decoration: none;
@@ -23,10 +26,22 @@
   height: var(--icon-size-lg);
 }
 
+// The sizes drawn with the mark at 1.1em, close to the word.
+:host(.lockup--xs),
+:host(.lockup--sm),
 :host(.lockup--lg),
 :host(.lockup--xl) {
   gap: 0.12em;
   line-height: 1;
+}
+
+// 22 px: the wordmark's size less a hairline gap.
+:host(.lockup--xs) {
+  font-size: calc(var(--font-size-2xl) - var(--space-0-5));
+}
+
+:host(.lockup--sm) {
+  font-size: var(--font-size-2xl);
 }
 
 :host(.lockup--lg) {
@@ -38,6 +53,8 @@
   font-size: calc(var(--font-size-5xl) + var(--space-1));
 }
 
+:host(.lockup--xs) .lockup__mark,
+:host(.lockup--sm) .lockup__mark,
 :host(.lockup--lg) .lockup__mark,
 :host(.lockup--xl) .lockup__mark {
   width: 1.1em;
@@ -45,6 +62,8 @@
 }
 
 // The word sits a little high beside the larger mark, as drawn.
+:host(.lockup--xs) .lockup__word,
+:host(.lockup--sm) .lockup__word,
 :host(.lockup--lg) .lockup__word,
 :host(.lockup--xl) .lockup__word {
   margin-top: -0.06em;
@@ -52,5 +71,5 @@
 
 :host(.lockup--on-ink),
 :host(.lockup--on-ink:hover) {
-  color: var(--color-fg-on-brand);
+  color: var(--jb-lockup-on-ink, var(--color-fg-on-brand));
 }

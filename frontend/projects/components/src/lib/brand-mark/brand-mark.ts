@@ -6,5 +6,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'brand-mark', 'aria-hidden': 'true', viewBox: '0 0 100 100' },
   templateUrl: './brand-mark.html',
+  styleUrl: './brand-mark.scss',
 })
 export class BrandMark {}

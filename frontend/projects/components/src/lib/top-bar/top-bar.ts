@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BrandMark } from '../brand-mark/brand-mark';
+import { Lockup } from '../lockup/lockup';
 import { Icon } from '../icon/icon';
 import { ChromeMember, ChromeSection } from '../navigation';
 import { Badge } from '../badge/badge';
@@ -14,7 +14,7 @@ import { Avatar } from 'components';
  */
 @Component({
   selector: 'header[jb-top-bar]',
-  imports: [RouterLink, BrandMark, Icon, Badge, Button, Input, Avatar],
+  imports: [RouterLink, Lockup, Icon, Badge, Button, Input, Avatar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'topbar topbar--ink' },
   templateUrl: './top-bar.html',

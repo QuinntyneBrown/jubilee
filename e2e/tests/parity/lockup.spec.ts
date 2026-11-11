@@ -1,8 +1,11 @@
 import { parity } from '../../fixtures/parity';
+import { BrowsePage } from '../../pages/browse.page';
 import { ForgotPasswordPage } from '../../pages/forgot-password.page';
+import { MarketingHomePage } from '../../pages/marketing-home.page';
 import { SignInPage } from '../../pages/sign-in.page';
 
-// jb-lockup: the brand link of the bare pages, and the two larger sizes of Log in and Sign up.
+// jb-lockup: the brand link of the bare pages and of the top bar, the two larger sizes of Log in
+// and Sign up, and the two smaller ones of the marketing site.
 parity('lockup', {
   cases: [
     {
@@ -10,6 +13,24 @@ parity('lockup', {
       route: 'forgot-password',
       screen: (page) => new ForgotPasswordPage(page),
       region: (screen: ForgotPasswordPage) => screen.frameBrand,
+    },
+    {
+      name: 'top-bar',
+      route: 'browse',
+      screen: (page) => new BrowsePage(page),
+      region: (screen: BrowsePage) => screen.brand,
+    },
+    {
+      name: 'marketing-bar',
+      route: 'marketing-home',
+      screen: (page) => new MarketingHomePage(page),
+      region: (screen: MarketingHomePage) => screen.lockup,
+    },
+    {
+      name: 'marketing-footer',
+      route: 'marketing-home',
+      screen: (page) => new MarketingHomePage(page),
+      region: (screen: MarketingHomePage) => screen.footerLockup,
     },
     {
       name: 'large',

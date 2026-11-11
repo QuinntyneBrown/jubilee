@@ -111,7 +111,7 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 
 /* ---------- Navigation ----------------------------------------------------- */
 .topbar { position: sticky; top: 0; z-index: var(--z-sticky); display: flex; align-items: center; gap: var(--space-4); min-height: var(--layout-topbar-height); padding-inline: var(--layout-margin); background: var(--color-bg-surface); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
-.topbar__brand { font: var(--text-h4); color: var(--color-fg-default); text-decoration: none; display: inline-flex; align-items: center; gap: var(--space-2); }
+.topbar__brand { --jb-lockup-size: var(--font-size-2xl); line-height: var(--line-height-snug); }
 .topbar__nav { display: none; gap: var(--space-1); margin-left: var(--space-4); }
 .topbar__spacer { flex: 1; }
 .topbar__menu { display: inline-flex; }
@@ -270,10 +270,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 /* ---------- Top bar on the brand band --------------------------------------- */
 .topbar--ink { background: var(--color-bg-brand); border-bottom-color: var(--color-border-on-brand); color: var(--color-fg-on-brand); }
 .topbar--ink :focus-visible { outline-color: var(--color-focus-ring-on-brand); }
-.topbar--ink .topbar__brand { color: var(--color-fg-on-brand); font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); font-size: var(--font-size-2xl); letter-spacing: var(--letter-spacing-tighter); }
-.brand-mark { width: var(--icon-size-lg); height: var(--icon-size-lg); fill: none; stroke-width: 14.5; stroke-linecap: butt; stroke-linejoin: miter; flex: none; }
-.brand-mark__j { stroke: currentColor; }
-.brand-mark__bar { stroke: var(--color-accent); }
 .topbar--ink .topbar__nav { margin-left: 0; align-items: center; gap: var(--space-2); }
 .topbar--ink .nav-link { color: var(--color-fg-on-brand-muted); border-radius: 0; min-height: var(--layout-topbar-height); }
 .topbar--ink .nav-link:hover, .topbar--ink .nav-link[data-state="hover"] { background: transparent; color: var(--color-fg-on-brand); }
