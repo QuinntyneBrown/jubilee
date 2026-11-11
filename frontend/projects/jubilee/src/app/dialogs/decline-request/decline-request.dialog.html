@@ -1,0 +1,84 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--danger" aria-hidden="true">
+      <svg jb-icon name="alert"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">Decline {{ firstName }}’s {{ noun }}?</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+        A kind, clear reason keeps the door open. {{ firstName }} can reply in Messages.
+      </p>
+    </div>
+    <button
+      class="btn btn--ghost btn--icon"
+      type="button"
+      aria-label="Close"
+      [disabled]="busy()"
+      (click)="close()"
+    >
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <form class="dialog__body stack" id="decline-request-form" novalidate (ngSubmit)="send()">
+    @if (view() === 'failed') {
+      <div class="alert alert--danger" role="alert">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">We couldn’t send your decline</div>
+          <div>The request is still new and your note is kept. Try again.</div>
+        </div>
+      </div>
+    }
+    <div class="field">
+      <label class="field__label" for="d-why">Reason</label>
+      <select
+        class="select"
+        id="d-why"
+        name="reason"
+        [disabled]="busy()"
+        [ngModel]="reason()"
+        (ngModelChange)="reason.set($event)"
+      >
+        @for (option of reasons; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="d-msg">
+        Message to {{ firstName }} <span class="optional">(required)</span>
+      </label>
+      <span class="field__help" id="d-msg-help">Shown to the customer with your decline.</span>
+      <textarea
+        class="textarea"
+        id="d-msg"
+        name="message"
+        rows="3"
+        required
+        [attr.maxlength]="maxMessage"
+        [readOnly]="busy()"
+        [attr.aria-invalid]="problem() ? 'true' : null"
+        [attr.aria-describedby]="problem() ? 'd-msg-help d-msg-error' : 'd-msg-help'"
+        [ngModel]="message()"
+        (ngModelChange)="message.set($event)"
+      ></textarea>
+      @if (problem() === 'required') {
+        <span class="field__error" id="d-msg-error"
+          >Write a short note so {{ firstName }} knows why and what to do next.</span
+        >
+      }
+    </div>
+  </form>
+  <div class="dialog__footer">
+    <button class="btn" type="button" [disabled]="busy()" (click)="close()">Keep request</button>
+    <button
+      class="btn btn--danger"
+      type="submit"
+      form="decline-request-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? 'true' : null"
+    >
+      Decline request
+    </button>
+  </div>
+</div>

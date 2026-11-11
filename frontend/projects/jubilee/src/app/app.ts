@@ -24,13 +24,14 @@ import { JbRouteData } from './app.routes';
 import { ClockService } from './services/clock.service';
 import { NavigationStore } from './services/navigation.store';
 import { SessionService } from './services/session.service';
+import { ToastRegion } from './toasts/toast-region';
 
 const BARE: JbRouteData = { shell: 'bare', page: '' };
 
 /** AppShell: the skip link, the top bar, the routed page in `main`, the footer and the tab bar. */
 @Component({
   selector: 'jb-root',
-  imports: [RouterOutlet, SkipLink, TopBar, SiteFooter, TabBar, VerifyEmailBanner],
+  imports: [RouterOutlet, SkipLink, TopBar, SiteFooter, TabBar, VerifyEmailBanner, ToastRegion],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
 })

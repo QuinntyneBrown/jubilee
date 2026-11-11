@@ -1,0 +1,34 @@
+@for (toast of toasts.toasts(); track toast.id) {
+  <div
+    [class]="'toast toast--' + toast.tone"
+    [attr.role]="toast.tone === 'danger' ? 'alert' : null"
+    (mouseenter)="toasts.pause(toast.id)"
+    (mouseleave)="toasts.resume(toast.id)"
+    (focusin)="toasts.pause(toast.id)"
+    (focusout)="toasts.resume(toast.id)"
+  >
+    <svg jb-icon [name]="icon(toast.tone)" aria-hidden="true"></svg>
+    <div class="toast__body">
+      <div class="toast__title">{{ toast.title }}</div>
+      @if (toast.text) {
+        <div class="toast__text">{{ toast.text }}</div>
+      }
+      @if (toast.action; as action) {
+        <button class="toast__action" type="button" (click)="toasts.act(toast.id)">
+          {{ action.label }}
+        </button>
+      }
+    </div>
+    <button class="close" type="button" aria-label="Dismiss" (click)="toasts.dismiss(toast.id)">
+      <svg jb-icon name="close"></svg>
+    </button>
+    @if (toast.durationMs > 0) {
+      <span
+        class="toast__progress"
+        aria-hidden="true"
+        [style.animation]="'toast-countdown ' + toast.durationMs + 'ms linear forwards'"
+        [style.animation-play-state]="toast.paused ? 'paused' : 'running'"
+      ></span>
+    }
+  </div>
+}

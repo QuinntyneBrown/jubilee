@@ -1,0 +1,74 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+      <svg jb-icon name="check"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">Confirm {{ firstName }}’s {{ noun }}?</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+        Only confirm if you can fulfil “{{ request.title }}”.
+      </p>
+    </div>
+    <button
+      class="btn btn--ghost btn--icon"
+      type="button"
+      aria-label="Close"
+      [disabled]="busy()"
+      (click)="close()"
+    >
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <div class="dialog__body stack">
+    @if (view() === 'failed') {
+      <div class="alert alert--danger" role="alert">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">We couldn’t confirm it</div>
+          <div>The request is still new. Check your connection and try again.</div>
+        </div>
+      </div>
+    }
+    @if (view() === 'conflict') {
+      <div class="alert alert--danger" role="alert">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">{{ conflict() }}</div>
+          <div>Nothing was confirmed.</div>
+        </div>
+      </div>
+    }
+    <dl class="dl well">
+      <dt>Customer</dt>
+      <dd>{{ request.customerName }}</dd>
+      <dt>{{ request.kindLabel }}</dt>
+      <dd>{{ request.title }}</dd>
+      @if (request.when) {
+        <dt>{{ whenLabel }}</dt>
+        <dd>{{ request.when }}</dd>
+      }
+      @if (request.total) {
+        <dt>Total</dt>
+        <dd class="price">{{ request.total }}</dd>
+      }
+    </dl>
+    <p class="text-muted">
+      {{ firstName }} is told you’ve confirmed and that you’ll message them about payment and
+      pickup.
+    </p>
+  </div>
+  <div class="dialog__footer">
+    <button class="btn" type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
+      Not yet
+    </button>
+    <button
+      class="btn btn--primary"
+      type="button"
+      [disabled]="busy() || view() === 'conflict'"
+      [attr.aria-busy]="busy() ? 'true' : null"
+      (click)="confirm()"
+    >
+      {{ view() === 'failed' ? 'Try again' : 'Confirm ' + noun }}
+    </button>
+  </div>
+</div>

@@ -4,6 +4,7 @@ import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './moc
 import { fulfil, recordedAnswer } from './mock-api';
 import { stubMessaging } from './messaging';
 import { esther, stubAdmin } from './admin';
+import { stubIncoming } from './incoming-requests';
 import { stubReference } from './reference';
 import type { StubName } from './routes';
 
@@ -220,6 +221,12 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       );
     case 'search-start':
       return stubSearchStart(page, memberSearchStart);
+    case 'incoming':
+      return stubIncoming(page);
+    case 'incoming-empty':
+      return stubIncoming(page, { list: 'empty' });
+    case 'incoming-error':
+      return stubIncoming(page, { list: 'fails' });
     case 'admin-queue':
       return stubAdmin(page);
     case 'admin-queue-empty':
