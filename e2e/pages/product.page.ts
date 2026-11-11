@@ -42,6 +42,8 @@ export class ProductPage extends ShellPage implements Screen {
   readonly backToShop: Locator;
   readonly saveButton: Locator;
   readonly loadingStatus: Locator;
+  /** The quantity's label, input and error together. */
+  readonly quantityField: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -61,6 +63,7 @@ export class ProductPage extends ShellPage implements Screen {
     this.optionError = this.optionGroup.locator('.field__error');
     this.quantity = this.main.getByLabel('Quantity');
     this.quantityError = this.main.locator('#qty-error');
+    this.quantityField = this.main.locator('.field:has(#qty)');
     this.requestButton = this.main.getByRole('button', { name: 'Request this item' });
     this.actions = this.main.locator('.detail-head__actions');
     this.messageLink = this.main.locator('.detail-head__actions .btn--icon');

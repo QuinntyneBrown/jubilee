@@ -29,6 +29,9 @@ import {
   DescriptionItem,
   Price,
   CardGrid,
+  ProductRequestForm,
+  ProductRequestView,
+  ProductSelection,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { RequestItemData, RequestItemDialog } from '../../dialogs/request-item/request-item.dialog';
@@ -41,7 +44,6 @@ import { LoadState, errorReference } from '../../services/load-state';
 import { SavedStore } from '../../services/saved.store';
 import { PendingActionService } from '../../services/pending-action.service';
 import { SessionService } from '../../services/session.service';
-import { ProductRequestForm, ProductSelection } from './product-request-form';
 
 /**
  * The product page at /b/:slug/p/:product (L2-035): the product with its options, quantity and
@@ -90,6 +92,23 @@ export class ProductPage {
   protected readonly productSlug = signal('');
   protected readonly state = signal<LoadState<ProductPageModel>>({ status: 'loading' });
   protected readonly alertRequested = signal(false);
+
+  /** What the request form needs of the product on the page. */
+  protected readonly requestView = computed<ProductRequestView | null>(() => {
+    const state = this.state();
+    if (state.status !== 'loaded') return null;
+    const product = state.value;
+    return {
+      optionName: product.optionName,
+      options: product.options,
+      minimumQuantity: product.minimumQuantity,
+      maxQuantity: product.maxQuantity,
+      soldOut: product.soldOut,
+      restockNote: product.restockNote,
+      messageLink: ['/b', product.shop.slug, 'message'],
+      shopName: product.shop.name,
+    };
+  });
 
   /** Whether the member has saved this product (L2-041). */
   protected readonly saved = computed(() => {

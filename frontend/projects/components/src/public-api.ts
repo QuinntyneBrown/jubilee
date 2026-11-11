@@ -88,6 +88,7 @@ export * from './lib/password-input/password-input';
 export * from './lib/perk/perk';
 export * from './lib/price/price';
 export * from './lib/product-card/product-card';
+export * from './lib/product-request-form/product-request-form';
 export * from './lib/radio-group/radio-group';
 export * from './lib/request-card/request-card';
 export * from './lib/row-list-skeleton/row-list-skeleton';

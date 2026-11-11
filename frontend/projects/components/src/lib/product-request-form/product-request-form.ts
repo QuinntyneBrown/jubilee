@@ -10,18 +10,30 @@ import {
   viewChildren,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProductPage } from 'api';
-import {
-  Icon,
-  Button,
-  Alert,
-  Field,
-  FieldError,
-  Input,
-  ChipOption,
-  InlineStatus,
-  DetailHeadActions,
-} from 'components';
+import { Alert } from '../alert/alert';
+import { Button } from '../button/button';
+import { ChipOption } from '../chip/chip-option';
+import { DetailHeadActions } from '../page-header/detail-head-actions';
+import { Field } from '../field/field';
+import { FieldError } from '../field/field-error';
+import { Icon } from '../icon/icon';
+import { InlineStatus } from '../inline-status/inline-status';
+import { Input } from '../input/input';
+
+/** What the form needs to know of a product. */
+export interface ProductRequestView {
+  /** What the options choose, for example "Size"; null without options. */
+  optionName: string | null;
+  options: { label: string; maxQuantity: number }[];
+  minimumQuantity: number;
+  /** The bound before an option is chosen, or of a product without options. */
+  maxQuantity: number;
+  soldOut: boolean;
+  restockNote: string | null;
+  /** Where "Message the shop" goes, and the shop's name for its label. */
+  messageLink: string | readonly unknown[];
+  shopName: string;
+}
 
 /** A valid selection, handed to the order request (L2-035 AC2). */
 export interface ProductSelection {
@@ -50,11 +62,12 @@ export interface ProductSelection {
     DetailHeadActions,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { style: 'display: contents' },
+  host: { class: 'product-request' },
   templateUrl: './product-request-form.html',
+  styleUrl: './product-request-form.scss',
 })
 export class ProductRequestForm {
-  readonly product = input.required<ProductPage>();
+  readonly product = input.required<ProductRequestView>();
   /** The member has an open back-in-stock alert for this product (L2-036 AC2). */
   readonly alertRequested = input(false);
   readonly requested = output<ProductSelection>();
@@ -62,16 +75,16 @@ export class ProductRequestForm {
   readonly alertAsked = output<HTMLElement>();
 
   // Another product starts again: nothing chosen, at its minimum order quantity, no errors.
-  protected readonly chosen = linkedSignal<ProductPage, string | null>({
+  protected readonly chosen = linkedSignal<ProductRequestView, string | null>({
     source: this.product,
     computation: () => null,
   });
   protected readonly quantity = linkedSignal(() => String(this.product().minimumQuantity));
-  protected readonly optionError = linkedSignal<ProductPage, string | null>({
+  protected readonly optionError = linkedSignal<ProductRequestView, string | null>({
     source: this.product,
     computation: () => null,
   });
-  protected readonly quantityError = linkedSignal<ProductPage, string | null>({
+  protected readonly quantityError = linkedSignal<ProductRequestView, string | null>({
     source: this.product,
     computation: () => null,
   });
