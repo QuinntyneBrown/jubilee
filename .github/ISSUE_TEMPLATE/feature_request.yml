@@ -1,0 +1,41 @@
+name: Feature request
+description: Suggest something Jubilee should do.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is hard or impossible today, and for whom?
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Role
+      description: Who is the feature for?
+      multiple: true
+      options:
+        - Visitor
+        - Member
+        - Owner
+        - Church reference
+        - Verification team
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behaviour
+      description: Describe what should happen. Given-When-Then criteria are welcome.
+    validations:
+      required: true
+  - type: input
+    id: journey
+    attributes:
+      label: Related journey or requirement
+      description: A journey in docs/journey.md or a requirement in docs/specs/, if any.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
