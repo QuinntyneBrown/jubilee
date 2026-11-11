@@ -1,0 +1,6 @@
+// Block: status-page. The host fills the page and centres its one empty state.
+:host {
+  min-height: 70dvh;
+  display: grid;
+  place-items: center;
+}

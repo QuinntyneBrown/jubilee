@@ -9,6 +9,8 @@ export class ShellPage {
   readonly pageHeader: Locator;
   /** The head of each titled section: its heading and the action beside it. */
   readonly sectionHeads: Locator;
+  /** The whole of a page that only says why it has nothing to show. */
+  readonly statusPage: Locator;
   readonly topBar: Locator;
   readonly brand: Locator;
   readonly primaryNav: Locator;
@@ -30,6 +32,7 @@ export class ShellPage {
     this.main = page.locator('main#main');
     this.pageHeader = this.main.locator('.page-header');
     this.sectionHeads = this.main.locator('.section-head');
+    this.statusPage = this.main.locator('.status-page');
     this.topBar = page.locator('header.topbar');
     this.brand = this.topBar.locator('.topbar__brand');
     this.primaryNav = this.topBar.getByRole('navigation', { name: 'Primary', exact: true });
