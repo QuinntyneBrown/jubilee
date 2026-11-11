@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { MarketingButton, MarketingLink } from 'components';
+import { MarketingButton, MarketingLink, Lockup } from 'components';
 import { APP_URL } from './app-url';
 import { Benefits } from './benefits/benefits';
 import { ForBusinesses } from './for-businesses/for-businesses';
 import { HeroVisual } from './hero-visual/hero-visual';
 import { HowItWorks } from './how-it-works/how-it-works';
 import { InsideTheApp } from './inside-the-app/inside-the-app';
-import { Lockup } from './lockup/lockup';
 import { PitchVideo } from './pitch-video/pitch-video';
 
 /** The marketing site's one page (L2-183), section for section as the design reference has it. */

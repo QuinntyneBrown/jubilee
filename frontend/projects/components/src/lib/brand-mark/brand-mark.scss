@@ -1,0 +1,18 @@
+// Block: brand-mark. The host is the svg. A block that sets the mark beside its word sizes it.
+:host {
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
+  fill: none;
+  stroke-width: 14.5;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  flex: none;
+}
+
+.brand-mark__j {
+  stroke: currentColor;
+}
+
+.brand-mark__bar {
+  stroke: var(--color-accent);
+}

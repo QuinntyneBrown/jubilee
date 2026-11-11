@@ -50,6 +50,8 @@ export class MarketingHomePage implements Screen {
   readonly closing: Locator;
   readonly closingStartBrowsing: Locator;
   readonly footer: Locator;
+  /** The lockup that signs the footer. */
+  readonly footerLockup: Locator;
   readonly headings: Locator;
 
   private readonly requests: string[] = [];
@@ -104,6 +106,7 @@ export class MarketingHomePage implements Screen {
     this.closing = this.main.locator('section.mkt-closing');
     this.closingStartBrowsing = this.closing.getByRole('link', { name: 'Start browsing' });
     this.footer = page.locator('footer.mkt-footer');
+    this.footerLockup = this.footer.getByRole('img', { name: 'Jubilee' });
     this.headings = this.main.getByRole('heading', { level: 2 });
   }
 
