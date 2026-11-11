@@ -13,6 +13,9 @@ export class MyBusinessPage extends ShellPage implements Screen {
   readonly replyRows: Locator;
   readonly listingCard: Locator;
   readonly pause: Locator;
+  readonly awayRow: Locator;
+  readonly setAway: Locator;
+  readonly changeAway: Locator;
   readonly resume: Locator;
   readonly pausedBanner: Locator;
   readonly liveBanner: Locator;
@@ -34,6 +37,9 @@ export class MyBusinessPage extends ShellPage implements Screen {
     this.replyRows = this.needsReply.locator('ul.rows > li');
     this.listingCard = this.main.locator('aside .card');
     this.pause = this.main.getByRole('button', { name: 'Pause listing' });
+    this.awayRow = this.listingCard.locator('li.row').filter({ hasText: /Away/ });
+    this.setAway = this.awayRow.getByRole('button', { name: 'Set away period' });
+    this.changeAway = this.awayRow.getByRole('button', { name: 'Change away period' });
     this.resume = page.getByRole('button', { name: 'Resume listing' });
     this.pausedBanner = page.locator('.banner').filter({ hasText: 'Your listing is paused.' });
     this.liveBanner = page.locator('.banner').filter({ hasText: 'is verified and live.' });

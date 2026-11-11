@@ -1,0 +1,78 @@
+// Block: bubble, one message of a conversation. The host is the list item.
+:host {
+  max-width: min(32rem, 85%);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-subtle);
+  align-self: flex-start;
+  overflow-wrap: anywhere;
+}
+
+:host(.bubble--me) {
+  align-self: flex-end;
+  background: var(--color-bg-inverse);
+  color: var(--color-fg-inverse);
+}
+
+:host(.bubble--pending) {
+  opacity: 0.7;
+}
+
+:host(.bubble--failed) {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+  border: var(--border-width-hairline) solid var(--color-danger-border);
+}
+
+.bubble__text {
+  white-space: pre-wrap;
+}
+
+.bubble__meta {
+  display: block;
+  font: var(--text-caption);
+  opacity: 0.8;
+  margin-top: var(--space-1);
+}
+
+.bubble__meta button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+  min-height: var(--target-min);
+}
+
+.bubble__photo {
+  display: block;
+  width: 16rem;
+  max-width: 100%;
+  padding: 0;
+  margin: var(--space-1) 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: inherit;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.bubble__photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--color-bg-subtle-hover);
+}
+
+.bubble__photo--missing {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  border: var(--border-width-hairline) dashed currentColor;
+  font: var(--text-caption);
+  cursor: default;
+}

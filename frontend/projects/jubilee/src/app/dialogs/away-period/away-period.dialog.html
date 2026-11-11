@@ -1,0 +1,38 @@
+<jb-dialog
+  heading="Set an away period"
+  description="Members who message you see that you’re away and when you’re back. Your listing stays public."
+  icon="clock"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <form jb-dialog-body class="stack" id="away-form" novalidate (ngSubmit)="save()">
+    @if (view() === 'failed') {
+      <div jb-alert tone="danger" heading="We couldn’t save that" role="alert">
+        <div>Your away period has not changed. Try again.</div>
+      </div>
+    }
+    <div jb-field label="Back on" controlId="d-back" required [error]="problem()">
+      <input
+        jb-input
+        name="backOn"
+        type="date"
+        required
+        cdkFocusInitial
+        [attr.min]="min"
+        [attr.max]="max"
+        [readOnly]="busy()"
+        [ngModel]="backOn()"
+        (ngModelChange)="backOn.set($event)"
+      />
+    </div>
+  </form>
+  <div jb-dialog-footer>
+    @if (data.awayUntil) {
+      <button jb-button variant="ghost" type="button" [disabled]="busy()" (click)="clear()">
+        Clear away period
+      </button>
+    }
+    <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+    <button jb-button variant="primary" type="submit" form="away-form" [busy]="busy()">Save</button>
+  </div>
+</jb-dialog>

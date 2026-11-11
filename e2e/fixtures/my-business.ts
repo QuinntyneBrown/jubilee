@@ -24,6 +24,12 @@ export interface FakeBusiness {
   save: Outcome | 'conflict';
   pause: Outcome;
   resume: Outcome | 'review';
+  /** How saving the away period is answered; `in-past` refuses the date (422). */
+  away: Outcome | 'in-past';
+  /** The instant the owner is back, or null (L2-062). */
+  awayUntil: string | null;
+  /** What was sent to the away endpoint, in order. */
+  aways: (string | null)[];
   /** The refusal of the next photo upload, by the API's code; null accepts it. */
   photoRefusal: { status: number; code: string } | null;
   state: string;
@@ -80,6 +86,9 @@ export async function stubMyBusiness(
     editor: 'ok',
     save: 'ok',
     pause: 'ok',
+    away: 'ok',
+    awayUntil: null,
+    aways: [],
     resume: 'ok',
     photoRefusal: null,
     state: 'live',
@@ -166,6 +175,7 @@ export async function stubMyBusiness(
             : 'Pending verification · submitted today',
       paused: fake.paused,
       pausedAt: fake.paused ? '2026-11-10T14:00:00Z' : null,
+      awayUntil: fake.awayUntil,
       justApproved: fake.justApproved,
       newRequests: 3,
       stats: live
@@ -247,7 +257,7 @@ export async function stubMyBusiness(
     return route.fulfill({ json: overview() });
   });
 
-  await page.route(/\/api\/my-business\/(listing|pause|resume|photos.*)$/, (route: Route) => {
+  await page.route(/\/api\/my-business\/(listing|pause|resume|away|photos.*)$/, (route: Route) => {
     const request = route.request();
     const path = new URL(request.url()).pathname.replace('/api/my-business/', '');
     const method = request.method();
@@ -280,6 +290,17 @@ export async function stubMyBusiness(
         highlight: String(body['highlight']),
       };
       return route.fulfill({ json: editor() });
+    }
+    if (path === 'away') {
+      if (fake.away === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
+      if (fake.away === 'in-past') {
+        return route.fulfill(problem(422, { code: 'VALIDATION', errors: { until: 'IN_PAST' } }));
+      }
+      const { until } = request.postDataJSON() as { until: string | null };
+      fake.aways.push(until);
+      // The period ends at the start of that day in Toronto.
+      fake.awayUntil = until ? `${until}T05:00:00Z` : null;
+      return route.fulfill({ json: { awayUntil: fake.awayUntil } });
     }
     if (path === 'pause') {
       if (fake.pause === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));

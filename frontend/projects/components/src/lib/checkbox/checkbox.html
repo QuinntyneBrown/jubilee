@@ -9,5 +9,10 @@
     [attr.aria-describedby]="describedBy()"
     (change)="toggle($event)"
   />
-  <span class="choice__text"><ng-content /></span>
+  <span class="choice__text"
+    ><ng-content />
+    @if (hint(); as hint) {
+      <small>{{ hint }}</small>
+    }
+  </span>
 </label>

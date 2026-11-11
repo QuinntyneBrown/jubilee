@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { EmptyState, Icon, Button, Input, Skeleton, Avatar } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { MessagesStore } from '../../services/messages.store';
 import { threadTime } from '../../services/message-time';
+import { RealtimeService } from '../../services/realtime.service';
 
 const SEARCH_DELAY_MS = 250;
 
@@ -27,6 +29,16 @@ export class InboxList {
   readonly selectedId = input<string | null>(null);
 
   protected readonly text = signal(this.store.search());
+
+  constructor() {
+    // A message that arrives changes a row, its place and what is unread (L2-056, L2-070).
+    inject(RealtimeService)
+      .received.pipe(takeUntilDestroyed())
+      .subscribe((item) => {
+        if (item.kind === 'message') this.store.load();
+      });
+  }
+
   private timer: ReturnType<typeof setTimeout> | undefined;
 
   protected typed(value: string): void {

@@ -36,7 +36,11 @@ public sealed record MyBusinessDto(
     IReadOnlyList<NeedsReplyDto> NeedsReply,
     MyBusinessSummaryDto? Summary,
     ReferenceStatusDto? Reference,
-    OwnerVerificationDto? Verification);
+    OwnerVerificationDto? Verification,
+    DateTimeOffset? AwayUntil = null);
+
+/// <summary>The owner's away period after a change: the instant they are back, or none (L2-062).</summary>
+public sealed record AwayPeriodDto(DateTimeOffset? AwayUntil);
 
 public sealed record CategoryOptionDto(string Slug, string Name);
 
@@ -237,7 +241,8 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             needs,
             summary,
             reference,
-            verification);
+            verification,
+            listing.AwayUntil is { } back && back > now ? back : null);
     }
 
     /// <summary>How many different members saved the business or one of its products: a count, never who (L2-041 AC6).</summary>
@@ -376,6 +381,45 @@ public sealed class PauseListingCommandHandler(IAppDbContext db, TimeProvider cl
         await db.SaveChangesAsync(cancellationToken);
         return new PauseResultDto(true, listing.PausedAt, Workspace.State(listing), false);
     }
+}
+
+/// <summary>The owner says the day they are back, or clears it (L2-062 AC3 to AC6). The period ends at the start of that day in Toronto.</summary>
+public sealed record SetAwayPeriodCommand(string Subject, string? Until) : IRequest<AwayPeriodDto>;
+
+public sealed class SetAwayPeriodCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<SetAwayPeriodCommand, AwayPeriodDto>
+{
+    public async Task<AwayPeriodDto> Handle(SetAwayPeriodCommand request, CancellationToken cancellationToken)
+    {
+        var listing = await Workspace.Owned(db, request.Subject, cancellationToken);
+        if (request.Until is null)
+        {
+            listing.SetAway(null);
+            await db.SaveChangesAsync(cancellationToken);
+            return new AwayPeriodDto(null);
+        }
+
+        if (!DateOnly.TryParseExact(request.Until, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var day))
+        {
+            throw Invalid("REQUIRED");
+        }
+
+        var today = TorontoClock.Today(clock.GetUtcNow());
+        if (day <= today)
+        {
+            throw Invalid("IN_PAST");
+        }
+
+        if (day > today.AddYears(1))
+        {
+            throw Invalid("TOO_FAR");
+        }
+
+        listing.SetAway(TorontoClock.At(day, TimeOnly.MinValue));
+        await db.SaveChangesAsync(cancellationToken);
+        return new AwayPeriodDto(listing.AwayUntil);
+    }
+
+    private static ValidationFailedException Invalid(string code) => new(new Dictionary<string, string> { ["until"] = code });
 }
 
 public sealed record ResumeListingCommand(string Subject) : IRequest<PauseResultDto>;

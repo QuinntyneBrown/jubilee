@@ -16,12 +16,10 @@ skinparam package {
 }
 actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "MessageComposer" as composer
-  participant "ConversationStore" as store
+  participant "ConversationPage" as page
   participant "MessagesApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "IdempotencyMiddleware" as idem
   participant "ConversationsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
@@ -31,39 +29,41 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-member -> composer : Press Enter or the send button
-composer -> composer : Ignore empty or whitespace-only text (L2-058)
-composer -> store : send(text, attachmentIds)
-store -> store : Create OutgoingMessage with a new idempotency key
-store --> composer : Clear composer and show "Sending…" (L2-058)
-store -> client : sendMessage(id, text, key)
-client -> idem : POST /api/conversations/{id}/messages with Idempotency-Key
-idem -> idem : Look up key (L2-132)
-idem -> controller : Forward new request
+member -> page : Press Enter or the send button
+page -> page : Ignore empty or whitespace-only text with no photo (L2-058)
+page -> page : Create a pending message with a new idempotency key
+page --> member : Clear composer and show "Sending…" (L2-058)
+page -> client : send(id, text, key)
+client -> controller : POST /api/conversations/{id}/messages with idempotencyKey
 controller -> controller : Authenticate and apply endpoint policy
 controller -> handler : Send SendMessageCommand
 handler -> db : Load conversation for a participant (L2-133)
-db --> handler : Conversation and listing away period
-handler -> entity : AddMessage(sender, text, now)
-entity --> handler : Message with next sequence
-handler -> db : Save message and outbox row in one unit of work
-db --> handler : Commit result
-handler --> controller : MessageDto with awayUntil
-controller --> idem : 201 Created
-idem --> client : Response stored under the key
+db --> handler : Conversation and listing away date
+handler -> db : Look up (SenderSubject, IdempotencyKey) (L2-132)
+alt key already stored
+  db --> handler : Original message
+else new key
+  db --> handler : No row
+  handler -> entity : NextMessageTime(now)
+  entity --> handler : Time never before the last message
+  handler -> db : Save message
+  db --> handler : Commit result
+end
+handler --> controller : MessageDto
+controller --> client : 201 Created
 alt response received
-  client --> store : Confirmed message
-  store --> composer : Replace "Sending…" with the time
-  opt owner away period is active
-    store --> member : Toast "{Owner} is away until {day}." (L2-062)
+  client --> page : Confirmed message
+  page --> member : Replace "Sending…" with the time
+  opt owner away date is in the future
+    page --> member : Toast "{Owner} is away until {day}." (L2-062)
   end
 else request fails
-  client --> store : Network or server error
-  store --> member : Show "Not sent. Check your connection." with "Try again" and "Delete"
-  member -> store : Press "Try again"
-  store -> client : sendMessage with the same key (L2-058)
-  client -> idem : POST with the same Idempotency-Key
-  idem --> client : Original or new 201 result and never a duplicate
-  client --> store : Confirmed message
+  client --> page : Network or server error
+  page --> member : Show "Not sent. Check your connection." with "Try again" and "Delete"
+  member -> page : Press "Try again"
+  page -> client : send with the same key (L2-058)
+  client -> controller : POST with the same idempotencyKey
+  controller --> client : Original or new 201 result and never a duplicate
+  client --> page : Confirmed message
 end
 @enduml

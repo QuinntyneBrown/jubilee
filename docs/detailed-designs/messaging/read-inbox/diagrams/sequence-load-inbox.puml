@@ -18,27 +18,29 @@ actor "Member or Owner" as member
 box "Frontend — Jubilee Web" #E0F2FE
   participant "MessagesPage" as page
   participant "MessagesStore" as store
+  participant "RealtimeService" as rt
   participant "MessagesApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "ConversationsController" as controller
+  participant "EventsController" as events
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "ListConversationsQueryHandler" as handler
+  participant "GetInboxQueryHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 member -> page : Open /messages
 page -> store : load()
-store -> client : list()
+store -> client : inbox()
 client -> controller : GET /api/conversations
 controller -> controller : Authenticate and apply endpoint policy
-controller -> handler : Send ListConversationsQuery
+controller -> handler : Send GetInboxQuery
 handler -> db : Select conversations where caller is the member or owns the listing (L2-056)
-db --> handler : Rows with last message and read position
+db --> handler : Rows with last message and read marks
 handler -> handler : Order by latest activity and build previews (L2-056)
-handler --> controller : InboxResult
+handler --> controller : InboxDto
 controller --> client : 200 OK
 client --> store : Rows and totals
 store --> page : State
@@ -49,5 +51,16 @@ else conversations exist
   opt viewport 1024 px or wider and none open
     page --> member : Show "Pick a conversation." in the right pane
   end
+end
+opt a message arrives while the inbox is open
+  events -> rt : notification event of kind message (L2-070)
+  rt -> store : Publish notification
+  store -> client : inbox()
+  client -> controller : GET /api/conversations
+  controller --> client : 200 OK
+  client --> store : Rows and totals
+  store --> page : Rows reordered and unread marks updated
+  events -> rt : counts event
+  rt --> member : Unread count in the navigation updated
 end
 @enduml
