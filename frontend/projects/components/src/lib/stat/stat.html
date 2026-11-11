@@ -1,0 +1,13 @@
+@if (loading()) {
+  <span jb-skeleton shape="text" width="50"></span>
+  <span jb-skeleton shape="title"></span>
+} @else {
+  <span class="stat__label">{{ label() }}</span>
+  <span class="stat__value">{{ value() }}</span>
+  <span
+    class="stat__delta"
+    [class.stat__delta--up]="trend() === 'up'"
+    [class.stat__delta--down]="trend() === 'down'"
+    >{{ note() }}</span
+  >
+}

@@ -96,6 +96,8 @@ export * from './lib/site-footer/site-footer';
 export * from './lib/skeleton/skeleton';
 export * from './lib/skip-link/skip-link';
 export * from './lib/spinner/spinner';
+export * from './lib/stat/stat';
+export * from './lib/stat/stat-grid';
 export * from './lib/status-page/status-page';
 export * from './lib/steps/step';
 export * from './lib/steps/steps';

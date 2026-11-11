@@ -18,12 +18,9 @@
     <jb-workspace-header heading="My business" subtitle="Loading…" current="overview" />
     <div style="margin-top: var(--space-6)">
       <p class="visually-hidden" role="status">Loading your business…</p>
-      <div class="stat-grid" aria-hidden="true">
+      <div jb-stat-grid aria-hidden="true">
         @for (item of [1, 2, 3, 4]; track item) {
-          <div jb-card>
-            <span jb-skeleton shape="text" width="50"></span>
-            <span jb-skeleton shape="title"></span>
-          </div>
+          <div jb-stat loading></div>
         }
       </div>
       <section jb-section>
@@ -97,34 +94,33 @@
       />
       <div style="margin-top: var(--space-6)">
         @if (b.stats; as stats) {
-          <div class="stat-grid">
-            <div jb-card class="stat">
-              <span class="stat__label">Listing views, 7 days</span>
-              <span class="stat__value">{{ stats.views.value }}</span>
-              <span class="stat__delta" [class.stat__delta--up]="stats.views.change > 0">{{
-                viewsDelta(b)
-              }}</span>
-            </div>
-            <div jb-card class="stat">
-              <span class="stat__label">Open requests</span>
-              <span class="stat__value">{{ stats.openRequests }}</span>
-              <span class="stat__delta" [class.stat__delta--up]="stats.newSinceYesterday > 0">{{
+          <div jb-stat-grid>
+            <div
+              jb-stat
+              label="Listing views, 7 days"
+              [value]="stats.views.value"
+              [note]="viewsDelta(b)"
+              [trend]="stats.views.change > 0 ? 'up' : null"
+            ></div>
+            <div
+              jb-stat
+              label="Open requests"
+              [value]="stats.openRequests"
+              [note]="
                 stats.newSinceYesterday === 0
                   ? 'None new since yesterday'
                   : stats.newSinceYesterday + ' new since yesterday'
-              }}</span>
-            </div>
-            <div jb-card class="stat">
-              <span class="stat__label">Unanswered messages</span>
-              <span class="stat__value">{{ stats.unansweredMessages }}</span>
-              <span class="stat__delta">Reply within a day to keep your badge</span>
-            </div>
+              "
+              [trend]="stats.newSinceYesterday > 0 ? 'up' : null"
+            ></div>
+            <div
+              jb-stat
+              label="Unanswered messages"
+              [value]="stats.unansweredMessages"
+              note="Reply within a day to keep your badge"
+            ></div>
             @if (stats.saved !== null) {
-              <div jb-card class="stat">
-                <span class="stat__label">Saved by members</span>
-                <span class="stat__value">{{ stats.saved }}</span>
-                <span class="stat__delta">This week</span>
-              </div>
+              <div jb-stat label="Saved by members" [value]="stats.saved" note="This week"></div>
             }
           </div>
           <div class="split">

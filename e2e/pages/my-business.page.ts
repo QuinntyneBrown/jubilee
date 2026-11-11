@@ -9,6 +9,8 @@ export class MyBusinessPage extends ShellPage implements Screen {
   readonly publicLink: Locator;
   readonly sections: Locator;
   readonly stats: Locator;
+  /** The grid the figures stand in. */
+  readonly statGrid: Locator;
   readonly needsReply: Locator;
   readonly replyRows: Locator;
   readonly listingCard: Locator;
@@ -33,6 +35,7 @@ export class MyBusinessPage extends ShellPage implements Screen {
     this.publicLink = this.main.getByRole('link', { name: /^(View public|Preview) listing$/ });
     this.sections = this.main.getByRole('navigation', { name: 'My business sections' });
     this.stats = this.main.locator('.stat-grid .stat');
+    this.statGrid = this.main.locator('.stat-grid');
     this.needsReply = this.main.locator('section[aria-labelledby="nr"]');
     this.replyRows = this.needsReply.locator('ul.rows > li');
     this.listingCard = this.main.locator('aside .card');

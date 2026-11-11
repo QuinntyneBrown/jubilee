@@ -39,6 +39,8 @@ import {
   PageHeader,
   Section,
   WorkspaceHeader,
+  Stat,
+  StatGrid,
 } from 'components';
 import {
   ConfirmRequestData,
@@ -85,6 +87,8 @@ const UNDO_MS = 8000;
     Rows,
     PageHeader,
     Section,
+    Stat,
+    StatGrid,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

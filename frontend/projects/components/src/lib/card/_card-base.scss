@@ -1,0 +1,10 @@
+// The surface of a card, for a block that is a card as well as itself (stat).
+//
+// Knob: --jb-card-padding, set by a block that lays cards out tighter (stat-grid).
+@mixin surface {
+  background: var(--color-bg-surface);
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: var(--jb-card-padding, var(--space-6));
+}
