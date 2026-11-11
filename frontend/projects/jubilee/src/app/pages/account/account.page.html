@@ -1,0 +1,278 @@
+<div class="page-header">
+  <div>
+    <h1>Your account</h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+</div>
+<nav class="tabs" aria-label="Account sections">
+  <a class="tab" routerLink="/account" aria-current="page">Profile</a>
+  <a class="tab" routerLink="/account/notifications">Notification settings</a>
+  <a class="tab" routerLink="/saved">Saved</a>
+  <a class="tab" routerLink="/requests">Your requests</a>
+</nav>
+@let current = state();
+<div style="margin-top: var(--space-6)">
+  @switch (current.status) {
+    @case ('error') {
+      <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your account">
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>{{ current.reference }}</code
+        >.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+      </div>
+    }
+    @case ('loading') {
+      <div class="card stack" style="max-width: 42rem" aria-hidden="true">
+        <span class="skeleton skeleton--text skeleton--w50"></span>
+        <span class="skeleton skeleton--text"></span>
+        <span class="skeleton skeleton--text skeleton--w70"></span>
+      </div>
+      <p class="visually-hidden" role="status">Loading your account…</p>
+    }
+    @case ('loaded') {
+      @let account = current.value;
+      @if (savedNow(); as when) {
+        <div
+          class="alert alert--success"
+          role="status"
+          style="max-width: 42rem; margin-bottom: var(--space-4)"
+        >
+          <svg jb-icon name="check"></svg>
+          <div class="alert__body">
+            <div class="alert__title">Profile saved</div>
+            <div>{{ when }}. Businesses see your new phone number on requests from now on.</div>
+          </div>
+        </div>
+      }
+      @if (failed()) {
+        <div
+          class="alert alert--danger"
+          role="alert"
+          style="max-width: 42rem; margin-bottom: var(--space-4)"
+        >
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">We couldn’t save your profile</div>
+            <div>
+              Your connection dropped before it reached us. Nothing changed and what you typed is
+              still here. Try again.
+            </div>
+          </div>
+        </div>
+      }
+      @if (problems().length > 0) {
+        <div
+          class="alert alert--danger form-summary"
+          role="alert"
+          id="summary"
+          tabindex="-1"
+          #summaryBox
+          style="max-width: 42rem; margin-bottom: var(--space-4)"
+        >
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">
+              Fix {{ problems().length }} {{ problems().length === 1 ? 'thing' : 'things' }} to
+              continue
+            </div>
+            <ul class="alert__list">
+              @for (item of problems(); track item.field) {
+                <li>
+                  <a
+                    [href]="'#' + item.id"
+                    (click)="$event.preventDefault(); focusField(item.id)"
+                    >{{ item.text }}</a
+                  >
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+      <form
+        class="card form"
+        style="max-width: 42rem"
+        novalidate
+        (submit)="$event.preventDefault(); save()"
+      >
+        <div class="form-grid form-grid--2">
+          <div class="field">
+            <label class="field__label" for="first">First name</label>
+            <input
+              class="input"
+              id="first"
+              name="first"
+              type="text"
+              autocomplete="given-name"
+              maxlength="50"
+              [attr.aria-invalid]="problem('firstName') ? 'true' : null"
+              [attr.aria-describedby]="problem('firstName') ? 'first-error' : null"
+              [ngModel]="firstName()"
+              (ngModelChange)="firstName.set($event)"
+            />
+            @if (problem('firstName'); as text) {
+              <span class="field__error" id="first-error">{{ text }}</span>
+            }
+          </div>
+          <div class="field">
+            <label class="field__label" for="last">Last name</label>
+            <input
+              class="input"
+              id="last"
+              name="last"
+              type="text"
+              autocomplete="family-name"
+              maxlength="50"
+              [attr.aria-invalid]="problem('lastName') ? 'true' : null"
+              [attr.aria-describedby]="problem('lastName') ? 'last-error' : null"
+              [ngModel]="lastName()"
+              (ngModelChange)="lastName.set($event)"
+            />
+            @if (problem('lastName'); as text) {
+              <span class="field__error" id="last-error">{{ text }}</span>
+            }
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="email">E-mail</label>
+          <span class="field__help" id="email-help">
+            {{ account.emailStatus === 'confirmed' ? 'Confirmed.' : 'Not confirmed yet.' }}
+            <button
+              #changeEmailButton
+              class="btn btn--link"
+              type="button"
+              (click)="changeEmail(changeEmailButton)"
+            >
+              Change e-mail
+            </button>
+          </span>
+          <input
+            class="input"
+            id="email"
+            type="email"
+            [value]="account.email"
+            aria-describedby="email-help"
+            readonly
+          />
+        </div>
+        <div class="form-grid form-grid--2">
+          <div class="field">
+            <label class="field__label" for="phone"
+              >Phone <span class="optional">(optional)</span></label
+            >
+            <span class="field__help" id="phone-help"
+              >Shared with a business only when you send a request.</span
+            >
+            <input
+              class="input"
+              id="phone"
+              name="phone"
+              type="tel"
+              autocomplete="tel"
+              [attr.aria-invalid]="problem('phone') ? 'true' : null"
+              [attr.aria-describedby]="problem('phone') ? 'phone-help phone-error' : 'phone-help'"
+              [ngModel]="phone()"
+              (ngModelChange)="phone.set($event)"
+            />
+            @if (problem('phone'); as text) {
+              <span class="field__error" id="phone-error">{{ text }}</span>
+            }
+          </div>
+          <div class="field">
+            <label class="field__label" for="postal"
+              >Postal code <span class="optional">(optional)</span></label
+            >
+            <span class="field__help" id="postal-help">Used to show businesses near you.</span>
+            <input
+              class="input"
+              id="postal"
+              name="postal"
+              type="text"
+              autocomplete="postal-code"
+              [attr.aria-invalid]="problem('postalCode') ? 'true' : null"
+              [attr.aria-describedby]="
+                problem('postalCode') ? 'postal-help postal-error' : 'postal-help'
+              "
+              [ngModel]="postalCode()"
+              (ngModelChange)="postalCode.set($event)"
+            />
+            @if (problem('postalCode'); as text) {
+              <span class="field__error" id="postal-error">{{ text }}</span>
+            }
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="church"
+            >Home church <span class="optional">(optional)</span></label
+          >
+          <input
+            class="input"
+            id="church"
+            name="church"
+            type="text"
+            maxlength="100"
+            [ngModel]="homeChurch()"
+            (ngModelChange)="homeChurch.set($event)"
+          />
+        </div>
+        <div class="field">
+          <label class="field__label" for="pronouns"
+            >Pronouns <span class="optional">(optional)</span></label
+          >
+          <span class="field__help" id="pronouns-help"
+            >Used in messages we write about you, such as a church reference request.</span
+          >
+          <input
+            class="input"
+            id="pronouns"
+            name="pronouns"
+            type="text"
+            maxlength="40"
+            aria-describedby="pronouns-help"
+            [ngModel]="pronouns()"
+            (ngModelChange)="pronouns.set($event)"
+          />
+        </div>
+        <div class="form-actions">
+          <span class="inline-status" style="margin-right: auto">{{ lastSaved() }}</span>
+          <button class="btn" type="button" [disabled]="!dirty() || saving()" (click)="discard()">
+            Discard changes
+          </button>
+          <button
+            class="btn btn--primary"
+            type="submit"
+            [disabled]="saving()"
+            [attr.aria-busy]="saving() ? 'true' : null"
+          >
+            {{ saving() ? 'Saving…' : 'Save profile' }}
+          </button>
+        </div>
+      </form>
+      <section
+        class="card stack"
+        style="max-width: 42rem; margin-top: var(--space-6)"
+        aria-labelledby="sec"
+      >
+        <h2 id="sec" class="card__title">Sign-in and security</h2>
+        <ul class="rows">
+          <li class="row">
+            <div class="row__body">
+              <div class="row__title">Password</div>
+              <div class="row__meta">{{ passwordMeta() }}</div>
+            </div>
+            <button
+              #changePasswordButton
+              class="btn btn--sm"
+              type="button"
+              (click)="changePassword(changePasswordButton)"
+            >
+              {{ account.hasPassword ? 'Change password' : 'Set a password' }}
+            </button>
+          </li>
+        </ul>
+      </section>
+    }
+  }
+</div>

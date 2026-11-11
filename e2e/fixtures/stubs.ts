@@ -6,6 +6,7 @@ import { stubMessaging } from './messaging';
 import { esther, stubAdmin } from './admin';
 import { stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
+import { stubProfile } from './profile';
 import { stubSaved } from './saved';
 import { stubPasswordReset } from './password-reset';
 import { NOTIFICATIONS, stubNotifications } from './notifications';
@@ -272,6 +273,18 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMyBusiness(page);
     case 'editor-error':
       return stubMyBusiness(page, { editor: 'fails' });
+    case 'profile':
+      return void (await stubProfile(page));
+    case 'profile-error':
+      return void (await stubProfile(page, { load: 'fails' }));
+    case 'preferences-error':
+      return void (await stubProfile(page, { preferencesLoad: 'fails' }));
+    case 'confirm-email-change':
+      return void (await stubProfile(page, { confirm: 'confirmed' }));
+    case 'confirm-email-change-expired':
+      return void (await stubProfile(page, { confirm: 'expired' }));
+    case 'confirm-email-change-in-use':
+      return void (await stubProfile(page, { confirm: 'email-in-use' }));
     case 'saved':
       return void (await stubSaved(page));
     case 'saved-empty':

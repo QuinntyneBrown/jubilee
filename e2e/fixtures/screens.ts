@@ -14,6 +14,9 @@ import {
 } from '../pages/product.page';
 import { EditListingPage } from '../pages/edit-listing.page';
 import { IncomingRequestsPage } from '../pages/incoming-requests.page';
+import { AccountPage } from '../pages/account.page';
+import { ConfirmEmailChangePage } from '../pages/confirm-email-change.page';
+import { NotificationSettingsPage } from '../pages/notification-settings.page';
 import { SavedPage } from '../pages/saved.page';
 import { ForgotPasswordPage } from '../pages/forgot-password.page';
 import { ResetPasswordPage } from '../pages/reset-password.page';
@@ -56,6 +59,13 @@ export const screens: {
   { key: 'my-business.empty', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.error', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.paused', screen: (page) => new MyBusinessPage(page) },
+  { key: 'account', screen: (page) => new AccountPage(page) },
+  { key: 'account.error', screen: (page) => new AccountPage(page) },
+  { key: 'preferences', screen: (page) => new NotificationSettingsPage(page) },
+  { key: 'preferences.error', screen: (page) => new NotificationSettingsPage(page) },
+  { key: 'confirm-email-change.success', screen: (page) => new ConfirmEmailChangePage(page) },
+  { key: 'confirm-email-change.expired', screen: (page) => new ConfirmEmailChangePage(page) },
+  { key: 'confirm-email-change.in-use', screen: (page) => new ConfirmEmailChangePage(page) },
   { key: 'saved', screen: (page) => new SavedPage(page) },
   { key: 'saved.empty', screen: (page) => new SavedPage(page) },
   { key: 'saved.error', screen: (page) => new SavedPage(page) },

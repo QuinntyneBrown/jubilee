@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -21,6 +22,7 @@ import {
 } from 'components';
 import { filter, map, startWith } from 'rxjs';
 import { JbRouteData } from './app.routes';
+import { AccountMenuData, AccountMenuDialog } from './dialogs/account-menu/account-menu.dialog';
 import { ClockService } from './services/clock.service';
 import { NavigationStore } from './services/navigation.store';
 import { RealtimeService } from './services/realtime.service';
@@ -44,6 +46,7 @@ export class App {
   private readonly navigation = inject(NavigationStore);
   private readonly realtime = inject(RealtimeService);
   private readonly account = inject(ACCOUNT_API);
+  private readonly dialog = inject(Dialog);
   protected readonly year = inject(ClockService).year();
 
   /** The data of the deepest activated route, read again after every navigation. */
@@ -145,6 +148,26 @@ export class App {
         this.resending.set(false);
       },
       error: () => this.resending.set(false),
+    });
+  }
+
+  /** The account menu from the avatar (L2-019); focus returns to the avatar when it closes. */
+  protected openAccountMenu(avatar: HTMLElement): void {
+    const member = this.session.member();
+    if (!member) return;
+    const summary = this.navigation.summary();
+    this.dialog.open<void, AccountMenuData>(AccountMenuDialog, {
+      data: {
+        displayName: member.displayName,
+        initials: member.initials,
+        email: member.email,
+        ownsListing: summary.ownsListing,
+        isVerifier: member.isVerifier,
+      },
+      ariaLabelledBy: 'dlg-title',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+      restoreFocus: avatar,
     });
   }
 

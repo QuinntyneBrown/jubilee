@@ -1,0 +1,27 @@
+# 0028. Manage profile and settings decisions
+
+Status: accepted
+
+## Context
+
+A member opens `/account` to edit the profile, change the e-mail address or the password, and opens `/account/notifications` to choose which e-mail Jubilee sends, including consent to commercial e-mail (L2-013, L2-014, L2-015, L2-016, L2-019, L2-068, L2-126, L2-133, L2-134, L2-140, L2-149). The designs left several names and values `<TO SUPPLY>`.
+
+## Decision
+
+- **One endpoint family, the member from the session.** `GET /api/account`, `PUT /api/account/profile`, `POST /api/account/email-change`, `POST /api/account/email-change/confirm`, `PUT /api/account/password`, `GET` and `PATCH /api/account/notification-preferences`. No route names a member, so another member's data cannot be addressed (L2-133). Every body refuses unknown fields with 400 (L2-136), so a `role` in a profile save changes nothing.
+- **Profile rules.** First and last name are required (50 characters). A phone is optional and is kept as ten digits (`416-555-0142`, `(416) 555-0142` and `1 416 555 0142` all store `4165550142`); anything else is 422 `PHONE_INVALID`. A postal code is optional and is stored as `M4C 1A1` whatever the spacing or case was; anything else is 422 `POSTAL_CODE_INVALID`. Home church is 100 characters, pronouns 40. A request copies the phone when it is sent, so a later change does not reach it (L2-013 AC7). The load carries the error reference `JB-ACC-503`.
+- **The e-mail changes only when the link is opened.** The request needs the current password (a member who joined with Google has none and is not asked), refuses an address another account uses with 422 `EMAIL_IN_USE`, supersedes the member's earlier unused link, stores the new address on the `LinkToken` (`ChangeEmail`, 24 hours, single use, hashed), and queues two e-mails: the link to the new address and a notice to the old one. The link is opened at `/confirm-email-change/:token`; it needs no session, because it may be opened on another device. Opening it again, after 24 hours, or after another account took the address changes nothing and says so (`expired` or `email-in-use`). The address in use stays until then.
+- **The password change keeps this session.** The new password is 10 to 128 characters, not breached, and repeated. A wrong current password is 422 `CURRENT_PASSWORD_INCORRECT`. A member without a password sets one without a current password. A change records `PasswordChangedAt`, supersedes unused reset links, queues the security e-mail and starts the session again, so every other session ends (L2-134 AC3) and this one goes on.
+- **Five switches and one frequency, saved one at a time.** `PATCH` carries one `setting` (`messages`, `requests`, `reminders`, `new-businesses`, `tips`, or `frequency`) so two quick changes cannot overwrite each other. The switches stay as columns of `Member` (journey 17); the frequency is one more column. An unknown setting is 422 `SETTING_UNKNOWN`, which is also how "security" has no switch. The load and the save carry `JB-PREF-503`.
+- **Consent is recorded where it is given.** A change of `new-businesses` or `tips` appends a `ConsentRecord` (category, given or withdrawn, method, time) in the same save as the switch (L2-149 AC3). A change that changes nothing, and the three transactional categories, append nothing. The one-click unsubscribe of journey 17 goes through the same code and records `OneClickUnsubscribe`. Nothing in the application updates or deletes a record.
+- **The page saves each switch at once and puts it back on failure.** The switch is applied first and only that row waits; a failure puts it back and shows an error toast with "Try again" that repeats the same change. The header says "Saving…" and then "Saved at {time}".
+- **Leaving unsaved changes asks.** A `canDeactivate` guard opens the "Leave without saving?" dialog; a `beforeunload` handler covers closing the tab (L2-013 AC6).
+- **The account menu is a dialog.** The avatar is a button that opens the menu as a CDK dialog: hung under the avatar from 640 px, a bottom sheet under it; arrow keys move, Escape closes, focus returns to the avatar (L2-019). It lists "Your account", "Your requests", "Saved", "Notifications", "List your business" or "My business", "Verification queue" for a verifier, and "Help".
+
+## Deferred
+
+- **Sign out** (menu item and the sessions row): the sign-in and sign-out journey (5) has not been built, and `/sign-in` does not exist yet. The menu gains "Sign out" with it.
+- **The daily summary** (L2-016 AC on 7:00 Toronto time and `EmailDeliveryPolicy`): the choice is saved and read back, but the job that gathers the day's e-mail and the outbox rule that holds e-mail for it are not built. Meeting reminders and security e-mail are never held back, so the rule is only for the three categories that wait.
+- **Promotional e-mail** (the audience query, the composer with sender address and `List-Unsubscribe` headers, the `/unsubscribe/:token` page, the consent record's retention period): no promotional mailing exists, and the mailing address, retention period and unsubscribe-link lifetime are still `<TO SUPPLY>`. The consent is already recorded so nothing needs back-filling.
+- **Download data and delete account** belong to journey 26; the account page has no section for them yet.
+- **Prefilling a request's phone** from the profile: the request dialogs still ask for it.

@@ -1,0 +1,48 @@
+<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
+<div class="auth-card card stack">
+  @switch (view()) {
+    @case ('loading') {
+      <div class="empty" role="status">
+        <span class="spinner spinner--lg" aria-hidden="true"></span>
+        <h1 class="empty__title">Confirming your new e-mail…</h1>
+        <p class="empty__text">This takes a moment.</p>
+      </div>
+    }
+    @case ('confirmed') {
+      <div jb-empty-state icon="verified" heading="E-mail changed" [level]="1">
+        Your Jubilee e-mail is now the address you confirmed. Use it the next time you sign in.
+        <a slot="actions" class="btn btn--primary" routerLink="/account">Go to your account</a>
+      </div>
+    }
+    @case ('in-use') {
+      <div jb-empty-state icon="info" heading="An account already uses this e-mail" [level]="1">
+        Someone else took that address after you asked. Your e-mail has not changed. Choose another
+        address from your account.
+        <a slot="actions" class="btn btn--primary" routerLink="/account">Choose another e-mail</a>
+      </div>
+    }
+    @case ('expired') {
+      <div jb-empty-state icon="info" heading="This link has expired" [level]="1">
+        The link to confirm a new e-mail works for 24 hours, and only once. Your e-mail has not
+        changed. Ask for a new link from your account.
+        <a slot="actions" class="btn btn--primary" routerLink="/account">Change e-mail again</a>
+      </div>
+    }
+    @default {
+      <div
+        jb-empty-state
+        icon="alert"
+        heading="We couldn’t load your verification"
+        [level]="1"
+        [error]="true"
+      >
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>JB-VERIFY-502</code>.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="confirm()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" class="btn" routerLink="/welcome">Back to welcome</a>
+      </div>
+    }
+  }
+</div>

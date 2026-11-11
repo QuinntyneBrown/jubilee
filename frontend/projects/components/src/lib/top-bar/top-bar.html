@@ -71,10 +71,16 @@
     }
   </a>
   <!-- The initials are decoration; the name of the link is the hidden sentence (WCAG 2.5.3). -->
-  <a class="avatar avatar--sm avatar--brand only-desktop" routerLink="/account"
-    ><span aria-hidden="true">{{ member.initials }}</span
-    ><span class="visually-hidden">Account menu for {{ member.displayName }}</span></a
+  <button
+    #avatar
+    class="avatar avatar--sm avatar--brand only-desktop"
+    type="button"
+    aria-haspopup="dialog"
+    (click)="accountMenu.emit(avatar)"
   >
+    <span aria-hidden="true">{{ member.initials }}</span
+    ><span class="visually-hidden">Account menu for {{ member.displayName }}</span>
+  </button>
 } @else {
   <nav class="topbar__nav" aria-label="Primary">
     <a class="nav-link" routerLink="/" [attr.aria-current]="current() === 'browse' ? 'page' : null"

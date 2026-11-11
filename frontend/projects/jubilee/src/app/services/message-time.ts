@@ -96,3 +96,26 @@ const DAY_FORMAT = new Intl.DateTimeFormat('en-CA', {
 export function isoDay(date: Date): string {
   return DAY_FORMAT.format(date);
 }
+
+/** "Mon 9 Nov": the day of the Toronto date, without today or yesterday (L2-013 "Last saved"). */
+export function dayLabel(iso: string): string {
+  const then = parts(new Date(iso));
+  return `${then.weekday} ${then.day} ${then.month}`;
+}
+
+/** "14 Oct 2026" (L2-015 "Changed"). */
+export function fullDate(iso: string): string {
+  const then = parts(new Date(iso));
+  return `${then.day} ${then.month} ${then.year}`;
+}
+
+const MONTH_YEAR = new Intl.DateTimeFormat('en-CA', {
+  timeZone: ZONE,
+  month: 'long',
+  year: 'numeric',
+});
+
+/** "October 2026" (L2-013 "member since"). */
+export function monthYear(iso: string): string {
+  return MONTH_YEAR.format(new Date(iso));
+}

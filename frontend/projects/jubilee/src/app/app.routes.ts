@@ -2,6 +2,7 @@ import { Routes, UrlMatchResult, UrlSegment } from '@angular/router';
 import { ChromeSection } from 'components';
 import { guestGuard } from './guards/guest.guard';
 import { memberGuard } from './guards/member.guard';
+import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 import { verifierGuard } from './guards/verifier.guard';
 import { welcomeRedirectGuard } from './guards/welcome-redirect.guard';
 
@@ -233,6 +234,34 @@ export const routes: Routes = [
     canActivate: [guestGuard],
     data: data({ shell: 'bare', page: 'sign-up' }),
     title: 'Join · Jubilee',
+  },
+  {
+    path: 'account',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/account/account.page').then((m) => m.AccountPage),
+    canActivate: [memberGuard],
+    canDeactivate: [unsavedChangesGuard],
+    data: data({ shell: 'app', page: 'account', section: 'account' }),
+    title: 'Your account · Jubilee',
+  },
+  {
+    path: 'account/notifications',
+    loadComponent: () =>
+      import('./pages/notification-settings/notification-settings.page').then(
+        (m) => m.NotificationSettingsPage,
+      ),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'preferences', section: 'account' }),
+    title: 'Notification settings · Jubilee',
+  },
+  {
+    path: 'confirm-email-change/:token',
+    loadComponent: () =>
+      import('./pages/confirm-email-change/confirm-email-change.page').then(
+        (m) => m.ConfirmEmailChangePage,
+      ),
+    data: data({ shell: 'bare', page: 'confirm-email-change' }),
+    title: 'Confirm your new e-mail · Jubilee',
   },
   {
     path: 'forgot-password',
