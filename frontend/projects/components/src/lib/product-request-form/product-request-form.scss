@@ -1,0 +1,16 @@
+// Block: product-request. The host draws no box: the option, the quantity and the actions are
+// items of the stack the page puts the form in.
+:host {
+  display: contents;
+}
+
+.product-request__options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.product-request__quantity {
+  max-width: 8rem;
+}

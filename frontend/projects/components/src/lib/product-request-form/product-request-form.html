@@ -2,7 +2,7 @@
 @if (item.options.length) {
   <fieldset [attr.aria-describedby]="optionError() ? 'option-error' : null">
     <legend>{{ item.optionName }}</legend>
-    <div class="cluster" style="gap: var(--space-2)">
+    <div class="product-request__options">
       @for (option of item.options; track option.label) {
         <jb-chip-option
           name="option"
@@ -19,7 +19,13 @@
     }
   </fieldset>
 }
-<div jb-field label="Quantity" controlId="qty" [error]="quantityError()" style="max-width: 8rem">
+<div
+  jb-field
+  class="product-request__quantity"
+  label="Quantity"
+  controlId="qty"
+  [error]="quantityError()"
+>
   <input
     jb-input
     #quantityInput
@@ -72,9 +78,8 @@
     jb-button
     iconOnly
     size="lg"
-    [routerLink]="['/b', item.shop.slug, 'message']"
-    [attr.aria-label]="'Message ' + item.shop.name"
-    style="width: var(--control-height-lg)"
+    [routerLink]="item.messageLink"
+    [attr.aria-label]="'Message ' + item.shopName"
     ><svg jb-icon name="message"></svg
   ></a>
 </div>

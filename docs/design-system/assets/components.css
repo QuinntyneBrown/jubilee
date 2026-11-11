@@ -231,7 +231,7 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .chip:has(input:checked) { --chip-bg: var(--color-accent); --chip-bg-hover: var(--color-accent-hover); --chip-border: var(--color-accent-border); --chip-fg: var(--color-fg-on-accent); }
 .chip:has(input:focus-visible) { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
 .chip:has(input) { position: relative; }
-.chip:disabled, .chip[aria-disabled="true"], .chip[data-state="disabled"] { opacity: 0.5; cursor: not-allowed; }
+.chip:disabled, .chip[aria-disabled="true"], .chip[data-state="disabled"], .chip:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
 .chip--sm { min-height: var(--target-min); padding-inline: var(--space-2); font-size: var(--font-size-xs); }
 .chip .remove { display: inline-grid; place-items: center; width: var(--target-min); height: var(--target-min); margin-right: calc(-1 * var(--space-2)); border-radius: var(--radius-full); border: 0; background: transparent; color: inherit; cursor: pointer; }
 .chip .remove:hover { background: var(--color-bg-subtle-hover); }
