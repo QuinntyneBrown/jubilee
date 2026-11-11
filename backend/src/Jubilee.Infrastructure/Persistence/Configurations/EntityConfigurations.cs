@@ -138,3 +138,52 @@ public sealed class RecentSearchConfiguration : IEntityTypeConfiguration<RecentS
         builder.HasIndex(r => new { r.MemberSubject, r.SearchedAt });
     }
 }
+
+public sealed class MemberConfiguration : IEntityTypeConfiguration<Member>
+{
+    public void Configure(EntityTypeBuilder<Member> builder)
+    {
+        builder.ToTable("Members");
+        builder.HasKey(m => m.Id);
+        builder.Property(m => m.Id).ValueGeneratedNever();
+        builder.Property(m => m.Email).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.Property(m => m.EmailKey).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.HasIndex(m => m.EmailKey).IsUnique();
+        builder.Property(m => m.FirstName).HasMaxLength(50).IsRequired();
+        builder.Property(m => m.LastName).HasMaxLength(50).IsRequired();
+        builder.Property(m => m.HomeChurch).HasMaxLength(100);
+        builder.Property(m => m.PasswordHash).HasMaxLength(400);
+        builder.Property(m => m.EmailStatus).HasConversion<string>().HasMaxLength(16);
+        builder.Property(m => m.GoogleSubject).HasMaxLength(100);
+        builder.HasIndex(m => m.GoogleSubject).IsUnique().HasFilter("[GoogleSubject] IS NOT NULL");
+        builder.Ignore(m => m.DisplayName);
+    }
+}
+
+public sealed class LinkTokenConfiguration : IEntityTypeConfiguration<LinkToken>
+{
+    public void Configure(EntityTypeBuilder<LinkToken> builder)
+    {
+        builder.ToTable("LinkTokens");
+        builder.HasKey(t => t.Id);
+        builder.Property(t => t.Id).ValueGeneratedNever();
+        builder.Property(t => t.Purpose).HasConversion<string>().HasMaxLength(32);
+        builder.Property(t => t.TokenHash).HasMaxLength(64).IsRequired();
+        builder.HasIndex(t => t.TokenHash).IsUnique();
+        builder.HasOne<Member>().WithMany().HasForeignKey(t => t.MemberId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage>
+{
+    public void Configure(EntityTypeBuilder<OutboxMessage> builder)
+    {
+        builder.ToTable("OutboxMessages");
+        builder.HasKey(m => m.Id);
+        builder.Property(m => m.Id).ValueGeneratedNever();
+        builder.Property(m => m.ToAddress).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.Property(m => m.Subject).HasMaxLength(200).IsRequired();
+        builder.Property(m => m.TextBody).HasMaxLength(4000).IsRequired();
+        builder.HasIndex(m => new { m.SentAt, m.NextAttemptAt });
+    }
+}

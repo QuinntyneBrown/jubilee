@@ -19,5 +19,11 @@ public interface IAppDbContext
 
     DbSet<RecentSearch> RecentSearches { get; }
 
+    DbSet<Member> Members { get; }
+
+    DbSet<LinkToken> LinkTokens { get; }
+
+    DbSet<OutboxMessage> OutboxMessages { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

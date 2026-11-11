@@ -40,6 +40,7 @@ var app = builder.Build();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<SecurityHeadersMiddleware>();
 
 // Swagger stays above UseAuthentication so the fallback policy never hides the API description.
 if (!app.Environment.IsProduction())
@@ -49,9 +50,11 @@ if (!app.Environment.IsProduction())
 }
 
 app.UseRouting();
-app.UseRateLimiter();
 app.UseAuthentication();
+app.UseRateLimiter();
+app.UseMiddleware<CsrfMiddleware>();
 app.UseAuthorization();
+app.UseMiddleware<AgreementRequiredMiddleware>();
 app.MapControllers();
 
 await app.Services.InitialiseDatabaseAsync(app.Configuration);

@@ -34,6 +34,12 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 context, StatusCodes.Status404NotFound, "We can't find that.", notFound.Message, notFound.Code);
         }
 
+        if (exception is Application.Accounts.ValidationFailedException invalid)
+        {
+            return ProblemWriter.WriteAsync(
+                context, StatusCodes.Status422UnprocessableEntity, "Fix the highlighted fields.", code: "validation_failed", errors: invalid.Errors);
+        }
+
         if (exception is ConflictException conflict)
         {
             return ProblemWriter.WriteAsync(

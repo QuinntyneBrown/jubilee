@@ -1,3 +1,7 @@
+using Jubilee.Application;
+using Jubilee.Application.Accounts;
+using Jubilee.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -5,28 +9,52 @@ using Microsoft.Extensions.Logging;
 namespace Jubilee.Worker;
 
 /// <summary>
-/// The background jobs host. It is a skeleton for now: outbox dispatch, e-mail sending and
-/// search indexing are added by the journeys that need them.
+/// The background jobs host. It runs the outbox dispatch (e-mail sending); search indexing is added
+/// when a search engine replaces the database index (ADR 0011).
 /// </summary>
 public static class WorkerHost
 {
     public static HostApplicationBuilder CreateBuilder(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
-        builder.Services.AddHostedService<IdleWorker>();
+        builder.Services.AddApplication();
+        builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddHostedService<OutboxDispatcherJob>();
         return builder;
     }
 }
 
-/// <summary>Keeps the host alive and logs its lifetime until real jobs exist.</summary>
-public sealed class IdleWorker(ILogger<IdleWorker> logger) : BackgroundService
+/// <summary>
+/// Sends the e-mails in the outbox every few seconds (L2-068 AC1: within 2 minutes). A failed send is
+/// retried with back-off by the dispatcher; a failure of the job's own pass is logged and tried again.
+/// </summary>
+public sealed class OutboxDispatcherJob(IServiceScopeFactory scopes, IConfiguration configuration, ILogger<OutboxDispatcherJob> logger)
+    : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("Jubilee Worker started. No background jobs are registered yet.");
+        var interval = TimeSpan.FromSeconds(int.TryParse(configuration["Worker:OutboxIntervalSeconds"], out var seconds) ? seconds : 10);
+        logger.LogInformation("Jubilee Worker started. Dispatching the outbox every {Interval}.", interval);
+        using var timer = new PeriodicTimer(interval);
         try
         {
-            await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sent = await scope.ServiceProvider.GetRequiredService<OutboxDispatcher>().DispatchDueAsync(stoppingToken);
+                    if (sent > 0)
+                    {
+                        logger.LogInformation("Sent {Count} e-mails.", sent);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The outbox could not be dispatched. It will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
         }
         catch (OperationCanceledException)
         {

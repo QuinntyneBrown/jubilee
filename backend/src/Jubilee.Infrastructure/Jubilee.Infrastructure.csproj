@@ -1,6 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\Jubilee.Application\Jubilee.Application.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Konscious.Security.Cryptography.Argon2" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
