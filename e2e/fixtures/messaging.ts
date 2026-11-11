@@ -133,14 +133,51 @@ const card = (
 
 /** The confirmed booking of docs/mocks/pages/conversation/default.html, sent between the two messages. */
 export const bookingCard = (): FakeCard =>
-  card('r-booking', 'booking', 'Discovery meeting', 'Thu 12 Nov, 10:00–10:30 a.m. · Video', 'confirmed', 'Confirmed', '2026-11-10T14:10:00Z');
+  card(
+    'r-booking',
+    'booking',
+    'Discovery meeting',
+    'Thu 12 Nov, 10:00–10:30 a.m. · Video',
+    'confirmed',
+    'Confirmed',
+    '2026-11-10T14:10:00Z',
+  );
 
 /** The four cards of docs/mocks/pages/conversation/requests.html. */
 export const requestCards = (): FakeCard[] => [
-  { ...bookingCard(), status: 'new', statusLabel: 'Awaiting reply', sentAt: '2026-11-10T14:05:00Z' },
-  card('r-quote', 'quote', 'A plan for giving and RRSPs', 'Needed by Fri 27 Nov', 'confirmed', 'Confirmed', '2026-11-10T14:06:00Z'),
-  card('r-order', 'order', 'Retirement planning workbook × 1', 'Pickup · $24.00 + tax', 'declined', 'Declined', '2026-11-10T14:07:00Z'),
-  card('r-follow-up', 'booking', 'Follow-up meeting', 'Tue 3 Nov, 2:00–2:30 p.m. · In person', 'cancelled', 'Cancelled', '2026-11-10T14:08:00Z'),
+  {
+    ...bookingCard(),
+    status: 'new',
+    statusLabel: 'Awaiting reply',
+    sentAt: '2026-11-10T14:05:00Z',
+  },
+  card(
+    'r-quote',
+    'quote',
+    'A plan for giving and RRSPs',
+    'Needed by Fri 27 Nov',
+    'confirmed',
+    'Confirmed',
+    '2026-11-10T14:06:00Z',
+  ),
+  card(
+    'r-order',
+    'order',
+    'Retirement planning workbook × 1',
+    'Pickup · $24.00 + tax',
+    'declined',
+    'Declined',
+    '2026-11-10T14:07:00Z',
+  ),
+  card(
+    'r-follow-up',
+    'booking',
+    'Follow-up meeting',
+    'Tue 3 Nov, 2:00–2:30 p.m. · In person',
+    'cancelled',
+    'Cancelled',
+    '2026-11-10T14:08:00Z',
+  ),
 ];
 
 /** The first signed link of a stored photo; the stand-in treats it as expired when told to. */
@@ -149,7 +186,12 @@ const signed = (id: string, sig = 'first') => `/api/attachments/${id}?expires=1&
 /** The two photo messages of docs/mocks/pages/conversation/photo.html. */
 export const photoMessages = (): FakeMessage[] => [
   {
-    ...message('m-4', 'Here’s the page of the statement I mentioned.', '2026-11-10T14:20:00Z', true),
+    ...message(
+      'm-4',
+      'Here’s the page of the statement I mentioned.',
+      '2026-11-10T14:20:00Z',
+      true,
+    ),
     attachment: { id: 'a-statement', url: signed('a-statement'), contentType: 'image/jpeg' },
   },
   {
@@ -240,7 +282,9 @@ export async function stubMessaging(
     live: false,
     arrive(body, conversation = 'c-legacy') {
       const row = fake.rows.find((r) => r.id === conversation)!;
-      const at = new Date(Date.parse('2026-11-10T14:15:00Z') + events.length * 60_000).toISOString();
+      const at = new Date(
+        Date.parse('2026-11-10T14:15:00Z') + events.length * 60_000,
+      ).toISOString();
       if (conversation === 'c-legacy') {
         fake.messages.push(message(`m-arrived-${events.length}`, body, at, false));
       }
@@ -248,13 +292,26 @@ export async function stubMessaging(
       row.lastMessageAt = at;
       row.unread = true;
       fake.rows = [row, ...fake.rows.filter((r) => r !== row)];
-      fake.notify('message', `New message from ${row.businessName}`, body, `/messages/${conversation}`);
+      fake.notify(
+        'message',
+        `New message from ${row.businessName}`,
+        body,
+        `/messages/${conversation}`,
+      );
     },
     notify(kind, title, detail, target) {
       const id = String(1_000 + events.length + 1);
       events.push({
         id,
-        item: { id: `n-${id}`, kind, title, detail, target, at: '2026-11-10T14:15:00Z', read: false },
+        item: {
+          id: `n-${id}`,
+          kind,
+          title,
+          detail,
+          target,
+          at: '2026-11-10T14:15:00Z',
+          read: false,
+        },
       });
     },
     hasMore: false,
@@ -275,7 +332,10 @@ export async function stubMessaging(
       const last = route.request().headers()['last-event-id'];
       const frames = events
         .filter((event) => last === undefined || Number(event.id) > Number(last))
-        .map((event) => `id: ${event.id}\nevent: notification\ndata: ${JSON.stringify(event.item)}\n\n`)
+        .map(
+          (event) =>
+            `id: ${event.id}\nevent: notification\ndata: ${JSON.stringify(event.item)}\n\n`,
+        )
         .join('');
       return route.fulfill({
         status: 200,
@@ -397,7 +457,8 @@ export async function stubMessaging(
 
   await page.route('**/api/attachments/**', (route) => {
     const first = new URL(route.request().url()).searchParams.get('sig') === 'first';
-    if (fake.links === 'expired' && first) return route.fulfill(problem(404, 'attachment_not_found'));
+    if (fake.links === 'expired' && first)
+      return route.fulfill(problem(404, 'attachment_not_found'));
     return route.fulfill({ path: MOCK_PHOTO, contentType: 'image/jpeg' });
   });
 
@@ -418,4 +479,16 @@ export async function stubMessaging(
   });
 
   return fake;
+}
+
+/**
+ * Resolves when the app's next read of the inbox has been answered. Start it before the step
+ * that opens Messages and await it after, so that what follows comes after the read, not
+ * during it.
+ */
+export function nextInboxRead(page: Page): Promise<unknown> {
+  return page.waitForResponse(
+    (response) =>
+      response.request().method() === 'GET' && /\/api\/conversations(\?.*)?$/.test(response.url()),
+  );
 }
