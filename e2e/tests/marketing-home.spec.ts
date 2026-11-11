@@ -131,3 +131,67 @@ test.describe('marketing home page (L2-183)', () => {
     await expect(home.featuredCards).toContainText('Legacy Financial');
   });
 });
+
+test.describe('pitch film player (L2-184)', () => {
+  test('AC1: before play it shows the still, the play button and the length, and fetches no film', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    home.watchRequests();
+    await jb.open('marketing-home');
+    await expect(home.play).toBeVisible();
+    await expect(home.filmLength).toHaveText('1:04');
+    await expect(home.video).not.toHaveAttribute('controls');
+    await expect(home.currentChapter).toHaveCount(0);
+    expect(home.filmRequests()).toEqual([]);
+  });
+
+  test('AC2: play replaces the still with the film and its controls, from the start', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    // When the visitor presses play
+    await home.play.click();
+    // Then the still is gone and the film has the browser's controls
+    await expect(home.play).toHaveCount(0);
+    await expect(home.video).toHaveAttribute('controls');
+    await expect(home.currentChapter).toHaveText('0:00Why we built Jubilee');
+    expect(await home.filmTime()).toBeLessThan(5);
+  });
+
+  test('AC3: a chapter plays the film from its time and becomes the current one', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await home.withoutFilm();
+    await jb.open('marketing-home');
+    await expect(home.chapters).toHaveText([
+      '0:00Why we built Jubilee',
+      '0:21Finding someone you can trust',
+      '0:43Growing your business',
+    ]);
+    // When the visitor chooses the second chapter
+    await home.chapter('Finding someone you can trust').click();
+    // Then the film stands at 0:21 and that chapter is current
+    await expect(home.play).toHaveCount(0);
+    await expect(home.currentChapter).toHaveText('0:21Finding someone you can trust');
+    await expect.poll(async () => Math.floor(await home.filmTime())).toBeGreaterThanOrEqual(21);
+    expect(await home.filmTime()).toBeLessThan(43);
+    // And the third chapter moves it on
+    await home.chapter('Growing your business').click();
+    await expect(home.currentChapter).toHaveText('0:43Growing your business');
+    await expect.poll(async () => Math.floor(await home.filmTime())).toBeGreaterThanOrEqual(43);
+  });
+
+  test('AC4: "Watch the film" moves the page to the film section', async ({ page, jb }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    await home.watchTheFilm.click();
+    await expect(page).toHaveURL(/#film$/);
+    await expect(home.play).toBeInViewport();
+  });
+});

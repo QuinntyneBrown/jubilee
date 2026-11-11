@@ -129,6 +129,11 @@ export class MarketingHomePage implements Screen {
     this.page.on('request', (request) => this.requests.push(request.url()));
   }
 
+  /** Leaves the film unanswered, so a spec does not depend on the film file; call before opening the page. */
+  async withoutFilm(): Promise<void> {
+    await this.page.route('**/media/*.mp4', (route) => route.abort());
+  }
+
   /** The requests the page made for the film itself. */
   filmRequests(): string[] {
     return this.requests.filter((url) => url.endsWith('.mp4'));

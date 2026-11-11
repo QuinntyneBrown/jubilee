@@ -16,7 +16,7 @@ feature follows it. `docs/estimates/` tracks how far each design is.
 ## Repository layout
 
 - `backend/` — .NET solution
-- `frontend/` — Angular workspace (`jubilee`, `api`, `components`)
+- `frontend/` — Angular workspace (`jubilee`, `marketing`, `api`, `components`)
 - `e2e/` — Playwright suite
 - `docs/assets/` — the logo (`jubilee-icon.svg`) and other images the docs share
 - `docs/mocks/` — static design reference (the source of truth for the UI)
@@ -68,7 +68,8 @@ jubilee/
 │       ├── api/src/lib/               service contracts, implementations, view models, helpers
 │       │   ├── api/
 │       │   └── models/
-│       └── components/src/lib/        `jb-*` UI atoms, one folder per component, plus `styles/`
+│       ├── components/src/lib/        `jb-*` UI atoms, one folder per component, plus `styles/`
+│       └── marketing/src/app/         the marketing site: one page, one folder per section
 ├── e2e/
 │   ├── playwright.config.ts
 │   ├── fixtures/                      `jb-test.ts`, `routes.ts`, data fixtures
@@ -116,7 +117,8 @@ adding coverage; `pwsh eng/Test-Backend.ps1` runs the suite as CI does.
 
 ## Frontend architecture
 
-Workspace has three projects under `frontend/projects/`: `jubilee` (the app), `api` (service
+Workspace has four projects under `frontend/projects/`: `jubilee` (the app), `marketing` (the
+public marketing site: one static page, no router, session or API; ADR 0013), `api` (service
 contracts, implementations, view models, pure helpers) and `components` (`jb-*` UI atoms, the
 design system).
 

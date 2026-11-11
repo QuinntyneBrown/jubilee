@@ -1,1 +1,46 @@
-<div class="mkt-player"></div>
+<div class="mkt-player">
+  <div class="mkt-player__frame">
+    <!-- The film's narration is burned into the picture as captions (L2-184 AC5). -->
+    <video
+      #video
+      class="mkt-player__video"
+      preload="none"
+      playsinline
+      tabindex="-1"
+      aria-label="Jubilee pitch film"
+      [src]="film"
+      [poster]="still"
+      [controls]="playing()"
+    ></video>
+    @if (!playing()) {
+      <button
+        class="mkt-player__poster"
+        type="button"
+        aria-label="Play the Jubilee film"
+        (click)="play()"
+      >
+        <img class="mkt-player__still" [src]="still" alt="" />
+        <span class="mkt-player__scrim"></span>
+        <span class="mkt-player__play">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3 20 12 6 21Z" /></svg>
+        </span>
+        <span class="mkt-player__length">{{ length }}</span>
+      </button>
+    }
+  </div>
+  <ol class="mkt-chapters" aria-label="Chapters">
+    @for (chapter of chapters; track chapter.at; let index = $index) {
+      <li>
+        <button
+          class="mkt-chapter"
+          type="button"
+          [attr.aria-current]="playing() && current() === index ? 'true' : null"
+          (click)="play(index)"
+        >
+          <span class="mkt-chapter__time">{{ chapter.time }}</span>
+          <span class="mkt-chapter__title">{{ chapter.title }}</span>
+        </button>
+      </li>
+    }
+  </ol>
+</div>
