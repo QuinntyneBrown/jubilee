@@ -24,7 +24,7 @@
 | L2-061 mute control | No mock for the conversation menu; the API is done. |
 | L2-063 report and block dialogs | No mock (design says so); the API is done. |
 | L2-062 owner sets the away period | Belongs to the owner workspace journey; the page reads and shows it. |
-| L2-057 real-time arrival of new messages | No push channel yet; a conversation refreshes when opened. Notifications arrive with journey 17. |
+| L2-057 real-time arrival of new messages | The push channel exists (SSE, ADR 0025) and toasts a new message, but the Messages page does not subscribe to it; a conversation refreshes when opened. |
 | L2-059 paging of a very long inbox | The list holds 200 conversations; paging when a member exceeds that. |
 | Malware scan of photos | No scanner is chosen; photos are re-encoded to JPEG or PNG data only. |
 | Request cards in a conversation | Requests arrive in journeys 7 to 9. |
