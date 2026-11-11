@@ -35,6 +35,7 @@ import {
   MessageThread,
   MessageDay,
   Composer,
+  InboxLayout,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -120,6 +121,7 @@ type Entry =
     MessageThread,
     MessageDay,
     Composer,
+    InboxLayout,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './conversation.page.html',

@@ -374,21 +374,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .stat-grid { --jb-card-padding: var(--space-4); }
 
 /* ---------- Messages -------------------------------------------------------------------- */
-.inbox { display: grid; min-height: 32rem; border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-bg-surface); overflow: hidden; }
-.inbox > * { min-width: 0; }
-@media (min-width: 64rem) { .inbox { grid-template-columns: 22rem minmax(0, 1fr); } .inbox__list { border-right: var(--border-width-hairline) solid var(--color-border-default); } }
-@media (max-width: 63.99rem) { .inbox--list .inbox__chat { display: none; } .inbox--chat .inbox__list { display: none; } }
-.inbox__tools { padding: var(--space-3) var(--space-4); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
-.thread { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: var(--border-width-hairline) solid var(--color-border-default); color: inherit; text-decoration: none; }
-.thread:hover, .thread[data-state="hover"] { background: var(--color-bg-subtle); }
-.thread[aria-current="page"], .thread[data-state="selected"] { background: var(--color-accent-subtle); }
-.thread__body { flex: 1; min-width: 0; }
-.thread__top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); }
-.thread__name { font: var(--text-label); }
-.thread__time { font: var(--text-caption); color: var(--color-fg-muted); white-space: nowrap; }
-.thread__snippet { display: block; font: var(--text-body-sm); color: var(--color-fg-muted); }
-.thread--unread .thread__name, .thread--unread .thread__snippet { font-weight: var(--font-weight-bold); color: var(--color-fg-default); }
-.thread__dot { display: inline-block; vertical-align: middle; margin-right: var(--space-1); width: var(--indicator-size); height: var(--indicator-size); border-radius: var(--radius-full); background: var(--color-accent-border); flex: none; margin-top: var(--space-2); }
 
 /* ---------- Requests, timeline, notifications ------------------------------------------------ */
 .timeline { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }

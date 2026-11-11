@@ -17,12 +17,10 @@
     <a slot="actions" jb-button variant="primary" routerLink="/">Browse businesses</a>
   </div>
 } @else {
-  <div class="inbox inbox--list">
-    <jb-inbox-list />
-    <div class="inbox__chat">
-      <div jb-empty-state icon="message" heading="Pick a conversation">
-        Choose one on the left to read and reply.
-      </div>
+  <jb-inbox-layout showing="list">
+    <jb-inbox-list slot="list" />
+    <div slot="detail" jb-empty-state icon="message" heading="Pick a conversation">
+      Choose one on the left to read and reply.
     </div>
-  </div>
+  </jb-inbox-layout>
 }

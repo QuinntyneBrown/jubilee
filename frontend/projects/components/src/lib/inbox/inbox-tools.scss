@@ -1,0 +1,6 @@
+// Block: inbox, the tools above its list.
+:host {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+}

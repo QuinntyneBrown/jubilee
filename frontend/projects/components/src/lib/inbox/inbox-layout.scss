@@ -1,0 +1,34 @@
+// Block: inbox. The host is the frame; each column is a column of its own, so what is
+// projected into it takes its width.
+:host {
+  display: grid;
+  min-height: 32rem;
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  overflow: hidden;
+}
+
+.inbox__list,
+.inbox__chat {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 64rem) {
+  :host {
+    grid-template-columns: 22rem minmax(0, 1fr);
+  }
+
+  .inbox__list {
+    border-right: var(--border-width-hairline) solid var(--color-border-default);
+  }
+}
+
+@media (max-width: 63.99rem) {
+  :host(.inbox--list) .inbox__chat,
+  :host(.inbox--chat) .inbox__list {
+    display: none;
+  }
+}

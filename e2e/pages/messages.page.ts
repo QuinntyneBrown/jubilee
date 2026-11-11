@@ -8,15 +8,18 @@ export class InboxListRegion {
   readonly root: Locator;
   readonly search: Locator;
   readonly rows: Locator;
+  /** The rows that stand in for conversations while they load. */
+  readonly skeletonRows: Locator;
   readonly loading: Locator;
   readonly noResults: Locator;
   readonly clearSearch: Locator;
   readonly error: Locator;
 
   constructor(page: Page) {
-    this.root = page.locator('jb-inbox-list');
+    this.root = page.locator('.inbox__list');
     this.search = this.root.getByRole('searchbox', { name: 'Search messages' });
     this.rows = this.root.locator('a.thread');
+    this.skeletonRows = this.root.locator('li.thread');
     this.loading = this.root.getByText('Loading your messages…');
     this.noResults = this.root.locator('.empty');
     this.clearSearch = this.root.getByRole('button', { name: 'Clear search' });

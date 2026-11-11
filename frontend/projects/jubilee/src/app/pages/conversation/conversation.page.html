@@ -1,6 +1,6 @@
-<div class="inbox inbox--chat">
-  <jb-inbox-list [selectedId]="id()" />
-  <div jb-chat class="inbox__chat">
+<jb-inbox-layout showing="detail">
+  <jb-inbox-list slot="list" [selectedId]="id()" />
+  <div jb-chat slot="detail">
     @let current = state();
     @if (current.status === 'error') {
       <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this conversation">
@@ -190,4 +190,4 @@
       </form>
     }
   </div>
-</div>
+</jb-inbox-layout>
