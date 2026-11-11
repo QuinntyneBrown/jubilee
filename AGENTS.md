@@ -27,6 +27,8 @@ say so and propose the correction; do not work around it silently.
 - `e2e/` — Playwright suite
 - `docs/assets/` — the logo (`jubilee-icon.svg`) and other images the docs share
 - `docs/mocks/` — static design reference (the source of truth for the UI)
+- `docs/design-reference/magic-patterns/` — captures of the Magic Patterns design the mocks are
+  drawn from; it trumps the mocks
 - `docs/design-system/` — tokens, foundations, components and patterns extracted from the mocks
 - `docs/specs/` — requirements (`L1.md` high level, `L2.md` detailed with acceptance criteria)
 - `docs/detailed-designs/` — per-feature designs derived from the requirements
@@ -208,6 +210,11 @@ design system).
   job runs `npm run sweeps`, `npm run baseline` or anything that sets `JB_SWEEPS=1` or
   `JB_BASELINE=1`; only the repository owner runs them, by hand. Done means the behaviour specs
   pass, not the sweeps.
+- **Component parity (ADR 0036).** Every component of the `components` library has a spec in
+  `e2e/tests/parity/`, built with `e2e/fixtures/parity.ts`, that compares its region in the app
+  with the mock (360 px and 1280 px, both themes, 1 %) and with the Magic Patterns reference in
+  `docs/design-reference/magic-patterns/` (3 %). `npm run parity` runs these specs and nothing
+  else; agents and CI run it. It is not a sweep: it never sets `JB_SWEEPS` or `JB_BASELINE`.
 - Visual regression compares the app to `docs/mocks` region by region. Update baselines only for
   intentional design changes, after changing the mock first.
 - Run frontend tests in Chromium only. Do not configure or run Firefox, WebKit, or any other

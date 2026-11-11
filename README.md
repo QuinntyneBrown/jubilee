@@ -134,6 +134,7 @@ and `docs/design-system/index.html` for the tokens and components.
 | Design-system copy is current | `npm run design:check` | `frontend/` |
 | End-to-end type check | `npm run typecheck` | `e2e/` |
 | End-to-end behaviour tests | `npm test` | `e2e/` |
+| Component parity with the mocks and the Magic Patterns design | `npm run parity` | `e2e/` |
 | Visual, responsive and accessibility sweeps | `npm run sweeps` | `e2e/` (repository owner, by hand only) |
 
 - The backend tests run on EF Core InMemory and need no database.
@@ -148,6 +149,11 @@ and `docs/design-system/index.html` for the tokens and components.
   `docs/mocks` to screenshots, then compare the app with them region by region. CI never runs the
   sweeps, and the screenshots are not committed: to change how a screen looks, change its mock
   first.
+- `npm run parity` runs the component parity specs in `e2e/tests/parity/` and nothing else
+  ([ADR 0036](docs/adr/0036-component-parity-specs.md)): one spec per component of the
+  `components` library. It renders the component's region from the mocks, then compares the app
+  with it at 360 px and 1280 px in both themes (1 % of pixels), and with the crops of the Magic
+  Patterns reference images in `docs/design-reference/magic-patterns/` (3 %).
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs everything above except the sweeps on
 every push to `main` and every pull request.
