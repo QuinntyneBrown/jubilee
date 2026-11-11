@@ -71,6 +71,7 @@ export * from './lib/rows/row-meta';
 export * from './lib/rows/row-price';
 export * from './lib/rows/row-title';
 export * from './lib/rows/rows';
+export * from './lib/section/section';
 export * from './lib/select/select';
 export * from './lib/service-row/service-row';
 export * from './lib/site-footer/site-footer';

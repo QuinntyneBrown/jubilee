@@ -16,6 +16,7 @@ import {
   RowTitle,
   Rows,
   PageHeader,
+  Section,
 } from 'components';
 import { SearchStore } from '../../services/search.store';
 
@@ -57,6 +58,7 @@ function plural(count: number, one: string, many: string): string {
     RowTitle,
     Rows,
     PageHeader,
+    Section,
   ],
   providers: [SearchStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,14 @@
+@if (heading(); as heading) {
+  <div class="section-head">
+    @if (level() === 3) {
+      <h3 [attr.id]="headingId()">{{ heading }}</h3>
+    } @else {
+      <h2 [attr.id]="headingId()">{{ heading }}</h2>
+    }
+    @if (actionLabel(); as label) {
+      <a [routerLink]="actionLink()">{{ label }}</a>
+    }
+    <ng-content select="[slot=action]" />
+  </div>
+}
+<ng-content />

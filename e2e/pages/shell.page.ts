@@ -7,6 +7,8 @@ export class ShellPage {
   readonly main: Locator;
   /** The title block of the page: its heading, its subtitle and its actions. */
   readonly pageHeader: Locator;
+  /** The head of each titled section: its heading and the action beside it. */
+  readonly sectionHeads: Locator;
   readonly topBar: Locator;
   readonly brand: Locator;
   readonly primaryNav: Locator;
@@ -27,6 +29,7 @@ export class ShellPage {
     this.skipLink = page.locator('a.skip-link');
     this.main = page.locator('main#main');
     this.pageHeader = this.main.locator('.page-header');
+    this.sectionHeads = this.main.locator('.section-head');
     this.topBar = page.locator('header.topbar');
     this.brand = this.topBar.locator('.topbar__brand');
     this.primaryNav = this.topBar.getByRole('navigation', { name: 'Primary', exact: true });

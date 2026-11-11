@@ -22,7 +22,7 @@
       />
     </form>
     @if (state.value.recent.length > 0) {
-      <section class="section" aria-labelledby="recent">
+      <section jb-section labelledBy="recent">
         <div class="cluster cluster--between">
           <h2 id="recent">Your recent searches</h2>
           <button jb-button variant="ghost" size="sm" type="button" (click)="store.clearRecent()">
@@ -51,7 +51,7 @@
         </ul>
       </section>
     }
-    <section class="section" aria-labelledby="pop">
+    <section jb-section labelledBy="pop">
       <h2 id="pop">Popular categories</h2>
       <ul jb-chip-row plain style="margin-top: var(--space-3)">
         @for (category of state.value.popularCategories; track category.slug) {

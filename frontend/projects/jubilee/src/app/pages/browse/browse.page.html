@@ -47,11 +47,11 @@
   @switch (state.status) {
     @case ('loading') {
       <p class="visually-hidden" role="status">Loading the directory…</p>
-      <section class="section">
+      <section jb-section>
         <span jb-skeleton shape="title"></span>
         <div style="margin-top: var(--space-4)"><ul jb-card-grid-skeleton [count]="4"></ul></div>
       </section>
-      <section class="section">
+      <section jb-section>
         <span jb-skeleton shape="title"></span>
         <ul jb-row-list-skeleton [count]="6" action></ul>
       </section>
@@ -93,8 +93,7 @@
           </div>
         }
         @if (directory.featured.length) {
-          <section class="section" aria-labelledby="feat">
-            <div class="section-head"><h2 id="feat">Featured this week</h2></div>
+          <section jb-section heading="Featured this week" headingId="feat">
             <ul class="card-grid feature-grid">
               @for (business of directory.featured; track business.slug) {
                 <li>
@@ -109,11 +108,13 @@
           </section>
         }
         @if (directory.products.length) {
-          <section class="section" aria-labelledby="shops">
-            <div class="section-head">
-              <h2 id="shops">From the shops</h2>
-              <a [routerLink]="['/c', 'shops']">All shops</a>
-            </div>
+          <section
+            jb-section
+            heading="From the shops"
+            headingId="shops"
+            actionLabel="All shops"
+            [actionLink]="['/c', 'shops']"
+          >
             <ul class="scroller">
               @for (
                 product of directory.products;
@@ -130,10 +131,11 @@
             </ul>
           </section>
         }
-        <section class="section" aria-labelledby="all">
-          <div class="section-head">
-            <h2 id="all">All {{ directory.liveBusinessCount | jbCount }} businesses</h2>
-          </div>
+        <section
+          jb-section
+          [heading]="'All ' + (directory.liveBusinessCount | jbCount) + ' businesses'"
+          headingId="all"
+        >
           <div class="dir-groups">
             @for (group of directory.groups; track group.slug) {
               <section class="dir-group" [attr.aria-labelledby]="'g-' + group.slug">

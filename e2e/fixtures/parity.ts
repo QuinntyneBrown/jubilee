@@ -74,7 +74,9 @@ export interface ParityOptions {
 
 /** Brings the region to the middle of the viewport, clear of the fixed bars at its edges. */
 async function centre(region: Locator): Promise<void> {
-  await region.first().evaluate((element) => element.scrollIntoView({ block: 'center' }));
+  await region
+    .first()
+    .evaluate((element) => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
 }
 
 function baselineOf(component: string, file: string): string[] {

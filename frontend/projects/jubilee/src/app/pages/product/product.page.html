@@ -120,14 +120,13 @@
     </div>
     @if (product.more.length) {
       <section
-        class="section"
-        aria-labelledby="more"
-        style="border-top: 1px solid var(--color-border-default); padding-top: var(--space-8)"
+        jb-section
+        divided
+        [heading]="'More from ' + product.shop.name"
+        headingId="more"
+        actionLabel="Visit shop"
+        [actionLink]="['/b', product.shop.slug]"
       >
-        <div class="section-head">
-          <h2 id="more">More from {{ product.shop.name }}</h2>
-          <a [routerLink]="['/b', product.shop.slug]">Visit shop</a>
-        </div>
         <ul class="card-grid">
           @for (other of product.more; track other.slug) {
             <li>

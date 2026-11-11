@@ -26,7 +26,7 @@
           </div>
         }
       </div>
-      <section class="section">
+      <section jb-section>
         <span jb-skeleton shape="title"></span>
         <ul jb-row-list-skeleton [count]="3" leading="avatar" action></ul>
       </section>
@@ -128,11 +128,13 @@
             }
           </div>
           <div class="split">
-            <section class="section" aria-labelledby="nr">
-              <div class="section-head">
-                <h2 id="nr">Needs your reply</h2>
-                <a routerLink="/my-business/requests">All requests</a>
-              </div>
+            <section
+              jb-section
+              heading="Needs your reply"
+              headingId="nr"
+              actionLabel="All requests"
+              actionLink="/my-business/requests"
+            >
               @if (b.needsReply.length === 0) {
                 <div jb-empty-state [compact]="true" icon="check" heading="You’re all caught up">
                   New requests from members show up here.
@@ -174,7 +176,7 @@
                 </ul>
               }
             </section>
-            <aside class="section stack">
+            <aside jb-section class="stack">
               <div jb-card heading="Your listing" class="stack">
                 @if (b.summary; as summary) {
                   <ul jb-rows>

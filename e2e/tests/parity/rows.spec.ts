@@ -56,6 +56,14 @@ parity('rows', {
   reference: {
     crops: [
       {
+        case: 'directory-row',
+        width: 1280,
+        frame: 'home-1280.png',
+        clip: { x: 32, y: 1822, width: 380, height: 64 },
+        knownDifference:
+          'The reference draws the row 380 px wide with a smaller tagline, in Inter; the design system has a wider column and the tagline at the small body size, in the system face.',
+      },
+      {
         case: 'service-row',
         width: 1280,
         frame: 'business-services-1280.png',
