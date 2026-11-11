@@ -26,7 +26,13 @@
     [attr.aria-current]="current() === 'messages' ? 'page' : null"
     ><svg jb-icon name="message"></svg>Messages
     @if (member.unreadConversationCount > 0) {
-      <span jb-unread-badge [count]="member.unreadConversationCount"></span>
+      <span class="tabbar__badge"
+        ><span
+          jb-badge
+          [count]="member.unreadConversationCount"
+          [label]="member.unreadConversationCount + ' unread'"
+        ></span
+      ></span>
     }
   </a>
   <a

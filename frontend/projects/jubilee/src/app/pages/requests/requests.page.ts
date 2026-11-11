@@ -16,7 +16,16 @@ import {
   MemberRequests,
   REQUESTS_API,
 } from 'api';
-import { EmptyState, Icon, IconName, Button, RowListSkeleton, Avatar } from 'components';
+import {
+  EmptyState,
+  Icon,
+  IconName,
+  Button,
+  RowListSkeleton,
+  Avatar,
+  Badge,
+  BadgeTone,
+} from 'components';
 import { interval } from 'rxjs';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -40,7 +49,7 @@ const ICON: Record<string, IconName> = { booking: 'calendar', quote: 'message', 
 /** Your requests at /requests (L2-047): every booking, quote and order the member sent. */
 @Component({
   selector: 'jb-requests-page',
-  imports: [RouterLink, EmptyState, Icon, Button, RowListSkeleton, Avatar],
+  imports: [RouterLink, EmptyState, Icon, Button, RowListSkeleton, Avatar, Badge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './requests.page.html',
@@ -154,7 +163,7 @@ export class RequestsPage implements OnInit {
     return ICON[row.kind];
   }
 
-  protected tone(row: MemberRequestRow): string {
+  protected tone(row: MemberRequestRow): BadgeTone | '' {
     return STATUS_TONE[row.status];
   }
 

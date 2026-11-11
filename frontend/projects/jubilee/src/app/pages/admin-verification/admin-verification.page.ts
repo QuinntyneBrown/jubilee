@@ -19,6 +19,9 @@ import {
   FieldError,
   Checkbox,
   Skeleton,
+  Badge,
+  Perk,
+  BadgeTone,
 } from 'components';
 import {
   ApproveListingDialog,
@@ -36,7 +39,7 @@ import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { dayHeading, clockTime } from '../../services/message-time';
 
-const ANSWERS: Record<string, { label: string; tone: string }> = {
+const ANSWERS: Record<string, { label: string; tone: BadgeTone }> = {
   vouches: { label: 'Knows them and can vouch', tone: 'success' },
   'cant-vouch': { label: 'Knows them but can’t vouch', tone: 'danger' },
   'doesnt-know': { label: 'Doesn’t know them', tone: 'danger' },
@@ -50,7 +53,19 @@ const WAITING_STATES: ReferenceState[] = ['waiting', 'expired', 'deleted'];
  */
 @Component({
   selector: 'jb-admin-verification-page',
-  imports: [RouterLink, EmptyState, Icon, MediaTile, Button, Alert, FieldError, Checkbox, Skeleton],
+  imports: [
+    RouterLink,
+    EmptyState,
+    Icon,
+    MediaTile,
+    Button,
+    Alert,
+    FieldError,
+    Checkbox,
+    Skeleton,
+    Badge,
+    Perk,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-verification.page.html',
 })

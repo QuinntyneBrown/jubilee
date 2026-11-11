@@ -19,6 +19,7 @@ import {
   formatPrice,
   Button,
   RowListSkeleton,
+  Badge,
 } from 'components';
 import { DeleteItemData, DeleteItemDialog } from '../../dialogs/delete-item/delete-item.dialog';
 import {
@@ -33,7 +34,7 @@ import { WorkspaceHeader } from '../my-business/workspace-header';
 /** My products at /my-business/products (L2-089, L2-090): the shop's catalogue, with add, edit, delete and reorder. */
 @Component({
   selector: 'jb-my-products-page',
-  imports: [EmptyState, Icon, MediaTile, WorkspaceHeader, Button, RowListSkeleton],
+  imports: [EmptyState, Icon, MediaTile, WorkspaceHeader, Button, RowListSkeleton, Badge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './my-products.page.html',

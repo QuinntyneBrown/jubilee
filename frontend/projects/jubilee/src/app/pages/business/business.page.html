@@ -81,7 +81,7 @@
         @if (listing.credentials.length) {
           <div class="cluster" style="gap: var(--space-2)">
             @for (credential of listing.credentials; track $index) {
-              <span class="tag">{{ credential }}</span>
+              <span jb-tag>{{ credential }}</span>
             }
           </div>
         }
@@ -154,7 +154,7 @@
           }
         </div>
         @if (listing.highlight) {
-          <p class="perk">{{ listing.highlight }}</p>
+          <p jb-perk>{{ listing.highlight }}</p>
         }
       </div>
     </div>

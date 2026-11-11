@@ -3,7 +3,7 @@
 <p class="biz-card__tagline">{{ business().tagline }}</p>
 <p class="biz-card__meta">
   @if (business().highlight; as highlight) {
-    <span class="perk">{{ highlight }}</span>
+    <span jb-perk>{{ highlight }}</span>
   }
   @if (business().verified) {
     <span jb-verified-mark></span>

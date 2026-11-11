@@ -48,12 +48,17 @@
         <p class="subtitle">
           {{ report.entries[0].reason }} · received {{ received(report) }} ·
           @if (report.overdue) {
-            <span class="badge badge--warning">Overdue</span>
+            <span jb-badge tone="warning">Overdue</span>
           }
           <span
-            class="badge"
-            [class.badge--info]="report.status === 'in-review'"
-            [class.badge--success]="report.status === 'resolved'"
+            jb-badge
+            [tone]="
+              report.status === 'in-review'
+                ? 'info'
+                : report.status === 'resolved'
+                  ? 'success'
+                  : null
+            "
             >{{
               report.status === 'in-review'
                 ? 'In review'

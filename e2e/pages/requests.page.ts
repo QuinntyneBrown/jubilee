@@ -8,6 +8,8 @@ export class RequestsPage extends ShellPage implements Screen {
   readonly subtitle: Locator;
   readonly typeTabs: Locator;
   readonly rows: Locator;
+  /** The status of each request. */
+  readonly statusBadges: Locator;
   readonly empty: Locator;
   readonly alert: Locator;
   readonly reference: Locator;
@@ -22,6 +24,7 @@ export class RequestsPage extends ShellPage implements Screen {
     this.subtitle = this.main.locator('.subtitle');
     this.typeTabs = this.main.getByRole('tablist', { name: 'Request type' });
     this.rows = this.main.locator('ul.rows > li');
+    this.statusBadges = this.rows.locator('.badge');
     this.empty = this.main.locator('.empty');
     this.alert = this.main.getByRole('alert');
     this.reference = this.main.locator('code');

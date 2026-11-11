@@ -10,7 +10,17 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ADMIN_API, FeaturedListing, FeaturedWeek } from 'api';
-import { EmptyState, Icon, Button, Alert, Field, FieldHelp, Input, Skeleton } from 'components';
+import {
+  EmptyState,
+  Icon,
+  Button,
+  Alert,
+  Field,
+  FieldHelp,
+  Input,
+  Skeleton,
+  Badge,
+} from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { dayLabel, isoDay } from '../../services/message-time';
@@ -34,6 +44,7 @@ const MAX = 5;
     FieldHelp,
     Input,
     Skeleton,
+    Badge,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-featured.page.html',
