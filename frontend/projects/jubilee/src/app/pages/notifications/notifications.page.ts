@@ -9,8 +9,22 @@ import {
   signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { NOTIFICATIONS_API, NotificationItem, NotificationKind, NotificationList } from 'api';
-import { EmptyState, Icon, IconName, Button, Skeleton, Card, PageHeader } from 'components';
+import {
+  NOTIFICATIONS_API,
+  NotificationItem as NotificationEntry,
+  NotificationKind,
+  NotificationList,
+} from 'api';
+import {
+  EmptyState,
+  Icon,
+  IconName,
+  Button,
+  Card,
+  PageHeader,
+  NotificationItemSkeleton,
+  NotificationItem,
+} from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { threadTime } from '../../services/message-time';
@@ -30,7 +44,16 @@ const ICON: Record<NotificationKind, IconName> = {
 /** The notification centre at /notifications (L2-064): the member's events of the last 90 days, newest first. */
 @Component({
   selector: 'jb-notifications-page',
-  imports: [EmptyState, Icon, RouterLink, Button, Skeleton, Card, PageHeader],
+  imports: [
+    EmptyState,
+    Icon,
+    RouterLink,
+    Button,
+    Card,
+    PageHeader,
+    NotificationItem,
+    NotificationItemSkeleton,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './notifications.page.html',
@@ -97,16 +120,16 @@ export class NotificationsPage implements OnInit {
     return state.status === 'error' ? state.reference : '';
   }
 
-  protected icon(item: NotificationItem): IconName {
+  protected icon(item: NotificationEntry): IconName {
     return ICON[item.kind] ?? 'bell';
   }
 
-  protected when(item: NotificationItem): string {
+  protected when(item: NotificationEntry): string {
     return threadTime(item.at, this.clock.now());
   }
 
   /** Opening an item goes to its target and marks it read (AC2). */
-  protected open(event: Event, item: NotificationItem): void {
+  protected open(event: Event, item: NotificationEntry): void {
     event.preventDefault();
     if (!item.read) {
       this.update((list) => ({

@@ -7,6 +7,8 @@ export class NotificationsPage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly subtitle: Locator;
   readonly items: Locator;
+  /** Each notification, as the link it is. */
+  readonly links: Locator;
   readonly markAll: Locator;
   readonly settings: Locator;
   readonly empty: Locator;
@@ -20,6 +22,7 @@ export class NotificationsPage extends ShellPage implements Screen {
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.subtitle = this.main.locator('.subtitle');
     this.items = this.main.locator('ul.card--list > li');
+    this.links = this.main.locator('a.notif');
     this.markAll = this.main.getByRole('button', { name: 'Mark all as read' });
     this.settings = this.main.getByRole('link', { name: 'Settings' });
     this.empty = this.main.locator('.empty');

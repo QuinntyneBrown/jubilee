@@ -1,0 +1,57 @@
+// Block: notif. The host is the link.
+@use './notification-base' as notif;
+
+:host {
+  @include notif.row;
+}
+
+:host(:hover),
+:host([data-state='hover']) {
+  @include notif.hover;
+}
+
+:host(.notif--unread) {
+  background: var(--color-accent-subtle);
+}
+
+:host(.notif--unread:hover),
+:host(.notif--unread[data-state='hover']) {
+  background: var(--color-accent-subtle-hover);
+}
+
+// The last notification of a list has no line under it.
+:host-context(li:last-child) {
+  border-bottom: 0;
+}
+
+.notif__icon {
+  display: grid;
+  place-items: center;
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-subtle);
+  flex: none;
+}
+
+.notif__body {
+  @include notif.body;
+}
+
+.notif__title,
+.notif__meta {
+  display: block;
+}
+
+.notif__title {
+  font: var(--text-label);
+}
+
+:host(.notif--unread) .notif__title {
+  font-weight: var(--font-weight-bold);
+}
+
+.notif__meta {
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}

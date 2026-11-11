@@ -1,0 +1,13 @@
+<span class="notif__icon" aria-hidden="true"><svg jb-icon [name]="icon()"></svg></span>
+<span class="notif__body">
+  <span class="notif__title">
+    @if (unread()) {
+      <span class="visually-hidden">Unread. </span>
+    }
+    {{ heading() }}</span
+  >
+  @if (text(); as text) {
+    <span class="notif__meta">{{ text }}</span>
+  }
+  <span class="text-caption">{{ time() }}</span>
+</span>

@@ -67,6 +67,8 @@ export * from './lib/message-thread/chat-head';
 export * from './lib/message-thread/message-day';
 export * from './lib/message-thread/message-thread';
 export * from './lib/navigation';
+export * from './lib/notification-item/notification-item';
+export * from './lib/notification-item/notification-item-skeleton';
 export * from './lib/page-header/detail-head';
 export * from './lib/page-header/detail-head-actions';
 export * from './lib/page-header/detail-head-kicker';

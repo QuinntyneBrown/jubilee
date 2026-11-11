@@ -1,0 +1,18 @@
+// Block: notif, the row that stands in for one while the list loads.
+@use './notification-base' as notif;
+
+:host {
+  @include notif.row;
+}
+
+:host(:hover) {
+  @include notif.hover;
+}
+
+:host(:last-child) {
+  border-bottom: 0;
+}
+
+.notif__body {
+  @include notif.body;
+}
