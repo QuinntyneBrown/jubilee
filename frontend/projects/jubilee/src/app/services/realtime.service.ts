@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { EVENTS_API, NOTIFICATIONS_API, NotificationItem, NotificationKind } from 'api';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { NavigationStore } from './navigation.store';
 import { SessionService } from './session.service';
 import { ToastService } from '../toasts/toast.service';
@@ -36,6 +36,13 @@ export class RealtimeService {
   /** Grows with each notification that arrives, so a list on screen can read again. */
   readonly arrivals = this.arrived.asReadonly();
 
+  private readonly items = new Subject<NotificationItem>();
+  /**
+   * Each notification as it arrives, once. An open conversation and the inbox read again on the ones
+   * that concern them (L2-057 AC5; ADR 0037): the stream carries no other event for a message.
+   */
+  readonly received = this.items.asObservable();
+
   start(): void {
     if (this.subscription) return;
     this.subscription = this.events.stream().subscribe((event) => {
@@ -46,6 +53,11 @@ export class RealtimeService {
       if (this.seen.has(event.id)) return;
       this.seen.add(event.id);
       this.arrived.update((count) => count + 1);
+      this.items.next(event.item);
+      // A message in the conversation that is open is read where it lands, not in a toast.
+      if (event.item.kind === 'message' && this.router.url.split('?')[0] === event.item.target) {
+        return;
+      }
       this.announce(event.item);
     });
   }

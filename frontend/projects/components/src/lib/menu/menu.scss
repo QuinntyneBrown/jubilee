@@ -1,0 +1,15 @@
+// Block: menu. The host is the panel; the overlay that opens it decides where it sits.
+:host {
+  display: block;
+  min-width: 12rem;
+  width: max-content;
+  max-width: min(20rem, 90vw);
+  padding: var(--space-1);
+  margin: var(--space-1) 0 0;
+  background: var(--color-bg-surface-raised);
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-3);
+  animation: scale-in var(--duration-fast) var(--ease-enter);
+  transform-origin: top right;
+}

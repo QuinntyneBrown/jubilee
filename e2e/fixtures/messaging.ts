@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { MOCK_PHOTO } from './photos';
 
 // A stand-in for the messaging endpoints (L2-055 to L2-063). The seeded API has no conversations,
 // so the answers the mocks show are produced here; the requests the app makes are kept so a test
@@ -21,7 +22,7 @@ export interface FakeMessage {
   sentAt: string;
   mine: boolean;
   senderFirstName: string;
-  attachment: null;
+  attachment: { id: string; url: string; contentType: string } | null;
 }
 
 const row = (
@@ -98,6 +99,65 @@ function message(id: string, body: string, sentAt: string, mine: boolean): FakeM
   return { id, body, sentAt, mine, senderFirstName: mine ? 'Joanna' : 'Trevor', attachment: null };
 }
 
+export interface FakeCard {
+  id: string;
+  kind: 'booking' | 'quote' | 'order';
+  kindLabel: string;
+  title: string;
+  detail: string | null;
+  status: 'new' | 'confirmed' | 'declined' | 'cancelled' | 'completed';
+  statusLabel: string;
+  sentAt: string;
+  link: string;
+}
+
+const card = (
+  id: string,
+  kind: FakeCard['kind'],
+  title: string,
+  detail: string | null,
+  status: FakeCard['status'],
+  statusLabel: string,
+  sentAt: string,
+): FakeCard => ({
+  id,
+  kind,
+  kindLabel: `${kind[0].toUpperCase()}${kind.slice(1)} request`,
+  title,
+  detail,
+  status,
+  statusLabel,
+  sentAt,
+  link: `/requests/${id}`,
+});
+
+/** The confirmed booking of docs/mocks/pages/conversation/default.html, sent between the two messages. */
+export const bookingCard = (): FakeCard =>
+  card('r-booking', 'booking', 'Discovery meeting', 'Thu 12 Nov, 10:00–10:30 a.m. · Video', 'confirmed', 'Confirmed', '2026-11-10T14:10:00Z');
+
+/** The four cards of docs/mocks/pages/conversation/requests.html. */
+export const requestCards = (): FakeCard[] => [
+  { ...bookingCard(), status: 'new', statusLabel: 'Awaiting reply', sentAt: '2026-11-10T14:05:00Z' },
+  card('r-quote', 'quote', 'A plan for giving and RRSPs', 'Needed by Fri 27 Nov', 'confirmed', 'Confirmed', '2026-11-10T14:06:00Z'),
+  card('r-order', 'order', 'Retirement planning workbook × 1', 'Pickup · $24.00 + tax', 'declined', 'Declined', '2026-11-10T14:07:00Z'),
+  card('r-follow-up', 'booking', 'Follow-up meeting', 'Tue 3 Nov, 2:00–2:30 p.m. · In person', 'cancelled', 'Cancelled', '2026-11-10T14:08:00Z'),
+];
+
+/** The first signed link of a stored photo; the stand-in treats it as expired when told to. */
+const signed = (id: string, sig = 'first') => `/api/attachments/${id}?expires=1&sig=${sig}`;
+
+/** The two photo messages of docs/mocks/pages/conversation/photo.html. */
+export const photoMessages = (): FakeMessage[] => [
+  {
+    ...message('m-4', 'Here’s the page of the statement I mentioned.', '2026-11-10T14:20:00Z', true),
+    attachment: { id: 'a-statement', url: signed('a-statement'), contentType: 'image/jpeg' },
+  },
+  {
+    ...message('m-5', '', '2026-11-10T14:26:00Z', false),
+    attachment: { id: 'a-reply', url: signed('a-reply'), contentType: 'image/jpeg' },
+  },
+];
+
 export type Delivery = 'ok' | 'fail' | 'hang' | 'rate-limited' | 'unconfirmed';
 
 /** What the fake answers, and what it was asked; a test changes these while it runs. */
@@ -107,13 +167,41 @@ export interface FakeMessaging {
   /** How the next sends and starts are answered. */
   delivery: Delivery;
   awayUntil: string | null;
+  muted: boolean;
+  /** How saving a mute is answered. */
+  muting: 'ok' | 'fail';
+  mutes: boolean[];
+  /** False for an owner, who cannot block (L2-063 AC5). */
+  canBlock: boolean;
+  /** How a report is answered. */
+  reporting: 'ok' | 'fail';
+  reports: { reason: string; block: boolean }[];
+  /** How an upload is answered: stored, cut off, never answered, or refused as not a photo. */
+  uploading: 'ok' | 'fail' | 'hang' | 'refused';
+  uploads: { bytes: number; contentType: string }[];
+  /** `expired` answers a photo's first link with 404, as after five minutes. */
+  links: 'ok' | 'expired';
+  /** How a new link is answered. */
+  renewing: 'ok' | 'fail';
+  renewals: string[];
+  /**
+   * True answers the member's event stream (L2-070) from this stand-in, so `arrive` and `notify`
+   * reach the open page. Off by default: a page that holds the stream open is never idle.
+   */
+  live: boolean;
+  /** The other side writes: the message is stored and its notification goes down the stream. */
+  arrive(body: string, conversation?: string): void;
+  /** Sends a notification event down the stream. */
+  notify(kind: 'message' | 'request', title: string, detail: string, target: string): void;
   hasMore: boolean;
   rows: FakeRow[];
   messages: FakeMessage[];
+  /** The requests between the member and the business, as cards (L2-057 AC4). */
+  requests: FakeCard[];
   earlier: FakeMessage[];
   searches: (string | null)[];
   opened: { before: string | null }[];
-  sends: { body: string; idempotencyKey: string }[];
+  sends: { body: string; idempotencyKey: string; attachmentId?: string }[];
   starts: { listingSlug: string; body: string; idempotencyKey: string }[];
 }
 
@@ -132,14 +220,47 @@ export async function stubMessaging(
   page: Page,
   initial: Partial<FakeMessaging> = {},
 ): Promise<FakeMessaging> {
+  const events: { id: string; item: object }[] = [];
   const fake: FakeMessaging = {
     inbox: 'ok',
     conversation: 'ok',
     delivery: 'ok',
     awayUntil: null,
+    muted: false,
+    muting: 'ok',
+    mutes: [],
+    canBlock: true,
+    reporting: 'ok',
+    reports: [],
+    uploading: 'ok',
+    uploads: [],
+    links: 'ok',
+    renewing: 'ok',
+    renewals: [],
+    live: false,
+    arrive(body, conversation = 'c-legacy') {
+      const row = fake.rows.find((r) => r.id === conversation)!;
+      const at = new Date(Date.parse('2026-11-10T14:15:00Z') + events.length * 60_000).toISOString();
+      if (conversation === 'c-legacy') {
+        fake.messages.push(message(`m-arrived-${events.length}`, body, at, false));
+      }
+      row.preview = `${conversation === 'c-legacy' ? 'Trevor: ' : ''}${body}`;
+      row.lastMessageAt = at;
+      row.unread = true;
+      fake.rows = [row, ...fake.rows.filter((r) => r !== row)];
+      fake.notify('message', `New message from ${row.businessName}`, body, `/messages/${conversation}`);
+    },
+    notify(kind, title, detail, target) {
+      const id = String(1_000 + events.length + 1);
+      events.push({
+        id,
+        item: { id: `n-${id}`, kind, title, detail, target, at: '2026-11-10T14:15:00Z', read: false },
+      });
+    },
     hasMore: false,
     rows: inboxRows(),
     messages: legacyMessages(),
+    requests: [bookingCard()],
     earlier: [],
     searches: [],
     opened: [],
@@ -147,6 +268,22 @@ export async function stubMessaging(
     starts: [],
     ...initial,
   };
+
+  if (fake.live) {
+    // The stream asks again soon after every answer, as a browser does, and says what it last received.
+    await page.route('**/api/events', (route) => {
+      const last = route.request().headers()['last-event-id'];
+      const frames = events
+        .filter((event) => last === undefined || Number(event.id) > Number(last))
+        .map((event) => `id: ${event.id}\nevent: notification\ndata: ${JSON.stringify(event.item)}\n\n`)
+        .join('');
+      return route.fulfill({
+        status: 200,
+        contentType: 'text/event-stream',
+        body: `: connected\nretry: 200\n\n${frames}`,
+      });
+    });
+  }
 
   const fail = (route: Route) => {
     switch (fake.delivery) {
@@ -212,12 +349,13 @@ export async function stubMessaging(
         id: 'c-legacy',
         business: { name: 'Legacy Financial', slug: 'legacy-financial' },
         counterpart: { name: 'Trevor Chew' },
-        muted: false,
-        canBlock: true,
+        muted: fake.muted,
+        canBlock: fake.canBlock,
         awayUntil: fake.awayUntil,
         replies: 'day',
         hasMore: before ? false : fake.hasMore,
         messages,
+        requests: before ? [] : fake.requests,
       },
     });
   });
@@ -228,8 +366,55 @@ export async function stubMessaging(
     if (failure) return failure;
     fake.sends.push(body);
     const sent = message(`m-sent-${fake.sends.length}`, body.body, '2026-11-10T14:00:00Z', true);
+    if (body.attachmentId) {
+      sent.attachment = {
+        id: body.attachmentId,
+        url: signed(body.attachmentId),
+        contentType: 'image/jpeg',
+      };
+    }
     fake.messages.push(sent);
     return route.fulfill({ status: 201, json: sent });
+  });
+
+  // Photos: the upload, the stored photo behind its signed link, and a new link for a participant.
+  await page.route(/\/api\/conversations\/c-legacy\/attachments(\/[^/?]+)?$/, (route) => {
+    const request = route.request();
+    if (request.method() === 'GET') {
+      const id = new URL(request.url()).pathname.split('/').pop()!;
+      fake.renewals.push(id);
+      if (fake.renewing === 'fail') return route.fulfill(problem(404, 'attachment_not_found'));
+      return route.fulfill({ json: { url: signed(id, 'renewed') } });
+    }
+    if (fake.uploading === 'hang') return hang(route);
+    if (fake.uploading === 'fail') return route.abort('failed');
+    if (fake.uploading === 'refused') return route.fulfill(problem(422, 'INVALID_IMAGE'));
+    const body = request.postDataBuffer() ?? Buffer.alloc(0);
+    const type = /Content-Type: ([^\r\n]+)/i.exec(body.subarray(0, 400).toString('latin1'));
+    fake.uploads.push({ bytes: body.length, contentType: type?.[1] ?? '' });
+    return route.fulfill({ status: 201, json: { id: `a-${fake.uploads.length}` } });
+  });
+
+  await page.route('**/api/attachments/**', (route) => {
+    const first = new URL(route.request().url()).searchParams.get('sig') === 'first';
+    if (fake.links === 'expired' && first) return route.fulfill(problem(404, 'attachment_not_found'));
+    return route.fulfill({ path: MOCK_PHOTO, contentType: 'image/jpeg' });
+  });
+
+  await page.route('**/api/conversations/c-legacy/report', (route) => {
+    if (fake.reporting === 'fail') return route.abort('failed');
+    fake.reports.push(route.request().postDataJSON() as FakeMessaging['reports'][number]);
+    return route.fulfill({ status: 204 });
+  });
+
+  await page.route('**/api/conversations/c-legacy/mute', (route) => {
+    if (fake.muting === 'fail') return route.fulfill(problem(500, 'SERVER_ERROR'));
+    const { muted } = route.request().postDataJSON() as { muted: boolean };
+    fake.mutes.push(muted);
+    fake.muted = muted;
+    const row = fake.rows.find((r) => r.id === 'c-legacy');
+    if (row) row.muted = muted;
+    return route.fulfill({ status: 204 });
   });
 
   return fake;

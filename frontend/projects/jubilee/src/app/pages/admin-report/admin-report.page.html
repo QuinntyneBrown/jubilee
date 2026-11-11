@@ -115,11 +115,13 @@
               @if (newDay(report, i)) {
                 <li class="chat__day">{{ dayOf(message.at) }}</li>
               }
-              <li class="bubble" [class.bubble--me]="!message.fromOwner">
-                <span class="visually-hidden">{{ message.from }}: </span
-                ><span style="white-space: pre-wrap">{{ message.body }}</span
-                ><span class="bubble__meta">{{ timeOf(message.at) }}</span>
-              </li>
+              <li
+                jb-message-bubble
+                [mine]="!message.fromOwner"
+                [sender]="message.from"
+                [text]="message.body"
+                [meta]="timeOf(message.at)"
+              ></li>
             }
           </ul>
         </section>

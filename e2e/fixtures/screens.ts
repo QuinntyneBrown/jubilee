@@ -32,7 +32,14 @@ import { RequestDetailPage } from '../pages/request-detail.page';
 import { RequestsPage } from '../pages/requests.page';
 import { JoinPage } from '../pages/join.page';
 import { MarketingHomePage } from '../pages/marketing-home.page';
-import { ConversationPage, MessagesPage } from '../pages/messages.page';
+import {
+  ConversationMenuScreen,
+  ConversationPage,
+  ConversationPhotoAttachedScreen,
+  ConversationPhotoSendingScreen,
+  ConversationRequestsScreen,
+  MessagesPage,
+} from '../pages/messages.page';
 import { SearchPage } from '../pages/search.page';
 import { SessionExpiredPage, SignInPage } from '../pages/sign-in.page';
 import { VerifyEmailPage } from '../pages/verify-email.page';
@@ -61,6 +68,7 @@ export const screens: {
   { key: 'incoming-requests.empty', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'incoming-requests.error', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'my-business', screen: (page) => new MyBusinessPage(page) },
+  { key: 'my-business.away', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.pending', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.changes-requested', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.empty', screen: (page) => new MyBusinessPage(page) },
@@ -151,6 +159,13 @@ export const screens: {
   { key: 'conversation', screen: (page) => new ConversationPage(page) },
   { key: 'conversation.loading', screen: (page) => new ConversationPage(page) },
   { key: 'conversation.error', screen: (page) => new ConversationPage(page) },
+  { key: 'conversation.menu', screen: (page) => new ConversationMenuScreen(page) },
+  { key: 'conversation.muted', screen: (page) => new ConversationMenuScreen(page) },
+  { key: 'conversation.photo', screen: (page) => new ConversationPage(page) },
+  { key: 'conversation.photo-attached', screen: (page) => new ConversationPhotoAttachedScreen(page) },
+  { key: 'conversation.photo-sending', screen: (page) => new ConversationPhotoSendingScreen(page) },
+  { key: 'conversation.requests', screen: (page) => new ConversationRequestsScreen(page) },
+  { key: 'conversation.arrived', screen: (page) => new ConversationPage(page) },
   { key: 'search', screen: (page) => new SearchPage(page) },
   { key: 'search.loading', screen: (page) => new SearchPage(page) },
   { key: 'search.empty', screen: (page) => new SearchPage(page) },

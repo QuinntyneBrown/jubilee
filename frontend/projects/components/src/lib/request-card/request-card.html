@@ -1,0 +1,9 @@
+<p class="request-card__kind">{{ kind() }}</p>
+<p class="request-card__title">{{ heading() }}</p>
+@if (detail(); as text) {
+  <p class="request-card__meta">{{ text }}</p>
+}
+<div class="request-card__foot">
+  <span class="badge" [class]="tone()">{{ statusLabel() }}</span>
+  <a [routerLink]="link()">View request</a>
+</div>

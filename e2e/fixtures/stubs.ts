@@ -2,7 +2,7 @@ import type { Page, Route } from '@playwright/test';
 import { categories } from './categories';
 import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
 import { fulfil, recordedAnswer } from './mock-api';
-import { stubMessaging } from './messaging';
+import { legacyMessages, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
 import { esther, stubAdmin } from './admin';
 import { stubModeration } from './moderation';
@@ -132,6 +132,20 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMessaging(page, { conversation: 'loading' });
     case 'conversation-error':
       return stubMessaging(page, { conversation: 'error' });
+    case 'conversation-photo':
+      return stubMessaging(page, { messages: [...legacyMessages(), ...photoMessages()] });
+    case 'conversation-photo-sending':
+      return stubMessaging(page, { uploading: 'hang' });
+    case 'conversation-arrived': {
+      // The reply of the mock, as it stands once it has arrived over the event stream.
+      const fake = await stubMessaging(page);
+      fake.arrive('I’ve sent the meeting link to your e-mail.');
+      return fake;
+    }
+    case 'conversation-requests':
+      return stubMessaging(page, { requests: requestCards() });
+    case 'conversation-muted':
+      return stubMessaging(page, { muted: true });
     case 'browse-loading':
       return page.route(home, pending);
     case 'browse-empty':
@@ -262,6 +276,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubIncoming(page, { list: 'fails' });
     case 'business':
       return stubMyBusiness(page);
+    case 'business-away':
+      return stubMyBusiness(page, { awayUntil: '2026-11-16T05:00:00Z' });
     case 'business-pending':
       return stubMyBusiness(page, { state: 'pending-reference' });
     case 'business-changes':

@@ -14,18 +14,39 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ChatMessage, Conversation, MESSAGES_API, RepliesBand } from 'api';
-import { EmptyState, Icon, Button, Alert, Textarea } from 'components';
+import { Dialog } from '@angular/cdk/dialog';
+import { CdkMenuTrigger } from '@angular/cdk/menu';
+import { ConnectedPosition } from '@angular/cdk/overlay';
+import { ChatMessage, Conversation, MESSAGES_API, RepliesBand, RequestCard } from 'api';
+import {
+  Alert,
+  AttachPhoto,
+  Button,
+  EmptyState,
+  Icon,
+  Menu,
+  MenuItem,
+  MessageBubble,
+  RequestCard as RequestCardItem,
+  Textarea,
+} from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { MessagesStore } from '../../services/messages.store';
 import { clockTime, dayHeading, dayKey, initialsOf, newKey } from '../../services/message-time';
 import { NavigationStore } from '../../services/navigation.store';
+import { RealtimeService } from '../../services/realtime.service';
 import { ConnectionService } from '../../services/offline/connection.service';
 import { OfflineNavigation } from '../../services/offline/offline-navigation';
 import { OfflineSnapshotStore } from '../../services/offline/offline-snapshot.store';
+import { PhotoAttachmentService } from '../../services/photo-attachment.service';
 import { OutgoingMessageQueue, QueuedMessage } from '../../services/offline/outgoing-message.queue';
 import { QueueDrainer } from '../../services/offline/queue-drainer';
+import {
+  ReportConversationData,
+  ReportConversationDialog,
+} from '../../dialogs/report-conversation/report-conversation.dialog';
+import { ToastService } from '../../toasts/toast.service';
 import { InboxList } from '../messages/inbox-list';
 
 const REPLIES: Record<RepliesBand, string> = {
@@ -33,6 +54,12 @@ const REPLIES: Record<RepliesBand, string> = {
   day: 'usually replies within a day',
   'few-days': 'usually replies within a few days',
 };
+
+/** The menu hangs under "More", flush with its right edge. */
+const MENU_POSITION: ConnectedPosition[] = [
+  { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' },
+  { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
+];
 
 const STARTERS = ['Do you offer a first meeting?', 'What does it cost?', 'Can we meet by video?'];
 
@@ -42,11 +69,20 @@ interface Outgoing {
   body: string;
   status: 'sending' | 'failed';
   problem: string;
+  photo: OutgoingPhoto | null;
+}
+
+/** The photo of a message on its way: what to upload, how to show it, and its id once it is stored. */
+interface OutgoingPhoto {
+  blob: Blob;
+  preview: string;
+  attachmentId: string | null;
 }
 
 type Entry =
   | { kind: 'day'; id: string; label: string }
   | { kind: 'message'; id: string; message: ChatMessage; time: string }
+  | { kind: 'request'; id: string; card: RequestCard }
   | { kind: 'outgoing'; id: string; outgoing: Outgoing }
   | { kind: 'queued'; id: string; queued: QueuedMessage };
 
@@ -57,7 +93,22 @@ type Entry =
  */
 @Component({
   selector: 'jb-conversation-page',
-  imports: [FormsModule, RouterLink, EmptyState, Icon, InboxList, Button, Alert, Textarea],
+  imports: [
+    FormsModule,
+    RouterLink,
+    CdkMenuTrigger,
+    EmptyState,
+    Icon,
+    InboxList,
+    Button,
+    Alert,
+    Menu,
+    MenuItem,
+    MessageBubble,
+    AttachPhoto,
+    RequestCardItem,
+    Textarea,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './conversation.page.html',
 })
@@ -74,17 +125,32 @@ export class ConversationPage implements OnInit {
   private readonly drainer = inject(QueueDrainer);
   private readonly snapshots = inject(OfflineSnapshotStore);
   private readonly offlinePage = inject(OfflineNavigation);
+  private readonly toasts = inject(ToastService);
+  private readonly dialog = inject(Dialog);
+  private readonly photos = inject(PhotoAttachmentService);
+  private readonly realtime = inject(RealtimeService);
 
   protected readonly starters = STARTERS;
   protected readonly state = signal<LoadState<Conversation>>({ status: 'loading' });
   protected readonly messages = signal<ChatMessage[]>([]);
   protected readonly hasMore = signal(false);
+  /** The requests between the two, shown as cards among the messages. */
+  protected readonly cards = signal<RequestCard[]>([]);
   protected readonly loadingEarlier = signal(false);
   protected readonly outgoing = signal<Outgoing[]>([]);
   protected readonly text = signal('');
   protected readonly id = signal('');
+  protected readonly muted = signal(false);
+  /** What a screen reader is told when a reply arrives (L2-057 AC5). */
+  protected readonly announcement = signal('');
+  /** The photo chosen in the composer and not sent yet (L2-060 AC5). */
+  protected readonly attached = signal<{ blob: Blob; preview: string } | null>(null);
+  /** New links to photos whose first link expired, and the photos that cannot be shown (L2-060 AC8). */
+  private readonly renewedLinks = signal<Record<string, string | null>>({});
+  protected readonly menuPosition = MENU_POSITION;
 
   private readonly composer = viewChild<ElementRef<HTMLElement>>('composer');
+  private readonly more = viewChild('more', { read: ElementRef<HTMLElement> });
 
   protected readonly conversation = computed(() => {
     const state = this.state();
@@ -102,13 +168,30 @@ export class ConversationPage implements OnInit {
     const now = this.clock.now();
     const entries: Entry[] = [];
     let day = '';
+    // Messages keep the order the server gave them; each request card goes before the first
+    // message sent after it (L2-057 AC4).
+    const cards = [...this.cards()].sort((a, b) => Date.parse(a.sentAt) - Date.parse(b.sentAt));
+    const items: { at: string; message: ChatMessage | null; card: RequestCard | null }[] = [];
     for (const message of this.messages()) {
-      const key = dayKey(message.sentAt);
+      while (cards.length > 0 && Date.parse(cards[0].sentAt) < Date.parse(message.sentAt)) {
+        const card = cards.shift()!;
+        items.push({ at: card.sentAt, message: null, card });
+      }
+      items.push({ at: message.sentAt, message, card: null });
+    }
+    for (const card of cards) items.push({ at: card.sentAt, message: null, card });
+    for (const item of items) {
+      const key = dayKey(item.at);
       if (key !== day) {
         day = key;
-        entries.push({ kind: 'day', id: `day-${key}`, label: dayHeading(message.sentAt, now) });
+        entries.push({ kind: 'day', id: `day-${key}`, label: dayHeading(item.at, now) });
       }
-      entries.push({ kind: 'message', id: message.id, message, time: clockTime(message.sentAt) });
+      if (item.message) {
+        const message = item.message;
+        entries.push({ kind: 'message', id: message.id, message, time: clockTime(message.sentAt) });
+      } else if (item.card) {
+        entries.push({ kind: 'request', id: `request-${item.card.id}`, card: item.card });
+      }
     }
     for (const queued of this.queue.items()) {
       if (queued.conversationId === this.id()) {
@@ -129,6 +212,12 @@ export class ConversationPage implements OnInit {
       if (now === delivered) return;
       delivered = now;
       this.refresh();
+    });
+    // A reply, or a change to a request of this conversation, arrives over the event stream (ADR 0037).
+    this.realtime.received.pipe(takeUntilDestroyed()).subscribe((item) => {
+      if (this.state().status !== 'loaded') return;
+      if (item.kind === 'message' && item.target === `/messages/${this.id()}`) this.refresh(true);
+      else if (item.kind === 'request') this.refresh(false);
     });
     // Keep the newest message in view after the log changes.
     effect(() => {
@@ -155,7 +244,9 @@ export class ConversationPage implements OnInit {
     this.api.open(this.id()).subscribe({
       next: (conversation) => {
         this.messages.set(conversation.messages);
+        this.cards.set(conversation.requests ?? []);
         this.hasMore.set(conversation.hasMore);
+        this.muted.set(conversation.muted);
         this.state.set({ status: 'loaded', value: conversation });
         void this.snapshots.save(`conversation:${this.id()}`, conversation);
         // Opening marks the conversation read, so the counts change.
@@ -192,20 +283,81 @@ export class ConversationPage implements OnInit {
       return;
     }
     this.messages.set(saved.data.messages);
+    this.cards.set(saved.data.requests ?? []);
     this.hasMore.set(saved.data.hasMore);
+    this.muted.set(saved.data.muted);
     this.state.set({ status: 'loaded', value: saved.data });
   }
 
-  /** Reads the latest messages again without a loading state. */
-  private refresh(): void {
+  /** Reads the latest messages again without a loading state, and says so when a reply came. */
+  private refresh(announce = false): void {
     this.api.open(this.id()).subscribe({
       next: (conversation) => {
+        const known = new Set(this.messages().map((message) => message.id));
+        const reply = [...conversation.messages]
+          .reverse()
+          .find((message) => !message.mine && !known.has(message.id));
+        if (announce && reply) {
+          // The same words twice are still two announcements.
+          this.announcement.set('');
+          setTimeout(() => this.announcement.set(`New message from ${reply.senderFirstName}`));
+          // Reading it here is reading it: the inbox and the badge follow.
+          this.store.load();
+          this.navigation.load();
+        }
+        this.state.set({ status: 'loaded', value: conversation });
+        this.cards.update((cards) => mergeCards(cards, conversation.requests ?? []));
         this.messages.set(conversation.messages);
         this.hasMore.set(conversation.hasMore);
         void this.snapshots.save(`conversation:${this.id()}`, conversation);
       },
       error: () => undefined,
     });
+  }
+
+  /** Saves the mute, then says so; "Undo" on the toast takes a mute back (L2-061). */
+  protected setMuted(muted: boolean, announce = muted): void {
+    this.api.mute(this.id(), muted).subscribe({
+      next: () => {
+        this.muted.set(muted);
+        this.store.load();
+        if (!announce) return;
+        this.toasts.show({
+          tone: 'success',
+          title: 'Conversation muted',
+          text: 'You won’t be e-mailed about new replies here.',
+          action: { label: 'Undo', run: () => this.setMuted(false) },
+        });
+      },
+      error: () =>
+        this.toasts.show({
+          tone: 'danger',
+          title: muted
+            ? 'We couldn’t mute this conversation'
+            : 'We couldn’t unmute this conversation',
+          text: 'Try again.',
+        }),
+    });
+  }
+
+  /** "Report conversation" (L2-063): a CDK dialog; closing it returns focus to "More". */
+  protected report(): void {
+    const conversation = this.conversation();
+    if (!conversation) return;
+    const ref = this.dialog.open<void, ReportConversationData>(ReportConversationDialog, {
+      data: {
+        conversationId: conversation.id,
+        businessName: conversation.business.name,
+        canBlock: conversation.canBlock,
+      },
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+      // The menu item that opened it is gone by then, so focus goes back to the menu's trigger.
+      restoreFocus: false,
+    });
+    ref.closed.subscribe(() => this.more()?.nativeElement.focus());
   }
 
   protected retryQueued(queued: QueuedMessage): void {
@@ -223,10 +375,72 @@ export class ConversationPage implements OnInit {
     this.api.open(this.id(), first.id).subscribe({
       next: (page) => {
         this.messages.update((current) => [...page.messages, ...current]);
+        this.cards.update((cards) => mergeCards(page.requests ?? [], cards));
         this.hasMore.set(page.hasMore);
         this.loadingEarlier.set(false);
       },
       error: () => this.loadingEarlier.set(false),
+    });
+  }
+
+  /** A photo was picked: check it, shrink it when it is large, and show it in the composer (L2-060). */
+  protected async attach(file: File): Promise<void> {
+    if ((await this.photos.typeOf(file)) && this.photos.needsShrinking(file)) {
+      this.toasts.show({
+        tone: 'warning',
+        title: 'Photo is large',
+        text: 'Shrinking it to 5 MB before sending.',
+      });
+    }
+    const photo = await this.photos.prepare(file);
+    if (!photo) {
+      this.toasts.show({
+        tone: 'danger',
+        title: 'Photo couldn’t be attached',
+        text: 'Use a JPG or PNG under 5 MB.',
+      });
+      return;
+    }
+    this.detach();
+    this.attached.set({ blob: photo.blob, preview: URL.createObjectURL(photo.blob) });
+  }
+
+  protected detach(): void {
+    const attached = this.attached();
+    if (attached) URL.revokeObjectURL(attached.preview);
+    this.attached.set(null);
+  }
+
+  /** The address a message's photo is shown from; null when it cannot be shown. */
+  protected photoOf(message: ChatMessage): string | null {
+    const attachment = message.attachment;
+    if (!attachment) return null;
+    const renewed = this.renewedLinks()[attachment.id];
+    return renewed === undefined ? attachment.url : renewed;
+  }
+
+  /** A photo did not load: its five-minute link has run out, so ask once for a new one. */
+  protected renewPhoto(message: ChatMessage): void {
+    const id = message.attachment?.id;
+    if (!id) return;
+    if (id in this.renewedLinks()) {
+      this.renewedLinks.update((links) => ({ ...links, [id]: null }));
+      return;
+    }
+    this.renewedLinks.update((links) => ({ ...links, [id]: message.attachment!.url }));
+    this.api.attachmentLink(this.id(), id).subscribe({
+      next: (link) => this.renewedLinks.update((links) => ({ ...links, [id]: link.url })),
+      error: () => this.renewedLinks.update((links) => ({ ...links, [id]: null })),
+    });
+  }
+
+  /** "View photo": the full photo in a new tab, through a link made now. */
+  protected viewPhoto(message: ChatMessage): void {
+    const id = message.attachment?.id;
+    if (!id) return;
+    this.api.attachmentLink(this.id(), id).subscribe({
+      next: (link) => window.open(link.url, '_blank', 'noopener'),
+      error: () => this.renewedLinks.update((links) => ({ ...links, [id]: null })),
     });
   }
 
@@ -244,11 +458,21 @@ export class ConversationPage implements OnInit {
   protected send(event?: Event): void {
     event?.preventDefault();
     const body = this.text().trim();
-    if (!body) return;
-    const outgoing: Outgoing = { key: newKey(), body, status: 'sending', problem: '' };
+    const attached = this.attached();
+    // A photo needs no text (L2-060 AC6); without either there is nothing to send.
+    if (!body && !attached) return;
+    const outgoing: Outgoing = {
+      key: newKey(),
+      body,
+      status: 'sending',
+      problem: '',
+      photo: attached ? { ...attached, attachmentId: null } : null,
+    };
     this.text.set('');
-    // Offline, or with Jubilee out of reach, the message is kept on the device and sent later (L2-120).
-    if (this.connection.cannotDeliver()) {
+    this.attached.set(null);
+    // Offline, or with Jubilee out of reach, a text message is kept on the device and sent later
+    // (L2-120). A message with a photo is not queued (ADR 0037): it fails and offers "Try again".
+    if (!outgoing.photo && this.connection.cannotDeliver()) {
       void this.queue.enqueue(this.id(), body, outgoing.key);
       return;
     }
@@ -258,16 +482,38 @@ export class ConversationPage implements OnInit {
 
   protected retry(outgoing: Outgoing): void {
     this.update(outgoing.key, { status: 'sending', problem: '' });
-    this.deliver({ ...outgoing, status: 'sending', problem: '' });
+    const current = this.outgoing().find((item) => item.key === outgoing.key) ?? outgoing;
+    this.deliver({ ...current, status: 'sending', problem: '' });
   }
 
   protected discard(outgoing: Outgoing): void {
+    if (outgoing.photo) URL.revokeObjectURL(outgoing.photo.preview);
     this.outgoing.update((list) => list.filter((item) => item.key !== outgoing.key));
   }
 
+  /** Uploads the photo, unless an earlier try already stored it, then sends the message (L2-060 AC7). */
   private deliver(outgoing: Outgoing): void {
-    this.api.send(this.id(), outgoing.body, outgoing.key).subscribe({
+    const photo = outgoing.photo;
+    if (!photo || photo.attachmentId) {
+      this.post(outgoing);
+      return;
+    }
+    this.api.attach(this.id(), photo.blob).subscribe({
+      next: (stored) => {
+        const uploaded = { ...outgoing, photo: { ...photo, attachmentId: stored.id } };
+        this.update(outgoing.key, { photo: uploaded.photo });
+        this.post(uploaded);
+      },
+      error: (error: unknown) =>
+        this.update(outgoing.key, { status: 'failed', problem: problemOf(error, true) }),
+    });
+  }
+
+  private post(outgoing: Outgoing): void {
+    const attachmentId = outgoing.photo?.attachmentId ?? undefined;
+    this.api.send(this.id(), outgoing.body, outgoing.key, attachmentId).subscribe({
       next: (message) => {
+        if (outgoing.photo) URL.revokeObjectURL(outgoing.photo.preview);
         this.outgoing.update((list) => list.filter((item) => item.key !== outgoing.key));
         this.messages.update((list) =>
           list.some((m) => m.id === message.id) ? list : [...list, message],
@@ -276,6 +522,7 @@ export class ConversationPage implements OnInit {
       },
       error: (error: unknown) => {
         if (
+          !outgoing.photo &&
           error instanceof HttpErrorResponse &&
           error.status === 0 &&
           this.connection.cannotDeliver()
@@ -297,7 +544,17 @@ export class ConversationPage implements OnInit {
   }
 }
 
-function problemOf(error: unknown): string {
+/** The cards already shown, with the ones just read in their place or added: a card is never shown twice. */
+function mergeCards(shown: RequestCard[], read: RequestCard[]): RequestCard[] {
+  const fresh = new Map(read.map((card) => [card.id, card]));
+  const kept = shown.map((card) => fresh.get(card.id) ?? card);
+  const known = new Set(shown.map((card) => card.id));
+  return [...kept, ...read.filter((card) => !known.has(card.id))];
+}
+
+function problemOf(error: unknown, upload = false): string {
+  if (upload && error instanceof HttpErrorResponse && error.status === 422)
+    return 'Not sent. Use a JPG or PNG under 5 MB.';
   if (error instanceof HttpErrorResponse) {
     const code = (error.error as { code?: string } | null)?.code;
     if (error.status === 429) return 'Not sent. You’re sending quickly; wait a few minutes.';

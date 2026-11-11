@@ -1,0 +1,94 @@
+<div class="dialog__panel">
+  @if (view() === 'success') {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="check"></svg>
+      </div>
+      <div class="dialog__heading">
+        <h2 class="dialog__title" id="dlg-title">Thanks for telling us</h2>
+        <p id="dlg-desc" class="dialog__desc">
+          Your report is private. Our verification team reviews it within one business day.
+          @if (data.canBlock && block()) {
+            {{ data.businessName }} is blocked.
+          }
+        </p>
+      </div>
+      <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    <div class="dialog__footer">
+      <button jb-button variant="primary" type="button" cdkFocusInitial (click)="close()">
+        Close
+      </button>
+    </div>
+  } @else {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="flag"></svg>
+      </div>
+      <div class="dialog__heading">
+        <h2 class="dialog__title" id="dlg-title">Report this conversation</h2>
+        <p id="dlg-desc" class="dialog__desc">
+          Reports are private. Our verification team reads this conversation only while the report
+          is open.
+        </p>
+      </div>
+      <button
+        jb-button
+        variant="ghost"
+        iconOnly
+        type="button"
+        aria-label="Close"
+        [disabled]="busy()"
+        (click)="close()"
+      >
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    <form class="dialog__body stack" id="report-form" novalidate (ngSubmit)="send()">
+      @if (view() === 'failed') {
+        <div jb-alert tone="danger" heading="We couldn’t send that" role="alert">
+          <div>{{ failure() }}</div>
+        </div>
+      }
+      <div
+        jb-field
+        label="Tell us what happened"
+        controlId="d-what"
+        required
+        [counter]="remaining() + ' characters left'"
+        [error]="problem()"
+      >
+        <textarea
+          jb-textarea
+          name="what"
+          rows="4"
+          required
+          cdkFocusInitial
+          [attr.maxlength]="max"
+          [readOnly]="busy()"
+          [ngModel]="what()"
+          (ngModelChange)="what.set($event)"
+        ></textarea>
+      </div>
+      @if (data.canBlock) {
+        <jb-checkbox
+          controlId="d-block"
+          name="block"
+          hint="They won’t be told. Their messages will stop reaching you."
+          [disabled]="busy()"
+          [checked]="block()"
+          (checkedChange)="block.set($event)"
+          >Block {{ data.businessName }}</jb-checkbox
+        >
+      }
+    </form>
+    <div class="dialog__footer">
+      <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button jb-button variant="primary" type="submit" form="report-form" [busy]="busy()">
+        Send report
+      </button>
+    </div>
+  }
+</div>
