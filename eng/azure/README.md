@@ -73,8 +73,12 @@ three repository variables (Settings, Secrets and variables, Actions, Variables)
 | `AZURE_TENANT_ID` | the directory (tenant) ID |
 | `AZURE_SUBSCRIPTION_ID` | the subscription that holds `rg-jubilee-prod` |
 
-The app registration has a federated credential for `repo:QuinntyneBrown/jubilee:ref:refs/heads/main`
-and the Contributor role on `rg-jubilee-prod` only.
+The app registration has one federated credential (`github-main`) and the Contributor role on
+`rg-jubilee-prod` only. The credential's subject is the one GitHub presents for this repository,
+which carries the owner and repository IDs:
+`repo:QuinntyneBrown@1749159/jubilee@1452953441:ref:refs/heads/main`. The plain form
+`repo:QuinntyneBrown/jubilee:ref:refs/heads/main` is refused (`AADSTS700213`); the sign-in error
+quotes the subject it was given.
 
 To deploy by hand instead, in Azure Cloud Shell (bash):
 

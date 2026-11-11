@@ -14,7 +14,16 @@ APP_APP=${APP_APP:-jubilee-to-app}   # app.jubilee.to: frontend/projects/jubilee
 
 root=$(cd "$(dirname "$0")/../.." && pwd)
 work=$(mktemp -d)
-trap 'rm -rf "$work"' EXIT
+server=
+# On any exit: remove the working folder and, if the database step opened the SQL firewall to
+# this machine, close it again, also when a migration fails.
+cleanup() {
+  rm -rf "$work"
+  if [[ -n "$server" ]]; then
+    az sql server firewall-rule delete -g "$GROUP" -s "$server" -n deploy -o none || true
+  fi
+}
+trap cleanup EXIT
 
 # The .NET SDK that backend/global.json asks for; Cloud Shell ships an older one.
 dotnet=dotnet
@@ -48,7 +57,8 @@ if [[ " $* " == *" --migrate "* || " $* " == *" --seed "* ]]; then
     "$dotnet" run --project "$root/backend/src/Jubilee.Cli" -c Release -- seed
   fi
   unset ConnectionStrings__Jubilee
-  az sql server firewall-rule delete -g "$GROUP" -s "$server" -n deploy
+  az sql server firewall-rule delete -g "$GROUP" -s "$server" -n deploy -o none
+  server=
 fi
 
 echo "== Packaging"
@@ -73,12 +83,15 @@ node_file=$(curl -sL "$node_release/SHASUMS256.txt" | grep -o 'node-v22[0-9.]*-l
 echo "== Deploying"
 az webapp deploy -g "$GROUP" -n "$WWW_APP" --src-path "$work/www.zip" --type zip -o none
 # The app is restarted only after every file is in place: a container that starts while the
-# package is still being copied does not find start.sh and stops.
-az webapp deploy -g "$GROUP" -n "$APP_APP" --src-path "$work/app.zip" --type zip --restart false -o none
+# package is still being copied does not find start.sh and stops. Without a restart there is no
+# start-up to track, and az would wait ten minutes for one and fail: --track-status false.
+az webapp deploy -g "$GROUP" -n "$APP_APP" --src-path "$work/app.zip" --type zip --restart false   --track-status false -o none
 az webapp restart -g "$GROUP" -n "$APP_APP"
 
 echo "== Waiting for the app"
 health=${HEALTH_URL:-https://app.jubilee.to/api/health}
+# Give the restart time to stop the previous container, so the answer comes from the new one.
+sleep 30
 for attempt in $(seq 1 40); do
   if curl -fsS --max-time 10 "$health" >/dev/null 2>&1; then
     echo "Deployed. https://www.jubilee.to  $health"
