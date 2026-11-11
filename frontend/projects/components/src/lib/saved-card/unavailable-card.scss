@@ -1,0 +1,14 @@
+// Block: biz-card, for something no longer listed. The host is the card.
+@use '../business-card/business-card-base' as card;
+
+:host {
+  @include card.card;
+}
+
+.biz-card__name {
+  @include card.name;
+}
+
+.biz-card__tagline {
+  @include card.tagline;
+}

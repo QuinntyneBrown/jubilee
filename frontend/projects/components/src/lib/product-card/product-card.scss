@@ -1,0 +1,20 @@
+// Block: product-card, a biz-card with a smaller name and its price. The host is the card.
+@use '../business-card/business-card-base' as card;
+
+:host {
+  @include card.card;
+}
+
+@include card.link-hover;
+
+.biz-card__name {
+  @include card.name;
+
+  font: var(--text-label);
+}
+
+.biz-card__tagline {
+  @include card.tagline;
+
+  font: var(--text-caption);
+}
