@@ -46,7 +46,11 @@ certificates for the three host names.
 
 | `Email__ConnectionString`, `Email__From`, `Email__WebhookSecret` | set by `configure-email.sh` (see "E-mail" below); without the first, no e-mail leaves |
 
-Not configured yet, so this feature is off: `BotChallenge__SecretKey` (Turnstile).
+Not configured yet, so this feature is off: the bot challenge of the join form (Cloudflare
+Turnstile). It needs a Turnstile widget for `app.jubilee.to` and two settings: `BotChallenge__SiteKey`
+(public; the join form reads it from `GET /api/session` and shows the challenge) and
+`BotChallenge__SecretKey` (the API verifies the token with it). Set both or neither: with only the
+site key the form sends a token nobody checks, and with only the secret every join is refused.
 
 ## Google sign-in
 

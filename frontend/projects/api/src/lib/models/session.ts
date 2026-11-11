@@ -4,6 +4,8 @@ export type SessionDto =
       signedIn: false;
       /** Whether "Join with Google" and "Continue with Google" can be offered (L2-003 AC5). */
       googleSignIn?: boolean;
+      /** The public site key of the bot challenge of the join form, when one is configured (L2-137 AC2). */
+      botChallengeSiteKey?: string;
     }
   | {
       signedIn: true;

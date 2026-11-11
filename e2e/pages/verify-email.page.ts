@@ -16,6 +16,7 @@ export class VerifyEmailPage extends ShellPage implements Screen {
   readonly errorReference: Locator;
   readonly tryAgain: Locator;
   readonly startBrowsing: Locator;
+  readonly continueWhereYouLeftOff: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -30,6 +31,9 @@ export class VerifyEmailPage extends ShellPage implements Screen {
     this.errorReference = this.errorState.locator('code');
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.startBrowsing = this.main.getByRole('link', { name: 'Start browsing' });
+    this.continueWhereYouLeftOff = this.main.getByRole('link', {
+      name: 'Continue where you left off',
+    });
   }
 
   async ready(): Promise<void> {

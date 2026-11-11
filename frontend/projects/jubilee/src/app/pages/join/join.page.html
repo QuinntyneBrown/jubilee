@@ -137,6 +137,9 @@
             <span jb-field-error id="agree-error">{{ text }}</span>
           }
         </div>
+        @if (challengeSiteKey(); as siteKey) {
+          <jb-bot-challenge [siteKey]="siteKey" (token)="challenge.set($event)" />
+        }
         <button
           jb-button
           variant="primary"
