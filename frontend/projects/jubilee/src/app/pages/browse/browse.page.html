@@ -33,11 +33,11 @@
         placeholder="Plumber, lawyer, Bibles…"
       />
     </form>
-    <ul class="chip-row">
-      <li><a class="chip" routerLink="/" aria-current="page">All</a></li>
+    <ul jb-chip-row>
+      <li><a jb-chip routerLink="/" selected>All</a></li>
       @for (category of categories; track category.slug) {
         <li>
-          <a class="chip" [routerLink]="['/c', category.slug]">{{ category.name }}</a>
+          <a jb-chip [routerLink]="['/c', category.slug]">{{ category.name }}</a>
         </li>
       }
     </ul>

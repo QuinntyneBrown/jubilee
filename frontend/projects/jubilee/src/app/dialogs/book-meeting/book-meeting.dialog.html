@@ -135,17 +135,14 @@
               }
               <div class="cluster" style="gap: var(--space-2)">
                 @for (slot of slots(); track slot) {
-                  <label class="chip" style="position: relative">
-                    <input
-                      type="radio"
-                      name="time"
-                      class="visually-hidden"
-                      [value]="slot"
-                      [checked]="time() === slot"
-                      [disabled]="busy()"
-                      (change)="time.set(slot); timeProblem.set('')"
-                    />{{ label(slot) }}
-                  </label>
+                  <jb-chip-option
+                    name="time"
+                    [value]="slot"
+                    [checked]="time() === slot"
+                    [disabled]="busy()"
+                    (selected)="time.set(slot); timeProblem.set('')"
+                    >{{ label(slot) }}</jb-chip-option
+                  >
                 }
               </div>
               @if (timeProblem()) {

@@ -1,0 +1,48 @@
+// Block: chip, as the label around a radio. The radio is there for the keyboard and assistive
+// technology and is not drawn; the label shows its state.
+@use './chip-base' as chip;
+
+:host {
+  display: inline-flex;
+}
+
+@include chip.chip('.chip');
+
+.chip {
+  position: relative;
+}
+
+input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.chip:has(input:checked) {
+  @include chip.chip-selected;
+}
+
+.chip:has(input:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.chip:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+// A phone: the comfortable touch target.
+@media (max-width: 47.99rem) {
+  .chip {
+    min-height: var(--target-comfortable);
+    min-width: var(--target-comfortable);
+    justify-content: center;
+  }
+}
