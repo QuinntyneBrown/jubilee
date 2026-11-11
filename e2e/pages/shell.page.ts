@@ -149,6 +149,11 @@ export class ShellPage {
     return box.y + box.height;
   }
 
+  /** Whether a region runs with the text around it, as a word does, rather than as a box. */
+  flowsInline(region: Locator): Promise<boolean> {
+    return region.evaluate((element) => getComputedStyle(element).display === 'inline');
+  }
+
   private async boxOf(
     region: Locator,
   ): Promise<{ x: number; y: number; width: number; height: number }> {

@@ -100,13 +100,10 @@ test.describe('join with e-mail (L2-001)', () => {
     );
     await expect(join.statementLink).toHaveAttribute('href', '/statement-of-faith');
     await expect(join.termsLink).toHaveAttribute('href', '/terms');
-    // The links are words of the sentence, on its line, not lines of their own.
-    expect(
-      Math.abs((await join.topEdge(join.termsLink)) - (await join.topEdge(join.statementLink))),
-    ).toBeLessThan(2);
-    expect(await join.leftEdge(join.termsLink)).toBeGreaterThan(
-      await join.rightEdge(join.statementLink),
-    );
+    // The links are words of the sentence, not boxes or lines of their own. Where the sentence
+    // wraps depends on the text face, so this asks how the links flow, not where they land.
+    expect(await join.flowsInline(join.statementLink)).toBe(true);
+    expect(await join.flowsInline(join.termsLink)).toBe(true);
   });
 
   test('AC7: the page says who it is for and offers Log in under the form', async ({
