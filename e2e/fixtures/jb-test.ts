@@ -5,8 +5,7 @@ import { installMockApi, saveShard } from './mock-api';
 import { applyStub } from './stubs';
 
 /** True when the target is the mocks: the sweeps' baseline render, or the parity specs' one. */
-export const BASELINE =
-  process.env['JB_BASELINE'] === '1' || process.env['JB_PARITY'] === 'mocks';
+export const BASELINE = process.env['JB_BASELINE'] === '1' || process.env['JB_PARITY'] === 'mocks';
 export type Theme = 'light' | 'dark';
 /** Where `npm run start:marketing` serves the marketing site (ADR 0013). */
 export const MARKETING_URL = 'http://localhost:4201';

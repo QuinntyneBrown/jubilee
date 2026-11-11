@@ -1,0 +1,15 @@
+// Block: form-summary, a danger alert with the list of what to fix.
+:host {
+  display: block;
+}
+
+.form-summary {
+  // Its links are set in the alert's own colour.
+  --jb-link-color: currentColor;
+  --jb-link-hover-color: currentColor;
+}
+
+.form-summary__list {
+  margin: 0;
+  padding-left: var(--space-5);
+}

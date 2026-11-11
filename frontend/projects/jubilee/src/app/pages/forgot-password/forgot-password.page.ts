@@ -1,16 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  inject,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
-import { BrandMark, EmptyState, Icon, Button, Alert } from 'components';
+import { BrandMark, EmptyState, Icon, Button, Alert, FormSummary } from 'components';
 
 type View = 'form' | 'submitting' | 'success' | 'error';
 
@@ -22,14 +15,14 @@ const MALFORMED = 'Enter an e-mail address like name@example.com';
  */
 @Component({
   selector: 'jb-forgot-password-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert],
+  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert, FormSummary],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './forgot-password.page.html',
 })
 export class ForgotPasswordPage {
   private readonly api = inject(PASSWORD_RESET_API);
-  private readonly summaryRef = viewChild('summaryBox', { read: ElementRef<HTMLElement> });
+  private readonly summaryRef = viewChild(FormSummary);
 
   protected readonly view = signal<View>('form');
   protected readonly email = signal('');
@@ -43,7 +36,7 @@ export class ForgotPasswordPage {
     this.notice.set(null);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
       this.error.set(MALFORMED);
-      setTimeout(() => this.summaryRef()?.nativeElement.focus());
+      setTimeout(() => this.summaryRef()?.focus());
       return;
     }
 
@@ -58,7 +51,7 @@ export class ForgotPasswordPage {
         if (failure.status === 422) {
           this.view.set('form');
           this.error.set(MALFORMED);
-          setTimeout(() => this.summaryRef()?.nativeElement.focus());
+          setTimeout(() => this.summaryRef()?.focus());
         } else if (failure.status === 429) {
           this.view.set('form');
           const seconds = Number(failure.headers.get('Retry-After')) || 3600;
@@ -71,10 +64,6 @@ export class ForgotPasswordPage {
         }
       },
     });
-  }
-
-  protected focusEmail(): void {
-    document.getElementById('email')?.focus();
   }
 
   protected retry(): void {

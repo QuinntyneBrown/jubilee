@@ -49,7 +49,8 @@ export async function stubPasswordReset(
 
     if (path.endsWith('/password-reset-requests')) {
       fake.requestedFor.push(body.email);
-      if (fake.request === 'fails') return route.fulfill(problem(503, { reference: 'JB-AUTH-503' }));
+      if (fake.request === 'fails')
+        return route.fulfill(problem(503, { reference: 'JB-AUTH-503' }));
       if (fake.request === 'slow') await new Promise((resolve) => setTimeout(resolve, 600));
       return route.fulfill({ status: 202 });
     }
@@ -58,15 +59,24 @@ export async function stubPasswordReset(
       fake.inspected.push(body.token);
       if (fake.link === 'fails') return route.fulfill(problem(503, { reference: 'JB-AUTH-504' }));
       return route.fulfill({
-        json: fake.link === 'valid' ? { state: 'valid', email: RESET_EMAIL } : { state: 'expired', email: null },
+        json:
+          fake.link === 'valid'
+            ? { state: 'valid', email: RESET_EMAIL }
+            : { state: 'expired', email: null },
       });
     }
 
-    fake.changes.push({ token: body.token, newPassword: body.newPassword, repeatPassword: body.repeatPassword });
+    fake.changes.push({
+      token: body.token,
+      newPassword: body.newPassword,
+      repeatPassword: body.repeatPassword,
+    });
     if (fake.reset === 'expires') return route.fulfill(problem(410, { code: 'LINK_EXPIRED' }));
     if (fake.reset === 'fails') return route.fulfill(problem(503, { reference: 'JB-AUTH-505' }));
     if (body.newPassword === BREACHED) {
-      return route.fulfill(problem(422, { code: 'validation_failed', errors: { newPassword: 'PASSWORD_BREACHED' } }));
+      return route.fulfill(
+        problem(422, { code: 'validation_failed', errors: { newPassword: 'PASSWORD_BREACHED' } }),
+      );
     }
     return route.fulfill({ status: 204 });
   });

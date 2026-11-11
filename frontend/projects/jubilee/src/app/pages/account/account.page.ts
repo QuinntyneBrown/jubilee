@@ -3,7 +3,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   OnInit,
   computed,
   inject,
@@ -13,7 +12,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ACCOUNT_DATA_API, Account, PROFILE_API, ProfileForm } from 'api';
-import { EmptyState, Icon, Button, Alert } from 'components';
+import { EmptyState, Icon, Button, Alert, FormSummary } from 'components';
 import { Observable, map } from 'rxjs';
 import { ChangeEmailData, ChangeEmailDialog } from '../../dialogs/change-email/change-email.dialog';
 import {
@@ -59,7 +58,7 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-account-page',
-  imports: [FormsModule, RouterLink, EmptyState, Icon, Button, Alert],
+  imports: [FormsModule, RouterLink, EmptyState, Icon, Button, Alert, FormSummary],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page', '(window:beforeunload)': 'warnOnClose($event)' },
   templateUrl: './account.page.html',
@@ -71,8 +70,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
   private readonly dialog = inject(Dialog);
   private readonly session = inject(SessionService);
   private readonly toasts = inject(ToastService);
-  private readonly summaryBox = viewChild('summaryBox', { read: ElementRef<HTMLElement> });
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly summaryBox = viewChild(FormSummary);
 
   protected readonly state = signal<LoadState<Account>>({ status: 'loading' });
   protected readonly firstName = signal('');
@@ -278,12 +276,8 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
     return this.problems().find((p) => p.field === field)?.text ?? null;
   }
 
-  protected focusField(id: string): void {
-    this.host.nativeElement.querySelector<HTMLElement>(`#${id}`)?.focus();
-  }
-
   private focusSummary(): void {
-    setTimeout(() => this.summaryBox()?.nativeElement.focus());
+    setTimeout(() => this.summaryBox()?.focus());
   }
 
   protected changeEmail(opener: HTMLElement): void {

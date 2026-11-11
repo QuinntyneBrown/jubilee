@@ -58,33 +58,11 @@
         </div>
       }
       @if (problems().length > 0) {
-        <div
-          jb-alert
-          tone="danger"
-          [heading]="
-            'Fix ' +
-            problems().length +
-            ' ' +
-            (problems().length === 1 ? 'thing' : 'things') +
-            ' to continue'
-          "
-          class="form-summary"
-          role="alert"
-          id="summary"
-          tabindex="-1"
+        <jb-form-summary
+          [errors]="problems()"
           #summaryBox
           style="max-width: 42rem; margin-bottom: var(--space-4)"
-        >
-          <ul class="alert__list">
-            @for (item of problems(); track item.field) {
-              <li>
-                <a [href]="'#' + item.id" (click)="$event.preventDefault(); focusField(item.id)">{{
-                  item.text
-                }}</a>
-              </li>
-            }
-          </ul>
-        </div>
+        />
       }
       <form
         class="card form"

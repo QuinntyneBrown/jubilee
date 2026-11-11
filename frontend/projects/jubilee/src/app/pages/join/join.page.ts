@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   computed,
   inject,
   signal,
@@ -11,7 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ACCOUNT_API, JoinRequest } from 'api';
-import { BrandMark, EmptyState, Icon, Button, Alert } from 'components';
+import { BrandMark, EmptyState, Icon, Button, Alert, FormSummary } from 'components';
 import { SessionService } from '../../services/session.service';
 
 type Field = 'firstName' | 'lastName' | 'email' | 'password' | 'agreement';
@@ -66,7 +65,7 @@ function message(field: Field, code: string, passwordLength: number): string {
 /** JoinPage (L2-001 to L2-003): create an account with e-mail or Google. */
 @Component({
   selector: 'jb-join-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert],
+  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert, FormSummary],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './join.page.html',
@@ -75,7 +74,7 @@ export class JoinPage {
   private readonly api = inject(ACCOUNT_API);
   private readonly session = inject(SessionService);
   private readonly returnUrl = inject(ActivatedRoute).snapshot.queryParamMap.get('returnUrl');
-  private readonly summaryRef = viewChild('summaryBox', { read: ElementRef<HTMLElement> });
+  private readonly summaryRef = viewChild(FormSummary);
 
   protected readonly max = MAX;
   protected readonly view = signal<View>('form');
@@ -163,10 +162,6 @@ export class JoinPage {
     }
   }
 
-  protected focusField(id: string): void {
-    document.getElementById(id)?.focus();
-  }
-
   protected retry(): void {
     this.view.set('form');
   }
@@ -179,6 +174,6 @@ export class JoinPage {
   }
 
   private focusSummary(): void {
-    setTimeout(() => this.summaryRef()?.nativeElement.focus());
+    setTimeout(() => this.summaryRef()?.focus());
   }
 }

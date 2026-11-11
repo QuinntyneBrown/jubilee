@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   computed,
   inject,
   signal,
@@ -10,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BrandMark, EmptyState, Icon, Button, Alert } from 'components';
+import { BrandMark, EmptyState, Icon, Button, Alert, FormSummary } from 'components';
 import { sanitiseReturnUrl } from '../../services/return-url';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../toasts/toast.service';
@@ -27,7 +26,7 @@ const GOOGLE_ERRORS: Record<string, string> = {
 /** SignInPage (L2-006, L2-007): e-mail and password, or Google, then back to where the visitor was. */
 @Component({
   selector: 'jb-sign-in-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert],
+  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert, FormSummary],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './sign-in.page.html',
@@ -37,7 +36,7 @@ export class SignInPage {
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastService);
   private readonly query = inject(ActivatedRoute).snapshot.queryParamMap;
-  private readonly summaryRef = viewChild('summaryBox', { read: ElementRef<HTMLElement> });
+  private readonly summaryRef = viewChild(FormSummary);
 
   protected readonly returnUrl = sanitiseReturnUrl(this.query.get('returnUrl'));
   protected readonly googleUrl = `/api/auth/google/start?returnUrl=${encodeURIComponent(this.returnUrl)}`;
@@ -120,15 +119,11 @@ export class SignInPage {
     }
   }
 
-  protected focusField(id: string): void {
-    document.getElementById(id)?.focus();
-  }
-
   protected retry(): void {
     this.view.set('form');
   }
 
   private focusSummary(): void {
-    setTimeout(() => this.summaryRef()?.nativeElement.focus());
+    setTimeout(() => this.summaryRef()?.focus());
   }
 }

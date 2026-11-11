@@ -3,7 +3,6 @@ import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   OnInit,
   computed,
   inject,
@@ -13,7 +12,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
-import { BrandMark, EmptyState, Icon, Button, Alert } from 'components';
+import { BrandMark, EmptyState, Icon, Button, FormSummary } from 'components';
 
 type View = 'loading' | 'form' | 'submitting' | 'success' | 'expired' | 'error';
 type Field = 'password' | 'confirm';
@@ -52,7 +51,7 @@ function text(code: string, length: number): string {
  */
 @Component({
   selector: 'jb-reset-password-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert],
+  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, FormSummary],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './reset-password.page.html',
@@ -61,7 +60,7 @@ export class ResetPasswordPage implements OnInit {
   private readonly api = inject(PASSWORD_RESET_API);
   private readonly document = inject(DOCUMENT);
   private readonly token = inject(ActivatedRoute).snapshot.paramMap.get('token') ?? '';
-  private readonly summaryRef = viewChild('summaryBox', { read: ElementRef<HTMLElement> });
+  private readonly summaryRef = viewChild(FormSummary);
 
   protected readonly view = signal<View>('loading');
   protected readonly accountEmail = signal('');
@@ -148,11 +147,7 @@ export class ResetPasswordPage implements OnInit {
     }
   }
 
-  protected focusField(id: string): void {
-    document.getElementById(id)?.focus();
-  }
-
   private focusSummary(): void {
-    setTimeout(() => this.summaryRef()?.nativeElement.focus());
+    setTimeout(() => this.summaryRef()?.focus());
   }
 }

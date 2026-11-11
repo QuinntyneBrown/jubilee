@@ -10,7 +10,15 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ListingChanges, ListingEditor, ListingPhoto, MY_BUSINESS_API } from 'api';
-import { BusinessCard, EmptyState, Icon, Button, CloseButton, Alert } from 'components';
+import {
+  BusinessCard,
+  EmptyState,
+  Icon,
+  Button,
+  CloseButton,
+  Alert,
+  FormSummary,
+} from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 import { WorkspaceHeader } from '../my-business/workspace-header';
 
@@ -40,6 +48,7 @@ type Saving = 'idle' | 'saving';
     Button,
     CloseButton,
     Alert,
+    FormSummary,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -60,6 +69,9 @@ export class EditListingPage implements OnInit {
   protected readonly photos = signal<ListingPhoto[]>([]);
   protected readonly errors = signal<Partial<Record<Field, string>>>({});
   protected readonly summary = signal<{ field: Field; text: string }[]>([]);
+  protected readonly summaryErrors = computed(() =>
+    this.summary().map((item) => ({ id: this.idOf(item.field), text: item.text })),
+  );
   protected readonly saving = signal<Saving>('idle');
   protected readonly saved = signal<{ recheck: boolean } | null>(null);
   protected readonly failure = signal<'conflict' | 'failed' | null>(null);
@@ -276,15 +288,6 @@ export class EditListingPage implements OnInit {
 
   protected dismissSaved(): void {
     this.saved.set(null);
-  }
-
-  protected pluralThings(count: number): string {
-    return count === 1 ? 'thing' : 'things';
-  }
-
-  protected focusField(field: Field, event: Event): void {
-    event.preventDefault();
-    document.getElementById(this.idOf(field))?.focus();
   }
 
   protected idOf(field: Field): string {

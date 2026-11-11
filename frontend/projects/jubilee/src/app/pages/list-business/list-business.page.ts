@@ -20,7 +20,7 @@ import {
   SubmittedListing,
 } from 'api';
 import { FormsModule } from '@angular/forms';
-import { Icon, MediaTile, categoryTile, formatPrice, Button, Alert } from 'components';
+import { Icon, MediaTile, categoryTile, formatPrice, Button, Alert, FormSummary } from 'components';
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
 import { clockTime, newKey } from '../../services/message-time';
@@ -87,7 +87,7 @@ function summaryFor(field: Field, code: string): string {
  */
 @Component({
   selector: 'jb-list-business-page',
-  imports: [FormsModule, RouterLink, Icon, MediaTile, Button, Alert],
+  imports: [FormsModule, RouterLink, Icon, MediaTile, Button, Alert, FormSummary],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',
 })
@@ -248,11 +248,6 @@ export class ListBusinessPage {
         this.items.update((list) => [...list, item]);
         this.touched();
       });
-  }
-
-  protected goTo(event: Event, id: string): void {
-    event.preventDefault();
-    document.getElementById(id)?.focus();
   }
 
   private check(): Partial<Record<Field, string>> {
