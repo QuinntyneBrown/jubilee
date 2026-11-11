@@ -33,12 +33,13 @@
   }
   @case ('loaded') {
     <form
-      class="card stack"
-      aria-labelledby="fw"
-      style="margin-top: var(--space-4)"
+      jb-card
+      heading="Featured this week"
+      headingId="fw"
+      class="stack"
       (submit)="$event.preventDefault(); save()"
+      style="margin-top: var(--space-4)"
     >
-      <h2 id="fw" class="card__title">Featured this week</h2>
       @if (problem(); as message) {
         <div jb-alert tone="danger" role="alert">{{ message }}</div>
       }

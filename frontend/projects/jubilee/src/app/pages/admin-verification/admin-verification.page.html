@@ -110,8 +110,7 @@
     }
     <div class="split" style="margin-top: var(--space-6)">
       <div class="stack">
-        <section class="card" aria-labelledby="own">
-          <h2 id="own" class="card__title">Owner</h2>
+        <section jb-card heading="Owner" headingId="own">
           <dl class="dl" style="margin-top: var(--space-4)">
             <dt>Name</dt>
             <dd>{{ r.owner.name }}</dd>
@@ -123,8 +122,7 @@
             <dd>{{ r.owner.otherListings === 0 ? 'None' : r.owner.otherListings }}</dd>
           </dl>
         </section>
-        <section class="card" aria-labelledby="ref">
-          <h2 id="ref" class="card__title">Church reference</h2>
+        <section jb-card heading="Church reference" headingId="ref">
           <dl class="dl" style="margin-top: var(--space-4)">
             <dt>Church</dt>
             <dd>{{ r.reference.church }}</dd>
@@ -161,8 +159,7 @@
             Private. Never shown to the owner or the public; deleted 90 days after a decision.
           </p>
         </section>
-        <section class="card" aria-labelledby="chk">
-          <h2 id="chk" class="card__title">Checklist</h2>
+        <section jb-card heading="Checklist" headingId="chk">
           @if (r.flags.length > 0) {
             <p class="text-caption" style="margin-top: var(--space-2)">
               Flagged by the submission: {{ r.flags.join(', ') }}

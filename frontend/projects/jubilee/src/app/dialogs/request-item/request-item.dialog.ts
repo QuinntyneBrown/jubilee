@@ -23,6 +23,7 @@ import {
   DialogFrame,
   DialogBody,
   DialogFooter,
+  Card,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from '../../services/message-time';
@@ -66,6 +67,7 @@ function money(cents: number): string {
     DialogFrame,
     DialogBody,
     DialogFooter,
+    Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './request-item.dialog.html',

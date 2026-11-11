@@ -24,7 +24,7 @@
       </div>
     }
     @case ('loading') {
-      <div class="card stack" style="max-width: 42rem" aria-hidden="true">
+      <div jb-card narrow class="stack" aria-hidden="true">
         <span jb-skeleton shape="text" width="50"></span>
         <span jb-skeleton shape="text"></span>
         <span jb-skeleton shape="text" width="70"></span>
@@ -64,12 +64,7 @@
           style="max-width: 42rem; margin-bottom: var(--space-4)"
         />
       }
-      <form
-        class="card form"
-        style="max-width: 42rem"
-        novalidate
-        (submit)="$event.preventDefault(); save()"
-      >
+      <form jb-card narrow class="form" novalidate (submit)="$event.preventDefault(); save()">
         <div class="form-grid form-grid--2">
           <div jb-field label="First name" controlId="first" [error]="problem('firstName')">
             <input
@@ -185,11 +180,13 @@
         </div>
       </form>
       <section
-        class="card stack"
-        style="max-width: 42rem; margin-top: var(--space-6)"
-        aria-labelledby="sec"
+        jb-card
+        narrow
+        heading="Sign-in and security"
+        headingId="sec"
+        class="stack"
+        style="margin-top: var(--space-6)"
       >
-        <h2 id="sec" class="card__title">Sign-in and security</h2>
         <ul class="rows">
           <li class="row">
             <div class="row__body">
@@ -209,11 +206,13 @@
         </ul>
       </section>
       <section
-        class="card stack"
-        style="max-width: 42rem; margin-top: var(--space-6)"
-        aria-labelledby="dat"
+        jb-card
+        narrow
+        heading="Your data"
+        headingId="dat"
+        class="stack"
+        style="margin-top: var(--space-6)"
       >
-        <h2 id="dat" class="card__title">Your data</h2>
         <p class="text-muted">
           Get a copy of your profile, saved list, requests, messages and notification settings as a
           JSON file. We e-mail you a link within 24 hours. It works for 7 days.
@@ -244,11 +243,14 @@
         </div>
       </section>
       <section
-        class="card stack danger-zone"
-        style="max-width: 42rem; margin-top: var(--space-6)"
-        aria-labelledby="dz"
+        jb-card
+        variant="danger"
+        narrow
+        heading="Delete account"
+        headingId="dz"
+        class="stack"
+        style="margin-top: var(--space-6)"
       >
-        <h2 id="dz" class="card__title">Delete account</h2>
         <p class="text-muted">
           Removes your profile, saved list and messages. Open requests are cancelled and the
           businesses are told.

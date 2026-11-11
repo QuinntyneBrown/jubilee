@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NOTIFICATIONS_API, NotificationItem, NotificationKind, NotificationList } from 'api';
-import { EmptyState, Icon, IconName, Button, Skeleton } from 'components';
+import { EmptyState, Icon, IconName, Button, Skeleton, Card } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { threadTime } from '../../services/message-time';
@@ -30,7 +30,7 @@ const ICON: Record<NotificationKind, IconName> = {
 /** The notification centre at /notifications (L2-064): the member's events of the last 90 days, newest first. */
 @Component({
   selector: 'jb-notifications-page',
-  imports: [EmptyState, Icon, RouterLink, Button, Skeleton],
+  imports: [EmptyState, Icon, RouterLink, Button, Skeleton, Card],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './notifications.page.html',

@@ -104,16 +104,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .form-actions { --jb-inline-status-margin-end: auto; }
 
 /* ---------- Surfaces ------------------------------------------------------- */
-.card { background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); box-shadow: var(--shadow-1); padding: var(--space-6); }
-.card--flush { padding: 0; overflow: hidden; }
-.card--interactive { cursor: pointer; transition: box-shadow var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard); }
-.card--interactive:focus-visible, .card--interactive[data-state="focus"] { border-radius: var(--radius-lg); }
-.card--interactive:hover, .card--interactive[data-state="hover"] { box-shadow: var(--shadow-2); border-color: var(--color-border-strong); transform: translateY(-1px); }
-.card--selected, .card[aria-selected="true"], .card[data-state="selected"] { border-color: var(--color-accent-border); box-shadow: 0 0 0 var(--border-width-hairline) var(--color-accent-border); }
-.card__header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-4); margin-bottom: var(--space-4); }
-.card__title { font: var(--text-h4); }
-.card__footer { margin-top: var(--space-4); padding-top: var(--space-4); border-top: var(--border-width-hairline) solid var(--color-border-default); display: flex; gap: var(--space-3); justify-content: flex-end; }
-.well { background: var(--color-bg-surface-sunken); border-radius: var(--radius-md); padding: var(--space-4); }
 .stat { display: flex; flex-direction: column; gap: var(--space-1); }
 .stat__label { font: var(--text-label); color: var(--color-fg-muted); }
 .stat__value { font: var(--text-h2); font-variant-numeric: tabular-nums; }
@@ -271,10 +261,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
    is a status indicator, not decoration. */
 @media (prefers-reduced-motion: reduce) {
   .progress--indeterminate .progress__bar { animation: none; width: 100%; opacity: 0.6; }
-  .card--interactive:hover { transform: none; }
-}
-@media (forced-colors: active) {
-  .card { forced-color-adjust: none; border: 1px solid CanvasText; }
 }
 @media print { .topbar, .tabbar, .sidebar, .toast-region, .skip-link { display: none !important; } }
 
@@ -452,7 +438,7 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .item-list__name { flex: 1; min-width: 0; }
 .stat-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (min-width: 64rem) { .stat-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.stat-grid .card { padding: var(--space-4); }
+.stat-grid { --jb-card-padding: var(--space-4); }
 .steps { display: grid; gap: var(--space-6); list-style: none; padding: 0; margin: 0; counter-reset: step; }
 @media (min-width: 48rem) { .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .steps li { counter-increment: step; display: flex; flex-direction: column; gap: var(--space-2); }
@@ -460,7 +446,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .band { background: var(--color-bg-brand); color: var(--color-fg-on-brand); border-radius: var(--radius-xl); padding: var(--space-8) var(--space-6); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
 .band p { color: var(--color-fg-on-brand-muted); }
 .band :focus-visible { outline-color: var(--color-focus-ring-on-brand); }
-.danger-zone { border-color: var(--color-danger-border); }
 
 /* ---------- Messages -------------------------------------------------------------------- */
 .inbox { display: grid; min-height: 32rem; border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-bg-surface); overflow: hidden; }
@@ -507,8 +492,7 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .notif__title { font: var(--text-label); }
 .notif--unread .notif__title { font-weight: var(--font-weight-bold); }
 .notif__meta { font: var(--text-body-sm); color: var(--color-fg-muted); }
-.card--list { padding: 0; overflow: hidden; }
-.card--list > :last-child, .card--list > li:last-child > * { border-bottom: 0; }
+.notif:last-child, li:last-child > .notif { border-bottom: 0; }
 
 /* ---------- Skeleton shapes ---------------------------------------------------------------------- */
 

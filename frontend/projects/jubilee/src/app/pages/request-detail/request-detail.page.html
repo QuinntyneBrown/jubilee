@@ -58,15 +58,14 @@
       }
     </div>
     <div class="split" style="margin-top: var(--space-6)">
-      <section class="card" aria-labelledby="rd">
-        <h2 id="rd" class="card__title">Details</h2>
+      <section jb-card heading="Details" headingId="rd">
         <dl class="dl" style="margin-top: var(--space-4)">
           @for (line of r.details; track line.label) {
             <dt>{{ line.label }}</dt>
             <dd>{{ line.value }}</dd>
           }
         </dl>
-        <div class="card__footer" style="justify-content: flex-start; flex-wrap: wrap">
+        <div jb-card-footer start>
           @if (r.canAddToCalendar) {
             <a jb-button variant="primary" [href]="calendarUrl(r)" download>
               <svg jb-icon name="calendar"></svg>Add to calendar
@@ -96,8 +95,7 @@
           }
         </div>
       </section>
-      <section class="card" aria-labelledby="rp">
-        <h2 id="rp" class="card__title">Progress</h2>
+      <section jb-card heading="Progress" headingId="rp">
         <div style="margin-top: var(--space-4)">
           <ol class="timeline">
             @for (step of r.timeline; track $index) {

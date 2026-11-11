@@ -364,6 +364,8 @@ export class RequestItemDialog implements Screen {
   /** The parts of the dialog frame. */
   readonly header: Locator;
   readonly footer: Locator;
+  /** The well that holds the amounts. */
+  readonly amounts: Locator;
   readonly title: Locator;
   readonly description: Locator;
   readonly summary: Locator;
@@ -388,6 +390,7 @@ export class RequestItemDialog implements Screen {
     this.description = this.root.locator('#dlg-desc');
     this.header = this.root.locator('.dialog__header');
     this.footer = this.root.locator('.dialog__footer');
+    this.amounts = this.root.locator('.well');
     this.summary = this.root.locator('.item-list');
     this.methods = this.root.locator('label.choice');
     this.methodGroup = this.root

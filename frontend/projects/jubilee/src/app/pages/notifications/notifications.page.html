@@ -30,7 +30,7 @@
   }
   @case ('loading') {
     <p class="visually-hidden" role="status">Loading notifications…</p>
-    <ul class="list card card--list" aria-hidden="true">
+    <ul jb-card list class="list" aria-hidden="true">
       @for (item of skeleton; track item) {
         <li class="notif">
           <span jb-skeleton shape="avatar"></span>
@@ -50,7 +50,7 @@
           <a slot="actions" jb-button variant="primary" routerLink="/">Browse businesses</a>
         </div>
       } @else {
-        <ul class="list card card--list">
+        <ul jb-card list class="list">
           @for (item of notifications.items; track item.id) {
             <li>
               <a

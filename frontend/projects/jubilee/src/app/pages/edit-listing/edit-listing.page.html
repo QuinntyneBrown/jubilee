@@ -18,7 +18,7 @@
     <jb-workspace-header heading="My business" subtitle="Loading…" current="listing" />
     <div style="margin-top: var(--space-6)">
       <p class="visually-hidden" role="status">Loading your listing…</p>
-      <div class="card" style="max-width: 42rem">
+      <div jb-card narrow>
         <div class="form" aria-hidden="true">
           @for (item of [1, 2, 3, 4]; track item) {
             <div jb-field>
@@ -47,7 +47,7 @@
     />
     <div style="margin-top: var(--space-6)">
       <div class="split">
-        <form class="card form" novalidate (ngSubmit)="save()" #form="ngForm">
+        <form jb-card class="form" novalidate (ngSubmit)="save()" #form="ngForm">
           @if (saved(); as done) {
             <div jb-alert tone="success" heading="Listing updated">
               <div>

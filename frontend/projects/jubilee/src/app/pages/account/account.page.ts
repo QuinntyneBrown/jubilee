@@ -22,6 +22,7 @@ import {
   Input,
   Skeleton,
   InlineStatus,
+  Card,
 } from 'components';
 import { Observable, map } from 'rxjs';
 import { ChangeEmailData, ChangeEmailDialog } from '../../dialogs/change-email/change-email.dialog';
@@ -80,6 +81,7 @@ const MESSAGES: Record<string, string> = {
     Input,
     Skeleton,
     InlineStatus,
+    Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page', '(window:beforeunload)': 'warnOnClose($event)' },
