@@ -151,13 +151,13 @@ test.describe('edit the profile (L2-013)', () => {
     await jb.goto('/account');
     await account.firstName.fill('Joy');
 
-    await account.tabs.getByRole('link', { name: 'Saved' }).click();
+    await account.sectionTabs.getByRole('link', { name: 'Saved' }).click();
     await expect(leave.title).toHaveText('Leave without saving?');
     await leave.keepEditing.click();
     await expect(page).toHaveURL(/\/account$/);
     await expect(account.firstName).toHaveValue('Joy');
 
-    await account.tabs.getByRole('link', { name: 'Saved' }).click();
+    await account.sectionTabs.getByRole('link', { name: 'Saved' }).click();
     await leave.leave.click();
     await expect(page).toHaveURL(/\/saved$/);
   });
@@ -169,7 +169,7 @@ test.describe('edit the profile (L2-013)', () => {
     await jb.goto('/account');
     await expect(account.firstName).toHaveValue('Joanna');
 
-    await account.tabs.getByRole('link', { name: 'Saved' }).click();
+    await account.sectionTabs.getByRole('link', { name: 'Saved' }).click();
 
     await expect(page).toHaveURL(/\/saved$/);
   });
@@ -532,7 +532,7 @@ test.describe('choose notification settings (L2-016, L2-149)', () => {
     await stubProfile(page);
     await jb.goto('/account');
 
-    await account.tabs.getByRole('link', { name: 'Notification settings' }).click();
+    await account.sectionTabs.getByRole('link', { name: 'Notification settings' }).click();
 
     await expect(page).toHaveURL(/\/account\/notifications$/);
     await expect(settings.switch('New messages')).toBeVisible();

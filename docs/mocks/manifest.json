@@ -597,6 +597,21 @@
       }
     },
     {
+      "id": "marketing-home",
+      "kind": "page",
+      "title": "Marketing home",
+      "route": "/ (marketing site)",
+      "states": [
+        "default",
+        "playing"
+      ],
+      "not_applicable": {
+        "loading": "The marketing page is static: its text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile.",
+        "empty": "The marketing page is static: its text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile.",
+        "error": "The marketing page is static: its text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile."
+      }
+    },
+    {
       "id": "book-meeting",
       "kind": "dialog",
       "title": "Book a meeting",

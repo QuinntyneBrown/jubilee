@@ -49,7 +49,7 @@ export class MyBusinessPage extends ShellPage implements Screen {
     return this.stats.filter({ hasText: label });
   }
 
-  section(name: string): Locator {
+  section(name: string | RegExp): Locator {
     return this.sections.getByRole('link', { name });
   }
 

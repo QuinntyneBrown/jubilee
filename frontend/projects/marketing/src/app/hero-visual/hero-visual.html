@@ -1,0 +1,47 @@
+<div class="mkt-glimpse" role="group" aria-label="A glimpse of the app">
+  <div class="mkt-glimpse__panel">
+    <div class="mkt-glimpse__search">
+      <svg class="mkt-icon" aria-hidden="true" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" />
+      </svg>
+      <span class="mkt-truncate">Home repairs near Leslieville</span>
+    </div>
+    <p class="mkt-glimpse__caption">Home &amp; property · 11 verified</p>
+    <ul class="mkt-glimpse__list">
+      @for (business of results; track business.name) {
+        <li>
+          <img class="mkt-glimpse__photo" [src]="business.photo" alt="" />
+          <div class="mkt-glimpse__text">
+            <p class="mkt-glimpse__name">
+              <span class="mkt-truncate">{{ business.name }}</span>
+              <svg class="mkt-icon" aria-hidden="true" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="m8 12 3 3 5-6" />
+              </svg>
+              <span class="visually-hidden"> Verified</span>
+            </p>
+            <p class="mkt-glimpse__tagline mkt-truncate">{{ business.tagline }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+  <p class="mkt-note mkt-note--trust">
+    <span class="mkt-note__badge">
+      <svg class="mkt-icon" aria-hidden="true" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="m8 12 3 3 5-6" />
+      </svg>
+    </span>
+    Vouched for by Grace Toronto Church
+  </p>
+  <p class="mkt-note mkt-note--reply">
+    <span class="mkt-note__badge">
+      <svg class="mkt-icon" aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
+      </svg>
+    </span>
+    WaterWorks replied in 12 min
+  </p>
+</div>

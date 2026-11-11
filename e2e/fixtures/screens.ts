@@ -31,6 +31,7 @@ import { MyBusinessPage } from '../pages/my-business.page';
 import { RequestDetailPage } from '../pages/request-detail.page';
 import { RequestsPage } from '../pages/requests.page';
 import { JoinPage } from '../pages/join.page';
+import { MarketingHomePage } from '../pages/marketing-home.page';
 import { ConversationPage, MessagesPage } from '../pages/messages.page';
 import { SearchPage } from '../pages/search.page';
 import { SessionExpiredPage, SignInPage } from '../pages/sign-in.page';
@@ -47,6 +48,7 @@ export const screens: {
   below?: number;
 }[] = [
   { key: 'welcome', screen: (page) => new WelcomePage(page) },
+  { key: 'marketing-home', screen: (page) => new MarketingHomePage(page) },
   { key: 'requests', screen: (page) => new RequestsPage(page) },
   { key: 'requests.empty', screen: (page) => new RequestsPage(page) },
   { key: 'requests.error', screen: (page) => new RequestsPage(page) },

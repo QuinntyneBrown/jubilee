@@ -1,230 +1,334 @@
-// Runtime for animated pitch decks. Everything on screen is a pure function of the clock, so the same
-// page plays live (synced to the mixed MP3) and renders frame by frame (tools/video-build/build.mjs
-// calls PITCH.seek). See docs/videos/README.md for the attributes a deck may use.
+// Runtime for pitch films. A film is a list of scenes, each exactly three bars long; every pixel is a
+// pure function of film time, so the same page plays live (synced to the mixed MP3) and renders frame
+// by frame (tools/video-build/build.mjs calls PITCH.seek). The clock, the easing curves and the shared
+// pieces (masked words, the J mark, the wordmark, the crossbar wipe, the seal, the aurora shader and
+// the confetti) are ported from the Magic Patterns "Pitch Video" source. See docs/videos/README.md.
 (() => {
-  const $ = (s, r = document) => [...r.querySelectorAll(s)];
   const body = document.body;
   const query = new URLSearchParams(location.search);
   const RENDER = query.has('render');
-  const INTRO = +body.dataset.intro || 0;
-  const OUTRO = +body.dataset.outro || 0;
-  const BPM = +body.dataset.bpm || 120;
-  const TIMING = window.TIMING;
-  const DURATION = INTRO + TIMING.duration + OUTRO;
-  const sentences = TIMING.sections.flatMap((s) => s.sentences);
   const W = 1920, H = 1080;
 
-  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
-  const ease = {
-    out: (p) => 1 - Math.pow(1 - p, 3),
-    expo: (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p)),
-    back: (p) => 1 + 3.2 * Math.pow(p - 1, 3) + 2.2 * Math.pow(p - 1, 2),
-    bounce: (p) => {
-      const n = 7.5625, d = 2.75;
-      if (p < 1 / d) return n * p * p;
-      if (p < 2 / d) return n * (p -= 1.5 / d) * p + 0.75;
-      if (p < 2.5 / d) return n * (p -= 2.25 / d) * p + 0.9375;
-      return n * (p -= 2.625 / d) * p + 0.984375;
-    },
+  // ── The master clock ──────────────────────────────────────────────────────────────────────────────
+  const BPM = +body.dataset.bpm || 100;
+  const BEAT = 60 / BPM;
+  const BAR = BEAT * 4;
+  const SCENE = BAR * 3;
+  /** Local beat k (0-based) of a scene, in seconds. */
+  const b = (k) => k * BEAT;
+
+  const clamp = (v, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
+  const lerp = (a, c, p) => a + (c - a) * p;
+  /** 0→1 progress of t through [at, at + dur]. */
+  const prog = (t, at, dur) => clamp((t - at) / dur);
+
+  /** Every entrance. */
+  const brand = (p) => 1 - Math.pow(1 - p, 5);
+  const outExpo = (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p));
+  const inOutCubic = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+  /** Exits only. */
+  const inQuart = (p) => p * p * p * p;
+  /** Small overshoot for stamps and pops (peaks about 6%). */
+  const outBack = (p) => 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2);
+  const enter = (t, at, dur = 0.3, ease = brand) => ease(prog(t, at, dur));
+  const exit = (t, at, dur = 0.24, ease = inQuart) => ease(prog(t, at, dur));
+  /** A sharp attack on each listed time that decays as e^(−decay·Δt). */
+  const pulse = (t, beats, decay = 10) => beats.reduce((acc, at) => (t >= at ? Math.max(acc, Math.exp(-(t - at) * decay)) : acc), 0);
+  const beatsBetween = (from, to, every = 1) => {
+    const out = [];
+    for (let k = from; k < to; k += every) out.push(b(k));
+    return out;
   };
-  const rand = (seed) => () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  /** Deterministic PRNG, so confetti draws the same on every pass. */
+  const seeded = (seed) => {
+    let s = seed >>> 0;
+    return () => {
+      s = (s + 0x6d2b79f5) >>> 0;
+      let r = Math.imul(s ^ (s >>> 15), 1 | s);
+      r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    };
+  };
+  const timecode = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}.${String(Math.floor((t % 1) * 100)).padStart(2, '0')}`;
 
-  // ── Cues: a section starts when narration reaches the sentence its data-cue begins ────────────────
-  const errors = [];
-  const sections = $('#stage > section').map((el) => ({ el }));
-  sections.forEach((s, i) => {
-    const cue = s.el.dataset.cue;
-    s.sentence = cue ? sentences.findIndex((x) => x.text.startsWith(cue)) : -1;
-    if (cue && s.sentence < 0) errors.push(`cue not found in script.md: "${cue}"`);
-    if (!cue && i > 0) errors.push(`section ${i + 1} has no data-cue`);
-    s.start = s.sentence < 0 ? 0 : INTRO + sentences[s.sentence].start;
-  });
-  sections.forEach((s, i) => {
-    s.end = i + 1 < sections.length ? sections[i + 1].start : DURATION;
-    if (i && s.start <= sections[i - 1].start) errors.push(`cue out of narration order: "${s.el.dataset.cue}"`);
-    s.items = $('[data-in], [data-float], [data-beat], [data-drift], [data-count]', s.el).map((el, k) => {
-      const d = el.dataset;
-      const n = s.sentence + (+d.sentence || 0);
-      if (d.sentence && !sentences[n]) errors.push(`data-sentence="${d.sentence}" is past the end of the script`);
-      const base = d.sentence && sentences[n] ? INTRO + sentences[n].start : s.start;
-      const tilt = (d.tilt || '0,0').split(',').map(Number);
-      const drift = (d.drift || '0,0').split(',').map(Number);
-      return { el, kind: d.in, t0: base + (+d.at || 0), dur: +d.dur || 0.6, rot: +d.rot || 0, tilt, drift,
-        float: +d.float || 0, beat: +d.beat || 0, count: d.count ? +d.count : null, phase: k * 1.7 };
-    });
-  });
+  const COLOR = { ink: '#0b0e14', cream: '#f4f2ec', gold: '#ffb81c', emerald: '#00875a', emeraldDeep: '#00623f', teal: '#0e4f5c', muted: '#5b5f68' };
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-  // ── Background: a sunburst and drifting aurora in a fragment shader ───────────────────────────────
-  const glCanvas = document.getElementById('gl');
-  const gl = glCanvas.getContext('webgl', { antialias: false, preserveDrawingBuffer: true });
-  let uniforms = null;
-  if (gl) {
-    const compile = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+  // ── Scenes: static markup plus the functions that move it ─────────────────────────────────────────
+  // A scene's build(S) returns its HTML. S.ref(fn) marks an element and registers fn(el, t), called on
+  // every frame with the scene-local time; the helpers below are built on it.
+  function makeScene(root, def, start) {
+    const fns = [];
+    const S = {
+      start,
+      ref(fn) { fns.push(fn); return `data-r="${fns.length - 1}"`; },
+
+      /** Masked word rise: 300 ms a word, brand ease, 50 ms stagger. `accent` words follow `text`. */
+      words(at, text, { accent = '', accentClass = 'gold', stagger = 0.05, dur = 0.3 } = {}) {
+        const list = [...text.split(' ').filter(Boolean).map((w) => [w, '']), ...accent.split(' ').filter(Boolean).map((w) => [w, ' ' + accentClass])];
+        return list.map(([w, cls], i) => `<span class="w"><span class="wi${cls}" ${S.ref((el, t) => {
+          const p = brand(prog(t, at + i * stagger, dur));
+          el.style.transform = `translateY(${(1 - p) * 0.9}em)`;
+          el.style.opacity = p;
+        })}>${esc(w)}</span></span>`).join('');
+      },
+
+      /** Fade and rise for supporting text and UI. Returns the attributes for the element. */
+      rise(at, { dur = 0.3, y = 24 } = {}) {
+        return S.ref((el, t) => {
+          const p = enter(t, at, dur);
+          el.style.opacity = p;
+          el.style.transform = `translateY(${(1 - p) * y}px)`;
+        });
+      },
+
+      /** The J mark, drawable: draw(t) strokes the stem and tail, bar(t) extends the crossbar from its centre. */
+      drawnMark(size, { draw = () => 1, bar = () => 1, fg = COLOR.cream, accent = COLOR.gold } = {}) {
+        const LEN = 137; // stem 52 + arc 62.8 + rise 22
+        return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none" aria-hidden="true" style="overflow:visible">` +
+          `<path d="M60 8 V60 A20 20 0 0 1 20 60 V38" stroke="${fg}" stroke-width="14.5" stroke-linecap="butt" stroke-dasharray="${LEN}" ${S.ref((el, t) => el.setAttribute('stroke-dashoffset', LEN * (1 - clamp(draw(t)))))}/>` +
+          `<path stroke="${accent}" stroke-width="14.5" stroke-linecap="butt" ${S.ref((el, t) => {
+            const half = 24 * clamp(bar(t));
+            el.style.display = half > 0 ? '' : 'none';
+            el.setAttribute('d', `M${60 - half} 27 H${60 + half}`);
+          })}/></svg>`;
+      },
+      mark(size, fg = COLOR.ink, accent = COLOR.gold) { return S.drawnMark(size, { fg, accent }); },
+
+      /** "jubilee" with a per-letter rise; p(t) is 0→1 for the whole word. */
+      wordmark(size, p, color = COLOR.cream) {
+        return `<span class="d" style="display:inline-flex;overflow:hidden;line-height:1;font-weight:700;font-size:${size}px;color:${color};letter-spacing:-0.03em;padding-bottom:0.12em">` +
+          'jubilee'.split('').map((l, i) => `<span style="display:inline-block" ${S.ref((el, t) => {
+            const e = brand(clamp(p(t) * 1.6 - i * 0.09));
+            el.style.transform = `translateY(${(1 - e) * 0.9}em)`;
+            el.style.opacity = e;
+          })}>${l}</span>`).join('') + '</span>';
+      },
+
+      /** The crossbar wipe: a gold slab. p(t) 0 = off left, 0.5 = covering, 1 = off right. */
+      wipe(p) {
+        return `<div class="wipe" ${S.ref((el, t) => {
+          const v = p(t);
+          el.style.display = v <= 0 || v >= 1 ? 'none' : 'block';
+          el.firstChild.style.left = `${-2640 + v * 4800}px`;
+        })}><i></i></div>`;
+      },
+
+      /** The seal: the J mark in a ring of set text, turning at `spin` degrees a second. */
+      seal(size, spin) {
+        const id = `seal-${Math.round(start * 10)}-${fns.length}`;
+        const text = 'VOUCHED FOR BY A LOCAL CHURCH · VOUCHED FOR BY A LOCAL CHURCH · ';
+        return `<svg width="${size}" height="${size}" viewBox="0 0 200 200" aria-hidden="true">` +
+          `<circle cx="100" cy="100" r="98" fill="${COLOR.ink}"/><circle cx="100" cy="100" r="64" fill="${COLOR.cream}"/>` +
+          `<defs><path id="${id}" d="M100 100 m-81 0 a81 81 0 1 1 162 0 a81 81 0 1 1 -162 0"/></defs>` +
+          `<g ${S.ref((el, t) => el.setAttribute('transform', `rotate(${t * spin} 100 100)`))}>` +
+          `<text font-family="Inter, sans-serif" font-weight="600" font-size="12.4" letter-spacing="2.1" fill="${COLOR.cream}"><textPath href="#${id}">${text}</textPath></text></g>` +
+          `<g transform="translate(62 62) scale(0.76)"><path d="M60 8 V60 A20 20 0 0 1 20 60 V38" stroke="${COLOR.ink}" stroke-width="14.5" fill="none"/>` +
+          `<path d="M36 27 H84" stroke="${COLOR.gold}" stroke-width="14.5"/></g></svg>`;
+      },
+
+      /** The aurora: intensity(t) is 0..1.5; it drifts with film time. */
+      aurora(intensity, { horizon = 0.62, colors = [COLOR.ink, COLOR.emerald, COLOR.teal, COLOR.gold] } = {}) {
+        let draw = null;
+        return `<canvas width="960" height="540" class="fill" style="width:100%;height:100%;background:${colors[0]}" ${S.ref((el, t) => {
+          draw ??= aurora(el, horizon, colors);
+          draw(start + t, intensity(t));
+        })}></canvas>`;
+      },
+
+      /** Confetti cannons at each burst time. */
+      confetti(bursts, count = 140, seed = 7) {
+        return `<canvas width="${W}" height="${H}" class="fill" style="width:100%;height:100%;pointer-events:none" ${S.ref((el, t) => confetti(el.getContext('2d'), t, bursts, count, seed))}></canvas>`;
+      },
+    };
+    root.innerHTML = def.build(S);
+    const els = fns.map((_, n) => root.querySelector(`[data-r="${n}"]`));
+    return (t) => fns.forEach((fn, n) => fn(els[n], t));
+  }
+
+  // WebGL aurora: three layers of domain-warped fbm noise shaped into vertical curtains over ink.
+  // Rendered at half resolution and stretched; the softness is the point.
+  const FRAG = `
+precision highp float;
+uniform float uT; uniform float uI; uniform float uH; uniform vec2 uR;
+uniform vec3 uC0; uniform vec3 uC1; uniform vec3 uC2; uniform vec3 uC3;
+float h(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
+float n(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),u.x), mix(h(i+vec2(0,1)),h(i+vec2(1,1)),u.x), u.y); }
+float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<5;i++){ v+=a*n(p); p=p*2.03+vec2(1.7,9.2); a*=.5; } return v; }
+float curtain(vec2 uv, float off, float speed){
+  vec2 q = vec2(uv.x*2.2 + off, uT*speed);
+  float w = fbm(q + fbm(q*1.4 + uT*.05));
+  float x = uv.x*6. + w*3.5 + off;
+  float folds = .5 + .5*sin(x + uT*.35);
+  float band = smoothstep(uH+.32, uH-.05, uv.y + w*.18) * smoothstep(uH-.62, uH-.12, uv.y + w*.25);
+  return pow(folds, 3.) * band;
+}
+void main(){
+  vec2 uv = gl_FragCoord.xy / uR; uv.y = 1. - uv.y;
+  float a = curtain(uv, 0., .06);
+  float b = curtain(uv, 3.1, .045) * .8;
+  float c = curtain(uv, 7.4, .08) * .55;
+  vec3 col = uC0;
+  col += uC1 * a * 1.1 * uI;
+  col += uC2 * b * 1.2 * uI;
+  col += uC3 * pow(c, 1.6) * .9 * uI;
+  float grain = (h(gl_FragCoord.xy + uT) - .5) * .025;
+  gl_FragColor = vec4(col + grain, 1.);
+}`;
+  const rgb = (hex) => { const v = parseInt(hex.slice(1), 16); return new Float32Array([((v >> 16) & 255) / 255, ((v >> 8) & 255) / 255, (v & 255) / 255]); };
+  function aurora(canvas, horizon, colors) {
+    const gl = canvas.getContext('webgl', { preserveDrawingBuffer: true, premultipliedAlpha: false });
+    if (!gl) { errors.push('WebGL is unavailable: the aurora cannot draw'); return () => {}; }
+    const shader = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
     const program = gl.createProgram();
-    gl.attachShader(program, compile(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }'));
-    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, `
-      precision highp float;
-      uniform vec2 res; uniform float time, beat, scene;
-      float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-      float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
-        return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y); }
-      float fbm(vec2 p){ float v = 0., a = .5; for (int i = 0; i < 4; i++) { v += a * noise(p); p = p * 2.03 + 11.; a *= .5; } return v; }
-      void main(){
-        vec2 uv = (gl_FragCoord.xy - .5 * res) / res.y;
-        vec3 ink = vec3(.043, .055, .078), gold = vec3(1., .72, .11), green = vec3(0., .53, .35);
-        vec2 c = uv - vec2(.55 * sin(scene * 2.4), -.75);
-        float rays = smoothstep(.35, 1., sin(atan(c.y, c.x) * 14. + time * .5) * .5 + .5) * smoothstep(2.2, .2, length(c));
-        float a = fbm(uv * 1.4 + vec2(time * .09, -time * .05) + fbm(uv * 2.2 - time * .08));
-        float b = fbm(uv * 1.1 + vec2(-time * .06, time * .04) + 23. + scene);
-        vec3 col = ink + gold * pow(a, 3.2) * (.6 + .5 * beat) + green * pow(b, 3.) * .55 + gold * rays * (.07 + .09 * beat);
-        float dots = smoothstep(.06, .0, length(fract(uv * 9. + vec2(time * .03, 0.)) - .5)) * .09;
-        col += gold * dots * smoothstep(.2, 1.1, length(uv));
-        col *= 1. - .35 * dot(uv, uv);
-        gl_FragColor = vec4(col, 1.);
-      }`));
+    gl.attachShader(program, shader(gl.VERTEX_SHADER, 'attribute vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }'));
+    gl.attachShader(program, shader(gl.FRAGMENT_SHADER, FRAG));
     gl.linkProgram(program);
-    gl.useProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) { errors.push('the aurora shader did not link'); return () => {}; }
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(program, 'p');
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    uniforms = Object.fromEntries(['res', 'time', 'beat', 'scene'].map((n) => [n, gl.getUniformLocation(program, n)]));
+    gl.useProgram(program);
+    const u = (name) => gl.getUniformLocation(program, name);
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+    gl.uniform1f(u('uH'), horizon);
+    gl.uniform2f(u('uR'), gl.drawingBufferWidth, gl.drawingBufferHeight);
+    colors.forEach((hex, i) => gl.uniform3fv(u(`uC${i}`), rgb(hex)));
+    const uT = u('uT'), uI = u('uI');
+    return (t, intensity) => {
+      gl.uniform1f(uT, t);
+      gl.uniform1f(uI, intensity);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
   }
 
-  // ── Foreground: confetti cannons and a gold wipe on every cut, drawn in closed form ───────────────
-  const fx = document.getElementById('fx').getContext('2d');
-  const COLORS = ['#ffb81c', '#ffc94d', '#f4f2ec', '#5fc49b', '#ffffff'];
-  const cuts = sections.slice(1).map((s) => s.start);
-  const bursts = cuts.map((t, i) => ({ t, n: 70, seed: i + 1 }));
-  const last = sections[sections.length - 1];
-  const BAR = (60 / BPM) * 4; // the last scene fires a cannon on every downbeat
-  for (let t = Math.ceil((last.start + 0.9) / BAR) * BAR, i = 0; t < DURATION - 1; t += BAR, i++) bursts.push({ t, n: 150, seed: 50 + i });
-  bursts.push({ t: 0.25, n: 110, seed: 99 });
-  bursts.forEach((b) => {
-    const r = rand(b.seed * 7919);
-    b.parts = Array.from({ length: b.n }, (_, k) => {
-      const left = k % 2 === 0, angle = (left ? -1 : 1) * (0.25 + r() * 0.75), speed = 900 + r() * 1300;
-      return { x: left ? -20 : W + 20, y: H + 10, vx: Math.sin(Math.abs(angle)) * speed * (left ? 1 : -1), vy: -Math.cos(angle) * speed,
-        w: 12 + r() * 16, h: 8 + r() * 12, spin: (r() - 0.5) * 14, color: COLORS[(r() * COLORS.length) | 0], wob: r() * 6 };
-    });
-  });
-
-  function drawFx(t) {
-    fx.clearRect(0, 0, W, H);
-    for (const b of bursts) {
-      const dt = t - b.t;
-      if (dt < 0 || dt > 2.6) continue;
-      const fade = clamp((2.6 - dt) / 0.6);
-      for (const p of b.parts) {
-        const drag = (1 - Math.exp(-1.6 * dt)) / 1.6;
-        const x = p.x + p.vx * drag + Math.sin(dt * 5 + p.wob) * 14;
-        const y = p.y + p.vy * drag + 520 * dt * dt;
-        fx.save();
-        fx.globalAlpha = fade;
-        fx.translate(x, y);
-        fx.rotate(p.spin * dt);
-        fx.scale(1, Math.cos(dt * 9 + p.wob));
-        fx.fillStyle = p.color;
-        fx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-        fx.restore();
+  // Canvas confetti, solved in closed form per piece so any frame can be drawn alone:
+  // position = origin + v·drag falloff + ½gτ², with spin and flutter from τ. Mostly crossbar-shaped slivers.
+  const PALETTE = ['#ffb81c', '#f4f2ec', '#00875a', '#ffd166'];
+  function confetti(ctx, t, bursts, count, seed) {
+    ctx.clearRect(0, 0, W, H);
+    bursts.forEach((at, bi) => {
+      const tau = t - at;
+      if (tau < 0 || tau > 4) return;
+      const rnd = seeded(seed + bi * 101);
+      for (let i = 0; i < count; i++) {
+        const left = i % 2 === 0;
+        const ox = left ? 160 : 1760, oy = 1120;
+        const angle = -(Math.PI / 2) + (left ? 1 : -1) * (0.18 + rnd() * 0.5);
+        const speed = 1500 + rnd() * 1300;
+        const drag = 1.6 + rnd() * 0.8;
+        const k = (1 - Math.exp(-drag * tau)) / drag;
+        const flutter = Math.sin(tau * (6 + rnd() * 6) + i) * 26 * Math.min(1, tau);
+        const x = ox + Math.cos(angle) * speed * k + flutter;
+        const y = oy + Math.sin(angle) * speed * k + 0.5 * 900 * tau * tau * 0.55;
+        const spin = tau * (4 + rnd() * 8) + rnd() * 6;
+        const w = rnd() < 0.7 ? 34 + rnd() * 18 : 16;
+        const hgt = w > 20 ? 10 : 16;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, tau > 3 ? 1 - (tau - 3) : 1);
+        ctx.translate(x, y);
+        ctx.rotate(spin);
+        ctx.scale(1, Math.cos(spin * 1.7));
+        ctx.fillStyle = PALETTE[Math.floor(rnd() * PALETTE.length)];
+        ctx.fillRect(-w / 2, -hgt / 2, w, hgt);
+        ctx.restore();
       }
-    }
-    for (const cut of cuts) {
-      const p = (t - cut + 0.2) / 0.4;
-      if (p <= 0 || p >= 1) continue;
-      const x = (-1.75 + p * 3.2) * W;
-      fx.save();
-      fx.transform(1, 0, -0.35, 1, 0, 0);
-      fx.fillStyle = '#0b0e14'; fx.fillRect(x - 60, -10, 1.45 * W + 120, H + 20);
-      fx.fillStyle = '#ffb81c'; fx.fillRect(x + 380, -10, 1.45 * W, H + 20);
-      fx.restore();
-    }
+    });
   }
 
-  // ── The frame ─────────────────────────────────────────────────────────────────────────────────────
+  // ── The film ──────────────────────────────────────────────────────────────────────────────────────
+  const errors = [];
+  const CAPTIONS = window.TIMING?.captions ?? [];
+  const stage = document.getElementById('stage');
   const captionBox = document.getElementById('captions');
   const captionText = captionBox.appendChild(document.createElement('span'));
+  const guides = document.getElementById('guides');
+  let scenes = [];
+  let DURATION = 0;
 
-  function render(t) {
-    t = clamp(t, 0, DURATION);
-    const beatPhase = ((t * BPM) / 60) % 1;
-    const beat = Math.exp(-beatPhase * 5);
-    let sceneIndex = 0;
-    sections.forEach((s, i) => {
-      const on = t >= s.start && (t < s.end || i === sections.length - 1);
-      s.el.style.display = on ? 'block' : 'none';
-      if (!on) return;
-      sceneIndex = i;
-      for (const it of s.items) {
-        const p = clamp((t - it.t0) / it.dur);
-        let x = it.drift[0] * (t - s.start), y = it.drift[1] * (t - s.start), scale = 1, opacity = it.kind ? (p > 0 ? 1 : 0) : 1;
-        if (it.kind === 'pop') scale = p > 0 ? 0.3 + 0.7 * ease.back(p) : 0;
-        else if (it.kind === 'stamp') { scale = 1 + (1 - ease.expo(p)) * 2.6; opacity = clamp(p * 4); }
-        else if (it.kind === 'up') { y += (1 - ease.out(p)) * 150; opacity = clamp(p * 2.5); }
-        else if (it.kind === 'left') { x -= (1 - ease.out(p)) * 420; opacity = clamp(p * 2.5); }
-        else if (it.kind === 'right') { x += (1 - ease.out(p)) * 420; opacity = clamp(p * 2.5); }
-        else if (it.kind === 'rise') y += (1 - ease.out(p)) * 1000;
-        else if (it.kind === 'drop') y -= (1 - ease.bounce(p)) * 1100;
-        if (it.float) y += Math.sin(t * 1.5 + it.phase) * it.float;
-        if (it.beat) scale *= 1 + beat * it.beat;
-        const sway = it.tilt[0] || it.tilt[1] ? Math.sin(t * 0.8 + it.phase) * 2.5 : 0;
-        it.el.style.opacity = opacity;
-        it.el.style.transform = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0) rotateX(${it.tilt[0]}deg) rotateY(${(it.tilt[1] + sway).toFixed(2)}deg) rotate(${it.rot}deg) scale(${scale.toFixed(4)})`;
-        if (it.count !== null) it.el.textContent = Math.round(it.count * ease.out(clamp((t - it.t0) / 1.1)));
-      }
-    });
-    if (gl) {
-      gl.viewport(0, 0, W, H);
-      gl.uniform2f(uniforms.res, W, H);
-      gl.uniform1f(uniforms.time, t);
-      gl.uniform1f(uniforms.beat, beat);
-      gl.uniform1f(uniforms.scene, sceneIndex);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    }
-    drawFx(t);
-    const said = sentences.find((s) => t >= INTRO + s.start && t < INTRO + s.end + 0.1);
+  function render(T) {
+    T = clamp(T, 0, DURATION);
+    const i = Math.min(scenes.length - 1, Math.floor(T / SCENE));
+    const t = T - i * SCENE;
+    scenes.forEach((s, k) => { s.el.style.display = k === i ? 'block' : 'none'; });
+    scenes[i].update(t);
+    const said = CAPTIONS.find((c) => T >= c.start && T < c.end);
     captionText.textContent = said ? said.text : '';
+    if (!guides.hidden) {
+      const beat = Math.floor(t / BEAT);
+      guides.querySelector('.tc').textContent = `S${String(i + 1).padStart(2, '0')} · ${timecode(t)} · film ${timecode(T)} · bar ${Math.floor(t / BAR) + 1}/3 · beat ${(beat % 4) + 1}`;
+      [...guides.querySelectorAll('.beats i')].forEach((el, k) => { el.style.background = k === beat ? '#3df5ff' : k % 4 === 0 ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.22)'; });
+    }
   }
 
-  // ── Playing it ────────────────────────────────────────────────────────────────────────────────────
-  const frame = document.getElementById('frame');
-  const fit = () => {
-    const k = RENDER ? 1 : Math.min(innerWidth / W, innerHeight / H);
-    frame.style.transform = `translate(${(innerWidth - W * k) / 2}px, ${(innerHeight - H * k) / 2}px) scale(${k})`;
+  const PITCH = window.PITCH = {
+    BPM, BEAT, BAR, SCENE, COLOR, b, clamp, lerp, prog, brand, outExpo, inOutCubic, inQuart, outBack, enter, exit, pulse, beatsBetween, esc,
+    errors, seek: render, duration: 0, schedule: [], captions: CAPTIONS, ready: null,
+    /** Called once by the film's film.js with its scenes, in film order: [{ id, build(S) }]. */
+    film(defs) {
+      scenes = defs.map((def, i) => {
+        const el = stage.appendChild(document.createElement('section'));
+        el.id = def.id;
+        return { el, update: makeScene(el, def, i * SCENE) };
+      });
+      DURATION = PITCH.duration = SCENE * scenes.length;
+      PITCH.schedule = defs.map((def, i) => ({ id: def.id, start: i * SCENE, end: (i + 1) * SCENE }));
+      const images = [...stage.querySelectorAll('img')];
+      // Fonts and photos are in before frame 0, so the first frame never draws in a fallback face.
+      PITCH.ready = Promise.all([
+        ...['700 80px Archivo', '600 80px Archivo', '400 30px Inter', '500 30px Inter', '600 30px Inter'].map((f) => document.fonts.load(f)),
+        ...images.map((img) => img.decode().catch(() => errors.push(`image failed to load: ${img.src}`))),
+      ]).then(() => document.fonts.ready).then(() => {
+        for (const [face, label] of [['700 80px Archivo', 'Archivo'], ['600 30px Inter', 'Inter']]) {
+          if (!document.fonts.check(face)) errors.push(`${label} did not load: the film would draw in a fallback face`);
+        }
+        render(0);
+      });
+      start();
+    },
   };
-  addEventListener('resize', fit);
-  fit();
-  captionBox.hidden = query.get('captions') !== '1'; // captions are off unless asked for
 
-  const ready = Promise.all([document.fonts.ready, ...$('img').map((img) => img.decode().catch(() => errors.push(`image failed to load: ${img.getAttribute('src')}`)))])
-    .then(() => document.fonts.load('800 80px Archivo')).then(() => render(0));
-  window.PITCH = { ready, errors, duration: DURATION, intro: INTRO, outro: OUTRO, musicStart: +body.dataset.musicStart || 0, sentences,
-    schedule: sections.map((s) => ({ id: s.el.id, start: s.start, end: s.end })), seek: render };
-  if (RENDER) { body.classList.add('render'); return; }
+  function start() {
+    const frame = document.getElementById('frame');
+    const fit = () => {
+      const k = RENDER ? 1 : Math.min(innerWidth / W, innerHeight / H);
+      frame.style.transform = `translate(${(innerWidth - W * k) / 2}px, ${(innerHeight - H * k) / 2}px) scale(${k})`;
+    };
+    addEventListener('resize', fit);
+    fit();
+    captionBox.hidden = query.get('captions') === '0'; // captions are part of the film; ?captions=0 hides them
+    guides.hidden = query.get('guides') !== '1';
+    guides.innerHTML = `<div class="action"></div><div class="title"></div><div class="tc"></div><div class="beats">${'<i></i>'.repeat(12)}</div>`;
+    if (RENDER) { body.classList.add('render'); return; }
 
-  const audio = new Audio(body.dataset.audio);
-  let clockStart = null; // fallback clock when the MP3 has not been built yet
-  audio.addEventListener('error', () => { audio.failed = true; });
-  const now = () => (audio.failed ? (clockStart === null ? 0 : (performance.now() - clockStart) / 1000) : audio.currentTime);
-  const playButton = document.getElementById('play');
-  const ccButton = document.getElementById('cc');
-  const toggle = () => {
-    if (audio.failed) { clockStart = clockStart === null || now() >= DURATION ? performance.now() : null; playButton.hidden = clockStart !== null; return; }
-    if (audio.paused) { if (audio.ended) audio.currentTime = 0; audio.play(); } else audio.pause();
-  };
-  audio.addEventListener('play', () => { playButton.hidden = true; });
-  audio.addEventListener('pause', () => { playButton.hidden = false; });
-  playButton.addEventListener('click', toggle);
-  const setCaptions = (on) => { captionBox.hidden = !on; ccButton.setAttribute('aria-pressed', String(on)); };
-  setCaptions(!captionBox.hidden);
-  ccButton.addEventListener('click', () => setCaptions(captionBox.hidden));
-  document.getElementById('restart').addEventListener('click', () => { audio.currentTime = 0; if (audio.failed) clockStart = performance.now(); else audio.play(); playButton.hidden = true; });
-  addEventListener('keydown', (e) => {
-    if (e.target.closest('button')) return;
-    if (e.key === ' ') { e.preventDefault(); toggle(); }
-    if (e.key === 'c') setCaptions(captionBox.hidden);
-  });
-  const loop = () => { render(now()); requestAnimationFrame(loop); };
-  ready.then(loop);
+    const audio = new Audio(body.dataset.audio);
+    let clockStart = null; // fallback clock when the MP3 has not been built yet
+    audio.addEventListener('error', () => { audio.failed = true; });
+    const now = () => (audio.failed ? (clockStart === null ? 0 : (performance.now() - clockStart) / 1000) : audio.currentTime);
+    const playButton = document.getElementById('play');
+    const ccButton = document.getElementById('cc');
+    const toggle = () => {
+      if (audio.failed) { clockStart = clockStart === null || now() >= DURATION ? performance.now() : null; playButton.hidden = clockStart !== null; return; }
+      if (audio.paused) { if (audio.ended) audio.currentTime = 0; audio.play(); } else audio.pause();
+    };
+    audio.addEventListener('play', () => { playButton.hidden = true; });
+    audio.addEventListener('pause', () => { playButton.hidden = false; });
+    playButton.addEventListener('click', toggle);
+    const setCaptions = (on) => { captionBox.hidden = !on; ccButton.setAttribute('aria-pressed', String(on)); };
+    setCaptions(!captionBox.hidden);
+    ccButton.addEventListener('click', () => setCaptions(captionBox.hidden));
+    document.getElementById('restart').addEventListener('click', () => { audio.currentTime = 0; if (audio.failed) clockStart = performance.now(); else audio.play(); playButton.hidden = true; });
+    addEventListener('keydown', (e) => {
+      if (e.target.closest('button')) return;
+      if (e.key === ' ') { e.preventDefault(); toggle(); }
+      if (e.key === 'c') setCaptions(captionBox.hidden);
+      if (e.key === 'g') guides.hidden = !guides.hidden;
+    });
+    const start0 = +query.get('t') || 0; // ?t=14.4 opens on that film time, paused
+    const loop = () => { render(audio.failed || !audio.paused || audio.currentTime > 0 ? now() : start0); requestAnimationFrame(loop); };
+    PITCH.ready.then(loop);
+  }
 })();

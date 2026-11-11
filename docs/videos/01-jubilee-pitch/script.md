@@ -1,33 +1,41 @@
 # 01 · Meet Jubilee
 
-## Hello Toronto
+The narration, scene by scene. The times each line must sit inside, and the words that must land on
+a beat, are in `narration.json`; this file is the transcript. The wording is the designer's first
+draft and has not been signed off.
 
-Toronto! Meet Jubilee, your Christian marketplace.
+## 01 Sunday
 
-## The directory
+On Sunday, you know exactly who to trust.
 
-Forty-seven verified, Christian-owned businesses, all in one place. Shops, advisors, trades and more.
+## 02 Monday
 
-## Trust
+On Monday, the pipe bursts, and you're scrolling through strangers.
 
-Every listing is confirmed by a pastor or elder, so you can find someone you can trust.
+## 03 Meet Jubilee
 
-## Ask, book or order
+Meet Jubilee. Toronto's Christian businesses, all in one place.
 
-Message the owner. Book a meeting. Ask for a quote. Request a product.
+## 04 Why join
 
-## Your requests
+Every business is vouched for by a pastor or elder. Your money stays in the community. And it's free to join.
 
-The business answers you directly, and you keep track of every request.
+## 05 Shop
 
-## Owners
+Shop Christian makers: Bibles, gifts, apparel and fresh flowers.
 
-Own a business? List it free, and watch the requests roll in.
+## 06 Hire and book
 
-## Community
+Hire the advisors and trades your church already recommends, and book in a tap.
 
-Every dollar spent here supports a family, a church, and a community that shares your values.
+## 07 Why list
 
-## Join
+Own a business? Your church family is looking for you.
 
-Join free today. Jubilee! Do business with Toronto's Christian community.
+## 08 How to list
+
+Create your page, get vouched for by your church, and welcome customers who already trust you.
+
+## 09 Close
+
+Jubilee. Your community is open for business.

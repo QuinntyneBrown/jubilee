@@ -11,7 +11,7 @@ export class NotificationSettingsPage extends ShellPage implements Screen {
   readonly securityNote: Locator;
   readonly errorState: Locator;
   readonly tryAgain: Locator;
-  readonly tabs: Locator;
+  readonly sectionTabs: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -22,7 +22,7 @@ export class NotificationSettingsPage extends ShellPage implements Screen {
     this.securityNote = this.main.locator('.text-caption');
     this.errorState = this.main.getByRole('alert').filter({ hasText: 'JB-PREF-503' });
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
-    this.tabs = this.main.getByRole('navigation', { name: 'Account sections' });
+    this.sectionTabs = this.main.getByRole('navigation', { name: 'Account sections' });
   }
 
   /** The switch with this label, for example "New messages". */

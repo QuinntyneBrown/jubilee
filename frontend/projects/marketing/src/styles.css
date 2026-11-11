@@ -1,0 +1,12 @@
+/* Global styles are the shared foundations only: the tokens, the component kit and the
+   marketing stylesheet (docs/design-system, loaded from angular.json) plus the rule below that
+   makes Angular host elements invisible to the page's layout, as the mock has none. */
+jb-root,
+jb-hero-visual,
+jb-pitch-video,
+jb-benefits,
+jb-how-it-works,
+jb-inside-the-app,
+jb-for-businesses {
+  display: contents;
+}

@@ -1,0 +1,44 @@
+{
+  "voice": "af_heart",
+  "note": "Film seconds. Each segment is spoken inside [start, end]. 'hit' with 'lead' (or 'tail') places the segment so the word after the lead (or the tail word) lands on that time. 'caption' starts a new caption; segments without one extend the caption before them.",
+  "lines": [
+    { "scene": 1, "segments": [
+      { "text": "On Sunday, you know exactly who to trust.", "start": 0.60, "end": 3.40, "caption": "On Sunday, you know exactly who to trust." }
+    ] },
+    { "scene": 2, "segments": [
+      { "text": "On Monday, the pipe bursts, and you're scrolling through strangers.", "start": 7.50, "end": 11.40, "caption": "On Monday, the pipe bursts, and you’re scrolling through strangers." }
+    ] },
+    { "scene": 3, "segments": [
+      { "text": "Meet Jubilee.", "start": 14.70, "end": 15.60, "caption": "Meet Jubilee." },
+      { "text": "Toronto's Christian businesses, all in one place.", "start": 16.50, "end": 18.60, "caption": "Toronto’s Christian businesses, all in one place." }
+    ] },
+    { "scene": 4, "segments": [
+      { "text": "Every business is vouched for by a pastor or elder.", "start": 22.00, "end": 24.20, "lead": "Every business is", "hit": 22.80, "caption": "Every business is vouched for by a pastor or elder." },
+      { "text": "Your money stays in the community.", "start": 24.30, "end": 26.00, "caption": "Your money stays in the community. And it’s free to join." },
+      { "text": "And it's free to join.", "start": 26.10, "end": 27.40 }
+    ] },
+    { "scene": 5, "segments": [
+      { "text": "Shop Christian makers:", "start": 29.00, "end": 30.50, "caption": "Shop Christian makers: Bibles, gifts, apparel and fresh flowers." },
+      { "text": "Bibles,", "start": 30.60, "end": 31.16 },
+      { "text": "gifts,", "start": 31.20, "end": 31.76 },
+      { "text": "apparel and fresh flowers.", "start": 31.78, "end": 32.95, "lead": "apparel and fresh", "hit": 32.40 }
+    ] },
+    { "scene": 6, "segments": [
+      { "text": "Hire the advisors and trades your church already recommends,", "start": 36.20, "end": 39.30, "caption": "Hire the advisors and trades your church already recommends," },
+      { "text": "and book in a tap.", "start": 39.35, "end": 40.55, "tail": "tap.", "hit": 40.20, "caption": "and book in a tap." }
+    ] },
+    { "scene": 7, "segments": [
+      { "text": "Own a business?", "start": 43.50, "end": 44.70, "caption": "Own a business? Your church family is looking for you." },
+      { "text": "Your church family is looking for you.", "start": 44.95, "end": 46.80 }
+    ] },
+    { "scene": 8, "segments": [
+      { "text": "Create your page,", "start": 50.85, "end": 52.10, "caption": "Create your page, get vouched for by your church," },
+      { "text": "get vouched for by your church,", "start": 52.20, "end": 53.60 },
+      { "text": "and welcome customers who already trust you.", "start": 53.70, "end": 55.10, "caption": "and welcome customers who already trust you." }
+    ] },
+    { "scene": 9, "segments": [
+      { "text": "Jubilee.", "start": 58.00, "end": 58.65, "caption": "Jubilee. Your community is open for business." },
+      { "text": "Your community is open for business.", "start": 58.80, "end": 61.00 }
+    ] }
+  ]
+}

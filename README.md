@@ -109,6 +109,13 @@ for the full local stack; the quick start runs on SQLite, and the tests need no 
    npm start --prefix frontend
    ```
 
+The marketing site is a second application in the same workspace and needs no API. It copies the
+pitch film from `docs/videos/` and serves on `http://localhost:4201`:
+
+```
+npm run start:marketing --prefix frontend
+```
+
 To run against SQL Server instead, set the connection string `ConnectionStrings:Jubilee` and run
 `pwsh eng/Start-FreshStack.ps1`. It resets the database, applies the migrations, seeds the demo
 data and starts the API and the app. The API never applies migrations by itself; the `jubilee`
