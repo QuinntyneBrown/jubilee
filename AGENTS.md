@@ -35,6 +35,7 @@ say so and propose the correction; do not work around it silently.
 - `docs/audits/` — audits of the codebase against its rules, each with the fixes it calls for
 - `docs/journey.md`, `docs/prompts/` — the user journeys and one implementation prompt per journey
 - `eng/` — local engineering scripts (`Test-Backend.ps1`, `Start-E2eApi.ps1`, `Start-FreshStack.ps1`)
+- `eng/azure/` — how Jubilee is hosted on Azure and the script that deploys it (see its `README.md`)
 - `docs/videos/` — narrated videos, one folder each; `tools/` holds the scripts that build them
   (see `docs/videos/README.md`)
 
@@ -85,7 +86,7 @@ jubilee/
 │   └── tests/                         specs, with `visual/` for mock parity
 ├── eng/
 ├── docs/
-└── .github/workflows/                 `ci.yml`
+└── .github/workflows/                 `ci.yml`, `deploy.yml`
 ```
 
 See `README.md` for setup and development commands.
