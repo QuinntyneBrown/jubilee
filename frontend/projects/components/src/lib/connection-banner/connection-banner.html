@@ -1,18 +1,9 @@
-<svg
-  jb-icon
-  [name]="kind() === 'back-online' ? 'check' : kind() === 'offline' ? 'wifi-off' : 'alert'"
-></svg>
-<div class="alert__body">
+<div jb-alert banner [tone]="tone()" [icon]="kind() === 'offline' ? 'wifi-off' : null">
   @switch (kind()) {
     @case ('offline') {
       <span
         ><strong>You’re offline.</strong>
         {{ detail() ?? 'Messages you write are sent when you reconnect.' }}</span
-      >
-      <span class="alert__actions"
-        ><button jb-button size="sm" type="button" (click)="retry.emit()">
-          <svg jb-icon name="refresh"></svg>Try again
-        </button></span
       >
     }
     @case ('unreachable') {
@@ -24,11 +15,6 @@
           {{ countdown() === 1 ? 'second' : 'seconds' }}.
         }
       </span>
-      <span class="alert__actions"
-        ><a jb-button size="sm" [href]="statusUrl()" target="_blank" rel="noopener noreferrer"
-          >Check status</a
-        ></span
-      >
     }
     @case ('slow') {
       <span><strong>Your connection is slow.</strong> Pages may take longer to load.</span>
@@ -42,7 +28,24 @@
       </span>
     }
   }
+  <!-- One block per projected node: a slot node beside another in a block is not projected. -->
+  @if (kind() === 'offline') {
+    <button slot="actions" jb-button size="sm" type="button" (click)="retry.emit()">
+      <svg jb-icon name="refresh"></svg>Try again
+    </button>
+  }
+  @if (kind() === 'unreachable') {
+    <a
+      slot="actions"
+      jb-button
+      size="sm"
+      [href]="statusUrl()"
+      target="_blank"
+      rel="noopener noreferrer"
+      >Check status</a
+    >
+  }
+  @if (kind() === 'back-online') {
+    <button jb-close-button type="button" aria-label="Dismiss" (click)="dismiss.emit()"></button>
+  }
 </div>
-@if (kind() === 'back-online') {
-  <button jb-close-button type="button" aria-label="Dismiss" (click)="dismiss.emit()"></button>
-}

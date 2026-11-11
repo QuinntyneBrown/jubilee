@@ -23,12 +23,8 @@
   </div>
   <form class="dialog__body stack" (ngSubmit)="send()" id="new-message-form">
     @if (view() === 'failed') {
-      <div class="alert alert--danger" role="alert">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">{{ failure().title }}</div>
-          <div>{{ failure().text }}</div>
-        </div>
+      <div jb-alert tone="danger" [heading]="failure().title" role="alert">
+        <div>{{ failure().text }}</div>
       </div>
     }
     <div class="field">

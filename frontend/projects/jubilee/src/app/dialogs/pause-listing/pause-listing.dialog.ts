@@ -1,7 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MY_BUSINESS_API, PauseResult } from 'api';
-import { Icon, Button } from 'components';
+import { Icon, Button, Alert } from 'components';
 
 export interface PauseListingData {
   business: string;
@@ -13,7 +13,7 @@ type View = 'form' | 'busy' | 'failed';
 /** PauseListingDialog (L2-096): the owner hides the listing after seeing what stays. */
 @Component({
   selector: 'jb-pause-listing-dialog',
-  imports: [Icon, Button],
+  imports: [Icon, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './pause-listing.dialog.html',

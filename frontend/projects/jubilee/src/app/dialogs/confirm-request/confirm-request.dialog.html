@@ -23,21 +23,13 @@
   </div>
   <div class="dialog__body stack">
     @if (view() === 'failed') {
-      <div class="alert alert--danger" role="alert">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">We couldn’t confirm it</div>
-          <div>The request is still new. Check your connection and try again.</div>
-        </div>
+      <div jb-alert tone="danger" heading="We couldn’t confirm it" role="alert">
+        <div>The request is still new. Check your connection and try again.</div>
       </div>
     }
     @if (view() === 'conflict') {
-      <div class="alert alert--danger" role="alert">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">{{ conflict() }}</div>
-          <div>Nothing was confirmed.</div>
-        </div>
+      <div jb-alert tone="danger" [heading]="conflict()" role="alert">
+        <div>Nothing was confirmed.</div>
       </div>
     }
     <dl class="dl well">

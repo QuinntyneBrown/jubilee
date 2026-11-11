@@ -1,14 +1,16 @@
-<svg
-  jb-icon
-  [name]="
-    state() === 'confirmed'
-      ? 'check'
-      : state() === 'persistent' || state() === 'sent'
-        ? 'info'
+<div
+  jb-alert
+  banner
+  [tone]="tone()"
+  [icon]="
+    state() === 'persistent' || state() === 'sent'
+      ? null
+      : state() === 'confirmed'
+        ? 'check'
         : 'alert'
   "
-></svg>
-<div class="alert__body">
+  [role]="state() === 'bounced' ? 'alert' : 'status'"
+>
   @switch (state()) {
     @case ('confirmed') {
       <span
@@ -23,31 +25,37 @@
         ><strong>We couldn’t deliver e-mail to {{ email() }}.</strong> Check the address for a
         typo.</span
       >
-      <span class="alert__actions"
-        ><a jb-button size="sm" routerLink="/account">Change e-mail</a></span
-      >
     }
     @case ('expired') {
       <span><strong>Your confirmation link expired.</strong> Links work for 24 hours.</span>
-      <span class="alert__actions"
-        ><button jb-button size="sm" type="button" [disabled]="busy()" (click)="resend.emit()">
-          Send a new link
-        </button></span
-      >
     }
     @default {
       <span
         ><strong>Confirm your e-mail to message businesses.</strong> We sent a link to
         {{ email() }}.</span
       >
-      <span class="alert__actions"
-        ><button jb-button size="sm" type="button" [disabled]="busy()" (click)="resend.emit()">
-          Send it again</button
-        ><a routerLink="/account">Change e-mail</a></span
-      >
     }
   }
+  <!-- One block per projected node: a slot node beside another in a block is not projected. -->
+  @if (state() === 'bounced') {
+    <a slot="actions" jb-button size="sm" routerLink="/account">Change e-mail</a>
+  }
+  @if (state() === 'expired' || state() === 'persistent') {
+    <button
+      slot="actions"
+      jb-button
+      size="sm"
+      type="button"
+      [disabled]="busy()"
+      (click)="resend.emit()"
+    >
+      {{ state() === 'expired' ? 'Send a new link' : 'Send it again' }}
+    </button>
+  }
+  @if (state() === 'persistent') {
+    <a slot="actions" routerLink="/account">Change e-mail</a>
+  }
+  @if (state() === 'confirmed') {
+    <button jb-close-button type="button" aria-label="Dismiss" (click)="dismiss.emit()"></button>
+  }
 </div>
-@if (state() === 'confirmed') {
-  <button jb-close-button type="button" aria-label="Dismiss" (click)="dismiss.emit()"></button>
-}

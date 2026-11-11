@@ -18,7 +18,7 @@
   font-size: var(--font-size-md);
   line-height: 1;
   white-space: nowrap;
-  color: var(--btn-fg);
+  color: var(--jb-btn-fg, var(--btn-fg));
   background: var(--btn-bg);
   border: var(--border-width-hairline) solid var(--btn-border);
   border-radius: var(--radius-full);
@@ -56,7 +56,7 @@
   --btn-bg-hover: var(--color-accent-hover);
   --btn-bg-active: var(--color-accent-active);
 
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--jb-btn-font-weight, var(--font-weight-semibold));
 }
 
 :host(.btn--primary:hover) {

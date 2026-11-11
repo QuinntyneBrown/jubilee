@@ -25,24 +25,22 @@
   @if (view() === 'failed' || data.unticked > 0) {
     <div class="dialog__body stack">
       @if (view() === 'failed') {
-        <div class="alert alert--danger" role="alert">
-          <svg jb-icon name="alert"></svg>
-          <div class="alert__body">
-            <div class="alert__title">We couldn’t publish it</div>
-            <div>The listing is still in the queue. Try again.</div>
-          </div>
+        <div jb-alert tone="danger" heading="We couldn’t publish it" role="alert">
+          <div>The listing is still in the queue. Try again.</div>
         </div>
       }
       @if (data.unticked > 0) {
-        <div class="alert alert--warning" role="status">
-          <svg jb-icon name="alert"></svg>
-          <div class="alert__body">
-            <div class="alert__title">
-              {{ data.unticked }} checklist {{ data.unticked === 1 ? 'item is' : 'items are' }} not
-              ticked
-            </div>
-            <div>Say why you are approving anyway. The note is kept in the audit log.</div>
-          </div>
+        <div
+          jb-alert
+          tone="warning"
+          [heading]="
+            data.unticked +
+            ' checklist ' +
+            (data.unticked === 1 ? 'item is' : 'items are') +
+            ' not ticked'
+          "
+        >
+          <div>Say why you are approving anyway. The note is kept in the audit log.</div>
         </div>
         <div class="field">
           <label class="field__label" for="a-note"

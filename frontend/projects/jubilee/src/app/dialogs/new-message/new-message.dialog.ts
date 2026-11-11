@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MESSAGES_API } from 'api';
-import { Icon, Button } from 'components';
+import { Icon, Button, Alert } from 'components';
 import { newKey } from '../../services/message-time';
 
 export interface NewMessageData {
@@ -26,7 +26,7 @@ const MAX = 4000;
  */
 @Component({
   selector: 'jb-new-message-dialog',
-  imports: [FormsModule, Icon, Button],
+  imports: [FormsModule, Icon, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './new-message.dialog.html',

@@ -1,3 +1,4 @@
+export * from './lib/alert/alert';
 export * from './lib/brand-mark/brand-mark';
 export * from './lib/business-card/business-card';
 export * from './lib/button/button';

@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { Alert, AlertTone } from '../alert/alert';
 import { RouterLink } from '@angular/router';
-import { Icon } from '../icon/icon';
 import { Button } from '../button/button';
 import { CloseButton } from '../button/close-button';
 
@@ -14,16 +14,10 @@ export type VerifyEmailBannerState = 'persistent' | 'sent' | 'bounced' | 'expire
  */
 @Component({
   selector: 'div[jb-verify-email-banner]',
-  imports: [Icon, RouterLink, Button, CloseButton],
+  imports: [Alert, RouterLink, Button, CloseButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    class: 'alert banner',
-    '[class.alert--danger]': 'state() === "bounced"',
-    '[class.alert--success]': 'state() === "confirmed"',
-    '[class.alert--warning]': 'state() === "expired"',
-    '[attr.role]': 'state() === "bounced" ? "alert" : "status"',
-  },
   templateUrl: './verify-email-banner.html',
+  styleUrl: './verify-email-banner.scss',
 })
 export class VerifyEmailBanner {
   readonly state = input<VerifyEmailBannerState>('persistent');
@@ -32,4 +26,17 @@ export class VerifyEmailBanner {
   readonly resend = output<void>();
   /** Only the success state can be dismissed. */
   readonly dismiss = output<void>();
+
+  protected readonly tone = computed<AlertTone>(() => {
+    switch (this.state()) {
+      case 'bounced':
+        return 'danger';
+      case 'confirmed':
+        return 'success';
+      case 'expired':
+        return 'warning';
+      default:
+        return 'info';
+    }
+  });
 }

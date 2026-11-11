@@ -24,7 +24,9 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
  *
  * A band of the brand colour re-skins the ghost variant through `--jb-btn-ghost-fg`,
  * `--jb-btn-ghost-border`, `--jb-btn-ghost-bg-hover` and `--jb-btn-ghost-bg-active`; a container
- * whose small buttons are primary touch controls raises them with `--jb-btn-sm-min-height`.
+ * whose small buttons are primary touch controls raises them with `--jb-btn-sm-min-height`; a
+ * block that sets its actions in its own text style (an alert) passes `--jb-btn-fg` and
+ * `--jb-btn-font-weight`.
  */
 @Component({
   selector: 'button[jb-button], a[jb-button]',

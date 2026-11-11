@@ -40,12 +40,8 @@
     </div>
     <form class="dialog__body stack" id="change-email-form" novalidate (ngSubmit)="send()">
       @if (view() === 'failed') {
-        <div class="alert alert--danger" role="alert">
-          <svg jb-icon name="alert"></svg>
-          <div class="alert__body">
-            <div class="alert__title">We couldn’t send that</div>
-            <div>Your connection dropped before it reached us. Nothing was sent. Try again.</div>
-          </div>
+        <div jb-alert tone="danger" heading="We couldn’t send that" role="alert">
+          <div>Your connection dropped before it reached us. Nothing was sent. Try again.</div>
         </div>
       }
       <div class="field">

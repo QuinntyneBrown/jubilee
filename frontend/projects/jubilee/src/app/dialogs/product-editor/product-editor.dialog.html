@@ -24,21 +24,13 @@
   <form novalidate style="display: contents" (ngSubmit)="save()">
     <div class="dialog__body stack">
       @if (view() === 'failed') {
-        <div class="alert alert--danger" role="alert">
-          <svg jb-icon name="alert"></svg>
-          <div class="alert__body">
-            <div class="alert__title">We couldn’t save the product</div>
-            <div>{{ failure() }}</div>
-          </div>
+        <div jb-alert tone="danger" heading="We couldn’t save the product" role="alert">
+          <div>{{ failure() }}</div>
         </div>
       }
       @if (view() === 'discard') {
-        <div class="alert alert--warning" role="alert">
-          <svg jb-icon name="alert"></svg>
-          <div class="alert__body">
-            <div class="alert__title">Discard what you typed?</div>
-            <div>Your changes to this product have not been saved.</div>
-          </div>
+        <div jb-alert tone="warning" heading="Discard what you typed?" role="alert">
+          <div>Your changes to this product have not been saved.</div>
         </div>
       }
       <div class="field">
