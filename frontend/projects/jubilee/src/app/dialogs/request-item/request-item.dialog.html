@@ -121,35 +121,30 @@
               }
             </fieldset>
             @if (ships()) {
-              <div class="field">
-                <label class="field__label" for="d-addr"
-                  >Shipping address <span class="optional">(required)</span></label
-                >
+              <div
+                jb-field
+                label="Shipping address"
+                controlId="d-addr"
+                required
+                [error]="addressProblem()"
+              >
                 <textarea
                   class="textarea"
-                  id="d-addr"
+                  jbFieldControl
                   name="address"
                   rows="2"
                   required
                   autocomplete="street-address"
                   [readOnly]="busy()"
-                  [attr.aria-invalid]="addressProblem() ? 'true' : null"
-                  [attr.aria-describedby]="addressProblem() ? 'd-addr-error' : null"
                   [ngModel]="address()"
                   (ngModelChange)="address.set($event)"
                 ></textarea>
-                @if (addressProblem()) {
-                  <span class="field__error" id="d-addr-error">{{ addressProblem() }}</span>
-                }
               </div>
             }
-            <div class="field">
-              <label class="field__label" for="d-note"
-                >Note to {{ opts.shop.name }} <span class="optional">(optional)</span></label
-              >
+            <div jb-field [label]="'Note to ' + opts.shop.name" controlId="d-note" optional>
               <textarea
                 class="textarea"
-                id="d-note"
+                jbFieldControl
                 name="note"
                 rows="2"
                 maxlength="1000"

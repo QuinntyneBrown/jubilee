@@ -67,6 +67,20 @@ export class JoinPage extends ShellPage implements Screen {
     if (values.agree !== undefined) await this.agreement.setChecked(values.agree);
   }
 
+  /** The whole field of a control: label, hint and control. */
+  fieldOf(label: string): Locator {
+    return this.main
+      .locator('.field')
+      .filter({ has: this.main.page().getByLabel(label, { exact: false }) })
+      .first();
+  }
+
+  /** Types into a control and leaves it, so that it is shown at rest. */
+  async typeAndLeave(control: Locator, value: string): Promise<void> {
+    await control.fill(value);
+    await control.blur();
+  }
+
   async ready(): Promise<void> {
     await this.main.locator('form, .empty').first().waitFor({ state: 'attached' });
   }

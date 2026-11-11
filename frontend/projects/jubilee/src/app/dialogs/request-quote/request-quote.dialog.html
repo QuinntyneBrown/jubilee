@@ -85,54 +85,41 @@
                 <div>{{ failure().text }}</div>
               </div>
             }
-            <div class="field">
-              <label class="field__label" for="d-what"
-                >What do you need? <span class="optional">(required)</span></label
-              >
+            <div
+              jb-field
+              label="What do you need?"
+              controlId="d-what"
+              required
+              [error]="found.description"
+            >
               <textarea
                 class="textarea"
-                id="d-what"
+                jbFieldControl
                 name="description"
                 rows="4"
                 maxlength="2000"
                 required
                 [readOnly]="busy()"
-                [attr.aria-invalid]="found.description ? 'true' : null"
-                [attr.aria-describedby]="found.description ? 'd-what-error' : null"
                 [ngModel]="description()"
                 (ngModelChange)="description.set($event)"
               ></textarea>
-              @if (found.description) {
-                <span class="field__error" id="d-what-error">{{ found.description }}</span>
-              }
             </div>
             <div class="form-grid form-grid--2">
-              <div class="field">
-                <label class="field__label" for="d-when"
-                  >Needed by <span class="optional">(optional)</span></label
-                >
+              <div jb-field label="Needed by" controlId="d-when" optional [error]="found.neededBy">
                 <input
                   class="input"
-                  id="d-when"
+                  jbFieldControl
                   name="neededBy"
                   type="date"
                   [readOnly]="busy()"
-                  [attr.aria-invalid]="found.neededBy ? 'true' : null"
-                  [attr.aria-describedby]="found.neededBy ? 'd-when-error' : null"
                   [ngModel]="neededBy()"
                   (ngModelChange)="neededBy.set($event)"
                 />
-                @if (found.neededBy) {
-                  <span class="field__error" id="d-when-error">{{ found.neededBy }}</span>
-                }
               </div>
-              <div class="field">
-                <label class="field__label" for="d-budget"
-                  >Budget <span class="optional">(optional)</span></label
-                >
+              <div jb-field label="Budget" controlId="d-budget" optional>
                 <input
                   class="input"
-                  id="d-budget"
+                  jbFieldControl
                   name="budget"
                   type="text"
                   maxlength="60"
@@ -142,29 +129,23 @@
                 />
               </div>
             </div>
-            <div class="field">
-              <label class="field__label" for="d-phone"
-                >Phone <span class="optional">(optional)</span></label
-              >
-              <span class="field__help" id="d-phone-help"
-                >Shared with {{ opts.business.name }} for this request only.</span
-              >
+            <div
+              jb-field
+              label="Phone"
+              controlId="d-phone"
+              optional
+              [hint]="'Shared with ' + opts.business.name + ' for this request only.'"
+              [error]="found.phone"
+            >
               <input
                 class="input"
-                id="d-phone"
+                jbFieldControl
                 name="phone"
                 type="tel"
                 [readOnly]="busy()"
-                [attr.aria-invalid]="found.phone ? 'true' : null"
-                [attr.aria-describedby]="
-                  found.phone ? 'd-phone-help d-phone-error' : 'd-phone-help'
-                "
                 [ngModel]="phone()"
                 (ngModelChange)="phone.set($event)"
               />
-              @if (found.phone) {
-                <span class="field__error" id="d-phone-error">{{ found.phone }}</span>
-              }
             </div>
           </form>
           <div class="dialog__footer">

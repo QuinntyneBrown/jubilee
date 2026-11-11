@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PROFILE_API } from 'api';
-import { Icon, Button, Alert } from 'components';
+import { Icon, Button, Alert, FieldControl, Field } from 'components';
 
 export interface ChangeEmailData {
   /** A member who joined with Google has no password to give. */
@@ -18,7 +18,7 @@ export interface ChangeEmailData {
 }
 
 type View = 'form' | 'busy' | 'failed' | 'sent';
-type Field = 'email' | 'currentPassword';
+type FieldName = 'email' | 'currentPassword';
 
 const MESSAGES: Record<string, string> = {
   'email:REQUIRED': 'Enter the e-mail you want to use.',
@@ -34,7 +34,7 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-change-email-dialog',
-  imports: [FormsModule, Icon, Button, Alert],
+  imports: [FormsModule, Icon, Button, Alert, Field, FieldControl],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './change-email.dialog.html',
@@ -48,14 +48,14 @@ export class ChangeEmailDialog {
   protected readonly view = signal<View>('form');
   protected readonly email = signal('');
   protected readonly password = signal('');
-  protected readonly problems = signal<Partial<Record<Field, string>>>({});
+  protected readonly problems = signal<Partial<Record<FieldName, string>>>({});
   protected readonly sentTo = signal('');
   protected readonly busy = computed(() => this.view() === 'busy');
 
   protected send(): void {
     if (this.busy()) return;
     const email = this.email().trim();
-    const found: Partial<Record<Field, string>> = {};
+    const found: Partial<Record<FieldName, string>> = {};
     if (!email) found.email = MESSAGES['email:REQUIRED'];
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       found.email = MESSAGES['email:EMAIL_INVALID'];
@@ -80,8 +80,8 @@ export class ChangeEmailDialog {
     this.password.set('');
     if (error instanceof HttpErrorResponse && error.status === 422) {
       const errors = (error.error as { errors?: Record<string, string> } | null)?.errors ?? {};
-      const found: Partial<Record<Field, string>> = {};
-      for (const field of ['email', 'currentPassword'] as Field[]) {
+      const found: Partial<Record<FieldName, string>> = {};
+      for (const field of ['email', 'currentPassword'] as FieldName[]) {
         if (errors[field])
           found[field] = MESSAGES[`${field}:${errors[field]}`] ?? 'Check this field.';
       }

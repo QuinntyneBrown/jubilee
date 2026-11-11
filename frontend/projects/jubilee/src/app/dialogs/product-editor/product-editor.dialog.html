@@ -33,34 +33,23 @@
           <div>Your changes to this product have not been saved.</div>
         </div>
       }
-      <div class="field">
-        <label class="field__label" for="d-name"
-          >Product name <span class="optional">(required)</span></label
-        >
+      <div jb-field label="Product name" controlId="d-name" required [error]="errors().name">
         <input
           class="input"
-          id="d-name"
+          jbFieldControl
           name="name"
           type="text"
           required
           [ngModel]="name()"
           (ngModelChange)="name.set($event)"
           [readOnly]="busy()"
-          [attr.aria-invalid]="errors().name ? 'true' : null"
-          [attr.aria-describedby]="errors().name ? 'd-name-error' : null"
         />
-        @if (errors().name; as message) {
-          <span class="field__error" id="d-name-error">{{ message }}</span>
-        }
       </div>
       <div class="form-grid form-grid--2">
-        <div class="field">
-          <label class="field__label" for="d-price"
-            >Price (CAD) <span class="optional">(required)</span></label
-          >
+        <div jb-field label="Price (CAD)" controlId="d-price" required [error]="errors().price">
           <input
             class="input"
-            id="d-price"
+            jbFieldControl
             name="price"
             type="text"
             inputmode="decimal"
@@ -68,20 +57,19 @@
             [ngModel]="price()"
             (ngModelChange)="price.set($event)"
             [readOnly]="busy()"
-            [attr.aria-invalid]="errors().price ? 'true' : null"
-            [attr.aria-describedby]="errors().price ? 'd-price-error' : null"
           />
-          @if (errors().price; as message) {
-            <span class="field__error" id="d-price-error">{{ message }}</span>
-          }
         </div>
         @if (!hasOptions) {
-          <div class="field">
-            <label class="field__label" for="d-stock">In stock</label>
-            <span class="field__help" id="d-stock-help">0 shows as sold out.</span>
+          <div
+            jb-field
+            label="In stock"
+            controlId="d-stock"
+            hint="0 shows as sold out."
+            [error]="errors().stock"
+          >
             <input
               class="input"
-              id="d-stock"
+              jbFieldControl
               name="stock"
               type="number"
               min="0"
@@ -89,35 +77,21 @@
               [ngModel]="stock()"
               (ngModelChange)="stock.set($event === null ? '' : '' + $event)"
               [readOnly]="busy()"
-              [attr.aria-invalid]="errors().stock ? 'true' : null"
-              [attr.aria-describedby]="
-                errors().stock ? 'd-stock-help d-stock-error' : 'd-stock-help'
-              "
             />
-            @if (errors().stock; as message) {
-              <span class="field__error" id="d-stock-error">{{ message }}</span>
-            }
           </div>
         }
       </div>
-      <div class="field">
-        <label class="field__label" for="d-desc"
-          >Description <span class="optional">(optional)</span></label
-        >
+      <div jb-field label="Description" controlId="d-desc" optional [error]="errors().description">
         <textarea
           class="textarea"
-          id="d-desc"
+          jbFieldControl
           name="description"
           rows="3"
           maxlength="1000"
           [ngModel]="description()"
           (ngModelChange)="description.set($event)"
           [readOnly]="busy()"
-          [attr.aria-invalid]="errors().description ? 'true' : null"
         ></textarea>
-        @if (errors().description; as message) {
-          <span class="field__error">{{ message }}</span>
-        }
       </div>
     </div>
     <div class="dialog__footer">

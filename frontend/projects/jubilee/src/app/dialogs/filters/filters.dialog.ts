@@ -10,7 +10,7 @@ import {
   OfferFilter,
   SORTS,
 } from 'api';
-import { CountPipe, Icon, Button } from 'components';
+import { CountPipe, Icon, Button, Field, FieldControl } from 'components';
 import { Subscription } from 'rxjs';
 
 export interface FiltersDialogData {
@@ -34,7 +34,7 @@ export interface FiltersDialogResult {
  */
 @Component({
   selector: 'jb-filters-dialog',
-  imports: [CountPipe, Icon, Button],
+  imports: [CountPipe, Icon, Button, Field, FieldControl],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // The kit's `.dialog` fills the viewport and places the panel; a press outside the panel
   // closes the sheet, as a press on the backdrop does.

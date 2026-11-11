@@ -128,6 +128,7 @@ export interface ScreenRoute {
 
 export const routes = {
   'sign-in': { app: '/sign-in', mock: 'pages/sign-in/default.html', who: 'visitor' },
+  'sign-in.invalid': { app: '/sign-in', mock: 'pages/sign-in/invalid.html', who: 'visitor' },
   'session-expired': {
     app: '/session-expired',
     mock: 'pages/session-expired/default.html',

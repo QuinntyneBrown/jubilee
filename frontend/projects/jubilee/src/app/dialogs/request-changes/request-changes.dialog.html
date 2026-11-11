@@ -46,31 +46,27 @@
         </div>
       }
       @if (areaProblem()) {
-        <span class="field__error" id="areas-error">Choose at least one thing to change.</span>
+        <span jb-field-error id="areas-error">Choose at least one thing to change.</span>
       }
     </fieldset>
-    <div class="field">
-      <label class="field__label" for="d-msg">
-        Message to {{ data.ownerFirstName }} <span class="optional">(required)</span>
-      </label>
-      <span class="field__help" id="d-msg-help"
-        >Sent by e-mail and shown on their My business page.</span
-      >
+    <div
+      jb-field
+      [label]="'Message to ' + data.ownerFirstName"
+      controlId="d-msg"
+      required
+      hint="Sent by e-mail and shown on their My business page."
+      [error]="messageProblem() ? 'Tell the owner exactly what to change.' : null"
+    >
       <textarea
         class="textarea"
-        id="d-msg"
+        jbFieldControl
         name="message"
         rows="4"
         required
         [readOnly]="busy()"
-        [attr.aria-invalid]="messageProblem() ? 'true' : null"
-        [attr.aria-describedby]="messageProblem() ? 'd-msg-help d-msg-error' : 'd-msg-help'"
         [ngModel]="message()"
         (ngModelChange)="message.set($event)"
       ></textarea>
-      @if (messageProblem()) {
-        <span class="field__error" id="d-msg-error">Tell the owner exactly what to change.</span>
-      }
     </div>
   </form>
   <div class="dialog__footer">

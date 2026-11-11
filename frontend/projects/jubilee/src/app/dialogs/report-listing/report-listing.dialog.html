@@ -70,34 +70,28 @@
           </label>
         }
         @if (found.reason) {
-          <span class="field__error" id="d-why-error">{{ found.reason }}</span>
+          <span jb-field-error id="d-why-error">{{ found.reason }}</span>
         }
       </fieldset>
-      <div class="field">
-        <label class="field__label" for="d-detail"
-          >Tell us what happened <span class="optional">(required)</span></label
-        >
+      <div
+        jb-field
+        label="Tell us what happened"
+        controlId="d-detail"
+        required
+        [counter]="remaining() + (remaining() === 1 ? ' character' : ' characters') + ' left'"
+        [error]="found.description"
+      >
         <textarea
           class="textarea"
-          id="d-detail"
+          jbFieldControl
           name="description"
           rows="3"
           required
           [attr.maxlength]="max"
           [readOnly]="busy()"
-          [attr.aria-invalid]="found.description ? 'true' : null"
-          [attr.aria-describedby]="
-            found.description ? 'd-detail-count d-detail-error' : 'd-detail-count'
-          "
           [ngModel]="description()"
           (ngModelChange)="description.set($event)"
         ></textarea>
-        <span class="field__help" id="d-detail-count"
-          >{{ remaining() }} {{ remaining() === 1 ? 'character' : 'characters' }} left</span
-        >
-        @if (found.description) {
-          <span class="field__error" id="d-detail-error">{{ found.description }}</span>
-        }
       </div>
     </form>
     <div class="dialog__footer">
