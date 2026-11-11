@@ -1,0 +1,11 @@
+// Block: composer. The host is the form. Its text control is one line that takes more.
+:host {
+  --jb-textarea-min-height: var(--control-height-md);
+  --jb-textarea-resize: none;
+
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+}

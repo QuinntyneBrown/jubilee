@@ -135,6 +135,8 @@ export class ConversationPage extends ShellPage implements Screen {
   readonly away: Locator;
   readonly announcement: Locator;
   readonly composer: Locator;
+  /** The whole composer: the photo control, the text and "Send". */
+  readonly composerForm: Locator;
   readonly send: Locator;
   readonly attach: Locator;
   readonly attachPhoto: Locator;
@@ -169,7 +171,8 @@ export class ConversationPage extends ShellPage implements Screen {
     this.announcement = this.main.locator('.chat > [role="status"].visually-hidden');
     this.composer = this.main.getByRole('textbox', { name: /^Message / });
     this.send = this.main.getByRole('button', { name: 'Send', exact: true });
-    this.attach = this.main.locator('.composer .attach');
+    this.composerForm = this.main.locator('form.composer');
+    this.attach = this.composerForm.locator('.attach');
     this.attachPhoto = this.attach.getByRole('button', { name: 'Attach a photo' });
     this.photoInput = this.attach.locator('input[type="file"]');
     this.attachedPhoto = this.attach.getByRole('img', { name: 'Photo to send' });

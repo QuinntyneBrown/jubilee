@@ -174,26 +174,19 @@
         </ul>
       }
       <p class="visually-hidden" role="status">{{ announcement() }}</p>
-      <form class="composer" #composer (submit)="send($event)">
+      <form
+        jb-composer
+        #composer
+        [label]="'Message ' + conversation.business.name"
+        [(value)]="text"
+        (sent)="send()"
+      >
         <jb-attach-photo
+          slot="leading"
           [preview]="attached()?.preview ?? null"
           (picked)="attach($event)"
           (removed)="detach()"
         />
-        <label class="visually-hidden" for="msg">Message {{ conversation.business.name }}</label>
-        <textarea
-          jb-textarea
-          id="msg"
-          name="message"
-          rows="1"
-          placeholder="Write a message"
-          [ngModel]="text()"
-          (ngModelChange)="text.set($event)"
-          (keydown.enter)="onEnter($event)"
-        ></textarea>
-        <button jb-button variant="primary" iconOnly type="submit" aria-label="Send">
-          <svg jb-icon name="send"></svg>
-        </button>
       </form>
     }
   </div>
