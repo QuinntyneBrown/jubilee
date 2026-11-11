@@ -12,8 +12,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "cd .. && husky frontend/.husky || true",
-    "design:sync": "cp ../docs/design-system/tokens/tokens.css projects/components/src/lib/styles/tokens.css && cp ../docs/design-system/assets/fonts/Archivo.woff2 projects/components/src/lib/assets/fonts/Archivo.woff2 && cp ../docs/design-system/assets/fonts/Inter.woff2 projects/marketing/src/styles/fonts/Inter.woff2",
-    "design:check": "cmp ../docs/design-system/tokens/tokens.css projects/components/src/lib/styles/tokens.css && cmp ../docs/design-system/assets/fonts/Archivo.woff2 projects/components/src/lib/assets/fonts/Archivo.woff2 && cmp ../docs/design-system/assets/fonts/Inter.woff2 projects/marketing/src/styles/fonts/Inter.woff2",
+    "design:sync": "cp ../docs/design-system/tokens/tokens.css projects/components/src/lib/styles/tokens.css && cp ../docs/design-system/assets/fonts/Archivo.woff2 projects/components/src/lib/assets/fonts/Archivo.woff2 && cp ../docs/design-system/assets/fonts/Inter.woff2 projects/components/src/lib/assets/fonts/Inter.woff2",
+    "design:check": "cmp ../docs/design-system/tokens/tokens.css projects/components/src/lib/styles/tokens.css && cmp ../docs/design-system/assets/fonts/Archivo.woff2 projects/components/src/lib/assets/fonts/Archivo.woff2 && cmp ../docs/design-system/assets/fonts/Inter.woff2 projects/components/src/lib/assets/fonts/Inter.woff2",
     "media:sync": "cp ../docs/videos/01-jubilee-pitch/01-jubilee-pitch.mp4 projects/marketing/public/media/jubilee-pitch.mp4 && cp ../docs/assets/photos/*.jpg projects/marketing/public/photos/"
   },
   "private": true,

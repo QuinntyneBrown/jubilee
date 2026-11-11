@@ -26,7 +26,10 @@ page. ADR 0009 forbids the e2e suite from reaching an API.
 - The page is light only (`data-theme="light"` on `<html>`), as the reference is.
 - Nothing is loaded from another host. The photos are in `docs/assets/photos/` and the pitch
   film in `docs/videos/`; `npm run media:sync` copies both into the site before it is served or
-  built. Inter is bundled beside Archivo and declared by `marketing.css`.
+  built. Inter is bundled beside Archivo in the `components` library
+  (`components/src/lib/assets/fonts/`) and declared by the marketing foundations,
+  `components/src/lib/styles/marketing.css`, which hold the page's custom properties and reset
+  and no component rule (ADR 0035).
 - The e2e suite starts the site as a second web server and opens it by absolute address; it
   blocks every request that leaves `localhost`, which keeps the rule above true.
 
