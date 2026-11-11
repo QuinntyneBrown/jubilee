@@ -43,6 +43,18 @@ public sealed class ListingSubmission
     /// <summary>What the review screen flags: <c>CONTACT_IN_TEXT</c>, <c>REFERENCE_REUSED</c>.</summary>
     public List<string> Flags { get; private set; } = [];
 
+    /// <summary>When the listing last became ready for the verification team; "overdue" counts from here (L2-099 AC5).</summary>
+    public DateTimeOffset? ReadyAt { get; private set; }
+
+    public void MarkReady(DateTimeOffset now) => ReadyAt = now;
+
+    /// <summary>Deletes the reference's e-mail address, 90 days after a decision (L2-146).</summary>
+    public void ScrubReference()
+    {
+        PastorEmail = string.Empty;
+        PastorEmailKey = string.Empty;
+    }
+
     public void AddFlag(string flag)
     {
         if (!Flags.Contains(flag))

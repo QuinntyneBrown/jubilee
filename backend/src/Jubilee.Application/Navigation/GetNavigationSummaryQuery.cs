@@ -4,13 +4,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Navigation;
 
-public sealed record GetNavigationSummaryQuery(string? Subject = null) : IRequest<NavigationSummary>;
+public sealed record GetNavigationSummaryQuery(string? Subject = null, bool IsVerifier = false) : IRequest<NavigationSummary>;
 
 public sealed record NavigationSummary(
     int UnreadConversationCount,
     int UnreadNotificationCount,
     int NewRequestCount,
-    bool OwnsListing);
+    bool OwnsListing,
+    bool IsVerifier = false,
+    int VerificationCount = 0);
 
 public sealed class GetNavigationSummaryQueryHandler(IAppDbContext db) : IRequestHandler<GetNavigationSummaryQuery, NavigationSummary>
 {
@@ -30,6 +32,10 @@ public sealed class GetNavigationSummaryQueryHandler(IAppDbContext db) : IReques
                         && (r.Conversation.MemberReadAt == null || m.CreatedAt > r.Conversation.MemberReadAt))),
                 cancellationToken);
         var owns = await db.Listings.AnyAsync(l => l.OwnerId == subject, cancellationToken);
-        return new NavigationSummary(unread, 0, 0, owns);
+        // The team sees how many listings wait for a review (L2-098 AC3).
+        var waiting = request.IsVerifier
+            ? await db.Listings.CountAsync(l => l.Stage == Domain.ListingStage.ReadyToReview && l.DeletedAt == null, cancellationToken)
+            : 0;
+        return new NavigationSummary(unread, 0, 0, owns, request.IsVerifier, waiting);
     }
 }

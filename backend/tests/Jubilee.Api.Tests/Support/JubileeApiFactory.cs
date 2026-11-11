@@ -148,6 +148,9 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.ListingSubmissions);
             db.RemoveRange(db.ReferenceLinks);
             db.RemoveRange(db.ReferenceAnswers);
+            db.RemoveRange(db.ReviewTicks);
+            db.RemoveRange(db.ListingDecisions);
+            db.RemoveRange(db.AuditRecords);
             db.RemoveRange(db.Requests);
             db.RemoveRange(db.ConversationReports);
             db.RemoveRange(db.Messages);

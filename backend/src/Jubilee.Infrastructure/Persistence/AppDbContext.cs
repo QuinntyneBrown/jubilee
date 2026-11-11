@@ -49,6 +49,12 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ReferenceAnswer> ReferenceAnswers => Set<ReferenceAnswer>();
 
+    public DbSet<ReviewTick> ReviewTicks => Set<ReviewTick>();
+
+    public DbSet<ListingDecision> ListingDecisions => Set<ListingDecision>();
+
+    public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
