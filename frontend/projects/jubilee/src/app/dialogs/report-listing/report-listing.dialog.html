@@ -12,12 +12,12 @@
           e-mail you with a question.
         </p>
       </div>
-      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+      <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
         <svg jb-icon name="close"></svg>
       </button>
     </div>
     <div class="dialog__footer">
-      <button class="btn btn--primary" type="button" cdkFocusInitial (click)="close()">
+      <button jb-button variant="primary" type="button" cdkFocusInitial (click)="close()">
         Close
       </button>
     </div>
@@ -33,7 +33,9 @@
         </p>
       </div>
       <button
-        class="btn btn--ghost btn--icon"
+        jb-button
+        variant="ghost"
+        iconOnly
         type="button"
         aria-label="Close"
         [disabled]="busy()"
@@ -103,13 +105,8 @@
       </div>
     </form>
     <div class="dialog__footer">
-      <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
-      <button
-        class="btn btn--primary"
-        type="submit"
-        form="report-form"
-        [attr.aria-busy]="busy() ? 'true' : null"
-      >
+      <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button jb-button variant="primary" type="submit" form="report-form" [busy]="busy()">
         Send report
       </button>
     </div>

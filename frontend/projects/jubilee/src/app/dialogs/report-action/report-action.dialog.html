@@ -10,7 +10,9 @@
       </p>
     </div>
     <button
-      class="btn btn--ghost btn--icon"
+      jb-button
+      variant="ghost"
+      iconOnly
       type="button"
       aria-label="Close"
       [disabled]="busy()"
@@ -78,15 +80,14 @@
     </div>
   </form>
   <div class="dialog__footer">
-    <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+    <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
     <button
-      class="btn"
-      [class.btn--primary]="!wording().danger"
-      [class.btn--danger]="wording().danger"
+      jb-button
+      [variant]="wording().danger ? 'danger' : 'primary'"
       type="submit"
       form="report-action-form"
       [disabled]="busy()"
-      [attr.aria-busy]="busy() ? 'true' : null"
+      [busy]="busy()"
     >
       {{ wording().cta }}
     </button>

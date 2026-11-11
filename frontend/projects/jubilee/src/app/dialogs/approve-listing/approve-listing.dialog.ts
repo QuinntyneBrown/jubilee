@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ADMIN_API, DecisionResult } from 'api';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 
 export interface ApproveListingData {
   id: string;
@@ -29,7 +29,7 @@ type View = 'form' | 'busy' | 'failed';
  */
 @Component({
   selector: 'jb-approve-listing-dialog',
-  imports: [FormsModule, Icon],
+  imports: [FormsModule, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './approve-listing.dialog.html',
