@@ -174,6 +174,8 @@ public sealed class StartConversationCommandHandler(IAppDbContext db, TimeProvid
         db.Messages.Add(message);
         conversation.Touch(at);
         conversation.MarkRead(false, at);
+        Notifications.NotificationRules.Tell(
+            db, listing.OwnerId, "message", $"New message from {request.Name}", body, $"/messages/{conversation.Id}", at);
         await db.SaveChangesAsync(cancellationToken);
         return new StartedConversationDto(conversation.Id, message.Id);
     }
@@ -221,6 +223,18 @@ public sealed class SendMessageCommandHandler(IAppDbContext db, TimeProvider clo
         db.Messages.Add(message);
         row.Conversation.Touch(at);
         row.Conversation.MarkRead(row.AsOwner, at);
+        if (!hidden)
+        {
+            Notifications.NotificationRules.Tell(
+                db,
+                row.AsOwner ? row.Conversation.MemberSubject : row.Listing.OwnerId,
+                "message",
+                $"New message from {(row.AsOwner ? row.Listing.Name : request.Name)}",
+                body,
+                $"/messages/{row.Conversation.Id}",
+                at);
+        }
+
         await db.SaveChangesAsync(cancellationToken);
         return await ToDto(message, request.Subject, cancellationToken);
     }

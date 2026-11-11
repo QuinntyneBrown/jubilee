@@ -21,6 +21,8 @@ public interface IAppDbContext
 
     DbSet<RecentSearch> RecentSearches { get; }
 
+    DbSet<Notification> Notifications { get; }
+
     DbSet<Member> Members { get; }
 
     DbSet<LinkToken> LinkTokens { get; }

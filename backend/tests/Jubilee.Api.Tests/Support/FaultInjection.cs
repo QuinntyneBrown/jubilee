@@ -51,6 +51,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<RecentSearch> RecentSearches => Use(inner.RecentSearches);
 
+    public DbSet<Notification> Notifications => Use(inner.Notifications);
+
     public DbSet<Member> Members => Use(inner.Members);
 
     public DbSet<LinkToken> LinkTokens => Use(inner.LinkTokens);

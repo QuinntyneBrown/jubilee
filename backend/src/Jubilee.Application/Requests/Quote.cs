@@ -134,6 +134,9 @@ public sealed partial class RequestQuoteCommandHandler(IAppDbContext db, TimePro
 
     private async Task QueueOwnerEmail(Listing listing, Request request, DateTimeOffset now, CancellationToken cancellationToken)
     {
+        Notifications.NotificationRules.Tell(
+            db, listing.OwnerId, "request", $"New quote request from {request.MemberName}",
+            request.ServiceName ?? request.Note ?? "A quote request", "/my-business/requests", now, request.Id);
         if (!Guid.TryParse(listing.OwnerId, out var ownerId))
         {
             return;

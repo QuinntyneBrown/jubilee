@@ -626,6 +626,22 @@ public partial class AccountTests : IClassFixture<JubileeApiFactory>, IAsyncLife
         await client.GetAsync("/api/auth/google/start" + (returnUrl is null ? string.Empty : $"?returnUrl={Uri.EscapeDataString(returnUrl)}"));
         return await client.GetAsync($"/api/auth/google/callback?code=abc&state={_factory.Google.QueryValue("state")}");
     }
+
+    // L2-064 AC6
+    [Fact]
+    public async Task L2_064_AC6_confirming_the_e_mail_tells_the_member_in_the_notification_centre()
+    {
+        var (member, _) = await JoinedMember();
+        var before = JsonDocument.Parse(await (await member.GetAsync("/api/notifications")).Content.ReadAsStringAsync()).RootElement;
+        Assert.Empty(before.GetProperty("items").EnumerateArray());
+
+        Assert.Equal("confirmed", await Outcome(await LastLinkToken()));
+
+        var after = JsonDocument.Parse(await (await member.GetAsync("/api/notifications")).Content.ReadAsStringAsync()).RootElement;
+        var item = Assert.Single(after.GetProperty("items").EnumerateArray());
+        Assert.Equal("Your e-mail is confirmed", item.GetProperty("title").GetString());
+        Assert.Equal("account", item.GetProperty("kind").GetString());
+    }
 }
 
 public class JoinRateLimitTests(FiveJoinsFactory factory) : IClassFixture<FiveJoinsFactory>

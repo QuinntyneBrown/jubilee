@@ -227,6 +227,10 @@ public sealed class BookMeetingCommandHandler(IAppDbContext db, TimeProvider clo
 
     private async Task QueueOwnerEmail(Listing listing, Service service, Request request, DateTimeOffset now, CancellationToken cancellationToken)
     {
+        var starts = TorontoClock.Local(request.StartsAt!.Value);
+        Notifications.NotificationRules.Tell(
+            db, listing.OwnerId, "request", $"New booking request from {request.MemberName}",
+            $"{service.Name} · {starts.ToString("ddd d MMM, HH:mm", CultureInfo.InvariantCulture)}", "/my-business/requests", now, request.Id);
         if (!Guid.TryParse(listing.OwnerId, out var ownerId))
         {
             return;

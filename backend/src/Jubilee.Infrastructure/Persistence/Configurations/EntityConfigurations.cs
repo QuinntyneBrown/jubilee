@@ -144,6 +144,22 @@ public sealed class RecentSearchConfiguration : IEntityTypeConfiguration<RecentS
     }
 }
 
+public sealed class NotificationConfiguration : IEntityTypeConfiguration<Notification>
+{
+    public void Configure(EntityTypeBuilder<Notification> builder)
+    {
+        builder.ToTable("Notifications");
+        builder.HasKey(n => n.Id);
+        builder.Property(n => n.Id).ValueGeneratedNever();
+        builder.Property(n => n.MemberSubject).HasMaxLength(200).IsRequired();
+        builder.Property(n => n.Kind).HasMaxLength(20).IsRequired();
+        builder.Property(n => n.Title).HasMaxLength(Notification.MaxTitleLength).IsRequired();
+        builder.Property(n => n.Detail).HasMaxLength(Notification.MaxDetailLength).IsRequired();
+        builder.Property(n => n.Target).HasMaxLength(300).IsRequired();
+        builder.HasIndex(n => new { n.MemberSubject, n.CreatedAt });
+    }
+}
+
 public sealed class MemberConfiguration : IEntityTypeConfiguration<Member>
 {
     public void Configure(EntityTypeBuilder<Member> builder)

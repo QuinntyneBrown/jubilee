@@ -174,6 +174,8 @@ internal static class IncomingRules
     public static async Task QueueEmail(
         IAppDbContext db, Request request, string subject, string body, DateTimeOffset now, DateTimeOffset? notBefore, CancellationToken cancellationToken)
     {
+        Notifications.NotificationRules.Tell(
+            db, request.MemberSubject, "request", subject, Title(request), $"/requests/{request.Id}", now, request.Id);
         if (!Guid.TryParse(request.MemberSubject, out var memberId))
         {
             return;
@@ -322,6 +324,8 @@ public sealed class UndoConfirmRequestCommandHandler(IAppDbContext db, TimeProvi
         db.Messages.RemoveRange(await db.Messages.Where(m => m.IdempotencyKey == key).ToListAsync(cancellationToken));
         db.OutboxMessages.RemoveRange(
             await db.OutboxMessages.Where(m => m.CorrelationId == request.Id && m.SentAt == null && m.FailedAt == null).ToListAsync(cancellationToken));
+        db.Notifications.RemoveRange(
+            await db.Notifications.Where(n => n.CorrelationId == request.Id && n.MemberSubject == request.MemberSubject && n.ReadAt == null).ToListAsync(cancellationToken));
         await db.SaveChangesAsync(cancellationToken);
         return new RequestDecisionDto(
             request.Id, RequestLabels.Wire(request.Status), IncomingRules.OwnerLabel(request.Status), IncomingRules.KindWire(request.Kind),

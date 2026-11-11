@@ -199,6 +199,8 @@ public sealed class ConfirmEmailCommandHandler(IAppDbContext db, TimeProvider cl
         {
             token.Redeem(now);
             member.ConfirmEmail();
+            Notifications.NotificationRules.Tell(
+                db, member.Id.ToString(), "account", "Your e-mail is confirmed", "You can now message businesses and book meetings.", "/account", now);
             await db.SaveChangesAsync(cancellationToken);
             return new ConfirmEmailResult(ConfirmEmailOutcome.Confirmed, member.FirstName);
         }

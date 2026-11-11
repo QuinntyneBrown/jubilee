@@ -220,6 +220,9 @@ public sealed class SubmitReferenceAnswerCommandHandler(IAppDbContext db, TimePr
             (await db.ListingSubmissions.SingleAsync(s => s.ListingId == listing.Id, cancellationToken)).MarkReady(now);
         }
 
+        Notifications.NotificationRules.Tell(
+            db, listing.OwnerId, "listing", $"Your church reference answered for {listing.Name}",
+            kind == ReferenceAnswerKind.Vouches ? "We will review your listing next." : "The verification team will decide next.", "/my-business", now);
         await db.SaveChangesAsync(cancellationToken);
     }
 }

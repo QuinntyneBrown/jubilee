@@ -433,6 +433,7 @@ internal static class MemberRequestMail
         IAppDbContext db, AccountSettings settings, Listing listing, Request request, DateTimeOffset now,
         string subject, string text, CancellationToken cancellationToken)
     {
+        Notifications.NotificationRules.Tell(db, listing.OwnerId, "request", subject, MemberRequestRules.Title(request), "/my-business/requests", now, request.Id);
         if (!Guid.TryParse(listing.OwnerId, out var ownerId))
         {
             return;

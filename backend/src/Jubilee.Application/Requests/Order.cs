@@ -250,6 +250,9 @@ public sealed partial class RequestItemCommandHandler(IAppDbContext db, TimeProv
 
     private async Task QueueOwnerEmail(Listing shop, Request request, string? optionName, DateTimeOffset now, CancellationToken cancellationToken)
     {
+        Notifications.NotificationRules.Tell(
+            db, shop.OwnerId, "request", $"New order request from {request.MemberName}",
+            $"{request.ServiceName} × {request.Quantity}", "/my-business/requests", now, request.Id);
         if (!Guid.TryParse(shop.OwnerId, out var ownerId))
         {
             return;
