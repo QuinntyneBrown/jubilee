@@ -1,0 +1,19 @@
+// What a thread row and its skeleton share: the row itself and the column beside the avatar.
+@mixin row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+  color: inherit;
+  text-decoration: none;
+}
+
+@mixin hover {
+  background: var(--color-bg-subtle);
+}
+
+@mixin body {
+  flex: 1;
+  min-width: 0;
+}

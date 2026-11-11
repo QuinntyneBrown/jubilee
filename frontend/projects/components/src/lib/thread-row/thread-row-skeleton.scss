@@ -1,0 +1,14 @@
+// Block: thread, the row that stands in for one while the list loads.
+@use './thread-base' as thread;
+
+:host {
+  @include thread.row;
+}
+
+:host(:hover) {
+  @include thread.hover;
+}
+
+.thread__body {
+  @include thread.body;
+}

@@ -1,4 +1,4 @@
-<div class="inbox__tools">
+<div jb-inbox-tools>
   <form class="search" role="search" (submit)="searchNow($event)">
     <label class="visually-hidden" for="mq">Search messages</label>
     <svg jb-icon name="search"></svg>
@@ -18,13 +18,7 @@
     <p class="visually-hidden" role="status">Loading your messages…</p>
     <ul jb-list aria-hidden="true">
       @for (row of [1, 2, 3, 4, 5]; track row) {
-        <li class="thread">
-          <span jb-skeleton shape="avatar"></span>
-          <span class="thread__body">
-            <span jb-skeleton shape="text" width="50"></span>
-            <span jb-skeleton shape="text"></span>
-          </span>
-        </li>
+        <li jb-thread-row-skeleton></li>
       }
     </ul>
   }
@@ -60,29 +54,15 @@
         @for (row of inbox.value.conversations; track row.id) {
           <li>
             <a
-              class="thread"
-              [class.thread--unread]="row.unread"
+              jb-thread-row
+              [name]="row.title"
+              [time]="time(row.lastMessageAt)"
+              [preview]="row.preview"
+              [unread]="row.unread"
+              [muted]="row.muted"
+              [current]="row.id === selectedId()"
               [routerLink]="['/messages', row.id]"
-              [attr.aria-current]="row.id === selectedId() ? 'page' : null"
-            >
-              <jb-avatar [name]="row.title" />
-              <span class="thread__body">
-                <span class="thread__top">
-                  <span class="thread__name truncate">{{ row.title }}</span>
-                  <span class="thread__time">{{ time(row.lastMessageAt) }}</span>
-                </span>
-                <span class="thread__snippet truncate" style="display: block">
-                  @if (row.unread) {
-                    <span class="thread__dot" aria-hidden="true"></span>
-                    <span class="visually-hidden">Unread. </span>
-                  }
-                  @if (row.muted) {
-                    <span class="visually-hidden">Muted. </span>
-                  }
-                  {{ row.preview }}
-                </span>
-              </span>
-            </a>
+            ></a>
           </li>
         }
       </ul>

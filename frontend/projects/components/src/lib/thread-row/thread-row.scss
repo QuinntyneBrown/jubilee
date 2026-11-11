@@ -1,0 +1,61 @@
+// Block: thread. The host is the link.
+@use './thread-base' as thread;
+
+:host {
+  @include thread.row;
+}
+
+:host(:hover),
+:host([data-state='hover']) {
+  @include thread.hover;
+}
+
+:host([aria-current='page']),
+:host([data-state='selected']) {
+  background: var(--color-accent-subtle);
+}
+
+.thread__body {
+  @include thread.body;
+}
+
+.thread__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.thread__name {
+  font: var(--text-label);
+}
+
+.thread__time {
+  font: var(--text-caption);
+  color: var(--color-fg-muted);
+  white-space: nowrap;
+}
+
+.thread__snippet {
+  display: block;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+:host(.thread--unread) .thread__name,
+:host(.thread--unread) .thread__snippet {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg-default);
+}
+
+.thread__dot {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: var(--space-1);
+  width: var(--indicator-size);
+  height: var(--indicator-size);
+  border-radius: var(--radius-full);
+  background: var(--color-accent-border);
+  flex: none;
+  margin-top: var(--space-2);
+}

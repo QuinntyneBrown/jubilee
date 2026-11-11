@@ -36,7 +36,7 @@ module.exports = defineConfig([
       // A card or row component renders the content of its anchor from this input.
       '@angular-eslint/template/elements-content': [
         'error',
-        { allowList: ['business', 'product'] },
+        { allowList: ['business', 'product', 'preview'] },
       ],
     },
   },

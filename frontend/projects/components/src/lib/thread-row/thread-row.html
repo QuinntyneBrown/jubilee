@@ -1,0 +1,17 @@
+<jb-avatar [name]="name()" />
+<span class="thread__body">
+  <span class="thread__top">
+    <span class="thread__name truncate">{{ name() }}</span>
+    <span class="thread__time">{{ time() }}</span>
+  </span>
+  <span class="thread__snippet truncate">
+    @if (unread()) {
+      <span class="thread__dot" aria-hidden="true"></span>
+      <span class="visually-hidden">Unread. </span>
+    }
+    @if (muted()) {
+      <span class="visually-hidden">Muted. </span>
+    }
+    <span>{{ preview() }}</span>
+  </span>
+</span>
