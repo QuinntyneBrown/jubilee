@@ -37,7 +37,7 @@ The feature is a vertical slice from the conversation page to the database.
   items "Mute", or "Unmute" when the conversation is muted, and "Report
   conversation". It works by touch and by keyboard: arrow keys move a roving
   focus, Enter chooses, and Escape closes the menu and returns focus to "More"
-  (ADR 0037).
+  (ADR 0038).
 - **Mute** — "Mute" saves at once with `PUT /api/conversations/{id}/mute` and the
   body `{ muted: true }`. The toast "Conversation muted. You won't be e-mailed
   about new replies here." offers "Undo", which sends the opposite value. A muted
@@ -73,7 +73,7 @@ The feature is a vertical slice from the conversation page to the database.
   is true and the caller is the member, and saves both in one unit of work. A
   participant has at most one unresolved report per conversation: a repeat files
   nothing new and still applies the block. That rule makes the route safe to
-  retry, so it carries no idempotency key (ADR 0037).
+  retry, so it carries no idempotency key (ADR 0038).
 - **`ConversationReport`** — domain entity. It holds the conversation, the
   reporter, the reason and a `ReportStatus` of `Open`, `InReview` or `Resolved`.
   The verification team sees it in the same list as listing reports (ADR 0033).
@@ -83,7 +83,7 @@ The feature is a vertical slice from the conversation page to the database.
   When the member has blocked the business, a message from the business is
   stored with `HiddenFromMember`, is never shown to the member and is not counted
   as unread. The business is answered `201` as if the message were delivered, and
-  nobody is told (ADR 0014). A block does not hide request cards (ADR 0037).
+  nobody is told (ADR 0014). A block does not hide request cards (ADR 0038).
 - **`AdminReportsController`** — ASP.NET Core controller for
   `GET /api/admin/reports/{reportId}/conversation`, restricted to the `Verifier`
   and `Admin` roles.

@@ -307,7 +307,7 @@
         <li><a href="../../mocks/pages/conversation/menu.html">pages/conversation/menu</a> (anchored menu, open, "Mute")</li>
         <li><a href="../../mocks/pages/conversation/muted.html">pages/conversation/muted</a> (anchored menu, "Unmute", with the header's "Muted" badge)</li>
       </ul>
-      <p>The conversation mocks, added on 11 November 2026 (ADR 0037), are the first to draw the dropdown form and the first whose trigger carries <code>aria-haspopup</code> and <code>aria-expanded</code>; they write the panel as a <code>div</code> of buttons, which the menu role allows. The notes that follow are about the earlier mocks.</p>
+      <p>The conversation mocks, added on 11 November 2026 (ADR 0038), are the first to draw the dropdown form and the first whose trigger carries <code>aria-haspopup</code> and <code>aria-expanded</code>; they write the panel as a <code>div</code> of buttons, which the menu role allows. The notes that follow are about the earlier mocks.</p>
       <p>Drift fixed during extraction: in the account, product and sort mocks the dropdown form is never drawn, only described in a mock note; the phone sheet sets <code>style="min-height: var(--target-comfortable)"</code> on all seven items and reuses <code>.menu__item</code> inside a <code>.list</code>. None of those mocks carries <code>aria-haspopup</code> or <code>aria-expanded</code>; the avatar trigger is a link to the sheet page. In the CSS, <code>.menu__item:focus-visible</code> removes the outline and relies on <code>--color-bg-subtle</code>, which is below 3:1 on the raised surface; the system documents the ring as required (CSS fix proposed).</p>
     </section>
 

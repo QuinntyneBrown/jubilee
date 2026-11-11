@@ -213,7 +213,7 @@ export class ConversationPage implements OnInit {
       delivered = now;
       this.refresh();
     });
-    // A reply, or a change to a request of this conversation, arrives over the event stream (ADR 0037).
+    // A reply, or a change to a request of this conversation, arrives over the event stream (ADR 0038).
     this.realtime.received.pipe(takeUntilDestroyed()).subscribe((item) => {
       if (this.state().status !== 'loaded') return;
       if (item.kind === 'message' && item.target === `/messages/${this.id()}`) this.refresh(true);
@@ -471,7 +471,7 @@ export class ConversationPage implements OnInit {
     this.text.set('');
     this.attached.set(null);
     // Offline, or with Jubilee out of reach, a text message is kept on the device and sent later
-    // (L2-120). A message with a photo is not queued (ADR 0037): it fails and offers "Try again".
+    // (L2-120). A message with a photo is not queued (ADR 0038): it fails and offers "Try again".
     if (!outgoing.photo && this.connection.cannotDeliver()) {
       void this.queue.enqueue(this.id(), body, outgoing.key);
       return;

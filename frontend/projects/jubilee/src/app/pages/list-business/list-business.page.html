@@ -100,44 +100,28 @@
           <form class="form" novalidate (submit)="$event.preventDefault(); submit()">
             <fieldset [disabled]="busy()">
               <legend>What do you offer?</legend>
-              <div class="choice-cards">
-                <label class="choice-card">
-                  <input
-                    type="radio"
-                    name="offer"
-                    id="offer-p"
-                    [checked]="kind() === 'products'"
-                    (change)="setKind('products')"
-                  />
-                  <span class="choice-card__icon" aria-hidden="true"
-                    ><svg jb-icon name="store"></svg
-                  ></span>
-                  <span>
-                    <span class="choice-card__title">Products</span>
-                    <span class="choice-card__text"
-                      >A shop or online store: books, apparel, gifts, flowers, furniture.</span
-                    >
-                  </span>
-                </label>
-                <label class="choice-card">
-                  <input
-                    type="radio"
-                    name="offer"
-                    id="offer-s"
-                    [checked]="kind() === 'services'"
-                    (change)="setKind('services')"
-                  />
-                  <span class="choice-card__icon" aria-hidden="true"
-                    ><svg jb-icon name="briefcase"></svg
-                  ></span>
-                  <span>
-                    <span class="choice-card__title">Services</span>
-                    <span class="choice-card__text"
-                      >Advisors, brokers, lawyers, trades, photographers, speakers, lessons.</span
-                    >
-                  </span>
-                </label>
-              </div>
+              <jb-choice-cards>
+                <jb-choice-card
+                  name="offer"
+                  controlId="offer-p"
+                  icon="store"
+                  heading="Products"
+                  [checked]="kind() === 'products'"
+                  (selected)="setKind('products')"
+                  >A shop or online store: books, apparel, gifts, flowers,
+                  furniture.</jb-choice-card
+                >
+                <jb-choice-card
+                  name="offer"
+                  controlId="offer-s"
+                  icon="briefcase"
+                  heading="Services"
+                  [checked]="kind() === 'services'"
+                  (selected)="setKind('services')"
+                  >Advisors, brokers, lawyers, trades, photographers, speakers,
+                  lessons.</jb-choice-card
+                >
+              </jb-choice-cards>
               <p jb-field-help style="margin-top: var(--space-2)">
                 Offer both? Pick the main one now and add the other after you’re verified.
               </p>

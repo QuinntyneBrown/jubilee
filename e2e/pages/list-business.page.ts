@@ -6,6 +6,8 @@ import { ShellPage } from './shell.page';
 export class ListBusinessPage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly products: Locator;
+  /** The two cards of "What do you offer?". */
+  readonly offerCards: Locator;
   readonly services: Locator;
   readonly name: Locator;
   readonly tagline: Locator;
@@ -41,6 +43,7 @@ export class ListBusinessPage extends ShellPage implements Screen {
     super(page);
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.products = this.main.getByRole('radio', { name: /Products/ });
+    this.offerCards = this.main.locator('.choice-cards');
     this.services = this.main.getByRole('radio', { name: /Services/ });
     this.name = this.main.locator('#name');
     this.tagline = this.main.locator('#tagline');

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted, 10 November 2026. Completed by ADR 0037, which builds the screens this record left without a mock.
+Accepted, 10 November 2026. Completed by ADR 0038, which builds the screens this record left without a mock.
 
 ## Context
 

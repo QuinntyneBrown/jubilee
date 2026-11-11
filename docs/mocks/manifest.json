@@ -26,7 +26,10 @@
         "error",
         "invalid",
         "submitting",
-        "success"
+        "success",
+        "google-unavailable",
+        "google-cancelled",
+        "google-refused"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
@@ -43,7 +46,10 @@
         "error",
         "invalid",
         "submitting",
-        "success"
+        "success",
+        "google-unavailable",
+        "google-cancelled",
+        "google-refused"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."

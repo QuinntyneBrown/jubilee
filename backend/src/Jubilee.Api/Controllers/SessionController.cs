@@ -17,7 +17,7 @@ public sealed record SignInRequest(string? Email, string? Password, bool KeepSig
 
 [ApiController]
 [Route("api/session")]
-public sealed class SessionController(ISender sender) : ControllerBase
+public sealed class SessionController(ISender sender, IGoogleIdentityClient google) : ControllerBase
 {
     /// <summary>Signs in with e-mail and password (L2-006). Throttled (L2-007); the answer does not reveal whether the e-mail has an account (L2-141).</summary>
     [HttpPost]
@@ -76,7 +76,8 @@ public sealed class SessionController(ISender sender) : ControllerBase
 
     private SessionDto ToDto(MemberAccountDto account, int otherSessions) => new(
         true, account.FirstName, account.DisplayName, account.Initials,
-        account.Email, account.EmailStatus, account.EmailBounced, account.AgreementRequired, otherSessions, User.ToViewer().IsVerifier);
+        account.Email, account.EmailStatus, account.EmailBounced, account.AgreementRequired, otherSessions, User.ToViewer().IsVerifier,
+        google.IsConfigured);
 
     /// <summary>Who is calling: a visitor (<c>signedIn: false</c>) or a signed-in member.</summary>
     [HttpGet]
@@ -91,7 +92,7 @@ public sealed class SessionController(ISender sender) : ControllerBase
 
         if (User.Identity?.IsAuthenticated != true)
         {
-            return SessionDto.Visitor;
+            return SessionDto.Visitor(google.IsConfigured);
         }
 
         // A member of the accounts table: the e-mail status is read from the database every time,
@@ -116,7 +117,8 @@ public sealed class SessionController(ISender sender) : ControllerBase
             _ => words[0][..1] + words[^1][..1],
         };
 
-        return new SessionDto(true, firstName, displayName, initials.ToUpperInvariant(), null, "confirmed", false, false, 0, User.ToViewer().IsVerifier);
+        return new SessionDto(true, firstName, displayName, initials.ToUpperInvariant(), null, "confirmed", false, false, 0, User.ToViewer().IsVerifier,
+            google.IsConfigured);
     }
 }
 
@@ -130,7 +132,10 @@ public sealed record SessionDto(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? EmailBounced,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? AgreementRequired,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? OtherSessionCount,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? IsVerifier = null)
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? IsVerifier = null,
+    bool GoogleSignIn = false)
 {
-    public static readonly SessionDto Visitor = new(false, null, null, null, null, null, null, null, null);
+    /// <summary>A visitor. <paramref name="googleSignIn"/> says whether the Google buttons can be shown (L2-003 AC5).</summary>
+    public static SessionDto Visitor(bool googleSignIn) =>
+        new(false, null, null, null, null, null, null, null, null, GoogleSignIn: googleSignIn);
 }

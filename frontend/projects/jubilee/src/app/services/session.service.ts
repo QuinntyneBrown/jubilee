@@ -29,6 +29,7 @@ function toState(dto: SessionDto): SessionState {
 export class SessionService {
   private readonly api = inject(SESSION_API);
   private readonly current = signal<SessionState>({ status: 'resolving' });
+  private readonly google = signal(false);
 
   readonly state = this.current.asReadonly();
   readonly member = computed(() => {
@@ -41,6 +42,8 @@ export class SessionService {
     return member !== null && !member.emailConfirmed;
   });
   readonly resolved = computed(() => this.current().status !== 'resolving');
+  /** Whether Google sign-in is configured; the join and sign-in pages hide its button otherwise (L2-003 AC5). */
+  readonly googleSignIn = this.google.asReadonly();
 
   constructor() {
     // Confirming the address in another tab clears the banner when this tab is focused (L2-005 AC4).
@@ -53,6 +56,7 @@ export class SessionService {
   /** Resolves the session; a failed request leaves the user a visitor. */
   resolve(): Observable<SessionState> {
     return this.api.getSession().pipe(
+      tap((dto) => this.google.set(dto.googleSignIn === true)),
       map(toState),
       catchError(() => of<SessionState>({ status: 'visitor' })),
       tap((state) => this.current.set(state)),

@@ -15,6 +15,7 @@ import { NOTIFICATIONS, stubNotifications } from './notifications';
 import { stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubReference } from './reference';
+import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
 import type { StubName } from './routes';
 
@@ -288,6 +289,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMyBusiness(page, { overview: 'fails' });
     case 'business-paused':
       return stubMyBusiness(page, { paused: true });
+    case 'listing-draft':
+      return stubListingDrafts(page);
     case 'order':
       return stubOrder(page);
     case 'editor':
@@ -386,6 +389,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubReference(page, { outcome: 'load-fails' });
     case 'reference-expired':
       return stubReference(page, { outcome: 'closed' });
+    case 'google-sign-in-off':
+      return stubSession(page, visitorWithoutGoogle);
     case 'verify-email-pending':
       return stubSession(page, unconfirmedSession);
     case 'verify-email-loading':
@@ -414,6 +419,9 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       );
   }
 }
+
+/** A visitor where Google sign-in is not configured: the pages show no Google button (L2-003 AC5). */
+export const visitorWithoutGoogle = { signedIn: false, googleSignIn: false };
 
 /** Joanna as the session endpoint returns her while her address is not yet confirmed (L2-005). */
 export const unconfirmedSession = {

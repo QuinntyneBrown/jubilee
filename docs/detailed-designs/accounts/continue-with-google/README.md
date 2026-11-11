@@ -71,8 +71,17 @@ database`, with `Google Identity` as the external identity provider.
   `AGREEMENT_REQUIRED`.
 
 A mismatch of `state` or `nonce`, a failed code exchange and an invalid ID
-token all end in a redirect to `/sign-in` with the sign-in error state; no
-session is issued. The rule for a Google sign-in whose verified e-mail matches
+token all end in a redirect with the sign-in error state; no session is
+issued. The pending sign-in remembers the page it started on (`from=join` or
+`sign-in`), so the redirect returns there with the return URL: `?error=google`
+for a failure, `?error=google-email` for an unverified e-mail and
+`?error=google-cancelled` when the visitor cancelled at Google
+(`error=access_denied`), which the page words calmly. A callback whose `state`
+is unknown goes to `/sign-in`. Without `Google:ClientId` and
+`Google:ClientSecret` the session answer carries `googleSignIn: false` and
+the join and sign-in pages show no Google button; a start request made all the
+same is returned in the same way (ADR 0037). The redirect URI is
+`App:PublicBaseUrl` followed by `/api/auth/google/callback`. The rule for a Google sign-in whose verified e-mail matches
 an account that is still unconfirmed is: link it and remove the account's password (ADR 0012); `L2-003`
 defines linking for a confirmed account.
 

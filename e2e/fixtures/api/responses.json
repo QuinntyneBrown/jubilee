@@ -2592,7 +2592,8 @@
   "GET /api/session": {
     "status": 200,
     "body": {
-      "signedIn": false
+      "signedIn": false,
+      "googleSignIn": true
     }
   },
   "POST /api/listings/deeks-insurance/views": {

@@ -34,7 +34,7 @@ enter this slice through the same send endpoint and idempotency key.
 ## Description
 
 The feature is a vertical slice from the conversation page to the database. The
-decisions behind it are recorded in ADR 0014 and ADR 0037.
+decisions behind it are recorded in ADR 0014 and ADR 0038.
 
 - **`ConversationPage`** — Angular page at `/messages/:id`
   (`frontend/projects/jubilee/src/app/pages/conversation/`), guarded by
@@ -68,7 +68,7 @@ decisions behind it are recorded in ADR 0014 and ADR 0037.
   `/my-business/requests` for the owner). The page places each card in the
   timeline at the time the request was sent; the card shows the request's present
   status. With older messages still to load, the API sends only the cards newer
-  than the oldest loaded message. A block does not hide cards (ADR 0037).
+  than the oldest loaded message. A block does not hide cards (ADR 0038).
 - **Empty conversation** — a conversation with no messages shows "Say hello to
   {first name}. Ask a question or tell him what you need." and up to three
   suggested openers that fill the composer when pressed. The opener texts are
@@ -129,7 +129,7 @@ decisions behind it are recorded in ADR 0014 and ADR 0037.
   caller through `Conversation.MarkRead`; loading an older page does not. There
   is no separate read endpoint. Because every re-read of the newest page marks
   the conversation read, the `counts` event of the stream then corrects the
-  unread badge (ADR 0037).
+  unread badge (ADR 0038).
 - **Read marks** — `Conversation.MemberReadAt` and `Conversation.OwnerReadAt`
   hold the time up to which each side has read. A conversation is unread for a
   side when the other side wrote after that time (ADR 0014).
@@ -147,7 +147,7 @@ decisions behind it are recorded in ADR 0014 and ADR 0037.
   `MessageAttachments`. A refused file answers `422` with code `TOO_LARGE` or
   `INVALID_IMAGE`. Uploads are limited to 30 in 10 minutes per member (`429`).
   The malware scanner and object storage stay behind a later `IMediaStore`
-  (ADR 0014, ADR 0037).
+  (ADR 0014, ADR 0038).
 - **Signed link** — a stored photo is served only from
   `/api/attachments/{id}?expires=…&sig=…`, where `sig` is an HMAC-SHA256 of the id
   and the expiry made by `IAttachmentLinks` with `Attachments:SigningKey`. The

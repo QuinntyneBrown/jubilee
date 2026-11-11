@@ -39,7 +39,7 @@ export class RealtimeService {
   private readonly items = new Subject<NotificationItem>();
   /**
    * Each notification as it arrives, once. An open conversation and the inbox read again on the ones
-   * that concern them (L2-057 AC5; ADR 0037): the stream carries no other event for a message.
+   * that concern them (L2-057 AC5; ADR 0038): the stream carries no other event for a message.
    */
   readonly received = this.items.asObservable();
 
