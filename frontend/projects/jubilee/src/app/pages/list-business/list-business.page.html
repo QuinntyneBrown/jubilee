@@ -1,0 +1,420 @@
+<div class="container page">
+  @if (submitted(); as done) {
+    <div class="container--narrow" style="margin-inline: auto">
+      <div class="empty">
+        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="verified"></svg></div>
+        <h1 class="empty__title">{{ done.name }} is in for verification</h1>
+        <p class="empty__text">
+          Nothing more to do right now. We’ll e-mail you the moment you’re live.
+        </p>
+        <div class="empty__actions">
+          <a class="btn btn--primary" routerLink="/my-business">Go to My business</a>
+          <a class="btn" routerLink="/my-business">
+            {{ done.kind === 'services' ? 'Add more services' : 'Add more products' }}
+          </a>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="card__title">What happens next</h2>
+        <ol class="timeline" style="text-align: left; margin-top: var(--space-4)">
+          <li data-complete>
+            <span class="timeline__dot" aria-hidden="true">✓</span>
+            <div>
+              <div class="timeline__title">You submitted {{ done.name }}</div>
+            </div>
+          </li>
+          <li aria-current="step">
+            <span class="timeline__dot" aria-hidden="true"></span>
+            <div>
+              <div class="timeline__title">Your pastor confirms you</div>
+              <div class="timeline__meta">
+                We e-mailed {{ done.pastorEmail }} at {{ done.church }} just now
+              </div>
+            </div>
+          </li>
+          <li>
+            <span class="timeline__dot" aria-hidden="true"></span>
+            <div>
+              <div class="timeline__title">We review and publish</div>
+              <div class="timeline__meta">Within two business days of their answer</div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  } @else {
+    <div class="split" style="margin-top: var(--space-6)">
+      <div>
+        <h1>List your business</h1>
+        <p class="subtitle" style="margin-bottom: var(--space-6)">
+          Free for Christian-owned businesses in Toronto. Every listing is verified with a church
+          reference.
+        </p>
+        @if (loading()) {
+          <p class="visually-hidden" role="status">Loading your draft…</p>
+          <div class="form" aria-hidden="true">
+            @for (n of [1, 2, 3, 4, 5, 6]; track n) {
+              <div class="field">
+                <span class="skeleton skeleton--text skeleton--w30"></span>
+                <span
+                  class="skeleton skeleton--rect"
+                  style="height: var(--control-height-md)"
+                ></span>
+              </div>
+            }
+            <span class="skeleton skeleton--btn"></span>
+          </div>
+        } @else if (loadFailed()) {
+          <div class="empty empty--error" role="alert">
+            <div class="empty__icon" aria-hidden="true"><svg jb-icon name="alert"></svg></div>
+            <h2 class="empty__title">We couldn’t load your draft</h2>
+            <p class="empty__text">
+              Nothing is lost. Check your connection and try again. If it keeps happening, tell us
+              and quote <code>JB-LST-503</code>.
+            </p>
+            <div class="empty__actions">
+              <button class="btn btn--primary" type="button" (click)="load()">
+                <svg jb-icon name="refresh"></svg>Try again
+              </button>
+              <a class="btn" routerLink="/">Back to browse</a>
+            </div>
+          </div>
+        } @else {
+          @if (session.unconfirmed()) {
+            <div class="alert alert--warning" role="status">
+              <svg jb-icon name="info"></svg>
+              <div class="alert__body">
+                Confirm your e-mail to submit. You can write and save your draft meanwhile.
+              </div>
+            </div>
+          }
+          @if (summary().length) {
+            <div class="alert alert--danger form-summary" role="alert" id="summary" tabindex="-1">
+              <svg jb-icon name="alert"></svg>
+              <div class="alert__body">
+                <div class="alert__title">
+                  Fix {{ summary().length }} {{ summary().length === 1 ? 'thing' : 'things' }} to
+                  continue
+                </div>
+                <ul class="alert__list">
+                  @for (item of summary(); track item.field) {
+                    <li>
+                      <a [href]="'#' + item.id" (click)="goTo($event, item.id)">{{ item.text }}</a>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          }
+          @if (failed()) {
+            <div class="alert alert--danger" role="alert">
+              <svg jb-icon name="alert"></svg>
+              <div class="alert__body">{{ failed() }}</div>
+            </div>
+          }
+          @if (savedAt(); as at) {
+            <div class="alert alert--success" role="status">
+              <svg jb-icon name="verified"></svg>
+              <div class="alert__body">
+                <div class="alert__title">Draft saved</div>
+                Saved today at {{ at }}. Come back any time from My business; nothing is public
+                until you submit.
+              </div>
+            </div>
+          }
+          <form class="form" novalidate (submit)="$event.preventDefault(); submit()">
+            <fieldset [disabled]="busy()">
+              <legend>What do you offer?</legend>
+              <div class="choice-cards">
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="offer"
+                    id="offer-p"
+                    [checked]="kind() === 'products'"
+                    (change)="setKind('products')"
+                  />
+                  <span class="choice-card__icon" aria-hidden="true"
+                    ><svg jb-icon name="store"></svg
+                  ></span>
+                  <span>
+                    <span class="choice-card__title">Products</span>
+                    <span class="choice-card__text"
+                      >A shop or online store: books, apparel, gifts, flowers, furniture.</span
+                    >
+                  </span>
+                </label>
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="offer"
+                    id="offer-s"
+                    [checked]="kind() === 'services'"
+                    (change)="setKind('services')"
+                  />
+                  <span class="choice-card__icon" aria-hidden="true"
+                    ><svg jb-icon name="briefcase"></svg
+                  ></span>
+                  <span>
+                    <span class="choice-card__title">Services</span>
+                    <span class="choice-card__text"
+                      >Advisors, brokers, lawyers, trades, photographers, speakers, lessons.</span
+                    >
+                  </span>
+                </label>
+              </div>
+              <p class="field__help" style="margin-top: var(--space-2)">
+                Offer both? Pick the main one now and add the other after you’re verified.
+              </p>
+            </fieldset>
+            <div class="field">
+              <label class="field__label" for="name"
+                >Business name <span class="optional">(required)</span></label
+              >
+              <input
+                class="input"
+                id="name"
+                name="name"
+                type="text"
+                maxlength="120"
+                required
+                [readOnly]="busy()"
+                [attr.aria-invalid]="errors().name ? 'true' : null"
+                [attr.aria-describedby]="errors().name ? 'name-error' : null"
+                [ngModel]="name()"
+                (ngModelChange)="name.set($event); clear('name'); touched()"
+              />
+              @if (errors().name; as message) {
+                <span class="field__error" id="name-error">{{ message }}</span>
+              }
+            </div>
+            <div class="field">
+              <label class="field__label" for="tagline"
+                >One line on what you do <span class="optional">(required)</span></label
+              >
+              <span class="field__help" id="tagline-help"
+                >Shown under your name everywhere on Jubilee. {{ taglineMax }} characters at
+                most.</span
+              >
+              <input
+                class="input"
+                id="tagline"
+                name="tagline"
+                type="text"
+                required
+                [readOnly]="busy()"
+                [attr.aria-invalid]="errors().tagline ? 'true' : null"
+                [attr.aria-describedby]="
+                  errors().tagline ? 'tagline-help tagline-error' : 'tagline-help'
+                "
+                [ngModel]="tagline()"
+                (ngModelChange)="tagline.set($event); clear('tagline'); touched()"
+              />
+              <span class="field__help" aria-live="polite">
+                {{ taglineCount() }} / {{ taglineMax }}
+              </span>
+              @if (errors().tagline; as message) {
+                <span class="field__error" id="tagline-error">{{ message }}</span>
+              }
+            </div>
+            <div class="form-grid form-grid--2">
+              <div class="field">
+                <label class="field__label" for="cat">Category</label>
+                <select
+                  class="select"
+                  id="cat"
+                  name="category"
+                  [attr.aria-invalid]="errors().categorySlug ? 'true' : null"
+                  [ngModel]="categorySlug()"
+                  (ngModelChange)="categorySlug.set($event); clear('categorySlug'); touched()"
+                >
+                  @for (category of categories; track category.slug) {
+                    <option [value]="category.slug">{{ category.name }}</option>
+                  }
+                </select>
+                @if (errors().categorySlug; as message) {
+                  <span class="field__error">{{ message }}</span>
+                }
+              </div>
+              <div class="field">
+                <label class="field__label" for="area">{{ placeLabel() }}</label>
+                <input
+                  class="input"
+                  id="area"
+                  name="place"
+                  type="text"
+                  [readOnly]="busy()"
+                  [ngModel]="place()"
+                  (ngModelChange)="place.set($event); touched()"
+                />
+              </div>
+            </div>
+            <fieldset [disabled]="busy()">
+              <legend>{{ isServices() ? 'Services' : 'Products' }}</legend>
+              <p class="field__help">
+                @if (isServices()) {
+                  Add a few to start. A price is optional; “Ask” is fine.
+                } @else {
+                  Add a few to start. You can add the rest later.
+                }
+              </p>
+              <ul class="item-list" style="margin-top: var(--space-2)">
+                @for (item of items(); track $index) {
+                  <li>
+                    @if (!isServices()) {
+                      <div
+                        jb-media-tile
+                        class="media--thumb"
+                        [tint]="tile().tint"
+                        [icon]="tile().icon"
+                      ></div>
+                    }
+                    <span class="item-list__name"
+                      >{{ item.name }}
+                      @if (item.detail) {
+                        <span class="text-muted"> · {{ item.detail }}</span>
+                      }
+                    </span>
+                    <span class="price">
+                      @if (item.priceKind === 'amount' && item.priceCents !== null) {
+                        {{ format(item.priceCents) }}
+                      } @else if (item.priceKind === 'free') {
+                        Free
+                      } @else {
+                        Ask
+                      }
+                    </span>
+                    <button
+                      class="btn btn--icon btn--ghost btn--sm"
+                      type="button"
+                      [attr.aria-label]="'Remove ' + item.name"
+                      (click)="removeItem($index)"
+                    >
+                      <svg jb-icon name="close"></svg>
+                    </button>
+                  </li>
+                }
+                <li>
+                  <button class="btn btn--link" type="button" (click)="addItem()">
+                    <svg jb-icon name="plus"></svg
+                    >{{ isServices() ? 'Add a service' : 'Add a product' }}
+                  </button>
+                </li>
+              </ul>
+            </fieldset>
+            <fieldset [disabled]="busy()">
+              <legend>Church reference</legend>
+              <p class="field__help">
+                A pastor or elder who can confirm you. We contact them privately; they never see
+                your listing details.
+              </p>
+              <div class="form-grid form-grid--2" style="margin-top: var(--space-2)">
+                <div class="field">
+                  <label class="field__label" for="ref-church"
+                    >Church <span class="optional">(required)</span></label
+                  >
+                  <input
+                    class="input"
+                    id="ref-church"
+                    name="church"
+                    type="text"
+                    required
+                    [attr.aria-invalid]="errors().church ? 'true' : null"
+                    [attr.aria-describedby]="errors().church ? 'ref-church-error' : null"
+                    [ngModel]="church()"
+                    (ngModelChange)="church.set($event); clear('church'); touched()"
+                  />
+                  @if (errors().church; as message) {
+                    <span class="field__error" id="ref-church-error">{{ message }}</span>
+                  }
+                </div>
+                <div class="field">
+                  <label class="field__label" for="ref-email"
+                    >Pastor’s e-mail <span class="optional">(required)</span></label
+                  >
+                  <input
+                    class="input"
+                    id="ref-email"
+                    name="pastorEmail"
+                    type="email"
+                    placeholder="name@church.ca"
+                    required
+                    [attr.aria-invalid]="errors().pastorEmail ? 'true' : null"
+                    [attr.aria-describedby]="errors().pastorEmail ? 'ref-email-error' : null"
+                    [ngModel]="pastorEmail()"
+                    (ngModelChange)="pastorEmail.set($event); clear('pastorEmail'); touched()"
+                  />
+                  @if (errors().pastorEmail; as message) {
+                    <span class="field__error" id="ref-email-error">{{ message }}</span>
+                  }
+                </div>
+              </div>
+            </fieldset>
+            <div>
+              <label class="choice">
+                <input
+                  type="checkbox"
+                  id="agree"
+                  name="agreed"
+                  [disabled]="busy()"
+                  [checked]="agreed()"
+                  [attr.aria-invalid]="errors().agreed ? 'true' : null"
+                  [attr.aria-describedby]="errors().agreed ? 'agree-error' : null"
+                  (change)="agreed.set($any($event.target).checked); clear('agreed'); touched()"
+                />
+                <span class="choice__text"
+                  >I agree to Jubilee’s
+                  <a href="/statement-of-faith" target="_blank" rel="noopener"
+                    >statement of faith</a
+                  >
+                  and to deal honestly with every customer.</span
+                >
+              </label>
+              @if (errors().agreed; as message) {
+                <span class="field__error" id="agree-error">{{ message }}</span>
+              }
+            </div>
+            <div class="form-actions form-actions--bordered">
+              <button
+                class="btn btn--ghost"
+                type="button"
+                [disabled]="busy()"
+                (click)="saveDraft()"
+              >
+                Save draft
+              </button>
+              <button
+                class="btn btn--primary btn--lg"
+                type="submit"
+                [disabled]="session.unconfirmed()"
+                [attr.aria-busy]="busy() ? 'true' : null"
+              >
+                <svg jb-icon name="verified"></svg>Submit for verification
+              </button>
+            </div>
+          </form>
+        }
+      </div>
+      <aside class="split__sticky" aria-labelledby="pv">
+        <h2
+          id="pv"
+          class="text-caption"
+          style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3)"
+        >
+          How members see you
+        </h2>
+        <div class="biz-card">
+          <div
+            jb-media-tile
+            [tint]="tile().tint"
+            [icon]="tile().icon"
+            [tag]="isServices() ? 'Business' : 'Shop'"
+          ></div>
+          <p class="biz-card__name">{{ name() || 'Your business name' }}</p>
+          <p class="biz-card__tagline">{{ tagline() || 'One line on what you do' }}</p>
+          <p class="biz-card__meta"><span class="perk">Pending verification</span></p>
+        </div>
+      </aside>
+    </div>
+  }
+</div>

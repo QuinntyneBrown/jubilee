@@ -143,6 +143,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         {
             db.RemoveRange(db.RequestTransitions);
             db.RemoveRange(db.DeliveryMethods);
+            db.RemoveRange(db.ListingDrafts);
+            db.RemoveRange(db.ListingSubmissions);
             db.RemoveRange(db.Requests);
             db.RemoveRange(db.ConversationReports);
             db.RemoveRange(db.Messages);

@@ -20,6 +20,7 @@ public static class WorkerHost
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddHostedService<OutboxDispatcherJob>();
+        builder.Services.AddHostedService<ListingDraftExpiryJob>();
         return builder;
     }
 }
@@ -59,6 +60,43 @@ public sealed class OutboxDispatcherJob(IServiceScopeFactory scopes, IConfigurat
         catch (OperationCanceledException)
         {
             logger.LogInformation("Jubilee Worker stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Once a day: e-mails the owner of a draft untouched for 180 days and deletes it 14 days later
+/// (L2-077 AC5). The sweep is idempotent, so a repeat or a second instance changes nothing.
+/// </summary>
+public sealed class ListingDraftExpiryJob(IServiceScopeFactory scopes, ILogger<ListingDraftExpiryJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(24));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var changed = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Onboarding.ExpireListingDraftsCommand(), stoppingToken);
+                    if (changed > 0)
+                    {
+                        logger.LogInformation("Handled {Count} idle listing drafts.", changed);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Idle listing drafts could not be handled. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The draft expiry job is stopping.");
         }
     }
 }

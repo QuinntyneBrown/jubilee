@@ -14,7 +14,9 @@ import {
   HttpDirectoryApi,
   HttpListingsApi,
   HttpMessagesApi,
+  HttpListingDraftsApi,
   HttpRequestsApi,
+  LISTING_DRAFTS_API,
   MESSAGES_API,
   REQUESTS_API,
   HttpNavigationApi,
@@ -42,6 +44,7 @@ export const appConfig: ApplicationConfig = {
     { provide: SEARCH_API, useClass: HttpSearchApi },
     { provide: MESSAGES_API, useClass: HttpMessagesApi },
     { provide: REQUESTS_API, useClass: HttpRequestsApi },
+    { provide: LISTING_DRAFTS_API, useClass: HttpListingDraftsApi },
     provideAppInitializer(() => inject(SessionService).resolve()),
   ],
 };

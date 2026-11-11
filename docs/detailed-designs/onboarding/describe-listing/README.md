@@ -79,7 +79,7 @@ The feature is a vertical slice from the `/list` page to the `Jubilee database`.
 - **`ContentFlagScanner`** — domain service run at submission. A name or
   tagline that contains a URL, an e-mail address, a phone number or a discount
   code is accepted, and a `ListingFlag` is stored for the review screen. The
-  matching patterns are `<TO SUPPLY>`.
+  matching patterns are fixed in ADR 0018.
 
 A listing with zero products or services may be submitted; the review checklist
 then shows "No products or services yet".

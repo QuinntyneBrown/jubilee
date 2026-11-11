@@ -47,7 +47,7 @@ The feature is a vertical slice from two sections of the `/list` form to the
   equal to the owner's own e-mail or to the e-mail of any account the owner
   holds. It compares normalized addresses. The refusal code is
   `REFERENCE_IS_OWNER`, shown as "Your reference must be someone other than
-  you." The rule that links two accounts to one owner is `<TO SUPPLY>`.
+  you." The rule that links two accounts to one owner is deferred (ADR 0018).
 - **`ReferenceReusePolicy`** — domain service that counts the listings by
   different owners that named the same reference e-mail in the last `30 days`.
   When more than 5 exist, the sixth submission is accepted and a `ListingFlag`
@@ -56,7 +56,7 @@ The feature is a vertical slice from two sections of the `/list` form to the
   `ChurchName`, `Email` and a `ChurchReferenceStatus` of `Waiting`,
   `Confirmed`, `CantVouch` or `DoesntKnow`.
 - **`EmailAddress`** — value object that parses an address and exposes a
-  normalized form for comparison. The normalization rules are `<TO SUPPLY>`.
+  normalized form for comparison. The normalization rules are trim and lower-case (ADR 0018).
 - **`FaithAgreement`** — record of the agreement with `AgreedAt` and
   `StatementVersion`, the date of the statement of faith the owner agreed to.
   `Listing.RecordAgreement` writes it in the same unit of work as the
@@ -67,7 +67,7 @@ The feature is a vertical slice from two sections of the `/list` form to the
   sign-in when the owner's latest `FaithAgreement` is older than the current
   version. The owner's listing stays live for `30 days` after the new version
   is published. The effect on the listing after `30 days` without agreement is
-  `<TO SUPPLY>`.
+  deferred with the re-agreement itself (ADR 0018).
 - **`AccountApi`** — typed HTTP client. `GET /api/account/faith-agreement`
   returns the current version and whether the owner agreed to it.
   `POST /api/account/faith-agreement` records a new agreement.

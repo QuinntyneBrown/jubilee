@@ -39,5 +39,9 @@ public interface IAppDbContext
 
     DbSet<DeliveryMethod> DeliveryMethods { get; }
 
+    DbSet<ListingDraft> ListingDrafts { get; }
+
+    DbSet<ListingSubmission> ListingSubmissions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

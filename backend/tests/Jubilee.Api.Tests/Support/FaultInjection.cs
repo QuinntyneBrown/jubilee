@@ -69,6 +69,10 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<DeliveryMethod> DeliveryMethods => Use(inner.DeliveryMethods);
 
+    public DbSet<ListingDraft> ListingDrafts => Use(inner.ListingDrafts);
+
+    public DbSet<ListingSubmission> ListingSubmissions => Use(inner.ListingSubmissions);
+
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         outage.ThrowIfUnavailable();

@@ -41,6 +41,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<DeliveryMethod> DeliveryMethods => Set<DeliveryMethod>();
 
+    public DbSet<ListingDraft> ListingDrafts => Set<ListingDraft>();
+
+    public DbSet<ListingSubmission> ListingSubmissions => Set<ListingSubmission>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
