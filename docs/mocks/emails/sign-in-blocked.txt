@@ -1,0 +1,7 @@
+Subject: Sign-in to Jubilee was blocked
+
+Hi Joanna,
+
+We blocked sign-in to your Jubilee account for 15 minutes after repeated failed attempts. If that was you, wait and try again. If it was not, reset your password: https://app.jubilee.to/forgot-password
+
+Jubilee · Toronto's Christian marketplace

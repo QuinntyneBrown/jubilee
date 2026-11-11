@@ -114,6 +114,21 @@ Without them the script supplies placeholders: the buttons show, as in the mocks
 refuses the request. An API started with neither variable reports Google sign-in as off and the
 pages show no Google button.
 
+#### Seeing e-mail locally
+
+No e-mail leaves a development machine: without `Email__ConnectionString` the sender only logs
+the recipient and the subject (ADR 0038). The e-mails are sent by the worker, which reads the
+outbox of the same database as the API. To read them, start the worker beside the API with the
+same `Database__Provider` and `ConnectionStrings__Jubilee`, and name a folder for the previews:
+
+```shell
+$env:Email__PreviewFolder = "$PWD/.cache/mail"
+dotnet run --project backend/src/Jubilee.Worker
+```
+
+Each e-mail is then written there twice, as `.html` (open it in a browser) and as `.txt`. Every
+e-mail as it should look is in [`docs/mocks/emails/`](docs/mocks/emails/index.html).
+
 ### Marketing site
 
 The marketing site is a second application in the same workspace and needs no API. It copies the

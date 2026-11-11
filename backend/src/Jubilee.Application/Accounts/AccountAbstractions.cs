@@ -23,11 +23,10 @@ public interface IBotChallengeVerifier
     Task<bool> VerifyAsync(string? token, string? remoteIp, CancellationToken cancellationToken);
 }
 
-/// <summary>Sends one e-mail through the transactional e-mail provider.</summary>
+/// <summary>Sends one e-mail through the transactional e-mail provider. A failure is thrown: the outbox retries it (L2-179 AC3).</summary>
 public interface IEmailSender
 {
-    /// <param name="unsubscribeUrl">Set for notification e-mails: sent as <c>List-Unsubscribe</c> with one-click POST (RFC 8058).</param>
-    Task SendAsync(string to, string subject, string textBody, CancellationToken cancellationToken, string? unsubscribeUrl = null);
+    Task SendAsync(Emails.EmailMessage message, CancellationToken cancellationToken);
 }
 
 /// <summary>Where the app is served, for the links in e-mails (<c>App:PublicBaseUrl</c>).</summary>
