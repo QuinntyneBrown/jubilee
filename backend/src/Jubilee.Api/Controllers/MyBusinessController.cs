@@ -19,6 +19,10 @@ public sealed record MovePhotoBody(int Position);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record DescribePhotoBody(string? Alt);
 
+/// <summary>The day the owner is back, as <c>yyyy-MM-dd</c>, or null to clear the away period (L2-062).</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record AwayPeriodBody(string? Until);
+
 /// <summary>The owner's workspace: the overview, the listing's page, its photos, pause and resume (L2-085 to L2-088, L2-096).</summary>
 [ApiController]
 [Route("api/my-business")]
@@ -46,6 +50,10 @@ public sealed class MyBusinessController(ISender sender) : ControllerBase
     [HttpPost("pause")]
     public Task<PauseResultDto> Pause(CancellationToken cancellationToken) =>
         sender.Send(new PauseListingCommand(Subject), cancellationToken);
+
+    [HttpPut("away")]
+    public Task<AwayPeriodDto> Away([FromBody] AwayPeriodBody body, CancellationToken cancellationToken) =>
+        sender.Send(new SetAwayPeriodCommand(Subject, body.Until), cancellationToken);
 
     [HttpPost("resume")]
     public Task<PauseResultDto> Resume(CancellationToken cancellationToken) =>
