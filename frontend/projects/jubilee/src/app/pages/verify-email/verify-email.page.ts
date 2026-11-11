@@ -11,7 +11,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ACCOUNT_API } from 'api';
 import { AuthLayout, EmptyState, Icon, Button, Spinner } from 'components';
 import { ReturnAfterJoinService } from '../../services/return-after-join.service';
-import { ReturnAfterJoinService } from '../../services/return-after-join.service';
 import { SessionService } from '../../services/session.service';
 
 type View =
