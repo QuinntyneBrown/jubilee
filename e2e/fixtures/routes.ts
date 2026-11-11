@@ -69,6 +69,12 @@ export type StubName =
   | 'business-paused'
   | 'editor'
   | 'editor-error'
+  | 'products'
+  | 'products-empty'
+  | 'products-error'
+  | 'services'
+  | 'services-empty'
+  | 'services-error'
   | 'admin-queue'
   | 'admin-queue-empty'
   | 'admin-queue-error'
@@ -522,6 +528,42 @@ export const routes = {
     mock: 'pages/edit-listing/error.html',
     who: 'member',
     stub: 'editor-error',
+  },
+  'my-products': {
+    app: '/my-business/products',
+    mock: 'pages/my-products/default.html',
+    who: 'member',
+    stub: 'products',
+  },
+  'my-products.empty': {
+    app: '/my-business/products',
+    mock: 'pages/my-products/empty.html',
+    who: 'member',
+    stub: 'products-empty',
+  },
+  'my-products.error': {
+    app: '/my-business/products',
+    mock: 'pages/my-products/error.html',
+    who: 'member',
+    stub: 'products-error',
+  },
+  'my-services': {
+    app: '/my-business/services',
+    mock: 'pages/my-services/default.html',
+    who: 'member',
+    stub: 'services',
+  },
+  'my-services.empty': {
+    app: '/my-business/services',
+    mock: 'pages/my-services/empty.html',
+    who: 'member',
+    stub: 'services-empty',
+  },
+  'my-services.error': {
+    app: '/my-business/services',
+    mock: 'pages/my-services/error.html',
+    who: 'member',
+    stub: 'services-error',
   },
   'admin-verifications': {
     app: '/admin/verifications',

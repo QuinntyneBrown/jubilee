@@ -5,6 +5,7 @@ import { fulfil, recordedAnswer } from './mock-api';
 import { stubMessaging } from './messaging';
 import { esther, stubAdmin } from './admin';
 import { stubIncoming } from './incoming-requests';
+import { stubCatalogue } from './catalogue';
 import { stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubReference } from './reference';
@@ -268,6 +269,18 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMyBusiness(page);
     case 'editor-error':
       return stubMyBusiness(page, { editor: 'fails' });
+    case 'products':
+      return stubCatalogue(page);
+    case 'products-empty':
+      return stubCatalogue(page, { productRows: [] });
+    case 'products-error':
+      return stubCatalogue(page, { products: 'fails' });
+    case 'services':
+      return stubCatalogue(page);
+    case 'services-empty':
+      return stubCatalogue(page, { serviceRows: [] });
+    case 'services-error':
+      return stubCatalogue(page, { services: 'fails' });
     case 'admin-queue':
       return stubAdmin(page);
     case 'admin-queue-empty':

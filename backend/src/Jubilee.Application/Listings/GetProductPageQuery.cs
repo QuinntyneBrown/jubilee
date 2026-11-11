@@ -77,7 +77,8 @@ public sealed class GetProductPageQueryHandler(IAppDbContext db, IDirectoryReadC
             ?? throw NotFound();
         var more = await shopProducts
             .Where(p => p.Id != product.Id)
-            .OrderByDescending(p => p.CreatedAt)
+            .OrderBy(p => p.Position)
+            .ThenByDescending(p => p.CreatedAt)
             .ThenBy(p => p.Slug)
             .Take(MoreCount)
             .ToListAsync(cancellationToken);

@@ -70,7 +70,7 @@ public static class BookingAvailability
 
     /// <summary>The length of a meeting for a service whose detail says, for example, "60 min".</summary>
     public static TimeSpan LengthOf(Service service) =>
-        Minutes.Match(service.Detail) is { Success: true } m
+        service.DurationMinutes is { } owned ? TimeSpan.FromMinutes(owned) : Minutes.Match(service.Detail) is { Success: true } m
             ? TimeSpan.FromMinutes(int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture))
             : TimeSpan.FromMinutes(30);
 

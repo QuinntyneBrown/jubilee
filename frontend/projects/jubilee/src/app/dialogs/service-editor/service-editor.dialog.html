@@ -1,0 +1,222 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+      <svg jb-icon name="wrench"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">{{ editing ? 'Edit service' : 'Add a service' }}</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+        Changes show on your public listing as soon as you save.
+      </p>
+    </div>
+    <button
+      class="btn btn--ghost btn--icon"
+      type="button"
+      aria-label="Close"
+      [disabled]="busy()"
+      (click)="close()"
+    >
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <form novalidate style="display: contents" (ngSubmit)="save()">
+    <div class="dialog__body stack">
+      @if (view() === 'failed') {
+        <div class="alert alert--danger" role="alert">
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">We couldn’t save the service</div>
+            <div>{{ failure() }}</div>
+          </div>
+        </div>
+      }
+      @if (view() === 'discard') {
+        <div class="alert alert--warning" role="alert">
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">Discard what you typed?</div>
+            <div>Your changes to this service have not been saved.</div>
+          </div>
+        </div>
+      }
+      <div class="field">
+        <label class="field__label" for="d-name"
+          >Service name <span class="optional">(required)</span></label
+        >
+        <input
+          class="input"
+          id="d-name"
+          name="name"
+          type="text"
+          required
+          [ngModel]="name()"
+          (ngModelChange)="name.set($event)"
+          [readOnly]="busy()"
+          [attr.aria-invalid]="errors().name ? 'true' : null"
+          [attr.aria-describedby]="errors().name ? 'd-name-error' : null"
+        />
+        @if (errors().name; as message) {
+          <span class="field__error" id="d-name-error">{{ message }}</span>
+        }
+      </div>
+      <div class="field">
+        <label class="field__label" for="d-meta"
+          >Short detail <span class="optional">(optional)</span></label
+        >
+        <span class="field__help" id="d-meta-help"
+          >Length, place or what to bring. 60 characters at most.</span
+        >
+        <input
+          class="input"
+          id="d-meta"
+          name="detail"
+          type="text"
+          maxlength="60"
+          aria-describedby="d-meta-help"
+          [ngModel]="detail()"
+          (ngModelChange)="detail.set($event)"
+          [readOnly]="busy()"
+        />
+      </div>
+      <div class="form-grid form-grid--2">
+        <div class="field">
+          <label class="field__label" for="d-pricing">Pricing</label>
+          <select
+            class="select"
+            id="d-pricing"
+            name="pricing"
+            [ngModel]="pricing()"
+            (ngModelChange)="setPricing($event)"
+            [disabled]="busy()"
+          >
+            <option value="free">Free</option>
+            <option value="amount">Fixed price</option>
+            <option value="ask">Ask for a quote</option>
+          </select>
+        </div>
+        @if (pricing() === 'amount') {
+          <div class="field">
+            <label class="field__label" for="d-price">Price (CAD)</label>
+            <input
+              class="input"
+              id="d-price"
+              name="price"
+              type="text"
+              inputmode="decimal"
+              [ngModel]="price()"
+              (ngModelChange)="price.set($event)"
+              [readOnly]="busy()"
+              [attr.aria-invalid]="errors().price ? 'true' : null"
+              [attr.aria-describedby]="errors().price ? 'd-price-error' : null"
+            />
+            @if (errors().price; as message) {
+              <span class="field__error" id="d-price-error">{{ message }}</span>
+            }
+          </div>
+        }
+      </div>
+      <div class="field">
+        <label class="field__label" for="d-action">Members can</label>
+        <select
+          class="select"
+          id="d-action"
+          name="action"
+          [ngModel]="action()"
+          (ngModelChange)="action.set($event)"
+          [disabled]="busy()"
+        >
+          <option value="book">Book a time</option>
+          <option value="ask">Ask for a quote</option>
+        </select>
+      </div>
+      @if (action() === 'book') {
+        <div class="form-grid form-grid--2">
+          <div class="field">
+            <label class="field__label" for="d-duration">Meeting length (minutes)</label>
+            <span class="field__help" id="d-duration-help"
+              >15 to 480. Slots follow your listing hours.</span
+            >
+            <input
+              class="input"
+              id="d-duration"
+              name="duration"
+              type="number"
+              min="15"
+              max="480"
+              [ngModel]="duration()"
+              (ngModelChange)="duration.set('' + $event)"
+              [readOnly]="busy()"
+              [attr.aria-invalid]="errors().duration ? 'true' : null"
+              [attr.aria-describedby]="
+                errors().duration ? 'd-duration-help d-duration-error' : 'd-duration-help'
+              "
+            />
+            @if (errors().duration; as message) {
+              <span class="field__error" id="d-duration-error">{{ message }}</span>
+            }
+          </div>
+          <fieldset class="field" [attr.aria-invalid]="errors().modes ? 'true' : null">
+            <legend class="field__label">Meet by</legend>
+            <label class="choice">
+              <input
+                type="checkbox"
+                name="video"
+                [ngModel]="video()"
+                (ngModelChange)="video.set($event)"
+                [disabled]="busy()"
+              />
+              <span>Video call</span>
+            </label>
+            <label class="choice">
+              <input
+                type="checkbox"
+                name="inPerson"
+                [ngModel]="inPerson()"
+                (ngModelChange)="inPerson.set($event)"
+                [disabled]="busy()"
+              />
+              <span>In person</span>
+            </label>
+            @if (errors().modes; as message) {
+              <span class="field__error">{{ message }}</span>
+            }
+          </fieldset>
+        </div>
+        @if (inPerson()) {
+          <div class="field">
+            <label class="field__label" for="d-place"
+              >Place <span class="optional">(required for in person)</span></label
+            >
+            <input
+              class="input"
+              id="d-place"
+              name="place"
+              type="text"
+              [ngModel]="place()"
+              (ngModelChange)="place.set($event)"
+              [readOnly]="busy()"
+              [attr.aria-invalid]="errors().place ? 'true' : null"
+              [attr.aria-describedby]="errors().place ? 'd-place-error' : null"
+            />
+            @if (errors().place; as message) {
+              <span class="field__error" id="d-place-error">{{ message }}</span>
+            }
+          </div>
+        }
+      }
+    </div>
+    <div class="dialog__footer">
+      @if (view() === 'discard') {
+        <button class="btn" type="button" cdkFocusInitial (click)="keepEditing()">
+          Keep editing
+        </button>
+        <button class="btn btn--danger" type="button" (click)="discard()">Discard</button>
+      } @else {
+        <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+        <button class="btn btn--primary" type="submit" [attr.aria-busy]="busy() ? 'true' : null">
+          {{ editing ? 'Save changes' : 'Add service' }}
+        </button>
+      }
+    </div>
+  </form>
+</div>

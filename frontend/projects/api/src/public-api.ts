@@ -27,4 +27,6 @@ export * from './lib/api/incoming-requests-api';
 export * from './lib/models/incoming-requests';
 export * from './lib/api/my-business-api';
 export * from './lib/models/my-business';
+export * from './lib/api/catalogue-api';
+export * from './lib/models/catalogue';
 export * from './lib/models/member-requests';
