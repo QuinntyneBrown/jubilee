@@ -122,6 +122,8 @@ export class ConversationPage extends ShellPage implements Screen {
   readonly menu: Locator;
   readonly muted: Locator;
   readonly backLink: Locator;
+  /** The head of the conversation: who it is with, and its actions. */
+  readonly chatHead: Locator;
   readonly log: Locator;
   readonly days: Locator;
   readonly bubbles: Locator;
@@ -148,7 +150,8 @@ export class ConversationPage extends ShellPage implements Screen {
     super(page);
     this.list = new InboxListRegion(page);
     this.heading = this.main.getByRole('heading', { level: 1 });
-    this.caption = this.main.locator('.chat__head .text-caption');
+    this.chatHead = this.main.locator('.chat__head');
+    this.caption = this.chatHead.locator('.text-caption');
     this.listingLink = this.main.locator('.chat__head').getByRole('link', { name: /listing$/ });
     this.more = this.main.locator('.chat__head').getByRole('button', { name: 'More' });
     // The app opens the menu in an overlay outside main; the mock shows it beside its trigger.

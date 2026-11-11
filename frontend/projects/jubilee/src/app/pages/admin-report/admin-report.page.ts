@@ -25,6 +25,8 @@ import {
   Rows,
   PageHeader,
   Tabs,
+  MessageThread,
+  MessageDay,
 } from 'components';
 import {
   ReportActionData,
@@ -74,6 +76,8 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
     Rows,
     PageHeader,
     Tabs,
+    MessageThread,
+    MessageDay,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-report.page.html',
