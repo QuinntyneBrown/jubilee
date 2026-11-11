@@ -1,7 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CATALOGUE_API, DeletedItem } from 'api';
-import { Icon, Button, Alert } from 'components';
+import { Button, Alert, DialogFrame, DialogBody, DialogFooter } from 'components';
 import { timeout } from 'rxjs';
 
 export interface DeleteItemData {
@@ -17,9 +17,8 @@ type View = 'form' | 'busy' | 'failed';
 /** DeleteItemDialog (L2-092, L2-095): the owner deletes a product or a service after seeing the consequence. */
 @Component({
   selector: 'jb-delete-item-dialog',
-  imports: [Icon, Button, Alert],
+  imports: [Button, Alert, DialogFrame, DialogBody, DialogFooter],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog' },
   templateUrl: './delete-item.dialog.html',
 })
 export class DeleteItemDialog {

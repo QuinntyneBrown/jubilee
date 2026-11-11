@@ -1,7 +1,7 @@
 import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, ElementRef, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Icon, Button } from 'components';
+import { Icon, DialogBody, DialogFrame } from 'components';
 import { SignOutDialog } from '../sign-out/sign-out.dialog';
 
 export interface AccountMenuData {
@@ -19,10 +19,9 @@ export interface AccountMenuData {
  */
 @Component({
   selector: 'jb-account-menu-dialog',
-  imports: [RouterLink, Icon, Button],
+  imports: [RouterLink, Icon, DialogFrame, DialogBody],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog', '(click)': 'closeIfOutside($event)', '(keydown)': 'move($event)' },
-  styleUrl: './account-menu.dialog.scss',
+  host: { '(keydown)': 'move($event)' },
   templateUrl: './account-menu.dialog.html',
 })
 export class AccountMenuDialog {
@@ -44,10 +43,6 @@ export class AccountMenuDialog {
       ariaModal: true,
       backdropClass: 'backdrop',
     });
-  }
-
-  protected closeIfOutside(event: Event): void {
-    if (event.target === event.currentTarget) this.close();
   }
 
   protected move(event: KeyboardEvent): void {

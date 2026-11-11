@@ -1,27 +1,37 @@
 @let opts = options();
-<div class="dialog__panel">
+<jb-dialog
+  [heading]="
+    view() === 'success'
+      ? 'Request sent to ' + opts?.business?.name
+      : 'Book a meeting' + (opts ? ' with ' + opts.business.name : '')
+  "
+  [icon]="view() === 'success' ? 'verified' : 'calendar'"
+  [busy]="busy()"
+  (closed)="close()"
+  (outsideClick)="close()"
+>
   @if (view() === 'success') {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="verified"></svg>
-      </div>
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">Request sent to {{ opts?.business?.name }}</h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          {{ opts?.ownerFirstName }}
-          @if (opts?.usuallyConfirms) {
-            usually confirms {{ opts?.usuallyConfirms }}.
-          } @else {
-            will confirm it or suggest another time.
-          }
-          You’ll get a notification and an e-mail, and the request is in Your requests.
-        </p>
-      </div>
-      <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
-    <div class="dialog__footer">
+    <span slot="description"
+      >{{ opts?.ownerFirstName }}
+      @if (opts?.usuallyConfirms) {
+        usually confirms {{ opts?.usuallyConfirms }}.
+      } @else {
+        will confirm it or suggest another time.
+      }
+      You’ll get a notification and an e-mail, and the request is in Your requests.</span
+    >
+  } @else {
+    <span slot="description">
+      @if (opts) {
+        Ask for a time. {{ opts.ownerFirstName }} confirms it or suggests another; nothing is
+        charged.
+      } @else {
+        Ask for a time. Nothing is charged.
+      }
+    </span>
+  }
+  @if (view() === 'success') {
+    <div jb-dialog-footer>
       <button jb-button type="button" (click)="close()">Close</button>
       <a
         jb-button
@@ -33,54 +43,25 @@
       >
     </div>
   } @else {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="calendar"></svg>
-      </div>
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">
-          Book a meeting{{ opts ? ' with ' + opts.business.name : '' }}
-        </h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          @if (opts) {
-            Ask for a time. {{ opts.ownerFirstName }} confirms it or suggests another; nothing is
-            charged.
-          } @else {
-            Ask for a time. Nothing is charged.
-          }
-        </p>
-      </div>
-      <button
-        jb-button
-        variant="ghost"
-        iconOnly
-        type="button"
-        aria-label="Close"
-        [disabled]="busy()"
-        (click)="close()"
-      >
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
     @switch (view()) {
       @case ('loading') {
-        <div class="dialog__body">
+        <div jb-dialog-body>
           <p role="status" class="text-muted">Loading the times…</p>
         </div>
       }
       @case ('unavailable') {
-        <div class="dialog__body stack">
+        <div jb-dialog-body class="stack">
           <div jb-alert tone="danger" heading="Booking isn’t available right now" role="alert">
             <div>Nothing is lost. Close this and try again in a moment, or send a message.</div>
           </div>
         </div>
-        <div class="dialog__footer">
+        <div jb-dialog-footer>
           <button jb-button variant="primary" type="button" (click)="close()">Close</button>
         </div>
       }
       @default {
         @if (opts) {
-          <form class="dialog__body stack" id="book-form" (ngSubmit)="send()">
+          <form jb-dialog-body class="stack" id="book-form" (ngSubmit)="send()">
             @if (view() === 'failed') {
               <div jb-alert tone="danger" [heading]="failure().title" role="alert">
                 <div>{{ failure().text }}</div>
@@ -161,7 +142,7 @@
               ></textarea>
             </div>
           </form>
-          <div class="dialog__footer">
+          <div jb-dialog-footer>
             <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
             <button jb-button variant="primary" type="submit" form="book-form" [busy]="busy()">
               Send request
@@ -171,4 +152,4 @@
       }
     }
   }
-</div>
+</jb-dialog>

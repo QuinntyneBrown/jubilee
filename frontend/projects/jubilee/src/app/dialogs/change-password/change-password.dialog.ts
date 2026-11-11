@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PROFILE_API } from 'api';
-import { Icon, Button, Alert, Field, Input } from 'components';
+import { Button, Alert, Field, Input, DialogFrame, DialogBody, DialogFooter } from 'components';
 
 export interface ChangePasswordData {
   /** False for a member who joined with Google: the dialog is "Set a password" (L2-015 AC5). */
@@ -36,9 +36,8 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-change-password-dialog',
-  imports: [FormsModule, Icon, Button, Alert, Field, Input],
+  imports: [FormsModule, Button, Alert, Field, Input, DialogFrame, DialogBody, DialogFooter],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog' },
   templateUrl: './change-password.dialog.html',
 })
 export class ChangePasswordDialog {
