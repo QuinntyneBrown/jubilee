@@ -16,7 +16,7 @@
 @switch (inbox.status) {
   @case ('loading') {
     <p class="visually-hidden" role="status">Loading your messages…</p>
-    <ul class="list" aria-hidden="true">
+    <ul jb-list aria-hidden="true">
       @for (row of [1, 2, 3, 4, 5]; track row) {
         <li class="thread">
           <span jb-skeleton shape="avatar"></span>
@@ -56,7 +56,7 @@
         <button slot="actions" jb-button type="button" (click)="clear()">Clear search</button>
       </div>
     } @else {
-      <ul class="list">
+      <ul jb-list>
         @for (row of inbox.value.conversations; track row.id) {
           <li>
             <a

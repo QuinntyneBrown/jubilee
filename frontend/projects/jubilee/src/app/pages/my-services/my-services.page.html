@@ -48,19 +48,18 @@
           @if (list.total >= list.max) {
             <p class="text-muted" role="status">You can list up to {{ list.max }} services.</p>
           }
-          <ul class="rows">
+          <ul jb-rows>
             @for (service of list.rows; track service.id; let first = $first; let last = $last) {
-              <li class="row row--stack">
-                <div class="row__body">
-                  <div class="row__title">{{ service.name }}</div>
-                  @if (meta(service)) {
-                    <div class="row__meta">{{ meta(service) }}</div>
-                  }
-                </div>
-                <span class="row__price" [class.row__price--free]="service.priceKind === 'free'">{{
+              <li jb-row stack>
+                <div jb-row-title>{{ service.name }}</div>
+                @if (meta(service)) {
+                  <div jb-row-meta>{{ meta(service) }}</div>
+                }
+
+                <span slot="trailing" jb-row-price [free]="service.priceKind === 'free'">{{
                   price(service)
                 }}</span>
-                <div class="row__actions">
+                <div slot="trailing" jb-row-actions>
                   <button
                     jb-button
                     iconOnly

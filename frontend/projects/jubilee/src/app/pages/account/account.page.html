@@ -187,13 +187,13 @@
         class="stack"
         style="margin-top: var(--space-6)"
       >
-        <ul class="rows">
-          <li class="row">
-            <div class="row__body">
-              <div class="row__title">Password</div>
-              <div class="row__meta">{{ passwordMeta() }}</div>
-            </div>
+        <ul jb-rows>
+          <li jb-row>
+            <div jb-row-title>Password</div>
+            <div jb-row-meta>{{ passwordMeta() }}</div>
+
             <button
+              slot="trailing"
               #changePasswordButton
               jb-button
               size="sm"

@@ -7,6 +7,7 @@ import {
   numberAttribute,
 } from '@angular/core';
 import { Skeleton } from '../skeleton/skeleton';
+import { Row } from '../rows/row';
 
 /**
  * A list of rows that is loading, on the list itself:
@@ -17,7 +18,7 @@ import { Skeleton } from '../skeleton/skeleton';
  */
 @Component({
   selector: 'ul[jb-row-list-skeleton]',
-  imports: [Skeleton],
+  imports: [Skeleton, Row],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'rows', 'aria-hidden': 'true' },
   templateUrl: './row-list-skeleton.html',

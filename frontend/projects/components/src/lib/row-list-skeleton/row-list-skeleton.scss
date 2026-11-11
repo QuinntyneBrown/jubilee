@@ -1,4 +1,9 @@
-// The rows and row blocks draw the list; this component only fills it with placeholders.
+// Block: rows. The skeleton is the list itself; jb-row draws each row and this component fills
+// it with placeholders.
+@use '../rows/row-base' as base;
+
 :host {
   display: block;
+
+  @include base.rows;
 }

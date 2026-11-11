@@ -196,7 +196,7 @@
           @if (hasServices) {
             <section class="section" aria-labelledby="custom">
               <div class="section-head"><h2 id="custom">Custom work</h2></div>
-              <ul class="rows">
+              <ul jb-rows>
                 @for (service of listing.services; track service.id) {
                   <li jb-service-row [service]="service" [actionLink]="link('quote')"></li>
                 }
@@ -207,7 +207,7 @@
           <section class="section" aria-labelledby="svc">
             <div class="section-head"><h2 id="svc">Services</h2></div>
             @if (hasServices) {
-              <ul class="rows">
+              <ul jb-rows>
                 @for (service of listing.services; track service.id) {
                   <li
                     jb-service-row

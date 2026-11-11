@@ -58,17 +58,17 @@
             @if (stockProblem()) {
               <div jb-alert tone="danger" role="alert">{{ stockProblem() }}</div>
             }
-            <ul class="item-list">
-              <li>
+            <ul jb-item-list>
+              <li jb-item-list-item>
                 <div
                   jb-media-tile
                   class="media--thumb"
                   [tint]="opts.product.tile.tint"
                   [icon]="opts.product.tile.icon"
                 ></div>
-                <span class="item-list__name"
+                <span jb-item-list-name
                   >{{ opts.product.name }}<br />
-                  <span class="row__meta">
+                  <span jb-row-meta>
                     @if (data.option) {
                       {{ opts.product.optionName }} {{ data.option }} ×
                     } @else {

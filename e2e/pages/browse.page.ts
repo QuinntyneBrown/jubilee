@@ -66,6 +66,10 @@ export class BrowsePage extends ShellPage implements Screen {
   readonly directory: Locator;
   readonly directoryHeading: Locator;
   readonly groups: Locator;
+  /** Every directory row, across the groups. */
+  readonly directoryRows: Locator;
+  /** The list of rows of each group. */
+  readonly directoryLists: Locator;
   readonly loadingStatus: Locator;
   readonly skeletons: Locator;
   /** The list of rows drawn while the directory loads. */
@@ -95,6 +99,8 @@ export class BrowsePage extends ShellPage implements Screen {
     this.directory = this.main.locator('section.section:has(.dir-groups)');
     this.directoryHeading = this.directory.getByRole('heading', { level: 2 });
     this.groups = this.directory.locator('section.dir-group');
+    this.directoryRows = this.directory.locator('a.dir-row');
+    this.directoryLists = this.directory.locator('ul.list');
     this.loadingStatus = this.content.getByRole('status');
     this.skeletons = this.content.locator('.skeleton');
     this.loadingRows = this.content.locator('ul.rows[aria-hidden="true"]');
