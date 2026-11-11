@@ -12,7 +12,17 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ACCOUNT_DATA_API, Account, PROFILE_API, ProfileForm } from 'api';
-import { EmptyState, Icon, Button, Alert, FormSummary, Field, Input, Skeleton } from 'components';
+import {
+  EmptyState,
+  Icon,
+  Button,
+  Alert,
+  FormSummary,
+  Field,
+  Input,
+  Skeleton,
+  InlineStatus,
+} from 'components';
 import { Observable, map } from 'rxjs';
 import { ChangeEmailData, ChangeEmailDialog } from '../../dialogs/change-email/change-email.dialog';
 import {
@@ -69,6 +79,7 @@ const MESSAGES: Record<string, string> = {
     Field,
     Input,
     Skeleton,
+    InlineStatus,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page', '(window:beforeunload)': 'warnOnClose($event)' },
