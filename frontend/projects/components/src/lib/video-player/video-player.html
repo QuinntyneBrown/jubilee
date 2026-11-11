@@ -1,0 +1,45 @@
+<div class="mkt-player__frame">
+  <video
+    #video
+    class="mkt-player__video"
+    preload="none"
+    playsinline
+    tabindex="-1"
+    [attr.aria-label]="label()"
+    [src]="src()"
+    [poster]="still()"
+    [controls]="playing()"
+  ></video>
+  @if (!playing()) {
+    <button
+      class="mkt-player__poster"
+      type="button"
+      [attr.aria-label]="playLabel()"
+      (click)="play()"
+    >
+      <img class="mkt-player__still" [src]="still()" alt="" />
+      <span class="mkt-player__scrim"></span>
+      <span class="mkt-player__play">
+        <svg jb-icon class="mkt-player__play-icon" name="play"></svg>
+      </span>
+      <span class="mkt-player__length">{{ length() }}</span>
+    </button>
+  }
+</div>
+@if (chapters().length) {
+  <ol class="mkt-chapters" aria-label="Chapters">
+    @for (chapter of chapters(); track chapter.at; let index = $index) {
+      <li>
+        <button
+          class="mkt-chapter"
+          type="button"
+          [attr.aria-current]="playing() && current() === index ? 'true' : null"
+          (click)="play(index)"
+        >
+          <span class="mkt-chapter__time">{{ chapter.time }}</span>
+          <span class="mkt-chapter__title">{{ chapter.title }}</span>
+        </button>
+      </li>
+    }
+  </ol>
+}
