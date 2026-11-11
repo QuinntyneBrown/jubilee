@@ -68,6 +68,7 @@ export type StubName =
   | 'business-error'
   | 'business-paused'
   | 'editor'
+  | 'order'
   | 'editor-error'
   | 'notifications'
   | 'notifications-read'
@@ -243,6 +244,7 @@ export const routes = {
     app: '/b/luzandre/p/faith-heavyweight-tee-charcoal/request?option=M&quantity=1',
     mock: 'dialogs/order-request/default.html',
     who: 'member',
+    stub: 'order',
   },
   'church-reference': {
     app: '/reference/e2e-token',

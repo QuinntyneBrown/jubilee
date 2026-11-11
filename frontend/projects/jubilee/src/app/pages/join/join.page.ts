@@ -20,6 +20,7 @@ import {
   FieldError,
   Field,
   Input,
+  Checkbox,
 } from 'components';
 import { SessionService } from '../../services/session.service';
 
@@ -87,6 +88,7 @@ function message(field: FieldName, code: string, passwordLength: number): string
     Field,
     FieldError,
     Input,
+    Checkbox,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },

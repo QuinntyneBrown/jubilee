@@ -103,23 +103,15 @@
                 <span class="price">{{ unitPrice(opts.product.priceCents * data.quantity) }}</span>
               </li>
             </ul>
-            <fieldset>
-              <legend>How would you like to get it?</legend>
-              @for (m of opts.deliveryMethods; track m.id) {
-                <label class="choice">
-                  <input
-                    type="radio"
-                    name="get"
-                    [value]="m.id"
-                    [checked]="methodId() === m.id"
-                    [disabled]="busy()"
-                    (change)="pickMethod(m.id)"
-                  /><span class="choice__text"
-                    >{{ m.label }}<small>{{ m.detail }}</small></span
-                  >
-                </label>
-              }
-            </fieldset>
+            <fieldset
+              jb-radio-group
+              legend="How would you like to get it?"
+              name="get"
+              [options]="deliveryOptions()"
+              [value]="methodId()"
+              (valueChange)="pickMethod($event)"
+              [disabled]="busy()"
+            ></fieldset>
             @if (ships()) {
               <div
                 jb-field

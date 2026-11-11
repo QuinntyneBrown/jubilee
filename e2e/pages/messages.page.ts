@@ -242,12 +242,14 @@ export class RequestQuoteDialog {
 }
 
 /** The dialog that asks a shop for a product (L2-046). */
-export class RequestItemDialog {
+export class RequestItemDialog implements Screen {
   readonly root: Locator;
   readonly title: Locator;
   readonly description: Locator;
   readonly summary: Locator;
   readonly methods: Locator;
+  /** The ways to get the product: legend and radios. */
+  readonly methodGroup: Locator;
   readonly address: Locator;
   readonly note: Locator;
   readonly itemAmount: Locator;
@@ -266,6 +268,9 @@ export class RequestItemDialog {
     this.description = this.root.locator('#dlg-desc');
     this.summary = this.root.locator('.item-list');
     this.methods = this.root.locator('label.choice');
+    this.methodGroup = this.root
+      .locator('fieldset')
+      .filter({ has: this.root.page().locator('label.choice') });
     this.address = this.root.getByLabel('Shipping address');
     this.note = this.root.getByLabel(/^Note to/);
     this.itemAmount = this.root.locator('dl.dl dd').nth(0);
@@ -281,5 +286,13 @@ export class RequestItemDialog {
 
   method(label: string): Locator {
     return this.methods.filter({ hasText: label });
+  }
+
+  async ready(): Promise<void> {
+    await this.methods.first().waitFor();
+  }
+
+  regions(): Region[] {
+    return [{ name: 'dialog', locator: this.root }];
   }
 }

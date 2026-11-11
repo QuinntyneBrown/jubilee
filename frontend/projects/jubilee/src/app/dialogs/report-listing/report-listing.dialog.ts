@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { REPORTS_API, ReportReason } from 'api';
-import { Icon, Button, Alert, FieldError, Field, Textarea } from 'components';
+import { Icon, Button, Alert, Field, Textarea, RadioGroup } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from '../../services/message-time';
 
@@ -47,7 +47,7 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-report-listing-dialog',
-  imports: [FormsModule, Icon, Button, Alert, Field, FieldError, Textarea],
+  imports: [FormsModule, Icon, Button, Alert, Field, Textarea, RadioGroup],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './report-listing.dialog.html',
@@ -130,7 +130,7 @@ export class ReportListingDialog {
   private focusFirstInvalid(): void {
     setTimeout(() => {
       const first = this.host.nativeElement.querySelector<HTMLElement>(
-        'fieldset[aria-invalid="true"] input, textarea[aria-invalid="true"]',
+        'input[aria-invalid="true"], textarea[aria-invalid="true"]',
       );
       first?.focus();
     });

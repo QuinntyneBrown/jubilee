@@ -171,16 +171,13 @@
           <div class="stack stack--sm" style="margin-top: var(--space-3)">
             @for (check of r.checklist; track check.key) {
               <div>
-                <label class="choice">
-                  <input
-                    type="checkbox"
-                    [name]="check.key"
-                    [checked]="ticked().includes(check.key)"
-                    [disabled]="!open()"
-                    (change)="tick(check.key, $any($event.target).checked)"
-                  />
-                  <span class="choice__text">{{ check.label }}</span>
-                </label>
+                <jb-checkbox
+                  [name]="check.key"
+                  [checked]="ticked().includes(check.key)"
+                  [disabled]="!open()"
+                  (checkedChange)="tick(check.key, $event)"
+                  >{{ check.label }}</jb-checkbox
+                >
               </div>
             }
           </div>

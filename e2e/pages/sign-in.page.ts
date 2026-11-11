@@ -8,6 +8,8 @@ export class SignInPage extends ShellPage implements Screen {
   readonly email: Locator;
   readonly password: Locator;
   readonly keepSignedIn: Locator;
+  /** The checkbox with its text. */
+  readonly keepSignedInChoice: Locator;
   readonly signIn: Locator;
   readonly google: Locator;
   readonly forgotPassword: Locator;
@@ -25,6 +27,7 @@ export class SignInPage extends ShellPage implements Screen {
     this.email = this.main.getByLabel('E-mail');
     this.password = this.main.getByLabel('Password');
     this.keepSignedIn = this.main.getByRole('checkbox', { name: 'Keep me signed in' });
+    this.keepSignedInChoice = this.main.locator('.choice').filter({ hasText: 'Keep me signed in' });
     this.signIn = this.main.getByRole('button', { name: 'Sign in' });
     this.google = this.main.getByRole('link', { name: 'Continue with Google' });
     this.forgotPassword = this.main.getByRole('link', { name: 'Forgot password?' });
@@ -47,6 +50,13 @@ export class SignInPage extends ShellPage implements Screen {
       .locator('.field')
       .filter({ has: this.main.page().getByLabel(label, { exact: false }) })
       .first();
+  }
+
+  /** Ticks "Keep me signed in" and leaves it, so that it is shown at rest. */
+  async keepAndLeave(): Promise<void> {
+    // By keyboard: a pointer left over the box would show it hovered.
+    await this.keepSignedIn.press('Space');
+    await this.keepSignedIn.blur();
   }
 
   /** Types into a control and leaves it, so that it is shown at rest. */

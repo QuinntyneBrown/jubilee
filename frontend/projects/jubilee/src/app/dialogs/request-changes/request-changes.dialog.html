@@ -31,18 +31,15 @@
       <legend>What needs to change?</legend>
       @for (area of areas; track area.key) {
         <div>
-          <label class="choice">
-            <input
-              type="checkbox"
-              [name]="'area-' + area.key"
-              [checked]="chosen().includes(area.key)"
-              [disabled]="busy()"
-              [attr.aria-invalid]="areaProblem() && $first ? 'true' : null"
-              [attr.aria-describedby]="areaProblem() && $first ? 'areas-error' : null"
-              (change)="toggle(area.key, $any($event.target).checked)"
-            />
-            <span class="choice__text">{{ area.label }}</span>
-          </label>
+          <jb-checkbox
+            [name]="'area-' + area.key"
+            [checked]="chosen().includes(area.key)"
+            [disabled]="busy()"
+            [invalid]="!!(areaProblem() && $first)"
+            [describedBy]="areaProblem() && $first ? 'areas-error' : null"
+            (checkedChange)="toggle(area.key, $event)"
+            >{{ area.label }}</jb-checkbox
+          >
         </div>
       }
       @if (areaProblem()) {

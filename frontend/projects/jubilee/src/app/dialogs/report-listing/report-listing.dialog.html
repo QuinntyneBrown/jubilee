@@ -51,28 +51,17 @@
         </div>
       }
       <fieldset
-        [attr.aria-invalid]="found.reason ? 'true' : null"
-        [attr.aria-describedby]="found.reason ? 'd-why-error' : null"
-      >
-        <legend>What’s wrong? <span class="optional text-muted">(required)</span></legend>
-        @for (option of reasons; track option.value; let i = $index) {
-          <label class="choice">
-            <input
-              type="radio"
-              name="why"
-              [id]="'d-why-' + i"
-              [value]="option.value"
-              [checked]="reason() === option.value"
-              [disabled]="busy()"
-              (change)="reason.set(option.value)"
-            />
-            <span class="choice__text">{{ option.label }}</span>
-          </label>
-        }
-        @if (found.reason) {
-          <span jb-field-error id="d-why-error">{{ found.reason }}</span>
-        }
-      </fieldset>
+        jb-radio-group
+        legend="What’s wrong?"
+        required
+        controlId="d-why"
+        name="why"
+        [options]="reasons"
+        [value]="reason()"
+        (valueChange)="reason.set($event)"
+        [disabled]="busy()"
+        [error]="found.reason"
+      ></fieldset>
       <div
         jb-field
         label="Tell us what happened"

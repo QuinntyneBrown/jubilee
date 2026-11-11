@@ -1,0 +1,9 @@
+// Block: choice, as the radios of a group. The host is the fieldset; the fieldset and the
+// legend take their look from the base element rules.
+@use '../checkbox/choice';
+
+:host {
+  display: block;
+}
+
+@include choice.choice('.choice');

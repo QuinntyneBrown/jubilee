@@ -10,13 +10,10 @@
       <legend>Offers</legend>
       @for (offer of offerOptions; track offer.value) {
         <div>
-          <label class="choice"
-            ><input
-              #box
-              type="checkbox"
-              [checked]="offers().includes(offer.value)"
-              (change)="toggleOffer(offer.value, box.checked)"
-            /><span class="choice__text">{{ offer.label }}</span></label
+          <jb-checkbox
+            [checked]="offers().includes(offer.value)"
+            (checkedChange)="toggleOffer(offer.value, $event)"
+            >{{ offer.label }}</jb-checkbox
           >
         </div>
       }
@@ -25,13 +22,10 @@
       <legend>Area served</legend>
       @for (area of areaOptions; track area.value) {
         <div>
-          <label class="choice"
-            ><input
-              #box
-              type="checkbox"
-              [checked]="areas().includes(area.value)"
-              (change)="toggleArea(area.value, box.checked)"
-            /><span class="choice__text">{{ area.label }}</span></label
+          <jb-checkbox
+            [checked]="areas().includes(area.value)"
+            (checkedChange)="toggleArea(area.value, $event)"
+            >{{ area.label }}</jb-checkbox
           >
         </div>
       }
