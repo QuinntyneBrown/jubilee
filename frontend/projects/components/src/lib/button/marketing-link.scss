@@ -6,6 +6,11 @@
   white-space: nowrap;
   font-size: 1.0625rem;
   font-weight: var(--font-weight-semibold);
+  --jb-icon-size: 1.125rem;
+}
+
+:host(.mkt-link--icon-sm) {
+  --jb-icon-size: var(--icon-size-sm);
 }
 
 // With the block class, so that the page's reset of link decoration does not win.
