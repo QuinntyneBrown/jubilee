@@ -17,10 +17,17 @@ export class JoinPage extends ShellPage implements Screen {
   readonly password: Locator;
   readonly homeChurch: Locator;
   readonly passwordHint: Locator;
+  /** The button inside the password control: "Show password", then "Hide password". */
+  readonly showPassword: Locator;
+  readonly hidePassword: Locator;
+  /** The password control with its button. */
+  readonly passwordControl: Locator;
   readonly homeChurchHint: Locator;
   readonly agreement: Locator;
   /** The sentence beside the agreement box. */
   readonly agreementText: Locator;
+  /** The agreement box with its sentence. */
+  readonly agreementChoice: Locator;
   readonly createAccount: Locator;
   readonly google: Locator;
   /** Google's "G" in the Google button. */
@@ -49,9 +56,13 @@ export class JoinPage extends ShellPage implements Screen {
     this.password = this.main.getByLabel('Password', { exact: true });
     this.homeChurch = this.main.getByLabel('Home church');
     this.passwordHint = this.main.locator('#password-help');
+    this.showPassword = this.main.getByRole('button', { name: 'Show password' });
+    this.hidePassword = this.main.getByRole('button', { name: 'Hide password' });
+    this.passwordControl = this.main.locator('.password-input');
     this.homeChurchHint = this.main.locator('#church-help');
     this.agreement = this.main.getByRole('checkbox');
     this.agreementText = this.main.locator('.choice__text');
+    this.agreementChoice = this.main.locator('.choice');
     this.createAccount = this.main.getByRole('button', { name: 'Create account' });
     // A link in the app; the mock draws it as a button.
     this.google = this.main.locator('.btn', { hasText: 'Sign up with Google' });
@@ -95,6 +106,13 @@ export class JoinPage extends ShellPage implements Screen {
       .locator('.field')
       .filter({ has: this.main.page().getByLabel(label, { exact: false }) })
       .first();
+  }
+
+  /** Ticks the agreement and leaves it, so that it is shown at rest. */
+  async agreeAndLeave(): Promise<void> {
+    // By keyboard: a pointer left over the box would show it hovered.
+    await this.agreement.press('Space');
+    await this.agreement.blur();
   }
 
   /** Types into a control and leaves it, so that it is shown at rest. */

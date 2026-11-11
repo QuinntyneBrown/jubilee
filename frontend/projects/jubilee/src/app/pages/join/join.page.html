@@ -101,17 +101,19 @@
             hintAfter
             [error]="errors().password"
           >
-            <input
-              jb-input
-              name="password"
-              type="password"
-              required
-              autocomplete="new-password"
-              [attr.maxlength]="max.password"
-              [ngModel]="password()"
-              (ngModelChange)="password.set($event)"
-              [readOnly]="view() === 'submitting'"
-            />
+            <jb-password-input>
+              <input
+                jb-input
+                name="password"
+                type="password"
+                required
+                autocomplete="new-password"
+                [attr.maxlength]="max.password"
+                [ngModel]="password()"
+                (ngModelChange)="password.set($event)"
+                [readOnly]="view() === 'submitting'"
+              />
+            </jb-password-input>
           </div>
         </div>
         <div

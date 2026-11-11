@@ -331,6 +331,60 @@ test.describe('join with e-mail (L2-001)', () => {
   });
 });
 
+test.describe('show password on Sign up (L2-187)', () => {
+  for (const width of [360, 1280]) {
+    test(`AC4: the button inside the control shows the password, then hides it, at ${width} px`, async ({
+      page,
+      jb,
+    }) => {
+      const join = new JoinPage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-up');
+      await join.password.fill('a long password 1');
+
+      expect(await join.rightEdge(join.showPassword)).toBeLessThanOrEqual(
+        await join.rightEdge(join.password),
+      );
+      expect(await join.leftEdge(join.showPassword)).toBeGreaterThan(
+        await join.leftEdge(join.password),
+      );
+
+      await join.showPassword.click();
+      await expect(join.password).toHaveAttribute('type', 'text');
+      await expect(join.hidePassword).toBeFocused();
+      await expect(join.password).toHaveValue('a long password 1');
+
+      await join.hidePassword.click();
+      await expect(join.password).toHaveAttribute('type', 'password');
+      await expect(join.showPassword).toBeFocused();
+      await expect(join.password).toHaveValue('a long password 1');
+    });
+  }
+
+  test('AC5, AC6: by keyboard it comes after the password, works with Enter and Space and sends nothing', async ({
+    page,
+    jb,
+  }) => {
+    const seen = await stubJoin(page, 201, {});
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+    await join.fill(valid);
+
+    await join.password.press('Tab');
+    await expect(join.showPassword).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(join.password).toHaveAttribute('type', 'text');
+    await page.keyboard.press('Space');
+    await expect(join.password).toHaveAttribute('type', 'password');
+
+    expect(seen).toHaveLength(0);
+    await expect(join.password).toHaveValue(valid.password);
+    // The password still keeps its limit and its hint.
+    await expect(join.password).toHaveAttribute('maxlength', '128');
+    await expect(join.password).toHaveAttribute('aria-describedby', 'password-help');
+  });
+});
+
 test.describe('confirm the e-mail address (L2-004)', () => {
   test('AC1: the waiting page names the address and sends the link again', async ({ page, jb }) => {
     await stubResend(page);

@@ -22,6 +22,7 @@ import {
   FieldError,
   Field,
   Input,
+  PasswordInput,
   Checkbox,
   DividerText,
 } from 'components';
@@ -95,6 +96,7 @@ function message(field: FieldName, code: string, passwordLength: number): string
     Field,
     FieldError,
     Input,
+    PasswordInput,
     Checkbox,
     DividerText,
   ],
