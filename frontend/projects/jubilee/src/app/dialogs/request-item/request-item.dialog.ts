@@ -13,7 +13,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BookedRequest, DeliveryMethod, OrderOptions, REQUESTS_API } from 'api';
 import {
-  Icon,
   MediaTile,
   formatPrice,
   Button,
@@ -21,6 +20,9 @@ import {
   Field,
   Textarea,
   RadioGroup,
+  DialogFrame,
+  DialogBody,
+  DialogFooter,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from '../../services/message-time';
@@ -52,9 +54,20 @@ function money(cents: number): string {
  */
 @Component({
   selector: 'jb-request-item-dialog',
-  imports: [FormsModule, RouterLink, Icon, MediaTile, Button, Alert, Field, Textarea, RadioGroup],
+  imports: [
+    FormsModule,
+    RouterLink,
+    MediaTile,
+    Button,
+    Alert,
+    Field,
+    Textarea,
+    RadioGroup,
+    DialogFrame,
+    DialogBody,
+    DialogFooter,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './request-item.dialog.html',
 })
 export class RequestItemDialog implements OnInit {
@@ -212,10 +225,6 @@ export class RequestItemDialog implements OnInit {
 
   protected close(): void {
     if (!this.busy()) this.ref.close();
-  }
-
-  protected closeIfOutside(event: Event): void {
-    if (event.target === event.currentTarget) this.close();
   }
 }
 

@@ -1,27 +1,11 @@
-<div class="dialog__panel">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-      <svg jb-icon name="shield"></svg>
-    </div>
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">{{ wording().title }}</h2>
-      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-        {{ wording().text }}
-      </p>
-    </div>
-    <button
-      jb-button
-      variant="ghost"
-      iconOnly
-      type="button"
-      aria-label="Close"
-      [disabled]="busy()"
-      (click)="close()"
-    >
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <form class="dialog__body stack" id="report-action-form" novalidate (ngSubmit)="send()">
+<jb-dialog
+  heading="{{ wording().title }}"
+  description="{{ wording().text }}"
+  icon="shield"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <form jb-dialog-body class="stack" id="report-action-form" novalidate (ngSubmit)="send()">
     @if (view() === 'failed') {
       <div jb-alert tone="danger" heading="We couldn’t save that action" role="alert">
         <div>Nothing was changed and your note is kept. Try again.</div>
@@ -65,7 +49,7 @@
       ></textarea>
     </div>
   </form>
-  <div class="dialog__footer">
+  <div jb-dialog-footer>
     <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
     <button
       jb-button
@@ -78,4 +62,4 @@
       {{ wording().cta }}
     </button>
   </div>
-</div>
+</jb-dialog>

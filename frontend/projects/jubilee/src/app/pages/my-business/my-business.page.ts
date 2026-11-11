@@ -18,7 +18,18 @@ import {
   RequestDecision,
   RequestKind,
 } from 'api';
-import { BusinessCard, EmptyState, Icon, Button, CloseButton, Alert } from 'components';
+import {
+  BusinessCard,
+  EmptyState,
+  Icon,
+  Button,
+  CloseButton,
+  Alert,
+  RowListSkeleton,
+  Skeleton,
+  Avatar,
+  initialsOf,
+} from 'components';
 import {
   ConfirmRequestData,
   ConfirmRequestDialog,
@@ -53,6 +64,9 @@ const UNDO_MS = 8000;
     Button,
     CloseButton,
     Alert,
+    RowListSkeleton,
+    Skeleton,
+    Avatar,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -102,16 +116,6 @@ export class MyBusinessPage implements OnInit {
 
   protected sent(row: NeedsReply): string {
     return threadTime(row.sentAt, this.clock.now());
-  }
-
-  protected initials(name: string): string {
-    return name
-      .split(' ')
-      .filter(Boolean)
-      .map((part) => part[0])
-      .slice(0, 2)
-      .join('')
-      .toUpperCase();
   }
 
   /** "↑ 18% on last week" (L2-085 AC2). */
@@ -255,7 +259,7 @@ export class MyBusinessPage implements OnInit {
       kind: row.kind as RequestKind,
       kindLabel: row.kindLabel,
       customerName: row.customerName,
-      customerInitials: this.initials(row.customerName),
+      customerInitials: initialsOf(row.customerName),
       title: row.title,
       detail: '',
       sentAt: row.sentAt,

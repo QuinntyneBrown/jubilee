@@ -2,7 +2,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { INCOMING_REQUESTS_API, IncomingRequestRow, RequestDecision } from 'api';
-import { Icon, Button, Alert } from 'components';
+import { Button, Alert, DialogFrame, DialogBody, DialogFooter } from 'components';
 
 export interface ConfirmRequestData {
   request: IncomingRequestRow;
@@ -18,9 +18,8 @@ export function requestNoun(kind: IncomingRequestRow['kind']): string {
 /** ConfirmRequestDialog (L2-052): the owner confirms an order, a booking or a quote request. */
 @Component({
   selector: 'jb-confirm-request-dialog',
-  imports: [Icon, Button, Alert],
+  imports: [Button, Alert, DialogFrame, DialogBody, DialogFooter],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog' },
   templateUrl: './confirm-request.dialog.html',
 })
 export class ConfirmRequestDialog {

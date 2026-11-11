@@ -82,10 +82,13 @@
   <!-- The initials are decoration; the name of the link is the hidden sentence (WCAG 2.5.3). -->
   <button
     #avatar
-    class="avatar avatar--sm avatar--brand only-desktop"
+    jb-avatar
+    size="sm"
+    brand
+    class="only-desktop"
     type="button"
     aria-haspopup="dialog"
-    (click)="accountMenu.emit(avatar)"
+    (click)="accountMenu.emit(avatar.element)"
   >
     <span aria-hidden="true">{{ member.initials }}</span
     ><span class="visually-hidden">Account menu for {{ member.displayName }}</span>

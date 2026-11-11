@@ -1,15 +1,7 @@
-<div class="dialog__panel dialog__panel--sm">
-  <div class="dialog__header">
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">Account</h2>
-    </div>
-    <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <div class="dialog__body stack">
+<jb-dialog heading="Account" size="sm" anchored (closed)="close()" (outsideClick)="close()">
+  <div jb-dialog-body class="stack">
     <div class="cluster">
-      <span class="avatar avatar--brand" aria-hidden="true">{{ data.initials }}</span>
+      <jb-avatar brand [initials]="data.initials" />
       <div>
         <div class="row__title">{{ data.displayName }}</div>
         <div class="row__meta">{{ data.email }}</div>
@@ -66,4 +58,4 @@
       </li>
     </ul>
   </div>
-</div>
+</jb-dialog>

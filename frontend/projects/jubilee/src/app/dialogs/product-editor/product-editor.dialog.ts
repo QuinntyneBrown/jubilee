@@ -10,7 +10,16 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CATALOGUE_API, OwnerProduct } from 'api';
-import { Icon, Button, Alert, Field, Input, Textarea } from 'components';
+import {
+  Button,
+  Alert,
+  Field,
+  Input,
+  Textarea,
+  DialogFrame,
+  DialogBody,
+  DialogFooter,
+} from 'components';
 import { timeout } from 'rxjs';
 import { failureText, guardClose } from '../guard-close';
 
@@ -34,9 +43,18 @@ const SAVE_TIMEOUT_MS = 10_000;
 /** ProductEditorDialog (L2-091): add or change a product; it is live on the listing as soon as it is saved. */
 @Component({
   selector: 'jb-product-editor-dialog',
-  imports: [FormsModule, Icon, Button, Alert, Field, Input, Textarea],
+  imports: [
+    FormsModule,
+    Button,
+    Alert,
+    Field,
+    Input,
+    Textarea,
+    DialogFrame,
+    DialogBody,
+    DialogFooter,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog' },
   templateUrl: './product-editor.dialog.html',
 })
 export class ProductEditorDialog {

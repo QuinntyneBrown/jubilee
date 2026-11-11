@@ -1,0 +1,39 @@
+// Block: avatar. The host is the avatar.
+:host {
+  display: inline-grid;
+  place-items: center;
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+  text-decoration: none;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-subtle);
+  color: var(--color-fg-accent);
+  font: var(--text-label);
+  overflow: hidden;
+  flex: none;
+}
+
+// The account menu trigger.
+:host(button) {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+:host(.avatar--sm) {
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
+  font-size: var(--font-size-xs);
+}
+
+:host(.avatar--lg) {
+  width: var(--avatar-size-lg);
+  height: var(--avatar-size-lg);
+  font-size: var(--font-size-lg);
+}
+
+:host(.avatar--brand) {
+  background: var(--color-success-solid);
+  color: var(--color-fg-inverse);
+  font-weight: var(--font-weight-semibold);
+}

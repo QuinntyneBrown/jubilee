@@ -18,6 +18,7 @@ import {
   Alert,
   FieldError,
   Checkbox,
+  Skeleton,
 } from 'components';
 import {
   ApproveListingDialog,
@@ -49,7 +50,7 @@ const WAITING_STATES: ReferenceState[] = ['waiting', 'expired', 'deleted'];
  */
 @Component({
   selector: 'jb-admin-verification-page',
-  imports: [RouterLink, EmptyState, Icon, MediaTile, Button, Alert, FieldError, Checkbox],
+  imports: [RouterLink, EmptyState, Icon, MediaTile, Button, Alert, FieldError, Checkbox, Skeleton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-verification.page.html',
 })

@@ -10,7 +10,16 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { CATALOGUE_API, DeletedItem, OwnerProduct, OwnerProducts } from 'api';
-import { EmptyState, Icon, IconName, MediaTile, TileTint, formatPrice, Button } from 'components';
+import {
+  EmptyState,
+  Icon,
+  IconName,
+  MediaTile,
+  TileTint,
+  formatPrice,
+  Button,
+  RowListSkeleton,
+} from 'components';
 import { DeleteItemData, DeleteItemDialog } from '../../dialogs/delete-item/delete-item.dialog';
 import {
   ProductEditorData,
@@ -24,7 +33,7 @@ import { WorkspaceHeader } from '../my-business/workspace-header';
 /** My products at /my-business/products (L2-089, L2-090): the shop's catalogue, with add, edit, delete and reorder. */
 @Component({
   selector: 'jb-my-products-page',
-  imports: [EmptyState, Icon, MediaTile, WorkspaceHeader, Button],
+  imports: [EmptyState, Icon, MediaTile, WorkspaceHeader, Button, RowListSkeleton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './my-products.page.html',
