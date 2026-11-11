@@ -3,7 +3,13 @@ import { joanna } from '../fixtures/cast';
 import { expect, test } from '../fixtures/jb-test';
 import { SearchPage } from '../pages/search.page';
 import { ProductPage } from '../pages/product.page';
-import { AccountMenuRegion, SessionExpiredPage, SignInPage } from '../pages/sign-in.page';
+import {
+  AccountMenuRegion,
+  SessionExpiredPage,
+  SignInErrorScreen,
+  SignInPage,
+  SignInSubmittingScreen,
+} from '../pages/sign-in.page';
 
 // Sign in and out: L2-006, L2-007, L2-010, L2-011, L2-012, L2-116. The API is answered by
 // Playwright mocking (ADR 0009); the requests the app makes are captured to prove what it sends.
@@ -38,16 +44,73 @@ async function stubSignIn(
 }
 
 test.describe('sign in (L2-006)', () => {
-  test('AC3: the page offers Forgot password, Join free and Google', async ({ page, jb }) => {
+  test('AC3: the page welcomes the member back and offers Forgot password and a free account', async ({
+    page,
+    jb,
+  }) => {
     const signIn = new SignInPage(page);
     await jb.open('sign-in');
     await expect.poll(() => signIn.dataPage()).toBe('sign-in');
 
-    await expect(signIn.heading).toHaveText('Sign in to Jubilee');
+    await expect(signIn.heading).toHaveText('Welcome back');
+    await expect(signIn.lead).toHaveText('Log in to message businesses and manage your listing.');
     await expect(signIn.forgotPassword).toHaveAttribute('href', '/forgot-password');
+    await expect(signIn.main).toContainText('New to Jubilee?');
     await expect(signIn.joinFree).toHaveAttribute('href', /^\/join/);
-    await expect(signIn.google).toHaveAttribute('href', '/api/auth/google/start?returnUrl=%2F');
+  });
+
+  for (const width of [360, 1280]) {
+    test(`AC3: "Forgot password?" is on the line of the Password label at ${width} px`, async ({
+      page,
+      jb,
+    }) => {
+      const signIn = new SignInPage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-in');
+
+      // Beside the label, above the control.
+      expect(await signIn.bottomEdge(signIn.forgotPassword)).toBeLessThanOrEqual(
+        await signIn.topEdge(signIn.password),
+      );
+      expect(await signIn.topEdge(signIn.forgotPassword)).toBeLessThan(
+        await signIn.bottomEdge(signIn.passwordLabel),
+      );
+      expect(await signIn.leftEdge(signIn.forgotPassword)).toBeGreaterThan(
+        await signIn.leftEdge(signIn.passwordLabel),
+      );
+    });
+  }
+
+  test('AC8: the form has Email, Password and "Keep me logged in", not ticked', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+
+    await expect(signIn.email).toHaveAttribute('placeholder', 'you@example.com');
+    await expect(signIn.email).toHaveAttribute('type', 'email');
+    await expect(signIn.password).toHaveAttribute('type', 'password');
     await expect(signIn.keepSignedIn).not.toBeChecked();
+    await expect(signIn.signIn).toHaveText('Log in');
+  });
+
+  test('L2-003 AC8: Google comes first, with its mark, and "or use email" divides it from the form', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+
+    await expect(signIn.google).toHaveAttribute('href', '/api/auth/google/start?returnUrl=%2F');
+    await expect(signIn.googleMark).toBeVisible();
+    await expect(signIn.divider).toHaveText('or use email');
+    expect(await signIn.bottomEdge(signIn.google)).toBeLessThanOrEqual(
+      await signIn.topEdge(signIn.divider),
+    );
+    expect(await signIn.bottomEdge(signIn.divider)).toBeLessThanOrEqual(
+      await signIn.topEdge(signIn.email),
+    );
   });
 
   test('AC1: the right e-mail and password sign in, say "Welcome back" and land on browse', async ({
@@ -181,8 +244,228 @@ test.describe('sign in (L2-006)', () => {
   });
 });
 
+test.describe('the Log in frame (L2-187)', () => {
+  test('AC1: from 1024 px a brand panel stands beside the form', async ({ page, jb }) => {
+    const signIn = new SignInPage(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.open('sign-in');
+
+    await expect(signIn.brandPanel).toBeVisible();
+    await expect(signIn.brandPanel).toContainText('Hire, shop and book with your church family.');
+    await expect(signIn.brandPanel).toContainText(
+      'Christian-owned businesses across Toronto, all in one place.',
+    );
+    await expect(signIn.brandPanel).toContainText('© Jubilee · Toronto');
+    // The panel holds the only lockup, and the form stands to its right.
+    await expect(signIn.lockup).toHaveCount(1);
+    await expect(signIn.panelLockup).toBeVisible();
+    expect(await signIn.leftEdge(signIn.card)).toBeGreaterThan(
+      await signIn.rightEdge(signIn.brandPanel),
+    );
+    // One screen, one heading: what the panel says is not a second one.
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+  });
+
+  test('AC2: under 1024 px there is no panel and the lockup is above the card', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    for (const width of [360, 768, 1023]) {
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-in');
+
+      await expect(signIn.brandPanel).toBeHidden();
+      await expect(signIn.lockup).toHaveCount(1);
+      expect(await signIn.bottomEdge(signIn.lockup)).toBeLessThanOrEqual(
+        await signIn.topEdge(signIn.card),
+      );
+    }
+  });
+
+  for (const width of [360, 1280]) {
+    test(`AC3: the lockup leads to the welcome page at ${width} px`, async ({ page, jb }) => {
+      const signIn = new SignInPage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-in');
+
+      await signIn.lockup.click();
+
+      await expect.poll(() => signIn.dataPage()).toBe('welcome');
+    });
+  }
+});
+
+test.describe('the other states of Log in, in the frame (L2-006, L2-003, L2-187)', () => {
+  test('a failed request leaves one heading, and neither the lead nor the link under the card', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInErrorScreen(page);
+    await jb.open('sign-in.error');
+    await signIn.ready();
+
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    await expect(signIn.heading).toHaveText('We couldn’t load sign in');
+    await expect(signIn.lead).toHaveCount(0);
+    await expect(signIn.joinFree).toHaveCount(0);
+    await expect(signIn.frameFoot).toBeHidden();
+    await expect(signIn.lockup).toBeVisible();
+  });
+
+  test('under 1024 px the lockup stays at the top when the card is short', async ({ page, jb }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    const form = new SignInPage(page);
+    await jb.open('sign-in');
+    const top = await form.topEdge(form.lockup);
+
+    const failed = new SignInErrorScreen(page);
+    await jb.open('sign-in.error');
+    await failed.ready();
+
+    // The error state is shorter than the screen; the frame does not centre it.
+    expect(await failed.topEdge(failed.lockup)).toBe(top);
+  });
+
+  test('a notice from Google stands between the heading and the Google button', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in.google-cancelled');
+
+    expect(await signIn.topEdge(signIn.calmNotice)).toBeGreaterThanOrEqual(
+      await signIn.bottomEdge(signIn.lead),
+    );
+    expect(await signIn.bottomEdge(signIn.calmNotice)).toBeLessThanOrEqual(
+      await signIn.topEdge(signIn.google),
+    );
+  });
+
+  test('the error summary stands above the Google button and takes the focus', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+
+    await signIn.signInWith('joanna.adeyemi@', 'longpassword1');
+
+    await expect(signIn.summary).toBeFocused();
+    expect(await signIn.bottomEdge(signIn.summary)).toBeLessThanOrEqual(
+      await signIn.topEdge(signIn.google),
+    );
+    await expect(signIn.heading).toHaveText('Welcome back');
+  });
+
+  test('while the form is being sent the frame keeps its heading and its link', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInSubmittingScreen(page);
+    await jb.open('sign-in.submitting');
+    await signIn.ready();
+
+    await expect(signIn.signIn).toHaveAttribute('aria-busy', 'true');
+    await expect(signIn.email).toHaveAttribute('readonly', '');
+    await expect(signIn.heading).toHaveText('Welcome back');
+    await expect(signIn.joinFree).toBeVisible();
+  });
+});
+
+test.describe('show password on Log in (L2-187)', () => {
+  for (const width of [360, 1280]) {
+    test(`AC4: the button inside the control shows the password, then hides it, at ${width} px`, async ({
+      page,
+      jb,
+    }) => {
+      const signIn = new SignInPage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-in');
+      await signIn.password.fill('correct horse 13');
+
+      // Inside the control, at its right edge.
+      expect(await signIn.rightEdge(signIn.showPassword)).toBeLessThanOrEqual(
+        await signIn.rightEdge(signIn.password),
+      );
+      expect(await signIn.leftEdge(signIn.showPassword)).toBeGreaterThan(
+        await signIn.leftEdge(signIn.password),
+      );
+      expect(await signIn.topEdge(signIn.showPassword)).toBeGreaterThanOrEqual(
+        await signIn.topEdge(signIn.password),
+      );
+
+      await signIn.showPassword.click();
+      await expect(signIn.password).toHaveAttribute('type', 'text');
+      await expect(signIn.hidePassword).toBeVisible();
+      await expect(signIn.showPassword).toHaveCount(0);
+
+      await signIn.hidePassword.click();
+      await expect(signIn.password).toHaveAttribute('type', 'password');
+      await expect(signIn.showPassword).toBeVisible();
+    });
+  }
+
+  test('AC5: showing keeps what was typed, keeps the focus on the button and sends nothing', async ({
+    page,
+    jb,
+  }) => {
+    const seen = await stubSignIn(page, 200, session);
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+    await signIn.email.fill('joanna.adeyemi@example.com');
+    await signIn.password.fill('correct horse 13');
+
+    await signIn.showPassword.click();
+
+    await expect(signIn.password).toHaveValue('correct horse 13');
+    await expect(signIn.hidePassword).toBeFocused();
+    await signIn.hidePassword.click();
+    await expect(signIn.password).toHaveValue('correct horse 13');
+    await expect(signIn.showPassword).toBeFocused();
+    expect(seen).toHaveLength(0);
+    await expect.poll(() => signIn.dataPage()).toBe('sign-in');
+  });
+
+  test('AC6: by keyboard the button comes after the password and works with Enter and with Space', async ({
+    page,
+    jb,
+  }) => {
+    const seen = await stubSignIn(page, 200, session);
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+    await signIn.password.fill('correct horse 13');
+
+    await signIn.password.press('Tab');
+    await expect(signIn.showPassword).toBeFocused();
+
+    await page.keyboard.press('Enter');
+    await expect(signIn.password).toHaveAttribute('type', 'text');
+    await expect(signIn.hidePassword).toBeFocused();
+
+    await page.keyboard.press('Space');
+    await expect(signIn.password).toHaveAttribute('type', 'password');
+    await expect(signIn.showPassword).toBeFocused();
+    expect(seen).toHaveLength(0);
+  });
+
+  test('AC5: the password still signs in after it was shown', async ({ page, jb }) => {
+    const seen = await stubSignIn(page, 200, session);
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+    await signIn.email.fill('joanna.adeyemi@example.com');
+    await signIn.password.fill('correct horse 13');
+    await signIn.showPassword.click();
+
+    await signIn.signIn.click();
+
+    await expect.poll(() => seen.length).toBe(1);
+    expect(seen[0]).toMatchObject({ password: 'correct horse 13' });
+  });
+});
+
 test.describe('continue with Google: off, cancelled or refused (L2-003)', () => {
-  test('AC5: without Google sign-in the page shows no Google button and no "or"', async ({
+  test('AC5: without Google sign-in the page shows no Google button and no "or use email"', async ({
     page,
     jb,
   }) => {
@@ -276,7 +559,7 @@ test.describe('the sign-in prompt and return to origin (L2-012)', () => {
     const dialog = page.getByRole('dialog', { name: 'Join to be told when it’s back' });
     await expect(dialog).toBeAttached();
     await dialog.getByRole('link', { name: 'Sign in' }).click();
-    await expect(signIn.heading).toHaveText('Sign in to Jubilee');
+    await expect(signIn.heading).toHaveText('Welcome back');
 
     const alert = page.waitForRequest(
       (request) => request.url().includes('/stock-alert') && request.method() === 'PUT',

@@ -1,0 +1,17 @@
+// Block: divider-text. The host is the paragraph; the rules either side of its words are drawn.
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  // The rule spans its container, not the reading measure of a paragraph.
+  max-width: none;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+:host::before,
+:host::after {
+  content: '';
+  flex: 1;
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+}

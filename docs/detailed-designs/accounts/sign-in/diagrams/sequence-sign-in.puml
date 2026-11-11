@@ -32,7 +32,7 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Cache" as cache
 end box
 
-actor -> page : Enter e-mail and password and press "Sign in"
+actor -> page : Enter e-mail and password and press "Log in"
 page -> page : Check e-mail format and set the busy state (L2-006)
 page -> client : signIn(email, password, keepSignedIn)
 client -> limit : POST /api/session

@@ -58,6 +58,7 @@
       <li><a href="../components/tooltip.html">Tooltip</a></li>
       <li><a href="../components/divider.html">Divider</a></li>
       <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/list.html">List</a></li>
       <li><a href="../components/description-list.html">Description list</a></li>
@@ -72,6 +73,7 @@
       <li><a href="../components/message-thread.html">Message thread</a></li>
       <li><a href="../components/notification-item.html">Notification item</a></li>
       <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -101,10 +103,11 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Wrap every <a href="../components/text-field.html">Text field</a>, <a href="../components/textarea.html">Textarea</a> and <a href="../components/select.html">Select</a> in <code>.field</code>. Groups of <a href="../components/checkbox.html">checkboxes</a> and <a href="../components/radio-group.html">radios</a> use a <code>fieldset</code> with the same help and error parts. The order is fixed: label, help, control, error, counter.</p>
+      <p>Wrap every <a href="../components/text-field.html">Text field</a>, <a href="../components/textarea.html">Textarea</a> and <a href="../components/select.html">Select</a> in <code>.field</code>. Groups of <a href="../components/checkbox.html">checkboxes</a> and <a href="../components/radio-group.html">radios</a> use a <code>fieldset</code> with the same help and error parts. The order is label, help, control, error, counter; Sign up, as designed, moves the help under the control.</p>
       <ul>
-        <li><b>Label</b> always visible; the marker says “(required)” or “(optional)”.</li>
-        <li><b>Help</b> before the control, so it is read before typing.</li>
+        <li><b>Label</b> always visible; the marker says “(required)” or “(optional)”. Sign up marks only its optional field.</li>
+        <li><b>Label action</b> (optional): a link on the line of the label, at its right end, for help with this field only (“Forgot password?” beside “Password”).</li>
+        <li><b>Help</b> before the control, so it is read before typing. On Sign up the hint sits under the control; an error then sits between the control and the hint.</li>
         <li><b>Error</b> after the control, replacing nothing: help stays.</li>
         <li><b>Counter</b> last, right-aligned.</li>
       </ul>
@@ -136,10 +139,20 @@
         <div class="ds-example__caption"><span>With help.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="ff-v2"&gt;Home church &lt;span class="optional"&gt;(optional)&lt;/span&gt;&lt;/label&gt;&lt;span class="field__help" id="ff-v2-help"&gt;Shown to no one. Helps us recommend businesses near you.&lt;/span&gt;&lt;input class="input" id="ff-v2" type="text" value="Grace Toronto Church" aria-describedby="ff-v2-help"&gt;&lt;/div&gt;</code></pre></details></div>
       <div class="ds-example"><div class="ds-example__canvas">
-        <div class="field" style="width: 100%;"><label class="field__label" for="ff-v3">E-mail <span class="optional">(required)</span></label><input class="input" id="ff-v3" type="text" value="joanna.adeyemi@example.com" aria-describedby="ff-v3-err" aria-invalid="true"><span class="field__error" id="ff-v3-err">An account already uses this e-mail. Sign in instead, or use another address.</span></div>
+        <div class="field" style="width: 100%;"><label class="field__label" for="ff-v3">Email</label><input class="input" id="ff-v3" type="email" value="joanna.adeyemi@example.com" placeholder="you@example.com" aria-describedby="ff-v3-err" aria-invalid="true" required autocomplete="email"><span class="field__error" id="ff-v3-err">An account already uses this e-mail. Log in instead, or use another address.</span></div>
       </div>
-        <div class="ds-example__caption"><span>With error.</span></div>
-        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="ff-v3"&gt;E-mail &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="ff-v3" type="text" value="joanna.adeyemi@example.com" aria-describedby="ff-v3-err" aria-invalid="true"&gt;&lt;span class="field__error" id="ff-v3-err"&gt;An account already uses this e-mail. Sign in instead, or use another address.&lt;/span&gt;&lt;/div&gt;</code></pre></details></div>
+        <div class="ds-example__caption"><span>With error (Sign up). The four required fields of Sign up carry <code>required</code> and no marker.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="ff-v3"&gt;Email&lt;/label&gt;&lt;input class="input" id="ff-v3" type="email" value="joanna.adeyemi@example.com" placeholder="you@example.com" aria-describedby="ff-v3-err" aria-invalid="true" required autocomplete="email"&gt;&lt;span class="field__error" id="ff-v3-err"&gt;An account already uses this e-mail. Log in instead, or use another address.&lt;/span&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="field" style="width: 100%;"><label class="field__label" for="ff-v6">Password</label><span class="field__action"><a href="../../mocks/pages/forgot-password/default.html">Forgot password?</a></span><span class="password-input"><input class="input" id="ff-v6" type="password" value="longpassword1" autocomplete="current-password"><button class="password-input__toggle" type="button" aria-label="Show password"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></span></div>
+      </div>
+        <div class="ds-example__caption"><span>With a label action (Log in). <code>.field__action</code> is in <code>--text-label</code> and comes before the control in the DOM, so it is the stop before the password.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="field" style="width: 100%;"&gt;&lt;label class="field__label" for="ff-v6"&gt;Password&lt;/label&gt;&lt;span class="field__action"&gt;&lt;a href="../../mocks/pages/forgot-password/default.html"&gt;Forgot password?&lt;/a&gt;&lt;/span&gt;&lt;span class="password-input"&gt;&lt;input class="input" id="ff-v6" type="password" value="longpassword1" autocomplete="current-password"&gt;&lt;button class="password-input__toggle" type="button" aria-label="Show password"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/&gt;&lt;circle cx="12" cy="12" r="3"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/span&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="stack" style="width: 100%;"><div class="field"><label class="field__label" for="ff-v7">Home church <span class="optional">(optional)</span></label><input class="input" id="ff-v7" type="text" placeholder="e.g. The Meeting House" aria-describedby="ff-v7-help"><span class="field__help" id="ff-v7-help">Shown to no one. Helps us recommend businesses near you.</span></div><div class="field"><label class="field__label" for="ff-v8">Password</label><span class="password-input"><input class="input" id="ff-v8" type="password" value="short" aria-describedby="ff-v8-help ff-v8-err" aria-invalid="true" required autocomplete="new-password"><button class="password-input__toggle" type="button" aria-label="Show password"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></span><span class="field__error" id="ff-v8-err">Use at least 10 characters. This one has 5.</span><span class="field__help" id="ff-v8-help">At least 10 characters.</span></div></div>
+      </div>
+        <div class="ds-example__caption"><span>With the hint under the control (Sign up), and the same with an error: the error sits between the control and the hint, and both stay. Only the optional field is marked.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="stack" style="width: 100%;"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="ff-v7"&gt;Home church &lt;span class="optional"&gt;(optional)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="ff-v7" type="text" placeholder="e.g. The Meeting House" aria-describedby="ff-v7-help"&gt;&lt;span class="field__help" id="ff-v7-help"&gt;Shown to no one. Helps us recommend businesses near you.&lt;/span&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="ff-v8"&gt;Password&lt;/label&gt;&lt;span class="password-input"&gt;&lt;input class="input" id="ff-v8" type="password" value="short" aria-describedby="ff-v8-help ff-v8-err" aria-invalid="true" required autocomplete="new-password"&gt;&lt;button class="password-input__toggle" type="button" aria-label="Show password"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/&gt;&lt;circle cx="12" cy="12" r="3"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/span&gt;&lt;span class="field__error" id="ff-v8-err"&gt;Use at least 10 characters. This one has 5.&lt;/span&gt;&lt;span class="field__help" id="ff-v8-help"&gt;At least 10 characters.&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
       <div class="ds-example"><div class="ds-example__canvas">
         <div class="field" style="width: 100%;"><label class="field__label" for="ff-v4">Highlight <span class="optional">(optional)</span></label><span class="field__help" id="ff-v4-help">A short green line on your card, like “Free first meeting”. 30 characters at most.</span><input class="input" id="ff-v4" type="text" value="Ships across Canada" aria-describedby="ff-v4-help ff-v4-count"><div class="field__counter" id="ff-v4-count">19 / 30</div></div>
       </div>
@@ -173,10 +186,12 @@
         <li>Fields stack label-over-control at every width; Jubilee never puts labels beside fields in forms (the inline sort is a toolbar, not a form).</li>
         <li>Help and error text wrap; they never truncate.</li>
         <li>In two-column grids, help text of unequal length is fine; controls align because help sits above them in both.</li>
+        <li>Where the hint sits under the control (Sign up), the controls of a pair align because nothing stands between a label and its control.</li>
+        <li>A label action stays on the line of the label at every width; keep both short enough to share 240px.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
-      <p>Label <code>--color-fg-default</code>, marker <code>--color-fg-subtle</code>, help <code>--color-fg-muted</code>, error <code>--color-danger-fg</code>. All four hold their contrast on canvas, surface and raised surface in both themes.</p>
+      <p>Label <code>--color-fg-default</code>, marker <code>--color-fg-subtle</code>, help <code>--color-fg-muted</code>, error <code>--color-danger-fg</code>. All four hold their contrast on canvas, surface and raised surface in both themes. A label action is a <a href="../components/link.html">Link</a> and takes <code>--color-fg-link</code>.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -184,12 +199,13 @@
       <h3>Keyboard</h3>
       <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
         <tr><td><kbd>Tab</kbd></td><td>Moves to the control; label, help and error are not focus stops.</td></tr>
+        <tr><td><kbd>Tab</kbd> with a label action</td><td>Reaches the action first, then the control: “Forgot password?”, then “Password”.</td></tr>
         <tr><td>Click or tap the label</td><td>Focuses the control (or toggles a checkbox).</td></tr>
       </tbody></table></div>
       <h3>Focus</h3>
       <p>On the control (2px <code>--color-focus-ring</code>). On submit with errors, focus goes to the form's error summary, whose links move focus to each field.</p>
       <h3>Labelling</h3>
-      <p>The label text plus marker is the accessible name; help and error are the description, in that order. <code>required</code> is set on the control as well as the visible marker. Errors are not announced as they appear on blur; they are collected in the summary on submit.</p>
+      <p>The label text plus marker is the accessible name; help and error are the description, in that order. <code>required</code> is set on the control as well as the visible marker; on Sign up the control carries <code>required</code> alone, so assistive technology still announces it. Where the hint sits under the control, <code>aria-describedby</code> still lists help, then error. Errors are not announced as they appear on blur; they are collected in the summary on submit.</p>
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
@@ -218,6 +234,8 @@
       <ul>
         <li>Labels: nouns in sentence case, no colon.</li>
         <li>Mark both: “(required)” and “(optional)”; members fill long forms faster when nothing is implied.</li>
+        <li>The exception is Sign up, which marks only “Home church (optional)”: its four other controls carry <code>required</code> and no “(required)” text (L2-126, <a href="../../adr/0038-log-in-and-sign-up-screens.md">ADR 0038</a>). Log in marks nothing.</li>
+        <li>A label action is two or three words that help with this field: “Forgot password?”.</li>
         <li>Help: what a good answer looks like or a limit. Plain, one sentence.</li>
         <li>Errors say what to do, with the numbers: “Use at least 10 characters. This one has 5.” Never “Invalid input.”</li>
       </ul>
@@ -225,7 +243,7 @@
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
       <div class="ds-dodont">
         <figure class="ds-do"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="ff-do1">Password <span class="optional">(required)</span></label><span class="field__help" id="ff-do1-help">At least 10 characters.</span><input class="input" id="ff-do1" type="text" value="short" aria-describedby="ff-do1-help ff-do1-err" aria-invalid="true"><span class="field__error" id="ff-do1-err">Use at least 10 characters. This one has 5.</span></div></div><figcaption>Help above, error below, both kept.</figcaption></figure>
-        <figure class="ds-dont"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="ff-dont1">Password</label><input class="input" id="ff-dont1" type="text" value="short" aria-invalid="true" aria-describedby="ff-dont1-e ff-dont1-h"><span class="field__error" id="ff-dont1-e">Use at least 10 characters.</span><span class="field__help" id="ff-dont1-h">At least 10 characters.</span></div></div><figcaption>Error and then help repeating it; the sign-up invalid mock moves help below the error, so the order changes between states.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="ff-dont1">Password</label><input class="input" id="ff-dont1" type="text" value="short" aria-invalid="true" aria-describedby="ff-dont1-e"><span class="field__error" id="ff-dont1-e">Use at least 10 characters. This one has 5.</span></div></div><figcaption>The error took the place of the help. Help stays where it was in every state, above the control or under it.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="ff-do2">Hours <span class="optional">(required)</span></label><input class="input" id="ff-do2" type="text" value="" aria-describedby="ff-do2-err" aria-invalid="true"><span class="field__error" id="ff-do2-err">Enter your hours, or “By appointment”.</span></div></div><figcaption>The error suggests a valid answer.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div class="field" style="width: 100%;"><label class="field__label" for="ff-dont2">Hours</label><input class="input" id="ff-dont2" type="text" value="" aria-describedby="ff-dont2-err" aria-invalid="true"><span class="field__error" id="ff-dont2-err">Invalid.</span></div></div><figcaption>“Invalid.” gives no way forward.</figcaption></figure>
       </div>
@@ -236,6 +254,7 @@
         <tbody>
           <tr><td>Label</td><td><code>--text-label</code> / <code>--color-fg-default</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--color-fg-default"></span></td></tr>
           <tr><td>Marker</td><td><code>--color-fg-subtle</code> / <code>--font-weight-regular</code></td><td colspan="2"><span data-token="--color-fg-subtle"></span> / <span data-token="--font-weight-regular"></span></td></tr>
+          <tr><td>Label action</td><td><code>--text-label</code> / <code>--color-fg-link</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--color-fg-link"></span></td></tr>
           <tr><td>Help</td><td><code>--text-body-sm</code> / <code>--color-fg-muted</code></td><td colspan="2"><span data-token="--text-body-sm"></span> / <span data-token="--color-fg-muted"></span></td></tr>
           <tr><td>Error</td><td><code>--text-body-sm</code> / <code>--color-danger-fg</code></td><td colspan="2"><span data-token="--text-body-sm"></span> / <span data-token="--color-danger-fg"></span></td></tr>
           <tr><td>Counter</td><td><code>--text-caption</code> / <code>--color-fg-subtle</code></td><td colspan="2"><span data-token="--text-caption"></span> / <span data-token="--color-fg-subtle"></span></td></tr>
@@ -256,6 +275,7 @@
         <tr><td><code>.field</code></td><td>Column wrapper.</td></tr>
         <tr><td><code>.field__label</code></td><td>Label.</td></tr>
         <tr><td><code>.optional</code></td><td>Required/optional marker inside the label.</td></tr>
+        <tr><td><code>.field__action</code></td><td>An action on the line of the label, at its right end; a <code>span</code> around a link, placed after the label.</td></tr>
         <tr><td><code>.field__help</code></td><td>Help.</td></tr>
         <tr><td><code>.field__error</code></td><td>Error with glyph.</td></tr>
         <tr><td><code>.field__counter</code></td><td>Counter.</td></tr>
@@ -265,13 +285,15 @@
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
       <p>Extracted from these mocks:</p>
       <ul>
-        <li><a href="../../mocks/pages/sign-up/invalid.html">pages/sign-up/invalid</a> (error and help order)</li>
+        <li><a href="../../mocks/pages/sign-up/invalid.html">pages/sign-up/invalid</a> (error between the control and the hint)</li>
+        <li><a href="../../mocks/pages/sign-up/default.html">pages/sign-up/default</a> (hint under the control, only the optional field marked)</li>
+        <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> (label action)</li>
         <li><a href="../../mocks/pages/edit-listing/invalid.html">pages/edit-listing/invalid</a> (counter and errors)</li>
         <li><a href="../../mocks/pages/list-business/services.html">pages/list-business/services</a> (fieldset with help)</li>
         <li><a href="../../mocks/dialogs/service-editor/default.html">dialogs/service-editor/default</a> (help and markers)</li>
         <li><a href="../../mocks/dialogs/delete-account/invalid.html">dialogs/delete-account/invalid</a> (confirm field error)</li>
       </ul>
-      <p>Drift fixed during extraction: the marker class <code>.optional</code> wraps “(required)” 93 times and “(optional)” 74 times; the name is kept for compatibility, documented as the marker for both. Help sits before the control in default states but after the error in the sign-up invalid state; the system fixes the order. Counters sat outside <code>.field</code> unlinked. Fieldset help paragraphs used inline <code>margin-top: var(--space-2)</code>.</p>
+      <p>Drift fixed during extraction: the marker class <code>.optional</code> wraps “(required)” 93 times and “(optional)” 74 times; the name is kept for compatibility, documented as the marker for both. Help sat before the control in default states but after the error in the old sign-up invalid state. The redrawn Sign up (<a href="../../adr/0038-log-in-and-sign-up-screens.md">ADR 0038</a>) settles it for that screen: the hint is under the control in every state, and an error goes between the two. Counters sat outside <code>.field</code> unlinked. Fieldset help paragraphs used inline <code>margin-top: var(--space-2)</code>.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

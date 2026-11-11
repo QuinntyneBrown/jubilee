@@ -1,5 +1,8 @@
-<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
-<div class="auth-card card stack">
+<jb-auth-layout
+  split
+  [heading]="view() === 'error' ? null : 'Welcome back'"
+  [lead]="view() === 'error' ? null : 'Log in to message businesses and manage your listing.'"
+>
   @if (view() === 'error') {
     <div jb-empty-state icon="alert" heading="We couldn’t load sign in" [level]="1" [error]="true">
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
@@ -10,7 +13,6 @@
       <a slot="actions" jb-button routerLink="/welcome">Back to welcome</a>
     </div>
   } @else {
-    <h1>Sign in to Jubilee</h1>
     @if (notice() && cancelled()) {
       <div jb-alert tone="warning" role="status">{{ notice() }}</div>
     }
@@ -20,40 +22,47 @@
     @if (summary().length > 0) {
       <jb-form-summary [errors]="summary()" #summaryBox />
     }
+    @if (google()) {
+      <a jb-button block size="lg" [href]="googleUrl"
+        ><svg jb-google-mark></svg>Continue with Google</a
+      >
+      <p jb-divider-text>or use email</p>
+    }
     <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
-      <div jb-field label="E-mail" controlId="email" [error]="errors().email">
+      <div jb-field label="Email" controlId="email" [error]="errors().email">
         <input
           jb-input
           name="email"
           type="email"
           autocomplete="email"
+          placeholder="you@example.com"
           [ngModel]="email()"
           (ngModelChange)="email.set($event)"
           [readOnly]="view() === 'submitting'"
         />
       </div>
       <div jb-field label="Password" controlId="password" [error]="errors().password">
-        <input
-          jb-input
-          name="password"
-          type="password"
-          autocomplete="current-password"
-          [ngModel]="password()"
-          (ngModelChange)="password.set($event)"
-          [readOnly]="view() === 'submitting'"
-        />
+        <a slot="action" routerLink="/forgot-password">Forgot password?</a>
+        <jb-password-input>
+          <input
+            jb-input
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            [readOnly]="view() === 'submitting'"
+          />
+        </jb-password-input>
       </div>
-      <div class="cluster cluster--between">
-        <div>
-          <jb-checkbox
-            controlId="remember"
-            [checked]="keep()"
-            (checkedChange)="keep.set($event)"
-            [disabled]="view() === 'submitting'"
-            >Keep me signed in</jb-checkbox
-          >
-        </div>
-        <a routerLink="/forgot-password">Forgot password?</a>
+      <div>
+        <jb-checkbox
+          controlId="remember"
+          [checked]="keep()"
+          (checkedChange)="keep.set($event)"
+          [disabled]="view() === 'submitting'"
+          >Keep me logged in</jb-checkbox
+        >
       </div>
       <button
         jb-button
@@ -63,19 +72,14 @@
         type="submit"
         [busy]="view() === 'submitting'"
       >
-        Sign in
+        Log in
       </button>
-      @if (google()) {
-        <p class="divider-text">or</p>
-      }
-      @if (google()) {
-        <a jb-button block size="lg" [href]="googleUrl">Continue with Google</a>
-      }
     </form>
   }
-</div>
-@if (view() !== 'error') {
-  <p class="auth-foot">
-    New to Jubilee? <a routerLink="/join" [queryParams]="joinQuery">Join free</a>
-  </p>
-}
+  @if (view() !== 'error') {
+    <span slot="foot"
+      >New to Jubilee?
+      <a jb-auth-link routerLink="/join" [queryParams]="joinQuery">Create a free account</a></span
+    >
+  }
+</jb-auth-layout>

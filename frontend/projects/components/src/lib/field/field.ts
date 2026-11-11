@@ -24,7 +24,9 @@ let nextId = 0;
  * `aria-describedby` and `aria-invalid` from the hint, the counter and the error. `controlId` is
  * for a page that names the field elsewhere (an error summary); without it the field makes one.
  * On a `fieldset` the label is the legend of a group of controls. An action that belongs to the
- * hint (a link, a button) is projected with `slot="hint"`.
+ * hint (a link, a button) is projected with `slot="hint"`; an action that stands on the line of
+ * the label ("Forgot password?") with `slot="action"`. `hintAfter` puts the hint under the
+ * control, and under its error, where two fields stand side by side and only one has a hint.
  */
 @Component({
   selector: 'div[jb-field], fieldset[jb-field]',
@@ -41,6 +43,8 @@ export class Field {
   /** Without a label the field only lays out what it holds (a loading placeholder). */
   readonly label = input<string | null>(null);
   readonly hint = input<string | null>(null);
+  /** The hint stands under the control instead of above it. */
+  readonly hintAfter = input(false, { transform: booleanAttribute });
   /** What to fix, when the value is refused; empty when it is not. */
   readonly error = input<string | null | undefined>(null);
   /** Marks the label "(optional)". */

@@ -3,6 +3,11 @@
     <span class="optional">({{ marker }})</span>
   }
 </ng-template>
+<ng-template #help>
+  @if (hint(); as hint) {
+    <span jb-field-help [id]="helpId()">{{ hint }} <ng-content select="[slot=hint]" /></span>
+  }
+</ng-template>
 @if (label(); as label) {
   @if (group) {
     <legend class="field__label">{{ label }} <ng-container [ngTemplateOutlet]="mark" /></legend>
@@ -12,8 +17,9 @@
     /></label>
   }
 }
-@if (hint(); as hint) {
-  <span jb-field-help [id]="helpId()">{{ hint }} <ng-content select="[slot=hint]" /></span>
+<span class="field__action"><ng-content select="[slot=action]" /></span>
+@if (!hintAfter()) {
+  <ng-container [ngTemplateOutlet]="help" />
 }
 <ng-content />
 @if (counter(); as counter) {
@@ -27,4 +33,7 @@
 }
 @if (error(); as error) {
   <span jb-field-error [id]="errorId()">{{ error }}</span>
+}
+@if (hintAfter()) {
+  <ng-container [ngTemplateOutlet]="help" />
 }

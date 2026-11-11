@@ -391,6 +391,18 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubReference(page, { outcome: 'closed' });
     case 'google-sign-in-off':
       return stubSession(page, visitorWithoutGoogle);
+    case 'sign-in-failing':
+      return stubSent(page, '**/api/session', failed);
+    case 'sign-in-pending':
+      return stubSent(page, '**/api/session', pending);
+    case 'join-created':
+      return stubSent(page, '**/api/account/join', (route) =>
+        route.fulfill({ status: 201, json: { email: 'joanna.adeyemi@example.com' } }),
+      );
+    case 'join-failing':
+      return stubSent(page, '**/api/account/join', failed);
+    case 'join-pending':
+      return stubSent(page, '**/api/account/join', pending);
     case 'verify-email-pending':
       return stubSession(page, unconfirmedSession);
     case 'verify-email-loading':
@@ -445,6 +457,29 @@ export const unconfirmedSession = {
 };
 
 /** Answers the session with `session` over the member the visit signed in as. */
+/** Answers a form that is sent to `url`; what the page reads from the same address is left alone. */
+function stubSent(
+  page: Page,
+  url: string,
+  answer: (route: Route) => Promise<void>,
+): Promise<unknown> {
+  return page.route(url, (route) =>
+    route.request().method() === 'POST' ? answer(route) : route.fallback(),
+  );
+}
+
+/**
+ * The request failed on the server. Not a 502, 503 or 504: those also raise the banner that says
+ * Jubilee cannot be reached, which the error state of a form does not show on its own.
+ */
+function failed(route: Route): Promise<void> {
+  return route.fulfill({
+    status: 500,
+    contentType: 'application/problem+json',
+    body: JSON.stringify({ title: 'Something went wrong', status: 500, reference: 'JB-AUTH-503' }),
+  });
+}
+
 export function stubSession(page: Page, session: Record<string, unknown>): Promise<unknown> {
   return page.route('**/api/session', (route) => route.fulfill({ json: session }));
 }

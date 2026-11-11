@@ -58,6 +58,7 @@
       <li><a href="../components/tooltip.html">Tooltip</a></li>
       <li><a href="../components/divider.html">Divider</a></li>
       <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/list.html">List</a></li>
       <li><a href="../components/description-list.html">Description list</a></li>
@@ -72,6 +73,7 @@
       <li><a href="../components/message-thread.html">Message thread</a></li>
       <li><a href="../components/notification-item.html">Notification item</a></li>
       <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -96,16 +98,17 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Inputs</p>
       <h1>Checkbox</h1>
-      <p class="ds-lead">A checkbox turns one independent option on or off: keep me signed in, agree to the statement of faith, each filter in a list. The whole label is the target.</p>
+      <p class="ds-lead">A checkbox turns one independent option on or off: keep me logged in, agree to the statement of faith, each filter in a list. The whole label is the target.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native <code>type="checkbox"</code></span><span class="ds-pill">105 uses in 26 mocks</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Use a checkbox for an option that is independent of the others, or for picking several from a short list. Use a <a href="../components/radio-group.html">Radio group</a> for exactly one of several, and a <a href="../components/switch.html">Switch</a> for a setting that applies the moment it changes.</p>
       <ul>
-        <li><b>Single</b>: one statement (“Keep me signed in”, the agreement on sign-up).</li>
+        <li><b>Single</b>: one statement (“Keep me logged in”, the agreement on Sign up).</li>
+        <li><b>Sentence with links</b>: the label is a sentence that links what it mentions; it wraps as one paragraph beside the box.</li>
         <li><b>Group</b>: a <code>fieldset</code> with a <code>legend</code> and one checkbox per option (filters, request changes).</li>
-        <li><b>With description</b>: a second line in <code>small</code> inside <code>.choice__text</code>.</li>
+        <li><b>With description</b>: a <code>small</code> inside <code>.choice__text</code>, set as a block under the label.</li>
         <li><b>Indeterminate</b>: a parent “Select all” that is partly on.</li>
       </ul>
     </section>
@@ -118,16 +121,21 @@
         <ol class="ds-anatomy__list">
           <li><div><b>Box</b><small>20px (<code>--icon-size-md</code>) with <code>--radius-xs</code>, strong border; checked fills gold with an ink tick.</small></div></li>
           <li><div><b>Label</b><small><code>.choice__text</code>: the accessible name; the whole <code>label.choice</code> is clickable and at least 24px tall.</small></div></li>
-          <li><div><b>Description</b><small>Optional <code>small</code> in <code>--color-fg-muted</code>.</small></div></li>
+          <li><div><b>Description</b><small>Optional <code>small</code> in <code>--color-fg-muted</code>, a block <code>--space-0-5</code> under the label.</small></div></li>
         </ol>
       </div>
     </section>
     <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
       <div class="ds-example"><div class="ds-example__canvas">
-        <div class="cluster cluster--between" style="width: 100%;"><div><label class="choice"><input type="checkbox" checked><span class="choice__text">Keep me signed in</span></label></div><a href="../../mocks/pages/forgot-password/default.html">Forgot password?</a></div>
+        <div><label class="choice"><input type="checkbox"><span class="choice__text">Keep me logged in</span></label></div>
       </div>
-        <div class="ds-example__caption"><span>Single (sign in).</span></div>
-        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="cluster cluster--between" style="width: 100%;"&gt;&lt;div&gt;&lt;label class="choice"&gt;&lt;input type="checkbox" checked&gt;&lt;span class="choice__text"&gt;Keep me signed in&lt;/span&gt;&lt;/label&gt;&lt;/div&gt;&lt;a href="../../mocks/pages/forgot-password/default.html"&gt;Forgot password?&lt;/a&gt;&lt;/div&gt;</code></pre></details></div>
+        <div class="ds-example__caption"><span>Single (Log in). Not ticked until the visitor ticks it: a ticked default would give every visitor a 30-day session, on a shared computer too (<a href="../../adr/0038-log-in-and-sign-up-screens.md">ADR 0038</a>).</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div&gt;&lt;label class="choice"&gt;&lt;input type="checkbox"&gt;&lt;span class="choice__text"&gt;Keep me logged in&lt;/span&gt;&lt;/label&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div style="width: 100%; max-width: 20rem;"><label class="choice"><input type="checkbox"><span class="choice__text">I am 18 or older and agree to Jubilee’s <a href="../../mocks/pages/statement-of-faith/default.html">statement of faith</a> and <a href="../../mocks/pages/terms/default.html">terms</a>.</span></label></div>
+      </div>
+        <div class="ds-example__caption"><span>A sentence with links (Sign up). <code>.choice__text</code> is plain text, so the sentence wraps under itself and never under the box. Each link is its own stop after the box; pressing one follows it and does not tick the box.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="width: 100%; max-width: 20rem;"&gt;&lt;label class="choice"&gt;&lt;input type="checkbox"&gt;&lt;span class="choice__text"&gt;I am 18 or older and agree to Jubilee’s &lt;a href="../../mocks/pages/statement-of-faith/default.html"&gt;statement of faith&lt;/a&gt; and &lt;a href="../../mocks/pages/terms/default.html"&gt;terms&lt;/a&gt;.&lt;/span&gt;&lt;/label&gt;&lt;/div&gt;</code></pre></details></div>
       <div class="ds-example"><div class="ds-example__canvas">
         <fieldset><legend>Area served</legend><label class="choice"><input type="checkbox"><span class="choice__text">Scarborough</span></label><label class="choice"><input type="checkbox"><span class="choice__text">North York</span></label><label class="choice"><input type="checkbox" checked><span class="choice__text">East York</span></label><label class="choice"><input type="checkbox"><span class="choice__text">Etobicoke</span></label></fieldset>
       </div>
@@ -179,11 +187,12 @@
       <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody>
         <tr><td><kbd>Tab</kbd></td><td>Moves to each checkbox in turn.</td></tr>
         <tr><td><kbd>Space</kbd></td><td>Toggles. Enter does not toggle; in a form it submits.</td></tr>
+        <tr><td><kbd>Tab</kbd> in a sentence with links</td><td>The box first, then each link in the sentence.</td></tr>
       </tbody></table></div>
       <h3>Focus</h3>
       <p>The shared 2px ring around the box (<code>:focus-visible</code>).</p>
       <h3>Labelling</h3>
-      <p>The label wraps the input, so it names it and enlarges the target. Groups take their name from the legend. Errors link via <code>aria-describedby</code> on the input and <code>aria-invalid="true"</code>.</p>
+      <p>The label wraps the input, so it names it and enlarges the target. In a sentence with links the whole sentence is the name, link words included; the links open without losing what was typed in the form (L2-001). Groups take their name from the legend. Errors link via <code>aria-describedby</code> on the input and <code>aria-invalid="true"</code>.</p>
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
@@ -212,15 +221,15 @@
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
-        <li>Labels are positive statements: “Keep me signed in”, not “Don’t sign me out”.</li>
-        <li>Agreement labels name what is agreed to and link it.</li>
+        <li>Labels are positive statements: “Keep me logged in”, not “Don’t log me out”.</li>
+        <li>Agreement labels name what is agreed to and link it, in one sentence with a full stop: “I am 18 or older and agree to Jubilee’s statement of faith and terms.”</li>
         <li>Legends are questions or nouns: “What needs to change?”, “Area served”.</li>
       </ul>
     </section>
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
       <div class="ds-dodont">
-        <figure class="ds-do"><div class="ds-example__canvas"><label class="choice"><input type="checkbox"><span class="choice__text">I agree to Jubilee’s statement of faith and terms.</span></label></div><figcaption>Agreement unchecked by default; the member opts in.</figcaption></figure>
-        <figure class="ds-dont"><div class="ds-example__canvas"><label class="choice"><input type="checkbox" checked><span class="choice__text">I agree to Jubilee’s statement of faith and terms.</span></label></div><figcaption>Pre-checked agreement. The sign-up default mock shows it ticked; consent must be given, not assumed.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><label class="choice"><input type="checkbox"><span class="choice__text">I am 18 or older and agree to Jubilee’s <a href="../../mocks/pages/statement-of-faith/default.html">statement of faith</a> and <a href="../../mocks/pages/terms/default.html">terms</a>.</span></label></div><figcaption>Agreement unchecked by default; the member opts in.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><label class="choice"><input type="checkbox" checked><span class="choice__text">I am 18 or older and agree to Jubilee’s <a href="../../mocks/pages/statement-of-faith/default.html">statement of faith</a> and <a href="../../mocks/pages/terms/default.html">terms</a>.</span></label></div><figcaption>Pre-checked agreement. The sign-up default mock shows it ticked; consent must be given, not assumed.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><fieldset><legend>Offers</legend><label class="choice"><input type="checkbox"><span class="choice__text">Free quote</span></label><label class="choice"><input type="checkbox"><span class="choice__text">Emergency calls</span></label></fieldset></div><figcaption>A group with a legend.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div><p class="field__label">Offers</p><label class="choice"><input type="checkbox"><span class="choice__text">Free quote</span></label><label class="choice"><input type="checkbox"><span class="choice__text">Emergency calls</span></label></div></div><figcaption>A paragraph as heading: screen readers hear two unrelated checkboxes.</figcaption></figure>
       </div>
@@ -250,7 +259,7 @@
 &lt;/fieldset&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.choice</code></td><td>Label row for a checkbox or radio.</td></tr>
-        <tr><td><code>.choice__text</code></td><td>Label text; <code>small</code> inside for a description.</td></tr>
+        <tr><td><code>.choice__text</code></td><td>Label text, plain or a sentence with links; a <code>small</code> inside is a description on its own line.</td></tr>
         <tr><td><code>checked</code> / <code>indeterminate</code> / <code>disabled</code> / <code>aria-invalid</code></td><td>States.</td></tr>
         <tr><td><code>data-state="hover|focus|checked|indeterminate|disabled|invalid"</code></td><td>Documentation only.</td></tr>
       </tbody></table></div>
@@ -258,13 +267,14 @@
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
       <p>Extracted from these mocks:</p>
       <ul>
-        <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> (keep me signed in)</li>
+        <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> (keep me logged in)</li>
+        <li><a href="../../mocks/pages/sign-up/default.html">pages/sign-up/default</a> (agreement sentence with links)</li>
         <li><a href="../../mocks/pages/sign-up/invalid.html">pages/sign-up/invalid</a> (agreement invalid)</li>
         <li><a href="../../mocks/dialogs/filters/default.html">dialogs/filters/default</a> (filter groups)</li>
         <li><a href="../../mocks/dialogs/request-changes/default.html">dialogs/request-changes/default</a> (admin checklist)</li>
         <li><a href="../../mocks/pages/list-business/submitting.html">pages/list-business/submitting</a> (disabled while submitting)</li>
       </ul>
-      <p>Drift fixed during extraction: every checkbox in a group was wrapped in an extra <code>&lt;div&gt;</code>; <code>.choice</code> is already block-level flex, so the wrapper is unnecessary. The sign-up default mock ships the agreement pre-checked. No indeterminate case appears in the mocks; the CSS supports it.</p>
+      <p>Drift fixed during extraction: every checkbox in a group was wrapped in an extra <code>&lt;div&gt;</code>; <code>.choice</code> is already block-level flex, so the wrapper is unnecessary. The sign-up default mock ships the agreement pre-checked. No indeterminate case appears in the mocks; the CSS supports it. <code>.choice__text</code> was a flex column, which set each piece of a sentence with links on its own line; since <a href="../../adr/0038-log-in-and-sign-up-screens.md">ADR 0038</a> it is plain text and its <code>small</code> is a block. The Log in mocks draw “Keep me logged in” ticked to show the state; the product starts it unticked.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

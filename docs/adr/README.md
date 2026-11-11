@@ -28,6 +28,8 @@ something else: a new record supersedes it and both say so.
 | [0013](0013-marketing-site-application.md) | Marketing site: a second, static Angular application with editorial content and one `APP_URL` | Accepted |
 | [0035](0035-presentation-in-the-components-library.md) | Prefer best practice; presentation only in `components`, one encapsulated `.scss` per component, BEM names | Accepted |
 | [0036](0036-component-parity-specs.md) | Component parity specs: `npm run parity`, against the mocks and the Magic Patterns reference, in CI | Accepted |
+| [0037](0037-google-sign-in-setup.md) | Google sign-in setup: one OAuth client, configured per environment | Accepted |
+| [0038](0038-log-in-and-sign-up-screens.md) | Log in and Sign up screens: the Magic Patterns frame, its words, and what stays as it was | Accepted |
 | [0037](0037-google-sign-in-setup.md) | Google sign-in setup: one OAuth client, redirect URI from `App:PublicBaseUrl`, off and hidden without keys | Accepted |
 | [0038](0038-e-mail-delivery.md) | E-mail delivery: Azure Communication Services Email, one HTML layout rendered from the text | Accepted |
 | [0039](0039-finish-messaging-decisions.md) | Finish messaging: the conversation menu, photos shrunk on the device and renewed links, real-time arrival over the event stream, request cards, the away period | Accepted |

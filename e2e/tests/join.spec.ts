@@ -1,7 +1,12 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures/jb-test';
 import { stubConfirmation, stubResend, stubSession, unconfirmedSession } from '../fixtures/stubs';
-import { JoinPage } from '../pages/join.page';
+import {
+  JoinErrorScreen,
+  JoinPage,
+  JoinSubmittingScreen,
+  JoinSuccessScreen,
+} from '../pages/join.page';
 import { VerifyEmailBannerRegion, VerifyEmailPage } from '../pages/verify-email.page';
 
 // Join Jubilee: L2-001 to L2-005. The API is answered by Playwright mocking (ADR 0009); the
@@ -55,6 +60,140 @@ test.describe('join with e-mail (L2-001)', () => {
     await expect(join.statementLink).toHaveAttribute('target', '_blank');
     await expect(join.termsLink).toHaveAttribute('target', '_blank');
     await expect(join.signInLink).toBeVisible();
+  });
+
+  test('AC3: the form names its fields as designed and marks only the optional one', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await expect(join.email).toHaveAttribute('placeholder', 'you@example.com');
+    await expect(join.homeChurch).toHaveAttribute('placeholder', 'e.g. The Meeting House');
+    await expect(join.passwordHint).toHaveText('At least 10 characters.');
+    await expect(join.homeChurchHint).toHaveText(
+      'Shown to no one. Helps us recommend businesses near you.',
+    );
+    await expect(join.fieldOf('Home church')).toContainText('(optional)');
+    await expect(join.main).not.toContainText('(required)');
+    for (const control of [join.firstName, join.lastName, join.email, join.password]) {
+      await expect(control).toHaveAttribute('required', '');
+    }
+    await expect(join.homeChurch).not.toHaveAttribute('required', '');
+    // Each hint stands under its control.
+    expect(await join.topEdge(join.passwordHint)).toBeGreaterThanOrEqual(
+      await join.bottomEdge(join.password),
+    );
+    expect(await join.topEdge(join.homeChurchHint)).toBeGreaterThanOrEqual(
+      await join.bottomEdge(join.homeChurch),
+    );
+  });
+
+  test('AC4: the agreement is one sentence with its two links', async ({ page, jb }) => {
+    const join = new JoinPage(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.open('sign-up');
+
+    await expect(join.agreementText).toHaveText(
+      'I am 18 or older and agree to Jubilee’s statement of faith and terms.',
+    );
+    await expect(join.statementLink).toHaveAttribute('href', '/statement-of-faith');
+    await expect(join.termsLink).toHaveAttribute('href', '/terms');
+    // The links are words of the sentence, on its line, not lines of their own.
+    expect(
+      Math.abs((await join.topEdge(join.termsLink)) - (await join.topEdge(join.statementLink))),
+    ).toBeLessThan(2);
+    expect(await join.leftEdge(join.termsLink)).toBeGreaterThan(
+      await join.rightEdge(join.statementLink),
+    );
+  });
+
+  test('AC7: the page says who it is for and offers Log in under the form', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await expect(join.heading).toHaveText('Join Jubilee');
+    await expect(join.lead).toHaveText('Free for everyone in Toronto’s Christian community.');
+    await expect(join.main).toContainText('Already on Jubilee?');
+    await expect(join.signInLink).toHaveAttribute('href', '/sign-in');
+    expect(await join.topEdge(join.signInLink)).toBeGreaterThan(
+      await join.bottomEdge(join.createAccount),
+    );
+  });
+
+  test('AC8: the names pair from 640 px, the e-mail and the password from 1024 px', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    const beside = async (left: typeof join.email, right: typeof join.email): Promise<boolean> =>
+      (await join.leftEdge(right)) >= (await join.rightEdge(left));
+
+    await page.setViewportSize({ width: 360, height: 800 });
+    await jb.open('sign-up');
+    expect(await beside(join.firstName, join.lastName)).toBe(false);
+    expect(await beside(join.email, join.password)).toBe(false);
+
+    await page.setViewportSize({ width: 768, height: 800 });
+    expect(await beside(join.firstName, join.lastName)).toBe(true);
+    expect(await beside(join.email, join.password)).toBe(false);
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    expect(await beside(join.firstName, join.lastName)).toBe(true);
+    expect(await beside(join.email, join.password)).toBe(true);
+  });
+
+  test('L2-003 AC8: Google comes first, with its mark, and "or use email" divides it from the form', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await expect(join.google).toHaveAttribute('href', '/api/auth/google/start?from=join');
+    await expect(join.googleMark).toBeVisible();
+    await expect(join.divider).toHaveText('or use email');
+    expect(await join.bottomEdge(join.google)).toBeLessThanOrEqual(
+      await join.topEdge(join.divider),
+    );
+    expect(await join.bottomEdge(join.divider)).toBeLessThanOrEqual(
+      await join.topEdge(join.firstName),
+    );
+  });
+
+  test('L2-187 AC1, AC2: the brand panel stands beside the form from 1024 px, and not below it', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.open('sign-up');
+    await expect(join.brandPanel).toBeVisible();
+    await expect(join.brandPanel).toContainText('Hire, shop and book with your church family.');
+    await expect(join.lockup).toHaveCount(1);
+    expect(await join.leftEdge(join.frameCard)).toBeGreaterThan(
+      await join.rightEdge(join.brandPanel),
+    );
+
+    await page.setViewportSize({ width: 360, height: 800 });
+    await expect(join.brandPanel).toBeHidden();
+    await expect(join.lockup).toHaveCount(1);
+    expect(await join.bottomEdge(join.lockup)).toBeLessThanOrEqual(
+      await join.topEdge(join.frameCard),
+    );
+  });
+
+  test('L2-187 AC3: the lockup leads to the welcome page', async ({ page, jb }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.lockup.click();
+
+    await expect.poll(() => join.dataPage()).toBe('welcome');
   });
 
   test('AC1: a signed-in member who opens the join page is taken to browse', async ({
@@ -139,7 +278,9 @@ test.describe('join with e-mail (L2-001)', () => {
     await join.fill(valid);
     await join.createAccount.click();
 
-    await expect(join.fieldError('email')).toContainText('An account already uses this e-mail');
+    await expect(join.fieldError('email')).toHaveText(
+      'An account already uses this e-mail. Log in instead, or use another address.',
+    );
     await expect(join.summary).toBeFocused();
   });
 
@@ -192,6 +333,132 @@ test.describe('join with e-mail (L2-001)', () => {
     await expect(join.errorState).toContainText('JB-AUTH-503');
     await join.errorState.getByRole('button', { name: 'Try again' }).click();
     await expect(join.createAccount).toBeVisible();
+  });
+});
+
+test.describe('the other states of Sign up, in the frame (L2-001, L2-002, L2-003, L2-187)', () => {
+  test('"Check your e-mail" is the only heading, with neither the lead nor the link under the card', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinSuccessScreen(page);
+    await jb.open('sign-up.success');
+    await join.ready();
+
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    await expect(join.heading).toHaveText('Check your e-mail');
+    await expect(join.sentText).toContainText('joanna.adeyemi@example.com');
+    await expect(join.lead).toHaveCount(0);
+    await expect(join.signInLink).toHaveCount(0);
+    await expect(join.frameFoot).toBeHidden();
+  });
+
+  test('a failed request leaves one heading and no link under the card', async ({ page, jb }) => {
+    const join = new JoinErrorScreen(page);
+    await jb.open('sign-up.error');
+    await join.ready();
+
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    await expect(join.heading).toHaveText('We couldn’t load the join form');
+    await expect(join.lead).toHaveCount(0);
+    await expect(join.signInLink).toHaveCount(0);
+  });
+
+  test('a notice from Google stands between the heading and the Google button', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up.google-cancelled');
+
+    expect(await join.topEdge(join.notice)).toBeGreaterThanOrEqual(
+      await join.bottomEdge(join.lead),
+    );
+    expect(await join.bottomEdge(join.notice)).toBeLessThanOrEqual(await join.topEdge(join.google));
+  });
+
+  test('the error summary stands above the Google button and takes the focus', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up.invalid');
+
+    await join.createAccount.click();
+
+    await expect(join.summary).toBeFocused();
+    expect(await join.bottomEdge(join.summary)).toBeLessThanOrEqual(
+      await join.topEdge(join.google),
+    );
+    await expect(join.heading).toHaveText('Join Jubilee');
+  });
+
+  test('while the form is being sent the frame keeps its heading and its link', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinSubmittingScreen(page);
+    await jb.open('sign-up.submitting');
+    await join.ready();
+
+    await expect(join.createAccount).toHaveAttribute('aria-busy', 'true');
+    await expect(join.email).toHaveAttribute('readonly', '');
+    await expect(join.heading).toHaveText('Join Jubilee');
+    await expect(join.signInLink).toBeVisible();
+  });
+});
+
+test.describe('show password on Sign up (L2-187)', () => {
+  for (const width of [360, 1280]) {
+    test(`AC4: the button inside the control shows the password, then hides it, at ${width} px`, async ({
+      page,
+      jb,
+    }) => {
+      const join = new JoinPage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-up');
+      await join.password.fill('a long password 1');
+
+      expect(await join.rightEdge(join.showPassword)).toBeLessThanOrEqual(
+        await join.rightEdge(join.password),
+      );
+      expect(await join.leftEdge(join.showPassword)).toBeGreaterThan(
+        await join.leftEdge(join.password),
+      );
+
+      await join.showPassword.click();
+      await expect(join.password).toHaveAttribute('type', 'text');
+      await expect(join.hidePassword).toBeFocused();
+      await expect(join.password).toHaveValue('a long password 1');
+
+      await join.hidePassword.click();
+      await expect(join.password).toHaveAttribute('type', 'password');
+      await expect(join.showPassword).toBeFocused();
+      await expect(join.password).toHaveValue('a long password 1');
+    });
+  }
+
+  test('AC5, AC6: by keyboard it comes after the password, works with Enter and Space and sends nothing', async ({
+    page,
+    jb,
+  }) => {
+    const seen = await stubJoin(page, 201, {});
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+    await join.fill(valid);
+
+    await join.password.press('Tab');
+    await expect(join.showPassword).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(join.password).toHaveAttribute('type', 'text');
+    await page.keyboard.press('Space');
+    await expect(join.password).toHaveAttribute('type', 'password');
+
+    expect(seen).toHaveLength(0);
+    await expect(join.password).toHaveValue(valid.password);
+    // The password still keeps its limit and its hint.
+    await expect(join.password).toHaveAttribute('maxlength', '128');
+    await expect(join.password).toHaveAttribute('aria-describedby', 'password-help');
   });
 });
 
@@ -310,7 +577,7 @@ test.describe('restricted until the address is confirmed (L2-005)', () => {
 });
 
 test.describe('join with Google: off, cancelled or refused (L2-003)', () => {
-  test('AC5: without Google sign-in the page shows no Google button and no "or"', async ({
+  test('AC5: without Google sign-in the page shows no Google button and no "or use email"', async ({
     page,
     jb,
   }) => {

@@ -58,6 +58,7 @@
       <li><a href="../components/tooltip.html">Tooltip</a></li>
       <li><a href="../components/divider.html">Divider</a></li>
       <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/list.html">List</a></li>
       <li><a href="../components/description-list.html">Description list</a></li>
@@ -72,6 +73,7 @@
       <li><a href="../components/message-thread.html">Message thread</a></li>
       <li><a href="../components/notification-item.html">Notification item</a></li>
       <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -162,6 +164,14 @@
         <div class="ds-example__caption"><span>Inside <code>.hero</code>, <code>.band</code> and <code>.topbar--ink</code> the ghost variant re-maps to on-brand tokens and the focus ring turns gold.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;button class="btn btn--primary" type="button"&gt;List your business&lt;/button&gt;
 &lt;button class="btn btn--ghost" type="button"&gt;How verification works&lt;/button&gt;</code></pre></details></div>
+      <h3>The Google button</h3>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="stack" style="width: 100%; max-width: 28.75rem;"><button class="btn btn--block btn--lg" type="button"><svg class="google-mark" aria-hidden="true" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Continue with Google</button><button class="btn btn--block btn--lg" type="button"><svg class="google-mark" aria-hidden="true" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Sign up with Google</button></div>
+      </div>
+        <div class="ds-example__caption"><span>The default button at the large size, full width, with Google’s “G” at 20px to the left of the label: “Continue with Google” on Log in, “Sign up with Google” on Sign up. It comes first, above the form.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="stack" style="width: 100%; max-width: 28.75rem;"&gt;&lt;button class="btn btn--block btn--lg" type="button"&gt;&lt;svg class="google-mark" aria-hidden="true" viewBox="0 0 48 48"&gt;&lt;path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/&gt;&lt;path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/&gt;&lt;path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/&gt;&lt;path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/&gt;&lt;/svg&gt;Continue with Google&lt;/button&gt;&lt;button class="btn btn--block btn--lg" type="button"&gt;&lt;svg class="google-mark" aria-hidden="true" viewBox="0 0 48 48"&gt;&lt;path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/&gt;&lt;path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/&gt;&lt;path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/&gt;&lt;path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/&gt;&lt;/svg&gt;Sign up with Google&lt;/button&gt;&lt;/div&gt;</code></pre></details></div>
+      <p>The mark is Google's and is used unaltered, in its four colours, on the neutral button, as Google's sign-in branding guidelines ask (<a href="../../adr/0038-log-in-and-sign-up-screens.md">ADR 0038</a>). Its four fills are attributes of the SVG; they are the only colour values in the system that are not tokens. While the form submits the button is disabled; when Google sign-in is not configured it is not rendered, and neither is the <a href="../components/divider.html">Divider</a> under it (L2-003).</p>
+      <p>Known difference: the design sets this button in Roboto with Google's grey edge. The product keeps the default button, with the system text face and <code>--color-border-strong</code>, at <code>--control-height-lg</code>.</p>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <p>Medium is the default. Small lives in top bars, rows, cards and toolbars; large is for detail-page actions, hero and auth screens where the button is the point.</p>
@@ -210,7 +220,7 @@
       <p>The button reads semantic tokens through five component tokens (<code>--btn-bg</code>, <code>--btn-fg</code>, <code>--btn-border</code>, <code>--btn-bg-hover</code>, <code>--btn-bg-active</code>) that each variant and each brand surface overrides. A theme changes semantic tokens; a re-skin overrides component tokens; neither edits <code>.btn</code>.</p>
       <pre><code>/* How the hero band re-maps the ghost button */
 .hero .btn--ghost { --btn-fg: var(--color-fg-on-brand); --btn-border: var(--color-border-on-brand); --btn-bg-hover: var(--color-bg-on-brand-subtle); }</code></pre>
-      <p>Gold stays gold in the dark theme, and its label stays ink (<code>--color-fg-on-accent</code>) in both, at 10.6:1. The danger button flips: red-300 fill with a red-950 label in dark.</p>
+      <p>Gold stays gold in the dark theme, and its label stays ink (<code>--color-fg-on-accent</code>) in both, at 11.15:1. The danger button flips: red-300 fill with a red-950 label in dark.</p>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
       <h3>Role and pattern</h3>
@@ -224,7 +234,7 @@
       <h3>Focus</h3>
       <p>The shared ring (2px <code>--color-focus-ring</code>, 2px offset) appears on <code>:focus-visible</code> only. It is ink in light and gold in dark; on the brand band it switches to <code>--color-focus-ring-on-brand</code> so it stays above 3:1 against ink.</p>
       <h3>Labelling</h3>
-      <p>The visible label is the accessible name. Icon-only buttons set <code>aria-label</code> naming the action and its object ("Save Luzandre.com", "Delete Faith heavyweight tee, charcoal"). Count dots on icon buttons go into the label ("Notifications, 3 unread"), never only into the dot.</p>
+      <p>The visible label is the accessible name. Icon-only buttons set <code>aria-label</code> naming the action and its object ("Save Luzandre.com", "Delete Faith heavyweight tee, charcoal"). Count dots on icon buttons go into the label ("Notifications, 3 unread"), never only into the dot. The Google mark is <code>aria-hidden</code>: the label already names Google.</p>
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
@@ -255,6 +265,7 @@
         <li>Name the object when the context does not: "Delete listing" in the dialog, "Delete" in a row whose name is already in the <code>aria-label</code>.</li>
         <li>Destructive labels name the loss: "Delete account", not "Confirm". Their partner is "Keep my account" or "Cancel".</li>
         <li>Keep to three words where possible. Loading never changes the label; progress text goes in a live region.</li>
+        <li>The Google button says “Continue with Google” on Log in and “Sign up with Google” on Sign up, exactly.</li>
       </ul>
     </section>
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
@@ -263,6 +274,8 @@
         <figure class="ds-dont"><div class="ds-example__canvas"><button class="btn btn--primary" type="button">Book a meeting</button><button class="btn btn--primary" type="button">Request a quote</button></div><figcaption>Two gold buttons compete. The business page mocks keep one primary and make the rest secondary or icon buttons.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><button class="btn btn--icon" type="button" aria-label="Save Luzandre.com"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button></div><figcaption>Icon-only buttons name the action and the thing it acts on.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><button class="btn btn--primary" type="button" disabled>Publish</button></div><figcaption>A disabled submit with no explanation. Keep it enabled and show the error summary on press, as the <em>invalid</em> form mocks do.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><button class="btn btn--block btn--lg" type="button"><svg class="google-mark" aria-hidden="true" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Continue with Google</button></div><figcaption>Google's own mark, in its colours, on the neutral button.</figcaption></figure>
+        <figure class="ds-dont"><div class="ds-example__canvas"><button class="btn btn--primary btn--block btn--lg" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9M12 12h8"/></svg>Continue with Google</button></div><figcaption>A “G” redrawn in the line style of the icon set, on the gold primary: not Google's mark, and a second primary beside “Log in”.</figcaption></figure>
       </div>
     </section>
     <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
@@ -285,6 +298,7 @@
           <tr><td>Primary weight</td><td><code>--font-weight-semibold</code></td><td colspan="2"><span data-token="--font-weight-semibold"></span></td></tr>
           <tr><td>Transition</td><td><code>--duration-fast</code> / <code>--ease-standard</code></td><td colspan="2"><span data-token="--duration-fast"></span> / <span data-token="--ease-standard"></span></td></tr>
           <tr><td>Spinner</td><td><code>--duration-spin</code></td><td colspan="2"><span data-token="--duration-spin"></span></td></tr>
+          <tr><td>Google mark</td><td><code>--icon-size-md</code></td><td colspan="2"><span data-token="--icon-size-md"></span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -303,6 +317,7 @@
         <tr><td><code>.btn--sm</code> <code>.btn--lg</code></td><td>Size; omit for medium.</td></tr>
         <tr><td><code>.btn--icon</code></td><td>Square icon-only button; requires <code>aria-label</code>.</td></tr>
         <tr><td><code>.btn--block</code></td><td>Full width.</td></tr>
+        <tr><td><code>svg.google-mark</code></td><td>Google's “G” before the label of the Google button; 20px, <code>aria-hidden</code>, its own four fills.</td></tr>
         <tr><td><code>disabled</code> / <code>aria-disabled="true"</code></td><td>Disabled; native attribute removes it from the tab order.</td></tr>
         <tr><td><code>aria-busy="true"</code></td><td>Loading: spinner, label hidden, clicks ignored, width kept.</td></tr>
         <tr><td><code>aria-pressed</code></td><td>Toggle state (button group).</td></tr>
@@ -316,7 +331,8 @@
         <li><a href="../../mocks/pages/product/default.html">pages/product/default</a> (Request this product)</li>
         <li><a href="../../mocks/dialogs/delete-product/default.html">dialogs/delete-product/default</a> (danger confirm)</li>
         <li><a href="../../mocks/dialogs/book-meeting/busy.html">dialogs/book-meeting/busy</a> (loading confirm)</li>
-        <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> (block primary)</li>
+        <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> (block primary, Continue with Google)</li>
+        <li><a href="../../mocks/pages/sign-up/default.html">pages/sign-up/default</a> (Sign up with Google)</li>
         <li><a href="../../mocks/pages/browse/default.html">pages/browse/default</a> (top-bar icon buttons, List your business)</li>
       </ul>
       <p>Drift fixed during extraction: the mocks layered pill radius, the gold edge and the semibold weight on as brand overrides after the base button; they are now part of <code>.btn</code> and <code>.btn--primary</code>. The spinner duration (0.8s) and its 1.1em size were raw values; they are now <code>--duration-spin</code> and <code>--icon-size-md</code>. <code>--control-height-md</code> was commented as 40px but is 44px; the comment and these docs now say 44px.</p>

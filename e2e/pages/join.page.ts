@@ -2,17 +2,36 @@ import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { ShellPage } from './shell.page';
 
-/** The join page (sign-up): the form, its error summary and the "Check your e-mail" state. */
+/** The Sign up screen (`/join`): Google first, the form, its error summary and the "Check your e-mail" state. */
 export class JoinPage extends ShellPage implements Screen {
   readonly heading: Locator;
+  /** The line under the heading. */
+  readonly lead: Locator;
+  /** The brand panel beside the form, from 1024 px (L2-187). */
+  readonly brandPanel: Locator;
+  /** The mark and wordmark that lead to the welcome page: in the panel, or above the card. */
+  readonly lockup: Locator;
   readonly firstName: Locator;
   readonly lastName: Locator;
   readonly email: Locator;
   readonly password: Locator;
   readonly homeChurch: Locator;
+  readonly passwordHint: Locator;
+  /** The button inside the password control: "Show password", then "Hide password". */
+  readonly showPassword: Locator;
+  readonly hidePassword: Locator;
+  /** The password control with its button. */
+  readonly passwordControl: Locator;
+  readonly homeChurchHint: Locator;
   readonly agreement: Locator;
+  /** The sentence beside the agreement box. */
+  readonly agreementText: Locator;
+  /** The agreement box with its sentence. */
+  readonly agreementChoice: Locator;
   readonly createAccount: Locator;
   readonly google: Locator;
+  /** Google's "G" in the Google button. */
+  readonly googleMark: Locator;
   readonly divider: Locator;
   readonly summary: Locator;
   readonly summaryLinks: Locator;
@@ -28,21 +47,33 @@ export class JoinPage extends ShellPage implements Screen {
   constructor(page: Page) {
     super(page);
     this.heading = this.main.getByRole('heading', { level: 1 });
+    this.lead = this.main.locator('.auth-card__lead');
+    this.brandPanel = this.main.locator('.auth-layout__panel');
+    this.lockup = this.main.getByRole('link', { name: 'Jubilee home' });
     this.firstName = this.main.getByLabel('First name');
     this.lastName = this.main.getByLabel('Last name');
-    this.email = this.main.getByLabel('E-mail');
-    this.password = this.main.getByLabel('Password');
+    this.email = this.main.getByLabel('Email', { exact: true });
+    this.password = this.main.getByLabel('Password', { exact: true });
     this.homeChurch = this.main.getByLabel('Home church');
+    this.passwordHint = this.main.locator('#password-help');
+    this.showPassword = this.main.getByRole('button', { name: 'Show password' });
+    this.hidePassword = this.main.getByRole('button', { name: 'Hide password' });
+    this.passwordControl = this.main.locator('.password-input');
+    this.homeChurchHint = this.main.locator('#church-help');
     this.agreement = this.main.getByRole('checkbox');
+    this.agreementText = this.main.locator('.choice__text');
+    this.agreementChoice = this.main.locator('.choice');
     this.createAccount = this.main.getByRole('button', { name: 'Create account' });
-    this.google = this.main.getByRole('link', { name: 'Join with Google' });
+    // A link in the app; the mock draws it as a button.
+    this.google = this.main.locator('.btn', { hasText: 'Sign up with Google' });
+    this.googleMark = this.google.locator('.google-mark');
     this.divider = this.main.locator('.divider-text');
     this.summary = this.main.locator('#summary');
     this.summaryLinks = this.summary.getByRole('link');
     this.notice = this.main.locator('.alert--warning');
     this.statementLink = this.main.getByRole('link', { name: 'statement of faith' });
     this.termsLink = this.main.getByRole('link', { name: 'terms', exact: true });
-    this.signInLink = this.main.getByRole('link', { name: 'Sign in' });
+    this.signInLink = this.main.getByRole('link', { name: 'Log in', exact: true });
     this.sentHeading = this.main.getByRole('heading', { name: 'Check your e-mail' });
     this.sentText = this.main.locator('.empty__text');
     this.sendAgain = this.main.getByRole('button', { name: 'Send it again' });
@@ -77,6 +108,13 @@ export class JoinPage extends ShellPage implements Screen {
       .first();
   }
 
+  /** Ticks the agreement and leaves it, so that it is shown at rest. */
+  async agreeAndLeave(): Promise<void> {
+    // By keyboard: a pointer left over the box would show it hovered.
+    await this.agreement.press('Space');
+    await this.agreement.blur();
+  }
+
   /** Types into a control and leaves it, so that it is shown at rest. */
   async typeAndLeave(control: Locator, value: string): Promise<void> {
     await control.fill(value);
@@ -89,5 +127,49 @@ export class JoinPage extends ShellPage implements Screen {
 
   regions(): Region[] {
     return [{ name: 'main', locator: this.main }];
+  }
+}
+
+/** What Joanna types to join, as the mocks draw it. */
+const joanna = {
+  first: 'Joanna',
+  last: 'Adeyemi',
+  email: 'joanna.adeyemi@example.com',
+  password: 'longpassword1',
+  church: 'Grace Toronto Church',
+  agree: true,
+};
+
+/** Sign up after the account was created; the state has no address, so the screen sends the form. */
+export class JoinSuccessScreen extends JoinPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    // The mock is drawn in the state already.
+    if (await this.sentHeading.isVisible()) return;
+    await this.fill(joanna);
+    await this.createAccount.click();
+    await this.sentHeading.waitFor();
+  }
+}
+
+/** Sign up after a request that failed. */
+export class JoinErrorScreen extends JoinPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.errorState.isVisible()) return;
+    await this.fill(joanna);
+    await this.createAccount.click();
+    await this.errorState.waitFor();
+  }
+}
+
+/** Sign up while its form is on the way. */
+export class JoinSubmittingScreen extends JoinPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if ((await this.createAccount.getAttribute('aria-busy')) === 'true') return;
+    await this.fill(joanna);
+    await this.createAccount.click();
+    await this.main.locator('.btn[aria-busy="true"]').waitFor();
   }
 }

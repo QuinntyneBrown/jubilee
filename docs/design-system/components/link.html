@@ -58,6 +58,7 @@
       <li><a href="../components/tooltip.html">Tooltip</a></li>
       <li><a href="../components/divider.html">Divider</a></li>
       <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/list.html">List</a></li>
       <li><a href="../components/description-list.html">Description list</a></li>
@@ -72,6 +73,7 @@
       <li><a href="../components/message-thread.html">Message thread</a></li>
       <li><a href="../components/notification-item.html">Notification item</a></li>
       <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -101,7 +103,7 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Use a link when activating it only navigates: “Forgot password?”, “View request”, “Back to browse”, a category in a business kicker. Use a <a href="../components/button.html">Button</a> when it changes something, and the <code>.btn--link</code> button when an action must look like a link (“Retry”). Navigation that should look like a button is <code>&lt;a class="btn"&gt;</code>.</p>
+      <p>Use a link when activating it only navigates: “Forgot password?”, “View request”, “Back to browse”, a category in a business kicker. Use a <a href="../components/button.html">Button</a> when it changes something, and the <code>.btn--link</code> button when an action must look like a link (“Retry”). Navigation that should look like a button is <code>&lt;a class="btn"&gt;</code>. The link under the Log in and Sign up forms has its own look, <code>.auth-link</code>; see <a href="../components/auth-layout.html">Auth layout</a>.</p>
       <ul>
         <li><b>Inline</b> sits in running text and inherits the type size; it is always underlined so it is not identified by colour alone (1.4.1).</li>
         <li><b>Back link</b> (<code>.back-link</code>) opens detail pages: muted, with a left arrow, 44px tall.</li>
@@ -113,7 +115,7 @@
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
       <div class="ds-anatomy">
         <figure class="ds-anatomy__figure">
-          <p>Already a member? <a href="../../mocks/pages/sign-in/default.html">Sign in</a></p>
+          <p>Remembered it? <a href="../../mocks/pages/sign-in/default.html">Back to sign in</a></p>
           <span class="ds-callout" style="left: 70%; top: 30%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 70%; top: 72%;" aria-hidden="true">2</span>
         </figure>
         <ol class="ds-anatomy__list">
@@ -168,8 +170,8 @@
       </table></div>
       <h3>Both themes</h3>
       <div class="ds-themes">
-        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><p>Already a member? <a href="../../mocks/pages/sign-in/default.html">Sign in</a> · <a class="back-link" href="../../mocks/pages/browse/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>Back to browse</a></p></div></div>
-        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><p>Already a member? <a href="../../mocks/pages/sign-in/default.html">Sign in</a> · <a class="back-link" href="../../mocks/pages/browse/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>Back to browse</a></p></div></div>
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><p>Remembered it? <a href="../../mocks/pages/sign-in/default.html">Back to sign in</a> · <a class="back-link" href="../../mocks/pages/browse/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>Back to browse</a></p></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><p>Remembered it? <a href="../../mocks/pages/sign-in/default.html">Back to sign in</a> · <a class="back-link" href="../../mocks/pages/browse/default.html"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>Back to browse</a></p></div></div>
       </div>
     </section>
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>

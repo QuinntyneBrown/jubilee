@@ -179,6 +179,12 @@ pre code { background: none; padding: 0; }
 .ds-frame--phone { max-width: 22.5rem; margin-inline: auto; border: var(--border-width-hairline) solid var(--color-border-default); }
 .ds-frame .backdrop, .ds-frame .dialog { position: absolute; }
 .ds-frame .toast-region { position: absolute; }
+/* The split auth frame is as tall as the viewport from 64rem, and its panel is sized in vw.
+   In the docs it is drawn as a screen at least 1280 wide and 800 tall, at 68% of its size, so its proportions are
+   the real ones; it scrolls sideways when the column is narrower than that. */
+.ds-frame--screen { overflow-x: auto; }
+.ds-frame--screen > .auth-layout { min-height: 0; }
+@media (min-width: 64rem) { .ds-frame--screen > .auth-layout { min-width: 80rem; height: 50rem; zoom: 0.68; } }
 .ds-matrix td .ds-cell-wide { min-width: 14rem; }
 .ds-specimen__sample { overflow-wrap: anywhere; }
 .ds-icon-sheet { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr)); margin-block: var(--space-4); padding: 0; list-style: none; }
