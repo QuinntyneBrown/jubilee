@@ -28,13 +28,7 @@
     <p class="visually-hidden" role="status">Loading notifications…</p>
     <ul jb-card list aria-hidden="true">
       @for (item of skeleton; track item) {
-        <li class="notif">
-          <span jb-skeleton shape="avatar"></span>
-          <div class="notif__body">
-            <span jb-skeleton shape="text" width="70"></span>
-            <span jb-skeleton shape="text" width="50"></span>
-          </div>
-        </li>
+        <li jb-notification-item-skeleton></li>
       }
     </ul>
   }
@@ -50,27 +44,15 @@
           @for (item of notifications.items; track item.id) {
             <li>
               <a
-                class="notif"
-                [class.notif--unread]="!item.read"
+                jb-notification-item
+                [icon]="icon(item)"
+                [heading]="item.title"
+                [text]="item.detail"
+                [time]="when(item)"
+                [unread]="!item.read"
                 [href]="item.target"
                 (click)="open($event, item)"
-              >
-                <span class="notif__icon" aria-hidden="true"
-                  ><svg jb-icon [name]="icon(item)"></svg
-                ></span>
-                <span class="notif__body">
-                  <span class="notif__title" style="display: block">
-                    @if (!item.read) {
-                      <span class="visually-hidden">Unread. </span>
-                    }
-                    {{ item.title }}</span
-                  >
-                  @if (item.detail) {
-                    <span class="notif__meta" style="display: block">{{ item.detail }}</span>
-                  }
-                  <span class="text-caption">{{ when(item) }}</span>
-                </span>
-              </a>
+              ></a>
             </li>
           }
         </ul>

@@ -379,17 +379,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .timeline li[data-stopped] .timeline__dot { background: var(--color-danger-solid); border-color: var(--color-danger-solid); color: var(--color-fg-on-danger); }
 .timeline__title { font: var(--text-label); }
 .timeline__meta { font: var(--text-body-sm); color: var(--color-fg-muted); }
-.notif { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-4); border-bottom: var(--border-width-hairline) solid var(--color-border-default); color: inherit; text-decoration: none; }
-.notif:hover, .notif[data-state="hover"] { background: var(--color-bg-subtle); }
-.notif--unread { background: var(--color-accent-subtle); }
-.notif--unread:hover, .notif--unread[data-state="hover"] { background: var(--color-accent-subtle-hover); }
-.notif__title, .notif__meta { display: block; }
-.notif__icon { display: grid; place-items: center; width: var(--avatar-size-md); height: var(--avatar-size-md); border-radius: var(--radius-full); background: var(--color-bg-subtle); flex: none; }
-.notif__body { flex: 1; min-width: 0; }
-.notif__title { font: var(--text-label); }
-.notif--unread .notif__title { font-weight: var(--font-weight-bold); }
-.notif__meta { font: var(--text-body-sm); color: var(--color-fg-muted); }
-.notif:last-child, li:last-child > .notif { border-bottom: 0; }
 
 /* ---------- Skeleton shapes ---------------------------------------------------------------------- */
 
