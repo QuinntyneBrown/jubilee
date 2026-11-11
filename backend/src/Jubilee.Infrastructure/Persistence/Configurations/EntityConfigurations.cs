@@ -85,6 +85,37 @@ public sealed class ListingViewConfiguration : IEntityTypeConfiguration<ListingV
     }
 }
 
+public sealed class ListingReportConfiguration : IEntityTypeConfiguration<ListingReport>
+{
+    public void Configure(EntityTypeBuilder<ListingReport> builder)
+    {
+        builder.ToTable("ListingReports");
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.ReporterSubject).HasMaxLength(100).IsRequired();
+        builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
+        builder.HasIndex(r => new { r.ListingId, r.ReporterSubject });
+        builder.HasMany(r => r.Entries).WithOne().HasForeignKey(e => e.ReportId).OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(r => r.Entries).UsePropertyAccessMode(PropertyAccessMode.Field);
+        builder.HasOne<Listing>().WithMany().HasForeignKey(r => r.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ListingReportEntryConfiguration : IEntityTypeConfiguration<ListingReportEntry>
+{
+    public void Configure(EntityTypeBuilder<ListingReportEntry> builder)
+    {
+        builder.ToTable("ListingReportEntries");
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).ValueGeneratedNever();
+        builder.Property(e => e.ReporterSubject).HasMaxLength(100).IsRequired();
+        builder.Property(e => e.Reason).HasConversion<string>().HasMaxLength(24);
+        builder.Property(e => e.Description).HasMaxLength(ListingReport.MaxDescriptionLength).IsRequired();
+        builder.Property(e => e.IdempotencyKey).HasMaxLength(100).IsRequired();
+        builder.HasIndex(e => new { e.ReporterSubject, e.IdempotencyKey }).IsUnique();
+    }
+}
+
 public sealed class ConsentRecordConfiguration : IEntityTypeConfiguration<ConsentRecord>
 {
     public void Configure(EntityTypeBuilder<ConsentRecord> builder)

@@ -19,6 +19,10 @@ public interface IAppDbContext
 
     DbSet<ConsentRecord> ConsentRecords { get; }
 
+    DbSet<ListingReport> ListingReports { get; }
+
+    DbSet<ListingReportEntry> ListingReportEntries { get; }
+
     DbSet<ListingView> ListingViews { get; }
 
     DbSet<ListingPhoto> ListingPhotos { get; }

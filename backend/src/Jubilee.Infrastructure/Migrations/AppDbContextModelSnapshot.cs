@@ -639,6 +639,75 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("ListingPhotos", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.ListingReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReporterSubject")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListingId", "ReporterSubject");
+
+                    b.ToTable("ListingReports", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ListingReportEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)");
+
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReporterSubject")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReportId");
+
+                    b.HasIndex("ReporterSubject", "IdempotencyKey")
+                        .IsUnique();
+
+                    b.ToTable("ListingReportEntries", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.ListingSubmission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1634,6 +1703,24 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.ListingReport", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Listing", null)
+                        .WithMany()
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ListingReportEntry", b =>
+                {
+                    b.HasOne("Jubilee.Domain.ListingReport", null)
+                        .WithMany("Entries")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Jubilee.Domain.ListingSubmission", b =>
                 {
                     b.HasOne("Jubilee.Domain.Listing", null)
@@ -1812,6 +1899,11 @@ namespace Jubilee.Infrastructure.Migrations
             modelBuilder.Entity("Jubilee.Domain.ListingDraft", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ListingReport", b =>
+                {
+                    b.Navigation("Entries");
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Request", b =>
