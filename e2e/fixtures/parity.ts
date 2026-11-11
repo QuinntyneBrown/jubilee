@@ -139,10 +139,18 @@ export function parity(component: string, { cases, reference }: ParityOptions): 
         await screen.ready();
         await item.arrange?.(screen);
         await centre(item.region(screen));
-        await expect(
-          item.region(screen),
-          `${crop.case} of ${component} against ${crop.frame}`,
-        ).toHaveScreenshot(baselineOf(component, file), { maxDiffPixelRatio: REFERENCE_THRESHOLD });
+        // The reference was captured on one platform; text set in the same face can land a pixel
+        // or two narrower on another. Compare the crop's footprint from the region's corner, so
+        // that difference counts against the threshold instead of failing on the image size.
+        const box = await item.region(screen).first().boundingBox();
+        if (!box) throw new Error(`${crop.case} of ${component} is not on screen.`);
+        await expect(page, `${crop.case} of ${component} against ${crop.frame}`).toHaveScreenshot(
+          baselineOf(component, file),
+          {
+            clip: { x: box.x, y: box.y, width: crop.clip.width, height: crop.clip.height },
+            maxDiffPixelRatio: REFERENCE_THRESHOLD,
+          },
+        );
       });
     }
   });
