@@ -6,7 +6,7 @@
 
    Three tiers:
      1. Primitives  (--palette-*, --font-family-*, --font-size-*, --font-weight-*,
-                    --line-height-*, --letter-spacing-*) raw values. Only
+                    --font-stretch-*, --line-height-*, --letter-spacing-*) raw values. Only
                     semantic tokens read them.
      2. Semantic    (--color-*, --text-*, --space-*, --layout-*, --radius-*,
                     --border-width-*, --shadow-*, --duration-*, --ease-*, --z-*,
@@ -24,6 +24,19 @@
    Jubilee brand: ink and cream neutrals; a gold accent that always carries
    ink text and is never used as text; green for verified, links and success.
    ========================================================================== */
+
+/* Archivo, the display face, ships with the design system (SIL OFL 1.1, see
+   assets/fonts/Archivo-OFL.txt) so headings and the wordmark render the same
+   from disk as in the design reference. One variable file: weight 400-900,
+   width 62-125%. */
+@font-face {
+  font-family: "Archivo";
+  src: url("../assets/fonts/Archivo.woff2") format("woff2");
+  font-weight: 400 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   /* ---------- Primitives: colour ------------------------------------------ */
@@ -111,12 +124,15 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
 
+  --font-stretch-wide: 110%;   /* wordmark: Archivo's width axis */
+
   --line-height-tight: 1.2;    /* display, h1, h2 */
   --line-height-snug: 1.3;     /* h3, h4 */
   --line-height-normal: 1.5;   /* body, labels */
   --line-height-relaxed: 1.65; /* long-form reading (legal pages) */
 
-  --letter-spacing-tight: -0.01em; /* headings, wordmark */
+  --letter-spacing-tighter: -0.03em; /* wordmark */
+  --letter-spacing-tight: -0.01em; /* headings */
   --letter-spacing-normal: 0;
   --letter-spacing-wide: 0.04em;   /* all-caps overlines and badges */
 

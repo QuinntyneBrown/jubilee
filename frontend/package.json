@@ -10,8 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "cd .. && husky frontend/.husky || true",
-    "design:sync": "cp ../docs/design-system/tokens/tokens.css projects/components/src/lib/styles/tokens.css && cp ../docs/design-system/assets/components.css projects/components/src/lib/styles/ui.css",
-    "design:check": "cmp ../docs/design-system/tokens/tokens.css projects/components/src/lib/styles/tokens.css && cmp ../docs/design-system/assets/components.css projects/components/src/lib/styles/ui.css"
+    "design:sync": "cp ../docs/design-system/tokens/tokens.css projects/components/src/lib/styles/tokens.css && cp ../docs/design-system/assets/components.css projects/components/src/lib/styles/ui.css && cp ../docs/design-system/assets/fonts/Archivo.woff2 projects/components/src/lib/assets/fonts/Archivo.woff2",
+    "design:check": "cmp ../docs/design-system/tokens/tokens.css projects/components/src/lib/styles/tokens.css && cmp ../docs/design-system/assets/components.css projects/components/src/lib/styles/ui.css && cmp ../docs/design-system/assets/fonts/Archivo.woff2 projects/components/src/lib/assets/fonts/Archivo.woff2"
   },
   "private": true,
   "packageManager": "npm@10.9.9",
