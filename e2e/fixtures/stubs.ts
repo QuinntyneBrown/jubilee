@@ -33,7 +33,10 @@ const searchResults = '**/api/search?*';
 const searchStart = '**/api/search/start';
 
 /** A search answer that differs from the seed: no hits, so the page shows its no-results state. */
-export function noResults(query: string, suggestion: { closeTerm: string; categorySlug: string } | null) {
+export function noResults(
+  query: string,
+  suggestion: { closeTerm: string; categorySlug: string } | null,
+) {
   return {
     query,
     businessCount: 0,
@@ -200,6 +203,24 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       );
     case 'search-start':
       return stubSearchStart(page, memberSearchStart);
+    case 'verify-email-pending':
+      return stubSession(page, unconfirmedSession);
+    case 'verify-email-loading':
+      return page.route(confirmation, pending);
+    case 'verify-email-success':
+      return stubConfirmation(page, { outcome: 'confirmed', firstName: 'Joanna' });
+    case 'verify-email-expired':
+      return stubConfirmation(page, { outcome: 'expired', firstName: null });
+    case 'verify-email-error':
+      return stubConfirmation(
+        page,
+        { title: 'Service unavailable', status: 503, reference: 'JB-VERIFY-502' },
+        503,
+      );
+    case 'email-unconfirmed':
+      return stubSession(page, unconfirmedSession);
+    case 'email-bounced':
+      return stubSession(page, { ...unconfirmedSession, emailBounced: true });
     case 'category-not-found':
       return page.route(categoryListings, (route) =>
         route.fulfill({
@@ -209,4 +230,39 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         }),
       );
   }
+}
+
+/** Joanna as the session endpoint returns her while her address is not yet confirmed (L2-005). */
+export const unconfirmedSession = {
+  signedIn: true,
+  firstName: 'Joanna',
+  displayName: 'Joanna Adeyemi',
+  initials: 'JA',
+  email: 'joanna.adeyemi@example.com',
+  emailStatus: 'unconfirmed',
+  emailBounced: false,
+  agreementRequired: false,
+};
+
+/** Answers the session with `session` over the member the visit signed in as. */
+export function stubSession(page: Page, session: Record<string, unknown>): Promise<unknown> {
+  return page.route('**/api/session', (route) => route.fulfill({ json: session }));
+}
+
+const confirmation = '**/api/account/confirmation';
+
+/** Answers the opening of a confirmation link. */
+export function stubConfirmation(page: Page, body: unknown, status = 200): Promise<unknown> {
+  return page.route(confirmation, (route) =>
+    route.fulfill({
+      status,
+      contentType: status >= 400 ? 'application/problem+json' : 'application/json',
+      body: JSON.stringify(body),
+    }),
+  );
+}
+
+/** Answers "Send it again" (the resend of the confirmation link). */
+export function stubResend(page: Page, status = 202): Promise<unknown> {
+  return page.route('**/api/account/confirmation/resend', (route) => route.fulfill({ status }));
 }

@@ -1,0 +1,36 @@
+<svg jb-icon [name]="state() === 'persistent' || state() === 'sent' ? 'info' : 'alert'"></svg>
+<div class="alert__body">
+  @switch (state()) {
+    @case ('sent') {
+      <span><strong>We sent a new link</strong> to {{ email() }}. It works for 24 hours.</span>
+    }
+    @case ('bounced') {
+      <span
+        ><strong>We couldn’t deliver e-mail to {{ email() }}.</strong> Check the address for a
+        typo.</span
+      >
+      <span class="alert__actions"
+        ><a class="btn btn--sm" routerLink="/account">Change e-mail</a></span
+      >
+    }
+    @case ('expired') {
+      <span><strong>Your confirmation link expired.</strong> Links work for 24 hours.</span>
+      <span class="alert__actions"
+        ><button class="btn btn--sm" type="button" [disabled]="busy()" (click)="resend.emit()">
+          Send a new link
+        </button></span
+      >
+    }
+    @default {
+      <span
+        ><strong>Confirm your e-mail to message businesses.</strong> We sent a link to
+        {{ email() }}.</span
+      >
+      <span class="alert__actions"
+        ><button class="btn btn--sm" type="button" [disabled]="busy()" (click)="resend.emit()">
+          Send it again</button
+        ><a routerLink="/account">Change e-mail</a></span
+      >
+    }
+  }
+</div>

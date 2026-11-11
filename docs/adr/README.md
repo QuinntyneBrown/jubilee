@@ -16,6 +16,7 @@ something else: a new record supersedes it and both say so.
 | [0009](0009-tests-without-a-backend-or-database.md) | Tests run without a real backend or database: Playwright API mocking for e2e, EF Core InMemory for the backend | Accepted |
 | [0010](0010-behaviour-tests-only-by-default.md) | Only behaviour tests run; the visual, responsive and accessibility sweeps run by hand | Accepted |
 | [0011](0011-search-index-over-the-database.md) | Search index: query-time analysis over the database behind `ISearchIndex`, until a search engine is chosen | Accepted |
+| [0012](0012-account-join-decisions.md) | Joining: Argon2id, outbox e-mail, confirmation links, the bounce webhook secret and Google linking | Accepted |
 | [0008](0008-frontend-file-per-type.md) | Frontend: one file per type, no single-file components (`templateUrl`, never `template`) | Accepted |
 
 ## Format

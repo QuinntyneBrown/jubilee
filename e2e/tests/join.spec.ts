@@ -1,0 +1,350 @@
+import type { Page } from '@playwright/test';
+import { expect, test } from '../fixtures/jb-test';
+import { stubConfirmation, stubResend, stubSession, unconfirmedSession } from '../fixtures/stubs';
+import { JoinPage } from '../pages/join.page';
+import { VerifyEmailBannerRegion, VerifyEmailPage } from '../pages/verify-email.page';
+
+// Join Jubilee: L2-001 to L2-005. The API is answered by Playwright mocking (ADR 0009); the
+// requests the app makes are captured to prove what it sends.
+
+const valid = {
+  first: 'Joanna',
+  last: 'Adeyemi',
+  email: 'joanna.adeyemi@example.com',
+  password: 'longpassword1',
+  church: 'Grace Toronto Church',
+  agree: true,
+};
+
+/** Answers the join request with `status` and `body`, and keeps the request bodies it saw. */
+async function stubJoin(
+  page: Page,
+  status: number,
+  body: unknown,
+  headers: Record<string, string> = {},
+) {
+  const seen: Record<string, unknown>[] = [];
+  await page.route('**/api/account/join', (route) => {
+    seen.push(route.request().postDataJSON() as Record<string, unknown>);
+    return route.fulfill({
+      status,
+      headers,
+      contentType: status >= 400 ? 'application/problem+json' : 'application/json',
+      body: JSON.stringify(body),
+    });
+  });
+  return seen;
+}
+
+test.describe('join with e-mail (L2-001)', () => {
+  test('AC1: the form asks for the fields of the mock, with their limits and the Google button', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+    await expect.poll(() => join.dataPage()).toBe('sign-up');
+
+    await expect(join.heading).toHaveText('Join Jubilee');
+    await expect(join.firstName).toHaveAttribute('maxlength', '50');
+    await expect(join.lastName).toHaveAttribute('maxlength', '50');
+    await expect(join.email).toHaveAttribute('maxlength', '254');
+    await expect(join.password).toHaveAttribute('maxlength', '128');
+    await expect(join.password).toHaveAttribute('type', 'password');
+    await expect(join.google).toHaveAttribute('href', '/api/auth/google/start');
+    await expect(join.statementLink).toHaveAttribute('target', '_blank');
+    await expect(join.termsLink).toHaveAttribute('target', '_blank');
+    await expect(join.signInLink).toBeVisible();
+  });
+
+  test('AC1: a signed-in member who opens the join page is taken to browse', async ({
+    page,
+    jb,
+  }) => {
+    await jb.signInAs('member');
+    await jb.goto('/join');
+    await expect.poll(() => new JoinPage(page).dataPage()).toBe('browse');
+  });
+
+  test('AC2: joining sends the fields and shows where the link was sent', async ({ page, jb }) => {
+    const seen = await stubJoin(page, 201, { email: valid.email });
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await expect(join.sentHeading).toBeVisible();
+    await expect(join.sentText).toContainText(valid.email);
+    expect(seen).toEqual([
+      {
+        firstName: 'Joanna',
+        lastName: 'Adeyemi',
+        email: valid.email,
+        password: valid.password,
+        homeChurch: 'Grace Toronto Church',
+        agreementAccepted: true,
+        challengeToken: null,
+      },
+    ]);
+  });
+
+  test('AC3: an empty form is not sent; the summary counts the fixes and takes the focus', async ({
+    page,
+    jb,
+  }) => {
+    const seen = await stubJoin(page, 201, { email: '' });
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.createAccount.click();
+
+    await expect(join.summary).toContainText('Fix 5 things to continue');
+    await expect(join.summary).toBeFocused();
+    await expect(join.summaryLinks).toHaveCount(5);
+    await expect(join.email).toHaveAttribute('aria-invalid', 'true');
+    await expect(join.fieldError('email')).toBeVisible();
+    await expect(join.agreement).toHaveAttribute('aria-invalid', 'true');
+    expect(seen).toEqual([]);
+
+    await join.summaryLinks.first().click();
+    await expect(join.firstName).toBeFocused();
+  });
+
+  test('AC3: a short password says how long it is', async ({ page, jb }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.fill({ ...valid, password: 'short' });
+    await join.createAccount.click();
+
+    await expect(join.fieldError('password')).toHaveText(
+      'Use at least 10 characters. This one has 5.',
+    );
+    await expect(join.summary).toContainText('Fix 1 thing to continue');
+  });
+
+  test('AC4: an address that already has an account is refused beside the field', async ({
+    page,
+    jb,
+  }) => {
+    await stubJoin(page, 422, {
+      title: 'Check the form',
+      status: 422,
+      errors: { email: 'EMAIL_TAKEN' },
+    });
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await expect(join.fieldError('email')).toContainText('An account already uses this e-mail');
+    await expect(join.summary).toBeFocused();
+  });
+
+  test('AC4: a password found in a breach is refused', async ({ page, jb }) => {
+    await stubJoin(page, 422, {
+      title: 'Check the form',
+      status: 422,
+      errors: { password: 'PASSWORD_BREACHED' },
+    });
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await expect(join.fieldError('password')).toContainText('data breach');
+  });
+
+  test('AC5: too many attempts tell the visitor how long to wait', async ({ page, jb }) => {
+    await stubJoin(
+      page,
+      429,
+      { title: 'Too many requests', status: 429 },
+      { 'Retry-After': '600' },
+    );
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await expect(join.notice).toHaveText('You’re doing that a lot. Try again in 10 minutes.');
+  });
+
+  test('AC6: a failed request shows the error reference and lets the visitor try again', async ({
+    page,
+    jb,
+  }) => {
+    await stubJoin(page, 503, {
+      title: 'Service unavailable',
+      status: 503,
+      reference: 'JB-AUTH-503',
+    });
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await expect(join.errorState).toContainText('JB-AUTH-503');
+    await join.errorState.getByRole('button', { name: 'Try again' }).click();
+    await expect(join.createAccount).toBeVisible();
+  });
+});
+
+test.describe('confirm the e-mail address (L2-004)', () => {
+  test('AC1: the waiting page names the address and sends the link again', async ({ page, jb }) => {
+    await stubResend(page);
+    const verify = new VerifyEmailPage(page);
+    await jb.open('verify-email');
+
+    await expect(verify.heading).toHaveText('Confirm your e-mail');
+    await expect(verify.text).toContainText(unconfirmedSession.email);
+    const request = page.waitForRequest('**/api/account/confirmation/resend');
+    await verify.sendAgain.click();
+    expect((await request).method()).toBe('POST');
+    await expect(verify.status).toContainText(`We sent a new link to ${unconfirmedSession.email}`);
+  });
+
+  test('AC2: opening the link confirms the address and takes the token out of the address bar', async ({
+    page,
+    jb,
+  }) => {
+    const bodies: unknown[] = [];
+    page.on('request', (request) => {
+      if (request.url().endsWith('/api/account/confirmation')) bodies.push(request.postDataJSON());
+    });
+    const verify = new VerifyEmailPage(page);
+    await jb.open('verify-email.success');
+
+    await expect(verify.heading).toHaveText('E-mail confirmed');
+    await expect(verify.text).toContainText('Thanks, Joanna.');
+    expect(bodies).toEqual([{ token: 'e2e-token' }]);
+    expect(new URL(page.url()).pathname).toBe('/verify-email');
+  });
+
+  test('AC3: a link past its 24 hours says so and offers a new one', async ({ page, jb }) => {
+    const verify = new VerifyEmailPage(page);
+    await jb.open('verify-email.expired');
+
+    await expect(verify.heading).toHaveText('This link has expired');
+    await expect(verify.text).toContainText('24 hours');
+  });
+
+  test('AC3: while the link is checked the page says it is working', async ({ page, jb }) => {
+    const verify = new VerifyEmailPage(page);
+    await jb.open('verify-email.loading');
+
+    await expect(verify.status).toContainText('Confirming your e-mail');
+  });
+
+  test('AC4: a failed check shows JB-VERIFY-502 and can be tried again', async ({ page, jb }) => {
+    const verify = new VerifyEmailPage(page);
+    await jb.open('verify-email.error');
+
+    await expect(verify.errorReference).toHaveText('JB-VERIFY-502');
+    await stubConfirmation(page, { outcome: 'confirmed', firstName: 'Joanna' });
+    await verify.tryAgain.click();
+    await expect(verify.heading).toHaveText('E-mail confirmed');
+  });
+});
+
+test.describe('restricted until the address is confirmed (L2-005)', () => {
+  test('AC1: an unconfirmed member sees the banner, with no way to dismiss it', async ({
+    page,
+    jb,
+  }) => {
+    const banner = new VerifyEmailBannerRegion(page);
+    await jb.open('verify-email-banner');
+
+    await expect(banner.banner).toContainText('Confirm your e-mail to message businesses.');
+    await expect(banner.banner).toContainText(unconfirmedSession.email);
+    await expect(banner.changeEmail).toBeVisible();
+    await expect(banner.dismiss).toHaveCount(0);
+  });
+
+  test('AC1: "Send it again" asks for a new link and says it was sent', async ({ page, jb }) => {
+    await stubResend(page);
+    const banner = new VerifyEmailBannerRegion(page);
+    await jb.open('verify-email-banner');
+
+    await banner.sendAgain.click();
+
+    await expect(banner.banner).toContainText('We sent a new link');
+  });
+
+  test('AC3: an address that bounced says so and offers to change it', async ({ page, jb }) => {
+    const banner = new VerifyEmailBannerRegion(page);
+    await jb.open('verify-email-banner.danger');
+
+    await expect(banner.banner).toContainText('We couldn’t deliver e-mail to');
+    await expect(banner.changeEmail).toBeVisible();
+  });
+
+  test('AC4: confirming in another tab clears the banner when this tab is focused again', async ({
+    page,
+    jb,
+  }) => {
+    const banner = new VerifyEmailBannerRegion(page);
+    await jb.open('verify-email-banner');
+    await expect(banner.banner).toBeVisible();
+
+    await stubSession(page, { ...unconfirmedSession, emailStatus: 'confirmed' });
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+
+    await expect(banner.banner).toHaveCount(0);
+  });
+
+  test('a confirmed member sees no banner', async ({ page, jb }) => {
+    const banner = new VerifyEmailBannerRegion(page);
+    await jb.open('browse');
+    await expect(page.locator('main#main')).toBeAttached();
+    await expect(banner.banner).toHaveCount(0);
+  });
+});
+
+test.describe('join with Google: the agreement (L2-003)', () => {
+  test('AC1: a Google member who has not agreed is held on the agreement page', async ({
+    page,
+    jb,
+  }) => {
+    await jb.signInAs('member');
+    await stubSession(page, {
+      ...unconfirmedSession,
+      emailStatus: 'confirmed',
+      agreementRequired: true,
+    });
+    await jb.goto('/');
+    await expect.poll(() => new JoinPage(page).dataPage()).toBe('join-agreement');
+    expect(new URL(page.url()).pathname).toBe('/join/agreement');
+  });
+
+  test('AC2: continuing without ticking the box is refused; ticking it saves and goes on', async ({
+    page,
+    jb,
+  }) => {
+    await jb.signInAs('member');
+    let agreed = false;
+    await page.route('**/api/session', (route) =>
+      route.fulfill({
+        json: { ...unconfirmedSession, emailStatus: 'confirmed', agreementRequired: !agreed },
+      }),
+    );
+    await page.route('**/api/account/agreement', (route) => {
+      agreed = true;
+      return route.fulfill({ status: 204 });
+    });
+    const join = new JoinPage(page);
+    await jb.goto('/join/agreement?returnUrl=%2Fsearch%3Fq%3Dplumber');
+
+    await page.getByRole('button', { name: 'Continue' }).click();
+    await expect(join.summary).toContainText('Agree to the statement of faith to join');
+
+    await join.agreement.check();
+    await page.getByRole('button', { name: 'Continue' }).click();
+    await expect.poll(() => new URL(page.url()).pathname).toBe('/search');
+  });
+});

@@ -50,6 +50,21 @@
       }
     },
     {
+      "id": "join-agreement",
+      "kind": "page",
+      "title": "Join agreement",
+      "route": "/join/agreement",
+      "states": [
+        "default",
+        "invalid"
+      ],
+      "not_applicable": {
+        "empty": "A form page has no collection that could be empty.",
+        "loading": "The page needs no data.",
+        "error": "Accepting is a single request; a failure shows the same toast as any save."
+      }
+    },
+    {
       "id": "forgot-password",
       "kind": "page",
       "title": "Forgot password",

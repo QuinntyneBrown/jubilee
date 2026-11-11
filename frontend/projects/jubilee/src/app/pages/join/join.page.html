@@ -1,0 +1,222 @@
+<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
+<div class="auth-card card stack">
+  @switch (view()) {
+    @case ('success') {
+      <div jb-empty-state icon="message" heading="Check your e-mail" [level]="1">
+        We sent a link to <strong>{{ sentTo() }}</strong
+        >. Open it within 24 hours to confirm your address.
+        <a slot="actions" class="btn btn--primary" routerLink="/verify-email"
+          >Open verification page</a
+        >
+        <button slot="actions" class="btn" type="button" (click)="resend()">Send it again</button>
+      </div>
+      @if (resent()) {
+        <p class="text-muted" role="status">We sent a new link to {{ sentTo() }}.</p>
+      }
+      @if (notice()) {
+        <p class="text-muted" role="alert">{{ notice() }}</p>
+      }
+    }
+    @case ('error') {
+      <div
+        jb-empty-state
+        icon="alert"
+        heading="We couldn’t load the join form"
+        [level]="1"
+        [error]="true"
+      >
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>JB-AUTH-503</code>.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="retry()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" class="btn" routerLink="/welcome">Back to welcome</a>
+      </div>
+    }
+    @default {
+      <h1>Join Jubilee</h1>
+      <p class="text-muted">Free for everyone in Toronto’s Christian community.</p>
+      @if (notice()) {
+        <div class="alert alert--warning" role="alert">
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">{{ notice() }}</div>
+        </div>
+      }
+      @if (summary().length > 0) {
+        <div
+          class="alert alert--danger form-summary"
+          role="alert"
+          id="summary"
+          tabindex="-1"
+          #summaryBox
+        >
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">
+              Fix {{ summary().length }} {{ summary().length === 1 ? 'thing' : 'things' }} to
+              continue
+            </div>
+            <ul class="alert__list">
+              @for (item of summary(); track item.field) {
+                <li>
+                  <a
+                    [href]="'#' + item.id"
+                    (click)="$event.preventDefault(); focusField(item.id)"
+                    >{{ item.text }}</a
+                  >
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+      <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
+        <div class="form-grid form-grid--2">
+          <div class="field">
+            <label class="field__label" for="first"
+              >First name <span class="optional">(required)</span></label
+            >
+            <input
+              class="input"
+              id="first"
+              name="firstName"
+              type="text"
+              required
+              autocomplete="given-name"
+              [attr.maxlength]="max.name"
+              [ngModel]="firstName()"
+              (ngModelChange)="firstName.set($event)"
+              [readOnly]="view() === 'submitting'"
+              [attr.aria-invalid]="errors().firstName ? 'true' : null"
+              [attr.aria-describedby]="errors().firstName ? 'first-error' : null"
+            />
+            @if (errors().firstName; as text) {
+              <span class="field__error" id="first-error">{{ text }}</span>
+            }
+          </div>
+          <div class="field">
+            <label class="field__label" for="last"
+              >Last name <span class="optional">(required)</span></label
+            >
+            <input
+              class="input"
+              id="last"
+              name="lastName"
+              type="text"
+              required
+              autocomplete="family-name"
+              [attr.maxlength]="max.name"
+              [ngModel]="lastName()"
+              (ngModelChange)="lastName.set($event)"
+              [readOnly]="view() === 'submitting'"
+              [attr.aria-invalid]="errors().lastName ? 'true' : null"
+              [attr.aria-describedby]="errors().lastName ? 'last-error' : null"
+            />
+            @if (errors().lastName; as text) {
+              <span class="field__error" id="last-error">{{ text }}</span>
+            }
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="email"
+            >E-mail <span class="optional">(required)</span></label
+          >
+          <input
+            class="input"
+            id="email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            [attr.maxlength]="max.email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            [readOnly]="view() === 'submitting'"
+            [attr.aria-invalid]="errors().email ? 'true' : null"
+            [attr.aria-describedby]="errors().email ? 'email-error' : null"
+          />
+          @if (errors().email; as text) {
+            <span class="field__error" id="email-error">{{ text }}</span>
+          }
+        </div>
+        <div class="field">
+          <label class="field__label" for="password"
+            >Password <span class="optional">(required)</span></label
+          >
+          <span class="field__help" id="password-help">At least 10 characters.</span>
+          <input
+            class="input"
+            id="password"
+            name="password"
+            type="password"
+            required
+            autocomplete="new-password"
+            [attr.maxlength]="max.password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            [readOnly]="view() === 'submitting'"
+            [attr.aria-invalid]="errors().password ? 'true' : null"
+            [attr.aria-describedby]="
+              errors().password ? 'password-help password-error' : 'password-help'
+            "
+          />
+          @if (errors().password; as text) {
+            <span class="field__error" id="password-error">{{ text }}</span>
+          }
+        </div>
+        <div class="field">
+          <label class="field__label" for="church"
+            >Home church <span class="optional">(optional)</span></label
+          >
+          <span class="field__help" id="church-help"
+            >Shown to no one. Helps us recommend businesses near you.</span
+          >
+          <input
+            class="input"
+            id="church"
+            name="homeChurch"
+            type="text"
+            aria-describedby="church-help"
+            [attr.maxlength]="max.church"
+            [ngModel]="homeChurch()"
+            (ngModelChange)="homeChurch.set($event)"
+            [readOnly]="view() === 'submitting'"
+          />
+        </div>
+        <div>
+          <label class="choice">
+            <input
+              type="checkbox"
+              id="agree"
+              [checked]="agreed()"
+              (change)="agreed.set($any($event.target).checked)"
+              [disabled]="view() === 'submitting'"
+              [attr.aria-invalid]="errors().agreement ? 'true' : null"
+              [attr.aria-describedby]="errors().agreement ? 'agree-error' : null"
+            />
+            <span class="choice__text"
+              >I agree to Jubilee’s
+              <a href="/statement-of-faith" target="_blank" rel="noopener">statement of faith</a>
+              and <a href="/terms" target="_blank" rel="noopener">terms</a>.</span
+            >
+          </label>
+          @if (errors().agreement; as text) {
+            <span class="field__error" id="agree-error">{{ text }}</span>
+          }
+        </div>
+        <button
+          class="btn btn--primary btn--block btn--lg"
+          type="submit"
+          [attr.aria-busy]="view() === 'submitting' ? 'true' : null"
+        >
+          Create account
+        </button>
+        <p class="divider-text">or</p>
+        <a class="btn btn--block btn--lg" [href]="googleUrl">Join with Google</a>
+      </form>
+    }
+  }
+</div>
+@if (view() === 'form' || view() === 'submitting') {
+  <p class="auth-foot">Already a member? <a routerLink="/sign-in">Sign in</a></p>
+}

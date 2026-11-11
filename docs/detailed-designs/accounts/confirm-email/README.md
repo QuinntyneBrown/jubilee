@@ -74,8 +74,8 @@ The feature is a vertical slice from the verification page and banner to the
   `EMAIL_UNCONFIRMED`. The save endpoints do not carry it, so saving succeeds.
 - **`EmailEventsController`** and **`RecordEmailBounceCommandHandler`** —
   receive the `E-mail provider` bounce event at
-  `POST /api/webhooks/email-events` and mark the member. The authentication
-  scheme of the webhook is `<TO SUPPLY>`.
+  `POST /api/webhooks/email-events` and mark the member. The webhook is
+  authenticated by a shared secret in `X-Webhook-Secret` (ADR 0012).
 - **`RateLimitMiddleware`** — limits confirmation resends to 5 per hour. A
   further press sends no e-mail; the response is `429` with `Retry-After`, and
   the banner states when the member may try again.
