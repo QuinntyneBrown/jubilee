@@ -15,6 +15,7 @@ import {
   Input,
   Textarea,
   RadioGroup,
+  Skeleton,
 } from 'components';
 
 type FieldName = 'answer' | 'name' | 'role' | 'note';
@@ -43,6 +44,7 @@ const MESSAGES: Record<string, string> = {
     Input,
     Textarea,
     RadioGroup,
+    Skeleton,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },

@@ -24,6 +24,7 @@ import {
   Input,
   Select,
   Textarea,
+  Skeleton,
 } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 import { WorkspaceHeader } from '../my-business/workspace-header';
@@ -61,6 +62,7 @@ type Saving = 'idle' | 'saving';
     Input,
     Select,
     Textarea,
+    Skeleton,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

@@ -258,9 +258,6 @@ button.avatar { border: 0; padding: 0; cursor: pointer; }
 .spinner { display: inline-block; flex: none; width: var(--icon-size-md); height: var(--icon-size-md); border: var(--border-width-thick) solid var(--color-border-default); border-top-color: var(--color-accent-border); border-radius: var(--radius-full); animation: spin var(--duration-spin) linear infinite; }
 .spinner--sm { width: var(--icon-size-sm); height: var(--icon-size-sm); }
 .spinner--lg { width: var(--avatar-size-md); height: var(--avatar-size-md); border-width: var(--border-width-thick); }
-.skeleton { display: block; background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-subtle-hover) 37%, var(--color-bg-subtle) 63%); background-size: 400% 100%; border-radius: var(--radius-sm); animation: shimmer var(--duration-loop) var(--ease-standard) infinite; min-height: 1em; }
-.skeleton--text { height: 0.9em; margin-block: 0.3em; } .skeleton--text:last-child { width: 60%; }
-.skeleton--title { height: 1.5em; width: 40%; } .skeleton--circle { border-radius: 50%; } .skeleton--rect { border-radius: var(--radius-md); }
 .empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-3); padding: var(--space-12) var(--space-6); }
 .empty__icon { width: calc(var(--avatar-size-md) + var(--space-6)); height: calc(var(--avatar-size-md) + var(--space-6)); border-radius: var(--radius-full); display: grid; place-items: center; background: var(--color-accent-subtle); color: var(--color-fg-accent); margin-bottom: var(--space-2); }
 .empty__title { font: var(--text-h3); } .empty__text { color: var(--color-fg-muted); max-width: 36ch; }
@@ -297,14 +294,13 @@ button.avatar { border: 0; padding: 0; cursor: pointer; }
 @keyframes slide-in-right { from { translate: 100% 0; } }
 @keyframes slide-in-left { from { translate: -100% 0; } }
 @keyframes toast-countdown { from { width: 100%; } to { width: 0; } }
-@keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
 @keyframes indeterminate { from { translate: -100% 0; } to { translate: 350% 0; } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 /* Transitions and reveals already collapse to 0.01ms through the duration
    tokens. Looping decoration stops here; the spinner keeps turning because it
    is a status indicator, not decoration. */
 @media (prefers-reduced-motion: reduce) {
-  .skeleton, .dot--pulse { animation: none; }
+  .dot--pulse { animation: none; }
   .progress--indeterminate .progress__bar { animation: none; width: 100%; opacity: 0.6; }
   .card--interactive:hover { transform: none; }
 }
@@ -554,15 +550,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .card--list > :last-child, .card--list > li:last-child > * { border-bottom: 0; }
 
 /* ---------- Skeleton shapes ---------------------------------------------------------------------- */
-.skeleton--media { aspect-ratio: 4 / 3; border-radius: var(--radius-lg); }
-.skeleton--square { aspect-ratio: 1; border-radius: var(--radius-lg); }
-.skeleton--btn { height: var(--control-height-md); width: 9rem; border-radius: var(--radius-full); }
-.skeleton--btn-sm { width: 5rem; }
-.skeleton--btn-block { width: 100%; height: var(--control-height-lg); }
-.skeleton--input { height: var(--control-height-md); border-radius: var(--radius-md); }
-.skeleton--h1 { height: var(--font-size-4xl); width: min(24rem, 80%); }
-.skeleton--avatar { width: var(--avatar-size-md); height: var(--avatar-size-md); border-radius: var(--radius-full); flex: none; }
-.skeleton--w30 { width: 30%; } .skeleton--w50 { width: 50%; } .skeleton--w70 { width: 70%; }
 
 /* ---------- Auth and bare pages ---------------------------------------------------------------------- */
 .auth-layout { align-content: center; gap: var(--space-6); }

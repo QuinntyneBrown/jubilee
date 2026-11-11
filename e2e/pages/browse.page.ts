@@ -68,6 +68,8 @@ export class BrowsePage extends ShellPage implements Screen {
   readonly groups: Locator;
   readonly loadingStatus: Locator;
   readonly skeletons: Locator;
+  /** The list of rows drawn while the directory loads. */
+  readonly loadingRows: Locator;
   readonly emptyState: Locator;
   readonly errorState: Locator;
   readonly errorReference: Locator;
@@ -95,6 +97,7 @@ export class BrowsePage extends ShellPage implements Screen {
     this.groups = this.directory.locator('section.dir-group');
     this.loadingStatus = this.content.getByRole('status');
     this.skeletons = this.content.locator('.skeleton');
+    this.loadingRows = this.content.locator('ul.rows[aria-hidden="true"]');
     this.emptyState = this.content.locator('.empty:not(.empty--error)');
     this.errorState = this.content.getByRole('alert');
     this.errorReference = this.errorState.locator('code');

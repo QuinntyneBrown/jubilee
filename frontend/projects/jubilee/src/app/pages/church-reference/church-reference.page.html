@@ -4,12 +4,12 @@
     @case ('loading') {
       <h1 class="visually-hidden">Loading the reference request</h1>
       <p class="visually-hidden" role="status">Loading the reference request…</p>
-      <span class="skeleton skeleton--title"></span>
-      <span class="skeleton skeleton--text skeleton--w30"></span>
-      <span class="skeleton skeleton--rect" style="height: var(--control-height-md)"></span>
-      <span class="skeleton skeleton--text skeleton--w30"></span>
-      <span class="skeleton skeleton--rect" style="height: var(--control-height-md)"></span>
-      <span class="skeleton skeleton--btn"></span>
+      <span jb-skeleton shape="title"></span>
+      <span jb-skeleton shape="text" width="30"></span>
+      <span jb-skeleton shape="input"></span>
+      <span jb-skeleton shape="text" width="30"></span>
+      <span jb-skeleton shape="input"></span>
+      <span jb-skeleton shape="button"></span>
     }
     @case ('error') {
       <div class="empty empty--error" role="alert">

@@ -21,18 +21,7 @@
   }
   @case ('loading') {
     <p class="visually-hidden" role="status">Loading requests…</p>
-    <ul class="rows" aria-hidden="true">
-      @for (item of skeleton; track item) {
-        <li class="row">
-          <span class="skeleton skeleton--avatar"></span>
-          <div class="row__body">
-            <span class="skeleton skeleton--text skeleton--w50"></span>
-            <span class="skeleton skeleton--text skeleton--w70"></span>
-          </div>
-          <span class="skeleton skeleton--btn" style="width: 5rem"></span>
-        </li>
-      }
-    </ul>
+    <ul jb-row-list-skeleton [count]="3" leading="avatar" action></ul>
   }
   @case ('loaded') {
     @if (requests.value.counts.all === 0) {

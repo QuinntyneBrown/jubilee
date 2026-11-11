@@ -15,11 +15,11 @@
     } @else if (current.status === 'loading') {
       <p class="visually-hidden" role="status">Loading this conversation…</p>
       <ul class="chat__log" aria-hidden="true">
-        <li class="bubble" style="width: 60%"><span class="skeleton skeleton--text"></span></li>
+        <li class="bubble" style="width: 60%"><span jb-skeleton shape="text"></span></li>
         <li class="bubble bubble--me" style="width: 45%">
-          <span class="skeleton skeleton--text"></span>
+          <span jb-skeleton shape="text"></span>
         </li>
-        <li class="bubble" style="width: 70%"><span class="skeleton skeleton--text"></span></li>
+        <li class="bubble" style="width: 70%"><span jb-skeleton shape="text"></span></li>
       </ul>
     } @else {
       @let conversation = current.value;
