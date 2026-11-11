@@ -13,95 +13,111 @@ skinparam class {
 ' --------------------------
 title Class structure — Exchange messages
 
-class ConversationStore <<signal store>> {
-  +header: Signal<ConversationHeader>
-  +items: Signal<TimelineItem[]>
+class ConversationPage <<Angular page>> {
+  +messages: Signal<ChatMessage[]>
+  +requests: Signal<RequestCard[]>
+  +outgoing: Signal<OutgoingMessage[]>
   +load(id: string): void
-  +loadOlder(): void
-  +send(text: string, attachmentIds: string[]): void
+  +loadEarlier(): void
+  +send(): void
   +retry(clientId: string): void
   +discard(clientId: string): void
-  +applyEvent(event: RealtimeEvent): void
+  +renewPhoto(attachmentId: string): void
 }
 class OutgoingMessage <<TypeScript>> {
   +clientId: string
   +idempotencyKey: string
   +text: string
+  +photo: Blob?
+  +attachmentId: string?
   +status: SendStatus
 }
 enum SendStatus {
   Sending
   WaitingToSend
-  Sent
   Failed
 }
 class PhotoAttachmentService <<Angular service>> {
   +maxBytes: number = 5 MB
+  +maxSide: number = 4096
   +prepare(file: File): Promise<Blob>
+}
+class RealtimeService <<Angular service>> {
+  +received: Observable<NotificationItem>
+  +start(): void
+  +stop(): void
 }
 class SendMessageCommand {
   +Guid ConversationId
-  +Guid SenderMemberId
-  +string Text
-  +IReadOnlyList<Guid> AttachmentIds
+  +string Subject
+  +string Body
+  +string IdempotencyKey
+  +Guid? AttachmentId
 }
 class SendMessageCommandHandler {
   +Handle(command: SendMessageCommand): Task<MessageDto>
 }
+class GetConversationQueryHandler {
+  +Handle(query: GetConversationQuery): Task<ConversationDto>
+}
+class ConversationDto {
+  +bool Muted
+  +bool CanBlock
+  +DateTimeOffset? AwayUntil
+  +bool HasMore
+  +IReadOnlyList<MessageDto> Messages
+  +IReadOnlyList<RequestCardDto> Requests
+}
+class RequestCardDto {
+  +string Kind
+  +string Title
+  +string Detail
+  +string Status
+  +DateTimeOffset SentAt
+  +string Link
+}
 class Conversation {
   +Guid Id
-  +Guid MemberId
   +Guid ListingId
-  +long LastSequence
-  +AddMessage(senderId: Guid, text: string, now: DateTimeOffset): Message
-  +AddRequestCard(requestId: Guid, now: DateTimeOffset): Message
-  +MarkRead(memberId: Guid): void
-}
-class ConversationParticipant {
-  +Guid MemberId
-  +long LastReadSequence
+  +string MemberSubject
+  +DateTimeOffset LastMessageAt
+  +DateTimeOffset? MemberReadAt
+  +DateTimeOffset? OwnerReadAt
+  +NextMessageTime(now: DateTimeOffset): DateTimeOffset
+  +MarkRead(asOwner: bool, now: DateTimeOffset): void
 }
 class Message {
   +Guid Id
-  +long Sequence
-  +MessageKind Kind
-  +Guid? SenderMemberId
-  +string Text
-  +Guid? RequestId
-  +DateTimeOffset SentAt
-}
-enum MessageKind {
-  Text
-  RequestCard
+  +string SenderSubject
+  +bool FromOwner
+  +string Body
+  +DateTimeOffset CreatedAt
+  +string IdempotencyKey
+  +Guid? AttachmentId
 }
 class MessageAttachment {
   +Guid Id
-  +string StorageKey
+  +Guid ConversationId
   +string ContentType
-  +long SizeBytes
-  +AttachmentState State
-}
-class AwayPeriod <<value object>> {
-  +DateOnly ReturnsOn
-  +IsActive(today: DateOnly): bool
+  +byte[] Content
 }
 class Listing {
   +Guid Id
-  +AwayPeriod? Away
-  +SetAway(returnsOn: DateOnly): void
-  +ClearAway(): void
+  +DateTimeOffset? AwayUntil
+  +SetAway(until: DateTimeOffset?): void
 }
 
-ConversationStore "1" o-- "*" OutgoingMessage : tracks
+ConversationPage "1" o-- "*" OutgoingMessage : tracks
 OutgoingMessage --> SendStatus : has
-ConversationStore ..> PhotoAttachmentService : uses
-ConversationStore ..> SendMessageCommand : POST messages
+ConversationPage ..> PhotoAttachmentService : uses
+ConversationPage ..> RealtimeService : listens to
+ConversationPage ..> SendMessageCommand : POST messages
 SendMessageCommandHandler ..> SendMessageCommand : handles
 SendMessageCommandHandler --> Conversation : loads / mutates
-Conversation "1" *-- "2" ConversationParticipant : has
+GetConversationQueryHandler --> Conversation : loads / marks read
+GetConversationQueryHandler ..> ConversationDto : returns
+ConversationDto "1" *-- "*" RequestCardDto : carries
 Conversation "1" *-- "*" Message : contains
-Message --> MessageKind : has
-Message "1" *-- "0..*" MessageAttachment : carries
+Message "1" --> "0..1" MessageAttachment : carries
 Conversation "*" --> "1" Listing : addressed to
-Listing "1" *-- "0..1" AwayPeriod : has
 @enduml

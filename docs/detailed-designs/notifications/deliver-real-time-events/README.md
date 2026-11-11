@@ -24,7 +24,11 @@ receives what it missed, and no event is shown twice.
 
 The feature is infrastructure for other slices. `exchange-messages`,
 `read-inbox`, `view-notification-centre` and `show-toasts-and-banners` consume
-its events; none of them opens a connection of its own.
+its events; none of them opens a connection of its own. The conversation page
+and the inbox consume the existing `notification` and `counts` events of the
+stream `GET /api/events` and add no event type: a `message` or `request`
+notification makes the open conversation and the inbox list read again, and the
+`counts` event corrects the unread count (ADR 0025, ADR 0037).
 
 ## Description
 

@@ -18,8 +18,8 @@ The terms below are used throughout the messaging subsystem.
 Exactly one conversation exists for each pair of member and listing. When the
 member has written to the business before, the first message is added to the
 existing conversation; otherwise the feature creates the conversation and adds
-the message in the same transaction. The dialog closes on success and a toast
-links to the conversation at `/messages/:id`.
+the message in the same transaction. On success the dialog closes and the
+conversation opens at `/messages/:id` (ADR 0014).
 
 The feature sits between the listing pages (`/b/:slug`) and the conversation
 page described in `exchange-messages`. A visitor who presses "Message" is first
@@ -48,12 +48,12 @@ is built yet; the names below are the names the design introduces.
   to the field (L2-126).
 - **`IdempotencyKeyFactory`** — Angular service. The dialog takes one key when it
   opens and reuses that key for every send attempt of the same text.
-- **`MessagesApi`** — typed Angular HTTP client. `startConversation` issues
-  `POST /api/conversations` with the body `{ listingId, text }` and the header
-  `Idempotency-Key`.
-- **`IdempotencyMiddleware`** — ASP.NET Core middleware in `Jubilee.Api`. It
-  stores the first response for a key in `Cache` for `24 hours` and returns that
-  response for a repeated key without running the handler again (L2-132).
+- **`MessagesApi`** — service contract with the injection token `MESSAGES_API`.
+  `start` issues `POST /api/conversations` with the body
+  `{ listingSlug, body, idempotencyKey }`.
+- **Idempotency** — a unique index on `(SenderSubject, IdempotencyKey)` of
+  `Messages`. A repeated key answers the original conversation and message and
+  writes nothing (L2-132, ADR 0014). No middleware and no cache take part.
 - **`ConversationsController`** — ASP.NET Core controller. It authenticates the
   session cookie, applies the endpoint policy, and sends
   `StartConversationCommand` through MediatR. The policy refuses a member whose
@@ -61,29 +61,33 @@ is built yet; the names below are the names the design introduces.
 - **`StartConversationCommandValidator`** — FluentValidation validator. It
   enforces the same rules as the dialog: text is required after trimming and is
   at most `4,000` characters. A failure returns HTTP `422` with the per-field
-  codes `MESSAGE_REQUIRED` or `MESSAGE_TOO_LONG`.
-- **`StartConversationCommandHandler`** — MediatR handler. It looks up the
+  codes `REQUIRED` or `TOO_LONG` (ADR 0014).
+- **`StartConversationCommandHandler`** — MediatR handler. It answers the
+  original result for a repeated idempotency key. Otherwise it looks up the
   conversation for the member and the listing, creates one through
-  `Conversation.Start` when none exists, calls `Conversation.AddMessage`, and
-  saves the conversation, the message and a `MessageSent` `OutboxMessage` in one
-  unit of work. A unique index on member and listing in `Jubilee database`
-  guarantees one conversation per pair under concurrent requests.
-- **`Conversation`** and **`Message`** — domain entities. `Conversation` owns its
-  messages and its `LastActivityAt` timestamp; `Message` carries the sender, the
-  text and the sent time.
-- **`StartConversationResult`** — response body with `ConversationId`,
-  `MessageId` and `Created`. The controller returns `201 Created` for a new
-  conversation and `200 OK` when an existing conversation is reused.
-- **`ToastService`** — shows the success toast whose single action opens
-  `/messages/:id`. There is no toast: the dialog closes and
-  `/messages/:id` opens with the sent message in it (ADR 0014).
+  `Conversation.Start` when none exists, adds the message, and saves the
+  conversation, the message and the owner's notification in one unit of work. A
+  unique index on `(ListingId, MemberSubject)` guarantees one conversation per
+  pair under concurrent requests. An owner who messages their own listing
+  receives `409` with code `OWN_LISTING`. The handler refuses more than 30
+  messages in 10 minutes and more than 10 new conversations in 24 hours per
+  member with `429` and `Retry-After` (L2-137, ADR 0014).
+- **`Conversation`** and **`Message`** — domain entities. `Conversation` holds
+  its `LastMessageAt` timestamp and one read mark per side; `Message` carries the
+  sender, the body, the sent time and the idempotency key.
+- **`StartedConversationDto`** — response body with `ConversationId` and
+  `MessageId`. The controller returns `201 Created` whether the conversation is
+  new or reused.
+- **After success** — there is no toast: the dialog closes and `/messages/:id`
+  opens with the sent message in it (ADR 0014).
 - **Failed state** — when the request fails, the dialog stays open, keeps the
   typed text, and shows "We couldn't send that. Your connection dropped before it
   reached us. Nothing was sent and what you typed is still here. Try again." A
   further send reuses the same idempotency key.
-- **`Jubilee Worker`** — `OutboxDispatcherJob` dispatches the `MessageSent` row.
-  The in-app notification, the e-mail and the real-time event for the owner are
-  designed in the notifications subsystem.
+- **Notifying the owner** — the handler writes the owner's `message`
+  notification and queues the new-message e-mail. The event stream delivers the
+  notification to the owner's open page (ADR 0025). The notification centre, the
+  e-mail and the stream are designed in the notifications subsystem.
 
 ## Requirements
 
@@ -109,18 +113,17 @@ the listing in the application and through the external e-mail provider.
 ### Containers
 
 The request travels from `Jubilee Web` to `Jubilee API`, which checks the
-session and the idempotency key in `Cache` and persists state in
-`Jubilee database`. `Jubilee Worker` reads the outbox and sends the new-message
-e-mail.
+idempotency key and persists state in `Jubilee database`. `Jubilee Worker`
+reads the outbox and sends the new-message e-mail.
 
 ![C4 container view for starting a conversation](diagrams/c4-container.png)
 
 ### Components
 
 `BusinessPage` opens `NewMessageDialog`, which calls `MessagesApi`. In the API,
-`IdempotencyMiddleware` guards `ConversationsController`, which validates and
-dispatches `StartConversationCommand` to its handler; the handler mutates
-`Conversation` and persists it with an outbox row.
+`ConversationsController` validates and dispatches `StartConversationCommand`
+to its handler; the handler checks the idempotency key, mutates `Conversation`
+and persists it with the owner's notification.
 
 ![C4 component view for starting a conversation](diagrams/c4-component.png)
 
@@ -128,8 +131,8 @@ dispatches `StartConversationCommand` to its handler; the handler mutates
 
 `NewMessageDialog` holds a `DialogState` and calls `MessagesApi`.
 `StartConversationCommandHandler` handles `StartConversationCommand`, finds or
-creates a `Conversation` that contains one or more `Message` entities, writes an
-`OutboxMessage`, and returns `StartConversationResult`.
+creates a `Conversation` that contains one or more `Message` entities, and
+returns `StartedConversationDto`.
 
 ![Class diagram for starting a conversation](diagrams/class-structure.png)
 
@@ -137,8 +140,8 @@ creates a `Conversation` that contains one or more `Message` entities, writes an
 
 The dialog rejects an empty message locally. For a valid message the API checks
 the idempotency key and the endpoint policy, reuses or creates the conversation,
-and commits the message and the outbox row together; the dialog then closes and
-the toast links to the conversation.
+and commits the message and the owner's notification together; the dialog then
+closes and the conversation opens.
 
 ![Sequence diagram for sending a first message](diagrams/sequence-send-first-message.png)
 
@@ -146,7 +149,7 @@ the toast links to the conversation.
 
 When the request or its response is lost, the dialog keeps the text and shows
 the failure message. The next attempt carries the same idempotency key, so the
-server returns the stored result when the first attempt arrived and creates the
-message once when it did not.
+handler returns the original result when the first attempt arrived and creates
+the message once when it did not.
 
 ![Sequence diagram for recovering from a failed send](diagrams/sequence-recover-from-failed-send.png)

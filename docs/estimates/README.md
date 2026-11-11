@@ -1,7 +1,7 @@
 # Estimates
 
 - Overall effort: 367 days
-- Complete: 57%
+- Complete: 58%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -14,7 +14,7 @@
 | [listings](listings.md) | 16 days | 41% |
 | [accounts](accounts.md) | 45 days | 82% |
 | [security](security.md) | 26 days | 11% |
-| [messaging](messaging.md) | 17 days | 71% |
+| [messaging](messaging.md) | 17 days | 94% |
 | [requests](requests.md) | 34 days | 85% |
 | [notifications](notifications.md) | 16 days | 86% |
 | [onboarding](onboarding.md) | 15 days | 84% |
@@ -31,7 +31,7 @@
 ## Roadmap
 
 1. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
-2. listings, messaging: the business and product page states, live arrival of messages in the open conversation, report and block dialogs
+2. listings: the business and product page states
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
 4. operations, performance: e-mail delivery, backups, deployment, availability, latency and page budgets
 5. Polish the remaining 70–90% designs: browse home sign-in prompt, church-reference outcome, offline and notification details
