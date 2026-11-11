@@ -44,7 +44,7 @@ export class ListBusinessPage extends ShellPage implements Screen {
     this.services = this.main.getByRole('radio', { name: /Services/ });
     this.name = this.main.locator('#name');
     this.tagline = this.main.locator('#tagline');
-    this.taglineCount = this.main.locator('#tagline ~ .field__help');
+    this.taglineCount = this.main.locator('#tagline-count');
     this.category = this.main.locator('#cat');
     this.place = this.main.locator('#area');
     this.placeLabel = this.main.locator('label[for="area"]');

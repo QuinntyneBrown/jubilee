@@ -33,51 +33,41 @@
           <div>Your changes to this service have not been saved.</div>
         </div>
       }
-      <div class="field">
-        <label class="field__label" for="d-name"
-          >Service name <span class="optional">(required)</span></label
-        >
+      <div jb-field label="Service name" controlId="d-name" required [error]="errors().name">
         <input
           class="input"
-          id="d-name"
+          jbFieldControl
           name="name"
           type="text"
           required
           [ngModel]="name()"
           (ngModelChange)="name.set($event)"
           [readOnly]="busy()"
-          [attr.aria-invalid]="errors().name ? 'true' : null"
-          [attr.aria-describedby]="errors().name ? 'd-name-error' : null"
         />
-        @if (errors().name; as message) {
-          <span class="field__error" id="d-name-error">{{ message }}</span>
-        }
       </div>
-      <div class="field">
-        <label class="field__label" for="d-meta"
-          >Short detail <span class="optional">(optional)</span></label
-        >
-        <span class="field__help" id="d-meta-help"
-          >Length, place or what to bring. 60 characters at most.</span
-        >
+      <div
+        jb-field
+        label="Short detail"
+        controlId="d-meta"
+        optional
+        hint="Length, place or what to bring. 60 characters at most."
+      >
         <input
           class="input"
-          id="d-meta"
+          jbFieldControl
           name="detail"
           type="text"
           maxlength="60"
-          aria-describedby="d-meta-help"
           [ngModel]="detail()"
           (ngModelChange)="detail.set($event)"
           [readOnly]="busy()"
         />
       </div>
       <div class="form-grid form-grid--2">
-        <div class="field">
-          <label class="field__label" for="d-pricing">Pricing</label>
+        <div jb-field label="Pricing" controlId="d-pricing">
           <select
             class="select"
-            id="d-pricing"
+            jbFieldControl
             name="pricing"
             [ngModel]="pricing()"
             (ngModelChange)="setPricing($event)"
@@ -89,31 +79,24 @@
           </select>
         </div>
         @if (pricing() === 'amount') {
-          <div class="field">
-            <label class="field__label" for="d-price">Price (CAD)</label>
+          <div jb-field label="Price (CAD)" controlId="d-price" [error]="errors().price">
             <input
               class="input"
-              id="d-price"
+              jbFieldControl
               name="price"
               type="text"
               inputmode="decimal"
               [ngModel]="price()"
               (ngModelChange)="price.set($event)"
               [readOnly]="busy()"
-              [attr.aria-invalid]="errors().price ? 'true' : null"
-              [attr.aria-describedby]="errors().price ? 'd-price-error' : null"
             />
-            @if (errors().price; as message) {
-              <span class="field__error" id="d-price-error">{{ message }}</span>
-            }
           </div>
         }
       </div>
-      <div class="field">
-        <label class="field__label" for="d-action">Members can</label>
+      <div jb-field label="Members can" controlId="d-action">
         <select
           class="select"
-          id="d-action"
+          jbFieldControl
           name="action"
           [ngModel]="action()"
           (ngModelChange)="action.set($event)"
@@ -125,14 +108,16 @@
       </div>
       @if (action() === 'book') {
         <div class="form-grid form-grid--2">
-          <div class="field">
-            <label class="field__label" for="d-duration">Meeting length (minutes)</label>
-            <span class="field__help" id="d-duration-help"
-              >15 to 480. Slots follow your listing hours.</span
-            >
+          <div
+            jb-field
+            label="Meeting length (minutes)"
+            controlId="d-duration"
+            hint="15 to 480. Slots follow your listing hours."
+            [error]="errors().duration"
+          >
             <input
               class="input"
-              id="d-duration"
+              jbFieldControl
               name="duration"
               type="number"
               min="15"
@@ -140,17 +125,14 @@
               [ngModel]="duration()"
               (ngModelChange)="duration.set('' + $event)"
               [readOnly]="busy()"
-              [attr.aria-invalid]="errors().duration ? 'true' : null"
-              [attr.aria-describedby]="
-                errors().duration ? 'd-duration-help d-duration-error' : 'd-duration-help'
-              "
             />
-            @if (errors().duration; as message) {
-              <span class="field__error" id="d-duration-error">{{ message }}</span>
-            }
           </div>
-          <fieldset class="field" [attr.aria-invalid]="errors().modes ? 'true' : null">
-            <legend class="field__label">Meet by</legend>
+          <fieldset
+            jb-field
+            label="Meet by"
+            [error]="errors().modes"
+            [attr.aria-invalid]="errors().modes ? 'true' : null"
+          >
             <label class="choice">
               <input
                 type="checkbox"
@@ -171,30 +153,25 @@
               />
               <span>In person</span>
             </label>
-            @if (errors().modes; as message) {
-              <span class="field__error">{{ message }}</span>
-            }
           </fieldset>
         </div>
         @if (inPerson()) {
-          <div class="field">
-            <label class="field__label" for="d-place"
-              >Place <span class="optional">(required for in person)</span></label
-            >
+          <div
+            jb-field
+            label="Place"
+            controlId="d-place"
+            marker="required for in person"
+            [error]="errors().place"
+          >
             <input
               class="input"
-              id="d-place"
+              jbFieldControl
               name="place"
               type="text"
               [ngModel]="place()"
               (ngModelChange)="place.set($event)"
               [readOnly]="busy()"
-              [attr.aria-invalid]="errors().place ? 'true' : null"
-              [attr.aria-describedby]="errors().place ? 'd-place-error' : null"
             />
-            @if (errors().place; as message) {
-              <span class="field__error" id="d-place-error">{{ message }}</span>
-            }
           </div>
         }
       }

@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PROFILE_API } from 'api';
-import { Icon, Button, Alert } from 'components';
+import { Icon, Button, Alert, FieldControl, Field } from 'components';
 
 export interface ChangePasswordData {
   /** False for a member who joined with Google: the dialog is "Set a password" (L2-015 AC5). */
@@ -18,7 +18,7 @@ export interface ChangePasswordData {
 }
 
 type View = 'form' | 'busy' | 'failed';
-type Field = 'currentPassword' | 'newPassword' | 'repeatPassword';
+type FieldName = 'currentPassword' | 'newPassword' | 'repeatPassword';
 
 const MESSAGES: Record<string, string> = {
   'currentPassword:CURRENT_PASSWORD_INCORRECT': 'That isn’t your current password.',
@@ -36,7 +36,7 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-change-password-dialog',
-  imports: [FormsModule, Icon, Button, Alert],
+  imports: [FormsModule, Icon, Button, Alert, Field, FieldControl],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './change-password.dialog.html',
@@ -51,12 +51,12 @@ export class ChangePasswordDialog {
   protected readonly current = signal('');
   protected readonly next = signal('');
   protected readonly repeat = signal('');
-  protected readonly problems = signal<Partial<Record<Field, string>>>({});
+  protected readonly problems = signal<Partial<Record<FieldName, string>>>({});
   protected readonly busy = computed(() => this.view() === 'busy');
 
   protected save(): void {
     if (this.busy()) return;
-    const found: Partial<Record<Field, string>> = {};
+    const found: Partial<Record<FieldName, string>> = {};
     if (this.data.hasPassword && !this.current())
       found.currentPassword = MESSAGES['currentPassword:CURRENT_PASSWORD_INCORRECT'];
     if (!this.next()) found.newPassword = MESSAGES['newPassword:REQUIRED'];
@@ -87,8 +87,8 @@ export class ChangePasswordDialog {
     this.clearPasswords();
     if (error instanceof HttpErrorResponse && error.status === 422) {
       const errors = (error.error as { errors?: Record<string, string> } | null)?.errors ?? {};
-      const found: Partial<Record<Field, string>> = {};
-      for (const field of ['currentPassword', 'newPassword', 'repeatPassword'] as Field[]) {
+      const found: Partial<Record<FieldName, string>> = {};
+      for (const field of ['currentPassword', 'newPassword', 'repeatPassword'] as FieldName[]) {
         if (errors[field])
           found[field] = MESSAGES[`${field}:${errors[field]}`] ?? 'Check this field.';
       }

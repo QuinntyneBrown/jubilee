@@ -86,11 +86,10 @@
                 <div>{{ failure().text }}</div>
               </div>
             }
-            <div class="field">
-              <label class="field__label" for="d-svc">Service</label>
+            <div jb-field label="Service" controlId="d-svc">
               <select
                 class="select"
-                id="d-svc"
+                jbFieldControl
                 name="service"
                 [disabled]="busy()"
                 [ngModel]="serviceId()"
@@ -102,33 +101,24 @@
               </select>
             </div>
             <div class="form-grid form-grid--2">
-              <div class="field">
-                <label class="field__label" for="d-date"
-                  >Day <span class="optional">(required)</span></label
-                >
+              <div jb-field label="Day" controlId="d-date" required [error]="dayProblem()">
                 <input
                   class="input"
-                  id="d-date"
+                  jbFieldControl
                   name="day"
                   type="date"
                   [min]="today"
                   [max]="lastDay"
                   required
                   [readOnly]="busy()"
-                  [attr.aria-invalid]="dayProblem() ? 'true' : null"
-                  [attr.aria-describedby]="dayProblem() ? 'd-date-error' : null"
                   [ngModel]="day()"
                   (ngModelChange)="pickDay($event)"
                 />
-                @if (dayProblem()) {
-                  <span class="field__error" id="d-date-error">{{ dayProblem() }}</span>
-                }
               </div>
-              <div class="field">
-                <label class="field__label" for="d-how">How</label>
+              <div jb-field label="How" controlId="d-how">
                 <select
                   class="select"
-                  id="d-how"
+                  jbFieldControl
                   name="how"
                   [disabled]="busy()"
                   [ngModel]="mode()"
@@ -162,16 +152,13 @@
                 }
               </div>
               @if (timeProblem()) {
-                <span class="field__error" id="d-time-error">{{ timeProblem() }}</span>
+                <span jb-field-error id="d-time-error">{{ timeProblem() }}</span>
               }
             </fieldset>
-            <div class="field">
-              <label class="field__label" for="d-note"
-                >What would you like to talk about? <span class="optional">(optional)</span></label
-              >
+            <div jb-field label="What would you like to talk about?" controlId="d-note" optional>
               <textarea
                 class="textarea"
-                id="d-note"
+                jbFieldControl
                 name="note"
                 rows="3"
                 maxlength="1000"

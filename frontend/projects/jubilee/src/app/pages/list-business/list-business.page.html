@@ -54,7 +54,7 @@
           <p class="visually-hidden" role="status">Loading your draft…</p>
           <div class="form" aria-hidden="true">
             @for (n of [1, 2, 3, 4, 5, 6]; track n) {
-              <div class="field">
+              <div jb-field>
                 <span class="skeleton skeleton--text skeleton--w30"></span>
                 <span
                   class="skeleton skeleton--rect"
@@ -138,68 +138,53 @@
                   </span>
                 </label>
               </div>
-              <p class="field__help" style="margin-top: var(--space-2)">
+              <p jb-field-help style="margin-top: var(--space-2)">
                 Offer both? Pick the main one now and add the other after you’re verified.
               </p>
             </fieldset>
-            <div class="field">
-              <label class="field__label" for="name"
-                >Business name <span class="optional">(required)</span></label
-              >
+            <div jb-field label="Business name" controlId="name" required [error]="errors().name">
               <input
                 class="input"
-                id="name"
+                jbFieldControl
                 name="name"
                 type="text"
                 maxlength="120"
                 required
                 [readOnly]="busy()"
-                [attr.aria-invalid]="errors().name ? 'true' : null"
-                [attr.aria-describedby]="errors().name ? 'name-error' : null"
                 [ngModel]="name()"
                 (ngModelChange)="name.set($event); clear('name'); touched()"
               />
-              @if (errors().name; as message) {
-                <span class="field__error" id="name-error">{{ message }}</span>
-              }
             </div>
-            <div class="field">
-              <label class="field__label" for="tagline"
-                >One line on what you do <span class="optional">(required)</span></label
-              >
-              <span class="field__help" id="tagline-help"
-                >Shown under your name everywhere on Jubilee. {{ taglineMax }} characters at
-                most.</span
-              >
+            <div
+              jb-field
+              label="One line on what you do"
+              controlId="tagline"
+              required
+              [hint]="
+                'Shown under your name everywhere on Jubilee. ' +
+                taglineMax +
+                ' characters at most.'
+              "
+              [counter]="taglineCount() + ' / ' + taglineMax"
+              [error]="errors().tagline"
+            >
               <input
                 class="input"
-                id="tagline"
+                jbFieldControl
                 name="tagline"
                 type="text"
                 required
                 [readOnly]="busy()"
-                [attr.aria-invalid]="errors().tagline ? 'true' : null"
-                [attr.aria-describedby]="
-                  errors().tagline ? 'tagline-help tagline-error' : 'tagline-help'
-                "
                 [ngModel]="tagline()"
                 (ngModelChange)="tagline.set($event); clear('tagline'); touched()"
               />
-              <span class="field__help" aria-live="polite">
-                {{ taglineCount() }} / {{ taglineMax }}
-              </span>
-              @if (errors().tagline; as message) {
-                <span class="field__error" id="tagline-error">{{ message }}</span>
-              }
             </div>
             <div class="form-grid form-grid--2">
-              <div class="field">
-                <label class="field__label" for="cat">Category</label>
+              <div jb-field label="Category" controlId="cat" [error]="errors().categorySlug">
                 <select
                   class="select"
-                  id="cat"
+                  jbFieldControl
                   name="category"
-                  [attr.aria-invalid]="errors().categorySlug ? 'true' : null"
                   [ngModel]="categorySlug()"
                   (ngModelChange)="categorySlug.set($event); clear('categorySlug'); touched()"
                 >
@@ -207,15 +192,11 @@
                     <option [value]="category.slug">{{ category.name }}</option>
                   }
                 </select>
-                @if (errors().categorySlug; as message) {
-                  <span class="field__error">{{ message }}</span>
-                }
               </div>
-              <div class="field">
-                <label class="field__label" for="area">{{ placeLabel() }}</label>
+              <div jb-field [label]="placeLabel()" controlId="area">
                 <input
                   class="input"
-                  id="area"
+                  jbFieldControl
                   name="place"
                   type="text"
                   [readOnly]="busy()"
@@ -226,7 +207,7 @@
             </div>
             <fieldset [disabled]="busy()">
               <legend>{{ isServices() ? 'Services' : 'Products' }}</legend>
-              <p class="field__help">
+              <p jb-field-help>
                 @if (isServices()) {
                   Add a few to start. A price is optional; “Ask” is fine.
                 } @else {
@@ -282,49 +263,45 @@
             </fieldset>
             <fieldset [disabled]="busy()">
               <legend>Church reference</legend>
-              <p class="field__help">
+              <p jb-field-help>
                 A pastor or elder who can confirm you. We contact them privately; they never see
                 your listing details.
               </p>
               <div class="form-grid form-grid--2" style="margin-top: var(--space-2)">
-                <div class="field">
-                  <label class="field__label" for="ref-church"
-                    >Church <span class="optional">(required)</span></label
-                  >
+                <div
+                  jb-field
+                  label="Church"
+                  controlId="ref-church"
+                  required
+                  [error]="errors().church"
+                >
                   <input
                     class="input"
-                    id="ref-church"
+                    jbFieldControl
                     name="church"
                     type="text"
                     required
-                    [attr.aria-invalid]="errors().church ? 'true' : null"
-                    [attr.aria-describedby]="errors().church ? 'ref-church-error' : null"
                     [ngModel]="church()"
                     (ngModelChange)="church.set($event); clear('church'); touched()"
                   />
-                  @if (errors().church; as message) {
-                    <span class="field__error" id="ref-church-error">{{ message }}</span>
-                  }
                 </div>
-                <div class="field">
-                  <label class="field__label" for="ref-email"
-                    >Pastor’s e-mail <span class="optional">(required)</span></label
-                  >
+                <div
+                  jb-field
+                  label="Pastor’s e-mail"
+                  controlId="ref-email"
+                  required
+                  [error]="errors().pastorEmail"
+                >
                   <input
                     class="input"
-                    id="ref-email"
+                    jbFieldControl
                     name="pastorEmail"
                     type="email"
                     placeholder="name@church.ca"
                     required
-                    [attr.aria-invalid]="errors().pastorEmail ? 'true' : null"
-                    [attr.aria-describedby]="errors().pastorEmail ? 'ref-email-error' : null"
                     [ngModel]="pastorEmail()"
                     (ngModelChange)="pastorEmail.set($event); clear('pastorEmail'); touched()"
                   />
-                  @if (errors().pastorEmail; as message) {
-                    <span class="field__error" id="ref-email-error">{{ message }}</span>
-                  }
                 </div>
               </div>
             </fieldset>
@@ -349,7 +326,7 @@
                 >
               </label>
               @if (errors().agreed; as message) {
-                <span class="field__error" id="agree-error">{{ message }}</span>
+                <span jb-field-error id="agree-error">{{ message }}</span>
               }
             </div>
             <div class="form-actions form-actions--bordered">

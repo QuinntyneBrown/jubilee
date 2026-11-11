@@ -2,7 +2,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DraftItem, ItemPriceKind, OfferKind } from 'api';
-import { Icon, Button } from 'components';
+import { Icon, Button, Field, FieldControl } from 'components';
 
 export interface ListingItemData {
   kind: OfferKind;
@@ -23,7 +23,7 @@ export function centsOf(text: string): number | null {
  */
 @Component({
   selector: 'jb-listing-item-dialog',
-  imports: [FormsModule, Icon, Button],
+  imports: [FormsModule, Icon, Button, Field, FieldControl],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './listing-item.dialog.html',

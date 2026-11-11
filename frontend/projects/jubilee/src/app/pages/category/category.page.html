@@ -61,12 +61,16 @@
         >
           <svg jb-icon name="filter"></svg>Filters{{ filterCount() ? ' · ' + filterCount() : '' }}
         </button>
-        <div class="field" style="flex-direction: row; align-items: center; gap: var(--space-2)">
-          <label class="field__label" for="sort">Sort</label>
+        <div
+          jb-field
+          label="Sort"
+          controlId="sort"
+          style="flex-direction: row; align-items: center; gap: var(--space-2)"
+        >
           <select
             #sort
             class="select input--sm"
-            id="sort"
+            jbFieldControl
             style="width: auto"
             (change)="sortBy(sort.value)"
           >

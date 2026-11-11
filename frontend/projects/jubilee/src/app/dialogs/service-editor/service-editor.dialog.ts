@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CATALOGUE_API, OwnerService, ServicePricing } from 'api';
-import { Icon, Button, Alert } from 'components';
+import { Icon, Button, Alert, FieldControl, Field } from 'components';
 import { timeout } from 'rxjs';
 import { failureText, guardClose } from '../guard-close';
 
@@ -26,14 +26,14 @@ export interface ServiceSaved {
 
 type View = 'form' | 'busy' | 'failed' | 'discard';
 
-type Field = 'name' | 'detail' | 'price' | 'duration' | 'modes' | 'place';
+type FieldName = 'name' | 'detail' | 'price' | 'duration' | 'modes' | 'place';
 
 const SAVE_TIMEOUT_MS = 10_000;
 
 /** ServiceEditorDialog (L2-094): add or change a service, its price and how members can ask for it. */
 @Component({
   selector: 'jb-service-editor-dialog',
-  imports: [FormsModule, Icon, Button, Alert],
+  imports: [FormsModule, Icon, Button, Alert, Field, FieldControl],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './service-editor.dialog.html',
@@ -50,7 +50,7 @@ export class ServiceEditorDialog {
   protected readonly view = signal<View>('form');
   protected readonly busy = computed(() => this.view() === 'busy');
   protected readonly failure = signal('');
-  protected readonly errors = signal<Partial<Record<Field, string>>>({});
+  protected readonly errors = signal<Partial<Record<FieldName, string>>>({});
 
   protected readonly name = signal(this.service?.name ?? '');
   protected readonly detail = signal(this.service?.detail ?? '');
@@ -139,8 +139,8 @@ export class ServiceEditorDialog {
     this.view.set('failed');
   }
 
-  private check(): Partial<Record<Field, string>> {
-    const problems: Partial<Record<Field, string>> = {};
+  private check(): Partial<Record<FieldName, string>> {
+    const problems: Partial<Record<FieldName, string>> = {};
     if (!this.name().trim()) problems.name = 'Enter a name for the service.';
     if (this.pricing() === 'amount') {
       const price = this.price().trim();
@@ -159,7 +159,7 @@ export class ServiceEditorDialog {
     return problems;
   }
 
-  private serverProblems(fields: Record<string, string>): Partial<Record<Field, string>> {
+  private serverProblems(fields: Record<string, string>): Partial<Record<FieldName, string>> {
     const text: Record<string, string> = {
       name: 'Enter a name for the service.',
       detail: 'Shorten this to 60 characters.',

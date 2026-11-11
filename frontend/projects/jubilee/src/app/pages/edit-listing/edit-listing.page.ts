@@ -18,6 +18,10 @@ import {
   CloseButton,
   Alert,
   FormSummary,
+  FieldControl,
+  FieldError,
+  FieldHelp,
+  Field,
 } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 import { WorkspaceHeader } from '../my-business/workspace-header';
@@ -28,10 +32,10 @@ export const MAX_ABOUT = 1500;
 export const MAX_HIGHLIGHT = 30;
 export const MAX_ALT = 125;
 
-type Field =
+type FieldName =
   'name' | 'tagline' | 'about' | 'category' | 'where' | 'hours' | 'website' | 'highlight';
 
-type Draft = Record<Field, string>;
+type Draft = Record<FieldName, string>;
 
 type Saving = 'idle' | 'saving';
 
@@ -49,6 +53,10 @@ type Saving = 'idle' | 'saving';
     CloseButton,
     Alert,
     FormSummary,
+    Field,
+    FieldControl,
+    FieldError,
+    FieldHelp,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -67,8 +75,8 @@ export class EditListingPage implements OnInit {
   protected readonly state = signal<LoadState<ListingEditor>>({ status: 'loading' });
   protected readonly draft = signal<Draft>(this.blank());
   protected readonly photos = signal<ListingPhoto[]>([]);
-  protected readonly errors = signal<Partial<Record<Field, string>>>({});
-  protected readonly summary = signal<{ field: Field; text: string }[]>([]);
+  protected readonly errors = signal<Partial<Record<FieldName, string>>>({});
+  protected readonly summary = signal<{ field: FieldName; text: string }[]>([]);
   protected readonly summaryErrors = computed(() =>
     this.summary().map((item) => ({ id: this.idOf(item.field), text: item.text })),
   );
@@ -90,7 +98,7 @@ export class EditListingPage implements OnInit {
     if (!editor) return false;
     const draft = this.draft();
     const saved = this.fromEditor(editor);
-    return (Object.keys(saved) as Field[]).some((field) => saved[field] !== draft[field]);
+    return (Object.keys(saved) as FieldName[]).some((field) => saved[field] !== draft[field]);
   });
 
   protected readonly preview = computed(() => ({
@@ -154,7 +162,7 @@ export class EditListingPage implements OnInit {
     };
   }
 
-  protected set(field: Field, value: string): void {
+  protected set(field: FieldName, value: string): void {
     this.draft.update((draft) => ({ ...draft, [field]: value }));
     this.saved.set(null);
   }
@@ -169,9 +177,9 @@ export class EditListingPage implements OnInit {
   }
 
   /** What is wrong with the draft, by field (L2-087 AC2, AC3). */
-  private check(): { field: Field; message: string; summary: string }[] {
+  private check(): { field: FieldName; message: string; summary: string }[] {
     const draft = this.draft();
-    const problems: { field: Field; message: string; summary: string }[] = [];
+    const problems: { field: FieldName; message: string; summary: string }[] = [];
     const name = draft.name.trim();
     const tagline = draft.tagline.trim();
     if (!name) {
@@ -267,7 +275,7 @@ export class EditListingPage implements OnInit {
     return before.name !== after.name || before.categorySlug !== after.categorySlug;
   }
 
-  private show(problems: { field: Field; message: string; summary: string }[]): void {
+  private show(problems: { field: FieldName; message: string; summary: string }[]): void {
     this.errors.set(Object.fromEntries(problems.map((p) => [p.field, p.message])));
     this.summary.set(problems.map((p) => ({ field: p.field, text: p.summary })));
     if (problems.length > 0) {
@@ -277,9 +285,9 @@ export class EditListingPage implements OnInit {
 
   /** The server's own refusal of a field the browser let through. */
   private showServer(errors: Record<string, string>): void {
-    const map: Record<string, Field> = { category: 'category' };
+    const map: Record<string, FieldName> = { category: 'category' };
     const problems = Object.keys(errors).map((key) => {
-      const field = (map[key] ?? key) as Field;
+      const field = (map[key] ?? key) as FieldName;
       const message = errors[key] === 'TOO_LONG' ? 'This is too long.' : 'Check this field.';
       return { field, message, summary: message };
     });
@@ -290,7 +298,7 @@ export class EditListingPage implements OnInit {
     this.saved.set(null);
   }
 
-  protected idOf(field: Field): string {
+  protected idOf(field: FieldName): string {
     return field === 'category'
       ? 'cat'
       : field === 'where'

@@ -10,7 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ADMIN_API, FeaturedListing, FeaturedWeek } from 'api';
-import { EmptyState, Icon, Button, Alert } from 'components';
+import { EmptyState, Icon, Button, Alert, Field, FieldControl, FieldHelp } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { dayLabel, isoDay } from '../../services/message-time';
@@ -22,7 +22,18 @@ const MAX = 5;
 /** Choosing the businesses "Featured this week" at /admin/featured (L2-106). */
 @Component({
   selector: 'jb-admin-featured-page',
-  imports: [FormsModule, RouterLink, EmptyState, Icon, TeamNav, Button, Alert],
+  imports: [
+    FormsModule,
+    RouterLink,
+    EmptyState,
+    Icon,
+    TeamNav,
+    Button,
+    Alert,
+    Field,
+    FieldControl,
+    FieldHelp,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-featured.page.html',
 })

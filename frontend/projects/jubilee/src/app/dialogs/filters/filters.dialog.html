@@ -36,9 +36,8 @@
         </div>
       }
     </fieldset>
-    <div class="field">
-      <label class="field__label" for="filters-sort">Sort</label>
-      <select #sortBox class="select" id="filters-sort" (change)="setSort(sortBox.value)">
+    <div jb-field label="Sort" controlId="filters-sort">
+      <select #sortBox class="select" jbFieldControl (change)="setSort(sortBox.value)">
         @for (option of sortOptions; track option.value) {
           <option [value]="option.value" [selected]="option.value === sort()">
             {{ option.label }}

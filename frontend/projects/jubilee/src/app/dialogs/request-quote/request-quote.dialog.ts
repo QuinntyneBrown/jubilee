@@ -12,7 +12,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BookedRequest, QuoteOptions, REQUESTS_API } from 'api';
-import { Icon, Button, Alert } from 'components';
+import { Icon, Button, Alert, FieldControl, Field } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { ClockService } from '../../services/clock.service';
 import { isoDay, newKey } from '../../services/message-time';
@@ -24,7 +24,7 @@ export interface RequestQuoteData {
 }
 
 type View = 'loading' | 'form' | 'busy' | 'success' | 'failed' | 'unavailable';
-type Field = 'description' | 'neededBy' | 'phone';
+type FieldName = 'description' | 'neededBy' | 'phone';
 
 /** A submission that takes longer than this fails instead of spinning (L2-127 AC2). */
 const SUBMIT_TIMEOUT_MS = 10_000;
@@ -36,7 +36,7 @@ const SUBMIT_TIMEOUT_MS = 10_000;
  */
 @Component({
   selector: 'jb-request-quote-dialog',
-  imports: [FormsModule, RouterLink, Icon, Button, Alert],
+  imports: [FormsModule, RouterLink, Icon, Button, Alert, Field, FieldControl],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './request-quote.dialog.html',
@@ -54,7 +54,7 @@ export class RequestQuoteDialog implements OnInit {
   protected readonly neededBy = signal('');
   protected readonly budget = signal('');
   protected readonly phone = signal('');
-  protected readonly problems = signal<Partial<Record<Field, string>>>({});
+  protected readonly problems = signal<Partial<Record<FieldName, string>>>({});
   protected readonly booked = signal<BookedRequest | null>(null);
   protected readonly failure = signal({ title: '', text: '' });
   protected readonly busy = computed(() => this.view() === 'busy');
@@ -106,8 +106,8 @@ export class RequestQuoteDialog implements OnInit {
   }
 
   /** The browser's rules (QuoteFormValidators); the server repeats them (L2-126 AC4). */
-  private check(options: QuoteOptions): Partial<Record<Field, string>> {
-    const found: Partial<Record<Field, string>> = {};
+  private check(options: QuoteOptions): Partial<Record<FieldName, string>> {
+    const found: Partial<Record<FieldName, string>> = {};
     if (!this.description().trim())
       found.description = this.messageFor('description', 'REQUIRED', options);
     const phone = this.phone().trim();
@@ -119,7 +119,7 @@ export class RequestQuoteDialog implements OnInit {
     return found;
   }
 
-  private messageFor(field: Field, code: string, options: QuoteOptions): string {
+  private messageFor(field: FieldName, code: string, options: QuoteOptions): string {
     switch (`${field}:${code}`) {
       case 'description:REQUIRED':
         return `Describe what you need in a sentence or two so ${options.ownerFirstName} can price it.`;
@@ -135,8 +135,8 @@ export class RequestQuoteDialog implements OnInit {
       const code = (error.error as { code?: string } | null)?.code;
       const errors = (error.error as { errors?: Record<string, string> } | null)?.errors ?? {};
       if (error.status === 422) {
-        const found: Partial<Record<Field, string>> = {};
-        for (const field of ['description', 'neededBy', 'phone'] as Field[]) {
+        const found: Partial<Record<FieldName, string>> = {};
+        for (const field of ['description', 'neededBy', 'phone'] as FieldName[]) {
           if (errors[field]) found[field] = this.messageFor(field, errors[field], options);
         }
         this.problems.set(found);

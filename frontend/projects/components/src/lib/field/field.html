@@ -1,0 +1,30 @@
+<ng-template #mark>
+  @if (shownMarker(); as marker) {
+    <span class="optional">({{ marker }})</span>
+  }
+</ng-template>
+@if (label(); as label) {
+  @if (group) {
+    <legend class="field__label">{{ label }} <ng-container [ngTemplateOutlet]="mark" /></legend>
+  } @else {
+    <label class="field__label" [for]="controlId()"
+      >{{ label }} <ng-container [ngTemplateOutlet]="mark"
+    /></label>
+  }
+}
+@if (hint(); as hint) {
+  <span jb-field-help [id]="helpId()">{{ hint }} <ng-content select="[slot=hint]" /></span>
+}
+<ng-content />
+@if (counter(); as counter) {
+  <span
+    class="field__counter"
+    aria-live="polite"
+    [id]="counterId()"
+    [attr.data-state]="counterInvalid() ? 'invalid' : null"
+    >{{ counter }}</span
+  >
+}
+@if (error(); as error) {
+  <span jb-field-error [id]="errorId()">{{ error }}</span>
+}

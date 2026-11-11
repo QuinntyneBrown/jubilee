@@ -44,48 +44,37 @@
           <div>Your connection dropped before it reached us. Nothing was sent. Try again.</div>
         </div>
       }
-      <div class="field">
-        <label class="field__label" for="ce-email">New e-mail</label>
+      <div jb-field label="New e-mail" controlId="ce-email" [error]="found.email">
         <input
           class="input"
-          id="ce-email"
+          jbFieldControl
           name="email"
           type="email"
           autocomplete="email"
           cdkFocusInitial
           [readOnly]="busy()"
-          [attr.aria-invalid]="found.email ? 'true' : null"
-          [attr.aria-describedby]="found.email ? 'ce-email-error' : null"
           [ngModel]="email()"
           (ngModelChange)="email.set($event)"
         />
-        @if (found.email) {
-          <span class="field__error" id="ce-email-error">{{ found.email }}</span>
-        }
       </div>
       @if (data.hasPassword) {
-        <div class="field">
-          <label class="field__label" for="ce-password">Current password</label>
-          <span class="field__help" id="ce-password-help"
-            >We ask so nobody else can change it.</span
-          >
+        <div
+          jb-field
+          label="Current password"
+          controlId="ce-password"
+          hint="We ask so nobody else can change it."
+          [error]="found.currentPassword"
+        >
           <input
             class="input"
-            id="ce-password"
+            jbFieldControl
             name="password"
             type="password"
             autocomplete="current-password"
             [readOnly]="busy()"
-            [attr.aria-invalid]="found.currentPassword ? 'true' : null"
-            [attr.aria-describedby]="
-              found.currentPassword ? 'ce-password-help ce-password-error' : 'ce-password-help'
-            "
             [ngModel]="password()"
             (ngModelChange)="password.set($event)"
           />
-          @if (found.currentPassword) {
-            <span class="field__error" id="ce-password-error">{{ found.currentPassword }}</span>
-          }
         </div>
       }
     </form>

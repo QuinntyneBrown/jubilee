@@ -28,7 +28,7 @@
         >
       </label>
       @if (invalid()) {
-        <span class="field__error" id="agree-error">Agree to the statement of faith to join.</span>
+        <span jb-field-error id="agree-error">Agree to the statement of faith to join.</span>
       }
     </div>
     <button jb-button variant="primary" block size="lg" type="submit" [busy]="busy()">

@@ -54,28 +54,24 @@
             <li>This can’t be undone.</li>
           </ul>
         }
-        <div class="field">
-          <label class="field__label" for="d-confirm">
-            Type DELETE to confirm <span class="optional">(required)</span>
-          </label>
+        <div
+          jb-field
+          label="Type DELETE to confirm"
+          controlId="d-confirm"
+          required
+          [error]="problem() ? 'Type DELETE in capital letters to confirm.' : null"
+        >
           <input
             class="input"
-            id="d-confirm"
+            jbFieldControl
             name="confirmation"
             type="text"
             required
             autocomplete="off"
             [readOnly]="busy()"
-            [attr.aria-invalid]="problem() ? 'true' : null"
-            [attr.aria-describedby]="problem() ? 'd-confirm-error' : null"
             [ngModel]="typed()"
             (ngModelChange)="typed.set($event)"
           />
-          @if (problem()) {
-            <span class="field__error" id="d-confirm-error"
-              >Type DELETE in capital letters to confirm.</span
-            >
-          }
         </div>
       }
     }

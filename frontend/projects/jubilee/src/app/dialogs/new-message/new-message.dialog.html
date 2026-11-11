@@ -27,34 +27,25 @@
         <div>{{ failure().text }}</div>
       </div>
     }
-    <div class="field">
-      <label class="field__label" for="d-msg"
-        >Your message <span class="optional">(required)</span></label
-      >
-      @if (view() !== 'invalid') {
-        <span class="field__help" id="d-msg-help"
-          >Be specific and {{ data.businessName }} can answer in one reply.</span
-        >
-      }
+    <div
+      jb-field
+      label="Your message"
+      controlId="d-msg"
+      required
+      [hint]="'Be specific and ' + data.businessName + ' can answer in one reply.'"
+      [error]="view() === 'invalid' ? error() : null"
+    >
       <textarea
         class="textarea"
-        id="d-msg"
+        jbFieldControl
         name="message"
         rows="5"
         cdkFocusInitial
         required
-        [attr.aria-describedby]="view() === 'invalid' ? 'd-msg-help d-msg-error' : 'd-msg-help'"
-        [attr.aria-invalid]="view() === 'invalid' ? 'true' : null"
         [readOnly]="busy()"
         [ngModel]="text()"
         (ngModelChange)="text.set($event)"
       ></textarea>
-      @if (view() === 'invalid') {
-        <span class="field__error" id="d-msg-error">{{ error() }}</span>
-        <span class="field__help" id="d-msg-help"
-          >Be specific and {{ data.businessName }} can answer in one reply.</span
-        >
-      }
     </div>
   </form>
   <div class="dialog__footer">

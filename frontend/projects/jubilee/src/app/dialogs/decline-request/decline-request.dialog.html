@@ -27,11 +27,10 @@
         <div>The request is still new and your note is kept. Try again.</div>
       </div>
     }
-    <div class="field">
-      <label class="field__label" for="d-why">Reason</label>
+    <div jb-field label="Reason" controlId="d-why">
       <select
         class="select"
-        id="d-why"
+        jbFieldControl
         name="reason"
         [disabled]="busy()"
         [ngModel]="reason()"
@@ -42,29 +41,27 @@
         }
       </select>
     </div>
-    <div class="field">
-      <label class="field__label" for="d-msg">
-        Message to {{ firstName }} <span class="optional">(required)</span>
-      </label>
-      <span class="field__help" id="d-msg-help">Shown to the customer with your decline.</span>
+    <div
+      jb-field
+      [label]="'Message to ' + firstName"
+      controlId="d-msg"
+      required
+      hint="Shown to the customer with your decline."
+      [error]="
+        problem() ? 'Write a short note so ' + firstName + ' knows why and what to do next.' : null
+      "
+    >
       <textarea
         class="textarea"
-        id="d-msg"
+        jbFieldControl
         name="message"
         rows="3"
         required
         [attr.maxlength]="maxMessage"
         [readOnly]="busy()"
-        [attr.aria-invalid]="problem() ? 'true' : null"
-        [attr.aria-describedby]="problem() ? 'd-msg-help d-msg-error' : 'd-msg-help'"
         [ngModel]="message()"
         (ngModelChange)="message.set($event)"
       ></textarea>
-      @if (problem() === 'required') {
-        <span class="field__error" id="d-msg-error"
-          >Write a short note so {{ firstName }} knows why and what to do next.</span
-        >
-      }
     </div>
   </form>
   <div class="dialog__footer">

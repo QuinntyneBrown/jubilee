@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { REPORTS_API, ReportReason } from 'api';
-import { Icon, Button, Alert } from 'components';
+import { Icon, Button, Alert, FieldControl, FieldError, Field } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from '../../services/message-time';
 
@@ -20,7 +20,7 @@ export interface ReportListingData {
 }
 
 type View = 'form' | 'busy' | 'failed' | 'success';
-type Field = 'reason' | 'description';
+type FieldName = 'reason' | 'description';
 
 const MAX = 2000;
 
@@ -47,7 +47,7 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-report-listing-dialog',
-  imports: [FormsModule, Icon, Button, Alert],
+  imports: [FormsModule, Icon, Button, Alert, Field, FieldControl, FieldError],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './report-listing.dialog.html',
@@ -63,7 +63,7 @@ export class ReportListingDialog {
   protected readonly view = signal<View>('form');
   protected readonly reason = signal<ReportReason | null>(null);
   protected readonly description = signal('');
-  protected readonly problems = signal<Partial<Record<Field, string>>>({});
+  protected readonly problems = signal<Partial<Record<FieldName, string>>>({});
   protected readonly busy = computed(() => this.view() === 'busy');
   protected readonly remaining = computed(() => MAX - this.description().length);
   protected readonly failure = signal({ title: '', text: '' });
@@ -71,7 +71,7 @@ export class ReportListingDialog {
 
   protected send(): void {
     if (this.busy()) return;
-    const found: Partial<Record<Field, string>> = {};
+    const found: Partial<Record<FieldName, string>> = {};
     if (!this.reason()) found.reason = MESSAGES['reason:REASON_REQUIRED'];
     if (!this.description().trim())
       found.description = MESSAGES['description:DESCRIPTION_REQUIRED'];
@@ -98,8 +98,8 @@ export class ReportListingDialog {
   private fail(error: unknown): void {
     if (error instanceof HttpErrorResponse && error.status === 422) {
       const errors = (error.error as { errors?: Record<string, string> } | null)?.errors ?? {};
-      const found: Partial<Record<Field, string>> = {};
-      for (const field of ['reason', 'description'] as Field[]) {
+      const found: Partial<Record<FieldName, string>> = {};
+      for (const field of ['reason', 'description'] as FieldName[]) {
         if (errors[field])
           found[field] = MESSAGES[`${field}:${errors[field]}`] ?? 'Check this field.';
       }

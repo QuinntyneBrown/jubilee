@@ -42,19 +42,22 @@
       @if (problem(); as message) {
         <div jb-alert tone="danger" role="alert">{{ message }}</div>
       }
-      <div class="field" style="max-width: 16rem">
-        <label class="field__label" for="start">Starts on</label>
+      <div
+        jb-field
+        label="Starts on"
+        controlId="start"
+        [hint]="'Shows for 7 days, to ' + endLabel() + '.'"
+        style="max-width: 16rem"
+      >
         <input
           class="input"
-          id="start"
+          jbFieldControl
           type="date"
           [min]="today"
           [ngModel]="startDate()"
           name="start"
-          aria-describedby="start-help"
           (ngModelChange)="pick($event)"
         />
-        <span class="field__help" id="start-help">Shows for 7 days, to {{ endLabel() }}.</span>
       </div>
       @if (chosen().length === 0) {
         <div jb-empty-state [compact]="true" icon="check" heading="Nothing featured yet">
@@ -107,11 +110,10 @@
           }
         </ol>
       }
-      <div class="field" style="margin-top: var(--space-4)">
-        <label class="field__label" for="find">Add a live business</label>
+      <div jb-field label="Add a live business" controlId="find" style="margin-top: var(--space-4)">
         <input
           class="input"
-          id="find"
+          jbFieldControl
           type="search"
           name="find"
           placeholder="Search by name"
@@ -120,7 +122,7 @@
           [ngModel]="search()"
           (ngModelChange)="find($event)"
         />
-        <span class="field__help" role="status"
+        <span jb-field-help role="status"
           >{{ chosen().length }} of {{ max }} chosen.
           @if (full()) {
             Remove one to add another.

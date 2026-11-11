@@ -43,6 +43,7 @@ it changes how the product looks, which a component move must not do.
 | Component | Reference | Design system and mocks |
 |---|---|---|
 | Button (top-bar action, `home-1280.png`) | 38 px tall, no border, Inter semibold | 32 px tall (`--control-height-sm`), hairline border, system text face |
+| Field ("Business name", `list-your-business-1280.png`) | 50 px control with a 12 px radius, 12 px under the label, Inter | 44 px control (`--control-height-md`) with `--radius-md`, `--space-1` under the label, system text face |
 
 ## Refreshing
 

@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CATALOGUE_API, OwnerProduct } from 'api';
-import { Icon, Button, Alert } from 'components';
+import { Icon, Button, Alert, FieldControl, Field } from 'components';
 import { timeout } from 'rxjs';
 import { failureText, guardClose } from '../guard-close';
 
@@ -26,7 +26,7 @@ export interface ProductSaved {
 
 type View = 'form' | 'busy' | 'failed' | 'discard';
 
-type Field = 'name' | 'price' | 'stock' | 'description';
+type FieldName = 'name' | 'price' | 'stock' | 'description';
 
 /** A submission that takes longer than this fails rather than spinning (L2-127 AC2). */
 const SAVE_TIMEOUT_MS = 10_000;
@@ -34,7 +34,7 @@ const SAVE_TIMEOUT_MS = 10_000;
 /** ProductEditorDialog (L2-091): add or change a product; it is live on the listing as soon as it is saved. */
 @Component({
   selector: 'jb-product-editor-dialog',
-  imports: [FormsModule, Icon, Button, Alert],
+  imports: [FormsModule, Icon, Button, Alert, Field, FieldControl],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './product-editor.dialog.html',
@@ -52,7 +52,7 @@ export class ProductEditorDialog {
   protected readonly view = signal<View>('form');
   protected readonly busy = computed(() => this.view() === 'busy');
   protected readonly failure = signal('');
-  protected readonly errors = signal<Partial<Record<Field, string>>>({});
+  protected readonly errors = signal<Partial<Record<FieldName, string>>>({});
 
   protected readonly name = signal(this.product?.name ?? '');
   protected readonly price = signal(this.product ? (this.product.priceCents / 100).toFixed(2) : '');
@@ -117,8 +117,8 @@ export class ProductEditorDialog {
     this.view.set('failed');
   }
 
-  private check(): Partial<Record<Field, string>> {
-    const problems: Partial<Record<Field, string>> = {};
+  private check(): Partial<Record<FieldName, string>> {
+    const problems: Partial<Record<FieldName, string>> = {};
     if (!this.name().trim()) problems.name = 'Enter a name for the product.';
     if (
       !/^\d{1,6}(\.\d{1,2})?$/.test(this.price().trim()) ||
@@ -134,7 +134,7 @@ export class ProductEditorDialog {
     return problems;
   }
 
-  private serverProblems(fields: Record<string, string>): Partial<Record<Field, string>> {
+  private serverProblems(fields: Record<string, string>): Partial<Record<FieldName, string>> {
     const text: Record<string, string> = {
       name: 'Enter a name for the product.',
       price: 'Enter a price in dollars, like 24.00.',

@@ -16,52 +16,47 @@
     </button>
   </div>
   <form class="dialog__body stack" id="item-form" novalidate (ngSubmit)="add()">
-    <div class="field">
-      <label class="field__label" for="d-name"
-        >{{ isService ? 'Service name' : 'Product name' }}
-        <span class="optional">(required)</span></label
-      >
+    <div
+      jb-field
+      [label]="isService ? 'Service name' : 'Product name'"
+      controlId="d-name"
+      required
+      [error]="nameProblem()"
+    >
       <input
         class="input"
-        id="d-name"
+        jbFieldControl
         name="name"
         type="text"
         maxlength="120"
         required
         cdkFocusInitial
-        [attr.aria-invalid]="nameProblem() ? 'true' : null"
-        [attr.aria-describedby]="nameProblem() ? 'd-name-error' : null"
         [ngModel]="name()"
         (ngModelChange)="name.set($event)"
       />
-      @if (nameProblem()) {
-        <span class="field__error" id="d-name-error">{{ nameProblem() }}</span>
-      }
     </div>
     @if (isService) {
-      <div class="field">
-        <label class="field__label" for="d-meta"
-          >Short detail <span class="optional">(optional)</span></label
-        >
-        <span class="field__help" id="d-meta-help"
-          >Length, place or what to bring. 60 characters at most.</span
-        >
+      <div
+        jb-field
+        label="Short detail"
+        controlId="d-meta"
+        optional
+        hint="Length, place or what to bring. 60 characters at most."
+      >
         <input
           class="input"
-          id="d-meta"
+          jbFieldControl
           name="detail"
           type="text"
           maxlength="60"
-          aria-describedby="d-meta-help"
           [ngModel]="detail()"
           (ngModelChange)="detail.set($event)"
         />
       </div>
-      <div class="field">
-        <label class="field__label" for="d-pricing">Pricing</label>
+      <div jb-field label="Pricing" controlId="d-pricing">
         <select
           class="select"
-          id="d-pricing"
+          jbFieldControl
           name="pricing"
           [ngModel]="pricing()"
           (ngModelChange)="pricing.set($event)"
@@ -73,24 +68,16 @@
       </div>
     }
     @if (!isService || pricing() === 'amount') {
-      <div class="field">
-        <label class="field__label" for="d-price"
-          >Price (CAD) <span class="optional">(required)</span></label
-        >
+      <div jb-field label="Price (CAD)" controlId="d-price" required [error]="priceProblem()">
         <input
           class="input"
-          id="d-price"
+          jbFieldControl
           name="price"
           type="text"
           inputmode="decimal"
-          [attr.aria-invalid]="priceProblem() ? 'true' : null"
-          [attr.aria-describedby]="priceProblem() ? 'd-price-error' : null"
           [ngModel]="price()"
           (ngModelChange)="price.set($event)"
         />
-        @if (priceProblem()) {
-          <span class="field__error" id="d-price-error">{{ priceProblem() }}</span>
-        }
       </div>
     }
   </form>

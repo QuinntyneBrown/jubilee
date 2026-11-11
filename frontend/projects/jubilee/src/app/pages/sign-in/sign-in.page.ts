@@ -9,12 +9,21 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BrandMark, EmptyState, Icon, Button, Alert, FormSummary } from 'components';
+import {
+  BrandMark,
+  EmptyState,
+  Icon,
+  Button,
+  Alert,
+  FormSummary,
+  FieldControl,
+  Field,
+} from 'components';
 import { sanitiseReturnUrl } from '../../services/return-url';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../toasts/toast.service';
 
-type Field = 'email' | 'password';
+type FieldName = 'email' | 'password';
 type View = 'form' | 'submitting' | 'error';
 
 const GOOGLE_ERRORS: Record<string, string> = {
@@ -26,7 +35,18 @@ const GOOGLE_ERRORS: Record<string, string> = {
 /** SignInPage (L2-006, L2-007): e-mail and password, or Google, then back to where the visitor was. */
 @Component({
   selector: 'jb-sign-in-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert, FormSummary],
+  imports: [
+    FormsModule,
+    RouterLink,
+    BrandMark,
+    EmptyState,
+    Icon,
+    Button,
+    Alert,
+    FormSummary,
+    Field,
+    FieldControl,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './sign-in.page.html',
@@ -45,14 +65,14 @@ export class SignInPage {
   protected readonly email = signal('');
   protected readonly password = signal('');
   protected readonly keep = signal(false);
-  protected readonly errors = signal<Partial<Record<Field, string>>>({});
+  protected readonly errors = signal<Partial<Record<FieldName, string>>>({});
   protected readonly notice = signal<string | null>(
     GOOGLE_ERRORS[this.query.get('error') ?? ''] ?? null,
   );
 
   protected readonly summary = computed(() => {
     const errors = this.errors();
-    const list: { id: Field; text: string }[] = [];
+    const list: { id: FieldName; text: string }[] = [];
     if (errors.email) list.push({ id: 'email', text: 'Enter the e-mail address you joined with' });
     if (errors.password) {
       list.push({
@@ -67,7 +87,7 @@ export class SignInPage {
 
   protected submit(): void {
     if (this.view() === 'submitting') return;
-    const errors: Partial<Record<Field, string>> = {};
+    const errors: Partial<Record<FieldName, string>> = {};
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email().trim())) {
       errors.email = 'Enter the e-mail address you joined with, like name@example.com';
     }

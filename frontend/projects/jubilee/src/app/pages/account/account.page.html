@@ -71,119 +71,91 @@
         (submit)="$event.preventDefault(); save()"
       >
         <div class="form-grid form-grid--2">
-          <div class="field">
-            <label class="field__label" for="first">First name</label>
+          <div jb-field label="First name" controlId="first" [error]="problem('firstName')">
             <input
               class="input"
-              id="first"
+              jbFieldControl
               name="first"
               type="text"
               autocomplete="given-name"
               maxlength="50"
-              [attr.aria-invalid]="problem('firstName') ? 'true' : null"
-              [attr.aria-describedby]="problem('firstName') ? 'first-error' : null"
               [ngModel]="firstName()"
               (ngModelChange)="firstName.set($event)"
             />
-            @if (problem('firstName'); as text) {
-              <span class="field__error" id="first-error">{{ text }}</span>
-            }
           </div>
-          <div class="field">
-            <label class="field__label" for="last">Last name</label>
+          <div jb-field label="Last name" controlId="last" [error]="problem('lastName')">
             <input
               class="input"
-              id="last"
+              jbFieldControl
               name="last"
               type="text"
               autocomplete="family-name"
               maxlength="50"
-              [attr.aria-invalid]="problem('lastName') ? 'true' : null"
-              [attr.aria-describedby]="problem('lastName') ? 'last-error' : null"
               [ngModel]="lastName()"
               (ngModelChange)="lastName.set($event)"
             />
-            @if (problem('lastName'); as text) {
-              <span class="field__error" id="last-error">{{ text }}</span>
-            }
           </div>
         </div>
-        <div class="field">
-          <label class="field__label" for="email">E-mail</label>
-          <span class="field__help" id="email-help">
-            {{ account.emailStatus === 'confirmed' ? 'Confirmed.' : 'Not confirmed yet.' }}
-            <button
-              #changeEmailButton
-              jb-button
-              variant="link"
-              type="button"
-              (click)="changeEmail(changeEmailButton.element)"
-            >
-              Change e-mail
-            </button>
-          </span>
-          <input
-            class="input"
-            id="email"
-            type="email"
-            [value]="account.email"
-            aria-describedby="email-help"
-            readonly
-          />
+        <div
+          jb-field
+          label="E-mail"
+          controlId="email"
+          [hint]="account.emailStatus === 'confirmed' ? 'Confirmed.' : 'Not confirmed yet.'"
+        >
+          <button
+            slot="hint"
+            #changeEmailButton
+            jb-button
+            variant="link"
+            type="button"
+            (click)="changeEmail(changeEmailButton.element)"
+          >
+            Change e-mail
+          </button>
+          <input class="input" jbFieldControl type="email" [value]="account.email" readonly />
         </div>
         <div class="form-grid form-grid--2">
-          <div class="field">
-            <label class="field__label" for="phone"
-              >Phone <span class="optional">(optional)</span></label
-            >
-            <span class="field__help" id="phone-help"
-              >Shared with a business only when you send a request.</span
-            >
+          <div
+            jb-field
+            label="Phone"
+            controlId="phone"
+            optional
+            hint="Shared with a business only when you send a request."
+            [error]="problem('phone')"
+          >
             <input
               class="input"
-              id="phone"
+              jbFieldControl
               name="phone"
               type="tel"
               autocomplete="tel"
-              [attr.aria-invalid]="problem('phone') ? 'true' : null"
-              [attr.aria-describedby]="problem('phone') ? 'phone-help phone-error' : 'phone-help'"
               [ngModel]="phone()"
               (ngModelChange)="phone.set($event)"
             />
-            @if (problem('phone'); as text) {
-              <span class="field__error" id="phone-error">{{ text }}</span>
-            }
           </div>
-          <div class="field">
-            <label class="field__label" for="postal"
-              >Postal code <span class="optional">(optional)</span></label
-            >
-            <span class="field__help" id="postal-help">Used to show businesses near you.</span>
+          <div
+            jb-field
+            label="Postal code"
+            controlId="postal"
+            optional
+            hint="Used to show businesses near you."
+            [error]="problem('postalCode')"
+          >
             <input
               class="input"
-              id="postal"
+              jbFieldControl
               name="postal"
               type="text"
               autocomplete="postal-code"
-              [attr.aria-invalid]="problem('postalCode') ? 'true' : null"
-              [attr.aria-describedby]="
-                problem('postalCode') ? 'postal-help postal-error' : 'postal-help'
-              "
               [ngModel]="postalCode()"
               (ngModelChange)="postalCode.set($event)"
             />
-            @if (problem('postalCode'); as text) {
-              <span class="field__error" id="postal-error">{{ text }}</span>
-            }
           </div>
         </div>
-        <div class="field">
-          <label class="field__label" for="church"
-            >Home church <span class="optional">(optional)</span></label
-          >
+        <div jb-field label="Home church" controlId="church" optional>
           <input
             class="input"
-            id="church"
+            jbFieldControl
             name="church"
             type="text"
             maxlength="100"
@@ -191,20 +163,19 @@
             (ngModelChange)="homeChurch.set($event)"
           />
         </div>
-        <div class="field">
-          <label class="field__label" for="pronouns"
-            >Pronouns <span class="optional">(optional)</span></label
-          >
-          <span class="field__help" id="pronouns-help"
-            >Used in messages we write about you, such as a church reference request.</span
-          >
+        <div
+          jb-field
+          label="Pronouns"
+          controlId="pronouns"
+          optional
+          hint="Used in messages we write about you, such as a church reference request."
+        >
           <input
             class="input"
-            id="pronouns"
+            jbFieldControl
             name="pronouns"
             type="text"
             maxlength="40"
-            aria-describedby="pronouns-help"
             [ngModel]="pronouns()"
             (ngModelChange)="pronouns.set($event)"
           />

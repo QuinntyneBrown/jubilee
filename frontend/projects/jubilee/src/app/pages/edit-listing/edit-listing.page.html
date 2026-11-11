@@ -21,7 +21,7 @@
       <div class="card" style="max-width: 42rem">
         <div class="form" aria-hidden="true">
           @for (item of [1, 2, 3, 4]; track item) {
-            <div class="field">
+            <div jb-field>
               <span class="skeleton skeleton--text skeleton--w30"></span>
               <span class="skeleton skeleton--rect" style="height: var(--control-height-md)"></span>
             </div>
@@ -177,67 +177,55 @@
               }
             </ul>
             @if (photoError(); as problem) {
-              <span class="field__error" role="alert">{{ problem }}</span>
+              <span jb-field-error role="alert">{{ problem }}</span>
             }
-            <p class="field__help" style="margin-top: var(--space-2)">
+            <p jb-field-help style="margin-top: var(--space-2)">
               Up to 6 photos, JPG or PNG, 5 MB each. The first is your cover.
             </p>
           </fieldset>
 
-          <div class="field">
-            <label class="field__label" for="name"
-              >Business name <span class="optional">(required)</span></label
-            >
+          <div jb-field label="Business name" controlId="name" required [error]="errors().name">
             <input
               class="input"
-              id="name"
+              jbFieldControl
               name="name"
               type="text"
               required
               [ngModel]="draft().name"
               (ngModelChange)="set('name', $event)"
               [readOnly]="busy()"
-              [attr.aria-invalid]="errors().name ? 'true' : null"
-              [attr.aria-describedby]="errors().name ? 'name-error' : null"
             />
-            @if (errors().name; as message) {
-              <span class="field__error" id="name-error">{{ message }}</span>
-            }
           </div>
-          <div>
-            <div class="field">
-              <label class="field__label" for="tagline"
-                >One line on what you do <span class="optional">(required)</span></label
-              >
-              <input
-                class="input"
-                id="tagline"
-                name="tagline"
-                type="text"
-                required
-                [ngModel]="draft().tagline"
-                (ngModelChange)="set('tagline', $event)"
-                [readOnly]="busy()"
-                [attr.aria-invalid]="errors().tagline ? 'true' : null"
-                [attr.aria-describedby]="errors().tagline ? 'tagline-error' : null"
-              />
-              @if (errors().tagline; as message) {
-                <span class="field__error" id="tagline-error">{{ message }}</span>
-              }
-            </div>
-            <div class="field__counter">{{ draft().tagline.trim().length }} / {{ maxTagline }}</div>
+          <div
+            jb-field
+            label="One line on what you do"
+            controlId="tagline"
+            required
+            [counter]="draft().tagline.trim().length + ' / ' + maxTagline"
+            [error]="errors().tagline"
+          >
+            <input
+              class="input"
+              jbFieldControl
+              name="tagline"
+              type="text"
+              required
+              [ngModel]="draft().tagline"
+              (ngModelChange)="set('tagline', $event)"
+              [readOnly]="busy()"
+            />
           </div>
-          <div class="field">
-            <label class="field__label" for="about">About</label>
-            <span class="field__help" id="about-help"
-              >A few sentences on who you are and who you serve.</span
-            >
+          <div
+            jb-field
+            label="About"
+            controlId="about"
+            hint="A few sentences on who you are and who you serve."
+          >
             <textarea
               class="textarea"
-              id="about"
+              jbFieldControl
               name="about"
               rows="4"
-              aria-describedby="about-help"
               [attr.maxlength]="maxAbout"
               [ngModel]="draft().about"
               (ngModelChange)="set('about', $event)"
@@ -245,11 +233,10 @@
             ></textarea>
           </div>
           <div class="form-grid form-grid--2">
-            <div class="field">
-              <label class="field__label" for="cat">Category</label>
+            <div jb-field label="Category" controlId="cat">
               <select
                 class="select"
-                id="cat"
+                jbFieldControl
                 name="category"
                 [ngModel]="draft().category"
                 (ngModelChange)="set('category', $event)"
@@ -260,11 +247,10 @@
                 }
               </select>
             </div>
-            <div class="field">
-              <label class="field__label" for="area">Where</label>
+            <div jb-field label="Where" controlId="area">
               <input
                 class="input"
-                id="area"
+                jbFieldControl
                 name="where"
                 type="text"
                 [ngModel]="draft().where"
@@ -274,57 +260,41 @@
             </div>
           </div>
           <div class="form-grid form-grid--2">
-            <div class="field">
-              <label class="field__label" for="hours">Hours</label>
+            <div jb-field label="Hours" controlId="hours" [error]="errors().hours">
               <input
                 class="input"
-                id="hours"
+                jbFieldControl
                 name="hours"
                 type="text"
                 [ngModel]="draft().hours"
                 (ngModelChange)="set('hours', $event)"
                 [readOnly]="busy()"
-                [attr.aria-invalid]="errors().hours ? 'true' : null"
-                [attr.aria-describedby]="errors().hours ? 'hours-error' : null"
               />
-              @if (errors().hours; as message) {
-                <span class="field__error" id="hours-error">{{ message }}</span>
-              }
             </div>
-            <div class="field">
-              <label class="field__label" for="web"
-                >Website <span class="optional">(optional)</span></label
-              >
+            <div jb-field label="Website" controlId="web" optional [error]="errors().website">
               <input
                 class="input"
-                id="web"
+                jbFieldControl
                 name="website"
                 type="url"
                 [ngModel]="draft().website"
                 (ngModelChange)="set('website', $event)"
                 [readOnly]="busy()"
-                [attr.aria-invalid]="errors().website ? 'true' : null"
-                [attr.aria-describedby]="errors().website ? 'web-error' : null"
               />
-              @if (errors().website; as message) {
-                <span class="field__error" id="web-error">{{ message }}</span>
-              }
             </div>
           </div>
-          <div class="field">
-            <label class="field__label" for="perk"
-              >Highlight <span class="optional">(optional)</span></label
-            >
-            <span class="field__help" id="perk-help"
-              >A short green line on your card, like “Free first meeting”. 30 characters at
-              most.</span
-            >
+          <div
+            jb-field
+            label="Highlight"
+            controlId="perk"
+            optional
+            hint="A short green line on your card, like “Free first meeting”. 30 characters at most."
+          >
             <input
               class="input"
-              id="perk"
+              jbFieldControl
               name="highlight"
               type="text"
-              aria-describedby="perk-help"
               [attr.maxlength]="maxHighlight"
               [ngModel]="draft().highlight"
               (ngModelChange)="set('highlight', $event)"

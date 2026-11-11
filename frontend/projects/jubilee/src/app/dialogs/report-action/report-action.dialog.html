@@ -28,51 +28,43 @@
       </div>
     }
     @if (wording().messages) {
-      <div class="field">
-        <label class="field__label" for="r-text">
-          Message <span class="optional">(required)</span>
-        </label>
+      <div
+        jb-field
+        label="Message"
+        controlId="r-text"
+        required
+        [error]="textProblem() ? 'Write the message to send.' : null"
+      >
         <textarea
           class="textarea"
-          id="r-text"
+          jbFieldControl
           name="messageText"
           rows="4"
           required
           [readOnly]="busy()"
-          [attr.aria-invalid]="textProblem() ? 'true' : null"
-          [attr.aria-describedby]="textProblem() ? 'r-text-error' : null"
           [ngModel]="text()"
           (ngModelChange)="text.set($event)"
         ></textarea>
-        @if (textProblem()) {
-          <span class="field__error" id="r-text-error">Write the message to send.</span>
-        }
       </div>
     }
-    <div class="field">
-      <label class="field__label" for="r-note">
-        Resolution note <span class="optional">(required)</span>
-      </label>
+    <div
+      jb-field
+      label="Resolution note"
+      controlId="r-note"
+      required
+      hint="Kept with the report and in the audit log. Never shown to the owner or the reporter."
+      [error]="noteProblem() ? 'Write a note about what you decided and why.' : null"
+    >
       <textarea
         class="textarea"
-        id="r-note"
+        jbFieldControl
         name="resolutionNote"
         rows="3"
         required
         [readOnly]="busy()"
-        [attr.aria-invalid]="noteProblem() ? 'true' : null"
-        [attr.aria-describedby]="noteProblem() ? 'r-note-help r-note-error' : 'r-note-help'"
         [ngModel]="note()"
         (ngModelChange)="note.set($event)"
       ></textarea>
-      @if (noteProblem()) {
-        <span class="field__error" id="r-note-error"
-          >Write a note about what you decided and why.</span
-        >
-      }
-      <span class="field__help" id="r-note-help"
-        >Kept with the report and in the audit log. Never shown to the owner or the reporter.</span
-      >
     </div>
   </form>
   <div class="dialog__footer">

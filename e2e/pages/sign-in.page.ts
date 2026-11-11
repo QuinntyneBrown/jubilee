@@ -41,6 +41,32 @@ export class SignInPage extends ShellPage implements Screen {
     return this.main.locator(`#${id}-error`);
   }
 
+  /** The whole field of a control: label, control and error. */
+  fieldOf(label: string): Locator {
+    return this.main
+      .locator('.field')
+      .filter({ has: this.main.page().getByLabel(label, { exact: false }) })
+      .first();
+  }
+
+  /** Types into a control and leaves it, so that it is shown at rest. */
+  async typeAndLeave(control: Locator, value: string): Promise<void> {
+    await control.fill(value);
+    await control.blur();
+  }
+
+  /** Sends an address that is not one, then leaves the summary focus moved to. */
+  async sendInvalidEmail(address: string, password: string): Promise<void> {
+    await this.signInWith(address, password);
+    await this.summary.evaluate(async (summary: HTMLElement) => {
+      // The page moves focus to the summary a moment after it shows it.
+      while (document.activeElement !== summary) {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      summary.blur();
+    });
+  }
+
   async signInWith(email: string, password: string, keep = false): Promise<void> {
     await this.email.fill(email);
     await this.password.fill(password);
