@@ -22,6 +22,7 @@ import {
   Select,
   Chip,
   PageHeader,
+  Breadcrumb,
 } from 'components';
 import { combineLatest } from 'rxjs';
 import {
@@ -73,6 +74,7 @@ function businesses(count: number): string {
     Select,
     Chip,
     PageHeader,
+    Breadcrumb,
   ],
   providers: [CategoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

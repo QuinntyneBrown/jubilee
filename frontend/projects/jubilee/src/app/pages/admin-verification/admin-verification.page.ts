@@ -24,6 +24,7 @@ import {
   BadgeTone,
   Card,
   PageHeader,
+  Breadcrumb,
 } from 'components';
 import {
   ApproveListingDialog,
@@ -69,6 +70,7 @@ const WAITING_STATES: ReferenceState[] = ['waiting', 'expired', 'deleted'];
     Perk,
     Card,
     PageHeader,
+    Breadcrumb,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-verification.page.html',

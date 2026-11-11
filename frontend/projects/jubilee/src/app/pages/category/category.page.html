@@ -1,11 +1,6 @@
 @let state = store.state();
 @let name = state.status === 'loaded' ? state.value.category.name : (category()?.name ?? '');
-<nav aria-label="Breadcrumb">
-  <ol class="breadcrumb">
-    <li><a routerLink="/">Browse</a></li>
-    <li aria-current="page">{{ name }}</li>
-  </ol>
-</nav>
+<nav jb-breadcrumb [items]="[{ label: 'Browse', link: '/' }, { label: name }]"></nav>
 <jb-page-header #heading focusable [heading]="name" [subtitle]="subtitle()"> </jb-page-header>
 @switch (state.status) {
   @case ('loading') {

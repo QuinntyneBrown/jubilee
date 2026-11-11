@@ -21,6 +21,7 @@ import {
   Card,
   CardFooter,
   PageHeader,
+  Breadcrumb,
 } from 'components';
 import { interval } from 'rxjs';
 import {
@@ -55,6 +56,7 @@ const NOUN = { booking: 'booking', quote: 'quote request', order: 'order' } as c
     Card,
     CardFooter,
     PageHeader,
+    Breadcrumb,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

@@ -73,6 +73,7 @@ it changes how the product looks, which a component move must not do.
 | Head of a business (`business-services-1280.png`) | a 420 px column, two round actions (message, save) beside Book a meeting, Inter | a 440 px column, a third action (Share), system text face |
 | Section head ("From the shops", `home-1280.png`) | the page 1216 px wide, the link ending with a chevron, Inter | a 1184 px container, the link without a chevron, system text face |
 | Directory row (`home-1280.png`) | 380 px wide, a smaller tagline, Inter | a wider column, the tagline at `--text-body-sm`, system text face |
+| Back link (`business-services-1280.png`) | a smaller arrow, closer to the words, Inter | the arrow at `--icon-size-md`, `--space-2` from the words, system text face |
 
 ## Refreshing
 

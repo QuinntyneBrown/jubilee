@@ -1,0 +1,11 @@
+<ol class="breadcrumb">
+  @for (item of items(); track $index) {
+    @if ($last) {
+      <li aria-current="page">{{ item.label }}</li>
+    } @else {
+      <li>
+        <a [routerLink]="item.link">{{ item.label }}</a>
+      </li>
+    }
+  }
+</ol>

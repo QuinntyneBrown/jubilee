@@ -1,15 +1,5 @@
 @let current = state();
-<nav aria-label="Breadcrumb">
-  <ol class="breadcrumb">
-    <li><a routerLink="/">Browse</a></li>
-    @if (shopName(); as shop) {
-      <li>
-        <a [routerLink]="['/b', slug()]">{{ shop }}</a>
-      </li>
-    }
-    <li aria-current="page">{{ productName() ?? 'Product' }}</li>
-  </ol>
-</nav>
+<nav jb-breadcrumb [items]="crumbs()"></nav>
 @switch (current.status) {
   @case ('loading') {
     <h1 class="visually-hidden">Loading this product</h1>
