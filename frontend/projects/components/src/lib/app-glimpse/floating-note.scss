@@ -1,0 +1,60 @@
+// Block: mkt-note. The host is the note, placed over a corner of the glimpse it is projected into.
+:host {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-fg-default) 10%, transparent),
+    var(--shadow-3, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+}
+
+:host(.mkt-note--trust) {
+  top: 0;
+  right: var(--space-2);
+}
+
+:host(.mkt-note--reply) {
+  bottom: 0;
+  left: var(--space-2);
+}
+
+@media (min-width: 40rem) {
+  :host(.mkt-note--trust) {
+    right: var(--space-6);
+  }
+
+  :host(.mkt-note--reply) {
+    left: var(--space-6);
+  }
+}
+
+.mkt-note__badge {
+  display: flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+:host(.mkt-note--trust) .mkt-note__badge {
+  background: var(--jb-mkt-accent);
+  color: var(--jb-mkt-paper);
+}
+
+:host(.mkt-note--reply) .mkt-note__badge {
+  background: var(--color-accent);
+  color: var(--color-fg-on-accent);
+}
+
+.mkt-note__icon {
+  width: 0.9375rem;
+  height: 0.9375rem;
+}

@@ -1,0 +1,23 @@
+<div class="mkt-glimpse__panel">
+  <div class="mkt-glimpse__search">
+    <svg jb-icon class="mkt-glimpse__search-icon" name="search"></svg>
+    <span class="mkt-glimpse__truncate">{{ search() }}</span>
+  </div>
+  <p class="mkt-glimpse__caption">{{ caption() }}</p>
+  <ul class="mkt-glimpse__list">
+    @for (business of results(); track business.name) {
+      <li class="mkt-glimpse__result">
+        <img class="mkt-glimpse__photo" [src]="business.photo" alt="" />
+        <div class="mkt-glimpse__text">
+          <p class="mkt-glimpse__name">
+            <span class="mkt-glimpse__truncate">{{ business.name }}</span>
+            <svg jb-icon class="mkt-glimpse__check" name="verified"></svg>
+            <span class="visually-hidden"> Verified</span>
+          </p>
+          <p class="mkt-glimpse__tagline">{{ business.tagline }}</p>
+        </div>
+      </li>
+    }
+  </ul>
+</div>
+<ng-content />

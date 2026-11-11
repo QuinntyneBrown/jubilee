@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { MarketingButton, MarketingLink, Lockup } from 'components';
+import { AppGlimpse, FloatingNote, MarketingButton, MarketingLink, Lockup } from 'components';
 import { APP_URL } from './app-url';
 import { Benefits } from './benefits/benefits';
 import { ForBusinesses } from './for-businesses/for-businesses';
-import { HeroVisual } from './hero-visual/hero-visual';
+import { GLIMPSE } from './content';
 import { HowItWorks } from './how-it-works/how-it-works';
 import { InsideTheApp } from './inside-the-app/inside-the-app';
 import { PitchVideo } from './pitch-video/pitch-video';
@@ -15,7 +15,8 @@ import { PitchVideo } from './pitch-video/pitch-video';
     MarketingButton,
     MarketingLink,
     Lockup,
-    HeroVisual,
+    AppGlimpse,
+    FloatingNote,
     PitchVideo,
     Benefits,
     HowItWorks,
@@ -28,4 +29,5 @@ import { PitchVideo } from './pitch-video/pitch-video';
 export class App {
   /** The app's browse home (L2-185 AC1). */
   protected readonly browseUrl = inject(APP_URL) + '/';
+  protected readonly glimpse = GLIMPSE;
 }

@@ -43,7 +43,16 @@
       </div>
       <p class="mkt-hero__note">Free for members · Every business church-verified</p>
     </div>
-    <jb-hero-visual />
+    <div
+      jb-app-glimpse
+      label="A glimpse of the app"
+      [search]="glimpse.search"
+      [caption]="glimpse.caption"
+      [results]="glimpse.results"
+    >
+      <p jb-floating-note tone="trust" icon="verified">Vouched for by Grace Toronto Church</p>
+      <p jb-floating-note tone="reply" icon="message">WaterWorks replied in 12 min</p>
+    </div>
   </section>
 
   <section id="film" class="mkt-wrap mkt-film" aria-labelledby="film-title">
