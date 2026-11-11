@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Accounts;
 
-/// <summary>The e-mails the account journeys send. Plain text, no tracking pixels (L2-179 AC4).</summary>
+/// <summary>The e-mails the account journeys send, as text; <see cref="Emails.EmailLayout"/> adds the HTML part when they are sent (L2-179 AC4, AC5).</summary>
 public sealed class AccountEmails(IAppDbContext db, AccountSettings settings, TimeProvider clock)
 {
     /// <summary>Issues a fresh confirmation link, makes earlier ones stop working, and queues the e-mail.</summary>
@@ -380,7 +380,7 @@ public sealed class OutboxDispatcher(
                 var link = message.Category is { } category && message.MemberId is { } memberId
                     ? $"{settings.PublicBaseUrl.TrimEnd('/')}/api/email/unsubscribe/{unsubscribe.For(memberId, category)}"
                     : null;
-                await sender.SendAsync(message.ToAddress, message.Subject, message.TextBody, cancellationToken, link);
+                await sender.SendAsync(Emails.EmailLayout.Render(message.ToAddress, message.Subject, message.TextBody, link), cancellationToken);
                 message.MarkSent(clock.GetUtcNow());
                 sent++;
             }

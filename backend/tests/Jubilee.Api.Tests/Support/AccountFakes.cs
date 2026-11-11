@@ -9,7 +9,8 @@ using Jubilee.Api.Middleware;
 
 namespace Jubilee.Api.Tests.Support;
 
-public sealed record SentEmail(string To, string Subject, string Body, string? UnsubscribeUrl = null);
+/// <summary>One sent e-mail: <c>Body</c> is the plain-text part, <c>Html</c> the HTML part.</summary>
+public sealed record SentEmail(string To, string Subject, string Body, string? UnsubscribeUrl = null, string Html = "");
 
 /// <summary>Collects the e-mails the worker would send; can be made to fail.</summary>
 public sealed class FakeEmailSender : IEmailSender
@@ -18,14 +19,14 @@ public sealed class FakeEmailSender : IEmailSender
 
     public bool Failing { get; set; }
 
-    public Task SendAsync(string to, string subject, string textBody, CancellationToken cancellationToken, string? unsubscribeUrl = null)
+    public Task SendAsync(Jubilee.Application.Emails.EmailMessage message, CancellationToken cancellationToken)
     {
         if (Failing)
         {
             throw new InvalidOperationException("The provider is down.");
         }
 
-        Sent.Enqueue(new SentEmail(to, subject, textBody, unsubscribeUrl));
+        Sent.Enqueue(new SentEmail(message.To, message.Subject, message.TextBody, message.UnsubscribeUrl, message.HtmlBody));
         return Task.CompletedTask;
     }
 

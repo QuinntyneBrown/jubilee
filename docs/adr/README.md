@@ -29,6 +29,7 @@ something else: a new record supersedes it and both say so.
 | [0035](0035-presentation-in-the-components-library.md) | Prefer best practice; presentation only in `components`, one encapsulated `.scss` per component, BEM names | Accepted |
 | [0036](0036-component-parity-specs.md) | Component parity specs: `npm run parity`, against the mocks and the Magic Patterns reference, in CI | Accepted |
 | [0037](0037-google-sign-in-setup.md) | Google sign-in setup: one OAuth client, redirect URI from `App:PublicBaseUrl`, off and hidden without keys | Accepted |
+| [0038](0038-e-mail-delivery.md) | E-mail delivery: Azure Communication Services Email, one HTML layout rendered from the text | Accepted |
 
 ## Format
 
