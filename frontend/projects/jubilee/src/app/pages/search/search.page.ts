@@ -18,6 +18,7 @@ import {
   TabListItem,
   TabList,
   SearchField,
+  MediaTile,
 } from 'components';
 import { SearchStore } from '../../services/search.store';
 
@@ -60,6 +61,7 @@ function plural(count: number, one: string, many: string): string {
     Section,
     TabList,
     SearchField,
+    MediaTile,
   ],
   providers: [SearchStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

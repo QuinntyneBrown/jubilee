@@ -1,18 +1,19 @@
 <div class="container page">
   @if (submitted(); as done) {
     <div class="container--narrow" style="margin-inline: auto">
-      <div class="empty">
-        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="verified"></svg></div>
-        <h1 class="empty__title">{{ done.name }} is in for verification</h1>
-        <p class="empty__text">
-          Nothing more to do right now. We’ll e-mail you the moment you’re live.
-        </p>
-        <div class="empty__actions">
-          <a jb-button variant="primary" routerLink="/my-business">Go to My business</a>
-          <a jb-button routerLink="/my-business">
-            {{ done.kind === 'services' ? 'Add more services' : 'Add more products' }}
-          </a>
-        </div>
+      <div
+        jb-empty-state
+        icon="verified"
+        [heading]="done.name + ' is in for verification'"
+        [level]="1"
+      >
+        Nothing more to do right now. We’ll e-mail you the moment you’re live.
+        <a slot="actions" jb-button variant="primary" routerLink="/my-business"
+          >Go to My business</a
+        >
+        <a slot="actions" jb-button routerLink="/my-business">
+          {{ done.kind === 'services' ? 'Add more services' : 'Add more products' }}
+        </a>
       </div>
       <div jb-card heading="What happens next">
         <ol jb-timeline style="text-align: left; margin-top: var(--space-4)">
@@ -51,19 +52,13 @@
             <span jb-skeleton shape="button"></span>
           </div>
         } @else if (loadFailed()) {
-          <div class="empty empty--error" role="alert">
-            <div class="empty__icon" aria-hidden="true"><svg jb-icon name="alert"></svg></div>
-            <h2 class="empty__title">We couldn’t load your draft</h2>
-            <p class="empty__text">
-              Nothing is lost. Check your connection and try again. If it keeps happening, tell us
-              and quote <code>JB-LST-503</code>.
-            </p>
-            <div class="empty__actions">
-              <button jb-button variant="primary" type="button" (click)="load()">
-                <svg jb-icon name="refresh"></svg>Try again
-              </button>
-              <a jb-button routerLink="/">Back to browse</a>
-            </div>
+          <div jb-empty-state error icon="alert" heading="We couldn’t load your draft">
+            Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+            quote <code>JB-LST-503</code>.
+            <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
+              <svg jb-icon name="refresh"></svg>Try again
+            </button>
+            <a slot="actions" jb-button routerLink="/">Back to browse</a>
           </div>
         } @else {
           @if (session.unconfirmed()) {
@@ -186,7 +181,7 @@
                     @if (!isServices()) {
                       <div
                         jb-media-tile
-                        class="media--thumb"
+                        size="thumb"
                         [tint]="tile().tint"
                         [icon]="tile().icon"
                       ></div>
@@ -318,17 +313,14 @@
         >
           How members see you
         </h2>
-        <div class="biz-card">
-          <div
-            jb-media-tile
-            [tint]="tile().tint"
-            [icon]="tile().icon"
-            [tag]="isServices() ? 'Business' : 'Shop'"
-          ></div>
-          <p class="biz-card__name">{{ name() || 'Your business name' }}</p>
-          <p class="biz-card__tagline">{{ tagline() || 'One line on what you do' }}</p>
-          <p class="biz-card__meta"><span jb-perk>Pending verification</span></p>
-        </div>
+        <div
+          jb-business-card-preview
+          [name]="name() || 'Your business name'"
+          [tagline]="tagline() || 'One line on what you do'"
+          [tint]="tile().tint"
+          [icon]="tile().icon"
+          [tag]="isServices() ? 'Business' : 'Shop'"
+        ></div>
       </aside>
     </div>
   }

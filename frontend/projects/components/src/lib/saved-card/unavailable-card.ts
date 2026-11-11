@@ -9,6 +9,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'biz-card', '[attr.aria-label]': 'name() + ", no longer available"' },
   templateUrl: './unavailable-card.html',
+  styleUrl: './unavailable-card.scss',
 })
 export class UnavailableCard {
   readonly name = input.required<string>();

@@ -9,6 +9,8 @@ export class MyProductsPage extends ShellPage implements Screen {
   readonly summary: Locator;
   readonly add: Locator;
   readonly rows: Locator;
+  /** The small tile beside each product's name. */
+  readonly thumbs: Locator;
   readonly limit: Locator;
   readonly empty: Locator;
   readonly reference: Locator;
@@ -27,6 +29,7 @@ export class MyProductsPage extends ShellPage implements Screen {
     this.summary = this.main.locator('p.text-muted').first();
     this.add = this.main.getByRole('button', { name: 'Add product' }).first();
     this.rows = this.main.locator('table.table tbody tr');
+    this.thumbs = this.rows.locator('.media--thumb');
     this.statusBadges = this.rows.locator('.badge');
     this.limit = this.main.getByText('You can list up to 100 products.');
     this.empty = this.main.locator('.empty');

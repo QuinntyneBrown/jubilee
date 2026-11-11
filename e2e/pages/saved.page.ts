@@ -25,6 +25,11 @@ export class SavedPage extends ShellPage implements Screen {
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
   }
 
+  /** The business card inside the saved card with this name. */
+  businessCard(name: string): Locator {
+    return this.card(name).locator('a.biz-card');
+  }
+
   card(name: string | RegExp): Locator {
     return this.cards.filter({ hasText: name });
   }

@@ -28,6 +28,7 @@ import {
   InlineStatus,
   Card,
   WorkspaceHeader,
+  MediaTile,
 } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 
@@ -67,6 +68,7 @@ type Saving = 'idle' | 'saving';
     Skeleton,
     InlineStatus,
     Card,
+    MediaTile,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

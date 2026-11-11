@@ -16,6 +16,7 @@ import {
   Textarea,
   RadioGroup,
   Skeleton,
+  EmptyState,
 } from 'components';
 
 type FieldName = 'answer' | 'name' | 'role' | 'note';
@@ -45,6 +46,7 @@ const MESSAGES: Record<string, string> = {
     Textarea,
     RadioGroup,
     Skeleton,
+    EmptyState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './church-reference.page.html',

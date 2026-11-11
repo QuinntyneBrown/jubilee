@@ -1,10 +1,8 @@
 <jb-auth-layout>
   @switch (view().kind) {
     @case ('loading') {
-      <div class="empty" role="status">
-        <span jb-spinner size="lg"></span>
-        <h1 class="empty__title">Confirming your e-mail…</h1>
-        <p class="empty__text">This takes a moment.</p>
+      <div jb-empty-state loading heading="Confirming your e-mail…" [level]="1">
+        This takes a moment.
       </div>
     }
     @case ('confirmed') {

@@ -1,0 +1,18 @@
+// Block: biz-card, as a preview. The host is the card.
+@use './business-card-base' as card;
+
+:host {
+  @include card.card;
+}
+
+.biz-card__name {
+  @include card.name;
+}
+
+.biz-card__tagline {
+  @include card.tagline;
+}
+
+.biz-card__meta {
+  @include card.meta;
+}

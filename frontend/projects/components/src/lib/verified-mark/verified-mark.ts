@@ -11,5 +11,6 @@ import { Icon } from '../icon/icon';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'verified' },
   templateUrl: './verified-mark.html',
+  styleUrl: './verified-mark.scss',
 })
 export class VerifiedMark {}

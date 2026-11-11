@@ -11,48 +11,44 @@
       <span jb-skeleton shape="button"></span>
     }
     @case ('error') {
-      <div class="empty empty--error" role="alert">
-        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="alert"></svg></div>
-        <h1 class="empty__title">We couldn’t load the reference request</h1>
-        <p class="empty__text">
-          Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
-          quote <code>JB-REF-502</code>.
-        </p>
-        <button jb-button variant="primary" type="button" (click)="load()">
+      <div
+        jb-empty-state
+        error
+        icon="alert"
+        heading="We couldn’t load the reference request"
+        [level]="1"
+      >
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>JB-REF-502</code>.
+        <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <a jb-button routerLink="/welcome">Back to welcome</a>
+        <a slot="actions" jb-button routerLink="/welcome">Back to welcome</a>
       </div>
     }
     @case ('closed') {
-      <div class="empty">
-        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="info"></svg></div>
-        <h1 class="empty__title">This request is closed</h1>
-        <p class="empty__text">{{ closedText() }}</p>
-        <a jb-button routerLink="/welcome">About Jubilee</a>
+      <div jb-empty-state icon="info" heading="This request is closed" [level]="1">
+        {{ closedText() }}
+        <a slot="actions" jb-button routerLink="/welcome">About Jubilee</a>
       </div>
     }
     @case ('reported') {
-      <div class="empty">
-        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="verified"></svg></div>
-        <h1 class="empty__title">Thank you. We’ve closed this request</h1>
-        <p class="empty__text">
-          We’ve told the Jubilee verification team that you weren’t expecting this. The link no
-          longer works and you won’t be contacted again about this listing.
-        </p>
-        <a jb-button routerLink="/welcome">About Jubilee</a>
+      <div
+        jb-empty-state
+        icon="verified"
+        heading="Thank you. We’ve closed this request"
+        [level]="1"
+      >
+        We’ve told the Jubilee verification team that you weren’t expecting this. The link no longer
+        works and you won’t be contacted again about this listing.
+        <a slot="actions" jb-button routerLink="/welcome">About Jubilee</a>
       </div>
     }
     @case ('sent') {
-      <div class="empty">
-        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="verified"></svg></div>
-        <h1 class="empty__title">Thank you, {{ thanks() }}</h1>
-        <p class="empty__text">
-          Your answer went privately to the Jubilee verification team. {{ view()?.ownerFirstName }}
-          will hear from us within two business days. You won’t be contacted again about this
-          listing.
-        </p>
-        <a jb-button routerLink="/welcome">See what Jubilee is</a>
+      <div jb-empty-state icon="verified" [heading]="'Thank you, ' + thanks()" [level]="1">
+        Your answer went privately to the Jubilee verification team. {{ view()?.ownerFirstName }}
+        will hear from us within two business days. You won’t be contacted again about this listing.
+        <a slot="actions" jb-button routerLink="/welcome">See what Jubilee is</a>
       </div>
     }
     @default {
