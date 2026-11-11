@@ -1,8 +1,13 @@
 /** The answer of `GET /api/session`: who is using the app. */
 export type SessionDto =
-  | { signedIn: false }
+  | {
+      signedIn: false;
+      /** Whether "Join with Google" and "Continue with Google" can be offered (L2-003 AC5). */
+      googleSignIn?: boolean;
+    }
   | {
       signedIn: true;
+      googleSignIn?: boolean;
       firstName: string;
       displayName: string;
       initials: string;

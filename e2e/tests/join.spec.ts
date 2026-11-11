@@ -51,7 +51,7 @@ test.describe('join with e-mail (L2-001)', () => {
     await expect(join.email).toHaveAttribute('maxlength', '254');
     await expect(join.password).toHaveAttribute('maxlength', '128');
     await expect(join.password).toHaveAttribute('type', 'password');
-    await expect(join.google).toHaveAttribute('href', '/api/auth/google/start');
+    await expect(join.google).toHaveAttribute('href', '/api/auth/google/start?from=join');
     await expect(join.statementLink).toHaveAttribute('target', '_blank');
     await expect(join.termsLink).toHaveAttribute('target', '_blank');
     await expect(join.signInLink).toBeVisible();
@@ -306,6 +306,57 @@ test.describe('restricted until the address is confirmed (L2-005)', () => {
     await jb.open('browse');
     await expect(page.locator('main#main')).toBeAttached();
     await expect(banner.banner).toHaveCount(0);
+  });
+});
+
+test.describe('join with Google: off, cancelled or refused (L2-003)', () => {
+  test('AC5: without Google sign-in the page shows no Google button and no "or"', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up.google-unavailable');
+
+    await expect(join.createAccount).toBeVisible();
+    await expect(join.google).toHaveCount(0);
+    await expect(join.divider).toHaveCount(0);
+  });
+
+  test('AC6: a visitor who cancelled at Google is back on the join page and keeps their place', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.goto('/join?error=google-cancelled&returnUrl=%2Fb%2Flegacy-financial');
+
+    await expect(join.notice).toHaveText(
+      'You didn’t finish with Google. Try again, or use your e-mail and password.',
+    );
+    await expect(join.notice).toHaveAttribute('role', 'status');
+    await expect(join.google).toHaveAttribute(
+      'href',
+      '/api/auth/google/start?from=join&returnUrl=%2Fb%2Flegacy-financial',
+    );
+  });
+
+  test('AC7: a refusal after starting from the join page is shown on the join page', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up.google-refused');
+
+    await expect(join.notice).toHaveText(
+      'Use a Google account with a confirmed e-mail, or join with e-mail.',
+    );
+    await expect(join.notice).toHaveAttribute('role', 'alert');
+  });
+
+  test('AC7: a failed Google sign-in is explained on the join page', async ({ page, jb }) => {
+    const join = new JoinPage(page);
+    await jb.goto('/join?error=google');
+
+    await expect(join.notice).toContainText('We couldn’t sign you in with Google');
   });
 });
 

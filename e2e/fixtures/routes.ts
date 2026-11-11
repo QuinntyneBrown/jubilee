@@ -36,6 +36,7 @@ export type StubName =
   | 'reference-loading'
   | 'reference-error'
   | 'reference-expired'
+  | 'google-sign-in-off'
   | 'verify-email-pending'
   | 'verify-email-loading'
   | 'verify-email-success'
@@ -130,12 +131,44 @@ export interface ScreenRoute {
 export const routes = {
   'sign-in': { app: '/sign-in', mock: 'pages/sign-in/default.html', who: 'visitor' },
   'sign-in.invalid': { app: '/sign-in', mock: 'pages/sign-in/invalid.html', who: 'visitor' },
+  'sign-in.google-unavailable': {
+    app: '/sign-in',
+    mock: 'pages/sign-in/google-unavailable.html',
+    who: 'visitor',
+    stub: 'google-sign-in-off',
+  },
+  'sign-in.google-cancelled': {
+    app: '/sign-in?error=google-cancelled',
+    mock: 'pages/sign-in/google-cancelled.html',
+    who: 'visitor',
+  },
+  'sign-in.google-refused': {
+    app: '/sign-in?error=google-email',
+    mock: 'pages/sign-in/google-refused.html',
+    who: 'visitor',
+  },
   'session-expired': {
     app: '/session-expired',
     mock: 'pages/session-expired/default.html',
     who: 'visitor',
   },
   'sign-up': { app: '/join', mock: 'pages/sign-up/default.html', who: 'visitor' },
+  'sign-up.google-unavailable': {
+    app: '/join',
+    mock: 'pages/sign-up/google-unavailable.html',
+    who: 'visitor',
+    stub: 'google-sign-in-off',
+  },
+  'sign-up.google-cancelled': {
+    app: '/join?error=google-cancelled',
+    mock: 'pages/sign-up/google-cancelled.html',
+    who: 'visitor',
+  },
+  'sign-up.google-refused': {
+    app: '/join?error=google-email',
+    mock: 'pages/sign-up/google-refused.html',
+    who: 'visitor',
+  },
   'join-agreement': {
     app: '/join/agreement',
     mock: 'pages/join-agreement/default.html',

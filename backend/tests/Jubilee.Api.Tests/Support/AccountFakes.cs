@@ -55,7 +55,8 @@ public sealed class FakeGoogle : IGoogleIdentityClient
 {
     private readonly ConcurrentDictionary<string, (string Nonce, string Challenge)> _sent = new();
 
-    public bool IsConfigured => true;
+    /// <summary>False stands for an environment without <c>Google:ClientId</c> and <c>Google:ClientSecret</c>.</summary>
+    public bool IsConfigured { get; set; } = true;
 
     /// <summary>The identity Google will return for the next code.</summary>
     public GoogleIdentity Identity { get; set; } = new("google-1", "g@example.com", true, "Gina", "Gordon");

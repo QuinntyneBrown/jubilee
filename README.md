@@ -97,6 +97,23 @@ The quick start runs on SQLite, and the tests need no database at all
    npm start --prefix frontend
    ```
 
+#### Signing in with Google locally
+
+"Join with Google" and "Continue with Google" need the OAuth client of ADR 0037, whose redirect
+URIs include `http://localhost:4200/api/auth/google/callback`. Set its two values in the terminal
+before you start the API, from wherever you keep secrets; never put them in a file of the
+repository:
+
+```shell
+$env:Google__ClientId = '<client ID>'
+$env:Google__ClientSecret = '<client secret>'
+pwsh eng/Start-E2eApi.ps1
+```
+
+Without them the script supplies placeholders: the buttons show, as in the mocks, but Google
+refuses the request. An API started with neither variable reports Google sign-in as off and the
+pages show no Google button.
+
 ### Marketing site
 
 The marketing site is a second application in the same workspace and needs no API. It copies the

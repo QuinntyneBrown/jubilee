@@ -13,6 +13,7 @@ export class JoinPage extends ShellPage implements Screen {
   readonly agreement: Locator;
   readonly createAccount: Locator;
   readonly google: Locator;
+  readonly divider: Locator;
   readonly summary: Locator;
   readonly summaryLinks: Locator;
   readonly notice: Locator;
@@ -35,6 +36,7 @@ export class JoinPage extends ShellPage implements Screen {
     this.agreement = this.main.getByRole('checkbox');
     this.createAccount = this.main.getByRole('button', { name: 'Create account' });
     this.google = this.main.getByRole('link', { name: 'Join with Google' });
+    this.divider = this.main.locator('.divider-text');
     this.summary = this.main.locator('#summary');
     this.summaryLinks = this.summary.getByRole('link');
     this.notice = this.main.locator('.alert--warning');
