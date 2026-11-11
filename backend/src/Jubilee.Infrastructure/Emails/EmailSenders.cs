@@ -96,7 +96,8 @@ public sealed class AzureCommunicationEmailSender : IEmailSender
             userEngagementTrackingDisabled = true,
         });
 
-        var uri = new Uri(_endpoint, $"emails:send?api-version={ApiVersion}");
+        // Built as text: "emails:send" as a relative reference would read as a URI with the scheme "emails".
+        var uri = new Uri($"{_endpoint.AbsoluteUri}emails:send?api-version={ApiVersion}");
         var date = _clock.GetUtcNow().ToString("r", System.Globalization.CultureInfo.InvariantCulture);
         var contentHash = Convert.ToBase64String(SHA256.HashData(body));
         var host = uri.IsDefaultPort ? uri.Host : $"{uri.Host}:{uri.Port}";
