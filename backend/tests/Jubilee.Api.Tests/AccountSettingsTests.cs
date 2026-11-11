@@ -32,6 +32,19 @@ public sealed partial class AccountSettingsTests : IClassFixture<JubileeApiFacto
         return client;
     }
 
+
+    /// <summary>Moves the clock on in steps shorter than the idle timeout, the member using the app throughout.</summary>
+    private async Task StayActive(HttpClient client, TimeSpan span)
+    {
+        while (span > TimeSpan.Zero)
+        {
+            var step = span > TimeSpan.FromHours(6) ? TimeSpan.FromHours(6) : span;
+            _factory.Clock.Advance(step);
+            await client.GetAsync("/api/account");
+            span -= step;
+        }
+    }
+
     private static async Task<JsonElement> Json(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
 
@@ -101,7 +114,7 @@ public sealed partial class AccountSettingsTests : IClassFixture<JubileeApiFacto
     public async Task L2_013_AC2_a_saved_profile_persists_and_says_when_it_was_saved()
     {
         var client = await Join();
-        _factory.Clock.Advance(TimeSpan.FromDays(3));
+        await StayActive(client, TimeSpan.FromDays(3));
 
         var response = await SaveProfile(client, Profile(first: "Joy", church: "Grace Toronto Church", pronouns: "she/her"));
 

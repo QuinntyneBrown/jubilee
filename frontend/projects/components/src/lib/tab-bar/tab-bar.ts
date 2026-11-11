@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Icon } from '../icon/icon';
 import { ChromeMember, ChromeSection } from '../navigation';
@@ -17,5 +17,7 @@ import { UnreadBadge } from '../unread-badge/unread-badge';
 })
 export class TabBar {
   readonly member = input.required<ChromeMember | null>();
+  /** Emits when "You" is pressed: the app opens the account menu. */
+  readonly accountMenu = output<HTMLElement>();
   readonly current = input<ChromeSection>(null);
 }

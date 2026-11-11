@@ -169,6 +169,11 @@ public sealed class ResetPasswordCommandHandler(
 
         var member = await db.Members.SingleAsync(m => m.Id == token.MemberId, cancellationToken);
         member.ChangePassword(hasher.Hash(password), now);
+        foreach (var session in await db.Sessions.Where(x => x.MemberId == member.Id && x.EndedAt == null).ToListAsync(cancellationToken))
+        {
+            session.End(now);
+        }
+
         token.Redeem(now);
         var others = await db.LinkTokens
             .Where(t => t.MemberId == member.Id && t.Purpose == LinkTokenPurpose.PasswordReset && t.UsedAt == null && t.SupersededAt == null)

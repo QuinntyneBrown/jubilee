@@ -58,13 +58,16 @@ import { routes } from './app.routes';
 import { connectionInterceptor } from './services/offline/connection.interceptor';
 import { errorInterceptor } from './services/error.interceptor';
 import { NavigationTrail } from './services/navigation-trail';
+import { sessionExpiredInterceptor } from './interceptors/session-expired.interceptor';
 import { SessionService } from './services/session.service';
 
 /** Composition root: every API contract is bound to its implementation here. */
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptors([connectionInterceptor, errorInterceptor])),
+    provideHttpClient(
+      withInterceptors([connectionInterceptor, sessionExpiredInterceptor, errorInterceptor]),
+    ),
     // Starts watching navigation at once, so the forbidden page knows which page was asked for (L2-114).
     provideAppInitializer(() => {
       inject(NavigationTrail);

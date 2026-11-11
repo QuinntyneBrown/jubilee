@@ -665,3 +665,30 @@ public sealed class ListingPhotoConfiguration : IEntityTypeConfiguration<Listing
         builder.HasIndex(p => new { p.ListingId, p.Position });
     }
 }
+
+public sealed class MemberSessionConfiguration : IEntityTypeConfiguration<MemberSession>
+{
+    public void Configure(EntityTypeBuilder<MemberSession> builder)
+    {
+        builder.ToTable("Sessions");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.KeyHash).HasMaxLength(64).IsRequired();
+        builder.HasIndex(s => s.KeyHash).IsUnique();
+        builder.HasIndex(s => s.MemberId);
+    }
+}
+
+public sealed class SignInFailureConfiguration : IEntityTypeConfiguration<SignInFailure>
+{
+    public void Configure(EntityTypeBuilder<SignInFailure> builder)
+    {
+        builder.ToTable("SignInFailures");
+        builder.HasKey(f => f.Id);
+        builder.Property(f => f.Id).ValueGeneratedNever();
+        builder.Property(f => f.AccountKey).HasMaxLength(64).IsRequired();
+        builder.Property(f => f.Address).HasMaxLength(64).IsRequired();
+        builder.HasIndex(f => new { f.AccountKey, f.At });
+        builder.HasIndex(f => new { f.Address, f.At });
+    }
+}

@@ -1,0 +1,81 @@
+namespace Jubilee.Domain;
+
+/// <summary>
+/// A server-side session (L2-010, L2-135). The browser holds only an opaque identifier; the
+/// database keeps its SHA-256, so a copy of the table cannot be used to impersonate a member.
+/// </summary>
+public sealed class MemberSession
+{
+    public Guid Id { get; private set; }
+
+    /// <summary>SHA-256 of the identifier in the cookie, hex.</summary>
+    public string KeyHash { get; private set; } = string.Empty;
+
+    public Guid? MemberId { get; private set; }
+
+    /// <summary>The serialised authentication ticket: who the session belongs to and their claims.</summary>
+    public byte[] Ticket { get; private set; } = [];
+
+    /// <summary>True when "Keep me signed in" was ticked.</summary>
+    public bool Persistent { get; private set; }
+
+    public DateTimeOffset CreatedAt { get; private set; }
+
+    public DateTimeOffset LastActivityAt { get; private set; }
+
+    public DateTimeOffset? EndedAt { get; private set; }
+
+    public static MemberSession Start(Guid id, Guid? memberId, string keyHash, byte[] ticket, bool persistent, DateTimeOffset now) => new()
+    {
+        Id = id,
+        KeyHash = keyHash,
+        MemberId = memberId,
+        Ticket = ticket,
+        Persistent = persistent,
+        CreatedAt = now,
+        LastActivityAt = now,
+    };
+
+    public void Touch(DateTimeOffset now) => LastActivityAt = now;
+
+    public void End(DateTimeOffset now) => EndedAt ??= now;
+
+    public void Replace(byte[] ticket) => Ticket = ticket;
+}
+
+/// <summary>When a session is over: 30 days after sign-in, or 12 hours without activity unless "Keep me signed in" was ticked.</summary>
+public static class SessionPolicy
+{
+    public static readonly TimeSpan AbsoluteLifetime = TimeSpan.FromDays(30);
+    public static readonly TimeSpan IdleTimeout = TimeSpan.FromHours(12);
+
+    public static bool IsExpired(MemberSession session, DateTimeOffset now) =>
+        session.EndedAt is not null
+        || now - session.CreatedAt > AbsoluteLifetime
+        || (!session.Persistent && now - session.LastActivityAt > IdleTimeout);
+}
+
+/// <summary>One failed sign-in, kept for 15 minutes to throttle guessing (L2-007).</summary>
+public sealed class SignInFailure
+{
+    public static readonly TimeSpan Window = TimeSpan.FromMinutes(15);
+    public const int AccountLimit = 5;
+    public const int AddressLimit = 20;
+
+    public Guid Id { get; private set; }
+
+    /// <summary>SHA-256 of the normalised e-mail, so an unknown address is counted like a known one.</summary>
+    public string AccountKey { get; private set; } = string.Empty;
+
+    public string Address { get; private set; } = string.Empty;
+
+    public DateTimeOffset At { get; private set; }
+
+    public static SignInFailure Record(string accountKey, string address, DateTimeOffset at) => new()
+    {
+        Id = Guid.NewGuid(),
+        AccountKey = accountKey,
+        Address = address,
+        At = at,
+    };
+}

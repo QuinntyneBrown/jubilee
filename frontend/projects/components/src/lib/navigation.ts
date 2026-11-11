@@ -1,6 +1,7 @@
 /** What the chrome needs to know about the signed-in member; `null` for a visitor. */
 export interface ChromeMember {
   displayName: string;
+  email: string;
   initials: string;
   ownsListing: boolean;
   unreadConversationCount: number;
