@@ -13,21 +13,21 @@ export interface MarketingBusiness {
   photo: string;
 }
 
-const photo = (id: string): string =>
-  `https://cdn.magicpatterns.com/patterns/generated-images/${id}.jpg`;
+/** The photos live in docs/assets/photos; `npm run media:sync` copies them into the site. */
+const photo = (name: string): string => `photos/${name}.jpg`;
 
 const PHOTOS = {
-  advisor: photo('2543c419-73ef-4324-89de-0fcc4684582d'),
-  counselling: photo('3df1f794-f142-4ee8-b356-406160c1b176'),
-  flowers: photo('a7c4d0b7-d519-421d-9bb1-27a22e65e44e'),
-  law: photo('68a97447-e494-4f8f-a381-457ccf0d5a16'),
-  plumbing: photo('bcde9411-0bf6-443b-9dfc-910234bf3c50'),
-  roofing: photo('4a975d52-5a0d-4be9-9034-885fce45f098'),
-  tshirt: photo('c6570a73-de87-4964-a535-c9a206418db5'),
+  advisor: photo('advisor'),
+  counselling: photo('counselling'),
+  flowers: photo('flowers'),
+  law: photo('law'),
+  plumbing: photo('plumbing'),
+  roofing: photo('roofing'),
+  tshirt: photo('tshirt'),
 };
 
 /** The still shown before the pitch film plays. */
-export const FILM_STILL = photo('ce88ac23-a3ab-401f-9949-f934eb50034f');
+export const FILM_STILL = photo('film-still');
 
 /** The number of verified businesses the page speaks of. */
 export const BUSINESS_COUNT = 47;

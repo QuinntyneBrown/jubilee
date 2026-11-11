@@ -4,20 +4,20 @@
 (() => {
   const { COLOR, SCENE: LEN, b, clamp, lerp, prog, brand, outExpo, inOutCubic, outBack, enter, exit, pulse, beatsBetween, esc } = window.PITCH;
 
-  const CDN = 'https://cdn.magicpatterns.com/patterns/generated-images/';
-  /** Every photo the film uses, hotlinked from the design's own CDN. */
+  const PHOTOS = '../../assets/photos/';
+  /** Every photo the film uses, from docs/assets/photos. */
   const PHOTO = {
-    sunday: CDN + '8ab54a5d-af9a-434c-90eb-4e65668eef30.jpg',
-    monday: CDN + 'cb4dd306-c2f9-4ff9-94fb-3506efa68ec1.jpg',
-    torontoDusk: CDN + '893f13c2-9b2b-41b6-b978-1e10eff2267b.jpg',
-    owner: CDN + '48e56a2b-6d51-42ca-aec9-f9c8879c0246.jpg',
-    vouch: CDN + '759fb70d-034a-4bd0-b10d-94acdc0a8448.jpg',
+    sunday: PHOTOS + 'sunday.jpg',
+    monday: PHOTOS + 'monday.jpg',
+    torontoDusk: PHOTOS + 'toronto-dusk.jpg',
+    owner: PHOTOS + 'owner.jpg',
+    vouch: PHOTOS + 'vouch.jpg',
     // From the app's own catalogue
-    tshirt: CDN + 'c6570a73-de87-4964-a535-c9a206418db5.jpg',
-    mug: CDN + 'bf60d053-8cc8-41cc-84f0-0814953faa86.jpg',
-    books: CDN + 'f161b0d2-968a-42ac-905f-8859f8462140.jpg',
-    flowers: CDN + 'a7c4d0b7-d519-421d-9bb1-27a22e65e44e.jpg',
-    advisor: CDN + '2543c419-73ef-4324-89de-0fcc4684582d.jpg',
+    tshirt: PHOTOS + 'tshirt.jpg',
+    mug: PHOTOS + 'mug.jpg',
+    books: PHOTOS + 'books.jpg',
+    flowers: PHOTOS + 'flowers.jpg',
+    advisor: PHOTOS + 'advisor.jpg',
   };
 
   // ── S01 · Sunday · 0:00.00–0:07.20 · bars 1–3 ─────────────────────────────────────────────────────

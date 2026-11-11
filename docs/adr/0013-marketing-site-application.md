@@ -24,17 +24,15 @@ page. ADR 0009 forbids the e2e suite from reaching an API.
 - Links to the app are built from one `APP_URL` token, set per environment in `environment.ts`
   (`https://app.jubilee.to` in production, `http://localhost:4200` in development).
 - The page is light only (`data-theme="light"` on `<html>`), as the reference is.
-- Photos stay on the design reference's image host and Inter comes from Google Fonts, exactly
-  as the reference loads them. The pitch film is copied into the build from `docs/videos/`.
+- Nothing is loaded from another host. The photos are in `docs/assets/photos/` and the pitch
+  film in `docs/videos/`; `npm run media:sync` copies both into the site before it is served or
+  built. Inter is bundled beside Archivo and declared by `marketing.css`.
 - The e2e suite starts the site as a second web server and opens it by absolute address; it
-  blocks every request that leaves `localhost`, so a spec never depends on the image host.
+  blocks every request that leaves `localhost`, which keeps the rule above true.
 
 ## Consequences
 
 - The marketing page can change without touching the app, and the app's bundle is unaffected.
 - The listings on the page do not follow the directory; when a featured business changes, the
   page is edited. The count "47" is editorial too.
-- The site depends on two third-party hosts for photos and Inter until those files are brought
-  into the repository; a photo that fails to load leaves a tinted tile, and Inter falls back to
-  the system face.
 - The address of the app in production is an assumption until the deployment is decided.

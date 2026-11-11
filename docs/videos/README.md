@@ -35,8 +35,8 @@ node tools/video-build/build.mjs docs/videos/NN-topic                       # ca
 
 - **The builder** needs Node with Playwright (Chromium) and ffmpeg with libx264 (`FFMPEG_PATH`
   overrides). Playwright is installed in `e2e/`; run the builder with
-  `NODE_PATH=e2e/node_modules` so it finds that copy. It also needs a network connection: the deck
-  hotlinks its photos and the Inter font (see below). The full render takes several minutes
+  `NODE_PATH=e2e/node_modules` so it finds that copy. It needs no network connection: the fonts
+  and photos are in the repository (see below). The full render takes several minutes
   (3,888 frames for 64.8 s).
 - **The audio is a synthesized stand-in.** `film_audio.py` writes the music and the sound effects
   with numpy and speaks the narration with Kokoro-82M (`af_heart`), run locally. The design's audio
@@ -78,7 +78,7 @@ Open `slides.html?guides=1` (or press `g`) for the safe areas, the timecode and 
 `slides.html?t=22.8` to open paused on a film time.
 
 **Fonts and photos.** Archivo is the repository's variable file with the width axis
-(`docs/design-system/assets/fonts/Archivo.woff2`); headings are set at width 112. Inter and every
-photo are not in the repository: the deck loads Inter from Google Fonts and the photos from the
-Magic Patterns CDN, as the design does. The runtime waits for both before the first frame and the
-builder stops if either fails to load.
+(`docs/design-system/assets/fonts/Archivo.woff2`); headings are set at width 112. Inter is
+`Inter.woff2` beside it (weights 400 to 600, Latin) and the photos are in `docs/assets/photos/`,
+downloaded from the Magic Patterns design. The runtime waits for both before the first frame and
+the builder stops if either fails to load.

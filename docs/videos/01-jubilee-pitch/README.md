@@ -61,9 +61,9 @@ Other things to know:
 - **Stamp sounds follow the picture.** The spec's hit table puts the stamp at 22.80 and 52.20; in
   the prototype's code the seal starts to fall then and lands at 23.00 and 52.70, so the thud is
   there.
-- **Photos and Inter are hotlinked.** The five scene photos and the catalogue images load from
-  `cdn.magicpatterns.com`, and Inter from Google Fonts; neither is in the repository, so the deck
-  and the builder need a network connection. The photos are AI-generated placeholders for a shoot.
+- **Photos and Inter are in the repository.** The five scene photos and the catalogue images are
+  in `docs/assets/photos/` and Inter in `docs/design-system/assets/fonts/`, so the deck and the
+  builder work offline. The photos are AI-generated placeholders for a shoot.
 - **Three small departures from the prototype's code**, each for a layout fault it has when run:
   in scene 02 the two headlines are held on one line and the search bar stays above the scrolling
   results; in scene 08 the call to action sits 32 px lower so it no longer covers step three.

@@ -142,6 +142,9 @@ design system).
   without them Windows substitutes Segoe UI and headings and the wordmark render far heavier than
   the design reference. Do not replace the file with one that lacks the width axis (the copy in
   `docs/videos/assets/` is weight-only). The app self-hosts the same file.
+- Inter, the text face, is bundled for the marketing site and the pitch film only
+  (`docs/design-system/assets/fonts/Inter.woff2`, declared by `marketing.css` and `pitch.css`); the
+  app still falls back to the system face. Their photos are in `docs/assets/photos/`.
 - **The wordmark is lowercase "jubilee" in Archivo bold (700) at 110% width with −0.03em
   tracking**, read from `--font-weight-bold`, `--font-stretch-wide` and `--letter-spacing-tighter`.
   It matches the Magic Patterns design reference; never set it at 800 or in a fallback face.

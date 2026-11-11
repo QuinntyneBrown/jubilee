@@ -40,10 +40,11 @@ and no API client (ADR 0013).
 - **`APP_URL`** — injection token for the address of `Jubilee Web`; every link to the app is
   built from it (L2-185 AC4). It is provided once in `app.config.ts` from `environment.ts`.
 
-Photos are served from the design reference's image host (`cdn.magicpatterns.com`) and Inter
-from Google Fonts, as in the reference; the film is copied into the build from
-`docs/videos/01-jubilee-pitch/01-jubilee-pitch.mp4` as `media/jubilee-pitch.mp4`. Moving the
-photos and Inter into the repository is `<TO SUPPLY>`: it needs the files downloaded.
+Nothing is loaded from another host. `npm run media:sync` copies the photos from
+`docs/assets/photos/` into `photos/` and the film from
+`docs/videos/01-jubilee-pitch/01-jubilee-pitch.mp4` to `media/jubilee-pitch.mp4`; Inter is
+bundled beside Archivo (`docs/design-system/assets/fonts/Inter.woff2`) and declared by
+`marketing.css`.
 
 ## Requirements
 
@@ -62,6 +63,5 @@ level-1 (L1) requirement, cited by identifier.
 PlantUML source: [`diagrams/c4-container.puml`](diagrams/c4-container.puml) (not rendered: no
 PlantUML on the machine that wrote this design).
 
-`Jubilee Marketing` is a static site in the visitor's browser. It links to `Jubilee Web`,
-loads photos from the image host and Inter from Google Fonts, and plays the film from its own
-origin. It never calls `Jubilee API`.
+`Jubilee Marketing` is a static site in the visitor's browser. It links to `Jubilee Web` and
+serves its photos, fonts and film from its own origin. It never calls `Jubilee API`.

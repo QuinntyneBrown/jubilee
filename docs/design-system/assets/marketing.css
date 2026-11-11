@@ -12,6 +12,15 @@
    adds: paper and ink as fixed grounds, and the heading accent.
    ========================================================================== */
 
+/* Inter, the text face, bundled as Archivo is (one variable file, weights 400 to 600, Latin). */
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/Inter.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 .mkt {
   --jb-mkt-ink: var(--color-bg-brand);
   --jb-mkt-paper: var(--color-bg-canvas);
@@ -107,11 +116,12 @@
 @media (min-width: 64rem) { .mkt-nav__links { display: flex; } }
 
 /* ---------- Opening ------------------------------------------------------- */
-.mkt-hero { display: grid; align-items: center; gap: var(--space-12); padding-top: var(--space-12); padding-bottom: var(--space-20); }
+.mkt-hero { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: var(--space-12); padding-top: var(--space-12); padding-bottom: var(--space-20); }
 .mkt-hero__text { min-width: 0; }
 .mkt-hero__title {
   font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide);
-  font-size: 2.75rem; line-height: 0.98; letter-spacing: -0.025em;
+  /* 2.75rem, eased down under 393px so the longest word, "businesses,", fits a 360px phone. */
+  font-size: min(2.75rem, 11.2vw); line-height: 0.98; letter-spacing: -0.025em;
 }
 .mkt-hero__lead { margin-top: var(--space-6); max-width: 36rem; }
 .mkt .mkt-hero__lead { max-width: 36rem; }
@@ -120,7 +130,7 @@
 @media (min-width: 40rem) { .mkt-hero__title { font-size: 3.75rem; } }
 @media (min-width: 48rem) { .mkt-hero { padding-top: var(--space-20); } }
 @media (min-width: 64rem) {
-  .mkt-hero { grid-template-columns: 1.05fr 1fr; gap: var(--space-16); padding-bottom: 7rem; }
+  .mkt-hero { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: var(--space-16); padding-bottom: 7rem; }
   .mkt-hero__title { font-size: 4.25rem; }
 }
 
