@@ -31,12 +31,6 @@ business, messages it, books a meeting, asks for a quote or requests a product, 
 confirms or declines. Every listing is confirmed by a pastor or elder before it goes live. Jubilee
 does not take payment; members pay the business directly.
 
-> [!NOTE]
-> **Project status: the first of 26 journeys is implemented.** A visitor can open the welcome
-> page, browse the directory and filter, sort and page through a category. The
-> [user journeys](docs/journey.md) list what is built next, in order of value to the user, and
-> [`docs/estimates/`](docs/estimates/README.md) tracks how far each design is.
-
 ## Contents
 
 - [Features](#features)
