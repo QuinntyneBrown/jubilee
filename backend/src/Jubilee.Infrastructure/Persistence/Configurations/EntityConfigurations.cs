@@ -406,6 +406,20 @@ public sealed class ReportActionConfiguration : IEntityTypeConfiguration<ReportA
     }
 }
 
+public sealed class DataExportConfiguration : IEntityTypeConfiguration<DataExport>
+{
+    public void Configure(EntityTypeBuilder<DataExport> builder)
+    {
+        builder.ToTable("DataExports");
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id).ValueGeneratedNever();
+        builder.Property(e => e.Status).HasConversion<string>().HasMaxLength(16);
+        builder.Property(e => e.TokenHash).HasMaxLength(64);
+        builder.HasIndex(e => e.MemberId);
+        builder.HasIndex(e => e.TokenHash);
+    }
+}
+
 public sealed class RequestConfiguration : IEntityTypeConfiguration<Request>
 {
     public void Configure(EntityTypeBuilder<Request> builder)

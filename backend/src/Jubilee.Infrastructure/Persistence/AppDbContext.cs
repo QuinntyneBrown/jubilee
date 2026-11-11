@@ -57,6 +57,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ReportAction> ReportActions => Set<ReportAction>();
 
+    public DbSet<DataExport> DataExports => Set<DataExport>();
+
     public DbSet<Request> Requests => Set<Request>();
 
     public DbSet<RequestTransition> RequestTransitions => Set<RequestTransition>();

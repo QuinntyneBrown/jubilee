@@ -29,6 +29,8 @@ public static class WorkerHost
         builder.Services.AddHostedService<MeetingReminderJob>();
         builder.Services.AddHostedService<UnansweredRequestJob>();
         builder.Services.AddHostedService<MaintenanceWatcherJob>();
+        builder.Services.AddHostedService<DataExportJob>();
+        builder.Services.AddHostedService<AccountErasureJob>();
         return builder;
     }
 }
@@ -387,6 +389,76 @@ public sealed class MaintenanceWatcherJob(IServiceScopeFactory scopes, ILogger<M
         catch (OperationCanceledException)
         {
             // The host is stopping.
+        }
+    }
+}
+
+/// <summary>
+/// Every few seconds: builds the data archives members asked for and mails their links; once an hour, deletes the files
+/// of the links that no longer work (L2-018, L2-182). A build that fails is tried again, up to 5 times.
+/// </summary>
+public sealed class DataExportJob(IServiceScopeFactory scopes, ILogger<DataExportJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
+        var lastCleanup = DateTimeOffset.MinValue;
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var builder = scope.ServiceProvider.GetRequiredService<DataExportBuilder>();
+                    await builder.BuildDueAsync(stoppingToken);
+                    if (DateTimeOffset.UtcNow - lastCleanup > TimeSpan.FromHours(1))
+                    {
+                        await builder.ExpireAsync(stoppingToken);
+                        lastCleanup = DateTimeOffset.UtcNow;
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Data exports could not be processed. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+}
+
+/// <summary>Once an hour: erases the personal data of the accounts deleted 30 days ago (L2-017 AC6, L2-148).</summary>
+public sealed class AccountErasureJob(IServiceScopeFactory scopes, ILogger<AccountErasureJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var erased = await scope.ServiceProvider.GetRequiredService<AccountErasure>().EraseDueAsync(stoppingToken);
+                    if (erased > 0)
+                    {
+                        logger.LogInformation("Erased the personal data of {Count} deleted accounts.", erased);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Deleted accounts could not be erased. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
 }

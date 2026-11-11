@@ -57,6 +57,9 @@ public sealed record EmailChangeBody(string? Email, string? CurrentPassword);
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record ChangePasswordBody(string? CurrentPassword, string? NewPassword, string? RepeatPassword);
 
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record DeleteAccountBody(string? Confirmation);
+
 public sealed record EmailChangeResponse(string Outcome);
 
 public sealed record JoinResponse(string Email);
@@ -139,6 +142,42 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     {
         Response.Headers["Referrer-Policy"] = "no-referrer";
         Response.Headers.CacheControl = "private, no-store";
+    }
+
+    /// <summary>"Download my data": records the request; the worker builds the archive and e-mails the link (L2-018 AC1).</summary>
+    [HttpPost("data-exports")]
+    [ErrorReference("JB-ACC-521")]
+    public async Task<IActionResult> RequestDataExport(CancellationToken cancellationToken) =>
+        Accepted(await sender.Send(new RequestDataExportCommand(MemberId()), cancellationToken));
+
+    [HttpGet("data-exports/current")]
+    [ErrorReference("JB-ACC-522")]
+    public async Task<ActionResult<DataExportStatusDto>> CurrentDataExport(CancellationToken cancellationToken) =>
+        Ok(await sender.Send(new GetDataExportStatusQuery(MemberId()), cancellationToken));
+
+    /// <summary>The e-mailed link: the archive, for the signed-in owner of the data until the link expires (L2-018 AC2).</summary>
+    [HttpGet("data-exports/{token}")]
+    [ErrorReference("JB-ACC-523")]
+    public async Task<IActionResult> DownloadDataExport(string token, CancellationToken cancellationToken)
+    {
+        NoReferrer();
+        var archive = await sender.Send(new DownloadDataExportQuery(MemberId(), token), cancellationToken);
+        return File(System.Text.Encoding.UTF8.GetBytes(archive), "application/json", "jubilee-data.json");
+    }
+
+    [HttpGet("deletion-summary")]
+    [ErrorReference("JB-ACC-524")]
+    public async Task<ActionResult<DeletionSummaryDto>> DeletionSummary(CancellationToken cancellationToken) =>
+        Ok(await sender.Send(new GetDeletionSummaryQuery(MemberId()), cancellationToken));
+
+    /// <summary>Deletes the account after the member typed DELETE, and ends this session (L2-017).</summary>
+    [HttpDelete]
+    [ErrorReference("JB-ACC-525")]
+    public async Task<IActionResult> DeleteAccount(DeleteAccountBody request, CancellationToken cancellationToken)
+    {
+        await sender.Send(new DeleteAccountCommand(MemberId(), request.Confirmation), cancellationToken);
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return NoContent();
     }
 
     [HttpPost("confirmation/resend")]

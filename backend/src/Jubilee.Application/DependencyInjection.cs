@@ -15,6 +15,8 @@ public static class DependencyInjection
         services.AddScoped<Accounts.AccountEmails>();
         services.AddScoped<Accounts.OutboxDispatcher>();
         services.AddScoped<Accounts.PasswordResetLinks>();
+        services.AddScoped<Accounts.DataExportBuilder>();
+        services.AddScoped<Accounts.AccountErasure>();
         services.AddScoped<Notifications.MeetingReminders>();
         services.AddScoped<Search.DatabaseNameSearch>();
         services.AddScoped<Search.SearchStartBuilder>();
