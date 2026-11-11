@@ -61,7 +61,21 @@
         ></div>
       </div>
       <div class="detail-head">
-        <h1>{{ product.name }}</h1>
+        <div class="cluster" style="justify-content: space-between; align-items: flex-start">
+          <h1>{{ product.name }}</h1>
+          <button
+            #saveButton
+            class="btn btn--icon btn--lg"
+            type="button"
+            [attr.aria-label]="saved() ? 'Saved. Remove from saved' : 'Save'"
+            [attr.aria-pressed]="saved()"
+            [style.color]="saved() ? 'var(--color-danger-solid)' : null"
+            style="width: var(--control-height-lg)"
+            (click)="toggleSave(product, saveButton)"
+          >
+            <svg jb-icon name="heart"></svg>
+          </button>
+        </div>
         <p>
           <span class="price" style="font-size: var(--font-size-2xl)">{{
             product.priceCents | jbPrice: product.perUnit

@@ -1,0 +1,161 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { SAVED_API, SavedItem, SavedList } from 'api';
+import { ToastService } from '../toasts/toast.service';
+
+/** What a heart stands for: a business, or a product of a shop. */
+export type SaveTarget =
+  | { kind: 'business'; slug: string; name: string }
+  | { kind: 'product'; shopSlug: string; slug: string; name: string };
+
+const keyOf = (target: SaveTarget): string =>
+  target.kind === 'business' ? `b:${target.slug}` : `p:${target.shopSlug}/${target.slug}`;
+
+/**
+ * The member's saved items (L2-041). A heart shows pressed at once and goes back when the server
+ * refuses; the toasts say what happened and offer Undo or Try again.
+ */
+@Injectable({ providedIn: 'root' })
+export class SavedStore {
+  private readonly api = inject(SAVED_API);
+  private readonly toasts = inject(ToastService);
+
+  private readonly keys = signal<ReadonlySet<string>>(new Set());
+  private loaded = false;
+  private readonly full = signal<SavedList | null>(null);
+
+  /** The list as last loaded, for the saved page. */
+  readonly list = this.full.asReadonly();
+  readonly count = computed(() => this.keys().size);
+
+  /** Reads which items are saved; the hearts need it once per session. */
+  load(): void {
+    if (this.loaded) return;
+    this.loaded = true;
+    this.api.list().subscribe({
+      next: (list) => this.adopt(list),
+      error: () => (this.loaded = false),
+    });
+  }
+
+  /** Forgets everything, on sign-out or when another member signs in. */
+  reset(): void {
+    this.loaded = false;
+    this.keys.set(new Set());
+    this.full.set(null);
+  }
+
+  adopt(list: SavedList): void {
+    this.full.set(list);
+    this.loaded = true;
+    this.keys.set(new Set(list.items.filter((item) => item.available).map(keyFromItem)));
+  }
+
+  isSaved(target: SaveTarget): boolean {
+    return this.keys().has(keyOf(target));
+  }
+
+  /** The heart was pressed. */
+  toggle(target: SaveTarget): void {
+    if (this.isSaved(target)) this.remove(target);
+    else this.save(target);
+  }
+
+  save(target: SaveTarget): void {
+    const key = keyOf(target);
+    this.set(key, true);
+    const call =
+      target.kind === 'business'
+        ? this.api.saveBusiness(target.slug)
+        : this.api.saveProduct(target.shopSlug, target.slug);
+    call.subscribe({
+      next: () => {
+        this.full.set(null);
+        this.toasts.show({
+          tone: 'success',
+          title: `Saved ${target.name}. Find it any time under Saved.`,
+          action: { label: 'Undo', run: () => this.remove(target) },
+        });
+      },
+      error: (error: HttpErrorResponse) => {
+        this.set(key, false);
+        if (error.status === 409 && error.error?.code === 'SAVED_LIMIT_REACHED') {
+          this.toasts.show({
+            tone: 'danger',
+            title: 'You can save up to 500 items. Remove some to add more.',
+          });
+          return;
+        }
+        this.toasts.show({
+          tone: 'danger',
+          title: `Couldn\u2019t save ${target.name}. You\u2019re offline. Reconnect and tap the heart again.`,
+          action: { label: 'Try again', run: () => this.save(target) },
+        });
+      },
+    });
+  }
+
+  remove(target: SaveTarget): void {
+    const key = keyOf(target);
+    this.set(key, false);
+    const call =
+      target.kind === 'business'
+        ? this.api.unsaveBusiness(target.slug)
+        : this.api.unsaveProduct(target.shopSlug, target.slug);
+    call.subscribe({
+      next: () => this.full.set(null),
+      error: () => {
+        this.set(key, true);
+        this.toasts.show({
+          tone: 'danger',
+          title: `Couldn\u2019t remove ${target.name} from Saved. Try again.`,
+        });
+      },
+    });
+  }
+
+  /** "Remove" on the saved page, by the item's own id. */
+  removeItem(item: SavedItem, done: () => void): void {
+    this.api.remove(item.id).subscribe({
+      next: () => {
+        this.full.update((list) => {
+          if (!list) return list;
+          const items = list.items.filter((entry) => entry.id !== item.id);
+          return {
+            items,
+            businessCount: items.filter((i) => i.available && i.kind === 'business').length,
+            productCount: items.filter((i) => i.available && i.kind === 'product').length,
+          };
+        });
+        this.keys.update((keys) => {
+          const next = new Set(keys);
+          next.delete(keyFromItem(item));
+          return next;
+        });
+        done();
+      },
+      error: () =>
+        this.toasts.show({
+          tone: 'danger',
+          title: `Couldn\u2019t remove ${item.name} from Saved. Try again.`,
+        }),
+    });
+  }
+
+  private set(key: string, saved: boolean): void {
+    this.keys.update((keys) => {
+      const next = new Set(keys);
+      if (saved) next.add(key);
+      else next.delete(key);
+      return next;
+    });
+  }
+}
+
+function keyFromItem(item: SavedItem): string {
+  if (item.kind === 'business' && item.business) return `b:${item.business.slug}`;
+  if (item.kind === 'product' && item.product) {
+    return `p:${item.product.businessSlug}/${item.product.slug}`;
+  }
+  return `x:${item.id}`;
+}

@@ -90,6 +90,10 @@ export async function installMockApi(page: Page, unanswered: string[]): Promise<
     }
   });
   if (!RECORDING) {
+    // A member's saved list is empty unless a spec installs fixtures/saved.ts.
+    await page.route('**/api/saved', (route) =>
+      route.fulfill({ json: { businessCount: 0, productCount: 0, items: [] } }),
+    );
     await page.route('**/api/events', (route) =>
       route.fulfill({
         status: 200,

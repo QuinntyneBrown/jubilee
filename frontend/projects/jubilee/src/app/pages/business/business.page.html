@@ -131,13 +131,15 @@
               style="width: var(--control-height-lg)"
               ><svg jb-icon name="message"></svg
             ></a>
-            <!-- Saving arrives with journey 19 (ADR 0007). -->
             <button
+              #saveButton
               class="btn btn--icon btn--lg"
               type="button"
-              aria-label="Save"
-              aria-pressed="false"
+              [attr.aria-label]="saved() ? 'Saved. Remove from saved' : 'Save'"
+              [attr.aria-pressed]="saved()"
+              [style.color]="saved() ? 'var(--color-danger-solid)' : null"
               style="width: var(--control-height-lg)"
+              (click)="toggleSave(listing, saveButton)"
             >
               <svg jb-icon name="heart"></svg>
             </button>

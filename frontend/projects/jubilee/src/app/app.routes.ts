@@ -79,6 +79,13 @@ export const routes: Routes = [
     title: 'Product · Jubilee',
   },
   {
+    path: 'saved',
+    loadComponent: () => import('./pages/saved/saved.page').then((m) => m.SavedPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'saved' }),
+    title: 'Saved · Jubilee',
+  },
+  {
     path: 'messages',
     pathMatch: 'full',
     loadComponent: () => import('./pages/messages/messages.page').then((m) => m.MessagesPage),

@@ -77,6 +77,9 @@ export type StubName =
   | 'reset-password'
   | 'reset-password-expired'
   | 'reset-password-error'
+  | 'saved'
+  | 'saved-empty'
+  | 'saved-error'
   | 'products'
   | 'products-empty'
   | 'products-error'
@@ -585,6 +588,9 @@ export const routes = {
     who: 'visitor',
     stub: 'reset-password-error',
   },
+  saved: { app: '/saved', mock: 'pages/saved/default.html', who: 'member', stub: 'saved' },
+  'saved.empty': { app: '/saved', mock: 'pages/saved/empty.html', who: 'member', stub: 'saved-empty' },
+  'saved.error': { app: '/saved', mock: 'pages/saved/error.html', who: 'member', stub: 'saved-error' },
   'my-products': {
     app: '/my-business/products',
     mock: 'pages/my-products/default.html',
