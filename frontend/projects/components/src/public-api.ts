@@ -109,6 +109,8 @@ export * from './lib/tag/tag';
 export * from './lib/textarea/textarea';
 export * from './lib/thread-row/thread-row';
 export * from './lib/thread-row/thread-row-skeleton';
+export * from './lib/timeline/timeline';
+export * from './lib/timeline/timeline-step';
 export * from './lib/toast/toast';
 export * from './lib/top-bar/top-bar';
 export * from './lib/verified-business-label/verified-business-label';

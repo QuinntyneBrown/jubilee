@@ -41,6 +41,9 @@ import {
   WorkspaceHeader,
   Stat,
   StatGrid,
+  Timeline,
+  TimelineStep,
+  TimelineStepState,
 } from 'components';
 import {
   ConfirmRequestData,
@@ -89,6 +92,8 @@ const UNDO_MS = 8000;
     Section,
     Stat,
     StatGrid,
+    Timeline,
+    TimelineStep,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -153,7 +158,7 @@ export class MyBusinessPage implements OnInit {
   /** The four steps to live and where the listing stands in them. */
   protected steps(
     business: MyBusiness,
-  ): { title: string; meta: string; mark: 'done' | 'now' | 'next' }[] {
+  ): { title: string; meta: string; state: TimelineStepState }[] {
     const state = business.state;
     const afterReference = state !== 'pending-reference' && state !== 'draft';
     const reviewNote =
@@ -166,21 +171,21 @@ export class MyBusinessPage implements OnInit {
       {
         title: 'Listing submitted',
         meta: business.subtitle.split('submitted ')[1] ?? '',
-        mark: 'done',
+        state: 'complete',
       },
       {
         title: 'Church reference',
         meta: afterReference
           ? 'Confirmed'
           : `Waiting for ${business.reference?.referenceEmail ?? 'your church reference'}`,
-        mark: afterReference ? 'done' : 'now',
+        state: afterReference ? 'complete' : 'current',
       },
       {
         title: 'Review by Jubilee',
         meta: afterReference ? reviewNote : '',
-        mark: afterReference ? 'now' : 'next',
+        state: afterReference ? 'current' : 'upcoming',
       },
-      { title: 'Live on Jubilee', meta: '', mark: 'next' },
+      { title: 'Live on Jubilee', meta: '', state: 'upcoming' },
     ];
   }
 

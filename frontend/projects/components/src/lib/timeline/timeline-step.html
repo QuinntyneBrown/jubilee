@@ -1,0 +1,7 @@
+<span class="timeline__dot" aria-hidden="true">{{ mark() }}</span>
+<div>
+  <div class="timeline__title">{{ heading() }}</div>
+  @if (text(); as text) {
+    <div class="timeline__meta">{{ text }}</div>
+  }
+</div>

@@ -22,6 +22,8 @@ import {
   CardFooter,
   PageHeader,
   Breadcrumb,
+  Timeline,
+  TimelineStep,
 } from 'components';
 import { interval } from 'rxjs';
 import {
@@ -57,6 +59,8 @@ const NOUN = { booking: 'booking', quote: 'quote request', order: 'order' } as c
     CardFooter,
     PageHeader,
     Breadcrumb,
+    Timeline,
+    TimelineStep,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

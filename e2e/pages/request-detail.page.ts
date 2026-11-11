@@ -11,6 +11,8 @@ export class RequestDetailPage extends ShellPage implements Screen {
   readonly details: Locator;
   readonly progress: Locator;
   readonly steps: Locator;
+  /** The whole list of steps under "Progress". */
+  readonly stepList: Locator;
   readonly message: Locator;
   readonly cancel: Locator;
   readonly addToCalendar: Locator;
@@ -30,6 +32,7 @@ export class RequestDetailPage extends ShellPage implements Screen {
     this.details = this.main.locator('section[aria-labelledby="rd"]');
     this.progress = this.main.locator('section[aria-labelledby="rp"]');
     this.steps = this.progress.locator('ol.timeline > li');
+    this.stepList = this.progress.locator('ol.timeline');
     this.message = this.main.getByRole('link', { name: 'Message' });
     this.cancel = this.main.getByRole('button', { name: /^Cancel (request|booking)$/ });
     this.addToCalendar = this.main.getByRole('link', { name: 'Add to calendar' });

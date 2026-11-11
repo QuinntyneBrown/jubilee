@@ -338,16 +338,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 /* ---------- Messages -------------------------------------------------------------------- */
 
 /* ---------- Requests, timeline, notifications ------------------------------------------------ */
-.timeline { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
-.timeline li { position: relative; display: flex; gap: var(--space-3); padding-bottom: var(--space-5); }
-.timeline li:last-child { padding-bottom: 0; }
-.timeline li:not(:last-child)::after { content: ""; position: absolute; left: calc(var(--target-min) / 2 - var(--border-width-hairline)); top: var(--target-min); bottom: 0; border-left: var(--border-width-thick) solid var(--color-border-default); }
-.timeline__dot { display: grid; place-items: center; width: var(--target-min); height: var(--target-min); border-radius: var(--radius-full); border: var(--border-width-thick) solid var(--color-border-strong); background: var(--color-bg-surface); flex: none; font: var(--text-caption); }
-.timeline li[data-complete] .timeline__dot { background: var(--color-success-solid); border-color: var(--color-success-solid); color: var(--color-fg-inverse); }
-.timeline li[aria-current="step"] .timeline__dot { border-color: var(--color-accent-border); background: var(--color-accent); }
-.timeline li[data-stopped] .timeline__dot { background: var(--color-danger-solid); border-color: var(--color-danger-solid); color: var(--color-fg-on-danger); }
-.timeline__title { font: var(--text-label); }
-.timeline__meta { font: var(--text-body-sm); color: var(--color-fg-muted); }
 
 /* ---------- Skeleton shapes ---------------------------------------------------------------------- */
 

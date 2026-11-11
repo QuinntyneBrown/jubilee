@@ -42,6 +42,8 @@ import {
   ItemList,
   ItemListItem,
   ItemListName,
+  Timeline,
+  TimelineStep,
 } from 'components';
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
@@ -138,6 +140,8 @@ function summaryFor(field: FieldName, code: string): string {
     ItemList,
     ItemListItem,
     ItemListName,
+    Timeline,
+    TimelineStep,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',
