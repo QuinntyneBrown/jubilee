@@ -298,4 +298,28 @@ public sealed partial class ErrorPagesTests : IClassFixture<JubileeApiFactory>, 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal(0, await Read(db => db.AccessRequests.CountAsync()));
     }
+
+    // L2-121 AC2: the app probes this to tell "offline" from "Jubilee is down".
+
+    [Fact]
+    public async Task L2_121_the_ping_answers_204_to_anyone_without_reading_data()
+    {
+        _factory.Database.Unavailable = true;
+
+        var response = await _factory.CreateClient().GetAsync("/api/health/ping");
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Empty(await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task L2_121_while_maintenance_is_on_the_ping_says_so()
+    {
+        _factory.Maintenance.Enabled = true;
+
+        var response = await _factory.CreateClient().GetAsync("/api/health/ping");
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal("MAINTENANCE", (await Json(response)).GetProperty("code").GetString());
+    }
 }

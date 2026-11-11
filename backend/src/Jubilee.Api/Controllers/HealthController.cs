@@ -11,4 +11,12 @@ public sealed class HealthController : ControllerBase
     [HttpGet]
     [AllowAnonymous]
     public IActionResult Get() => Ok(new { status = "ok" });
+
+    /// <summary>
+    /// What the app asks to learn whether Jubilee can be reached (L2-121): 204, no session, no data read. Held by
+    /// maintenance mode like every other request, so the app can tell the member why.
+    /// </summary>
+    [HttpGet("ping")]
+    [AllowAnonymous]
+    public IActionResult Ping() => NoContent();
 }
