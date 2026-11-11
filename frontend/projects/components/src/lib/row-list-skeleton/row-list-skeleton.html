@@ -1,0 +1,17 @@
+@for (row of rows(); track row) {
+  <li class="row">
+    @if (leading() === 'avatar') {
+      <span jb-skeleton shape="avatar"></span>
+    }
+    @if (leading() === 'thumb') {
+      <span jb-skeleton></span>
+    }
+    <div class="row__body">
+      <span jb-skeleton shape="text" width="50"></span>
+      <span jb-skeleton shape="text" [width]="detail()"></span>
+    </div>
+    @if (action()) {
+      <span jb-skeleton shape="button" size="sm"></span>
+    }
+  </li>
+}
