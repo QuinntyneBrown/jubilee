@@ -433,6 +433,7 @@ internal static class MemberRequestMail
         IAppDbContext db, AccountSettings settings, Listing listing, Request request, DateTimeOffset now,
         string subject, string text, CancellationToken cancellationToken)
     {
+        Notifications.NotificationRules.Tell(db, listing.OwnerId, "request", subject, MemberRequestRules.Title(request), "/my-business/requests", now, request.Id);
         if (!Guid.TryParse(listing.OwnerId, out var ownerId))
         {
             return;
@@ -445,7 +446,7 @@ internal static class MemberRequestMail
         }
 
         var body = $"Hi {owner.FirstName},\n\n{text}\n\nYour requests: {settings.PublicBaseUrl.TrimEnd('/')}/my-business/requests\n\nJubilee · Toronto's Christian marketplace\n";
-        db.OutboxMessages.Add(OutboxMessage.Email(owner.Id, owner.Email, subject, body, now, null, request.Id));
+        EmailPolicy.Queue(db, owner, EmailCategories.Requests, subject, body, now, null, request.Id);
     }
 }
 

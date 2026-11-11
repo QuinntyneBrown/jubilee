@@ -26,7 +26,8 @@ public interface IBotChallengeVerifier
 /// <summary>Sends one e-mail through the transactional e-mail provider.</summary>
 public interface IEmailSender
 {
-    Task SendAsync(string to, string subject, string textBody, CancellationToken cancellationToken);
+    /// <param name="unsubscribeUrl">Set for notification e-mails: sent as <c>List-Unsubscribe</c> with one-click POST (RFC 8058).</param>
+    Task SendAsync(string to, string subject, string textBody, CancellationToken cancellationToken, string? unsubscribeUrl = null);
 }
 
 /// <summary>Where the app is served, for the links in e-mails (<c>App:PublicBaseUrl</c>).</summary>

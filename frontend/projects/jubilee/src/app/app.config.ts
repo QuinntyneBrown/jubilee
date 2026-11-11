@@ -12,7 +12,10 @@ import {
   ADMIN_API,
   INCOMING_REQUESTS_API,
   CATALOGUE_API,
+  EVENTS_API,
   HttpCatalogueApi,
+  HttpNotificationsApi,
+  SseEventsApi,
   MY_BUSINESS_API,
   HttpMyBusinessApi,
   HttpIncomingRequestsApi,
@@ -33,6 +36,7 @@ import {
   HttpSessionApi,
   HttpSearchApi,
   NAVIGATION_API,
+  NOTIFICATIONS_API,
   SEARCH_API,
   SESSION_API,
 } from 'api';
@@ -60,6 +64,8 @@ export const appConfig: ApplicationConfig = {
     { provide: INCOMING_REQUESTS_API, useClass: HttpIncomingRequestsApi },
     { provide: MY_BUSINESS_API, useClass: HttpMyBusinessApi },
     { provide: CATALOGUE_API, useClass: HttpCatalogueApi },
+    { provide: NOTIFICATIONS_API, useClass: HttpNotificationsApi },
+    { provide: EVENTS_API, useClass: SseEventsApi },
     provideAppInitializer(() => inject(SessionService).resolve()),
   ],
 };

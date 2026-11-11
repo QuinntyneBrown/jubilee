@@ -14,9 +14,8 @@ public sealed record NavigationSummary(
     bool IsVerifier = false,
     int VerificationCount = 0);
 
-public sealed class GetNavigationSummaryQueryHandler(IAppDbContext db) : IRequestHandler<GetNavigationSummaryQuery, NavigationSummary>
+public sealed class GetNavigationSummaryQueryHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<GetNavigationSummaryQuery, NavigationSummary>
 {
-    // Notifications and requests arrive in later journeys; until then only conversations count.
     public async Task<NavigationSummary> Handle(GetNavigationSummaryQuery request, CancellationToken cancellationToken)
     {
         if (request.Subject is not { } subject)
@@ -39,6 +38,7 @@ public sealed class GetNavigationSummaryQueryHandler(IAppDbContext db) : IReques
         var newRequests = owns && request.Subject is not null
             ? await (from r in db.Requests join l in db.Listings on r.ListingId equals l.Id where l.OwnerId == request.Subject && r.Status == Domain.RequestStatus.New select r.Id).CountAsync(cancellationToken)
             : 0;
-        return new NavigationSummary(unread, 0, newRequests, owns, request.IsVerifier, waiting);
+        var notifications = await Notifications.NotificationRules.UnreadCount(db, subject, clock.GetUtcNow(), cancellationToken);
+        return new NavigationSummary(unread, notifications, newRequests, owns, request.IsVerifier, waiting);
     }
 }

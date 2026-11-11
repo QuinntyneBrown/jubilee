@@ -25,6 +25,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<ReferenceRetentionJob>();
         builder.Services.AddHostedService<ResponseTimeBadgeJob>();
         builder.Services.AddHostedService<BookingCompletionJob>();
+        builder.Services.AddHostedService<MeetingReminderJob>();
         builder.Services.AddHostedService<UnansweredRequestJob>();
         return builder;
     }
@@ -210,6 +211,42 @@ public sealed class ResponseTimeBadgeJob(IServiceScopeFactory scopes, ILogger<Re
         catch (OperationCanceledException)
         {
             logger.LogInformation("The response-time job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every minute: reminds both sides of each confirmed meeting that starts within the hour (L2-069). Safe to repeat.
+/// </summary>
+public sealed class MeetingReminderJob(IServiceScopeFactory scopes, ILogger<MeetingReminderJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var reminded = await scope.ServiceProvider.GetRequiredService<Jubilee.Application.Notifications.MeetingReminders>()
+                        .SendDueAsync(stoppingToken);
+                    if (reminded > 0)
+                    {
+                        logger.LogInformation("Reminded {Count} meetings.", reminded);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Meeting reminders could not be sent. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The meeting reminder job is stopping.");
         }
     }
 }

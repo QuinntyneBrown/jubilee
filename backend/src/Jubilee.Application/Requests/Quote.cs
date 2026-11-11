@@ -134,6 +134,9 @@ public sealed partial class RequestQuoteCommandHandler(IAppDbContext db, TimePro
 
     private async Task QueueOwnerEmail(Listing listing, Request request, DateTimeOffset now, CancellationToken cancellationToken)
     {
+        Notifications.NotificationRules.Tell(
+            db, listing.OwnerId, "request", $"New quote request from {request.MemberName}",
+            request.ServiceName ?? request.Note ?? "A quote request", "/my-business/requests", now, request.Id);
         if (!Guid.TryParse(listing.OwnerId, out var ownerId))
         {
             return;
@@ -166,11 +169,12 @@ public sealed partial class RequestQuoteCommandHandler(IAppDbContext db, TimePro
             lines.Add($"Phone (for this request only): {phone[..3]}-{phone[3..6]}-{phone[6..]}");
         }
 
-        db.OutboxMessages.Add(OutboxMessage.Email(
-            owner.Id,
-            owner.Email,
+        EmailPolicy.Queue(
+            db,
+            owner,
+            EmailCategories.Requests,
             $"New quote request from {request.MemberName}",
             $"Hi {owner.FirstName},\n\n{request.MemberName} would like a quote.\n\n{string.Join("\n", lines)}\n\nReply to it: {settings.PublicBaseUrl.TrimEnd('/')}/my-business/requests\n\nJubilee · Toronto's Christian marketplace\n",
-            now));
+            now);
     }
 }

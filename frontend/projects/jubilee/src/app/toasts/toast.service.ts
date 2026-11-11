@@ -28,6 +28,11 @@ interface Timer {
   remaining: number;
 }
 
+const DEFAULT_MS = 8000;
+
+/** At most this many toasts show at once (L2-066 AC3). */
+const MAX_SHOWN = 3;
+
 /** Toasts: short, self-dismissing messages. The timer pauses on hover and focus. */
 @Injectable({ providedIn: 'root' })
 export class ToastService {
@@ -38,10 +43,24 @@ export class ToastService {
 
   show(spec: ToastSpec): number {
     const id = this.nextId++;
-    const durationMs = spec.durationMs ?? 6000;
-    this.list.update((all) => [...all, { ...spec, id, durationMs, paused: false }]);
+    // Info, success and warning go after 8 seconds; an error stays until it is dismissed (L2-066 AC1, AC2).
+    const durationMs = spec.durationMs ?? (spec.tone === 'danger' ? 0 : DEFAULT_MS);
+    this.list.update((all) => this.within([...all, { ...spec, id, durationMs, paused: false }]));
     if (durationMs > 0) this.start(id, durationMs);
     return id;
+  }
+
+  /** When there are too many, the oldest toast that is not an error goes; an error is never pushed out. */
+  private within(all: Toast[]): Toast[] {
+    const result = [...all];
+    while (result.length > MAX_SHOWN) {
+      const index = result.findIndex((toast) => toast.tone !== 'danger');
+      if (index < 0 || index === result.length - 1) break;
+      this.stop(result[index].id);
+      this.timers.delete(result[index].id);
+      result.splice(index, 1);
+    }
+    return result;
   }
 
   dismiss(id: number): void {

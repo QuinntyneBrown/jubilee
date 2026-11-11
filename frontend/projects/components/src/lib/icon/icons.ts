@@ -48,6 +48,12 @@ export const ICONS = {
   share: [path('M12 3v12m0-12L8 7m4-4 4 4M5 13v6h14v-6')],
   shield: [path('M12 3 5 6v6c0 4.500 3 8 7 9 4-1 7-4.500 7-9V6z')],
   shirt: [path('M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z')],
+  settings: [
+    circle(12, 12, 3),
+    path(
+      'M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1',
+    ),
+  ],
   store: [
     path(
       'M4 9l1-5h14l1 5M4 9v11h16V9M4 9a3 3 0 0 0 5.3 0 3 3 0 0 0 5.400 0A3 3 0 0 0 20 9M10 20v-6h4v6',

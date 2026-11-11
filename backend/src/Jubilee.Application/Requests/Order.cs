@@ -250,6 +250,9 @@ public sealed partial class RequestItemCommandHandler(IAppDbContext db, TimeProv
 
     private async Task QueueOwnerEmail(Listing shop, Request request, string? optionName, DateTimeOffset now, CancellationToken cancellationToken)
     {
+        Notifications.NotificationRules.Tell(
+            db, shop.OwnerId, "request", $"New order request from {request.MemberName}",
+            $"{request.ServiceName} × {request.Quantity}", "/my-business/requests", now, request.Id);
         if (!Guid.TryParse(shop.OwnerId, out var ownerId))
         {
             return;
@@ -267,11 +270,12 @@ public sealed partial class RequestItemCommandHandler(IAppDbContext db, TimeProv
             : $"{request.ServiceName}\n{optionName ?? "Option"} {request.OptionLabel} × {request.Quantity}";
         var where = request.ShippingAddress is null ? request.DeliveryLabel : $"{request.DeliveryLabel}: {request.ShippingAddress}";
         var note = request.Note is null ? string.Empty : $"\nNote: {request.Note}\n";
-        db.OutboxMessages.Add(OutboxMessage.Email(
-            owner.Id,
-            owner.Email,
+        EmailPolicy.Queue(
+            db,
+            owner,
+            EmailCategories.Requests,
             $"New order request from {request.MemberName}",
             $"Hi {owner.FirstName},\n\n{request.MemberName} would like to order.\n\n{item}\n{where}\nItem {Money(request.ItemCents!.Value)} · shipping {Money(request.ShippingCents!.Value)} · estimated total {Money(request.TotalCents!.Value)} + tax\n{note}\nConfirm stock and arrange payment: {settings.PublicBaseUrl.TrimEnd('/')}/my-business/requests\n\nJubilee · Toronto's Christian marketplace\n",
-            now));
+            now);
     }
 }

@@ -89,6 +89,15 @@ export async function installMockApi(page: Page, unanswered: string[]): Promise<
       await route.fulfill({ status: 501, json: { title: error.message, code: 'not_recorded' } });
     }
   });
+  if (!RECORDING) {
+    await page.route('**/api/events', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'text/event-stream',
+        body: ': connected\nretry: 3600000\n\n',
+      }),
+    );
+  }
 }
 
 /** The method and URL of a request, for messages. */

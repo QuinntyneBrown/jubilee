@@ -17,6 +17,14 @@
     (resend)="resend()"
   ></div>
 }
+@if (routeData().shell === 'app' && confirmedBanner() && !unconfirmed() && member(); as signedIn) {
+  <div
+    jb-verify-email-banner
+    state="confirmed"
+    [email]="session.member()?.email ?? ''"
+    (dismiss)="dismissConfirmed()"
+  ></div>
+}
 <main id="main" tabindex="-1"><router-outlet /></main>
 @if (routeData().shell === 'app') {
   <footer jb-site-footer [year]="year"></footer>

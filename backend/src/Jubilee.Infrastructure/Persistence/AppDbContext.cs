@@ -21,6 +21,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<RecentSearch> RecentSearches => Set<RecentSearch>();
 
+    public DbSet<Notification> Notifications => Set<Notification>();
+
     public DbSet<Member> Members => Set<Member>();
 
     public DbSet<LinkToken> LinkTokens => Set<LinkToken>();

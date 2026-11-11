@@ -715,10 +715,25 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(254)
                         .HasColumnType("nvarchar(254)");
 
+                    b.Property<bool>("EmailMessages")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("EmailNewBusinesses")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("EmailReminders")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("EmailRequests")
+                        .HasColumnType("bit");
+
                     b.Property<string>("EmailStatus")
                         .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
+
+                    b.Property<bool>("EmailTips")
+                        .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -836,6 +851,52 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("MessageAttachments", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CorrelationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Detail")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("MemberSubject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("ReadAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Target")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberSubject", "CreatedAt");
+
+                    b.ToTable("Notifications", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -843,6 +904,10 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<int>("Attempts")
                         .HasColumnType("int");
+
+                    b.Property<string>("Category")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<Guid?>("CorrelationId")
                         .HasColumnType("uniqueidentifier");
@@ -1163,6 +1228,9 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("RemindedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid?>("ServiceId")
                         .HasColumnType("uniqueidentifier");

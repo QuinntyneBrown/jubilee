@@ -1,6 +1,20 @@
-<svg jb-icon [name]="state() === 'persistent' || state() === 'sent' ? 'info' : 'alert'"></svg>
+<svg
+  jb-icon
+  [name]="
+    state() === 'confirmed'
+      ? 'check'
+      : state() === 'persistent' || state() === 'sent'
+        ? 'info'
+        : 'alert'
+  "
+></svg>
 <div class="alert__body">
   @switch (state()) {
+    @case ('confirmed') {
+      <span
+        ><strong>E-mail confirmed.</strong> You can now message businesses and book meetings.</span
+      >
+    }
     @case ('sent') {
       <span><strong>We sent a new link</strong> to {{ email() }}. It works for 24 hours.</span>
     }
@@ -34,3 +48,8 @@
     }
   }
 </div>
+@if (state() === 'confirmed') {
+  <button class="close" type="button" aria-label="Dismiss" (click)="dismiss.emit()">
+    <svg jb-icon name="close"></svg>
+  </button>
+}

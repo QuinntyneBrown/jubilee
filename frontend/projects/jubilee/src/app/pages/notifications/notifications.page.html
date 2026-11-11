@@ -1,0 +1,89 @@
+<div class="page-header">
+  <div>
+    <h1>Notifications</h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+  <div class="cluster">
+    @if (list(); as notifications) {
+      @if (notifications.unread > 0) {
+        <button
+          class="btn"
+          type="button"
+          [attr.aria-busy]="marking() ? 'true' : null"
+          (click)="markAll()"
+        >
+          <svg jb-icon name="check"></svg>Mark all as read
+        </button>
+      }
+    }
+    <a class="btn btn--ghost" routerLink="/account/notifications"
+      ><svg jb-icon name="settings"></svg>Settings</a
+    >
+  </div>
+</div>
+@switch (state().status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your notifications">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ errorReference() }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading notifications…</p>
+    <ul class="list card card--list" aria-hidden="true">
+      @for (item of skeleton; track item) {
+        <li class="notif">
+          <span class="skeleton skeleton--avatar"></span>
+          <div class="notif__body">
+            <span class="skeleton skeleton--text skeleton--w70"></span>
+            <span class="skeleton skeleton--text skeleton--w50"></span>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  @case ('loaded') {
+    @if (list(); as notifications) {
+      @if (notifications.items.length === 0) {
+        <div jb-empty-state icon="bell" heading="No notifications yet">
+          We’ll tell you here when a business replies, confirms a booking or answers a quote.
+          <a slot="actions" class="btn btn--primary" routerLink="/">Browse businesses</a>
+        </div>
+      } @else {
+        <ul class="list card card--list">
+          @for (item of notifications.items; track item.id) {
+            <li>
+              <a
+                class="notif"
+                [class.notif--unread]="!item.read"
+                [href]="item.target"
+                (click)="open($event, item)"
+              >
+                <span class="notif__icon" aria-hidden="true"
+                  ><svg jb-icon [name]="icon(item)"></svg
+                ></span>
+                <span class="notif__body">
+                  <span class="notif__title" style="display: block">
+                    @if (!item.read) {
+                      <span class="visually-hidden">Unread. </span>
+                    }
+                    {{ item.title }}</span
+                  >
+                  @if (item.detail) {
+                    <span class="notif__meta" style="display: block">{{ item.detail }}</span>
+                  }
+                  <span class="text-caption">{{ when(item) }}</span>
+                </span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+}

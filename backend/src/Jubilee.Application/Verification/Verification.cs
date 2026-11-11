@@ -429,6 +429,8 @@ public sealed class ApproveListingCommandHandler(IAppDbContext db, TimeProvider 
         AuditLog.Record(
             db, request.Reviewer, "listing.approved", "listing", listing.Id.ToString(), before,
             Reviews.Json(new { stage = "live", ticked, unticked = ChecklistItems.All.Select(i => i.Key).Except(ticked) }), note, now);
+        Notifications.NotificationRules.Tell(
+            db, listing.OwnerId, "listing", $"{listing.Name} is verified and live", "Members can find your business now.", "/my-business", now);
         var owner = await Reviews.OwnerOf(db, listing, cancellationToken);
         if (owner is not null)
         {
@@ -497,6 +499,8 @@ public sealed class RequestChangesCommandHandler(IAppDbContext db, TimeProvider 
         AuditLog.Record(
             db, request.Reviewer, "listing.changes-requested", "listing", listing.Id.ToString(), before,
             Reviews.Json(new { stage = "changes-requested", areas }), message, now);
+        Notifications.NotificationRules.Tell(
+            db, listing.OwnerId, "listing", $"Changes needed for {listing.Name}", message, "/my-business", now);
         var owner = await Reviews.OwnerOf(db, listing, cancellationToken);
         if (owner is not null)
         {
@@ -547,6 +551,8 @@ public sealed class DeclineListingCommandHandler(IAppDbContext db, TimeProvider 
         AuditLog.Record(
             db, request.Reviewer, "listing.declined", "listing", listing.Id.ToString(), "needs-a-decision",
             Reviews.Json(new { stage = "declined" }), reason, now);
+        Notifications.NotificationRules.Tell(
+            db, listing.OwnerId, "listing", $"We couldn’t verify {listing.Name}", reason, "/my-business", now);
         var owner = await Reviews.OwnerOf(db, listing, cancellationToken);
         if (owner is not null)
         {

@@ -284,7 +284,7 @@ test.describe('restricted until the address is confirmed (L2-005)', () => {
     await expect(banner.changeEmail).toBeVisible();
   });
 
-  test('AC4: confirming in another tab clears the banner when this tab is focused again', async ({
+  test('AC4: confirming in another tab replaces the banner with a confirmation when this tab is focused again', async ({
     page,
     jb,
   }) => {
@@ -295,6 +295,9 @@ test.describe('restricted until the address is confirmed (L2-005)', () => {
     await stubSession(page, { ...unconfirmedSession, emailStatus: 'confirmed' });
     await page.evaluate(() => window.dispatchEvent(new Event('focus')));
 
+    await expect(banner.banner).toContainText('E-mail confirmed.');
+    await expect(banner.sendAgain).toHaveCount(0);
+    await banner.dismiss.click();
     await expect(banner.banner).toHaveCount(0);
   });
 

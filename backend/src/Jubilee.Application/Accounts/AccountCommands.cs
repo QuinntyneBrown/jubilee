@@ -199,6 +199,8 @@ public sealed class ConfirmEmailCommandHandler(IAppDbContext db, TimeProvider cl
         {
             token.Redeem(now);
             member.ConfirmEmail();
+            Notifications.NotificationRules.Tell(
+                db, member.Id.ToString(), "account", "Your e-mail is confirmed", "You can now message businesses and book meetings.", "/account", now);
             await db.SaveChangesAsync(cancellationToken);
             return new ConfirmEmailResult(ConfirmEmailOutcome.Confirmed, member.FirstName);
         }
@@ -355,7 +357,8 @@ public sealed class GetMemberAccountQueryHandler(IAppDbContext db) : IRequestHan
 }
 
 /// <summary>Sends the e-mails waiting in the outbox; a failure is retried with back-off (L2-179 AC3).</summary>
-public sealed class OutboxDispatcher(IAppDbContext db, IEmailSender sender, TimeProvider clock)
+public sealed class OutboxDispatcher(
+    IAppDbContext db, IEmailSender sender, TimeProvider clock, AccountSettings settings, Notifications.IUnsubscribeLinks unsubscribe)
 {
     public async Task<int> DispatchDueAsync(CancellationToken cancellationToken)
     {
@@ -367,7 +370,10 @@ public sealed class OutboxDispatcher(IAppDbContext db, IEmailSender sender, Time
         {
             try
             {
-                await sender.SendAsync(message.ToAddress, message.Subject, message.TextBody, cancellationToken);
+                var link = message.Category is { } category && message.MemberId is { } memberId
+                    ? $"{settings.PublicBaseUrl.TrimEnd('/')}/api/email/unsubscribe/{unsubscribe.For(memberId, category)}"
+                    : null;
+                await sender.SendAsync(message.ToAddress, message.Subject, message.TextBody, cancellationToken, link);
                 message.MarkSent(clock.GetUtcNow());
                 sent++;
             }

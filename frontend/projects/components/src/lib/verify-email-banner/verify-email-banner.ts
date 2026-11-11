@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { Icon } from '../icon/icon';
 
 /** The states of the banner that asks an unconfirmed member to confirm the address (L2-005). */
-export type VerifyEmailBannerState = 'persistent' | 'sent' | 'bounced' | 'expired';
+export type VerifyEmailBannerState = 'persistent' | 'sent' | 'bounced' | 'expired' | 'confirmed';
 
 /**
  * The verify-e-mail banner. It carries no dismiss control while the address is unconfirmed.
@@ -17,6 +17,7 @@ export type VerifyEmailBannerState = 'persistent' | 'sent' | 'bounced' | 'expire
   host: {
     class: 'alert banner',
     '[class.alert--danger]': 'state() === "bounced"',
+    '[class.alert--success]': 'state() === "confirmed"',
     '[class.alert--warning]': 'state() === "expired"',
     '[attr.role]': 'state() === "bounced" ? "alert" : "status"',
   },
@@ -27,4 +28,6 @@ export class VerifyEmailBanner {
   readonly email = input.required<string>();
   readonly busy = input(false);
   readonly resend = output<void>();
+  /** Only the success state can be dismissed. */
+  readonly dismiss = output<void>();
 }
