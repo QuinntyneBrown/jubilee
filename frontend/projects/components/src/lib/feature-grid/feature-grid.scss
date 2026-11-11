@@ -1,0 +1,5 @@
+// Block: feature-grid, a card-grid whose first card is drawn large. The grid itself is
+// card-grid's; this block places its items.
+:host {
+  display: grid;
+}

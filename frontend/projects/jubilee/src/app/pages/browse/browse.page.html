@@ -1,47 +1,43 @@
 @let state = store.state();
-<section class="hero">
-  <div class="container">
-    <p class="hero__greeting">{{ greeting() }}</p>
-    <h1>Do business with Toronto’s Christian community.</h1>
-    <p class="hero__sub">
-      @switch (state.status) {
-        @case ('loading') {
-          Loading the directory…
-        }
-        @case ('error') {
-          Shops, advisors, trades and more.
-        }
-        @case ('loaded') {
-          @if (state.value.liveBusinessCount > 0) {
-            {{ state.value.liveBusinessCount | jbCount }} verified businesses — shops, advisors,
-            trades and more.
-          } @else {
-            The first verified businesses are on their way.
-          }
+<section jb-hero [greeting]="greeting()" heading="Do business with Toronto’s Christian community.">
+  <ng-container ngProjectAs="[slot=lead]">
+    @switch (state.status) {
+      @case ('loading') {
+        Loading the directory…
+      }
+      @case ('error') {
+        Shops, advisors, trades and more.
+      }
+      @case ('loaded') {
+        @if (state.value.liveBusinessCount > 0) {
+          {{ state.value.liveBusinessCount | jbCount }} verified businesses — shops, advisors,
+          trades and more.
+        } @else {
+          The first verified businesses are on their way.
         }
       }
-    </p>
-    <form class="search" role="search" (submit)="search($event, hq.element.value)">
-      <label class="visually-hidden" for="hq">Search businesses and products</label>
-      <svg jb-icon name="search"></svg>
-      <input
-        jb-input
-        #hq
-        jbRequiresConnection
-        id="hq"
-        type="search"
-        placeholder="Plumber, lawyer, Bibles…"
-      />
-    </form>
-    <ul jb-chip-row>
-      <li><a jb-chip routerLink="/" selected>All</a></li>
-      @for (category of categories; track category.slug) {
-        <li>
-          <a jb-chip [routerLink]="['/c', category.slug]">{{ category.name }}</a>
-        </li>
-      }
-    </ul>
-  </div>
+    }
+  </ng-container>
+  <form class="search" role="search" (submit)="search($event, hq.element.value)">
+    <label class="visually-hidden" for="hq">Search businesses and products</label>
+    <svg jb-icon name="search"></svg>
+    <input
+      jb-input
+      #hq
+      jbRequiresConnection
+      id="hq"
+      type="search"
+      placeholder="Plumber, lawyer, Bibles…"
+    />
+  </form>
+  <ul jb-chip-row>
+    <li><a jb-chip routerLink="/" selected>All</a></li>
+    @for (category of categories; track category.slug) {
+      <li>
+        <a jb-chip [routerLink]="['/c', category.slug]">{{ category.name }}</a>
+      </li>
+    }
+  </ul>
 </section>
 <div class="container page">
   @switch (state.status) {
@@ -84,19 +80,20 @@
         </div>
       } @else {
         @if (!member()) {
-          <div class="band" style="margin-top: var(--space-6)">
-            <div>
-              <h2>New here?</h2>
-              <p>Join free to message businesses, book meetings and save favourites.</p>
-            </div>
+          <div
+            jb-band
+            heading="New here?"
+            text="Join free to message businesses, book meetings and save favourites."
+            style="margin-top: var(--space-6)"
+          >
             <a jb-button variant="primary" routerLink="/join">Join free</a>
           </div>
         }
         @if (directory.featured.length) {
           <section jb-section heading="Featured this week" headingId="feat">
-            <ul class="card-grid feature-grid">
+            <ul jb-feature-grid>
               @for (business of directory.featured; track business.slug) {
-                <li>
+                <li jb-feature-grid-item>
                   <a
                     jb-business-card
                     [business]="business"

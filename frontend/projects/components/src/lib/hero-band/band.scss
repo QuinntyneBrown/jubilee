@@ -1,0 +1,20 @@
+// Block: band. The host is the band.
+@use './on-brand' as brand;
+
+:host {
+  @include brand.knobs;
+
+  background: var(--color-bg-brand);
+  color: var(--color-fg-on-brand);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-6);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+p {
+  color: var(--color-fg-on-brand-muted);
+}

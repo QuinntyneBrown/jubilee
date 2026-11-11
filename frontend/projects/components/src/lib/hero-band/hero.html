@@ -1,0 +1,8 @@
+<div class="container">
+  @if (greeting(); as greeting) {
+    <p class="hero__greeting">{{ greeting }}</p>
+  }
+  <h1>{{ heading() }}</h1>
+  <p class="hero__sub">{{ lead() }}<ng-content select="[slot=lead]" /></p>
+  <ng-content />
+</div>

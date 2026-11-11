@@ -1,51 +1,41 @@
-<section class="hero">
-  <div class="container">
-    <p class="hero__greeting">Toronto’s Christian marketplace</p>
-    <h1>Do business with Toronto’s Christian community.</h1>
-    <p class="hero__sub">
-      @if (welcome(); as welcome) {
-        {{ welcome.liveBusinessCount | jbCount }} verified businesses — shops, advisors, trades and
-        more. Free to join, free to list.
-      } @else {
-        Shops, advisors, trades and more. Free to join, free to list.
-      }
-    </p>
-    <div class="cluster" style="margin-top: var(--space-6)">
-      <a jb-button variant="primary" size="lg" routerLink="/join">Join free</a>
-      <a jb-button variant="ghost" size="lg" routerLink="/">Browse businesses</a>
-    </div>
-    <ul jb-chip-row>
-      @for (category of categories; track category.slug) {
-        <li>
-          <a jb-chip [routerLink]="['/c', category.slug]">{{ category.name }}</a>
-        </li>
-      }
-    </ul>
+<section
+  jb-hero
+  greeting="Toronto’s Christian marketplace"
+  heading="Do business with Toronto’s Christian community."
+>
+  <ng-container ngProjectAs="[slot=lead]">
+    @if (welcome(); as welcome) {
+      {{ welcome.liveBusinessCount | jbCount }} verified businesses — shops, advisors, trades and
+      more. Free to join, free to list.
+    } @else {
+      Shops, advisors, trades and more. Free to join, free to list.
+    }
+  </ng-container>
+  <div class="cluster" style="margin-top: var(--space-6)">
+    <a jb-button variant="primary" size="lg" routerLink="/join">Join free</a>
+    <a jb-button variant="ghost" size="lg" routerLink="/">Browse businesses</a>
   </div>
+  <ul jb-chip-row>
+    @for (category of categories; track category.slug) {
+      <li>
+        <a jb-chip [routerLink]="['/c', category.slug]">{{ category.name }}</a>
+      </li>
+    }
+  </ul>
 </section>
 <div class="container page">
   <section jb-section heading="How Jubilee works" headingId="how">
-    <ol class="steps">
-      <li>
-        <h3>Find someone you can trust</h3>
-        <p class="text-muted">
-          Search or browse by category. Every listing is a Christian-owned business confirmed by a
-          pastor or elder.
-        </p>
+    <ol jb-steps>
+      <li jb-step heading="Find someone you can trust">
+        Search or browse by category. Every listing is a Christian-owned business confirmed by a
+        pastor or elder.
       </li>
-      <li>
-        <h3>Ask, book or order</h3>
-        <p class="text-muted">
-          Message the owner, book a meeting, ask for a quote or request a product. The business
-          answers you directly.
-        </p>
+      <li jb-step heading="Ask, book or order">
+        Message the owner, book a meeting, ask for a quote or request a product. The business
+        answers you directly.
       </li>
-      <li>
-        <h3>Keep wealth working for the kingdom</h3>
-        <p class="text-muted">
-          Every dollar spent here supports a family, a church and a community that shares your
-          values.
-        </p>
+      <li jb-step heading="Keep wealth working for the kingdom">
+        Every dollar spent here supports a family, a church and a community that shares your values.
       </li>
     </ol>
   </section>
@@ -68,21 +58,21 @@
       </section>
     }
   }
-  <section jb-section class="band" labelledBy="own">
-    <div>
-      <h2 id="own">Own a business?</h2>
-      <p>
-        List it free. Tell us what you offer, name a church reference, and you are live once your
-        pastor confirms.
-      </p>
-    </div>
-    <a
-      jb-button
-      variant="primary"
-      size="lg"
-      routerLink="/join"
-      [queryParams]="{ returnUrl: '/list' }"
-      ><svg jb-icon name="plus"></svg>List your business</a
+  <div jb-section>
+    <section
+      jb-band
+      heading="Own a business?"
+      headingId="own"
+      text="List it free. Tell us what you offer, name a church reference, and you are live once your pastor confirms."
     >
-  </section>
+      <a
+        jb-button
+        variant="primary"
+        size="lg"
+        routerLink="/join"
+        [queryParams]="{ returnUrl: '/list' }"
+        ><svg jb-icon name="plus"></svg>List your business</a
+      >
+    </section>
+  </div>
 </div>

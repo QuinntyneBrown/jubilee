@@ -60,6 +60,8 @@ export class BrowsePage extends ShellPage implements Screen {
   readonly content: Locator;
   readonly featured: Locator;
   readonly featuredCards: Locator;
+  /** The grid of featured cards, the first drawn large. */
+  readonly featureGrid: Locator;
   readonly shops: Locator;
   readonly productCards: Locator;
   readonly allShops: Locator;
@@ -93,6 +95,7 @@ export class BrowsePage extends ShellPage implements Screen {
     this.joinPanelAction = this.joinPanel.getByRole('link', { name: 'Join free' });
     this.featured = this.main.getByRole('region', { name: 'Featured this week' });
     this.featuredCards = this.featured.locator('a.biz-card');
+    this.featureGrid = this.featured.locator('ul.feature-grid');
     this.shops = this.main.getByRole('region', { name: 'From the shops' });
     this.productCards = this.shops.locator('a.product-card');
     this.allShops = this.shops.getByRole('link', { name: 'All shops' });

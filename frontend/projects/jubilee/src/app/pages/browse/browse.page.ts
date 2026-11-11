@@ -24,6 +24,10 @@ import {
   Skeleton,
   List,
   Section,
+  Hero,
+  Band,
+  FeatureGrid,
+  FeatureGridItem,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { RequiresConnection } from '../../directives/requires-connection';
@@ -57,6 +61,10 @@ import { SessionService } from '../../services/session.service';
     Skeleton,
     List,
     Section,
+    Hero,
+    Band,
+    FeatureGrid,
+    FeatureGridItem,
   ],
   providers: [DirectoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

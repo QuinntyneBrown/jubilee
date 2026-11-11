@@ -13,6 +13,8 @@ export class WelcomePage extends ShellPage implements Screen {
   readonly categoryLinks: Locator;
   readonly howItWorks: Locator;
   readonly steps: Locator;
+  /** The numbered list of steps. */
+  readonly stepList: Locator;
   readonly featured: Locator;
   readonly featuredCards: Locator;
   readonly browseAll: Locator;
@@ -30,6 +32,7 @@ export class WelcomePage extends ShellPage implements Screen {
     this.categoryLinks = this.hero.locator('.chip-row a.chip');
     this.howItWorks = this.main.getByRole('region', { name: 'How Jubilee works' });
     this.steps = this.howItWorks.locator('.steps > li h3');
+    this.stepList = this.howItWorks.locator('ol.steps');
     this.featured = this.main.getByRole('region', { name: 'Featured this week' });
     this.featuredCards = this.featured.locator('a.biz-card');
     this.browseAll = this.featured.getByRole('link', { name: /^Browse all/ });

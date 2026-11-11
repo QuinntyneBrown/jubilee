@@ -1,0 +1,16 @@
+// Block: feature-grid, one item.
+:host(:first-child) {
+  grid-column: 1 / -1;
+}
+
+// From the desktop layout the first card takes two columns and two rows, and its picture
+// fills the height that leaves.
+@media (min-width: 64rem) {
+  :host(:first-child) {
+    grid-column: span 2;
+    grid-row: span 2;
+    --jb-media-aspect-ratio: auto;
+    --jb-media-flex: 1;
+    --jb-media-min-height: 20rem;
+  }
+}
