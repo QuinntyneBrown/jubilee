@@ -10,7 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
-import { BrandMark, EmptyState, Icon, Button } from 'components';
+import { BrandMark, EmptyState, Icon, Button, Alert } from 'components';
 
 type View = 'form' | 'submitting' | 'success' | 'error';
 
@@ -22,14 +22,14 @@ const MALFORMED = 'Enter an e-mail address like name@example.com';
  */
 @Component({
   selector: 'jb-forgot-password-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button],
+  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './forgot-password.page.html',
 })
 export class ForgotPasswordPage {
   private readonly api = inject(PASSWORD_RESET_API);
-  private readonly summaryRef = viewChild<ElementRef<HTMLElement>>('summaryBox');
+  private readonly summaryRef = viewChild('summaryBox', { read: ElementRef<HTMLElement> });
 
   protected readonly view = signal<View>('form');
   protected readonly email = signal('');

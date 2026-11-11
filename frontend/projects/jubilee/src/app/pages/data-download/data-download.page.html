@@ -26,13 +26,9 @@
     </div>
   }
   @case ('done') {
-    <div class="alert alert--success" role="status">
-      <svg jb-icon name="check"></svg>
-      <div class="alert__body">
-        <div class="alert__title">Your data is in your downloads</div>
-        <div>
-          The file is called jubilee-data.json. <a routerLink="/account">Back to your account</a>
-        </div>
+    <div jb-alert tone="success" heading="Your data is in your downloads">
+      <div>
+        The file is called jubilee-data.json. <a routerLink="/account">Back to your account</a>
       </div>
     </div>
   }

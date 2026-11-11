@@ -81,45 +81,42 @@
           </div>
         } @else {
           @if (session.unconfirmed()) {
-            <div class="alert alert--warning" role="status">
-              <svg jb-icon name="info"></svg>
-              <div class="alert__body">
-                Confirm your e-mail to submit. You can write and save your draft meanwhile.
-              </div>
+            <div jb-alert tone="warning" icon="info">
+              Confirm your e-mail to submit. You can write and save your draft meanwhile.
             </div>
           }
           @if (summary().length) {
-            <div class="alert alert--danger form-summary" role="alert" id="summary" tabindex="-1">
-              <svg jb-icon name="alert"></svg>
-              <div class="alert__body">
-                <div class="alert__title">
-                  Fix {{ summary().length }} {{ summary().length === 1 ? 'thing' : 'things' }} to
-                  continue
-                </div>
-                <ul class="alert__list">
-                  @for (item of summary(); track item.field) {
-                    <li>
-                      <a [href]="'#' + item.id" (click)="goTo($event, item.id)">{{ item.text }}</a>
-                    </li>
-                  }
-                </ul>
-              </div>
+            <div
+              jb-alert
+              tone="danger"
+              [heading]="
+                'Fix ' +
+                summary().length +
+                ' ' +
+                (summary().length === 1 ? 'thing' : 'things') +
+                ' to continue'
+              "
+              class="form-summary"
+              role="alert"
+              id="summary"
+              tabindex="-1"
+            >
+              <ul class="alert__list">
+                @for (item of summary(); track item.field) {
+                  <li>
+                    <a [href]="'#' + item.id" (click)="goTo($event, item.id)">{{ item.text }}</a>
+                  </li>
+                }
+              </ul>
             </div>
           }
           @if (failed()) {
-            <div class="alert alert--danger" role="alert">
-              <svg jb-icon name="alert"></svg>
-              <div class="alert__body">{{ failed() }}</div>
-            </div>
+            <div jb-alert tone="danger" role="alert">{{ failed() }}</div>
           }
           @if (savedAt(); as at) {
-            <div class="alert alert--success" role="status">
-              <svg jb-icon name="verified"></svg>
-              <div class="alert__body">
-                <div class="alert__title">Draft saved</div>
-                Saved today at {{ at }}. Come back any time from My business; nothing is public
-                until you submit.
-              </div>
+            <div jb-alert tone="success" icon="verified" heading="Draft saved">
+              Saved today at {{ at }}. Come back any time from My business; nothing is public until
+              you submit.
             </div>
           }
           <form class="form" novalidate (submit)="$event.preventDefault(); submit()">

@@ -50,32 +50,16 @@
         </p>
       </div>
     </div>
-    <div
-      class="alert"
-      [class.alert--success]="r.callout.tone === 'success'"
-      [class.alert--warning]="r.callout.tone === 'warning'"
-      role="status"
-    >
-      <svg
-        jb-icon
-        [name]="
-          r.callout.tone === 'success' ? 'check' : r.callout.tone === 'warning' ? 'alert' : 'info'
-        "
-      ></svg>
-      <div class="alert__body">
-        <div class="alert__title">{{ r.callout.title }}</div>
-        @if (r.callout.text) {
-          <div>{{ r.callout.text }}</div>
-        }
-        @if (r.callout.quote) {
-          <div>“{{ r.callout.quote }}”</div>
-        }
-        @if (r.status === 'declined') {
-          <div class="alert__actions">
-            <a [routerLink]="['/c', r.categorySlug]">See other {{ r.categoryWord }}</a>
-          </div>
-        }
-      </div>
+    <div jb-alert [tone]="r.callout.tone" [heading]="r.callout.title">
+      @if (r.callout.text) {
+        <div>{{ r.callout.text }}</div>
+      }
+      @if (r.callout.quote) {
+        <div>“{{ r.callout.quote }}”</div>
+      }
+      @if (r.status === 'declined') {
+        <a slot="actions" [routerLink]="['/c', r.categorySlug]">See other {{ r.categoryWord }}</a>
+      }
     </div>
     <div class="split" style="margin-top: var(--space-6)">
       <section class="card" aria-labelledby="rd">

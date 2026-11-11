@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ADMIN_API, DecisionResult, ReferenceState, VerificationReview } from 'api';
-import { EmptyState, Icon, MediaTile, categoryTile, Button } from 'components';
+import { EmptyState, Icon, MediaTile, categoryTile, Button, Alert } from 'components';
 import {
   ApproveListingDialog,
   ApproveListingData,
@@ -40,7 +40,7 @@ const WAITING_STATES: ReferenceState[] = ['waiting', 'expired', 'deleted'];
  */
 @Component({
   selector: 'jb-admin-verification-page',
-  imports: [RouterLink, EmptyState, Icon, MediaTile, Button],
+  imports: [RouterLink, EmptyState, Icon, MediaTile, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-verification.page.html',
 })

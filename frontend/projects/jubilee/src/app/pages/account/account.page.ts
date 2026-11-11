@@ -13,7 +13,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ACCOUNT_DATA_API, Account, PROFILE_API, ProfileForm } from 'api';
-import { EmptyState, Icon, Button } from 'components';
+import { EmptyState, Icon, Button, Alert } from 'components';
 import { Observable, map } from 'rxjs';
 import { ChangeEmailData, ChangeEmailDialog } from '../../dialogs/change-email/change-email.dialog';
 import {
@@ -59,7 +59,7 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-account-page',
-  imports: [FormsModule, RouterLink, EmptyState, Icon, Button],
+  imports: [FormsModule, RouterLink, EmptyState, Icon, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page', '(window:beforeunload)': 'warnOnClose($event)' },
   templateUrl: './account.page.html',
@@ -71,7 +71,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
   private readonly dialog = inject(Dialog);
   private readonly session = inject(SessionService);
   private readonly toasts = inject(ToastService);
-  private readonly summaryBox = viewChild<ElementRef<HTMLElement>>('summaryBox');
+  private readonly summaryBox = viewChild('summaryBox', { read: ElementRef<HTMLElement> });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   protected readonly state = signal<LoadState<Account>>({ status: 'loading' });

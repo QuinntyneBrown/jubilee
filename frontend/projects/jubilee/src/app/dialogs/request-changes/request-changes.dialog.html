@@ -23,12 +23,8 @@
   </div>
   <form class="dialog__body stack" id="changes-form" novalidate (ngSubmit)="send()">
     @if (view() === 'failed') {
-      <div class="alert alert--danger" role="alert">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">We couldn’t send the request</div>
-          <div>Nothing was sent and your message is kept. Try again.</div>
-        </div>
+      <div jb-alert tone="danger" heading="We couldn’t send the request" role="alert">
+        <div>Nothing was sent and your message is kept. Try again.</div>
       </div>
     }
     <fieldset>

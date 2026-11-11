@@ -69,12 +69,8 @@
       }
       @case ('unavailable') {
         <div class="dialog__body stack">
-          <div class="alert alert--danger" role="alert">
-            <svg jb-icon name="alert"></svg>
-            <div class="alert__body">
-              <div class="alert__title">Quotes aren’t available right now</div>
-              <div>Nothing is lost. Close this and try again in a moment, or send a message.</div>
-            </div>
+          <div jb-alert tone="danger" heading="Quotes aren’t available right now" role="alert">
+            <div>Nothing is lost. Close this and try again in a moment, or send a message.</div>
           </div>
         </div>
         <div class="dialog__footer">
@@ -85,12 +81,8 @@
         @if (opts) {
           <form class="dialog__body stack" id="quote-form" novalidate (ngSubmit)="send()">
             @if (view() === 'failed') {
-              <div class="alert alert--danger" role="alert">
-                <svg jb-icon name="alert"></svg>
-                <div class="alert__body">
-                  <div class="alert__title">{{ failure().title }}</div>
-                  <div>{{ failure().text }}</div>
-                </div>
+              <div jb-alert tone="danger" [heading]="failure().title" role="alert">
+                <div>{{ failure().text }}</div>
               </div>
             }
             <div class="field">

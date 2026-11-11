@@ -49,21 +49,17 @@
       <div class="split">
         <form class="card form" novalidate (ngSubmit)="save()" #form="ngForm">
           @if (saved(); as done) {
-            <div class="alert alert--success" role="status">
-              <svg jb-icon name="check"></svg>
-              <div class="alert__body">
-                <div class="alert__title">Listing updated</div>
-                <div>
-                  Your changes are live now.
-                  @if (done.recheck) {
-                    Because you changed the name or category, the verification team will take
-                    another look within two business days. Your listing stays live.
-                  }
-                </div>
-                <div class="alert__actions">
-                  <a [routerLink]="['/b', e.slug]">View public listing</a>
-                </div>
+            <div jb-alert tone="success" heading="Listing updated">
+              <div>
+                Your changes are live now.
+                @if (done.recheck) {
+                  Because you changed the name or category, the verification team will take another
+                  look within two business days. Your listing stays live.
+                }
               </div>
+
+              <a slot="actions" [routerLink]="['/b', e.slug]">View public listing</a>
+
               <button
                 jb-close-button
                 type="button"
@@ -73,43 +69,42 @@
             </div>
           }
           @if (failure() === 'conflict') {
-            <div class="alert alert--danger" role="alert">
-              <svg jb-icon name="alert"></svg>
-              <div class="alert__body">
-                <div class="alert__title">
-                  This listing changed since you opened it. Reload to see the latest.
-                </div>
-                <div class="alert__actions">
-                  <button jb-button size="sm" type="button" (click)="load()">Reload</button>
-                </div>
-              </div>
+            <div
+              jb-alert
+              tone="danger"
+              heading="This listing changed since you opened it. Reload to see the latest."
+              role="alert"
+            >
+              <button slot="actions" jb-button size="sm" type="button" (click)="load()">
+                Reload
+              </button>
             </div>
           } @else if (failure() === 'failed') {
-            <div class="alert alert--danger" role="alert">
-              <svg jb-icon name="alert"></svg>
-              <div class="alert__body">
-                <div class="alert__title">We couldn’t save your changes</div>
-                <div>Nothing was changed. Check your connection and try again.</div>
-              </div>
+            <div jb-alert tone="danger" heading="We couldn’t save your changes" role="alert">
+              <div>Nothing was changed. Check your connection and try again.</div>
             </div>
           }
           @if (summary().length > 0) {
-            <div class="alert alert--danger form-summary" role="alert" id="summary" tabindex="-1">
-              <svg jb-icon name="alert"></svg>
-              <div class="alert__body">
-                <div class="alert__title">
-                  Fix {{ summary().length }} {{ pluralThings(summary().length) }} to continue
-                </div>
-                <ul style="margin: 0; padding-left: var(--space-5)">
-                  @for (item of summary(); track item.field) {
-                    <li>
-                      <a [href]="'#' + idOf(item.field)" (click)="focusField(item.field, $event)">{{
-                        item.text
-                      }}</a>
-                    </li>
-                  }
-                </ul>
-              </div>
+            <div
+              jb-alert
+              tone="danger"
+              [heading]="
+                'Fix ' + summary().length + ' ' + pluralThings(summary().length) + ' to continue'
+              "
+              class="form-summary"
+              role="alert"
+              id="summary"
+              tabindex="-1"
+            >
+              <ul style="margin: 0; padding-left: var(--space-5)">
+                @for (item of summary(); track item.field) {
+                  <li>
+                    <a [href]="'#' + idOf(item.field)" (click)="focusField(item.field, $event)">{{
+                      item.text
+                    }}</a>
+                  </li>
+                }
+              </ul>
             </div>
           }
 

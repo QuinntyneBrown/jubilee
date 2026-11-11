@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProductPage } from 'api';
-import { Icon, Button } from 'components';
+import { Icon, Button, Alert } from 'components';
 
 /** A valid selection, handed to the order request (L2-035 AC2). */
 export interface ProductSelection {
@@ -27,7 +27,7 @@ export interface ProductSelection {
  */
 @Component({
   selector: 'jb-product-request-form',
-  imports: [RouterLink, Icon, Button],
+  imports: [RouterLink, Icon, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { style: 'display: contents' },
   templateUrl: './product-request-form.html',

@@ -12,7 +12,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BookedRequest, DeliveryMethod, OrderOptions, REQUESTS_API } from 'api';
-import { Icon, MediaTile, formatPrice, Button } from 'components';
+import { Icon, MediaTile, formatPrice, Button, Alert } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from '../../services/message-time';
 
@@ -43,7 +43,7 @@ function money(cents: number): string {
  */
 @Component({
   selector: 'jb-request-item-dialog',
-  imports: [FormsModule, RouterLink, Icon, MediaTile, Button],
+  imports: [FormsModule, RouterLink, Icon, MediaTile, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './request-item.dialog.html',
