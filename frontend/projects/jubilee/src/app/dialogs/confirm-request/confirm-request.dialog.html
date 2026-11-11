@@ -1,27 +1,11 @@
-<div class="dialog__panel">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-      <svg jb-icon name="check"></svg>
-    </div>
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">Confirm {{ firstName }}’s {{ noun }}?</h2>
-      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-        Only confirm if you can fulfil “{{ request.title }}”.
-      </p>
-    </div>
-    <button
-      jb-button
-      variant="ghost"
-      iconOnly
-      type="button"
-      aria-label="Close"
-      [disabled]="busy()"
-      (click)="close()"
-    >
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <div class="dialog__body stack">
+<jb-dialog
+  heading="Confirm {{ firstName }}’s {{ noun }}?"
+  description="Only confirm if you can fulfil “{{ request.title }}”."
+  icon="check"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <div jb-dialog-body class="stack">
     @if (view() === 'failed') {
       <div jb-alert tone="danger" heading="We couldn’t confirm it" role="alert">
         <div>The request is still new. Check your connection and try again.</div>
@@ -51,7 +35,7 @@
       pickup.
     </p>
   </div>
-  <div class="dialog__footer">
+  <div jb-dialog-footer>
     <button jb-button type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
       Not yet
     </button>
@@ -66,4 +50,4 @@
       {{ view() === 'failed' ? 'Try again' : 'Confirm ' + noun }}
     </button>
   </div>
-</div>
+</jb-dialog>

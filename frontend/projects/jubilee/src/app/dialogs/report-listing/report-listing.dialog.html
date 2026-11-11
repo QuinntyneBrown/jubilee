@@ -1,50 +1,26 @@
 @let found = problems();
-<div class="dialog__panel">
+<jb-dialog
+  [heading]="view() === 'success' ? 'Thanks for telling us' : 'Report ' + data.businessName"
+  [icon]="view() === 'success' ? 'check' : 'flag'"
+  [busy]="busy()"
+  (closed)="close()"
+>
   @if (view() === 'success') {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="check"></svg>
-      </div>
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">Thanks for telling us</h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          Your report is private. Our verification team reviews it within one business day and may
-          e-mail you with a question.
-        </p>
-      </div>
-      <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
-    <div class="dialog__footer">
+    <span slot="description"
+      >Your report is private. Our verification team reviews it within one business day and may
+      e-mail you with a question.</span
+    >
+  } @else {
+    <span slot="description">Reports are private. The business is not told who sent them.</span>
+  }
+  @if (view() === 'success') {
+    <div jb-dialog-footer>
       <button jb-button variant="primary" type="button" cdkFocusInitial (click)="close()">
         Close
       </button>
     </div>
   } @else {
-    <div class="dialog__header">
-      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-        <svg jb-icon name="flag"></svg>
-      </div>
-      <div style="flex: 1">
-        <h2 class="dialog__title" id="dlg-title">Report {{ data.businessName }}</h2>
-        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-          Reports are private. The business is not told who sent them.
-        </p>
-      </div>
-      <button
-        jb-button
-        variant="ghost"
-        iconOnly
-        type="button"
-        aria-label="Close"
-        [disabled]="busy()"
-        (click)="close()"
-      >
-        <svg jb-icon name="close"></svg>
-      </button>
-    </div>
-    <form class="dialog__body stack" id="report-form" novalidate (ngSubmit)="send()">
+    <form jb-dialog-body class="stack" id="report-form" novalidate (ngSubmit)="send()">
       @if (view() === 'failed') {
         <div jb-alert tone="danger" [heading]="failure().title" role="alert">
           <div>{{ failure().text }}</div>
@@ -82,11 +58,11 @@
         ></textarea>
       </div>
     </form>
-    <div class="dialog__footer">
+    <div jb-dialog-footer>
       <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
       <button jb-button variant="primary" type="submit" form="report-form" [busy]="busy()">
         Send report
       </button>
     </div>
   }
-</div>
+</jb-dialog>

@@ -25,8 +25,10 @@ import {
   PasswordInput,
   Checkbox,
   DividerText,
+  BotChallenge,
 } from 'components';
 import { googleNotice } from '../../services/google-notice';
+import { ReturnAfterJoinService } from '../../services/return-after-join.service';
 import { sanitiseReturnUrl } from '../../services/return-url';
 import { SessionService } from '../../services/session.service';
 
@@ -99,6 +101,7 @@ function message(field: FieldName, code: string, passwordLength: number): string
     PasswordInput,
     Checkbox,
     DividerText,
+    BotChallenge,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './join.page.html',
@@ -109,6 +112,8 @@ export class JoinPage {
   private readonly query = inject(ActivatedRoute).snapshot.queryParamMap;
   private readonly returnUrl = sanitiseReturnUrl(this.query.get('returnUrl'));
   private readonly summaryRef = viewChild(FormSummary);
+  private readonly challengeRef = viewChild(BotChallenge);
+  private readonly returnAfterJoin = inject(ReturnAfterJoinService);
 
   protected readonly max = MAX;
   protected readonly view = signal<View>('form');
@@ -129,6 +134,9 @@ export class JoinPage {
   );
   protected readonly resent = signal(false);
   protected readonly google = this.session.googleSignIn;
+  /** The bot challenge of the form, when one is configured (L2-137 AC2). */
+  protected readonly challengeSiteKey = this.session.botChallengeSiteKey;
+  protected readonly challenge = signal<string | null>(null);
   protected readonly googleUrl = `/api/auth/google/start?from=join${
     this.returnUrl === '/' ? '' : `&returnUrl=${encodeURIComponent(this.returnUrl)}`
   }`;
@@ -170,12 +178,13 @@ export class JoinPage {
       password: this.password(),
       homeChurch: this.homeChurch().trim(),
       agreementAccepted: true,
-      challengeToken: null,
+      challengeToken: this.challenge(),
     };
     this.view.set('submitting');
     this.api.join(request).subscribe({
       next: (response) => {
         this.sentTo.set(response.email);
+        this.returnAfterJoin.remember(this.returnUrl);
         this.view.set('success');
         this.session.resolve().subscribe();
       },
@@ -186,9 +195,17 @@ export class JoinPage {
   private failed(error: HttpErrorResponse): void {
     this.view.set('form');
     if (error.status === 422 && error.error?.errors) {
+      if (error.error.errors.challenge) {
+        // The bot challenge was not passed: nothing about the fields is known, and one token
+        // passes one check, so a fresh one is asked for (L2-137 AC2).
+        this.challenge.set(null);
+        this.challengeRef()?.reset();
+        this.notice.set('We couldn’t check that you’re not a robot. Wait a moment and try again.');
+        return;
+      }
       const mapped: Partial<Record<FieldName, string>> = {};
       for (const [key, code] of Object.entries<string>(error.error.errors)) {
-        const field = (key === 'challenge' ? 'email' : key) as FieldName;
+        const field = key as FieldName;
         if (field in IDS) mapped[field] = message(field, code, this.password().length);
       }
       this.errors.set(mapped);

@@ -33,11 +33,11 @@
         placeholder="Plumber, lawyer, Bibles…"
       />
     </form>
-    <ul class="chip-row">
-      <li><a class="chip" routerLink="/" aria-current="page">All</a></li>
+    <ul jb-chip-row>
+      <li><a jb-chip routerLink="/" selected>All</a></li>
       @for (category of categories; track category.slug) {
         <li>
-          <a class="chip" [routerLink]="['/c', category.slug]">{{ category.name }}</a>
+          <a jb-chip [routerLink]="['/c', category.slug]">{{ category.name }}</a>
         </li>
       }
     </ul>
@@ -48,22 +48,12 @@
     @case ('loading') {
       <p class="visually-hidden" role="status">Loading the directory…</p>
       <section class="section">
-        <span class="skeleton skeleton--title"></span>
+        <span jb-skeleton shape="title"></span>
         <div style="margin-top: var(--space-4)"><ul jb-card-grid-skeleton [count]="4"></ul></div>
       </section>
       <section class="section">
-        <span class="skeleton skeleton--title"></span>
-        <ul class="rows" aria-hidden="true">
-          @for (row of skeletonRows; track row) {
-            <li class="row">
-              <div class="row__body">
-                <span class="skeleton skeleton--text skeleton--w50"></span>
-                <span class="skeleton skeleton--text skeleton--w70"></span>
-              </div>
-              <span class="skeleton skeleton--btn" style="width: 5rem"></span>
-            </li>
-          }
-        </ul>
+        <span jb-skeleton shape="title"></span>
+        <ul jb-row-list-skeleton [count]="6" action></ul>
       </section>
     }
     @case ('error') {

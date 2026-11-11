@@ -1,0 +1,31 @@
+// Block: attach, the photo control of a composer. The host is the wrapper.
+:host {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+
+.attach__preview {
+  display: block;
+  width: var(--control-height-md);
+  height: var(--control-height-md);
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+
+.attach__remove {
+  position: absolute;
+  top: calc(-1 * var(--space-2));
+  right: calc(-1 * var(--space-2));
+  display: grid;
+  place-items: center;
+  width: var(--target-min);
+  height: var(--target-min);
+  padding: 0;
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface-raised);
+  color: var(--color-fg-default);
+  cursor: pointer;
+}

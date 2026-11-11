@@ -13,10 +13,11 @@ skinparam class {
 ' --------------------------
 title Class structure — Report a conversation
 
-class ReportConversationDialog <<Angular dialog>> {
+class ReportConversationDialog <<CDK dialog>> {
+  +business: string
+  +canBlock: boolean
   +reason: FormControl<string>
-  +details: FormControl<string>
-  +blockOtherSide: FormControl<boolean>
+  +block: FormControl<boolean>
   +submit(): void
 }
 class MessageTextComponent <<Angular component>> {
@@ -24,28 +25,22 @@ class MessageTextComponent <<Angular component>> {
   +segments(): TextSegment[]
 }
 class ReportConversationCommand {
+  +string Subject
   +Guid ConversationId
-  +Guid ReporterMemberId
   +string Reason
-  +string Details
-  +bool BlockOtherSide
+  +bool Block
 }
 class ReportConversationCommandHandler {
-  +Handle(command: ReportConversationCommand): Task<Guid>
+  +Handle(command: ReportConversationCommand): Task
 }
-class Report {
+class ConversationReport {
   +Guid Id
-  +ReportTarget Target
   +Guid ConversationId
-  +Guid ReporterMemberId
+  +string ReporterSubject
   +string Reason
   +ReportStatus Status
   +DateTimeOffset CreatedAt
-  +IsOpen(): bool
-}
-enum ReportTarget {
-  Listing
-  Conversation
+  +{static} File(conversationId: Guid, reporterSubject: string, reason: string, now: DateTimeOffset): ConversationReport
 }
 enum ReportStatus {
   Open
@@ -54,14 +49,16 @@ enum ReportStatus {
 }
 class Conversation {
   +Guid Id
-  +Block(byMemberId: Guid, now: DateTimeOffset): void
-  +Unblock(byMemberId: Guid): void
-  +CanSend(senderId: Guid): bool
+  +bool MemberMuted
+  +bool OwnerMuted
+  +bool BlockedByMember
+  +Mute(asOwner: bool, muted: bool): void
+  +Block(): void
 }
-class ConversationBlock {
-  +Guid BlockedByMemberId
-  +ParticipantSide BlockedSide
-  +DateTimeOffset CreatedAt
+class Message {
+  +Guid Id
+  +bool FromOwner
+  +bool HiddenFromMember
 }
 class ReportedConversationAccessPolicy {
   +Authorize(staff: Member, conversationId: Guid): Task<bool>
@@ -75,14 +72,13 @@ class AuditEntry {
   +string Reason
 }
 
-ReportConversationDialog ..> ReportConversationCommand : POST reports
+ReportConversationDialog ..> ReportConversationCommand : POST report
 ReportConversationCommandHandler ..> ReportConversationCommand : handles
-ReportConversationCommandHandler --> Report : creates
-ReportConversationCommandHandler --> Conversation : blocks when chosen
-Report --> ReportTarget : has
-Report --> ReportStatus : has
-Report "*" --> "1" Conversation : attaches
-Conversation "1" *-- "0..2" ConversationBlock : has
-ReportedConversationAccessPolicy ..> Report : requires an open
+ReportConversationCommandHandler --> ConversationReport : files at most one unresolved
+ReportConversationCommandHandler --> Conversation : blocks when the member chose it
+ConversationReport --> ReportStatus : has
+ConversationReport "*" --> "1" Conversation : attaches
+Conversation "1" *-- "*" Message : contains
+ReportedConversationAccessPolicy ..> ConversationReport : requires an open
 ReportedConversationAccessPolicy ..> AuditEntry : records
 @enduml

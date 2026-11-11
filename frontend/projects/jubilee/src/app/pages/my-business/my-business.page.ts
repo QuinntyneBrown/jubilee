@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
+  AwayPeriod,
   INCOMING_REQUESTS_API,
   IncomingRequestRow,
   MY_BUSINESS_API,
@@ -18,7 +19,18 @@ import {
   RequestDecision,
   RequestKind,
 } from 'api';
-import { BusinessCard, EmptyState, Icon, Button, CloseButton, Alert } from 'components';
+import {
+  BusinessCard,
+  EmptyState,
+  Icon,
+  Button,
+  CloseButton,
+  Alert,
+  RowListSkeleton,
+  Skeleton,
+  Avatar,
+  initialsOf,
+} from 'components';
 import {
   ConfirmRequestData,
   ConfirmRequestDialog,
@@ -27,13 +39,14 @@ import {
   DeclineRequestData,
   DeclineRequestDialog,
 } from '../../dialogs/decline-request/decline-request.dialog';
+import { AwayPeriodData, AwayPeriodDialog } from '../../dialogs/away-period/away-period.dialog';
 import {
   PauseListingData,
   PauseListingDialog,
 } from '../../dialogs/pause-listing/pause-listing.dialog';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
-import { threadTime } from '../../services/message-time';
+import { dayLabel, threadTime } from '../../services/message-time';
 import { NavigationStore } from '../../services/navigation.store';
 import { ToastService } from '../../toasts/toast.service';
 import { WorkspaceHeader } from './workspace-header';
@@ -53,6 +66,9 @@ const UNDO_MS = 8000;
     Button,
     CloseButton,
     Alert,
+    RowListSkeleton,
+    Skeleton,
+    Avatar,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -104,16 +120,6 @@ export class MyBusinessPage implements OnInit {
     return threadTime(row.sentAt, this.clock.now());
   }
 
-  protected initials(name: string): string {
-    return name
-      .split(' ')
-      .filter(Boolean)
-      .map((part) => part[0])
-      .slice(0, 2)
-      .join('')
-      .toUpperCase();
-  }
-
   /** "↑ 18% on last week" (L2-085 AC2). */
   protected viewsDelta(business: MyBusiness): string {
     const stats = business.stats!;
@@ -156,6 +162,31 @@ export class MyBusinessPage implements OnInit {
       },
       { title: 'Live on Jubilee', meta: '', mark: 'next' },
     ];
+  }
+
+  protected awayDay(until: string): string {
+    return dayLabel(until);
+  }
+
+  /** "Set away period" (L2-062): a CDK dialog; My business reads again when it saved. */
+  protected openAway(business: MyBusiness): void {
+    const ref = this.dialog.open<AwayPeriod, AwayPeriodData>(AwayPeriodDialog, {
+      data: { awayUntil: business.awayUntil ?? null },
+      ...this.dialogOptions(),
+    });
+    ref.closed.subscribe((result) => {
+      if (!result) return;
+      this.toasts.show(
+        result.awayUntil
+          ? {
+              tone: 'success',
+              title: 'Away period set',
+              text: `Members who message you see you’re away until ${dayLabel(result.awayUntil)}.`,
+            }
+          : { tone: 'success', title: 'Away period cleared' },
+      );
+      this.fetch();
+    });
   }
 
   protected openPause(business: MyBusiness): void {
@@ -255,7 +286,7 @@ export class MyBusinessPage implements OnInit {
       kind: row.kind as RequestKind,
       kindLabel: row.kindLabel,
       customerName: row.customerName,
-      customerInitials: this.initials(row.customerName),
+      customerInitials: initialsOf(row.customerName),
       title: row.title,
       detail: '',
       sentAt: row.sentAt,

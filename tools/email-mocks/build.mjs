@@ -1,0 +1,161 @@
+// Builds docs/mocks/emails/ from the e-mail layout the backend embeds
+// (backend/src/Jubilee.Application/Emails/EmailLayout.html), so a mock and the e-mail that is
+// sent cannot drift in layout. The rules that turn the text into HTML mirror EmailLayout.cs.
+// Run: node tools/email-mocks/build.mjs
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const layout = readFileSync(
+  join(root, 'backend/src/Jubilee.Application/Emails/EmailLayout.html'),
+  'utf8',
+).replace(/\r\n/g, '\n');
+const out = join(root, 'docs/mocks/emails');
+const base = 'https://app.jubilee.to';
+const signature = "Jubilee · Toronto's Christian marketplace";
+const token = 'k3Jv9QmX2rT7bN4wZ8cP1sY6dH5fL0aG';
+
+const labels = [
+  ['/verify-email/', 'Confirm your e-mail'],
+  ['/confirm-email-change/', 'Confirm your new e-mail'],
+  ['/reset-password/', 'Choose a new password'],
+  ['/forgot-password', 'Reset your password'],
+  ['/reference/', 'Answer the request'],
+  ['/account/data/', 'Download your data'],
+  ['/sign-in', 'Sign in to Jubilee'],
+];
+
+const encode = (text) =>
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+const isLink = (p) => /^https?:\/\/\S+$/.test(p);
+const paragraphStyle = 'margin:0 0 16px;font-size:16px;line-height:24px;color:#0b0e14;';
+
+function paragraph(text) {
+  const html = encode(text).replace(/https?:\/\/[^\s<]+/g, (match) => {
+    const link = match.replace(/[.,;:)]+$/, '');
+    return `<a class="jb-mail__link" href="${link}" style="color:#006644;">${link}</a>${match.slice(link.length)}`;
+  });
+  return `            <p class="jb-mail__text" style="${paragraphStyle}">${html.replace(/\n/g, '<br>')}</p>\n`;
+}
+
+function button(link, label) {
+  const href = encode(link);
+  return (
+    '            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 16px;"><tr><td style="border-radius:8px;background-color:#ffb81c;">' +
+    `<a class="jb-mail__button" href="${href}" style="display:inline-block;padding:12px 24px;border:1px solid #b87f00;border-radius:8px;font-size:16px;line-height:24px;font-weight:600;color:#0b0e14;text-decoration:none;text-align:center;">${encode(label)}</a>` +
+    '</td></tr></table>\n' +
+    `            <p class="jb-mail__muted" style="margin:0 0 16px;font-size:13px;line-height:20px;color:#4a505c;word-break:break-all;">If the button doesn’t work, paste this link into your browser:<br><a class="jb-mail__link" href="${href}" style="color:#006644;">${href}</a></p>\n`
+  );
+}
+
+function render(subject, text, unsubscribe) {
+  const paragraphs = text
+    .split('\n\n')
+    .map((p) => p.replace(signature, '').trim())
+    .filter((p) => p.length > 0);
+  let content = '';
+  for (const p of paragraphs) {
+    if (isLink(p)) {
+      const path = new URL(p).pathname;
+      content += button(p, labels.find(([start]) => path.startsWith(start))?.[1] ?? 'Open Jubilee');
+      continue;
+    }
+    const lines = p.split('\n');
+    const named = /^([^:\n]{2,60}): (https?:\/\/\S+)$/.exec(lines[lines.length - 1]);
+    if (!named) {
+      content += paragraph(p);
+      continue;
+    }
+    if (lines.length > 1) content += paragraph(lines.slice(0, -1).join('\n'));
+    content += button(named[2], named[1]);
+  }
+  const preheader =
+    paragraphs.find((p) => !isLink(p) && !p.startsWith('Hi ') && !p.startsWith('Hello')) ?? subject;
+  const footer = unsubscribe
+    ? `            <p class="jb-mail__muted" style="margin:8px 0 0;font-size:13px;line-height:20px;color:#4a505c;">You get this e-mail because of your notification settings. <a class="jb-mail__link" href="${encode(unsubscribe)}" style="color:#006644;">Unsubscribe from e-mails like this</a>.</p>\n`
+    : '';
+  return layout
+    .replace('{{subject}}', encode(subject))
+    .replace('{{preheader}}', encode(preheader.replace(/\n/g, ' ')))
+    .replace('{{content}}\n', content)
+    .replace('{{footer}}\n', footer);
+}
+
+/** The dark rendition: what a mail client that honours prefers-color-scheme shows. */
+const dark = (html) => html.replace('@media (prefers-color-scheme: dark)', '@media all');
+
+const end = `\n\n${signature}\n`;
+const unsubscribe = `${base}/api/email/unsubscribe/${token}`;
+const emails = [
+  ['confirm-email', 'Confirm your e-mail for Jubilee', `Hi Joanna,\n\nConfirm your e-mail to message businesses and book meetings on Jubilee. Open this link within 24 hours:\n\n${base}/verify-email/${token}\n\nIf you didn't join Jubilee, ignore this e-mail.${end}`],
+  ['address-in-use', 'Someone tried to join Jubilee with your e-mail', `Hi Joanna,\n\nSomeone tried to create a Jubilee account with your address. Your account is unchanged. If that was you, sign in at ${base}/sign-in.${end}`],
+  ['confirm-new-email', 'Confirm your new e-mail for Jubilee', `Hi Joanna,\n\nConfirm this address to use it for your Jubilee account. Open this link within 24 hours:\n\n${base}/confirm-email-change/${token}\n\nIf you didn't ask for this, ignore this e-mail. Nothing changes until the link is opened.${end}`],
+  ['email-change-requested', 'A Jubilee e-mail change was requested', `Hi Joanna,\n\nSomeone asked to change the e-mail of your Jubilee account to joanna@adeyemi.example. Your address stays joanna.adeyemi@example.com until the link sent to the new address is opened.\n\nIf it wasn't you, change your password right away.${end}`],
+  ['reset-password', 'Reset your Jubilee password', `Hi Joanna,\n\nSomeone asked to reset the password of your Jubilee account. Open this link within 60 minutes to choose a new one. It works once:\n\n${base}/reset-password/${token}\n\nIf it wasn't you, ignore this e-mail. Your password stays as it is.${end}`],
+  ['password-changed', 'Your Jubilee password was changed', `Hi Joanna,\n\nThe password of your Jubilee account was just changed, and every other device was signed out. If that was you, there is nothing to do.\n\nIf it wasn't you, reset your password again right away and write to us.${end}`],
+  ['sign-in-blocked', 'Sign-in to Jubilee was blocked', `Hi Joanna,\n\nWe blocked sign-in to your Jubilee account for 15 minutes after repeated failed attempts. If that was you, wait and try again. If it was not, reset your password: ${base}/forgot-password${end}`],
+  ['data-ready', 'Your Jubilee data is ready to download', `Hi Joanna,\n\nYou asked for a copy of your data. Open this link, signed in to your account, within 7 days to download it as a JSON file:\n\n${base}/account/data/${token}\n\nIf it wasn't you, you can ignore this e-mail. The file is deleted after 7 days.${end}`],
+  ['account-deleted', 'Your Jubilee account was deleted', `Hi Joanna,\n\nYour Jubilee account is deleted. You are signed out everywhere, your open requests are cancelled and the businesses have been told. Your personal data is erased within 30 days.\n\nIf you didn't do this, write to help@jubilee.example at once.${end}`],
+  ['reference-request', 'Can you confirm Naomi Laurent for Jubilee?', `Hello,\n\nNaomi Laurent is listing Luzandre.com on Jubilee, Toronto's Christian marketplace, and named you at Grace Toronto Church as her church reference.\n\nWe only ask whether you know Naomi and can confirm the commitments in our statement of faith. It takes a minute, we contact you privately and you do not need an account.\n\nAnswer here: ${base}/reference/${token}\n\nThe link works once, for 14 days. If you do not know Naomi, you can ignore this e-mail.${end}`],
+  ['reference-unanswered', 'Your church reference for Luzandre.com didn’t answer', `Hi Naomi,\n\nThe request we sent to daniel.okoro@gracetoronto.example at Grace Toronto Church wasn’t answered in 14 days, so the link has closed.\n\nSend a new request, or name someone else, from My business: ${base}/my-business${end}`],
+  ['listing-verified', 'Luzandre.com is verified and live on Jubilee', `Hi Naomi,\n\nLuzandre.com is verified and live. Members can find you in Shops.\n\nSee it here: ${base}/b/luzandre${end}`],
+  ['listing-changes-needed', 'Luzandre.com: changes needed before we can publish', `Hi Naomi,\n\nMiriam from the Jubilee verification team asked for changes to Luzandre.com (description, photos):\n\nPlease say where your shirts are printed, and replace the stock photo with one of your own products.\n\nMake the changes and resubmit from My business: ${base}/my-business${end}`],
+  ['listing-not-verified', 'We couldn’t verify Luzandre.com', `Hi Naomi,\n\nWe couldn’t verify Luzandre.com.\n\nYour church reference told us he does not know you well enough to vouch for the business.\n\nYou can list again after naming a different pastor or elder: ${base}/list${end}`],
+  ['draft-expiring', 'Your draft of Luzandre.com will be deleted in 14 days', `Hi Naomi,\n\nYou started listing Luzandre.com on Jubilee and have not touched it in six months. We will delete the draft in 14 days.\n\nContinue it any time before then: ${base}/list\n\nNothing was ever public. ${signature}\n`],
+  ['new-booking-request', 'New booking request from Joanna Adeyemi', `Hi Naomi,\n\nJoanna Adeyemi would like to meet.\n\nCustom design consultation\nThu 12 Nov, 2:00 PM (30 minutes)\nVideo call\n“Shirts for our youth retreat, about 40 of them.”\nConfirm or decline it: ${base}/my-business/requests${end}`, unsubscribe],
+  ['new-quote-request', 'New quote request from Joanna Adeyemi', `Hi Naomi,\n\nJoanna Adeyemi would like a quote.\n\nCustom church team tee\n40 shirts, two colours\n“Can you have them ready by 6 December?”\n\nReply to it: ${base}/my-business/requests${end}`, unsubscribe],
+  ['new-order-request', 'New order request from Joanna Adeyemi', `Hi Naomi,\n\nJoanna Adeyemi would like to order.\n\nGold cross stoneware mug × 2\nShip to M4C 1A1\nItem $48.00 · shipping $9.00 · estimated total $57.00 + tax\n\nConfirm stock and arrange payment: ${base}/my-business/requests${end}`, unsubscribe],
+  ['new-message', 'New message from Legacy Financial', `Hi Joanna,\n\nLegacy Financial sent you a message on Jubilee.\n\nRead and reply: ${base}/messages/7f3a${end}`, unsubscribe],
+  ['meeting-reminder', 'Your meeting starts in 1 hour', `Hi Joanna,\n\nDiscovery meeting with Legacy Financial starts at 10:00 a.m.\n\nDetails: ${base}/requests/2b91${end}`, unsubscribe],
+];
+
+mkdirSync(out, { recursive: true });
+for (const [key, subject, text, unsub] of emails) {
+  const html = render(subject, text, unsub);
+  writeFileSync(join(out, `${key}.html`), html);
+  writeFileSync(join(out, `${key}.dark.html`), dark(html));
+  writeFileSync(join(out, `${key}.txt`), `Subject: ${subject}\n\n${text}`);
+}
+
+const card = ([key, subject]) => `
+  <article class="mail">
+    <h2>${encode(subject)}</h2>
+    <p><a href="${key}.html">light</a> · <a href="${key}.dark.html">dark</a> · <a href="${key}.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="${encode(subject)}, light" src="${key}.html" loading="lazy"></iframe>
+      <iframe title="${encode(subject)}, dark" src="${key}.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>`;
+writeFileSync(
+  join(out, 'index.html'),
+  `<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-mails — Jubilee mocks</title>
+<style>
+  body { margin: 0; padding: 24px; font: 16px/1.5 system-ui, sans-serif; background: #f4f2ec; color: #0b0e14; }
+  h1 { margin: 0 0 4px; } h2 { margin: 32px 0 4px; font-size: 18px; } p { margin: 0 0 12px; }
+  a { color: #006644; }
+  .pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 624px)); gap: 16px; }
+  iframe { width: 100%; height: 560px; border: 1px solid #dcdad2; border-radius: 8px; background: #fff; }
+</style>
+</head>
+<body>
+<h1>E-mails</h1>
+<p>Every e-mail Jubilee sends (L2-179, ADR 0038), rendered from the layout the backend embeds, at
+600 px, light and dark, with its plain-text part. Built by <code>node tools/email-mocks/build.mjs</code>;
+do not edit the files here by hand. <a href="../index.html">All mocks</a></p>
+${emails.map(card).join('\n')}
+</body>
+</html>
+`,
+);
+console.log(`${emails.length} e-mails written to docs/mocks/emails`);

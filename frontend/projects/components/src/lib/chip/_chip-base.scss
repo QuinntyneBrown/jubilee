@@ -1,0 +1,53 @@
+// Block: chip. jb-chip includes it on its host (the link or the button); jb-chip-option
+// includes it for the label around its radio.
+//
+// Knobs, set by a block that draws chips on the brand colour (the hero, a band):
+// --jb-chip-bg, --jb-chip-fg, --jb-chip-border, --jb-chip-bg-hover, --jb-chip-selected-border,
+// --jb-chip-min-height, --jb-chip-padding-inline.
+@mixin chip($root) {
+  #{$root} {
+    --chip-bg: var(--jb-chip-bg, var(--color-bg-surface));
+    --chip-fg: var(--jb-chip-fg, var(--color-fg-default));
+    --chip-border: var(--jb-chip-border, var(--color-border-strong));
+    --chip-bg-hover: var(--jb-chip-bg-hover, var(--color-bg-subtle));
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--jb-chip-min-height, var(--control-height-sm));
+    padding: 0 var(--jb-chip-padding-inline, var(--space-3));
+    border-radius: var(--radius-full);
+    border: var(--border-width-hairline) solid var(--chip-border);
+    background: var(--chip-bg);
+    color: var(--chip-fg);
+    font: var(--text-label);
+    white-space: nowrap;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+
+  #{$root}:hover {
+    background: var(--chip-bg-hover);
+    color: var(--chip-fg);
+  }
+
+  #{$root}:active {
+    background: var(--color-bg-subtle-hover);
+  }
+
+  @media (forced-colors: active) {
+    #{$root} {
+      forced-color-adjust: none;
+      border: 1px solid CanvasText;
+    }
+  }
+}
+
+// The chip that is the current page, is pressed, or holds the chosen radio.
+@mixin chip-selected {
+  --chip-bg: var(--color-accent);
+  --chip-bg-hover: var(--color-accent-hover);
+  --chip-border: var(--jb-chip-selected-border, var(--color-accent-border));
+  --chip-fg: var(--color-fg-on-accent);
+}

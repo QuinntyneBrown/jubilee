@@ -44,9 +44,9 @@
         <div class="cluster only-desktop" role="group" aria-label="Filters">
           @for (chip of chips; track chip.filter.value) {
             <button
-              class="chip"
+              jb-chip
               type="button"
-              [attr.aria-pressed]="store.isOn(chip.filter)"
+              [selected]="store.isOn(chip.filter)"
               (click)="store.toggle(chip.filter)"
             >
               {{ chip.label }}

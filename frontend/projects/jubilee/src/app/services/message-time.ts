@@ -72,12 +72,6 @@ export function newKey(): string {
   );
 }
 
-/** The two-letter avatar of a name: "Legacy Financial" is LF. */
-export function initialsOf(name: string): string {
-  const words = name.split(/[\s&]+/).filter((w) => /^[\p{L}\p{N}]/u.test(w));
-  return (words[0]?.[0] ?? '?').concat(words[1]?.[0] ?? '').toUpperCase();
-}
-
 /** "13:30" as "1:30 p.m.", the way the mocks write a time. */
 export function slotLabel(slot: string): string {
   const [hours, minutes] = slot.split(':').map(Number);

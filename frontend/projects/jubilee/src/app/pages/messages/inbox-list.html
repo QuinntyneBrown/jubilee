@@ -19,10 +19,10 @@
     <ul class="list" aria-hidden="true">
       @for (row of [1, 2, 3, 4, 5]; track row) {
         <li class="thread">
-          <span class="skeleton skeleton--avatar"></span>
+          <span jb-skeleton shape="avatar"></span>
           <span class="thread__body">
-            <span class="skeleton skeleton--text skeleton--w50"></span>
-            <span class="skeleton skeleton--text"></span>
+            <span jb-skeleton shape="text" width="50"></span>
+            <span jb-skeleton shape="text"></span>
           </span>
         </li>
       }
@@ -65,7 +65,7 @@
               [routerLink]="['/messages', row.id]"
               [attr.aria-current]="row.id === selectedId() ? 'page' : null"
             >
-              <span class="avatar" aria-hidden="true">{{ initials(row.title) }}</span>
+              <jb-avatar [name]="row.title" />
               <span class="thread__body">
                 <span class="thread__top">
                   <span class="thread__name truncate">{{ row.title }}</span>

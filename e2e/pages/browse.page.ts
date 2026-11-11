@@ -52,6 +52,8 @@ export class BrowsePage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly subline: Locator;
   readonly heroSearch: Locator;
+  /** The row of category chips in the hero. */
+  readonly categoryRow: Locator;
   readonly categoryChips: Locator;
   readonly joinPanel: Locator;
   readonly joinPanelAction: Locator;
@@ -66,6 +68,8 @@ export class BrowsePage extends ShellPage implements Screen {
   readonly groups: Locator;
   readonly loadingStatus: Locator;
   readonly skeletons: Locator;
+  /** The list of rows drawn while the directory loads. */
+  readonly loadingRows: Locator;
   readonly emptyState: Locator;
   readonly errorState: Locator;
   readonly errorReference: Locator;
@@ -79,6 +83,7 @@ export class BrowsePage extends ShellPage implements Screen {
     this.subline = this.hero.locator('.hero__sub');
     this.heroSearch = this.hero.getByRole('searchbox', { name: 'Search businesses and products' });
     this.categoryChips = this.hero.locator('.chip-row a.chip');
+    this.categoryRow = this.hero.locator('.chip-row');
     this.content = this.main.locator('div.container.page');
     this.joinPanel = this.content.locator('div.band');
     this.joinPanelAction = this.joinPanel.getByRole('link', { name: 'Join free' });
@@ -92,6 +97,7 @@ export class BrowsePage extends ShellPage implements Screen {
     this.groups = this.directory.locator('section.dir-group');
     this.loadingStatus = this.content.getByRole('status');
     this.skeletons = this.content.locator('.skeleton');
+    this.loadingRows = this.content.locator('ul.rows[aria-hidden="true"]');
     this.emptyState = this.content.locator('.empty:not(.empty--error)');
     this.errorState = this.content.getByRole('alert');
     this.errorReference = this.errorState.locator('code');

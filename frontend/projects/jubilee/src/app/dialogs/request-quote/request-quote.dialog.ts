@@ -12,7 +12,16 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BookedRequest, QuoteOptions, REQUESTS_API } from 'api';
-import { Icon, Button, Alert, Field, Input, Textarea } from 'components';
+import {
+  Button,
+  Alert,
+  Field,
+  Input,
+  Textarea,
+  DialogFrame,
+  DialogBody,
+  DialogFooter,
+} from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { ClockService } from '../../services/clock.service';
 import { isoDay, newKey } from '../../services/message-time';
@@ -36,9 +45,19 @@ const SUBMIT_TIMEOUT_MS = 10_000;
  */
 @Component({
   selector: 'jb-request-quote-dialog',
-  imports: [FormsModule, RouterLink, Icon, Button, Alert, Field, Input, Textarea],
+  imports: [
+    FormsModule,
+    RouterLink,
+    Button,
+    Alert,
+    Field,
+    Input,
+    Textarea,
+    DialogFrame,
+    DialogBody,
+    DialogFooter,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './request-quote.dialog.html',
 })
 export class RequestQuoteDialog implements OnInit {
@@ -165,10 +184,6 @@ export class RequestQuoteDialog implements OnInit {
 
   protected close(): void {
     if (!this.busy()) this.ref.close();
-  }
-
-  protected closeIfOutside(event: Event): void {
-    if (event.target === event.currentTarget) this.close();
   }
 }
 

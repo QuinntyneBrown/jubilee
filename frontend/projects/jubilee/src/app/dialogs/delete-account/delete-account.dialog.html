@@ -1,31 +1,18 @@
-<div class="dialog__panel">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--danger" aria-hidden="true">
-      <svg jb-icon name="trash"></svg>
-    </div>
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">Delete your account?</h2>
-      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-        @if (summary(); as account) {
-          {{ account.name }} · {{ account.email }}
-        } @else {
-          Your Jubilee account
-        }
-      </p>
-    </div>
-    <button
-      jb-button
-      variant="ghost"
-      iconOnly
-      type="button"
-      aria-label="Close"
-      [disabled]="busy()"
-      (click)="close()"
-    >
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <form class="dialog__body stack" id="delete-account-form" novalidate (ngSubmit)="remove()">
+<jb-dialog
+  heading="Delete your account?"
+  icon="trash"
+  tone="danger"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <span slot="description">
+    @if (summary(); as account) {
+      {{ account.name }} · {{ account.email }}
+    } @else {
+      Your Jubilee account
+    }
+  </span>
+  <form jb-dialog-body class="stack" id="delete-account-form" novalidate (ngSubmit)="remove()">
     @switch (view()) {
       @case ('loading') {
         <p class="text-muted" role="status">Counting what will be deleted…</p>
@@ -75,7 +62,7 @@
       }
     }
   </form>
-  <div class="dialog__footer">
+  <div jb-dialog-footer>
     <button jb-button type="button" [disabled]="busy()" (click)="close()">Keep my account</button>
     <button
       jb-button
@@ -88,4 +75,4 @@
       Delete account
     </button>
   </div>
-</div>
+</jb-dialog>

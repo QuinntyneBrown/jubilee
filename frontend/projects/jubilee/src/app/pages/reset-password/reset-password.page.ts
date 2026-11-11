@@ -12,7 +12,16 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
-import { AuthLayout, EmptyState, Icon, Button, FormSummary, Field, Input } from 'components';
+import {
+  AuthLayout,
+  EmptyState,
+  Icon,
+  Button,
+  FormSummary,
+  Field,
+  Input,
+  Skeleton,
+} from 'components';
 
 type View = 'loading' | 'form' | 'submitting' | 'success' | 'expired' | 'error';
 type FieldName = 'password' | 'confirm';
@@ -61,6 +70,7 @@ function text(code: string, length: number): string {
     FormSummary,
     Field,
     Input,
+    Skeleton,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './reset-password.page.html',

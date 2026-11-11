@@ -15,11 +15,9 @@
     } @else if (current.status === 'loading') {
       <p class="visually-hidden" role="status">Loading this conversation…</p>
       <ul class="chat__log" aria-hidden="true">
-        <li class="bubble" style="width: 60%"><span class="skeleton skeleton--text"></span></li>
-        <li class="bubble bubble--me" style="width: 45%">
-          <span class="skeleton skeleton--text"></span>
-        </li>
-        <li class="bubble" style="width: 70%"><span class="skeleton skeleton--text"></span></li>
+        <li jb-message-bubble [placeholder]="60"></li>
+        <li jb-message-bubble mine [placeholder]="45"></li>
+        <li jb-message-bubble [placeholder]="70"></li>
       </ul>
     } @else {
       @let conversation = current.value;
@@ -27,11 +25,14 @@
         <a jb-button variant="ghost" iconOnly routerLink="/messages" aria-label="Back to messages">
           <svg jb-icon name="arrow-left"></svg>
         </a>
-        <span class="avatar" aria-hidden="true">{{ initials(conversation.business.name) }}</span>
+        <jb-avatar [name]="conversation.business.name" />
         <div style="flex: 1; min-width: 0">
           <h1 class="truncate">{{ conversation.business.name }}</h1>
           <p class="text-caption truncate">{{ subtitle() }}</p>
         </div>
+        @if (muted()) {
+          <span class="badge">Muted</span>
+        }
         <a
           jb-button
           iconOnly
@@ -40,6 +41,28 @@
         >
           <svg jb-icon name="store"></svg>
         </a>
+        <button
+          jb-button
+          variant="ghost"
+          iconOnly
+          type="button"
+          aria-label="More"
+          #more
+          [cdkMenuTriggerFor]="actions"
+          [cdkMenuPosition]="menuPosition"
+        >
+          <svg jb-icon name="more"></svg>
+        </button>
+        <ng-template #actions>
+          <jb-menu label="Conversation">
+            @if (muted()) {
+              <button jb-menu-item icon="bell" (chosen)="setMuted(false)">Unmute</button>
+            } @else {
+              <button jb-menu-item icon="bell-off" (chosen)="setMuted(true)">Mute</button>
+            }
+            <button jb-menu-item icon="flag" (chosen)="report()">Report conversation</button>
+          </jb-menu>
+        </ng-template>
       </div>
       @if (conversation.awayUntil) {
         <p jb-alert data-testid="away">
@@ -58,7 +81,7 @@
           </div>
           <div class="cluster" style="justify-content: center">
             @for (starter of starters; track starter) {
-              <button class="chip" type="button" (click)="suggest(starter)">{{ starter }}</button>
+              <button jb-chip type="button" (click)="suggest(starter)">{{ starter }}</button>
             }
           </div>
         </div>
@@ -84,59 +107,76 @@
                 <li class="chat__day">{{ entry.label }}</li>
               }
               @case ('message') {
-                <li class="bubble" [class.bubble--me]="entry.message.mine">
-                  <span class="visually-hidden"
-                    >{{ entry.message.mine ? 'You' : entry.message.senderFirstName }}: </span
-                  ><span style="white-space: pre-wrap">{{ entry.message.body }}</span
-                  ><span class="bubble__meta">{{ entry.time }}</span>
-                </li>
+                <li
+                  jb-message-bubble
+                  [mine]="entry.message.mine"
+                  [sender]="entry.message.mine ? 'You' : entry.message.senderFirstName"
+                  [text]="entry.message.body"
+                  [meta]="entry.time"
+                  [photo]="photoOf(entry.message)"
+                  [photoMissing]="!!entry.message.attachment && photoOf(entry.message) === null"
+                  (photoFailed)="renewPhoto(entry.message)"
+                  (viewPhoto)="viewPhoto(entry.message)"
+                ></li>
+              }
+              @case ('request') {
+                <li
+                  jb-request-card
+                  [kind]="entry.card.kindLabel"
+                  [heading]="entry.card.title"
+                  [detail]="entry.card.detail"
+                  [status]="entry.card.status"
+                  [statusLabel]="entry.card.statusLabel"
+                  [link]="entry.card.link"
+                ></li>
               }
               @case ('queued') {
                 @if (entry.queued.state === 'waiting') {
-                  <li class="bubble bubble--me bubble--pending">
-                    <span class="visually-hidden">You: </span
-                    ><span style="white-space: pre-wrap">{{ entry.queued.body }}</span
-                    ><span class="bubble__meta" role="status">Waiting to send</span>
-                  </li>
+                  <li
+                    jb-message-bubble
+                    mine
+                    state="pending"
+                    sender="You"
+                    [text]="entry.queued.body"
+                    meta="Waiting to send"
+                  ></li>
                 } @else {
-                  <li class="bubble bubble--me bubble--failed" role="alert">
-                    <span class="visually-hidden">You: </span
-                    ><span style="white-space: pre-wrap">{{ entry.queued.body }}</span
-                    ><span class="bubble__meta"
-                      >Not sent. It could not be delivered within a day.
-                      <button type="button" (click)="retryQueued(entry.queued)">Try again</button>
-                      ·
-                      <button type="button" (click)="discardQueued(entry.queued)">
-                        Delete
-                      </button></span
-                    >
-                  </li>
+                  <li
+                    jb-message-bubble
+                    mine
+                    state="failed"
+                    sender="You"
+                    [text]="entry.queued.body"
+                    meta="Not sent. It could not be delivered within a day."
+                    (retry)="retryQueued(entry.queued)"
+                    (discard)="discardQueued(entry.queued)"
+                  ></li>
                 }
               }
               @case ('outgoing') {
-                @if (entry.outgoing.status === 'sending') {
-                  <li class="bubble bubble--me bubble--pending">
-                    <span class="visually-hidden">You: </span
-                    ><span style="white-space: pre-wrap">{{ entry.outgoing.body }}</span
-                    ><span class="bubble__meta" role="status">Sending…</span>
-                  </li>
-                } @else {
-                  <li class="bubble bubble--me bubble--failed" role="alert">
-                    <span class="visually-hidden">You: </span
-                    ><span style="white-space: pre-wrap">{{ entry.outgoing.body }}</span
-                    ><span class="bubble__meta"
-                      >{{ entry.outgoing.problem }}
-                      <button type="button" (click)="retry(entry.outgoing)">Try again</button> ·
-                      <button type="button" (click)="discard(entry.outgoing)">Delete</button></span
-                    >
-                  </li>
-                }
+                <li
+                  jb-message-bubble
+                  mine
+                  sender="You"
+                  [state]="entry.outgoing.status === 'sending' ? 'pending' : 'failed'"
+                  [text]="entry.outgoing.body"
+                  [meta]="entry.outgoing.status === 'sending' ? 'Sending…' : entry.outgoing.problem"
+                  [photo]="entry.outgoing.photo?.preview ?? null"
+                  (retry)="retry(entry.outgoing)"
+                  (discard)="discard(entry.outgoing)"
+                ></li>
               }
             }
           }
         </ul>
       }
+      <p class="visually-hidden" role="status">{{ announcement() }}</p>
       <form class="composer" #composer (submit)="send($event)">
+        <jb-attach-photo
+          [preview]="attached()?.preview ?? null"
+          (picked)="attach($event)"
+          (removed)="detach()"
+        />
         <label class="visually-hidden" for="msg">Message {{ conversation.business.name }}</label>
         <textarea
           jb-textarea

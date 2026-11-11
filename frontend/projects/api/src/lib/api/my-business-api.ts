@@ -1,7 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ListingChanges, ListingEditor, MyBusiness, PauseResult } from '../models/my-business';
+import {
+  AwayPeriod,
+  ListingChanges,
+  ListingEditor,
+  MyBusiness,
+  PauseResult,
+} from '../models/my-business';
 
 /** Contract of the owner's workspace (L2-085 to L2-088, L2-096). */
 export interface MyBusinessApi {
@@ -10,6 +16,8 @@ export interface MyBusinessApi {
   save(changes: ListingChanges): Observable<ListingEditor>;
   pause(): Observable<PauseResult>;
   resume(): Observable<PauseResult>;
+  /** Sets the day the owner is back (`yyyy-mm-dd`), or clears the away period with null (L2-062). */
+  setAway(until: string | null): Observable<AwayPeriod>;
   addPhoto(file: File): Observable<ListingEditor>;
   movePhoto(id: string, position: number): Observable<ListingEditor>;
   describePhoto(id: string, alt: string): Observable<ListingEditor>;
@@ -32,6 +40,10 @@ export class HttpMyBusinessApi implements MyBusinessApi {
 
   save(changes: ListingChanges): Observable<ListingEditor> {
     return this.http.put<ListingEditor>('/api/my-business/listing', changes);
+  }
+
+  setAway(until: string | null): Observable<AwayPeriod> {
+    return this.http.put<AwayPeriod>('/api/my-business/away', { until });
   }
 
   pause(): Observable<PauseResult> {

@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { MOCK_PHOTO } from '../fixtures/photos';
 import type { Region, Screen } from '../fixtures/visual';
 import { ShellPage } from './shell.page';
 
@@ -75,16 +76,39 @@ export class MessagesPage extends ShellPage implements Screen {
 
 /** One bubble of a conversation. */
 export class BubbleRegion {
+  readonly photo: Locator;
+  readonly viewPhoto: Locator;
+  readonly photoMissing: Locator;
   readonly time: Locator;
   readonly status: Locator;
   readonly tryAgain: Locator;
   readonly delete: Locator;
 
   constructor(readonly root: Locator) {
+    this.photo = root.getByRole('img');
+    this.viewPhoto = root.getByRole('button', { name: 'View photo' });
+    this.photoMissing = root.locator('.bubble__photo--missing');
     this.time = root.locator('.bubble__meta');
     this.status = root.getByRole('status');
     this.tryAgain = root.getByRole('button', { name: 'Try again' });
     this.delete = root.getByRole('button', { name: 'Delete' });
+  }
+}
+
+/** A request's card in a conversation (L2-057 AC4). */
+export class RequestCardRegion {
+  readonly kind: Locator;
+  readonly title: Locator;
+  readonly detail: Locator;
+  readonly status: Locator;
+  readonly viewRequest: Locator;
+
+  constructor(readonly root: Locator) {
+    this.kind = root.locator('.request-card__kind');
+    this.title = root.locator('.request-card__title');
+    this.detail = root.locator('.request-card__meta');
+    this.status = root.locator('.badge');
+    this.viewRequest = root.getByRole('link', { name: 'View request' });
   }
 }
 
@@ -94,15 +118,27 @@ export class ConversationPage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly caption: Locator;
   readonly listingLink: Locator;
+  readonly more: Locator;
+  readonly menu: Locator;
+  readonly muted: Locator;
   readonly backLink: Locator;
   readonly log: Locator;
   readonly days: Locator;
   readonly bubbles: Locator;
+  readonly cards: Locator;
+  /** Everything in the timeline, in order: day separators, bubbles and cards. */
+  readonly timeline: Locator;
   readonly showEarlier: Locator;
   readonly linksInMessages: Locator;
   readonly away: Locator;
+  readonly announcement: Locator;
   readonly composer: Locator;
   readonly send: Locator;
+  readonly attach: Locator;
+  readonly attachPhoto: Locator;
+  readonly photoInput: Locator;
+  readonly attachedPhoto: Locator;
+  readonly removePhoto: Locator;
   readonly loadingNote: Locator;
   readonly errorState: Locator;
   readonly errorReference: Locator;
@@ -114,19 +150,39 @@ export class ConversationPage extends ShellPage implements Screen {
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.caption = this.main.locator('.chat__head .text-caption');
     this.listingLink = this.main.locator('.chat__head').getByRole('link', { name: /listing$/ });
+    this.more = this.main.locator('.chat__head').getByRole('button', { name: 'More' });
+    // The app opens the menu in an overlay outside main; the mock shows it beside its trigger.
+    this.menu = page.getByRole('menu', { name: 'Conversation' });
+    this.muted = this.main.locator('.chat__head .badge');
     this.backLink = this.main.getByRole('link', { name: 'Back to messages' });
     this.log = this.main.getByRole('list', { name: 'Messages' });
     this.days = this.log.locator('.chat__day');
     this.bubbles = this.log.locator('.bubble');
+    this.cards = this.log.locator('.request-card');
+    this.timeline = this.log.locator('> li');
     this.showEarlier = this.log.getByRole('button', { name: 'Show earlier messages' });
-    this.linksInMessages = this.log.getByRole('link');
+    this.linksInMessages = this.bubbles.getByRole('link');
     this.away = this.main.locator('[data-testid="away"]');
+    this.announcement = this.main.locator('.chat > [role="status"].visually-hidden');
     this.composer = this.main.getByRole('textbox', { name: /^Message / });
     this.send = this.main.getByRole('button', { name: 'Send', exact: true });
+    this.attach = this.main.locator('.composer .attach');
+    this.attachPhoto = this.attach.getByRole('button', { name: 'Attach a photo' });
+    this.photoInput = this.attach.locator('input[type="file"]');
+    this.attachedPhoto = this.attach.getByRole('img', { name: 'Photo to send' });
+    this.removePhoto = this.attach.getByRole('button', { name: 'Remove photo' });
     this.loadingNote = this.main.getByText('Loading this conversation…');
     this.errorState = this.main.locator('.chat').getByRole('alert');
     this.errorReference = this.errorState.locator('code');
     this.tryAgain = this.errorState.getByRole('button', { name: 'Try again' });
+  }
+
+  menuItem(name: string): Locator {
+    return this.menu.getByRole('menuitem', { name, exact: true });
+  }
+
+  card(title: string | RegExp): RequestCardRegion {
+    return new RequestCardRegion(this.cards.filter({ hasText: title }));
   }
 
   bubble(text: string | RegExp): BubbleRegion {
@@ -139,6 +195,67 @@ export class ConversationPage extends ShellPage implements Screen {
 
   regions(): Region[] {
     return [{ name: 'main', locator: this.main }];
+  }
+}
+
+/** A conversation with its menu open (L2-061 AC3): the mock shows it open, the app opens it. */
+export class ConversationMenuScreen extends ConversationPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    await this.more.waitFor();
+    if (!(await this.menu.isVisible())) await this.more.click();
+    await this.menu.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [
+      { name: 'main', locator: this.main },
+      { name: 'menu', locator: this.menu },
+    ];
+  }
+}
+
+/**
+ * A conversation long enough to scroll: the app brings its composer into view, which puts the
+ * first card under the top bar; the mock opens at the top. Compared from the top, as the mock is.
+ */
+export class ConversationRequestsScreen extends ConversationPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    await this.cards.first().waitFor();
+    await this.composer.waitFor();
+    await this.page.evaluate(() => window.scrollTo(0, 0));
+  }
+}
+
+/** A conversation with a photo chosen in the composer (L2-060 AC5): the app has to be given the file. */
+export class ConversationPhotoAttachedScreen extends ConversationPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    await this.composer.waitFor();
+    if ((await this.photoInput.count()) > 0) await this.photoInput.setInputFiles(MOCK_PHOTO);
+    await this.attachedPhoto.waitFor();
+  }
+}
+
+/** A conversation with a photo message on its way (L2-060 AC7): the app has to be made to send it. */
+export class ConversationPhotoSendingScreen extends ConversationPage {
+  readonly pending: BubbleRegion;
+
+  constructor(page: Page) {
+    super(page);
+    this.pending = new BubbleRegion(this.log.locator('.bubble--pending'));
+  }
+
+  override async ready(): Promise<void> {
+    await super.ready();
+    await this.composer.waitFor();
+    if ((await this.photoInput.count()) > 0) {
+      await this.photoInput.setInputFiles(MOCK_PHOTO);
+      await this.composer.fill('Here’s the page of the statement I mentioned.');
+      await this.send.click();
+    }
+    await this.pending.photo.waitFor();
   }
 }
 
@@ -244,6 +361,9 @@ export class RequestQuoteDialog {
 /** The dialog that asks a shop for a product (L2-046). */
 export class RequestItemDialog implements Screen {
   readonly root: Locator;
+  /** The parts of the dialog frame. */
+  readonly header: Locator;
+  readonly footer: Locator;
   readonly title: Locator;
   readonly description: Locator;
   readonly summary: Locator;
@@ -266,6 +386,8 @@ export class RequestItemDialog implements Screen {
     this.root = page.getByRole('dialog');
     this.title = this.root.locator('.dialog__title');
     this.description = this.root.locator('#dlg-desc');
+    this.header = this.root.locator('.dialog__header');
+    this.footer = this.root.locator('.dialog__footer');
     this.summary = this.root.locator('.item-list');
     this.methods = this.root.locator('label.choice');
     this.methodGroup = this.root

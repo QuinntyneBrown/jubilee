@@ -1,0 +1,10 @@
+<label class="chip"
+  ><input
+    #radio
+    type="radio"
+    [name]="name()"
+    [value]="value()"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    (change)="selected.emit()" /><ng-content
+/></label>

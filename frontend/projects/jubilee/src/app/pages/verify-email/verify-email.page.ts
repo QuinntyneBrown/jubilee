@@ -9,7 +9,9 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ACCOUNT_API } from 'api';
-import { AuthLayout, EmptyState, Icon, Button } from 'components';
+import { AuthLayout, EmptyState, Icon, Button, Spinner } from 'components';
+import { ReturnAfterJoinService } from '../../services/return-after-join.service';
+import { ReturnAfterJoinService } from '../../services/return-after-join.service';
 import { SessionService } from '../../services/session.service';
 
 type View =
@@ -25,7 +27,7 @@ type View =
  */
 @Component({
   selector: 'jb-verify-email-page',
-  imports: [RouterLink, AuthLayout, EmptyState, Icon, Button],
+  imports: [RouterLink, AuthLayout, EmptyState, Icon, Button, Spinner],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './verify-email.page.html',
 })
@@ -43,6 +45,9 @@ export class VerifyEmailPage implements OnInit {
     return view.kind === 'confirmed' && view.firstName ? `Thanks, ${view.firstName}.` : 'Thanks.';
   });
   protected readonly sent = signal(false);
+  private readonly returnAfterJoin = inject(ReturnAfterJoinService);
+  /** Where the member was going when they were asked to join, if this browser remembers (L2-012 AC5). */
+  protected readonly returnPath = signal<string | null>(this.returnAfterJoin.peek());
   protected readonly sendFailed = signal(false);
 
   ngOnInit(): void {
@@ -52,6 +57,11 @@ export class VerifyEmailPage implements OnInit {
     } else if (!this.session.unconfirmed()) {
       void this.router.navigate(['/']);
     }
+  }
+
+  /** The path is used once. */
+  protected continued(): void {
+    this.returnAfterJoin.forget();
   }
 
   protected confirm(token: string | null = this.token): void {

@@ -1,0 +1,29 @@
+// Block: spinner. The host is the spinner. It keeps turning under reduced motion: it is a
+// status, not decoration (see --duration-spin).
+:host {
+  display: inline-block;
+  flex: none;
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  border: var(--border-width-thick) solid var(--color-border-default);
+  border-top-color: var(--color-accent-border);
+  border-radius: var(--radius-full);
+  animation: spin var(--duration-spin) linear infinite;
+}
+
+:host(.spinner--sm) {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+}
+
+:host(.spinner--lg) {
+  width: var(--avatar-size-md);
+  height: var(--avatar-size-md);
+  border-width: var(--border-width-thick);
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}

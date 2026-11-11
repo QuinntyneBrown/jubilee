@@ -627,6 +627,146 @@ test.describe('join with Google: off, cancelled or refused (L2-003)', () => {
   });
 });
 
+test.describe('the bot challenge of the join form (L2-137)', () => {
+  /** Stands in for Cloudflare: the script renders nothing and hands the form a token. */
+  async function stubChallenge(page: Page, tokens: string[]) {
+    let requests = 0;
+    await page.route('https://challenges.cloudflare.com/**', (route) => {
+      requests++;
+      return route.fulfill({
+        contentType: 'text/javascript',
+        body: `(() => {
+          const tokens = ${JSON.stringify(tokens)};
+          let callback = () => {};
+          window.turnstile = {
+            render: (_el, options) => { callback = options.callback; callback(tokens.shift()); return 'w1'; },
+            reset: () => callback(tokens.shift()),
+            remove: () => {},
+          };
+        })();`,
+      });
+    });
+    return () => requests;
+  }
+
+  test('AC2: with a site key the form sends the token of the challenge', async ({ page, jb }) => {
+    const join = new JoinPage(page);
+    const loaded = await stubChallenge(page, ['token-1']);
+    await stubSession(page, {
+      signedIn: false,
+      googleSignIn: true,
+      botChallengeSiteKey: 'site-key',
+    });
+    const seen = await stubJoin(page, 201, { email: valid.email });
+    await jb.goto('/join');
+
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await expect(join.sentHeading).toBeVisible();
+    expect(seen[0].challengeToken).toBe('token-1');
+    expect(loaded()).toBe(1);
+  });
+
+  test('AC2: without a site key no challenge is loaded and no token is sent', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    const loaded = await stubChallenge(page, []);
+    const seen = await stubJoin(page, 201, { email: valid.email });
+    await jb.open('sign-up');
+
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await expect(join.sentHeading).toBeVisible();
+    expect(seen[0].challengeToken).toBeNull();
+    expect(loaded()).toBe(0);
+  });
+
+  test('AC2: a challenge that was not passed says so, keeps the form and tries with a fresh token', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    await stubChallenge(page, ['token-1', 'token-2']);
+    await stubSession(page, {
+      signedIn: false,
+      googleSignIn: true,
+      botChallengeSiteKey: 'site-key',
+    });
+    const seen = await stubJoin(page, 422, {
+      title: 'Invalid',
+      status: 422,
+      errors: { challenge: 'CHALLENGE_FAILED' },
+    });
+    await jb.goto('/join');
+
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await expect(join.notice).toHaveText(
+      'We couldn’t check that you’re not a robot. Wait a moment and try again.',
+    );
+    await expect(join.email).toHaveValue(valid.email);
+    await expect(join.summary).toHaveCount(0);
+
+    await join.createAccount.click();
+    await expect.poll(() => seen.length).toBe(2);
+    expect(seen[1].challengeToken).toBe('token-2');
+  });
+});
+
+test.describe('back to where you were after joining (L2-012)', () => {
+  test('AC5: a visitor who joined on the way to a listing is offered it after confirming', async ({
+    page,
+    jb,
+  }) => {
+    const join = new JoinPage(page);
+    const verify = new VerifyEmailPage(page);
+    await stubJoin(page, 201, { email: valid.email });
+    await jb.goto('/join?returnUrl=%2Fb%2Flegacy-financial');
+    await join.fill(valid);
+    await join.createAccount.click();
+    await expect(join.sentHeading).toBeVisible();
+
+    await stubConfirmation(page, { outcome: 'confirmed', firstName: 'Joanna' });
+    await jb.goto('/verify-email/abc');
+
+    await expect(verify.continueWhereYouLeftOff).toHaveAttribute('href', '/b/legacy-financial');
+    await expect(verify.startBrowsing).toHaveCount(0);
+  });
+
+  test('AC5: a member who joined from nowhere in particular starts browsing', async ({
+    page,
+    jb,
+  }) => {
+    const verify = new VerifyEmailPage(page);
+    await jb.open('verify-email.success');
+
+    await expect(verify.startBrowsing).toHaveAttribute('href', '/');
+    await expect(verify.continueWhereYouLeftOff).toHaveCount(0);
+  });
+
+  test('AC5: a remembered path that is not a path of this app is not offered', async ({
+    page,
+    jb,
+  }) => {
+    const verify = new VerifyEmailPage(page);
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'jubilee-return-after-join',
+        JSON.stringify({ path: '//evil.example', at: Date.now() }),
+      );
+    });
+    await jb.open('verify-email.success');
+
+    await expect(verify.startBrowsing).toBeVisible();
+    await expect(verify.continueWhereYouLeftOff).toHaveCount(0);
+  });
+});
+
 test.describe('join with Google: the agreement (L2-003)', () => {
   test('AC1: a Google member who has not agreed is held on the agreement page', async ({
     page,

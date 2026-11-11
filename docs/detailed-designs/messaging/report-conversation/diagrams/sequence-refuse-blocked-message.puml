@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Refuse a message from a blocked side
+title UML sequence behaviour — Refuse a message from a blocked business
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -16,7 +16,7 @@ skinparam package {
 }
 actor "Owner" as owner
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "MessageComposer" as composer
+  participant "ConversationPage" as composer
   participant "MessagesApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
@@ -30,24 +30,25 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 owner -> composer : Send a message to the member
-composer -> client : sendMessage(id, text, key)
+composer -> client : send(id, text, key)
 client -> controller : POST /api/conversations/{id}/messages
 controller -> controller : Authenticate and apply endpoint policy
 controller -> handler : Send SendMessageCommand
-handler -> db : Load conversation with blocks
+handler -> db : Load conversation for a participant
 db --> handler : Conversation
-handler -> entity : CanSend(senderId) (L2-063)
-alt sender's side is blocked
-  entity --> handler : false
-  handler --> controller : Refused
-  controller --> client : 403 MESSAGE_REFUSED with no mention of a block
-  client --> composer : Failed send
-  composer --> owner : Show the message as not sent
-else not blocked
+handler -> entity : Read BlockedByMember (L2-063)
+alt member blocked the business
   entity --> handler : true
-  handler -> entity : AddMessage(sender, text, now)
-  entity --> handler : Message
-  handler -> db : Save message and outbox row
+  handler -> db : Save message with HiddenFromMember and no notification for the member
+  db --> handler : Commit result
+  handler --> controller : MessageDto
+  controller --> client : 201 Created with no mention of a block
+  client --> composer : Confirmed message
+  composer --> owner : Show the sent time
+  note over handler, db : The member never sees the message and it is not counted as unread
+else not blocked
+  entity --> handler : false
+  handler -> db : Save message and the member's notification
   db --> handler : Commit result
   handler --> controller : MessageDto
   controller --> client : 201 Created

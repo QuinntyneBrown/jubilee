@@ -66,6 +66,8 @@ it changes how the product looks, which a component move must not do.
 | Controls of Log in and Sign up (`log-in-*.png`, `sign-up-*.png`) | 48 px tall under 1024 px and 44 px from it, 12 px radius, a 1 px edge of ink at 20 %, Inter; labels 15 px medium; the Google button in Roboto with Google's grey edge | `--control-height-md` (44 px) at every width, `--radius-md`, `--color-border-strong`, system text face; labels `--text-label` (14 px); the Google button is the default button at `--control-height-lg` |
 | Checkbox of Log in and Sign up | the browser's own 20 px box in ink, 15 px text | the drawn 20 px box in the accent colour, 16 px text |
 | Choice cards ("What do you offer?", `list-your-business-1280.png`) | 16 px radius, 2 px ink border when chosen, 40 px icon disc, Inter, other copy | `--radius-lg`, hairline border doubled by a shadow, avatar-size disc, system text face |
+| Category chips on the hero (`home-1280.png`) | about 36 px tall, Inter at a medium weight | 44 px tall (`--control-height-md`), semibold label, system text face |
+| Avatar in the top bar (`home-1280.png`) | 36 px across | `--avatar-size-sm`, 32 px |
 
 ## Refreshing
 

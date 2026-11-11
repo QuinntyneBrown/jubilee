@@ -4,4 +4,7 @@
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Emails\EmailLayout.html" LogicalName="Jubilee.Application.Emails.EmailLayout.html" />
+  </ItemGroup>
 </Project>

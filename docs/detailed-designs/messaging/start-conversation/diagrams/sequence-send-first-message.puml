@@ -18,10 +18,8 @@ actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
   participant "NewMessageDialog" as dialog
   participant "MessagesApi" as client
-  participant "ToastService" as toast
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "IdempotencyMiddleware" as idem
   participant "ConversationsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
@@ -36,32 +34,30 @@ dialog -> dialog : Check L2-055 required text and 4000 limit
 alt empty message
   dialog --> member : Show "Write a message before sending."
 else valid message
-  dialog -> client : startConversation(listingId, text, key)
-  client -> idem : POST /api/conversations with Idempotency-Key
-  idem -> idem : Look up key (L2-132)
-  idem -> controller : Forward new request
+  dialog -> client : start(listingSlug, body, key)
+  client -> controller : POST /api/conversations with idempotencyKey
   controller -> controller : Authenticate and apply endpoint policy
   alt e-mail unconfirmed
     controller --> client : 403 EMAIL_UNCONFIRMED (L2-005)
     client --> dialog : Blocked result
   else confirmed member
     controller -> handler : Send StartConversationCommand
+    handler -> db : Look up (SenderSubject, IdempotencyKey) (L2-132)
+    db --> handler : No earlier message
     handler -> db : Find conversation for member and listing
     db --> handler : Existing conversation or none
     opt no conversation exists
-      handler -> entity : Start(memberId, listingId)
+      handler -> entity : Start(listingId, memberSubject)
       entity --> handler : New conversation
     end
-    handler -> entity : AddMessage (L2-055 one conversation per pair)
-    entity --> handler : Message
-    handler -> db : Save conversation and message and outbox row
+    handler -> entity : NextMessageTime(now) (L2-055 one conversation per pair)
+    entity --> handler : Time never before the last message
+    handler -> db : Save conversation and message and the owner's notification
     db --> handler : Commit result
-    handler --> controller : StartConversationResult
-    controller --> idem : 201 Created or 200 OK
-    idem --> client : Response stored under the key
+    handler --> controller : StartedConversationDto
+    controller --> client : 201 Created
     client --> dialog : Conversation ID
-    dialog -> toast : Show toast linking to /messages/:id
-    dialog --> member : Close dialog
+    dialog --> member : Close dialog and open /messages/:id
   end
 end
 @enduml

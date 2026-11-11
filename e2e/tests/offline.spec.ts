@@ -231,6 +231,8 @@ test.describe('messages written offline (L2-120)', () => {
     await waitForSnapshot(page, 'conversation:c-legacy');
     await conversation.backLink.click();
     await expect(conversation.list.rows).toHaveCount(4);
+    // The inbox reads again when the page opens; the connection drops after that read, not during it.
+    await page.waitForLoadState('networkidle');
 
     await goOffline(page);
     await conversation.list.row('Legacy Financial').click();

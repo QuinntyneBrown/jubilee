@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-mails — Jubilee mocks</title>
+<style>
+  body { margin: 0; padding: 24px; font: 16px/1.5 system-ui, sans-serif; background: #f4f2ec; color: #0b0e14; }
+  h1 { margin: 0 0 4px; } h2 { margin: 32px 0 4px; font-size: 18px; } p { margin: 0 0 12px; }
+  a { color: #006644; }
+  .pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 624px)); gap: 16px; }
+  iframe { width: 100%; height: 560px; border: 1px solid #dcdad2; border-radius: 8px; background: #fff; }
+</style>
+</head>
+<body>
+<h1>E-mails</h1>
+<p>Every e-mail Jubilee sends (L2-179, ADR 0038), rendered from the layout the backend embeds, at
+600 px, light and dark, with its plain-text part. Built by <code>node tools/email-mocks/build.mjs</code>;
+do not edit the files here by hand. <a href="../index.html">All mocks</a></p>
+
+  <article class="mail">
+    <h2>Confirm your e-mail for Jubilee</h2>
+    <p><a href="confirm-email.html">light</a> · <a href="confirm-email.dark.html">dark</a> · <a href="confirm-email.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Confirm your e-mail for Jubilee, light" src="confirm-email.html" loading="lazy"></iframe>
+      <iframe title="Confirm your e-mail for Jubilee, dark" src="confirm-email.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Someone tried to join Jubilee with your e-mail</h2>
+    <p><a href="address-in-use.html">light</a> · <a href="address-in-use.dark.html">dark</a> · <a href="address-in-use.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Someone tried to join Jubilee with your e-mail, light" src="address-in-use.html" loading="lazy"></iframe>
+      <iframe title="Someone tried to join Jubilee with your e-mail, dark" src="address-in-use.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Confirm your new e-mail for Jubilee</h2>
+    <p><a href="confirm-new-email.html">light</a> · <a href="confirm-new-email.dark.html">dark</a> · <a href="confirm-new-email.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Confirm your new e-mail for Jubilee, light" src="confirm-new-email.html" loading="lazy"></iframe>
+      <iframe title="Confirm your new e-mail for Jubilee, dark" src="confirm-new-email.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>A Jubilee e-mail change was requested</h2>
+    <p><a href="email-change-requested.html">light</a> · <a href="email-change-requested.dark.html">dark</a> · <a href="email-change-requested.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="A Jubilee e-mail change was requested, light" src="email-change-requested.html" loading="lazy"></iframe>
+      <iframe title="A Jubilee e-mail change was requested, dark" src="email-change-requested.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Reset your Jubilee password</h2>
+    <p><a href="reset-password.html">light</a> · <a href="reset-password.dark.html">dark</a> · <a href="reset-password.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Reset your Jubilee password, light" src="reset-password.html" loading="lazy"></iframe>
+      <iframe title="Reset your Jubilee password, dark" src="reset-password.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Your Jubilee password was changed</h2>
+    <p><a href="password-changed.html">light</a> · <a href="password-changed.dark.html">dark</a> · <a href="password-changed.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Your Jubilee password was changed, light" src="password-changed.html" loading="lazy"></iframe>
+      <iframe title="Your Jubilee password was changed, dark" src="password-changed.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Sign-in to Jubilee was blocked</h2>
+    <p><a href="sign-in-blocked.html">light</a> · <a href="sign-in-blocked.dark.html">dark</a> · <a href="sign-in-blocked.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Sign-in to Jubilee was blocked, light" src="sign-in-blocked.html" loading="lazy"></iframe>
+      <iframe title="Sign-in to Jubilee was blocked, dark" src="sign-in-blocked.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Your Jubilee data is ready to download</h2>
+    <p><a href="data-ready.html">light</a> · <a href="data-ready.dark.html">dark</a> · <a href="data-ready.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Your Jubilee data is ready to download, light" src="data-ready.html" loading="lazy"></iframe>
+      <iframe title="Your Jubilee data is ready to download, dark" src="data-ready.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Your Jubilee account was deleted</h2>
+    <p><a href="account-deleted.html">light</a> · <a href="account-deleted.dark.html">dark</a> · <a href="account-deleted.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Your Jubilee account was deleted, light" src="account-deleted.html" loading="lazy"></iframe>
+      <iframe title="Your Jubilee account was deleted, dark" src="account-deleted.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Can you confirm Naomi Laurent for Jubilee?</h2>
+    <p><a href="reference-request.html">light</a> · <a href="reference-request.dark.html">dark</a> · <a href="reference-request.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Can you confirm Naomi Laurent for Jubilee?, light" src="reference-request.html" loading="lazy"></iframe>
+      <iframe title="Can you confirm Naomi Laurent for Jubilee?, dark" src="reference-request.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Your church reference for Luzandre.com didn’t answer</h2>
+    <p><a href="reference-unanswered.html">light</a> · <a href="reference-unanswered.dark.html">dark</a> · <a href="reference-unanswered.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Your church reference for Luzandre.com didn’t answer, light" src="reference-unanswered.html" loading="lazy"></iframe>
+      <iframe title="Your church reference for Luzandre.com didn’t answer, dark" src="reference-unanswered.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Luzandre.com is verified and live on Jubilee</h2>
+    <p><a href="listing-verified.html">light</a> · <a href="listing-verified.dark.html">dark</a> · <a href="listing-verified.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Luzandre.com is verified and live on Jubilee, light" src="listing-verified.html" loading="lazy"></iframe>
+      <iframe title="Luzandre.com is verified and live on Jubilee, dark" src="listing-verified.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Luzandre.com: changes needed before we can publish</h2>
+    <p><a href="listing-changes-needed.html">light</a> · <a href="listing-changes-needed.dark.html">dark</a> · <a href="listing-changes-needed.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Luzandre.com: changes needed before we can publish, light" src="listing-changes-needed.html" loading="lazy"></iframe>
+      <iframe title="Luzandre.com: changes needed before we can publish, dark" src="listing-changes-needed.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>We couldn’t verify Luzandre.com</h2>
+    <p><a href="listing-not-verified.html">light</a> · <a href="listing-not-verified.dark.html">dark</a> · <a href="listing-not-verified.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="We couldn’t verify Luzandre.com, light" src="listing-not-verified.html" loading="lazy"></iframe>
+      <iframe title="We couldn’t verify Luzandre.com, dark" src="listing-not-verified.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Your draft of Luzandre.com will be deleted in 14 days</h2>
+    <p><a href="draft-expiring.html">light</a> · <a href="draft-expiring.dark.html">dark</a> · <a href="draft-expiring.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Your draft of Luzandre.com will be deleted in 14 days, light" src="draft-expiring.html" loading="lazy"></iframe>
+      <iframe title="Your draft of Luzandre.com will be deleted in 14 days, dark" src="draft-expiring.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>New booking request from Joanna Adeyemi</h2>
+    <p><a href="new-booking-request.html">light</a> · <a href="new-booking-request.dark.html">dark</a> · <a href="new-booking-request.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="New booking request from Joanna Adeyemi, light" src="new-booking-request.html" loading="lazy"></iframe>
+      <iframe title="New booking request from Joanna Adeyemi, dark" src="new-booking-request.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>New quote request from Joanna Adeyemi</h2>
+    <p><a href="new-quote-request.html">light</a> · <a href="new-quote-request.dark.html">dark</a> · <a href="new-quote-request.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="New quote request from Joanna Adeyemi, light" src="new-quote-request.html" loading="lazy"></iframe>
+      <iframe title="New quote request from Joanna Adeyemi, dark" src="new-quote-request.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>New order request from Joanna Adeyemi</h2>
+    <p><a href="new-order-request.html">light</a> · <a href="new-order-request.dark.html">dark</a> · <a href="new-order-request.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="New order request from Joanna Adeyemi, light" src="new-order-request.html" loading="lazy"></iframe>
+      <iframe title="New order request from Joanna Adeyemi, dark" src="new-order-request.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>New message from Legacy Financial</h2>
+    <p><a href="new-message.html">light</a> · <a href="new-message.dark.html">dark</a> · <a href="new-message.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="New message from Legacy Financial, light" src="new-message.html" loading="lazy"></iframe>
+      <iframe title="New message from Legacy Financial, dark" src="new-message.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+
+  <article class="mail">
+    <h2>Your meeting starts in 1 hour</h2>
+    <p><a href="meeting-reminder.html">light</a> · <a href="meeting-reminder.dark.html">dark</a> · <a href="meeting-reminder.txt">plain text</a></p>
+    <div class="pair">
+      <iframe title="Your meeting starts in 1 hour, light" src="meeting-reminder.html" loading="lazy"></iframe>
+      <iframe title="Your meeting starts in 1 hour, dark" src="meeting-reminder.dark.html" loading="lazy"></iframe>
+    </div>
+  </article>
+</body>
+</html>

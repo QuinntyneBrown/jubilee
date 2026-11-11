@@ -18,6 +18,10 @@ import {
   ProductCard,
   Button,
   Input,
+  Chip,
+  ChipRow,
+  RowListSkeleton,
+  Skeleton,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { RequiresConnection } from '../../directives/requires-connection';
@@ -45,6 +49,10 @@ import { SessionService } from '../../services/session.service';
     ProductCard,
     Button,
     Input,
+    Chip,
+    ChipRow,
+    RowListSkeleton,
+    Skeleton,
   ],
   providers: [DirectoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,7 +65,6 @@ export class BrowsePage {
   protected readonly store = inject(DirectoryStore);
   protected readonly member = inject(SessionService).member;
   protected readonly categories = CATEGORIES;
-  protected readonly skeletonRows = [1, 2, 3, 4, 5, 6];
 
   /** "Morning" before 12:00, "Afternoon" from 12:00, "Evening" from 17:00, Toronto time. */
   protected readonly greeting = computed(() => {

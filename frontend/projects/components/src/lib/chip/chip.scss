@@ -1,0 +1,21 @@
+// Block: chip, as a link or a button. The host is the chip.
+@use './chip-base' as chip;
+
+@include chip.chip(':host');
+
+:host([aria-pressed='true']),
+:host([aria-current='page']) {
+  @include chip.chip-selected;
+}
+
+:host(:disabled),
+:host([aria-disabled='true']) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:host(.chip--sm) {
+  min-height: var(--target-min);
+  padding-inline: var(--space-2);
+  font-size: var(--font-size-xs);
+}

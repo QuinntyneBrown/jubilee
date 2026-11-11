@@ -1,0 +1,68 @@
+@if (view() === 'success') {
+  <jb-dialog heading="Thanks for telling us" icon="check" (closed)="close()">
+    <span slot="description"
+      >Your report is private. Our verification team reviews it within one business day.
+      @if (data.canBlock && block()) {
+        {{ data.businessName }} is blocked.
+      }
+    </span>
+    <div jb-dialog-footer>
+      <button jb-button variant="primary" type="button" cdkFocusInitial (click)="close()">
+        Close
+      </button>
+    </div>
+  </jb-dialog>
+} @else {
+  <jb-dialog
+    heading="Report this conversation"
+    description="Reports are private. Our verification team reads this conversation only while the report is open."
+    icon="flag"
+    [busy]="busy()"
+    (closed)="close()"
+  >
+    <form jb-dialog-body class="stack" id="report-form" novalidate (ngSubmit)="send()">
+      @if (view() === 'failed') {
+        <div jb-alert tone="danger" heading="We couldn’t send that" role="alert">
+          <div>{{ failure() }}</div>
+        </div>
+      }
+      <div
+        jb-field
+        label="Tell us what happened"
+        controlId="d-what"
+        required
+        [counter]="remaining() + ' characters left'"
+        [error]="problem()"
+      >
+        <textarea
+          jb-textarea
+          name="what"
+          rows="4"
+          required
+          cdkFocusInitial
+          [attr.maxlength]="max"
+          [readOnly]="busy()"
+          [ngModel]="what()"
+          (ngModelChange)="what.set($event)"
+        ></textarea>
+      </div>
+      @if (data.canBlock) {
+        <jb-checkbox
+          controlId="d-block"
+          name="block"
+          hint="They won’t be told. Their messages will stop reaching you."
+          [disabled]="busy()"
+          [checked]="block()"
+          (checkedChange)="block.set($event)"
+          >Block {{ data.businessName }}</jb-checkbox
+        >
+      }
+    </form>
+    <div jb-dialog-footer>
+      <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button jb-button variant="primary" type="submit" form="report-form" [busy]="busy()">
+        Send report
+      </button>
+    </div>
+  </jb-dialog>
+}

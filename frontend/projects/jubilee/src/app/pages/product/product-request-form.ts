@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProductPage } from 'api';
-import { Icon, Button, Alert, Field, FieldError, Input } from 'components';
+import { Icon, Button, Alert, Field, FieldError, Input, ChipOption } from 'components';
 
 /** A valid selection, handed to the order request (L2-035 AC2). */
 export interface ProductSelection {
@@ -27,7 +27,7 @@ export interface ProductSelection {
  */
 @Component({
   selector: 'jb-product-request-form',
-  imports: [RouterLink, Icon, Button, Alert, Field, FieldError, Input],
+  imports: [RouterLink, Icon, Button, Alert, Field, FieldError, Input, ChipOption],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { style: 'display: contents' },
   templateUrl: './product-request-form.html',
@@ -55,7 +55,7 @@ export class ProductRequestForm {
     computation: () => null,
   });
 
-  private readonly optionInputs = viewChildren<ElementRef<HTMLInputElement>>('optionInput');
+  private readonly optionInputs = viewChildren(ChipOption);
   private readonly quantityInput = viewChild('quantityInput', {
     read: ElementRef<HTMLInputElement>,
   });
@@ -81,7 +81,7 @@ export class ProductRequestForm {
     const quantity = this.checkQuantity();
 
     if (needsOption) {
-      this.optionInputs()[0]?.nativeElement.focus();
+      this.optionInputs()[0]?.focus();
       return;
     }
     if (quantity === null) {

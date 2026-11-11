@@ -21,25 +21,14 @@
       <div class="stat-grid" aria-hidden="true">
         @for (item of [1, 2, 3, 4]; track item) {
           <div class="card">
-            <span class="skeleton skeleton--text skeleton--w50"></span>
-            <span class="skeleton skeleton--title"></span>
+            <span jb-skeleton shape="text" width="50"></span>
+            <span jb-skeleton shape="title"></span>
           </div>
         }
       </div>
       <section class="section">
-        <span class="skeleton skeleton--title"></span>
-        <ul class="rows" aria-hidden="true">
-          @for (item of skeleton; track item) {
-            <li class="row">
-              <span class="skeleton skeleton--avatar"></span>
-              <div class="row__body">
-                <span class="skeleton skeleton--text skeleton--w50"></span>
-                <span class="skeleton skeleton--text skeleton--w70"></span>
-              </div>
-              <span class="skeleton skeleton--btn" style="width: 5rem"></span>
-            </li>
-          }
-        </ul>
+        <span jb-skeleton shape="title"></span>
+        <ul jb-row-list-skeleton [count]="3" leading="avatar" action></ul>
       </section>
     </div>
   }
@@ -156,9 +145,7 @@
                 <ul class="rows">
                   @for (row of b.needsReply; track row.id) {
                     <li class="row row--stack">
-                      <span class="avatar" aria-hidden="true">{{
-                        initials(row.customerName)
-                      }}</span>
+                      <jb-avatar [name]="row.customerName" />
                       <div class="row__body">
                         <div class="row__title">{{ row.title }}</div>
                         <div class="row__meta">
@@ -234,6 +221,26 @@
                         <div class="row__title">Church reference</div>
                         <div class="row__meta">{{ summary.reference }}</div>
                       </div>
+                    </li>
+                    <li class="row">
+                      <div class="row__body">
+                        @if (b.awayUntil; as until) {
+                          <div class="row__title">Away until {{ awayDay(until) }}</div>
+                          <div class="row__meta">Members who message you are told.</div>
+                        } @else {
+                          <div class="row__title">Away period</div>
+                          <div class="row__meta">Not set</div>
+                        }
+                      </div>
+                      <button
+                        jb-button
+                        size="sm"
+                        type="button"
+                        [attr.aria-label]="b.awayUntil ? 'Change away period' : 'Set away period'"
+                        (click)="openAway(b)"
+                      >
+                        {{ b.awayUntil ? 'Change' : 'Set away period' }}
+                      </button>
                     </li>
                   </ul>
                 }

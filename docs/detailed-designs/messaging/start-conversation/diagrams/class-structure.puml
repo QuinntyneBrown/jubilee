@@ -27,48 +27,43 @@ enum DialogState {
   Busy
   Failed
 }
-class MessagesApi <<Angular service>> {
-  +startConversation(listingId: string, text: string, key: string): Observable<StartConversationResult>
+class MessagesApi <<service contract>> {
+  +start(listingSlug: string, body: string, idempotencyKey: string): Observable<StartedConversationDto>
 }
 class ConversationsController {
   +Start(request: StartConversationRequest): Task<IActionResult>
 }
 class StartConversationCommand {
-  +Guid MemberId
-  +Guid ListingId
-  +string Text
+  +string Subject
+  +string ListingSlug
+  +string Body
+  +string IdempotencyKey
 }
 class StartConversationCommandValidator {
   +const int MaxLength = 4000
   +Validate(command: StartConversationCommand): ValidationResult
 }
 class StartConversationCommandHandler {
-  +Handle(command: StartConversationCommand): Task<StartConversationResult>
+  +Handle(command: StartConversationCommand): Task<StartedConversationDto>
 }
-class StartConversationResult {
+class StartedConversationDto {
   +Guid ConversationId
   +Guid MessageId
-  +bool Created
 }
 class Conversation {
   +Guid Id
-  +Guid MemberId
   +Guid ListingId
-  +DateTimeOffset LastActivityAt
-  +{static} Start(memberId: Guid, listingId: Guid): Conversation
-  +AddMessage(senderId: Guid, text: string, now: DateTimeOffset): Message
+  +string MemberSubject
+  +DateTimeOffset LastMessageAt
+  +{static} Start(listingId: Guid, memberSubject: string, memberName: string, now: DateTimeOffset): Conversation
+  +NextMessageTime(now: DateTimeOffset): DateTimeOffset
 }
 class Message {
   +Guid Id
-  +Guid SenderMemberId
-  +string Text
-  +DateTimeOffset SentAt
-}
-class OutboxMessage {
-  +Guid Id
-  +string Type
-  +string Payload
+  +string SenderSubject
+  +string Body
   +DateTimeOffset CreatedAt
+  +string IdempotencyKey
 }
 
 NewMessageDialog --> DialogState : has
@@ -77,8 +72,8 @@ MessagesApi ..> ConversationsController : POST /api/conversations
 ConversationsController ..> StartConversationCommand : sends
 StartConversationCommandValidator ..> StartConversationCommand : validates
 StartConversationCommandHandler ..> StartConversationCommand : handles
-StartConversationCommandHandler ..> StartConversationResult : returns
+StartConversationCommandHandler ..> StartedConversationDto : returns
 StartConversationCommandHandler --> Conversation : finds or creates
-StartConversationCommandHandler ..> OutboxMessage : writes MessageSent
+StartConversationCommandHandler ..> Message : looks up by sender and idempotency key
 Conversation "1" *-- "1..*" Message : contains
 @enduml

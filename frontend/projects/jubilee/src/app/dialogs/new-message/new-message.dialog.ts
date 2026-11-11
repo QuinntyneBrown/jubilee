@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MESSAGES_API } from 'api';
-import { Icon, Button, Alert, Field, Textarea } from 'components';
+import { Button, Alert, Field, Textarea, DialogFrame, DialogBody, DialogFooter } from 'components';
 import { newKey } from '../../services/message-time';
 
 export interface NewMessageData {
@@ -26,9 +26,8 @@ const MAX = 4000;
  */
 @Component({
   selector: 'jb-new-message-dialog',
-  imports: [FormsModule, Icon, Button, Alert, Field, Textarea],
+  imports: [FormsModule, Button, Alert, Field, Textarea, DialogFrame, DialogBody, DialogFooter],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './new-message.dialog.html',
 })
 export class NewMessageDialog {
@@ -69,10 +68,6 @@ export class NewMessageDialog {
 
   protected close(): void {
     if (!this.busy()) this.ref.close();
-  }
-
-  protected closeIfOutside(event: Event): void {
-    if (event.target === event.currentTarget) this.close();
   }
 }
 

@@ -1,0 +1,8 @@
+// The challenge takes no room until Cloudflare has something to show the visitor.
+:host {
+  display: block;
+}
+
+:host(:empty) {
+  display: none;
+}

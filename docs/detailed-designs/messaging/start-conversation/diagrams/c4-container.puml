@@ -7,16 +7,14 @@ Person(member, "Member", "Writes to a business")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Listing page and the new-message dialog")
   Container(api, "Jubilee API", "ASP.NET Core", "Conversation endpoints and authorization")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Sends queued e-mail from the outbox")
   ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and messages and outbox")
-  ContainerDb(cache, "Cache", "Redis", "Sessions and idempotency keys")
 }
 System_Ext(email, "E-mail provider", "Sends e-mail")
 
 Rel(member, web, "Uses", "HTTPS")
 Rel(web, api, "POST /api/conversations", "JSON/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")
-Rel(api, cache, "Checks session and idempotency key", "Redis protocol")
 Rel(worker, db, "Reads outbox", "EF Core")
 Rel(worker, email, "Sends new-message e-mail")
 @enduml

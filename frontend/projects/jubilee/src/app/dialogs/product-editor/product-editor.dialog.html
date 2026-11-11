@@ -1,107 +1,87 @@
-<div class="dialog__panel">
-  <div class="dialog__header">
-    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
-      <svg jb-icon name="bag"></svg>
+<jb-dialog
+  heading="{{ editing ? 'Edit product' : 'Add a product' }}"
+  description="Changes show on your public listing as soon as you save."
+  icon="bag"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <form jb-dialog-body class="stack" id="product-editor-form" novalidate (ngSubmit)="save()">
+    @if (view() === 'failed') {
+      <div jb-alert tone="danger" heading="We couldn’t save the product" role="alert">
+        <div>{{ failure() }}</div>
+      </div>
+    }
+    @if (view() === 'discard') {
+      <div jb-alert tone="warning" heading="Discard what you typed?" role="alert">
+        <div>Your changes to this product have not been saved.</div>
+      </div>
+    }
+    <div jb-field label="Product name" controlId="d-name" required [error]="errors().name">
+      <input
+        jb-input
+        name="name"
+        type="text"
+        required
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+        [readOnly]="busy()"
+      />
     </div>
-    <div style="flex: 1">
-      <h2 class="dialog__title" id="dlg-title">{{ editing ? 'Edit product' : 'Add a product' }}</h2>
-      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
-        Changes show on your public listing as soon as you save.
-      </p>
-    </div>
-    <button
-      jb-button
-      variant="ghost"
-      iconOnly
-      type="button"
-      aria-label="Close"
-      [disabled]="busy()"
-      (click)="close()"
-    >
-      <svg jb-icon name="close"></svg>
-    </button>
-  </div>
-  <form novalidate style="display: contents" (ngSubmit)="save()">
-    <div class="dialog__body stack">
-      @if (view() === 'failed') {
-        <div jb-alert tone="danger" heading="We couldn’t save the product" role="alert">
-          <div>{{ failure() }}</div>
-        </div>
-      }
-      @if (view() === 'discard') {
-        <div jb-alert tone="warning" heading="Discard what you typed?" role="alert">
-          <div>Your changes to this product have not been saved.</div>
-        </div>
-      }
-      <div jb-field label="Product name" controlId="d-name" required [error]="errors().name">
+    <div class="form-grid form-grid--2">
+      <div jb-field label="Price (CAD)" controlId="d-price" required [error]="errors().price">
         <input
           jb-input
-          name="name"
+          name="price"
           type="text"
+          inputmode="decimal"
           required
-          [ngModel]="name()"
-          (ngModelChange)="name.set($event)"
+          [ngModel]="price()"
+          (ngModelChange)="price.set($event)"
           [readOnly]="busy()"
         />
       </div>
-      <div class="form-grid form-grid--2">
-        <div jb-field label="Price (CAD)" controlId="d-price" required [error]="errors().price">
+      @if (!hasOptions) {
+        <div
+          jb-field
+          label="In stock"
+          controlId="d-stock"
+          hint="0 shows as sold out."
+          [error]="errors().stock"
+        >
           <input
             jb-input
-            name="price"
-            type="text"
-            inputmode="decimal"
-            required
-            [ngModel]="price()"
-            (ngModelChange)="price.set($event)"
+            name="stock"
+            type="number"
+            min="0"
+            max="9999"
+            [ngModel]="stock()"
+            (ngModelChange)="stock.set($event === null ? '' : '' + $event)"
             [readOnly]="busy()"
           />
         </div>
-        @if (!hasOptions) {
-          <div
-            jb-field
-            label="In stock"
-            controlId="d-stock"
-            hint="0 shows as sold out."
-            [error]="errors().stock"
-          >
-            <input
-              jb-input
-              name="stock"
-              type="number"
-              min="0"
-              max="9999"
-              [ngModel]="stock()"
-              (ngModelChange)="stock.set($event === null ? '' : '' + $event)"
-              [readOnly]="busy()"
-            />
-          </div>
-        }
-      </div>
-      <div jb-field label="Description" controlId="d-desc" optional [error]="errors().description">
-        <textarea
-          jb-textarea
-          name="description"
-          rows="3"
-          maxlength="1000"
-          [ngModel]="description()"
-          (ngModelChange)="description.set($event)"
-          [readOnly]="busy()"
-        ></textarea>
-      </div>
-    </div>
-    <div class="dialog__footer">
-      @if (view() === 'discard') {
-        <button jb-button type="button" cdkFocusInitial (click)="keepEditing()">
-          Keep editing
-        </button>
-        <button jb-button variant="danger" type="button" (click)="discard()">Discard</button>
-      } @else {
-        <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
-        <button jb-button variant="primary" type="submit" [busy]="busy()">
-          {{ editing ? 'Save changes' : 'Add product' }}
-        </button>
       }
     </div>
+    <div jb-field label="Description" controlId="d-desc" optional [error]="errors().description">
+      <textarea
+        jb-textarea
+        name="description"
+        rows="3"
+        maxlength="1000"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+        [readOnly]="busy()"
+      ></textarea>
+    </div>
   </form>
-</div>
+  <div jb-dialog-footer>
+    @if (view() === 'discard') {
+      <button jb-button type="button" cdkFocusInitial (click)="keepEditing()">Keep editing</button>
+      <button jb-button variant="danger" type="button" (click)="discard()">Discard</button>
+    } @else {
+      <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button jb-button variant="primary" type="submit" form="product-editor-form" [busy]="busy()">
+        {{ editing ? 'Save changes' : 'Add product' }}
+      </button>
+    }
+  </div>
+</jb-dialog>

@@ -10,10 +10,13 @@ export class VerifyEmailPage extends ShellPage implements Screen {
   readonly sendNewLink: Locator;
   readonly useAnother: Locator;
   readonly status: Locator;
+  /** The spinner shown while the link is checked. */
+  readonly spinner: Locator;
   readonly errorState: Locator;
   readonly errorReference: Locator;
   readonly tryAgain: Locator;
   readonly startBrowsing: Locator;
+  readonly continueWhereYouLeftOff: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -23,10 +26,14 @@ export class VerifyEmailPage extends ShellPage implements Screen {
     this.sendNewLink = this.main.getByRole('button', { name: 'Send a new link' });
     this.useAnother = this.main.getByRole('link', { name: 'Use another e-mail' });
     this.status = this.main.getByRole('status');
+    this.spinner = this.main.locator('.spinner');
     this.errorState = this.main.getByRole('alert');
     this.errorReference = this.errorState.locator('code');
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.startBrowsing = this.main.getByRole('link', { name: 'Start browsing' });
+    this.continueWhereYouLeftOff = this.main.getByRole('link', {
+      name: 'Continue where you left off',
+    });
   }
 
   async ready(): Promise<void> {
