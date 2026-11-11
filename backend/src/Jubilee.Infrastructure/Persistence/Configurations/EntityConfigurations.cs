@@ -200,6 +200,7 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)
     {
         builder.ToTable("OutboxMessages");
+        builder.Property(m => m.Category).HasMaxLength(20);
         builder.HasKey(m => m.Id);
         builder.Property(m => m.Id).ValueGeneratedNever();
         builder.Property(m => m.ToAddress).HasMaxLength(EmailAddress.MaxLength).IsRequired();

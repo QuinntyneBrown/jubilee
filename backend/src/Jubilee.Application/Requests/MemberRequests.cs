@@ -446,7 +446,7 @@ internal static class MemberRequestMail
         }
 
         var body = $"Hi {owner.FirstName},\n\n{text}\n\nYour requests: {settings.PublicBaseUrl.TrimEnd('/')}/my-business/requests\n\nJubilee · Toronto's Christian marketplace\n";
-        db.OutboxMessages.Add(OutboxMessage.Email(owner.Id, owner.Email, subject, body, now, null, request.Id));
+        EmailPolicy.Queue(db, owner, EmailCategories.Requests, subject, body, now, null, request.Id);
     }
 }
 

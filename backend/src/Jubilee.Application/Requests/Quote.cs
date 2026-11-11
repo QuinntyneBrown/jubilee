@@ -169,11 +169,12 @@ public sealed partial class RequestQuoteCommandHandler(IAppDbContext db, TimePro
             lines.Add($"Phone (for this request only): {phone[..3]}-{phone[3..6]}-{phone[6..]}");
         }
 
-        db.OutboxMessages.Add(OutboxMessage.Email(
-            owner.Id,
-            owner.Email,
+        EmailPolicy.Queue(
+            db,
+            owner,
+            EmailCategories.Requests,
             $"New quote request from {request.MemberName}",
             $"Hi {owner.FirstName},\n\n{request.MemberName} would like a quote.\n\n{string.Join("\n", lines)}\n\nReply to it: {settings.PublicBaseUrl.TrimEnd('/')}/my-business/requests\n\nJubilee · Toronto's Christian marketplace\n",
-            now));
+            now);
     }
 }

@@ -140,7 +140,7 @@ public sealed class TurnstileBotChallengeVerifier(HttpClient http, IConfiguratio
 /// </summary>
 public sealed class LoggingEmailSender(ILogger<LoggingEmailSender> logger) : IEmailSender
 {
-    public Task SendAsync(string to, string subject, string textBody, CancellationToken cancellationToken)
+    public Task SendAsync(string to, string subject, string textBody, CancellationToken cancellationToken, string? unsubscribeUrl = null)
     {
         logger.LogInformation("E-mail \"{Subject}\" sent to {To}.", subject, to);
         return Task.CompletedTask;

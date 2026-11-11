@@ -77,6 +77,8 @@ public static class DependencyInjection
         services.AddHttpClient<Application.Accounts.IBotChallengeVerifier, Accounts.TurnstileBotChallengeVerifier>();
         services.AddHttpClient<Application.Accounts.IGoogleIdentityClient, Accounts.GoogleIdentityClient>();
         services.AddSingleton<Application.Accounts.IEmailSender, Accounts.LoggingEmailSender>();
+        services.AddSingleton<Application.Notifications.IUnsubscribeLinks>(
+            new Application.Notifications.HmacUnsubscribeLinks(configuration["Email:UnsubscribeKey"] ?? "development-only-unsubscribe-key"));
         services.AddSingleton<Application.Accounts.IOidcTransactionStore, Accounts.CacheOidcTransactionStore>();
         services.AddSingleton<IImageProcessor, Media.SkiaImageProcessor>();
         services.AddSingleton<IMediaStore>(new Media.FileMediaStore(

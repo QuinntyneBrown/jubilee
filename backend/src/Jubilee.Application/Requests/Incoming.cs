@@ -184,7 +184,7 @@ internal static class IncomingRules
         var member = await db.Members.AsNoTracking().SingleOrDefaultAsync(m => m.Id == memberId, cancellationToken);
         if (member is not null)
         {
-            db.OutboxMessages.Add(OutboxMessage.Email(member.Id, member.Email, subject, body, now, notBefore, request.Id));
+            EmailPolicy.Queue(db, member, EmailCategories.Requests, subject, body, now, notBefore, request.Id);
         }
     }
 }
@@ -248,7 +248,8 @@ public sealed class ListIncomingRequestsQueryHandler(IAppDbContext db, TimeProvi
 /// <summary>The owner confirms a new request (L2-052). The customer is told once the undo window has passed.</summary>
 public sealed record ConfirmRequestCommand(string Subject, Guid RequestId) : IRequest<RequestDecisionDto>;
 
-public sealed class ConfirmRequestCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings)
+public sealed class ConfirmRequestCommandHandler(
+    IAppDbContext db, TimeProvider clock, AccountSettings settings, Notifications.MeetingReminders reminders)
     : IRequestHandler<ConfirmRequestCommand, RequestDecisionDto>
 {
     public async Task<RequestDecisionDto> Handle(ConfirmRequestCommand command, CancellationToken cancellationToken)
@@ -274,6 +275,7 @@ public sealed class ConfirmRequestCommandHandler(IAppDbContext db, TimeProvider 
         }
 
         request.Confirm(command.Subject, now);
+        await reminders.RemindIfSoonAsync(request, cancellationToken);
         var title = IncomingRules.Title(request);
         var conversation = await db.Conversations.SingleOrDefaultAsync(
             c => c.ListingId == listing.Id && c.MemberSubject == request.MemberSubject, cancellationToken);

@@ -162,6 +162,9 @@ public sealed class Request
     /// <summary>When the owner was reminded of a request nobody answered; set once.</summary>
     public DateTimeOffset? NudgedAt { get; private set; }
 
+    /// <summary>When the one-hour reminder of a confirmed meeting was sent (L2-069).</summary>
+    public DateTimeOffset? RemindedAt { get; private set; }
+
     public IReadOnlyList<RequestTransition> Transitions => _transitions;
 
     public static Request Book(
@@ -327,6 +330,8 @@ public sealed class Request
 
     /// <summary>Records that the owner was reminded of a request nobody answered (L2-043 AC8).</summary>
     public void Nudge(DateTimeOffset now) => NudgedAt ??= now;
+
+    public void Remind(DateTimeOffset now) => RemindedAt ??= now;
 
     /// <summary>Whether a new request has waited long enough for the member to be offered "Cancel or ask again".</summary>
     public bool IsUnanswered(DateTimeOffset now) => Status == RequestStatus.New && now - CreatedAt >= UnansweredAfter;

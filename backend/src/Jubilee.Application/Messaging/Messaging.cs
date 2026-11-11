@@ -122,7 +122,7 @@ internal sealed class ConversationRow
 public sealed record StartConversationCommand(string Subject, string Name, string ListingSlug, string? Body, string? IdempotencyKey)
     : IRequest<StartedConversationDto>;
 
-public sealed class StartConversationCommandHandler(IAppDbContext db, TimeProvider clock)
+public sealed class StartConversationCommandHandler(IAppDbContext db, TimeProvider clock, Accounts.AccountSettings settings)
     : IRequestHandler<StartConversationCommand, StartedConversationDto>
 {
     public const string OwnListingCode = "OWN_LISTING";
@@ -176,6 +176,7 @@ public sealed class StartConversationCommandHandler(IAppDbContext db, TimeProvid
         conversation.MarkRead(false, at);
         Notifications.NotificationRules.Tell(
             db, listing.OwnerId, "message", $"New message from {request.Name}", body, $"/messages/{conversation.Id}", at);
+        await Notifications.MessageMail.QueueAsync(db, settings, conversation, true, listing.OwnerId, request.Name, now, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
         return new StartedConversationDto(conversation.Id, message.Id);
     }
@@ -185,7 +186,7 @@ public sealed class StartConversationCommandHandler(IAppDbContext db, TimeProvid
 public sealed record SendMessageCommand(Guid ConversationId, string Subject, string Name, string? Body, string? IdempotencyKey, Guid? AttachmentId)
     : IRequest<MessageDto>;
 
-public sealed class SendMessageCommandHandler(IAppDbContext db, TimeProvider clock, IAttachmentLinks links)
+public sealed class SendMessageCommandHandler(IAppDbContext db, TimeProvider clock, IAttachmentLinks links, Accounts.AccountSettings settings)
     : IRequestHandler<SendMessageCommand, MessageDto>
 {
     public async Task<MessageDto> Handle(SendMessageCommand request, CancellationToken cancellationToken)
@@ -233,6 +234,15 @@ public sealed class SendMessageCommandHandler(IAppDbContext db, TimeProvider clo
                 body,
                 $"/messages/{row.Conversation.Id}",
                 at);
+            await Notifications.MessageMail.QueueAsync(
+                db,
+                settings,
+                row.Conversation,
+                !row.AsOwner,
+                row.AsOwner ? row.Conversation.MemberSubject : row.Listing.OwnerId,
+                row.AsOwner ? row.Listing.Name : request.Name,
+                now,
+                cancellationToken);
         }
 
         await db.SaveChangesAsync(cancellationToken);

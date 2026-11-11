@@ -246,12 +246,13 @@ public sealed class BookMeetingCommandHandler(IAppDbContext db, TimeProvider clo
         var how = request.Mode == MeetingMode.InPerson ? $"In person, {request.Location}" : "Video call";
         var note = request.Note is null ? string.Empty : $"\nNote: {request.Note}\n";
         var when = $"{local.ToString("ddd d MMM yyyy", CultureInfo.InvariantCulture)}, {local.ToString("HH:mm", CultureInfo.InvariantCulture)}";
-        db.OutboxMessages.Add(OutboxMessage.Email(
-            owner.Id,
-            owner.Email,
+        EmailPolicy.Queue(
+            db,
+            owner,
+            EmailCategories.Requests,
             $"New booking request from {request.MemberName}",
             $"Hi {owner.FirstName},\n\n{request.MemberName} would like to meet.\n\n{service.Name}\n{when}\n{how}\n{note}\nConfirm or decline it: {settings.PublicBaseUrl.TrimEnd('/')}/my-business/requests\n\nJubilee · Toronto's Christian marketplace\n",
-            now));
+            now);
     }
 }
 

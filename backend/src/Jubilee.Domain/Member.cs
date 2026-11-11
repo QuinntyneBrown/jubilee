@@ -72,6 +72,56 @@ public sealed class Member
     /// <summary>The last e-mail to the address bounced (L2-004 AC6).</summary>
     public bool EmailBounced { get; private set; }
 
+    /// <summary>New messages, request updates and meeting reminders are on for a new account; the rest are off (L2-016 AC5).</summary>
+    public bool EmailMessages { get; private set; } = true;
+
+    public bool EmailRequests { get; private set; } = true;
+
+    public bool EmailReminders { get; private set; } = true;
+
+    public bool EmailNewBusinesses { get; private set; }
+
+    public bool EmailTips { get; private set; }
+
+    /// <summary>
+    /// Whether an e-mail of this category may be sent: the member turned it on and the address has not bounced
+    /// (L2-068 AC2, L2-179 AC2). Sign-in, security and other transactional e-mails do not ask.
+    /// </summary>
+    public bool WantsEmail(string category) => !EmailBounced && category switch
+    {
+        EmailCategories.Messages => EmailMessages,
+        EmailCategories.Requests => EmailRequests,
+        EmailCategories.Reminders => EmailReminders,
+        EmailCategories.NewBusinesses => EmailNewBusinesses,
+        EmailCategories.Tips => EmailTips,
+        _ => false,
+    };
+
+    /// <summary>Turns one category on or off; false when the category is unknown.</summary>
+    public bool SetEmailPreference(string category, bool on)
+    {
+        switch (category)
+        {
+            case EmailCategories.Messages:
+                EmailMessages = on;
+                return true;
+            case EmailCategories.Requests:
+                EmailRequests = on;
+                return true;
+            case EmailCategories.Reminders:
+                EmailReminders = on;
+                return true;
+            case EmailCategories.NewBusinesses:
+                EmailNewBusinesses = on;
+                return true;
+            case EmailCategories.Tips:
+                EmailTips = on;
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public string? GoogleSubject { get; private set; }
 
     /// <summary>Null until the statement of faith and terms are accepted (L2-003 AC1).</summary>
@@ -150,6 +200,20 @@ public sealed class Member
 
     /// <summary>False until the agreement is accepted (a new Google account).</summary>
     public bool IsUsable() => AgreementAcceptedAt is not null;
+}
+
+/// <summary>The kinds of e-mail a member can turn off (L2-016, L2-068). A message without a category is transactional.</summary>
+public static class EmailCategories
+{
+    public const string Messages = "messages";
+
+    public const string Requests = "requests";
+
+    public const string Reminders = "reminders";
+
+    public const string NewBusinesses = "new-businesses";
+
+    public const string Tips = "tips";
 }
 
 public enum LinkTokenPurpose
@@ -233,10 +297,15 @@ public sealed class OutboxMessage
     /// <summary>Ties the message to what caused it (a request), so it can be withdrawn before it is sent.</summary>
     public Guid? CorrelationId { get; private set; }
 
+    /// <summary>Null for a transactional e-mail; otherwise the category a member can unsubscribe from (L2-068 AC3).</summary>
+    public string? Category { get; private set; }
+
     public static OutboxMessage Email(
-        Guid? memberId, string to, string subject, string textBody, DateTimeOffset now, DateTimeOffset? notBefore = null, Guid? correlationId = null) => new()
+        Guid? memberId, string to, string subject, string textBody, DateTimeOffset now, DateTimeOffset? notBefore = null, Guid? correlationId = null,
+        string? category = null) => new()
     {
         CorrelationId = correlationId,
+        Category = category,
         Id = Guid.NewGuid(),
         MemberId = memberId,
         ToAddress = to,
