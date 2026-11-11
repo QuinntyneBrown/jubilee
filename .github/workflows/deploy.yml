@@ -1,0 +1,49 @@
+name: Deploy
+
+# Deploys main to Azure (eng/azure/README.md) after CI has passed on it. It can also be started
+# by hand from the Actions tab, which deploys the tip of main.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# One deployment at a time; a newer one waits for the one in progress rather than cancelling it.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # sign in to Azure with OpenID Connect; no stored password
+
+jobs:
+  deploy:
+    name: Deploy to Azure
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The commit CI passed on, not whatever main has become since.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: backend/global.json
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      # Applies new EF Core migrations, then builds, packages and deploys both sites and waits
+      # for https://app.jubilee.to/api/health.
+      - name: Migrate, build and deploy
+        run: bash eng/azure/deploy.sh --migrate
