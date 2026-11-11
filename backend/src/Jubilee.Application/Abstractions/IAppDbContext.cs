@@ -17,6 +17,8 @@ public interface IAppDbContext
 
     DbSet<ListingView> ListingViews { get; }
 
+    DbSet<ListingPhoto> ListingPhotos { get; }
+
     DbSet<RecentSearch> RecentSearches { get; }
 
     DbSet<Member> Members { get; }

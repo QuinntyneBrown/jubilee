@@ -1,0 +1,380 @@
+@let view = state();
+@switch (view.status) {
+  @case ('error') {
+    <jb-workspace-header heading="My business" subtitle="" current="listing" />
+    <div style="margin-top: var(--space-6)">
+      <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your listing">
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>{{ view.reference }}</code
+        >.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" class="btn" routerLink="/my-business">Back to overview</a>
+      </div>
+    </div>
+  }
+  @case ('loading') {
+    <jb-workspace-header heading="My business" subtitle="Loading…" current="listing" />
+    <div style="margin-top: var(--space-6)">
+      <p class="visually-hidden" role="status">Loading your listing…</p>
+      <div class="card" style="max-width: 42rem">
+        <div class="form" aria-hidden="true">
+          @for (item of [1, 2, 3, 4]; track item) {
+            <div class="field">
+              <span class="skeleton skeleton--text skeleton--w30"></span>
+              <span class="skeleton skeleton--rect" style="height: var(--control-height-md)"></span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+  @case ('loaded') {
+    @let e = view.value;
+    <jb-workspace-header
+      [heading]="e.name"
+      [subtitle]="
+        e.stage === 'live'
+          ? e.paused
+            ? 'Verified · paused, not public'
+            : 'Verified · live'
+          : 'Not public yet'
+      "
+      current="listing"
+      [slug]="e.slug"
+      [live]="e.stage === 'live' && !e.paused"
+    />
+    <div style="margin-top: var(--space-6)">
+      <div class="split">
+        <form class="card form" novalidate (ngSubmit)="save()" #form="ngForm">
+          @if (saved(); as done) {
+            <div class="alert alert--success" role="status">
+              <svg jb-icon name="check"></svg>
+              <div class="alert__body">
+                <div class="alert__title">Listing updated</div>
+                <div>
+                  Your changes are live now.
+                  @if (done.recheck) {
+                    Because you changed the name or category, the verification team will take
+                    another look within two business days. Your listing stays live.
+                  }
+                </div>
+                <div class="alert__actions">
+                  <a [routerLink]="['/b', e.slug]">View public listing</a>
+                </div>
+              </div>
+              <button class="close" type="button" aria-label="Dismiss" (click)="dismissSaved()">
+                <svg jb-icon name="close"></svg>
+              </button>
+            </div>
+          }
+          @if (failure() === 'conflict') {
+            <div class="alert alert--danger" role="alert">
+              <svg jb-icon name="alert"></svg>
+              <div class="alert__body">
+                <div class="alert__title">
+                  This listing changed since you opened it. Reload to see the latest.
+                </div>
+                <div class="alert__actions">
+                  <button class="btn btn--sm" type="button" (click)="load()">Reload</button>
+                </div>
+              </div>
+            </div>
+          } @else if (failure() === 'failed') {
+            <div class="alert alert--danger" role="alert">
+              <svg jb-icon name="alert"></svg>
+              <div class="alert__body">
+                <div class="alert__title">We couldn’t save your changes</div>
+                <div>Nothing was changed. Check your connection and try again.</div>
+              </div>
+            </div>
+          }
+          @if (summary().length > 0) {
+            <div class="alert alert--danger form-summary" role="alert" id="summary" tabindex="-1">
+              <svg jb-icon name="alert"></svg>
+              <div class="alert__body">
+                <div class="alert__title">
+                  Fix {{ summary().length }} {{ pluralThings(summary().length) }} to continue
+                </div>
+                <ul style="margin: 0; padding-left: var(--space-5)">
+                  @for (item of summary(); track item.field) {
+                    <li>
+                      <a [href]="'#' + idOf(item.field)" (click)="focusField(item.field, $event)">{{
+                        item.text
+                      }}</a>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          }
+
+          <fieldset>
+            <legend>Photos</legend>
+            <ul class="cluster" style="list-style: none; padding: 0; margin: 0">
+              @for (photo of photos(); track photo.id) {
+                <li class="stack" style="width: 9rem">
+                  <div class="media media--square">
+                    @if (photo.position === 1) {
+                      <span class="media__tag">Cover</span>
+                    }
+                    <img
+                      [src]="'/media/' + photo.key + '/320.jpg'"
+                      [alt]="photo.alt"
+                      width="144"
+                      height="144"
+                      style="object-fit: cover; width: 100%; height: 100%"
+                    />
+                  </div>
+                  <label class="visually-hidden" [for]="'alt-' + photo.id"
+                    >Describe photo {{ photo.position }}</label
+                  >
+                  <input
+                    class="input"
+                    type="text"
+                    [id]="'alt-' + photo.id"
+                    [value]="photo.customAlt ?? ''"
+                    [placeholder]="photo.alt"
+                    [attr.maxlength]="maxAlt"
+                    (change)="describe(photo, $any($event.target).value)"
+                  />
+                  <div class="cluster">
+                    <button
+                      class="btn btn--sm btn--icon"
+                      type="button"
+                      [attr.aria-label]="'Move photo ' + photo.position + ' earlier'"
+                      [disabled]="photo.position === 1 || photoBusy()"
+                      (click)="move(photo, -1)"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      class="btn btn--sm btn--icon"
+                      type="button"
+                      [attr.aria-label]="'Move photo ' + photo.position + ' later'"
+                      [disabled]="photo.position === photos().length || photoBusy()"
+                      (click)="move(photo, 1)"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      class="btn btn--sm"
+                      type="button"
+                      [attr.aria-label]="'Remove photo ' + photo.position"
+                      [disabled]="photoBusy()"
+                      (click)="remove(photo)"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </li>
+              }
+              @if (photos().length < 6) {
+                <li>
+                  <input
+                    #picker
+                    class="visually-hidden"
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    aria-label="Choose a photo"
+                    tabindex="-1"
+                    (change)="add(picker)"
+                  />
+                  <button
+                    class="btn"
+                    type="button"
+                    [disabled]="photoBusy()"
+                    [attr.aria-busy]="photoBusy() ? 'true' : null"
+                    (click)="choose(picker)"
+                  >
+                    <svg jb-icon name="plus"></svg>Add photo
+                  </button>
+                </li>
+              }
+            </ul>
+            @if (photoError(); as problem) {
+              <span class="field__error" role="alert">{{ problem }}</span>
+            }
+            <p class="field__help" style="margin-top: var(--space-2)">
+              Up to 6 photos, JPG or PNG, 5 MB each. The first is your cover.
+            </p>
+          </fieldset>
+
+          <div class="field">
+            <label class="field__label" for="name"
+              >Business name <span class="optional">(required)</span></label
+            >
+            <input
+              class="input"
+              id="name"
+              name="name"
+              type="text"
+              required
+              [ngModel]="draft().name"
+              (ngModelChange)="set('name', $event)"
+              [readOnly]="busy()"
+              [attr.aria-invalid]="errors().name ? 'true' : null"
+              [attr.aria-describedby]="errors().name ? 'name-error' : null"
+            />
+            @if (errors().name; as message) {
+              <span class="field__error" id="name-error">{{ message }}</span>
+            }
+          </div>
+          <div>
+            <div class="field">
+              <label class="field__label" for="tagline"
+                >One line on what you do <span class="optional">(required)</span></label
+              >
+              <input
+                class="input"
+                id="tagline"
+                name="tagline"
+                type="text"
+                required
+                [ngModel]="draft().tagline"
+                (ngModelChange)="set('tagline', $event)"
+                [readOnly]="busy()"
+                [attr.aria-invalid]="errors().tagline ? 'true' : null"
+                [attr.aria-describedby]="errors().tagline ? 'tagline-error' : null"
+              />
+              @if (errors().tagline; as message) {
+                <span class="field__error" id="tagline-error">{{ message }}</span>
+              }
+            </div>
+            <div class="field__counter">{{ draft().tagline.trim().length }} / {{ maxTagline }}</div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="about">About</label>
+            <span class="field__help" id="about-help"
+              >A few sentences on who you are and who you serve.</span
+            >
+            <textarea
+              class="textarea"
+              id="about"
+              name="about"
+              rows="4"
+              aria-describedby="about-help"
+              [attr.maxlength]="maxAbout"
+              [ngModel]="draft().about"
+              (ngModelChange)="set('about', $event)"
+              [readOnly]="busy()"
+            ></textarea>
+          </div>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label class="field__label" for="cat">Category</label>
+              <select
+                class="select"
+                id="cat"
+                name="category"
+                [ngModel]="draft().category"
+                (ngModelChange)="set('category', $event)"
+                [disabled]="busy()"
+              >
+                @for (category of e.categories; track category.slug) {
+                  <option [value]="category.slug">{{ category.name }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="area">Where</label>
+              <input
+                class="input"
+                id="area"
+                name="where"
+                type="text"
+                [ngModel]="draft().where"
+                (ngModelChange)="set('where', $event)"
+                [readOnly]="busy()"
+              />
+            </div>
+          </div>
+          <div class="form-grid form-grid--2">
+            <div class="field">
+              <label class="field__label" for="hours">Hours</label>
+              <input
+                class="input"
+                id="hours"
+                name="hours"
+                type="text"
+                [ngModel]="draft().hours"
+                (ngModelChange)="set('hours', $event)"
+                [readOnly]="busy()"
+                [attr.aria-invalid]="errors().hours ? 'true' : null"
+                [attr.aria-describedby]="errors().hours ? 'hours-error' : null"
+              />
+              @if (errors().hours; as message) {
+                <span class="field__error" id="hours-error">{{ message }}</span>
+              }
+            </div>
+            <div class="field">
+              <label class="field__label" for="web"
+                >Website <span class="optional">(optional)</span></label
+              >
+              <input
+                class="input"
+                id="web"
+                name="website"
+                type="url"
+                [ngModel]="draft().website"
+                (ngModelChange)="set('website', $event)"
+                [readOnly]="busy()"
+                [attr.aria-invalid]="errors().website ? 'true' : null"
+                [attr.aria-describedby]="errors().website ? 'web-error' : null"
+              />
+              @if (errors().website; as message) {
+                <span class="field__error" id="web-error">{{ message }}</span>
+              }
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="perk"
+              >Highlight <span class="optional">(optional)</span></label
+            >
+            <span class="field__help" id="perk-help"
+              >A short green line on your card, like “Free first meeting”. 30 characters at
+              most.</span
+            >
+            <input
+              class="input"
+              id="perk"
+              name="highlight"
+              type="text"
+              aria-describedby="perk-help"
+              [attr.maxlength]="maxHighlight"
+              [ngModel]="draft().highlight"
+              (ngModelChange)="set('highlight', $event)"
+              [readOnly]="busy()"
+            />
+          </div>
+          <div class="form-actions">
+            <span class="inline-status" style="margin-right: auto">{{
+              busy() ? 'Saving…' : 'Changes are published when you save'
+            }}</span>
+            <button class="btn" type="button" [disabled]="busy()" (click)="discard()">
+              Discard changes
+            </button>
+            <button
+              class="btn btn--primary"
+              type="submit"
+              [attr.aria-busy]="busy() ? 'true' : null"
+            >
+              Save listing
+            </button>
+          </div>
+        </form>
+        <aside class="split__sticky" aria-labelledby="pv">
+          <h2
+            id="pv"
+            class="text-caption"
+            style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3)"
+          >
+            How members see you
+          </h2>
+          <a jb-business-card [business]="preview()" [routerLink]="['/b', e.slug]"></a>
+        </aside>
+      </div>
+    </div>
+  }
+}

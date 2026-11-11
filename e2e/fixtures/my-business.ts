@@ -1,0 +1,365 @@
+import type { Page, Route } from '@playwright/test';
+import { naomi } from './incoming-requests';
+
+// A stand-in for the owner's workspace (L2-085 to L2-088, L2-096) and for the session of an owner.
+// What the app sends is kept so a test can prove it (ADR 0009).
+
+export type Outcome = 'ok' | 'fails';
+
+export interface FakePhoto {
+  id: string;
+  key: string;
+  position: number;
+  alt: string;
+  customAlt: string | null;
+  width: number;
+  height: number;
+}
+
+export interface FakeBusiness {
+  /** `fails` answers the overview with a 503; `forbidden` with a 403. */
+  overview: Outcome | 'forbidden';
+  editor: Outcome | 'forbidden';
+  /** `conflict` answers the save as if another tab had saved first (409). */
+  save: Outcome | 'conflict';
+  pause: Outcome;
+  resume: Outcome | 'review';
+  /** The refusal of the next photo upload, by the API's code; null accepts it. */
+  photoRefusal: { status: number; code: string } | null;
+  state: string;
+  paused: boolean;
+  justApproved: boolean;
+  version: number;
+  photos: FakePhoto[];
+  listing: {
+    name: string;
+    tagline: string;
+    categorySlug: string;
+    about: string;
+    where: string;
+    hours: string;
+    website: string;
+    highlight: string;
+  };
+  saves: Record<string, unknown>[];
+  pauses: number;
+  resumes: number;
+  uploads: number;
+  moves: { id: string; position: number }[];
+  descriptions: { id: string; alt: string }[];
+  removals: string[];
+}
+
+const problem = (status: number, body: object) => ({
+  status,
+  contentType: 'application/problem+json',
+  body: JSON.stringify({ title: 'Problem', status, correlationId: 'e2e', ...body }),
+});
+
+const CATEGORIES = [
+  { slug: 'shops', name: 'Shops' },
+  { slug: 'financial-insurance', name: 'Financial & insurance' },
+  { slug: 'home-property', name: 'Home & property' },
+];
+
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==',
+  'base64',
+);
+
+export const SAMUEL = '5d0b1c2e-0000-4000-8000-000000000001';
+
+export async function stubMyBusiness(
+  page: Page,
+  initial: Partial<FakeBusiness> = {},
+  member = naomi,
+): Promise<FakeBusiness> {
+  let next = 0;
+  const fake: FakeBusiness = {
+    overview: 'ok',
+    editor: 'ok',
+    save: 'ok',
+    pause: 'ok',
+    resume: 'ok',
+    photoRefusal: null,
+    state: 'live',
+    paused: false,
+    justApproved: false,
+    version: 0,
+    photos: [],
+    listing: {
+      name: 'Luzandre.com',
+      tagline: 'Unique & custom Christian apparel, artworks & gifts that bring joy',
+      categorySlug: 'shops',
+      about: 'Custom tees, mugs and original artwork designed to share joy.',
+      where: 'Online · studio pickup in Leslieville',
+      hours: 'Mon–Sat 10:00–6:00',
+      website: 'https://luzandre.com',
+      highlight: 'Ships across Canada',
+    },
+    saves: [],
+    pauses: 0,
+    resumes: 0,
+    uploads: 0,
+    moves: [],
+    descriptions: [],
+    removals: [],
+    ...initial,
+  };
+
+  const photos = () =>
+    fake.photos
+      .toSorted((a, b) => a.position - b.position)
+      .map((photo, index) => ({
+        ...photo,
+        position: index + 1,
+        alt: photo.customAlt ?? `${fake.listing.name} photo ${index + 1}`,
+      }));
+
+  const editor = () => ({
+    id: '7c1d0000-0000-4000-8000-000000000001',
+    version: fake.version,
+    slug: 'luzandre-com',
+    stage: fake.state === 'paused' ? 'live' : fake.state,
+    paused: fake.paused,
+    ...fake.listing,
+    categories: CATEGORIES,
+    photos: photos(),
+    recheckRequested: false,
+  });
+
+  const overview = () => {
+    if (fake.state === 'none') {
+      return {
+        state: 'none',
+        listingId: null,
+        name: null,
+        slug: null,
+        tagline: null,
+        categorySlug: null,
+        subtitle: "You haven't listed a business yet",
+        paused: false,
+        pausedAt: null,
+        justApproved: false,
+        newRequests: 0,
+        stats: null,
+        needsReply: [],
+        summary: null,
+        reference: null,
+        verification: null,
+      };
+    }
+    const live = fake.state === 'live' || fake.state === 'paused';
+    return {
+      state: fake.paused ? 'paused' : fake.state,
+      listingId: '7c1d0000-0000-4000-8000-000000000001',
+      name: fake.listing.name,
+      slug: 'luzandre-com',
+      tagline: fake.listing.tagline,
+      categorySlug: fake.listing.categorySlug,
+      subtitle: fake.paused
+        ? 'Verified · paused, not public'
+        : live
+          ? 'Verified · live since June 2026'
+          : fake.state === 'changes-requested'
+            ? 'Changes requested · not public yet'
+            : 'Pending verification · submitted today',
+      paused: fake.paused,
+      pausedAt: fake.paused ? '2026-11-10T14:00:00Z' : null,
+      justApproved: fake.justApproved,
+      newRequests: 3,
+      stats: live
+        ? {
+            views: { value: 312, change: 48 },
+            openRequests: 3,
+            newSinceYesterday: 2,
+            unansweredMessages: 1,
+            saved: null,
+          }
+        : null,
+      needsReply: live
+        ? [
+            {
+              id: SAMUEL,
+              kind: 'order',
+              kindLabel: 'Order',
+              customerName: 'Samuel Park',
+              title: 'Custom church team tee × 24',
+              sentAt: '2026-11-10T08:15:00-05:00',
+            },
+            {
+              id: '5d0b1c2e-0000-4000-8000-000000000003',
+              kind: 'quote',
+              kindLabel: 'Quote',
+              customerName: 'David Chen',
+              title: 'Church merch package',
+              sentAt: '2026-11-08T10:00:00-05:00',
+            },
+          ]
+        : [],
+      summary: live
+        ? { products: 4, soldOut: 1, services: 2, reference: 'Confirmed Jun 2026 · Verified' }
+        : null,
+      reference:
+        fake.state === 'pending-reference'
+          ? {
+              church: 'Grace Toronto Church',
+              referenceEmail: 'pastor@grace.example',
+              state: 'waiting',
+              requestedAt: '2026-11-10T14:40:00Z',
+            }
+          : null,
+      verification:
+        fake.state === 'changes-requested'
+          ? {
+              stage: 'changes-requested',
+              stageLabel: 'Changes requested',
+              changesRequested: {
+                areas: ['Tagline', 'Photos'],
+                message: 'Your tagline mentions a discount code. Add at least one photo.',
+                reviewerFirstName: 'Miriam',
+                requestedAt: '2026-11-09T15:00:00Z',
+              },
+              declined: null,
+            }
+          : null,
+    };
+  };
+
+  await page.route('**/api/session', (r) => r.fulfill({ json: member }));
+  await page.route('**/api/me/navigation', (r) =>
+    r.fulfill({
+      json: {
+        unreadConversationCount: 2,
+        unreadNotificationCount: 3,
+        newRequestCount: 3,
+        ownsListing: true,
+        isVerifier: false,
+        verificationCount: 0,
+      },
+    }),
+  );
+  await page.route('**/media/**', (r) => r.fulfill({ body: PNG, contentType: 'image/png' }));
+
+  await page.route(/\/api\/my-business$/, (route: Route) => {
+    if (fake.overview === 'fails') return route.fulfill(problem(503, { reference: 'JB-BIZ-503' }));
+    if (fake.overview === 'forbidden') return route.fulfill(problem(403, { code: 'FORBIDDEN' }));
+    return route.fulfill({ json: overview() });
+  });
+
+  await page.route(/\/api\/my-business\/(listing|pause|resume|photos.*)$/, (route: Route) => {
+    const request = route.request();
+    const path = new URL(request.url()).pathname.replace('/api/my-business/', '');
+    const method = request.method();
+    if (path === 'listing' && method === 'GET') {
+      if (fake.editor === 'fails') return route.fulfill(problem(503, { reference: 'JB-LST-503' }));
+      if (fake.editor === 'forbidden') return route.fulfill(problem(403, { code: 'FORBIDDEN' }));
+      return route.fulfill({ json: editor() });
+    }
+    if (path === 'listing') {
+      const body = request.postDataJSON() as Record<string, string | number>;
+      fake.saves.push(body);
+      if (fake.save === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
+      if (fake.save === 'conflict') {
+        return route.fulfill(
+          problem(409, {
+            code: 'LISTING_CHANGED',
+            detail: 'This listing changed since you opened it. Reload to see the latest.',
+          }),
+        );
+      }
+      fake.version += 1;
+      fake.listing = {
+        name: String(body['name']),
+        tagline: String(body['tagline']),
+        categorySlug: String(body['category']),
+        about: String(body['about']),
+        where: String(body['where']),
+        hours: String(body['hours']),
+        website: String(body['website']),
+        highlight: String(body['highlight']),
+      };
+      return route.fulfill({ json: editor() });
+    }
+    if (path === 'pause') {
+      if (fake.pause === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
+      fake.pauses += 1;
+      fake.paused = true;
+      return route.fulfill({
+        json: {
+          paused: true,
+          pausedAt: '2026-11-10T14:00:00Z',
+          state: 'paused',
+          needsReview: false,
+        },
+      });
+    }
+    if (path === 'resume') {
+      if (fake.resume === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
+      fake.resumes += 1;
+      fake.paused = false;
+      const review = fake.resume === 'review';
+      if (review) fake.state = 'ready-to-review';
+      return route.fulfill({
+        json: { paused: false, pausedAt: null, state: fake.state, needsReview: review },
+      });
+    }
+    // photos
+    const [, id, what] = path.split('/');
+    if (method === 'POST') {
+      if (fake.photoRefusal) {
+        return route.fulfill(problem(fake.photoRefusal.status, { code: fake.photoRefusal.code }));
+      }
+      fake.uploads += 1;
+      next += 1;
+      fake.photos.push({
+        id: `9e1d0000-0000-4000-8000-0000000000${String(next).padStart(2, '0')}`,
+        key: String(next).padStart(32, 'a'),
+        position: fake.photos.length + 1,
+        alt: '',
+        customAlt: null,
+        width: 800,
+        height: 600,
+      });
+      return route.fulfill({ status: 201, json: editor() });
+    }
+    if (method === 'DELETE') {
+      fake.removals.push(id);
+      fake.photos = fake.photos.filter((photo) => photo.id !== id);
+      return route.fulfill({ json: editor() });
+    }
+    const body = request.postDataJSON() as { position?: number; alt?: string };
+    if (what === 'position') {
+      fake.moves.push({ id, position: body.position! });
+      const ordered = photos();
+      const moving = ordered.find((photo) => photo.id === id)!;
+      ordered.splice(ordered.indexOf(moving), 1);
+      ordered.splice(body.position! - 1, 0, moving);
+      ordered.forEach((photo, index) => {
+        fake.photos.find((item) => item.id === photo.id)!.position = index + 1;
+      });
+      return route.fulfill({ json: editor() });
+    }
+    fake.descriptions.push({ id, alt: body.alt! });
+    fake.photos.find((photo) => photo.id === id)!.customAlt = body.alt?.trim() || null;
+    return route.fulfill({ json: editor() });
+  });
+
+  // The confirm and decline dialogs answer through the owner's requests API.
+  await page.route(/\/api\/my-business\/requests\/[^/]+\/(confirm|decline)$/, (route: Route) => {
+    const id = new URL(route.request().url()).pathname.split('/').at(-2)!;
+    const confirm = route.request().url().endsWith('/confirm');
+    return route.fulfill({
+      json: {
+        id,
+        status: confirm ? 'Confirmed' : 'Declined',
+        statusLabel: confirm ? 'Confirmed' : 'Declined',
+        kind: 'order',
+        customerFirstName: 'Samuel',
+        undoUntil: null,
+      },
+    });
+  });
+
+  return fake;
+}

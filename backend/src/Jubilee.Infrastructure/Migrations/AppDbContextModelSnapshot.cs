@@ -383,6 +383,12 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<DateTimeOffset?>("PausedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("RecheckRequestedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<double>("RecommendedScore")
                         .HasColumnType("float");
 
@@ -406,6 +412,13 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Where")
                         .HasMaxLength(200)
@@ -553,6 +566,42 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("OwnerSubject", "UpdatedAt");
 
                     b.ToTable("ListingDrafts", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ListingPhoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AddedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Alt")
+                        .HasMaxLength(125)
+                        .HasColumnType("nvarchar(125)");
+
+                    b.Property<int>("Height")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Width")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListingId", "Position");
+
+                    b.ToTable("ListingPhotos", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.ListingSubmission", b =>

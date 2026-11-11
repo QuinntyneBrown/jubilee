@@ -29,6 +29,7 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.PrimitiveCollection(l => l.Credentials).IsRequired();
         builder.Property(l => l.About).HasMaxLength(2000);
         builder.Property(l => l.Where).HasMaxLength(200);
+        builder.Property(l => l.Website).HasMaxLength(300);
         builder.Property(l => l.Hours).HasMaxLength(200);
         builder.Property(l => l.Languages).HasMaxLength(200);
         builder.Property(l => l.Delivery).HasMaxLength(200);
@@ -479,5 +480,18 @@ public sealed class ResponseTimeStatConfiguration : IEntityTypeConfiguration<Res
         builder.HasKey(s => s.ListingId);
         builder.Property(s => s.ListingId).ValueGeneratedNever();
         builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ListingPhotoConfiguration : IEntityTypeConfiguration<ListingPhoto>
+{
+    public void Configure(EntityTypeBuilder<ListingPhoto> builder)
+    {
+        builder.ToTable("ListingPhotos");
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.Id).ValueGeneratedNever();
+        builder.Property(p => p.Key).HasMaxLength(64).IsRequired();
+        builder.Property(p => p.Alt).HasMaxLength(ListingPhoto.MaxAltLength);
+        builder.HasIndex(p => new { p.ListingId, p.Position });
     }
 }

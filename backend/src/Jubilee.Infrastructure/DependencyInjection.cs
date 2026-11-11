@@ -78,6 +78,9 @@ public static class DependencyInjection
         services.AddHttpClient<Application.Accounts.IGoogleIdentityClient, Accounts.GoogleIdentityClient>();
         services.AddSingleton<Application.Accounts.IEmailSender, Accounts.LoggingEmailSender>();
         services.AddSingleton<Application.Accounts.IOidcTransactionStore, Accounts.CacheOidcTransactionStore>();
+        services.AddSingleton<IImageProcessor, Media.SkiaImageProcessor>();
+        services.AddSingleton<IMediaStore>(new Media.FileMediaStore(
+            configuration["Media:Root"] ?? Path.Combine(AppContext.BaseDirectory, "media")));
         services.AddScoped<DemoDataSeeder>();
         services.AddSingleton<IDirectoryReadCache, DistributedDirectoryReadCache>();
         services.AddSingleton<DirectoryCacheInvalidationInterceptor>();

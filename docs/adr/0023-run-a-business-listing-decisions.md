@@ -1,0 +1,32 @@
+# 0023. Run a business listing decisions
+
+Status: accepted
+
+## Context
+
+An owner runs their listing from My business: the overview, the editor with its photos, and pause and resume (L2-028, L2-085 to L2-088, L2-096, L2-097, L2-133, L2-138). The designs left open how photos are checked and stored, which image library to use, what the user-facing messages say, how a stale edit is detected, and how the verification team hears of a re-check. The owner workspace designs carry `<TO SUPPLY>` markers for the search index technology, the text of each photo rule and the bot list; the security and performance designs carry markers for the media host, cache lifetime and tooling vendors.
+
+## Decision
+
+- **Endpoints, all under `/api/my-business` and refused with 403 `FORBIDDEN` to a member who owns nothing.** `GET /` (overview; 503 `JB-BIZ-503`), `GET /listing` (editor; 503 `JB-LST-503`), `PUT /listing`, `POST /pause`, `POST /resume`, `POST /photos` (multipart `file`), `PUT /photos/{id}/position`, `PUT /photos/{id}/alt` and `DELETE /photos/{id}`. Every body is a closed record: an unknown field is a 400, so a caller cannot set a stage, an owner or a version of someone else's listing (L2-133 AC4). A member with no listing gets a 200 overview whose state is `none`, which is the empty state; every other route is 403.
+- **Overview.** The state is one of `none`, `draft`, `pending-reference`, `ready-to-review`, `needs-a-decision`, `changes-requested`, `live`, `paused`, `declined`. The numbers (views of 7 days against the 7 before, open requests, new since yesterday, unanswered messages, the products and services count) appear for a live listing only. "Needs your reply" is the three newest new requests, and Confirm and Decline reuse the dialogs of journey 13. The church reference and the reviewer's changes come from the queries journeys 10 and 12 built. A listing is "just verified" for 7 days after approval, and the banner is dismissed in the browser only.
+- **Edit and concurrency.** `Listing.Version` counts saves. A save carries the version the editor opened; a different one is 409 `LISTING_CHANGED` ("This listing changed since you opened it. Reload to see the latest."). Field rules are checked on the server as well as in the browser: name required and at most 80, one line required and at most 90, hours required, website an absolute `http` or `https` address of at most 300, About at most 1,500, Highlight at most 30. Each failure is a 422 with a code per field (`REQUIRED`, `TOO_LONG`, `INVALID`); the words come from the browser, which counts characters ("Shorten this to 90 characters. It has 124.").
+- **Re-check.** A change of name or category on a live listing keeps it live, stamps `RecheckRequestedAt` and writes the audit record `listing.recheck-requested` with the old and new values. The queue shows the stamp to the verification team; the e-mail to them waits for journey 17's notifications, and the two-business-day promise is the team's, not a timer.
+- **Photos.** At most six per listing; JPG and PNG only, found out from the first bytes of the file and not its name or declared type; at most 5 MB and 8,000 by 8,000 pixels. The upload is decoded and encoded again, which drops all metadata including GPS, and kept only as renditions 320, 640 and 1280 pixels wide in JPEG and WebP (never wider than the original). The original is not kept. Codes: `TOO_LARGE`, `NOT_AN_IMAGE`, `TOO_BIG_IN_PIXELS` (422) and `TOO_MANY_PHOTOS` (409). Messages: "Photos can be 5 MB at most.", "Add a JPG or PNG photo.", "Photos can be 8,000 by 8,000 pixels at most.", "A listing can have 6 photos. Remove one to add another." Alt text is at most 125 characters and defaults to "{business} photo {n}". Reordering is by move earlier and later buttons, which also serve a keyboard and a phone; drag is deferred.
+- **Image library.** SkiaSharp (MIT). ImageSharp 3 has a known vulnerability and ImageSharp 4 needs a paid licence key to build in Release, so neither is used. SkiaSharp is behind `IImageProcessor`, so tests can use another implementation; the Linux native assets are the dependency-free build.
+- **Storage and delivery.** Renditions are files under `Media:Root` (default `media/` beside the app), one folder per random 128-bit hex key, behind `IMediaStore`; tests keep them in memory (ADR 0009). `GET /media/{key}/{width}.{jpg|webp}` is anonymous, answers only a key of 32 hex digits and a width of 320, 640 or 1280, sets a fixed `Content-Type`, `X-Content-Type-Options: nosniff` and `Cache-Control: public, max-age=31536000, immutable` (the name is random and a changed photo has a new key). Removing a photo deletes its files.
+- **Pause and resume.** Pause is for a live listing only (409 `NOT_LIVE`, `ALREADY_PAUSED`). A paused listing leaves the public filter at once, so every list and its own URL stop showing it for the next request; the listing, its requests and its conversations stay. Resume clears the pause. A listing paused for 365 days or more returns to `ready-to-review` and the overview says so.
+- **Where it is reached from.** The shared header and "My business sections" tabs sit on the overview, the editor and the owner's requests. The Products and Services tabs link to routes journey 16 builds. The account menu entry waits for journey 20.
+- **Search index, media host, tooling.** The designs' `<TO SUPPLY>` search index is the database search of ADR 0011; the media host is the app's own `/media` path; the cache lifetime is one year as above. The observability vendor and CI tooling belong to the performance journey and stay open.
+
+## Deferred
+
+- L2-135 (CSRF, session cookies, CORS), L2-151 (real-user monitoring and Lighthouse) and L2-153 (page budgets): cross-cutting work with its own journeys; the media route already carries the cache and sniffing rules of L2-138.
+- L2-155 (a CDN, AVIF, and a cookieless media domain) and the public listing page showing the photos with `srcset`: the renditions exist, the public page still shows the category tile (L2-088 AC6 is therefore met; the photo on the card is not).
+- "Saved by members" on the overview: shown when the count exists, which it does with journey 19.
+- The e-mail to the verification team about a re-check (journey 17), and a dismissal of the "verified and live" banner that persists across devices.
+- Drag to reorder photos.
+
+## Consequences
+
+Journey 16 adds the Products and Services tabs on the same header. Journey 17 sends the re-check notice. A later journey puts the photos on the public page and behind a CDN.

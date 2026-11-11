@@ -1,0 +1,351 @@
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Jubilee.Api.Tests.Support;
+using Jubilee.Domain;
+using Jubilee.Tests.Shared;
+using Microsoft.EntityFrameworkCore;
+using SkiaSharp;
+
+namespace Jubilee.Api.Tests;
+
+// Run a business listing: L2-028, L2-065, L2-085 to L2-088, L2-096, L2-097, L2-126, L2-127, L2-133 and L2-138.
+// Naomi owns Luzandre.com, a live shop approved on 9 November 2026. "Now" is ListingMother.Now.
+public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
+{
+    private const string NaomiId = "member|naomi";
+
+    private readonly JubileeApiFactory _factory;
+    private Listing _listing = null!;
+
+    public OwnerWorkspaceTests(JubileeApiFactory factory) => _factory = factory;
+
+    public async Task InitializeAsync()
+    {
+        await _factory.Reset();
+        _listing = ListingMother.Public("luzandre-com", "shops", "Luzandre.com", tagline: "Custom church team tees");
+        _listing.AssignOwner(NaomiId);
+        await _factory.Arrange(_listing);
+    }
+
+    public Task DisposeAsync() => Task.CompletedTask;
+
+    private HttpClient Naomi() => _factory.CreateMemberClient("Naomi Laurent", NaomiId);
+
+    private HttpClient Joanna() => _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna");
+
+    private static async Task<JsonElement> Json(HttpResponseMessage response) =>
+        JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
+
+    private static object Body(int version, string name = "Luzandre.com", string tagline = "Custom church team tees", string category = "shops",
+        string? hours = "Mon to Fri, 10 to 6", string? website = "https://luzandre.com", string? about = "We print.", string? highlight = "Ships in 5 days") =>
+        new { version, name, tagline, category, about, where = "Leslieville", hours, website, highlight };
+
+    private static ByteArrayContent Photo(string name = "front.jpg", int width = 800, int height = 600)
+    {
+        using var bitmap = new SKBitmap(width, height);
+        bitmap.Erase(new SKColor(200, 120, 40));
+        using var image = SKImage.FromBitmap(bitmap);
+        using var encoded = image.Encode(SKEncodedImageFormat.Jpeg, 90);
+        return Upload(encoded.ToArray(), name);
+    }
+
+    private static ByteArrayContent Upload(byte[] bytes, string name)
+    {
+        var content = new ByteArrayContent(bytes);
+        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+        content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("form-data") { Name = "file", FileName = name };
+        return content;
+    }
+
+    private static Task<HttpResponseMessage> AddPhoto(HttpClient client, ByteArrayContent file) =>
+        client.PostAsync("/api/my-business/photos", new MultipartFormDataContent { { file, "file", "front.jpg" } });
+
+    // L2-085
+    [Fact]
+    public async Task L2_085_the_overview_of_a_live_listing_shows_the_week_in_numbers()
+    {
+        var yesterday = ListingMother.Now.AddHours(-5);
+        var quote = Request.AskForQuote(
+            "member|david", "David Chen", _listing.Id, null, "Church merch package", "150 tees", null, null, null, Guid.NewGuid().ToString(), yesterday);
+        await _factory.Arrange(
+            quote,
+            ListingView.Record(_listing.Id, "a", ListingMother.Now.AddDays(-1)),
+            ListingView.Record(_listing.Id, "b", ListingMother.Now.AddDays(-2)),
+            ListingView.Record(_listing.Id, "c", ListingMother.Now.AddDays(-9)));
+
+        var overview = await Json(await Naomi().GetAsync("/api/my-business"));
+
+        Assert.Equal("live", overview.GetProperty("state").GetString());
+        Assert.Equal("Verified · live since November 2026", overview.GetProperty("subtitle").GetString());
+        var stats = overview.GetProperty("stats");
+        Assert.Equal(2, stats.GetProperty("views").GetProperty("value").GetInt32());
+        Assert.Equal(1, stats.GetProperty("views").GetProperty("change").GetInt32());
+        Assert.Equal(1, stats.GetProperty("openRequests").GetInt32());
+        Assert.Equal(1, stats.GetProperty("newSinceYesterday").GetInt32());
+        Assert.Equal("David Chen", overview.GetProperty("needsReply")[0].GetProperty("customerName").GetString());
+        Assert.Equal(1, overview.GetProperty("newRequests").GetInt32());
+    }
+
+    // L2-085 AC1, L2-086
+    [Fact]
+    public async Task L2_086_a_listing_that_is_not_live_shows_where_it_stands_and_no_numbers()
+    {
+        await _factory.Reset();
+        var waiting = ListingMother.NonPublic(NonPublicState.ReadyToReview, "luzandre-com", "shops");
+        waiting.AssignOwner(NaomiId);
+        await _factory.Arrange(waiting);
+
+        var overview = await Json(await Naomi().GetAsync("/api/my-business"));
+
+        Assert.Equal("ready-to-review", overview.GetProperty("state").GetString());
+        Assert.StartsWith("Pending verification · submitted", overview.GetProperty("subtitle").GetString());
+        Assert.Equal(JsonValueKind.Null, overview.GetProperty("stats").ValueKind);
+    }
+
+    [Fact]
+    public async Task L2_086_a_member_with_no_business_sees_the_empty_state()
+    {
+        var overview = await Json(await Joanna().GetAsync("/api/my-business"));
+
+        Assert.Equal("none", overview.GetProperty("state").GetString());
+        Assert.Equal(JsonValueKind.Null, overview.GetProperty("listingId").ValueKind);
+    }
+
+    // L2-097, L2-133
+    [Fact]
+    public async Task L2_097_only_the_owner_reaches_the_editor_photos_and_pause()
+    {
+        var joanna = Joanna();
+        var photo = await AddPhoto(joanna, Photo());
+
+        Assert.Equal(HttpStatusCode.Forbidden, (await joanna.GetAsync("/api/my-business/listing")).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await joanna.PutAsJsonAsync("/api/my-business/listing", Body(0))).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, photo.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await joanna.PostAsync("/api/my-business/pause", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await _factory.CreateClient().GetAsync("/api/my-business")).StatusCode);
+    }
+
+    // L2-087
+    [Fact]
+    public async Task L2_087_the_owner_saves_the_listing_and_the_public_page_shows_it()
+    {
+        var response = await Naomi().PutAsJsonAsync("/api/my-business/listing", Body(0, tagline: "Church tees, printed in Toronto", website: "https://luzandre.com/shop"));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var saved = await Json(response);
+        Assert.Equal(1, saved.GetProperty("version").GetInt32());
+        Assert.Equal("https://luzandre.com/shop", saved.GetProperty("website").GetString());
+        var page = await _factory.GetJson("/api/listings/luzandre-com");
+        Assert.Equal("Church tees, printed in Toronto", page.GetProperty("tagline").GetString());
+    }
+
+    [Fact]
+    public async Task L2_087_each_invalid_field_is_named()
+    {
+        var response = await Naomi().PutAsJsonAsync("/api/my-business/listing",
+            Body(0, name: " ", tagline: new string('x', 91), hours: " ", website: "luzandre.com", about: new string('a', 1501), highlight: new string('h', 31)));
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        var errors = (await Json(response)).GetProperty("errors");
+        Assert.Equal("REQUIRED", errors.GetProperty("name").GetString());
+        Assert.Equal("TOO_LONG", errors.GetProperty("tagline").GetString());
+        Assert.Equal("REQUIRED", errors.GetProperty("hours").GetString());
+        Assert.Equal("INVALID", errors.GetProperty("website").GetString());
+        Assert.Equal("TOO_LONG", errors.GetProperty("about").GetString());
+        Assert.Equal("TOO_LONG", errors.GetProperty("highlight").GetString());
+    }
+
+    [Fact]
+    public async Task L2_087_an_edit_made_from_an_older_version_is_refused()
+    {
+        var naomi = Naomi();
+        await naomi.PutAsJsonAsync("/api/my-business/listing", Body(0));
+
+        var stale = await naomi.PutAsJsonAsync("/api/my-business/listing", Body(0, tagline: "Another"));
+
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+        Assert.Equal("LISTING_CHANGED", (await Json(stale)).GetProperty("code").GetString());
+    }
+
+    [Fact]
+    public async Task L2_087_changing_the_name_of_a_live_listing_asks_the_team_to_look_again_and_keeps_it_public()
+    {
+        var response = await Naomi().PutAsJsonAsync("/api/my-business/listing", Body(0, name: "Luzandre Print Co."));
+
+        Assert.True((await Json(response)).GetProperty("recheckRequested").GetBoolean());
+        await _factory.WithDb(async db =>
+        {
+            Assert.Contains(await db.AuditRecords.ToListAsync(), a => a.Action == "listing.recheck-requested" && a.TargetId == _listing.Id.ToString());
+        });
+        Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_087_the_request_cannot_set_anything_but_the_page_fields()
+    {
+        var response = await Naomi().PutAsJsonAsync("/api/my-business/listing", new { version = 0, name = "x", stage = "live", ownerId = "member|joanna" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_087_an_editor_that_cannot_load_carries_the_reference_JB_LST_503()
+    {
+        _factory.Database.Unavailable = true;
+
+        var response = await Naomi().GetAsync("/api/my-business/listing");
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal("JB-LST-503", (await Json(response)).GetProperty("reference").GetString());
+    }
+
+    // L2-088, L2-138
+    [Fact]
+    public async Task L2_088_a_photo_becomes_renditions_with_a_default_description()
+    {
+        var response = await AddPhoto(Naomi(), Photo());
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var photo = (await Json(response)).GetProperty("photos")[0];
+        Assert.Equal("Luzandre.com photo 1", photo.GetProperty("alt").GetString());
+        var key = photo.GetProperty("key").GetString()!;
+        Assert.Equal(32, key.Length);
+        var media = await _factory.CreateClient().GetAsync($"/media/{key}/640.jpg");
+        Assert.Equal(HttpStatusCode.OK, media.StatusCode);
+        Assert.Equal("image/jpeg", media.Content.Headers.ContentType!.MediaType);
+        Assert.Equal("nosniff", media.Headers.GetValues("X-Content-Type-Options").Single());
+        Assert.Contains("immutable", media.Headers.CacheControl!.ToString());
+        Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync($"/media/{key}/1280.webp")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync($"/media/{key}/999.jpg")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync("/media/not-a-key/640.jpg")).StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_138_a_file_that_is_not_an_image_is_refused_whatever_it_is_called()
+    {
+        var response = await AddPhoto(Naomi(), Upload("<script>alert(1)</script>"u8.ToArray(), "front.jpg"));
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        Assert.Equal("NOT_AN_IMAGE", (await Json(response)).GetProperty("code").GetString());
+    }
+
+    [Fact]
+    public async Task L2_138_a_photo_over_five_megabytes_is_refused()
+    {
+        var response = await AddPhoto(Naomi(), Upload(new byte[5 * 1024 * 1024 + 1], "big.jpg"));
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        Assert.Equal("TOO_LARGE", (await Json(response)).GetProperty("code").GetString());
+    }
+
+    [Fact]
+    public async Task L2_088_a_listing_holds_six_photos()
+    {
+        var naomi = Naomi();
+        for (var i = 0; i < 6; i++)
+        {
+            Assert.Equal(HttpStatusCode.Created, (await AddPhoto(naomi, Photo())).StatusCode);
+        }
+
+        var seventh = await AddPhoto(naomi, Photo());
+
+        Assert.Equal(HttpStatusCode.Conflict, seventh.StatusCode);
+        Assert.Equal("TOO_MANY_PHOTOS", (await Json(seventh)).GetProperty("code").GetString());
+    }
+
+    [Fact]
+    public async Task L2_088_photos_can_be_moved_described_and_removed()
+    {
+        var naomi = Naomi();
+        await AddPhoto(naomi, Photo());
+        var two = await Json(await AddPhoto(naomi, Photo()));
+        var second = two.GetProperty("photos")[1];
+        var secondId = second.GetProperty("id").GetString();
+        var secondKey = second.GetProperty("key").GetString();
+
+        var moved = await Json(await naomi.PutAsJsonAsync($"/api/my-business/photos/{secondId}/position", new { position = 1 }));
+        Assert.Equal(secondId, moved.GetProperty("photos")[0].GetProperty("id").GetString());
+
+        var described = await Json(await naomi.PutAsJsonAsync($"/api/my-business/photos/{secondId}/alt", new { alt = "The shop front on Queen Street" }));
+        Assert.Equal("The shop front on Queen Street", described.GetProperty("photos")[0].GetProperty("alt").GetString());
+
+        var tooLong = await naomi.PutAsJsonAsync($"/api/my-business/photos/{secondId}/alt", new { alt = new string('a', 126) });
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, tooLong.StatusCode);
+
+        var removed = await Json(await naomi.DeleteAsync($"/api/my-business/photos/{secondId}"));
+        Assert.Equal(1, removed.GetProperty("photos").GetArrayLength());
+        Assert.Equal("Luzandre.com photo 1", removed.GetProperty("photos")[0].GetProperty("alt").GetString());
+        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync($"/media/{secondKey}/640.jpg")).StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_097_a_member_cannot_touch_another_owners_photo()
+    {
+        var added = await Json(await AddPhoto(Naomi(), Photo()));
+        var id = added.GetProperty("photos")[0].GetProperty("id").GetString();
+        var other = ListingMother.Public("trade-shop", "shops", "Trade Shop");
+        other.AssignOwner("member|joanna");
+        await _factory.Arrange(other);
+
+        Assert.Equal(HttpStatusCode.NotFound, (await Joanna().DeleteAsync($"/api/my-business/photos/{id}")).StatusCode);
+    }
+
+    // L2-096, L2-028
+    [Fact]
+    public async Task L2_096_a_paused_listing_is_hidden_and_its_owner_can_resume_it()
+    {
+        var naomi = Naomi();
+
+        var paused = await Json(await naomi.PostAsync("/api/my-business/pause", null));
+
+        Assert.True(paused.GetProperty("paused").GetBoolean());
+        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
+        var overview = await Json(await naomi.GetAsync("/api/my-business"));
+        Assert.Equal("paused", overview.GetProperty("state").GetString());
+        Assert.True(overview.GetProperty("paused").GetBoolean());
+
+        var resumed = await Json(await naomi.PostAsync("/api/my-business/resume", null));
+
+        Assert.False(resumed.GetProperty("paused").GetBoolean());
+        Assert.False(resumed.GetProperty("needsReview").GetBoolean());
+        Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_096_a_listing_paused_for_a_year_goes_back_to_verification_when_resumed()
+    {
+        var naomi = Naomi();
+        await naomi.PostAsync("/api/my-business/pause", null);
+        _factory.Clock.Advance(TimeSpan.FromDays(366));
+
+        var resumed = await Json(await naomi.PostAsync("/api/my-business/resume", null));
+
+        Assert.True(resumed.GetProperty("needsReview").GetBoolean());
+        Assert.Equal("ready-to-review", resumed.GetProperty("state").GetString());
+        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_096_a_listing_that_is_not_live_cannot_be_paused()
+    {
+        await _factory.Reset();
+        var draft = ListingMother.NonPublic(NonPublicState.ChangesRequested, "luzandre-com", "shops");
+        draft.AssignOwner(NaomiId);
+        await _factory.Arrange(draft);
+
+        var response = await Naomi().PostAsync("/api/my-business/pause", null);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_096_pausing_twice_is_refused_as_is_resuming_a_listing_that_runs()
+    {
+        var naomi = Naomi();
+
+        Assert.Equal(HttpStatusCode.Conflict, (await naomi.PostAsync("/api/my-business/resume", null)).StatusCode);
+        await naomi.PostAsync("/api/my-business/pause", null);
+        Assert.Equal(HttpStatusCode.Conflict, (await naomi.PostAsync("/api/my-business/pause", null)).StatusCode);
+    }
+}

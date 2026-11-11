@@ -12,7 +12,9 @@ import {
   ProductPage,
   ProductWithSizeScreen,
 } from '../pages/product.page';
+import { EditListingPage } from '../pages/edit-listing.page';
 import { IncomingRequestsPage } from '../pages/incoming-requests.page';
+import { MyBusinessPage } from '../pages/my-business.page';
 import { RequestDetailPage } from '../pages/request-detail.page';
 import { RequestsPage } from '../pages/requests.page';
 import { JoinPage } from '../pages/join.page';
@@ -42,6 +44,14 @@ export const screens: {
   { key: 'incoming-requests', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'incoming-requests.empty', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'incoming-requests.error', screen: (page) => new IncomingRequestsPage(page) },
+  { key: 'my-business', screen: (page) => new MyBusinessPage(page) },
+  { key: 'my-business.pending', screen: (page) => new MyBusinessPage(page) },
+  { key: 'my-business.changes-requested', screen: (page) => new MyBusinessPage(page) },
+  { key: 'my-business.empty', screen: (page) => new MyBusinessPage(page) },
+  { key: 'my-business.error', screen: (page) => new MyBusinessPage(page) },
+  { key: 'my-business.paused', screen: (page) => new MyBusinessPage(page) },
+  { key: 'edit-listing', screen: (page) => new EditListingPage(page) },
+  { key: 'edit-listing.error', screen: (page) => new EditListingPage(page) },
   { key: 'admin-verifications', screen: (page) => new AdminVerificationsPage(page) },
   { key: 'admin-verifications.empty', screen: (page) => new AdminVerificationsPage(page) },
   { key: 'admin-verifications.error', screen: (page) => new AdminVerificationsPage(page) },

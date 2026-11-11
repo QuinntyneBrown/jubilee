@@ -17,6 +17,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ListingView> ListingViews => Set<ListingView>();
 
+    public DbSet<ListingPhoto> ListingPhotos => Set<ListingPhoto>();
+
     public DbSet<RecentSearch> RecentSearches => Set<RecentSearch>();
 
     public DbSet<Member> Members => Set<Member>();

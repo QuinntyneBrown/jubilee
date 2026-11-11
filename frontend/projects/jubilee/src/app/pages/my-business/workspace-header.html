@@ -1,0 +1,50 @@
+<div class="page-header">
+  <div>
+    <h1>{{ heading() }}</h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+  @if (slug(); as slug) {
+    <div class="cluster">
+      <a class="btn" [routerLink]="['/b', slug]">
+        <svg jb-icon name="compass"></svg>{{ live() ? 'View public listing' : 'Preview listing' }}
+      </a>
+    </div>
+  }
+</div>
+<nav class="tabs" aria-label="My business sections">
+  <a
+    class="tab"
+    routerLink="/my-business"
+    [attr.aria-current]="current() === 'overview' ? 'page' : null"
+    >Overview</a
+  >
+  <a
+    class="tab"
+    routerLink="/my-business/listing"
+    [attr.aria-current]="current() === 'listing' ? 'page' : null"
+    >Listing</a
+  >
+  <a
+    class="tab"
+    routerLink="/my-business/products"
+    [attr.aria-current]="current() === 'products' ? 'page' : null"
+    >Products</a
+  >
+  <a
+    class="tab"
+    routerLink="/my-business/services"
+    [attr.aria-current]="current() === 'services' ? 'page' : null"
+    >Services</a
+  >
+  <a
+    class="tab"
+    routerLink="/my-business/requests"
+    [attr.aria-current]="current() === 'requests' ? 'page' : null"
+    >Requests
+    @if (openRequests() > 0) {
+      <span class="badge badge--count" [attr.aria-label]="openRequests() + ' open'">{{
+        openRequests()
+      }}</span>
+    }
+  </a>
+</nav>

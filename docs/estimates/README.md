@@ -13,14 +13,14 @@
 | [system-pages](system-pages.md) | 10 days | 8% |
 | [listings](listings.md) | 16 days | 0% |
 | [accounts](accounts.md) | 45 days | 0% |
-| [security](security.md) | 26 days | 3% |
+| [security](security.md) | 26 days | 11% |
 | [messaging](messaging.md) | 17 days | 0% |
 | [requests](requests.md) | 34 days | 80% |
 | [notifications](notifications.md) | 16 days | 0% |
 | [onboarding](onboarding.md) | 15 days | 83% |
 | [church-reference](church-reference.md) | 10 days | 78% |
 | [verification](verification.md) | 20 days | 52% |
-| [owner-workspace](owner-workspace.md) | 20 days | 0% |
+| [owner-workspace](owner-workspace.md) | 20 days | 50% |
 | [privacy](privacy.md) | 16 days | 0% |
 | [accessibility](accessibility.md) | 10 days | 0% |
 | [performance](performance.md) | 9 days | 6% |

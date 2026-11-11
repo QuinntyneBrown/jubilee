@@ -50,6 +50,21 @@ public sealed class Listing
 
     public bool IsPaused { get; private set; }
 
+    /// <summary>When the owner paused the listing; null while it is not paused (L2-096).</summary>
+    public DateTimeOffset? PausedAt { get; private set; }
+
+    /// <summary>Counts the owner's saves of the listing; an edit made from an older version is refused (L2-087 AC8).</summary>
+    public int Version { get; private set; }
+
+    /// <summary>The business's website (L2-087); null when it has none.</summary>
+    public string? Website { get; private set; }
+
+    /// <summary>When a change of name or category asked the verification team to look again (L2-087 AC6).</summary>
+    public DateTimeOffset? RecheckRequestedAt { get; private set; }
+
+    /// <summary>A listing paused this long needs verifying again before it is public (L2-096 AC4).</summary>
+    public static readonly TimeSpan PausedTooLong = TimeSpan.FromDays(365);
+
     public DateTimeOffset? DeletedAt { get; private set; }
 
     public bool IsUnderModerationHold { get; private set; }
@@ -141,9 +156,54 @@ public sealed class Listing
         Stage = stage;
     }
 
-    public void Pause() => IsPaused = true;
+    public void Pause(DateTimeOffset? now = null)
+    {
+        IsPaused = true;
+        PausedAt ??= now;
+    }
 
-    public void Resume() => IsPaused = false;
+    /// <summary>Takes the listing off pause. After a year it goes back to the verification queue (L2-096 AC4).</summary>
+    public void Resume(DateTimeOffset? now = null)
+    {
+        if (IsPaused && now is { } at && PausedAt is { } since && at - since >= PausedTooLong)
+        {
+            Stage = ListingStage.ReadyToReview;
+        }
+
+        IsPaused = false;
+        PausedAt = null;
+    }
+
+    /// <summary>
+    /// The owner's edit of the listing's page (L2-087). Returns true when the name or category changed,
+    /// which asks the verification team to look again.
+    /// </summary>
+    public bool Edit(string name, string tagline, string categorySlug, string? about, string? where, string? hours, string? website, string? highlight, DateTimeOffset now)
+    {
+        var reworded = !string.Equals(Name, name, StringComparison.Ordinal) || CategorySlug != categorySlug;
+        Name = name;
+        SortName = Domain.SortName.From(name);
+        Tagline = tagline;
+        if (CategorySlug != categorySlug)
+        {
+            CategorySlug = categorySlug;
+            Kind = categorySlug == Category.ShopsSlug ? ListingKind.Shop : ListingKind.Services;
+        }
+
+        About = Clean(about);
+        Where = Clean(where);
+        Hours = Clean(hours);
+        Website = Clean(website);
+        Highlight = Clean(highlight);
+        Version++;
+        if (reworded && Stage == ListingStage.Live)
+        {
+            RecheckRequestedAt = now;
+        }
+
+        RefreshRecommendedScore(now);
+        return reworded;
+    }
 
     public void Delete(DateTimeOffset now) => DeletedAt ??= now;
 

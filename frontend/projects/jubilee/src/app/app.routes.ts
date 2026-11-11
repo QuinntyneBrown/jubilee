@@ -127,6 +127,24 @@ export const routes: Routes = [
     title: 'Request · Jubilee',
   },
   {
+    path: 'my-business',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/my-business/my-business.page').then((m) => m.MyBusinessPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'my-business', section: 'business' }),
+    title: 'My business · Jubilee',
+  },
+  {
+    path: 'my-business/listing',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/edit-listing/edit-listing.page').then((m) => m.EditListingPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'edit-listing', section: 'business' }),
+    title: 'Edit listing · Jubilee',
+  },
+  {
     path: 'my-business/requests',
     pathMatch: 'full',
     loadComponent: () =>
