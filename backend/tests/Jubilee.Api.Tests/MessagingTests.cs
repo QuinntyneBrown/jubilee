@@ -418,6 +418,150 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         Assert.Equal(0, (await Json(await Joanna().GetAsync("/api/me/navigation"))).GetProperty("unreadConversationCount").GetInt32());
     }
 
+    // L2-063 AC8
+    [Fact]
+    public async Task L2_063_AC8_a_second_report_while_one_is_open_files_nothing_new_and_still_applies_a_block()
+    {
+        var id = await StartedId(Joanna());
+        await Joanna().PostAsJsonAsync($"/api/conversations/{id}/report", new { reason = "He asks for a deposit first.", block = false });
+
+        var again = await Joanna().PostAsJsonAsync($"/api/conversations/{id}/report", new { reason = "Still happening.", block = true });
+
+        Assert.Equal(HttpStatusCode.NoContent, again.StatusCode);
+        Assert.Equal(1, await Count(db => db.ConversationReports));
+        await Send(Trevor(), id, "Are you still there?");
+        var asMember = await Json(await Joanna().GetAsync($"/api/conversations/{id}"));
+        Assert.DoesNotContain(asMember.GetProperty("messages").EnumerateArray(), m => m.GetProperty("body").GetString() == "Are you still there?");
+    }
+
+    [Fact]
+    public async Task L2_063_AC8_a_resolved_report_does_not_stop_a_new_one()
+    {
+        var id = await StartedId(Joanna());
+        await Joanna().PostAsJsonAsync($"/api/conversations/{id}/report", new { reason = "Spam", block = false });
+        await _factory.WithDb(async db =>
+        {
+            (await db.ConversationReports.SingleAsync()).Resolve("Looked at it.", ListingMother.Now);
+            await db.SaveChangesAsync();
+        });
+
+        await Joanna().PostAsJsonAsync($"/api/conversations/{id}/report", new { reason = "It started again.", block = false });
+
+        Assert.Equal(2, await Count(db => db.ConversationReports));
+    }
+
+    // L2-057 AC4, AC8, AC9
+    private async Task<Request> Booked(string member = JoannaId, string slug = "legacy-financial", DateTimeOffset? at = null)
+    {
+        Request request = null!;
+        await _factory.WithDb(async db =>
+        {
+            var listing = await db.Listings.SingleAsync(l => l.Slug == slug);
+            request = Request.Book(
+                member, "Joanna Adeyemi", listing.Id, Guid.NewGuid(), "Discovery meeting", ListingMother.Now.AddDays(2), TimeSpan.FromMinutes(30),
+                MeetingMode.Video, null, null, Guid.NewGuid().ToString(), at ?? ListingMother.Now);
+            db.Requests.Add(request);
+            await db.SaveChangesAsync();
+        });
+        return request;
+    }
+
+    [Fact]
+    public async Task L2_057_AC4_a_request_between_the_member_and_the_business_is_a_card_in_their_conversation()
+    {
+        var id = await StartedId(Joanna());
+        var request = await Booked();
+
+        var asMember = await Json(await Joanna().GetAsync($"/api/conversations/{id}"));
+        var asOwner = await Json(await Trevor().GetAsync($"/api/conversations/{id}"));
+
+        var card = Assert.Single(asMember.GetProperty("requests").EnumerateArray());
+        Assert.Equal(request.Id.ToString(), card.GetProperty("id").GetString());
+        Assert.Equal("booking", card.GetProperty("kind").GetString());
+        Assert.Equal("Booking request", card.GetProperty("kindLabel").GetString());
+        Assert.Equal("Discovery meeting", card.GetProperty("title").GetString());
+        Assert.Equal("Thu 12 Nov, 10:00–10:30 a.m. · Video", card.GetProperty("detail").GetString());
+        Assert.Equal("new", card.GetProperty("status").GetString());
+        Assert.Equal("Awaiting reply", card.GetProperty("statusLabel").GetString());
+        Assert.Equal(ListingMother.Now, card.GetProperty("sentAt").GetDateTimeOffset());
+        Assert.Equal($"/requests/{request.Id}", card.GetProperty("link").GetString());
+        Assert.Equal("/my-business/requests", Assert.Single(asOwner.GetProperty("requests").EnumerateArray()).GetProperty("link").GetString());
+    }
+
+    [Fact]
+    public async Task L2_057_AC4_the_card_shows_the_request_s_present_status()
+    {
+        var id = await StartedId(Joanna());
+        var request = await Booked();
+        await _factory.WithDb(async db =>
+        {
+            (await db.Requests.SingleAsync(r => r.Id == request.Id)).Confirm(TrevorId, ListingMother.Now.AddMinutes(5));
+            await db.SaveChangesAsync();
+        });
+
+        var card = Assert.Single((await Json(await Joanna().GetAsync($"/api/conversations/{id}"))).GetProperty("requests").EnumerateArray());
+
+        Assert.Equal("confirmed", card.GetProperty("status").GetString());
+        Assert.Equal("Confirmed", card.GetProperty("statusLabel").GetString());
+    }
+
+    [Fact]
+    public async Task L2_057_AC4_AC8_quote_and_order_cards_say_what_was_asked_and_other_peoples_requests_are_not_shown()
+    {
+        var id = await StartedId(Joanna());
+        await _factory.WithDb(async db =>
+        {
+            var legacy = await db.Listings.SingleAsync(l => l.Slug == "legacy-financial");
+            var books = await db.Listings.SingleAsync(l => l.Slug == "christian-bookstores");
+            db.Requests.Add(Request.AskForQuote(
+                JoannaId, "Joanna Adeyemi", legacy.Id, null, null, "A plan for giving and RRSPs. We are two.", new DateOnly(2026, 11, 27), null, null, "q1",
+                ListingMother.Now.AddMinutes(1)));
+            db.Requests.Add(Request.AskForOrder(
+                JoannaId, "Joanna Adeyemi", legacy.Id, Guid.NewGuid(), "Retirement planning workbook", null, 1, new OrderAmounts(2400, 2400, 0), "Pickup", null, null,
+                "o1", ListingMother.Now.AddMinutes(2)));
+            db.Requests.Add(Request.AskForQuote(JoannaId, "Joanna Adeyemi", books.Id, null, null, "Another business", null, null, null, "q2", ListingMother.Now));
+            db.Requests.Add(Request.AskForQuote("member|samuel", "Samuel Park", legacy.Id, null, null, "Another member", null, null, null, "q3", ListingMother.Now));
+            await db.SaveChangesAsync();
+        });
+
+        var cards = (await Json(await Joanna().GetAsync($"/api/conversations/{id}"))).GetProperty("requests").EnumerateArray().ToList();
+
+        Assert.Equal(2, cards.Count);
+        Assert.Equal("Quote request", cards[0].GetProperty("kindLabel").GetString());
+        Assert.Equal("A plan for giving and RRSPs", cards[0].GetProperty("title").GetString());
+        Assert.Equal("Needed by Fri 27 Nov", cards[0].GetProperty("detail").GetString());
+        Assert.Equal("Order request", cards[1].GetProperty("kindLabel").GetString());
+        Assert.Equal("Retirement planning workbook × 1", cards[1].GetProperty("title").GetString());
+        Assert.Equal("Pickup · $24.00 + tax", cards[1].GetProperty("detail").GetString());
+    }
+
+    [Fact]
+    public async Task L2_057_AC4_with_older_messages_still_to_load_only_the_cards_of_the_loaded_messages_are_sent()
+    {
+        var id = await StartedId(Joanna());
+        await Booked(at: ListingMother.Now.AddMinutes(-30));
+        _factory.Clock.Advance(TimeSpan.FromMinutes(20));
+        for (var i = 0; i < 25; i++)
+        {
+            await Send(Joanna(), id, $"Question {i}");
+        }
+
+        _factory.Clock.Advance(TimeSpan.FromMinutes(20));
+        var late = await Booked(at: ListingMother.Now.AddMinutes(41));
+        for (var i = 0; i < 28; i++)
+        {
+            await Send(Joanna(), id, $"More {i}");
+        }
+
+        var latest = await Json(await Joanna().GetAsync($"/api/conversations/{id}"));
+        var first = latest.GetProperty("messages")[0].GetProperty("id").GetString();
+        var earlier = await Json(await Joanna().GetAsync($"/api/conversations/{id}?before={first}"));
+
+        Assert.True(latest.GetProperty("hasMore").GetBoolean());
+        Assert.Equal(late.Id.ToString(), Assert.Single(latest.GetProperty("requests").EnumerateArray()).GetProperty("id").GetString());
+        Assert.NotEqual(late.Id.ToString(), Assert.Single(earlier.GetProperty("requests").EnumerateArray()).GetProperty("id").GetString());
+    }
+
     // L2-137 AC1
     [Fact]
     public async Task L2_137_AC1_the_31st_message_in_ten_minutes_is_refused_with_retry_after()
@@ -618,6 +762,135 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
 
         _factory.Clock.Advance(TimeSpan.FromMinutes(6));
         Assert.Equal(HttpStatusCode.NotFound, (await anonymous.GetAsync(url)).StatusCode);
+    }
+
+    // L2-060 AC6
+    [Fact]
+    public async Task L2_060_AC6_a_photo_needs_no_text_and_previews_as_Photo()
+    {
+        var id = await StartedId(Joanna());
+        var attachmentId = (await Json(await Upload(Joanna(), id, Png()))).GetProperty("id").GetString();
+
+        var sent = await Joanna().PostAsJsonAsync(
+            $"/api/conversations/{id}/messages", new { body = "", idempotencyKey = Guid.NewGuid().ToString(), attachmentId });
+
+        Assert.Equal(HttpStatusCode.Created, sent.StatusCode);
+        Assert.Equal(string.Empty, (await Json(sent)).GetProperty("body").GetString());
+        Assert.Equal("You: Photo", (await Json(await Joanna().GetAsync("/api/conversations"))).GetProperty("conversations")[0].GetProperty("preview").GetString());
+        Assert.Equal("Joanna: Photo", (await Json(await Trevor().GetAsync("/api/conversations"))).GetProperty("conversations")[0].GetProperty("preview").GetString());
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, (await Send(Joanna(), id, " ")).StatusCode);
+    }
+
+    // L2-060 AC8
+    [Fact]
+    public async Task L2_060_AC8_a_participant_gets_a_new_signed_link_and_nobody_else_does()
+    {
+        var id = await StartedId(Joanna());
+        var attachmentId = (await Json(await Upload(Joanna(), id, Png()))).GetProperty("id").GetString();
+        await Joanna().PostAsJsonAsync($"/api/conversations/{id}/messages", new { body = "The form", idempotencyKey = Guid.NewGuid().ToString(), attachmentId });
+        _factory.Clock.Advance(TimeSpan.FromMinutes(6));
+
+        var renewed = await Trevor().GetAsync($"/api/conversations/{id}/attachments/{attachmentId}");
+
+        Assert.Equal(HttpStatusCode.OK, renewed.StatusCode);
+        var url = (await Json(renewed)).GetProperty("url").GetString()!;
+        Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync(url)).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await Joanna().GetAsync($"/api/conversations/{id}/attachments/{attachmentId}")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await Naomi().GetAsync($"/api/conversations/{id}/attachments/{attachmentId}")).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await _factory.CreateClient().GetAsync($"/api/conversations/{id}/attachments/{attachmentId}")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await Joanna().GetAsync($"/api/conversations/{id}/attachments/{Guid.NewGuid()}")).StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_060_AC8_a_photo_from_a_blocked_business_is_not_linked_for_the_member()
+    {
+        var id = await StartedId(Joanna());
+        await Joanna().PostAsJsonAsync($"/api/conversations/{id}/report", new { reason = "Spam", block = true });
+        var attachmentId = (await Json(await Upload(Trevor(), id, Png()))).GetProperty("id").GetString();
+        await Trevor().PostAsJsonAsync($"/api/conversations/{id}/messages", new { body = "Look", idempotencyKey = Guid.NewGuid().ToString(), attachmentId });
+
+        Assert.Equal(HttpStatusCode.NotFound, (await Joanna().GetAsync($"/api/conversations/{id}/attachments/{attachmentId}")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await Trevor().GetAsync($"/api/conversations/{id}/attachments/{attachmentId}")).StatusCode);
+    }
+
+    // L2-137
+    [Fact]
+    public async Task L2_137_the_31st_photo_in_ten_minutes_is_refused_with_retry_after()
+    {
+        var id = await StartedId(Joanna());
+        var joanna = Joanna();
+        for (var i = 0; i < 30; i++)
+        {
+            Assert.Equal(HttpStatusCode.Created, (await Upload(joanna, id, Png())).StatusCode);
+        }
+
+        var refused = await Upload(joanna, id, Png());
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, refused.StatusCode);
+        Assert.NotNull(refused.Headers.RetryAfter);
+    }
+
+    // L2-062 AC3 to AC6
+    [Fact]
+    public async Task L2_062_AC3_the_owner_sets_the_day_they_are_back_and_the_member_sees_they_are_away()
+    {
+        var id = await StartedId(Joanna());
+
+        var saved = await Trevor().PutAsJsonAsync("/api/my-business/away", new { until = "2026-11-16" });
+
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+        var until = new DateTimeOffset(2026, 11, 16, 5, 0, 0, TimeSpan.Zero);
+        Assert.Equal(until, (await Json(saved)).GetProperty("awayUntil").GetDateTimeOffset());
+        Assert.Equal(until, (await Json(await Trevor().GetAsync("/api/my-business"))).GetProperty("awayUntil").GetDateTimeOffset());
+        Assert.Equal(until, (await Json(await Joanna().GetAsync($"/api/conversations/{id}"))).GetProperty("awayUntil").GetDateTimeOffset());
+    }
+
+    [Fact]
+    public async Task L2_062_AC5_clearing_the_away_period_ends_it_at_once()
+    {
+        var id = await StartedId(Joanna());
+        await Trevor().PutAsJsonAsync("/api/my-business/away", new { until = "2026-11-16" });
+
+        var cleared = await Trevor().PutAsJsonAsync("/api/my-business/away", new { until = (string?)null });
+
+        Assert.Equal(HttpStatusCode.OK, cleared.StatusCode);
+        Assert.Equal(JsonValueKind.Null, (await Json(await Trevor().GetAsync("/api/my-business"))).GetProperty("awayUntil").ValueKind);
+        Assert.Equal(JsonValueKind.Null, (await Json(await Joanna().GetAsync($"/api/conversations/{id}"))).GetProperty("awayUntil").ValueKind);
+    }
+
+    [Theory]
+    [InlineData("2026-11-10", "IN_PAST")]
+    [InlineData("2026-11-01", "IN_PAST")]
+    [InlineData("2027-11-11", "TOO_FAR")]
+    [InlineData("next week", "REQUIRED")]
+    [InlineData("", "REQUIRED")]
+    public async Task L2_062_AC4_a_date_that_is_not_from_tomorrow_to_a_year_ahead_is_refused(string until, string code)
+    {
+        var refused = await Trevor().PutAsJsonAsync("/api/my-business/away", new { until });
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, refused.StatusCode);
+        Assert.Equal(code, (await Json(refused)).GetProperty("errors").GetProperty("until").GetString());
+        Assert.Equal(JsonValueKind.Null, (await Json(await Trevor().GetAsync("/api/my-business"))).GetProperty("awayUntil").ValueKind);
+    }
+
+    [Fact]
+    public async Task L2_062_AC4_the_last_day_allowed_is_a_year_ahead()
+    {
+        Assert.Equal(HttpStatusCode.OK, (await Trevor().PutAsJsonAsync("/api/my-business/away", new { until = "2027-11-10" })).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await Trevor().PutAsJsonAsync("/api/my-business/away", new { until = "2026-11-11" })).StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_062_AC6_only_the_owner_of_a_listing_can_set_its_away_period()
+    {
+        var asMember = await Joanna().PutAsJsonAsync("/api/my-business/away", new { until = "2026-11-16" });
+        var asVisitor = await _factory.CreateClient().PutAsJsonAsync("/api/my-business/away", new { until = "2026-11-16" });
+
+        Assert.Equal(HttpStatusCode.Forbidden, asMember.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, asVisitor.StatusCode);
+        var listings = new List<DateTimeOffset?>();
+        await _factory.WithDb(async db => listings = await db.Listings.Select(l => l.AwayUntil).ToListAsync());
+        Assert.All(listings, away => Assert.Null(away));
     }
 
     [Fact]

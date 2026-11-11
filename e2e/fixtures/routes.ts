@@ -51,6 +51,11 @@ export type StubName =
   | 'conversation'
   | 'conversation-loading'
   | 'conversation-error'
+  | 'conversation-muted'
+  | 'conversation-photo'
+  | 'conversation-photo-sending'
+  | 'conversation-arrived'
+  | 'conversation-requests'
   | 'member-requests'
   | 'member-requests-empty'
   | 'member-requests-error'
@@ -64,6 +69,7 @@ export type StubName =
   | 'incoming-error'
   | 'business'
   | 'business-pending'
+  | 'business-away'
   | 'business-changes'
   | 'business-empty'
   | 'business-error'
@@ -258,6 +264,48 @@ export const routes = {
     mock: 'pages/conversation/error.html',
     who: 'member',
     stub: 'conversation-error',
+  },
+  'conversation.menu': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/menu.html',
+    who: 'member',
+    stub: 'conversation',
+  },
+  'conversation.muted': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/muted.html',
+    who: 'member',
+    stub: 'conversation-muted',
+  },
+  'conversation.photo': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/photo.html',
+    who: 'member',
+    stub: 'conversation-photo',
+  },
+  'conversation.photo-attached': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/photo-attached.html',
+    who: 'member',
+    stub: 'conversation',
+  },
+  'conversation.photo-sending': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/photo-sending.html',
+    who: 'member',
+    stub: 'conversation-photo-sending',
+  },
+  'conversation.arrived': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/arrived.html',
+    who: 'member',
+    stub: 'conversation-arrived',
+  },
+  'conversation.requests': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/requests.html',
+    who: 'member',
+    stub: 'conversation-requests',
   },
   'new-message': {
     app: '/b/legacy-financial/message',
@@ -574,6 +622,12 @@ export const routes = {
     mock: 'pages/my-business/default.html',
     who: 'member',
     stub: 'business',
+  },
+  'my-business.away': {
+    app: '/my-business',
+    mock: 'pages/my-business/away.html',
+    who: 'member',
+    stub: 'business-away',
   },
   'my-business.pending': {
     app: '/my-business',

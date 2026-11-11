@@ -1,9 +1,22 @@
 import { expect, test } from '../fixtures/jb-test';
-import { stubMessaging } from '../fixtures/messaging';
+import {
+  legacyMessages,
+  photoMessages,
+  requestCards,
+  stubMessaging,
+} from '../fixtures/messaging';
+import { brokenLargeJpeg, largePng, pdfNamedJpeg, smallJpeg } from '../fixtures/photos';
 import { BusinessPage } from '../pages/business.page';
 import { NotFoundPage } from '../pages/not-found.page';
-import { ConversationPage, MessagesPage, NewMessageDialog } from '../pages/messages.page';
+import {
+  BubbleRegion,
+  ConversationPage,
+  MessagesPage,
+  NewMessageDialog,
+} from '../pages/messages.page';
+import { ReportConversationDialog } from '../pages/report-conversation.dialog';
 import { SignInRequiredDialog } from '../pages/sign-in-required.dialog';
+import { Toasts } from '../pages/toasts';
 
 // Message a business: L2-055 to L2-063. The API is answered by Playwright mocking (ADR 0009);
 // the requests the app makes are kept to prove what it sends.
@@ -237,6 +250,658 @@ test.describe('a conversation (L2-057)', () => {
     await jb.goto('/messages/c-legacy');
 
     await expect(conversation.away).toContainText('Trevor Chew is away');
+  });
+});
+
+test.describe('request cards (L2-057 AC4)', () => {
+  test('AC4: a request shows as a card in the timeline, at the time it was sent, with its status', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+
+    const card = conversation.card('Discovery meeting');
+    await expect(card.kind).toHaveText('Booking request');
+    await expect(card.detail).toHaveText('Thu 12 Nov, 10:00–10:30 a.m. · Video');
+    await expect(card.status).toHaveText('Confirmed');
+    await expect(card.viewRequest).toHaveAttribute('href', '/requests/r-booking');
+    await expect(conversation.timeline).toContainText([
+      'Today · Tue 10 Nov',
+      'Hi Joanna',
+      'Thank you!',
+      'Discovery meeting',
+      'Thursday at 10:00 works',
+    ]);
+  });
+
+  test('AC8: booking, quote and order cards say what was asked and their status in words', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { requests: requestCards() });
+    await jb.goto('/messages/c-legacy');
+
+    await expect(conversation.cards).toHaveCount(4);
+    await expect(conversation.card('Discovery meeting').status).toHaveText('Awaiting reply');
+    const quote = conversation.card('A plan for giving');
+    await expect(quote.kind).toHaveText('Quote request');
+    await expect(quote.detail).toHaveText('Needed by Fri 27 Nov');
+    const order = conversation.card('Retirement planning workbook');
+    await expect(order.kind).toHaveText('Order request');
+    await expect(order.detail).toHaveText('Pickup · $24.00 + tax');
+    await expect(order.status).toHaveText('Declined');
+    await expect(conversation.card('Follow-up meeting').status).toHaveText('Cancelled');
+  });
+
+  test('AC4: the card follows the request when its status changes, without a reload', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { live: true, requests: [requestCards()[0]] });
+    await jb.goto('/messages/c-legacy');
+    const card = conversation.card('Discovery meeting');
+    await expect(card.status).toHaveText('Awaiting reply');
+
+    fake.requests[0] = { ...fake.requests[0], status: 'confirmed', statusLabel: 'Confirmed' };
+    fake.notify('request', 'Legacy Financial confirmed your meeting', 'Thu 12 Nov, 10:00 a.m.', '/requests/r-booking');
+
+    await expect(card.status).toHaveText('Confirmed', { timeout: 2000 });
+    await expect(conversation.cards).toHaveCount(1);
+  });
+
+  test('AC4: a request made while the conversation is open adds its card', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { live: true, requests: [] });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(3);
+    await expect(conversation.cards).toHaveCount(0);
+
+    fake.requests.push({ ...requestCards()[1], sentAt: '2026-11-10T14:20:00Z' });
+    fake.notify('request', 'Your quote request was sent', 'A plan for giving and RRSPs', '/requests/r-quote');
+
+    await expect(conversation.card('A plan for giving').status).toHaveText('Confirmed', { timeout: 2000 });
+    await expect(conversation.timeline.last()).toContainText('A plan for giving');
+  });
+
+  test('AC9: for the owner "View request" opens the owner’s Requests', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, {
+      canBlock: false,
+      requests: [{ ...requestCards()[0], link: '/my-business/requests' }],
+    });
+    await jb.goto('/messages/c-legacy');
+
+    await expect(conversation.card('Discovery meeting').viewRequest).toHaveAttribute(
+      'href',
+      '/my-business/requests',
+    );
+  });
+});
+
+test.describe('real-time arrival (L2-057 AC5, L2-070)', () => {
+  test('AC5: a reply appears in the open conversation within 2 seconds, without a reload, and is announced', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { live: true });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(3);
+    await expect(conversation.announcement).toHaveText('');
+    await page.evaluate(() => ((window as { stayed?: boolean }).stayed = true));
+
+    fake.arrive('I’ve sent the meeting link to your e-mail.');
+
+    const arrived = conversation.bubble('I’ve sent the meeting link');
+    await expect(arrived.root).toBeVisible({ timeout: 2000 });
+    await expect(arrived.time).toHaveText('9:15 a.m.');
+    await expect(conversation.announcement).toHaveText('New message from Trevor');
+    await expect(conversation.announcement).toHaveAttribute('role', 'status');
+    expect(await page.evaluate(() => (window as { stayed?: boolean }).stayed)).toBe(true);
+    // The member is reading it, so no toast repeats it.
+    await expect(toasts.withTitle('New message from Legacy Financial')).toHaveCount(0);
+    // Reading again marks the conversation read on the server (L2-057 AC2).
+    expect(fake.opened.filter((open) => open.before === null).length).toBeGreaterThan(1);
+  });
+
+  test('AC5: a second reply is shown once and announced again', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { live: true });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(3);
+
+    fake.arrive('One.');
+    await expect(conversation.bubbles).toHaveCount(4);
+    fake.arrive('Two.');
+    await expect(conversation.bubbles).toHaveCount(5);
+    await expect(conversation.bubbles.filter({ hasText: 'One.' })).toHaveCount(1);
+  });
+
+  test('L2-056, L2-070: the inbox row of another conversation moves up and says unread, with a toast', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { live: true });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.list.rows.first()).toContainText('Legacy Financial');
+
+    fake.arrive('Your flowers are ready for pickup.', 'c-flowers');
+
+    const row = conversation.list.rows.first();
+    await expect(row).toContainText('Flower Creations', { timeout: 2000 });
+    await expect(conversation.list.snippet(row)).toContainText('Unread. Your flowers are ready for pickup.');
+    await expect(toasts.withTitle('New message from Flower Creations')).toBeVisible();
+    await expect(conversation.bubbles).toHaveCount(3);
+  });
+
+  test('L2-056, L2-070: the Messages page lists a new message without a reload', async ({ page, jb }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { live: true });
+    await jb.goto('/messages');
+    await expect(messages.subtitle).toHaveText('4 conversations · 2 unread');
+
+    fake.arrive('Your flowers are ready for pickup.', 'c-flowers');
+
+    await expect(messages.subtitle).toHaveText('4 conversations · 3 unread', { timeout: 2000 });
+    await expect(messages.list.rows.first()).toContainText('Flower Creations');
+  });
+});
+
+test.describe('mute a conversation (L2-061)', () => {
+  test('AC3: "More" opens a menu with Mute and Report conversation, by keyboard too', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+
+    await conversation.more.focus();
+    await page.keyboard.press('Enter');
+    await expect(conversation.menuItem('Mute')).toBeFocused();
+    await expect(conversation.more).toHaveAttribute('aria-expanded', 'true');
+    await page.keyboard.press('ArrowDown');
+    await expect(conversation.menuItem('Report conversation')).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(conversation.menu).toBeHidden();
+    await expect(conversation.more).toBeFocused();
+  });
+
+  test('AC1, AC4: Mute saves it, says so in a toast and in the header, and Undo unmutes', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.muted).toHaveCount(0);
+
+    await conversation.more.click();
+    await conversation.menuItem('Mute').click();
+
+    const toast = toasts.withTitle('Conversation muted');
+    await expect(toast).toContainText('You won’t be e-mailed about new replies here.');
+    await expect(conversation.muted).toHaveText('Muted');
+    expect(fake.mutes).toEqual([true]);
+
+    await toasts.action(toast, 'Undo').click();
+    await expect(conversation.muted).toHaveCount(0);
+    expect(fake.mutes).toEqual([true, false]);
+  });
+
+  test('AC2: a muted conversation offers Unmute, which turns the e-mails back on', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { muted: true });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.muted).toHaveText('Muted');
+
+    await conversation.more.click();
+    await expect(conversation.menuItem('Mute')).toHaveCount(0);
+    await conversation.menuItem('Unmute').click();
+
+    await expect(conversation.muted).toHaveCount(0);
+    expect(fake.mutes).toEqual([false]);
+  });
+
+  test('AC5: when the mute cannot be saved the conversation stays as it was and a toast says so', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { muting: 'fail' });
+    await jb.goto('/messages/c-legacy');
+
+    await conversation.more.click();
+    await conversation.menuItem('Mute').click();
+
+    await expect(toasts.withTitle('We couldn’t mute this conversation')).toContainText('Try again.');
+    await expect(conversation.muted).toHaveCount(0);
+  });
+});
+
+test.describe('photo attachments (L2-060)', () => {
+  test('AC5: a chosen photo shows as a preview in the composer until it is removed or sent', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.attachPhoto).toBeVisible();
+
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await expect(conversation.attachedPhoto).toBeVisible();
+    await expect(conversation.attachPhoto).toHaveCount(0);
+
+    await conversation.removePhoto.click();
+    await expect(conversation.attachedPhoto).toHaveCount(0);
+    await expect(conversation.attachPhoto).toBeFocused();
+    expect(fake.uploads).toEqual([]);
+  });
+
+  test('AC1: a photo is uploaded and sent with the message, and shows in its bubble', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.composer.fill('Here’s the page of the statement I mentioned.');
+    await conversation.send.click();
+
+    const bubble = conversation.bubble('Here’s the page');
+    await expect(bubble.photo).toHaveAttribute('src', '/api/attachments/a-1?expires=1&sig=first');
+    await expect(bubble.photo).toHaveAccessibleName('Photo from you');
+    await expect(bubble.time).toHaveText('9:00 a.m.');
+    await expect(conversation.attachedPhoto).toHaveCount(0);
+    expect(fake.uploads).toHaveLength(1);
+    expect(fake.uploads[0].contentType).toBe('image/jpeg');
+    expect(fake.sends).toHaveLength(1);
+    expect(fake.sends[0]).toMatchObject({
+      body: 'Here’s the page of the statement I mentioned.',
+      attachmentId: 'a-1',
+    });
+    expect(fake.sends[0].idempotencyKey).toBeTruthy();
+  });
+
+  test('AC6: a photo is sent without text', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(3);
+
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.send.click();
+
+    await expect(conversation.bubbles).toHaveCount(4);
+    await expect(new BubbleRegion(conversation.bubbles.last()).photo).toBeVisible();
+    expect(fake.sends).toEqual([
+      { body: '', idempotencyKey: expect.any(String), attachmentId: 'a-1' },
+    ]);
+  });
+
+  test('AC7: a message with a photo shows the photo and "Sending…" while it is on its way', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { uploading: 'hang' });
+    await jb.goto('/messages/c-legacy');
+
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.composer.fill('The statement');
+    await conversation.send.click();
+
+    const bubble = conversation.bubble('The statement');
+    await expect(bubble.root).toHaveClass(/bubble--pending/);
+    await expect(bubble.photo).toBeVisible();
+    await expect(bubble.status).toHaveText('Sending…');
+    await expect(conversation.composer).toHaveValue('');
+    await expect(conversation.attachPhoto).toBeVisible();
+  });
+
+  test('AC7: a retry sends the same message and the same photo once', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { delivery: 'fail' });
+    await jb.goto('/messages/c-legacy');
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.composer.fill('The statement');
+    await conversation.send.click();
+
+    const bubble = conversation.bubble('The statement');
+    await expect(bubble.time).toContainText('Not sent. Check your connection.');
+    await expect(bubble.photo).toBeVisible();
+
+    fake.delivery = 'ok';
+    await bubble.tryAgain.click();
+    await expect(bubble.time).toHaveText('9:00 a.m.');
+    expect(fake.uploads).toHaveLength(1);
+    expect(fake.sends).toHaveLength(1);
+    expect(fake.sends[0].attachmentId).toBe('a-1');
+  });
+
+  test('AC7: when the upload does not go the message says so, and "Try again" uploads it', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { uploading: 'fail' });
+    await jb.goto('/messages/c-legacy');
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.composer.fill('The statement');
+    await conversation.send.click();
+
+    const bubble = conversation.bubble('The statement');
+    await expect(bubble.time).toContainText('Not sent. Check your connection.');
+    expect(fake.sends).toEqual([]);
+
+    fake.uploading = 'ok';
+    await bubble.tryAgain.click();
+    await expect(bubble.time).toHaveText('9:00 a.m.');
+    expect(fake.uploads).toHaveLength(1);
+    expect(fake.sends).toHaveLength(1);
+  });
+
+  test('AC2: a photo over 5 MB is shrunk on the device, with a warning, before it is sent', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    const large = largePng();
+    expect(large.buffer.length).toBeGreaterThan(5 * 1024 * 1024);
+
+    await conversation.photoInput.setInputFiles(large);
+
+    await expect(toasts.withTitle('Photo is large')).toContainText(
+      'Shrinking it to 5 MB before sending.',
+    );
+    await expect(conversation.attachedPhoto).toBeVisible();
+    await conversation.send.click();
+    await expect(conversation.bubbles).toHaveCount(4);
+    expect(fake.uploads).toHaveLength(1);
+    expect(fake.uploads[0].contentType).toBe('image/jpeg');
+    expect(fake.uploads[0].bytes).toBeLessThanOrEqual(5 * 1024 * 1024);
+  });
+
+  for (const [what, file] of [
+    ['is not a JPG or PNG, whatever its name', pdfNamedJpeg],
+    ['cannot be shrunk', brokenLargeJpeg],
+  ] as const) {
+    test(`AC3: a file that ${what} is refused with an error and nothing is attached`, async ({
+      page,
+      jb,
+    }) => {
+      const conversation = new ConversationPage(page);
+      const toasts = new Toasts(page);
+      await conversation.setWidth(1280);
+      await jb.signInAs('member');
+      const fake = await stubMessaging(page);
+      await jb.goto('/messages/c-legacy');
+
+      await conversation.photoInput.setInputFiles(file());
+
+      await expect(toasts.withTitle('Photo couldn’t be attached')).toContainText(
+        'Use a JPG or PNG under 5 MB.',
+      );
+      await expect(conversation.attachedPhoto).toHaveCount(0);
+      await expect(conversation.attachPhoto).toBeVisible();
+      await conversation.send.click();
+      expect(fake.uploads).toEqual([]);
+      expect(fake.sends).toEqual([]);
+    });
+  }
+
+  test('AC1, AC4: photos show in their bubbles through their signed links, with and without text', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { messages: [...legacyMessages(), ...photoMessages()] });
+    await jb.goto('/messages/c-legacy');
+
+    const mine = conversation.bubble('Here’s the page');
+    const theirs = new BubbleRegion(conversation.bubbles.last());
+    await expect(mine.photo).toHaveAttribute('src', /\/api\/attachments\/a-statement\?expires=1&sig=first/);
+    await expect(theirs.photo).toHaveAccessibleName('Photo from Trevor');
+    await expect(theirs.time).toHaveText('9:26 a.m.');
+    expect(await theirs.photo.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    expect(fake.renewals).toEqual([]);
+  });
+
+  test('AC8: a photo whose link has expired gets a new one and shows', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, {
+      messages: [...legacyMessages(), photoMessages()[0]],
+      links: 'expired',
+    });
+    await jb.goto('/messages/c-legacy');
+
+    const bubble = conversation.bubble('Here’s the page');
+    await expect(bubble.photo).toHaveAttribute('src', /sig=renewed/);
+    await expect
+      .poll(() => bubble.photo.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
+    expect(fake.renewals).toEqual(['a-statement']);
+  });
+
+  test('AC8: when no new link can be had the bubble says "Photo unavailable"', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, {
+      messages: [...legacyMessages(), photoMessages()[0]],
+      links: 'expired',
+      renewing: 'fail',
+    });
+    await jb.goto('/messages/c-legacy');
+
+    const bubble = conversation.bubble('Here’s the page');
+    await expect(bubble.photoMissing).toHaveText('Photo unavailable');
+    await expect(bubble.photo).toHaveCount(0);
+    expect(fake.renewals).toEqual(['a-statement']);
+  });
+
+  test('AC8: "View photo" opens the photo in a new tab through a new link', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { messages: [...legacyMessages(), photoMessages()[0]] });
+    await jb.goto('/messages/c-legacy');
+
+    const opened = page.waitForEvent('popup');
+    await conversation.bubble('Here’s the page').viewPhoto.click();
+
+    expect((await opened).url()).toContain('/api/attachments/a-statement?expires=1&sig=renewed');
+    expect(fake.renewals).toEqual(['a-statement']);
+  });
+});
+
+test.describe('report a conversation (L2-063)', () => {
+  test('AC5: "Report conversation" opens the dialog, and a member may block the business', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const dialog = new ReportConversationDialog(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+
+    await conversation.more.click();
+    await conversation.menuItem('Report conversation').click();
+
+    await expect(dialog.title).toHaveText('Report this conversation');
+    await expect(dialog.description).toHaveText(
+      'Reports are private. Our verification team reads this conversation only while the report is open.',
+    );
+    await expect(dialog.counter).toHaveText('1,000 characters left');
+    await expect(dialog.block).not.toBeChecked();
+    await expect(dialog.block).toHaveAccessibleName(/Block Legacy Financial/);
+    await expect(dialog.blockHelp).toHaveText(
+      'They won’t be told. Their messages will stop reaching you.',
+    );
+
+    await page.keyboard.press('Escape');
+    await expect(dialog.root).toBeHidden();
+    await expect(conversation.more).toBeFocused();
+  });
+
+  test('AC5: an owner reports without a block choice', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    const dialog = new ReportConversationDialog(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { canBlock: false });
+    await jb.goto('/messages/c-legacy');
+
+    await conversation.more.click();
+    await conversation.menuItem('Report conversation').click();
+    await expect(dialog.block).toHaveCount(0);
+    await dialog.what.fill('He keeps sending the same message.');
+    await dialog.send.click();
+
+    await expect(dialog.title).toHaveText('Thanks for telling us');
+    expect(fake.reports).toEqual([{ reason: 'He keeps sending the same message.', block: false }]);
+  });
+
+  test('AC6: with nothing written the field says what to do and nothing is sent', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const dialog = new ReportConversationDialog(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await conversation.more.click();
+    await conversation.menuItem('Report conversation').click();
+
+    await dialog.what.fill('   ');
+    await dialog.send.click();
+
+    await expect(dialog.whatError).toHaveText('Add a sentence or two so we know what to check.');
+    await expect(dialog.what).toHaveAttribute('aria-invalid', 'true');
+    await expect(dialog.what).toBeFocused();
+    expect(fake.reports).toEqual([]);
+  });
+
+  test('AC1, AC7: the report is sent with the block, and the dialog says the business is blocked', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const dialog = new ReportConversationDialog(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await conversation.more.click();
+    await conversation.menuItem('Report conversation').click();
+
+    await dialog.what.fill('He asks for a deposit by e-transfer before we have met.');
+    await expect(dialog.counter).toHaveText('945 characters left');
+    await dialog.block.check();
+    await dialog.send.click();
+
+    await expect(dialog.title).toHaveText('Thanks for telling us');
+    await expect(dialog.description).toHaveText(
+      'Your report is private. Our verification team reviews it within one business day. Legacy Financial is blocked.',
+    );
+    expect(fake.reports).toEqual([
+      { reason: 'He asks for a deposit by e-transfer before we have met.', block: true },
+    ]);
+    await dialog.close.click();
+    await expect(dialog.root).toBeHidden();
+  });
+
+  test('AC7: a report that did not go keeps what was typed, and "Send report" tries again', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const dialog = new ReportConversationDialog(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { reporting: 'fail' });
+    await jb.goto('/messages/c-legacy');
+    await conversation.more.click();
+    await conversation.menuItem('Report conversation').click();
+    await dialog.what.fill('Spam, three times a day.');
+    await dialog.send.click();
+
+    await expect(dialog.alert).toContainText('We couldn’t send that');
+    await expect(dialog.what).toHaveValue('Spam, three times a day.');
+
+    fake.reporting = 'ok';
+    await dialog.send.click();
+    await expect(dialog.title).toHaveText('Thanks for telling us');
+    await expect(dialog.description).toHaveText(
+      'Your report is private. Our verification team reviews it within one business day.',
+    );
+    expect(fake.reports).toEqual([{ reason: 'Spam, three times a day.', block: false }]);
   });
 });
 

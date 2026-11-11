@@ -1,0 +1,21 @@
+@if (placeholder() !== null) {
+  <span jb-skeleton shape="text"></span>
+} @else {
+  <span class="visually-hidden">{{ sender() }}: </span>
+  @if (photoMissing()) {
+    <span class="bubble__photo bubble__photo--missing">Photo unavailable</span>
+  } @else if (photo(); as src) {
+    <button class="bubble__photo" type="button" aria-label="View photo" (click)="viewPhoto.emit()">
+      <img [src]="src" [alt]="photoAlt()" (error)="photoFailed.emit()" />
+    </button>
+  }
+  <span class="bubble__text">{{ text() }}</span>
+  <span class="bubble__meta" [attr.role]="state() === 'pending' ? 'status' : null"
+    >{{ meta() }}
+    @if (state() === 'failed') {
+      <button type="button" (click)="retry.emit()">Try again</button>
+      ·
+      <button type="button" (click)="discard.emit()">Delete</button>
+    }
+  </span>
+}

@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
+  AwayPeriod,
   INCOMING_REQUESTS_API,
   IncomingRequestRow,
   MY_BUSINESS_API,
@@ -38,13 +39,14 @@ import {
   DeclineRequestData,
   DeclineRequestDialog,
 } from '../../dialogs/decline-request/decline-request.dialog';
+import { AwayPeriodData, AwayPeriodDialog } from '../../dialogs/away-period/away-period.dialog';
 import {
   PauseListingData,
   PauseListingDialog,
 } from '../../dialogs/pause-listing/pause-listing.dialog';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
-import { threadTime } from '../../services/message-time';
+import { dayLabel, threadTime } from '../../services/message-time';
 import { NavigationStore } from '../../services/navigation.store';
 import { ToastService } from '../../toasts/toast.service';
 import { WorkspaceHeader } from './workspace-header';
@@ -160,6 +162,31 @@ export class MyBusinessPage implements OnInit {
       },
       { title: 'Live on Jubilee', meta: '', mark: 'next' },
     ];
+  }
+
+  protected awayDay(until: string): string {
+    return dayLabel(until);
+  }
+
+  /** "Set away period" (L2-062): a CDK dialog; My business reads again when it saved. */
+  protected openAway(business: MyBusiness): void {
+    const ref = this.dialog.open<AwayPeriod, AwayPeriodData>(AwayPeriodDialog, {
+      data: { awayUntil: business.awayUntil ?? null },
+      ...this.dialogOptions(),
+    });
+    ref.closed.subscribe((result) => {
+      if (!result) return;
+      this.toasts.show(
+        result.awayUntil
+          ? {
+              tone: 'success',
+              title: 'Away period set',
+              text: `Members who message you see you’re away until ${dayLabel(result.awayUntil)}.`,
+            }
+          : { tone: 'success', title: 'Away period cleared' },
+      );
+      this.fetch();
+    });
   }
 
   protected openPause(business: MyBusiness): void {

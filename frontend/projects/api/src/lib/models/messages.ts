@@ -23,6 +23,30 @@ export interface MessageAttachment {
   contentType: string;
 }
 
+/** The answer of an upload: the id the next send names. */
+export interface StoredAttachment {
+  id: string;
+}
+
+/** A new signed link to a stored photo. */
+export interface AttachmentLink {
+  url: string;
+}
+
+/** A request between the member and the business, as its card in the conversation reads (L2-057 AC4). */
+export interface RequestCard {
+  id: string;
+  kind: 'booking' | 'quote' | 'order';
+  kindLabel: string;
+  title: string;
+  detail: string | null;
+  status: 'new' | 'confirmed' | 'declined' | 'cancelled' | 'completed';
+  statusLabel: string;
+  sentAt: string;
+  /** Where "View request" goes. */
+  link: string;
+}
+
 export interface ChatMessage {
   id: string;
   body: string;
@@ -45,6 +69,8 @@ export interface Conversation {
   replies: RepliesBand | null;
   hasMore: boolean;
   messages: ChatMessage[];
+  /** Absent in a copy saved before request cards existed. */
+  requests?: RequestCard[];
 }
 
 export interface StartedConversation {

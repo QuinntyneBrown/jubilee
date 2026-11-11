@@ -6,27 +6,21 @@ title Components — Start a conversation
 Container_Boundary(web, "Jubilee Web") {
   Component(page, "BusinessPage", "Angular page", "Shows the listing and the Message action")
   Component(dialog, "NewMessageDialog", "Angular dialog", "Collects the first message and shows field and send errors")
-  Component(client, "MessagesApi", "Typed HTTP client", "Builds the conversation request with an idempotency key")
-  Component(toast, "ToastService", "Angular service", "Shows the toast that links to the conversation")
+  Component(client, "MessagesApi", "Service contract", "Builds the conversation request with an idempotency key")
 }
 Container_Boundary(api, "Jubilee API") {
-  Component(idem, "IdempotencyMiddleware", "ASP.NET Core middleware", "Returns the original result for a repeated key")
   Component(ctrl, "ConversationsController", "ASP.NET Core controller", "Exposes POST /api/conversations")
   Component(validator, "StartConversationCommandValidator", "FluentValidation validator", "Requires text of 1 to 4000 characters")
-  Component(handler, "StartConversationCommandHandler", "MediatR handler", "Finds or creates the conversation and adds the message")
-  Component(conv, "Conversation", "Domain entity", "Owns participants and messages")
+  Component(handler, "StartConversationCommandHandler", "MediatR handler", "Answers the original result for a repeated key or finds or creates the conversation and adds the message")
+  Component(conv, "Conversation", "Domain entity", "Owns the read marks and message order")
 }
-ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and messages and outbox")
-ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
+ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and messages with a unique sender and idempotency key")
 
 Rel(page, dialog, "Opens")
-Rel(dialog, client, "Calls startConversation")
-Rel(dialog, toast, "Shows success toast")
-Rel(client, idem, "POST /api/conversations", "JSON/HTTPS")
-Rel(idem, cache, "Looks up key", "Redis protocol")
-Rel(idem, ctrl, "Forwards new request")
+Rel(dialog, client, "Calls start")
+Rel(client, ctrl, "POST /api/conversations", "JSON/HTTPS")
 Rel(ctrl, validator, "Validates through MediatR pipeline")
 Rel(ctrl, handler, "Sends StartConversationCommand")
 Rel(handler, conv, "Creates or loads and mutates")
-Rel(handler, db, "Persists with outbox row", "EF Core")
+Rel(handler, db, "Looks up the key and persists with the owner's notification", "EF Core")
 @enduml
