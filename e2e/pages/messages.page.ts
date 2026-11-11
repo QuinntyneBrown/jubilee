@@ -1,7 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
-import { MOCK_PHOTO } from '../fixtures/photos';
+import { MOCK_PHOTO, pdfNamedJpeg } from '../fixtures/photos';
 import type { Region, Screen } from '../fixtures/visual';
 import { ShellPage } from './shell.page';
+import { Toasts } from './toasts';
 
 /** The list of conversations with its search: the left column of Messages and of a conversation. */
 export class InboxListRegion {
@@ -247,6 +248,25 @@ export class ConversationPhotoAttachedScreen extends ConversationPage {
     await this.composer.waitFor();
     if ((await this.photoInput.count()) > 0) await this.photoInput.setInputFiles(MOCK_PHOTO);
     await this.attachedPhoto.waitFor();
+  }
+}
+
+/**
+ * A conversation that has just refused a file that is not a photo (L2-060 AC2): the toast says
+ * why. The mock is the toast alone; the app has to be given the file.
+ */
+export class ConversationPhotoRefusedScreen extends ConversationPage {
+  readonly refusal: Locator;
+
+  constructor(page: Page) {
+    super(page);
+    this.refusal = new Toasts(page).withTitle('Photo couldn’t be attached');
+  }
+
+  override async ready(): Promise<void> {
+    await this.composer.or(this.refusal).first().waitFor();
+    if ((await this.photoInput.count()) > 0) await this.photoInput.setInputFiles(pdfNamedJpeg());
+    await this.refusal.waitFor();
   }
 }
 

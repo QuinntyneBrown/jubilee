@@ -1,0 +1,14 @@
+<svg jb-icon class="toast__icon" aria-hidden="true" [name]="icon()"></svg>
+<div class="toast__body">
+  <div class="toast__title">{{ heading() }}</div>
+  @if (text(); as text) {
+    <div class="toast__text">{{ text }}</div>
+  }
+  @if (actionLabel(); as label) {
+    <button class="toast__action" type="button" (click)="action.emit()">{{ label }}</button>
+  }
+</div>
+<button jb-close-button type="button" aria-label="Dismiss" (click)="dismiss.emit()"></button>
+@if (duration() > 0) {
+  <span class="toast__progress" aria-hidden="true"></span>
+}

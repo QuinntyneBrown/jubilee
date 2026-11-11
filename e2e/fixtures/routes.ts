@@ -337,6 +337,12 @@ export const routes = {
     who: 'member',
     stub: 'conversation',
   },
+  'conversation.photo-refused': {
+    app: '/messages/c-legacy',
+    mock: 'notifications/message-toast/danger.html',
+    who: 'member',
+    stub: 'conversation',
+  },
   'conversation.photo-sending': {
     app: '/messages/c-legacy',
     mock: 'pages/conversation/photo-sending.html',
