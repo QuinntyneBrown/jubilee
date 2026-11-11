@@ -85,27 +85,7 @@
             </div>
           }
           @if (summary().length > 0) {
-            <div
-              jb-alert
-              tone="danger"
-              [heading]="
-                'Fix ' + summary().length + ' ' + pluralThings(summary().length) + ' to continue'
-              "
-              class="form-summary"
-              role="alert"
-              id="summary"
-              tabindex="-1"
-            >
-              <ul style="margin: 0; padding-left: var(--space-5)">
-                @for (item of summary(); track item.field) {
-                  <li>
-                    <a [href]="'#' + idOf(item.field)" (click)="focusField(item.field, $event)">{{
-                      item.text
-                    }}</a>
-                  </li>
-                }
-              </ul>
-            </div>
+            <jb-form-summary [errors]="summaryErrors()" />
           }
 
           <fieldset>

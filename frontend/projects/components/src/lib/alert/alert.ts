@@ -14,7 +14,7 @@ const TONE_ICON: Record<AlertTone, IconName> = {
   info: 'info',
   success: 'check',
   warning: 'alert',
-  danger: 'alert',
+  danger: 'alert-circle',
 };
 
 /**

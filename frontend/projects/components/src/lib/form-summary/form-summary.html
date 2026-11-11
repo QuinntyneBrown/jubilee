@@ -1,0 +1,18 @@
+<div
+  jb-alert
+  tone="danger"
+  role="alert"
+  class="form-summary"
+  tabindex="-1"
+  [id]="summaryId()"
+  [heading]="shownHeading()"
+  #box
+>
+  <ul class="form-summary__list">
+    @for (error of errors(); track error.id) {
+      <li>
+        <a [href]="'#' + error.id" (click)="goTo($event, error.id)">{{ error.text }}</a>
+      </li>
+    }
+  </ul>
+</div>

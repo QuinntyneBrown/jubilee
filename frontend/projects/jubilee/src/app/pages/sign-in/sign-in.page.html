@@ -15,32 +15,7 @@
       <div jb-alert tone="danger" role="alert">{{ notice() }}</div>
     }
     @if (summary().length > 0) {
-      <div
-        jb-alert
-        tone="danger"
-        [heading]="
-          'Fix ' +
-          summary().length +
-          ' ' +
-          (summary().length === 1 ? 'thing' : 'things') +
-          ' to continue'
-        "
-        class="form-summary"
-        role="alert"
-        id="summary"
-        tabindex="-1"
-        #summaryBox
-      >
-        <ul class="alert__list">
-          @for (item of summary(); track item.id) {
-            <li>
-              <a [href]="'#' + item.id" (click)="$event.preventDefault(); focusField(item.id)">{{
-                item.text
-              }}</a>
-            </li>
-          }
-        </ul>
-      </div>
+      <jb-form-summary [errors]="summary()" #summaryBox />
     }
     <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
       <div class="field">

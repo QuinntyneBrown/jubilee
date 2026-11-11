@@ -3,19 +3,9 @@
   <h1>One more step</h1>
   <p class="text-muted">Joining with Google. Agree to continue.</p>
   @if (invalid()) {
-    <div
-      jb-alert
-      tone="danger"
-      heading="Fix 1 thing to continue"
-      class="form-summary"
-      role="alert"
-      id="summary"
-      tabindex="-1"
-    >
-      <ul class="alert__list">
-        <li><a href="#agree">Agree to the statement of faith to join</a></li>
-      </ul>
-    </div>
+    <jb-form-summary
+      [errors]="[{ id: 'agree', text: 'Agree to the statement of faith to join' }]"
+    />
   }
   @if (failed()) {
     <div jb-alert tone="danger" role="alert">We couldn’t save that. Try again.</div>

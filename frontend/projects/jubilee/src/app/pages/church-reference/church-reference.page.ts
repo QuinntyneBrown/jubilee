@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Meta } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { REFERENCE_API, ReferenceAnswerValue, ReferenceRequestView } from 'api';
-import { BrandMark, Icon, Button, Alert } from 'components';
+import { BrandMark, Icon, Button, Alert, FormSummary } from 'components';
 
 type Field = 'answer' | 'name' | 'role' | 'note';
 
@@ -21,7 +21,7 @@ const MESSAGES: Record<string, string> = {
 /** ChurchReferencePage (L2-081, L2-082): a pastor or elder confirms or declines the owner, without an account. */
 @Component({
   selector: 'jb-church-reference-page',
-  imports: [FormsModule, RouterLink, BrandMark, Icon, Button, Alert],
+  imports: [FormsModule, RouterLink, BrandMark, Icon, Button, Alert, FormSummary],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './church-reference.page.html',
@@ -56,7 +56,7 @@ export class ChurchReferencePage {
         field,
         id: field === 'answer' ? 'know-0' : field,
         message: MESSAGES[this.codes()[field] ?? ''] ?? 'Check this answer.',
-        summary: this.summaryFor(field),
+        text: this.summaryFor(field),
       })),
   );
 
@@ -155,11 +155,6 @@ export class ChurchReferencePage {
       next: () => this.state.set('reported'),
       error: (error) => this.fail(error),
     });
-  }
-
-  protected goTo(event: Event, id: string): void {
-    event.preventDefault();
-    document.getElementById(id)?.focus();
   }
 
   protected clear(field: Field): void {

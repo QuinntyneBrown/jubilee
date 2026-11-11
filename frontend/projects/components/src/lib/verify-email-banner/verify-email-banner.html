@@ -1,16 +1,4 @@
-<div
-  jb-alert
-  banner
-  [tone]="tone()"
-  [icon]="
-    state() === 'persistent' || state() === 'sent'
-      ? null
-      : state() === 'confirmed'
-        ? 'check'
-        : 'alert'
-  "
-  [role]="state() === 'bounced' ? 'alert' : 'status'"
->
+<div jb-alert banner [tone]="tone()" [role]="state() === 'bounced' ? 'alert' : 'status'">
   @switch (state()) {
     @case ('confirmed') {
       <span

@@ -8,6 +8,7 @@ export * from './lib/button/marketing-link';
 export * from './lib/card-grid-skeleton/card-grid-skeleton';
 export * from './lib/directory-row/directory-row';
 export * from './lib/empty-state/empty-state';
+export * from './lib/form-summary/form-summary';
 export * from './lib/format/format';
 export * from './lib/icon/icon';
 export * from './lib/icon/icons';
