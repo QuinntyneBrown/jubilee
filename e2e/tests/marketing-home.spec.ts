@@ -305,6 +305,13 @@ test.describe('marketing site delivery (L2-186)', () => {
     expect(await home.fontOf(home.lead)).toMatch(/^"?Inter/);
   });
 
+  test('L2-112 AC4: "Skip to content" moves focus to main', async ({ page, jb }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    await home.skipToContent();
+    expect(await home.mainFocused()).toBe(true);
+  });
+
   test('AC4: every action is reached by Tab in reading order, with a focus ring', async ({
     page,
     jb,

@@ -76,18 +76,6 @@
 /* ---------- Lockup -------------------------------------------------------- */
 .mkt { --jb-lockup-on-ink: var(--jb-mkt-paper); }
 
-/* ---------- Top bar ------------------------------------------------------- */
-.mkt-nav {
-  position: sticky; top: 0; z-index: var(--z-sticky);
-  border-bottom: var(--border-width-hairline) solid color-mix(in srgb, var(--color-fg-default) 10%, transparent);
-  background: color-mix(in srgb, var(--jb-mkt-paper) 90%, transparent);
-  backdrop-filter: blur(8px);
-}
-.mkt-nav__inner { display: flex; height: var(--layout-topbar-height); align-items: center; justify-content: space-between; gap: var(--space-6); }
-.mkt-nav__links { display: none; align-items: center; gap: 1.75rem; font-size: 0.9375rem; }
-.mkt .mkt-nav__links a { color: color-mix(in srgb, var(--color-fg-default) 75%, transparent); transition: color 150ms ease-out; }
-.mkt .mkt-nav__links a:hover { color: var(--color-fg-default); }
-@media (min-width: 64rem) { .mkt-nav__links { display: flex; } }
 
 /* ---------- Opening ------------------------------------------------------- */
 .mkt-hero { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: var(--space-12); padding-top: var(--space-12); padding-bottom: var(--space-20); }
@@ -156,7 +144,7 @@
 
 /* ---------- For businesses ------------------------------------------------ */
 .mkt-owners { background: var(--jb-mkt-ink); color: var(--jb-mkt-paper); }
-.mkt-owners :focus-visible, .mkt-footer :focus-visible { outline-color: var(--color-focus-ring-on-brand); }
+.mkt-owners :focus-visible { outline-color: var(--color-focus-ring-on-brand); }
 .mkt-owners__inner { display: grid; gap: var(--space-12); padding-block: var(--space-20); }
 @media (min-width: 64rem) { .mkt-owners__inner { grid-template-columns: 1.1fr 1fr; gap: var(--space-20); padding-block: 7rem; } }
 .mkt-owners .mkt-accent { color: var(--color-accent); }
@@ -175,7 +163,3 @@
 .mkt-closing .mkt-btn { margin-top: var(--space-10); }
 @media (min-width: 40rem) { .mkt-closing__title { font-size: 3.75rem; } }
 @media (min-width: 64rem) { .mkt-closing { padding-block: 8rem; } }
-.mkt-footer { background: var(--jb-mkt-ink); color: var(--jb-mkt-paper); }
-.mkt-footer__inner { display: flex; flex-direction: column; gap: var(--space-6); padding-block: var(--space-10); }
-@media (min-width: 40rem) { .mkt-footer__inner { flex-direction: row; align-items: center; justify-content: space-between; } }
-.mkt-footer__line { font-size: var(--font-size-sm); color: color-mix(in srgb, var(--jb-mkt-paper) 60%, transparent); }

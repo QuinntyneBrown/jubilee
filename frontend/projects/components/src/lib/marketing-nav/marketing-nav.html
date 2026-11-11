@@ -1,0 +1,9 @@
+<div class="mkt-nav__inner">
+  <ng-content select="[slot=brand]" />
+  <nav class="mkt-nav__links" [attr.aria-label]="linksLabel()">
+    @for (link of links(); track link.href) {
+      <a class="mkt-nav__link" [href]="link.href">{{ link.label }}</a>
+    }
+  </nav>
+  <ng-content select="[slot=action]" />
+</div>

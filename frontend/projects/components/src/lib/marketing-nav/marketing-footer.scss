@@ -1,0 +1,29 @@
+// Block: mkt-footer. The host is the footer.
+:host {
+  display: block;
+  background: var(--jb-mkt-ink);
+  color: var(--jb-mkt-paper);
+}
+
+.mkt-footer__inner {
+  display: flex;
+  width: 100%;
+  max-width: var(--jb-mkt-max);
+  margin-inline: auto;
+  padding: var(--space-10) var(--jb-mkt-gutter);
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+@media (min-width: 40rem) {
+  .mkt-footer__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.mkt-footer__line {
+  font-size: var(--font-size-sm);
+  color: color-mix(in srgb, var(--jb-mkt-paper) 60%, transparent);
+}
