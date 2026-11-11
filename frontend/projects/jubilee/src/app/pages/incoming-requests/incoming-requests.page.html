@@ -38,20 +38,13 @@
         </a>
       </div>
     } @else {
-      <div class="tabs" role="tablist" aria-label="Request status">
-        @for (item of tabs; track item.tab) {
-          <button
-            class="tab"
-            role="tab"
-            type="button"
-            [attr.aria-selected]="item.tab === tab()"
-            [attr.tabindex]="item.tab === tab() ? null : -1"
-            (click)="load(item.tab)"
-          >
-            {{ item.label }} <span jb-badge>{{ requests.value.counts[item.tab] }}</span>
-          </button>
-        }
-      </div>
+      <div
+        jb-tab-list
+        label="Request status"
+        [items]="tabs()"
+        [selected]="tab()"
+        (selectedChange)="load($event)"
+      ></div>
       @if (requests.value.rows.length === 0) {
         @if (tab() === 'declined') {
           <div

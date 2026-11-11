@@ -25,12 +25,14 @@ import {
   Rows,
   Row,
   PageHeader,
+  Tabs,
 } from 'components';
 import { Observable } from 'rxjs';
 import { LoadState, errorReference } from '../../services/load-state';
 import { clockTime, monthYear } from '../../services/message-time';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../toasts/toast.service';
+import { ACCOUNT_TABS } from '../account/account-tabs';
 
 interface SettingRow {
   setting: PreferenceSetting;
@@ -103,12 +105,14 @@ const ROWS: SettingRow[] = [
     RowTitle,
     Rows,
     PageHeader,
+    Tabs,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './notification-settings.page.html',
 })
 export class NotificationSettingsPage implements OnInit {
+  protected readonly accountTabs = ACCOUNT_TABS;
   private readonly api = inject(PROFILE_API);
   private readonly session = inject(SessionService);
   private readonly toasts = inject(ToastService);

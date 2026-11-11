@@ -10,7 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ACCOUNT_DATA_API, Account, PROFILE_API, ProfileForm } from 'api';
 import {
   EmptyState,
@@ -28,6 +28,7 @@ import {
   RowTitle,
   Rows,
   PageHeader,
+  Tabs,
 } from 'components';
 import { Observable, map } from 'rxjs';
 import { ChangeEmailData, ChangeEmailDialog } from '../../dialogs/change-email/change-email.dialog';
@@ -42,6 +43,7 @@ import { LoadState, errorReference } from '../../services/load-state';
 import { clockTime, dayLabel, fullDate, monthYear } from '../../services/message-time';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../toasts/toast.service';
+import { ACCOUNT_TABS } from './account-tabs';
 
 type FieldName = 'firstName' | 'lastName' | 'phone' | 'postalCode';
 
@@ -76,7 +78,6 @@ const MESSAGES: Record<string, string> = {
   selector: 'jb-account-page',
   imports: [
     FormsModule,
-    RouterLink,
     EmptyState,
     Icon,
     Button,
@@ -92,12 +93,14 @@ const MESSAGES: Record<string, string> = {
     RowTitle,
     Rows,
     PageHeader,
+    Tabs,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page', '(window:beforeunload)': 'warnOnClose($event)' },
   templateUrl: './account.page.html',
 })
 export class AccountPage implements OnInit, HasUnsavedChanges {
+  protected readonly accountTabs = ACCOUNT_TABS;
   private readonly api = inject(PROFILE_API);
   private readonly dataApi = inject(ACCOUNT_DATA_API);
   private readonly router = inject(Router);

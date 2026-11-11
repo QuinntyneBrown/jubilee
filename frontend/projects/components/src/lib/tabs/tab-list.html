@@ -1,0 +1,19 @@
+@for (item of items(); track item.key; let i = $index) {
+  <button
+    #tab
+    class="tab"
+    role="tab"
+    type="button"
+    [attr.id]="panelPrefix() ? 'tab-' + item.key : null"
+    [attr.aria-selected]="item.key === selected()"
+    [attr.aria-controls]="panelPrefix() ? panelPrefix() + item.key : null"
+    [attr.tabindex]="item.key === selected() ? null : -1"
+    (click)="selectedChange.emit(item.key)"
+    (keydown)="move($event, i)"
+  >
+    {{ item.label }}
+    @if (item.count !== undefined && item.count !== null) {
+      <span jb-badge>{{ item.count }}</span>
+    }
+  </button>
+}

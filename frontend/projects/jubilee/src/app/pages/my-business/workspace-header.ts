@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Icon, Button, Badge, PageHeader } from 'components';
+import { Icon, Button, PageHeader, TabItem, Tabs } from 'components';
 
 export type WorkspaceSection = 'overview' | 'listing' | 'products' | 'services' | 'requests';
 
@@ -10,7 +10,7 @@ export type WorkspaceSection = 'overview' | 'listing' | 'products' | 'services' 
  */
 @Component({
   selector: 'jb-workspace-header',
-  imports: [RouterLink, Icon, Button, Badge, PageHeader],
+  imports: [RouterLink, Icon, Button, PageHeader, Tabs],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-header.html',
 })
@@ -23,4 +23,20 @@ export class WorkspaceHeader {
   readonly slug = input<string | null>(null);
   /** "Preview listing" until the listing is public, "View public listing" after. */
   readonly live = input<boolean>(true);
+
+  protected readonly tabs = computed<TabItem[]>(() => {
+    const open = this.openRequests();
+    return [
+      { key: 'overview', label: 'Overview', link: '/my-business' },
+      { key: 'listing', label: 'Listing', link: '/my-business/listing' },
+      { key: 'products', label: 'Products', link: '/my-business/products' },
+      { key: 'services', label: 'Services', link: '/my-business/services' },
+      {
+        key: 'requests',
+        label: 'Requests',
+        link: '/my-business/requests',
+        count: open > 0 ? { value: open, label: `${open} open` } : null,
+      },
+    ];
+  });
 }

@@ -8,11 +8,20 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ADMIN_API, ReportFilter, ReportList, ReportListItem } from 'api';
-import { EmptyState, Icon, Button, RowListSkeleton, Badge, PageHeader } from 'components';
+import {
+  EmptyState,
+  Icon,
+  Button,
+  RowListSkeleton,
+  Badge,
+  PageHeader,
+  TabList,
+  Tabs,
+} from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { threadTime } from '../../services/message-time';
-import { TeamNav } from '../admin-team-nav/team-nav';
+import { TEAM_TABS } from '../admin-team-nav/team-tabs';
 
 const FILTERS: { key: ReportFilter; label: string }[] = [
   { key: 'unresolved', label: 'Unresolved' },
@@ -30,11 +39,22 @@ const STATUS: Record<string, string> = {
 /** The reports at /admin/reports (L2-105): listing and conversation reports, oldest first, overdue marked. */
 @Component({
   selector: 'jb-admin-reports-page',
-  imports: [RouterLink, EmptyState, Icon, TeamNav, Button, RowListSkeleton, Badge, PageHeader],
+  imports: [
+    RouterLink,
+    EmptyState,
+    Icon,
+    Button,
+    RowListSkeleton,
+    Badge,
+    PageHeader,
+    TabList,
+    Tabs,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-reports.page.html',
 })
 export class AdminReportsPage implements OnInit {
+  protected readonly teamTabs = TEAM_TABS;
   private readonly api = inject(ADMIN_API);
   private readonly clock = inject(ClockService);
 

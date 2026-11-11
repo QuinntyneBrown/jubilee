@@ -1,10 +1,5 @@
 <jb-page-header heading="Your account" [subtitle]="subtitle()"> </jb-page-header>
-<nav class="tabs" aria-label="Account sections">
-  <a class="tab" routerLink="/account">Profile</a>
-  <a class="tab" routerLink="/account/notifications" aria-current="page">Notification settings</a>
-  <a class="tab" routerLink="/saved">Saved</a>
-  <a class="tab" routerLink="/requests">Your requests</a>
-</nav>
+<nav jb-tabs label="Account sections" [items]="accountTabs" current="notifications"></nav>
 @let current = state();
 @switch (current.status) {
   @case ('error') {

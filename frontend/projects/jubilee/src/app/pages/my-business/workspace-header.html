@@ -7,38 +7,4 @@
     </div>
   }
 </jb-page-header>
-<nav class="tabs" aria-label="My business sections">
-  <a
-    class="tab"
-    routerLink="/my-business"
-    [attr.aria-current]="current() === 'overview' ? 'page' : null"
-    >Overview</a
-  >
-  <a
-    class="tab"
-    routerLink="/my-business/listing"
-    [attr.aria-current]="current() === 'listing' ? 'page' : null"
-    >Listing</a
-  >
-  <a
-    class="tab"
-    routerLink="/my-business/products"
-    [attr.aria-current]="current() === 'products' ? 'page' : null"
-    >Products</a
-  >
-  <a
-    class="tab"
-    routerLink="/my-business/services"
-    [attr.aria-current]="current() === 'services' ? 'page' : null"
-    >Services</a
-  >
-  <a
-    class="tab"
-    routerLink="/my-business/requests"
-    [attr.aria-current]="current() === 'requests' ? 'page' : null"
-    >Requests
-    @if (openRequests() > 0) {
-      <span jb-badge [count]="openRequests()" [label]="openRequests() + ' open'"></span>
-    }
-  </a>
-</nav>
+<nav jb-tabs label="My business sections" [items]="tabs()" [current]="current()"></nav>

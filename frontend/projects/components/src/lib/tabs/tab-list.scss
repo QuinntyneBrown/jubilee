@@ -1,0 +1,10 @@
+// Blocks: tabs and tab. The host is the tab list.
+@use './tab-base' as base;
+
+:host {
+  @include base.strip;
+}
+
+.tab {
+  @include base.tab;
+}

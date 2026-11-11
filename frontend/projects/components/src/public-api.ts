@@ -82,6 +82,8 @@ export * from './lib/skip-link/skip-link';
 export * from './lib/spinner/spinner';
 export * from './lib/switch/switch';
 export * from './lib/tab-bar/tab-bar';
+export * from './lib/tabs/tab-list';
+export * from './lib/tabs/tabs';
 export * from './lib/tag/tag';
 export * from './lib/textarea/textarea';
 export * from './lib/top-bar/top-bar';

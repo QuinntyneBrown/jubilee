@@ -126,14 +126,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 @media (min-width: 64rem) { .sidebar { display: flex; position: sticky; top: 0; height: 100dvh; overflow: auto; } }
 .sidebar .nav-link { width: 100%; }
 .sidebar__group { font: var(--text-overline); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-fg-subtle); padding: var(--space-4) var(--space-3) var(--space-1); }
-.tabs { display: flex; gap: var(--space-1); border-bottom: var(--border-width-hairline) solid var(--color-border-default); overflow-x: auto; scrollbar-width: none; }
-.tab { position: relative; text-decoration: none; display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--target-comfortable); padding: 0 var(--space-3); border: 0; background: none; color: var(--color-fg-muted); font: var(--text-label); cursor: pointer; white-space: nowrap; }
-.tab::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc(-1 * var(--border-width-hairline)); height: var(--border-width-thick); background: transparent; border-radius: var(--radius-xs) var(--radius-xs) 0 0; transition: background-color var(--duration-fast) var(--ease-standard); }
-.tab:hover, .tab[data-state="hover"] { color: var(--color-fg-default); }
-.tab[aria-selected="true"], .tab[aria-current="page"], .tab[data-state="selected"] { color: var(--color-fg-default); font-weight: var(--font-weight-semibold); }
-.tab[aria-selected="true"]::after, .tab[aria-current="page"]::after, .tab[data-state="selected"]::after { background: var(--color-accent-border); }
-.tab:disabled, .tab[aria-disabled="true"], .tab[data-state="disabled"] { color: var(--color-fg-disabled); cursor: not-allowed; }
-.tab { --jb-badge-margin-left: var(--space-1); }
 .pagination { display: flex; align-items: center; gap: var(--space-1); list-style: none; padding: 0; }
 .pagination a, .pagination button { display: inline-grid; place-items: center; min-width: var(--control-height-sm); height: var(--control-height-sm); padding-inline: var(--space-2); border-radius: var(--radius-full); border: var(--border-width-hairline) solid transparent; background: none; color: var(--color-fg-muted); font: var(--text-label); text-decoration: none; cursor: pointer; }
 .pagination a:hover, .pagination button:hover, .pagination [data-state="hover"] { background: var(--color-bg-subtle); color: var(--color-fg-default); }
