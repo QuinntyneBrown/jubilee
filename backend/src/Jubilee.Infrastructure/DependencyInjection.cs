@@ -54,6 +54,8 @@ public static class DependencyInjection
             }
         });
         services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+        services.Configure<Application.Maintenance.MaintenanceOptions>(configuration.GetSection("Maintenance"));
+        services.AddSingleton<Application.Maintenance.IMaintenanceState, Maintenance.OptionsMaintenanceState>();
 
         // Redis when configured (ConnectionStrings:Redis), otherwise an in-process cache.
         var redis = configuration.GetConnectionString("Redis");

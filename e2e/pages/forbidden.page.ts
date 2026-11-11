@@ -14,7 +14,7 @@ export class ForbiddenPage extends ShellPage implements Screen {
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.text = this.main.locator('.empty__text');
     this.backToBrowse = this.main.getByRole('link', { name: 'Back to browse' });
-    this.askForAccess = this.main.getByRole('link', { name: 'Ask for access' });
+    this.askForAccess = this.main.getByRole('button', { name: /^(Ask for access|Requested)/ });
   }
 
   async ready(): Promise<void> {

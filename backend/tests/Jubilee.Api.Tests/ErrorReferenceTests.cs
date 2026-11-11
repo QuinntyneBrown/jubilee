@@ -108,7 +108,7 @@ public class ErrorReferenceTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
         Assert.Equal(500, json.GetProperty("status").GetInt32());
         var correlationId = json.GetProperty("correlationId").GetString();
         Assert.Equal(Assert.Single(response.Headers.GetValues("X-Correlation-ID")), correlationId);
-        Assert.False(json.TryGetProperty("reference", out _));
+        Assert.Matches("^JB-500-[A-Z2-9]{4}$", json.GetProperty("reference").GetString());
         Assert.DoesNotContain("PaymentsService", body);
         Assert.DoesNotContain("InvalidOperationException", body);
         Assert.Contains(

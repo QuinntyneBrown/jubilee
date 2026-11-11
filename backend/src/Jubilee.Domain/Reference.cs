@@ -89,6 +89,9 @@ public sealed class ReferenceLink
 
     public void NoticeSent(DateTimeOffset now) => ExpiryNoticeSentAt = now;
 
+    /// <summary>Moves the expiry forward by the length of a maintenance window (L2-117 AC2).</summary>
+    public void Extend(TimeSpan by) => ExpiresAt += by;
+
     /// <summary>Deletes the reference's e-mail address, 90 days after a decision (L2-146).</summary>
     public void Scrub() => ReferenceEmail = string.Empty;
 }

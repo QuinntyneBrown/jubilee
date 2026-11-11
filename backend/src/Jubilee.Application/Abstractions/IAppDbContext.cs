@@ -21,6 +21,10 @@ public interface IAppDbContext
 
     DbSet<ContentVersion> ContentVersions { get; }
 
+    DbSet<MaintenanceWindow> MaintenanceWindows { get; }
+
+    DbSet<AccessRequest> AccessRequests { get; }
+
     DbSet<ListingReport> ListingReports { get; }
 
     DbSet<ListingReportEntry> ListingReportEntries { get; }

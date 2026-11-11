@@ -69,11 +69,13 @@ statuses and references.
 - **`ErrorReferenceFactory`** — builds references. `ForLoadFailure` combines the
   area declared by `ErrorAreaAttribute` on the controller with `502` or `503`.
   `ForUnhandled` returns `JB-500-{code}`; the mock shows a code of 4 characters
-  (`7F3K`), and its derivation from the correlation ID is `<TO SUPPLY>`.
+  (`7F3K`), and the code is four characters of a hash of the correlation ID, so one request
+  always quotes one code (ADR 0031).
 - **`HelpController`** and **`CreateAccessRequestCommandHandler`** — expose
   `POST /api/help/access-requests`. The handler stores an `AccessRequest` with
-  the URL and the member's account and changes no role or permission. Who
-  receives the request is `<TO SUPPLY>`.
+  the URL and the member's account and changes no role or permission. The
+  verification team reads it from the stored requests; no e-mail is sent yet
+  (ADR 0031).
 
 ## Requirements
 

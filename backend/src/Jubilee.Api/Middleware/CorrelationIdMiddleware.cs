@@ -20,6 +20,7 @@ public sealed partial class CorrelationIdMiddleware(RequestDelegate next, ILogge
         context.Response.OnStarting(() =>
         {
             context.Response.Headers[HeaderName] = correlationId;
+            context.Response.Headers["X-Request-Id"] = correlationId;
             return Task.CompletedTask;
         });
 

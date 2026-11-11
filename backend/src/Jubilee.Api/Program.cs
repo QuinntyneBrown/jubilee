@@ -61,6 +61,7 @@ var app = builder.Build();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<MaintenanceMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
 
 // Swagger stays above UseAuthentication so the fallback policy never hides the API description.

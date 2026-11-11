@@ -85,6 +85,31 @@ public sealed class ListingViewConfiguration : IEntityTypeConfiguration<ListingV
     }
 }
 
+public sealed class MaintenanceWindowConfiguration : IEntityTypeConfiguration<MaintenanceWindow>
+{
+    public void Configure(EntityTypeBuilder<MaintenanceWindow> builder)
+    {
+        builder.ToTable("MaintenanceWindows");
+        builder.HasKey(w => w.Id);
+        builder.Property(w => w.Id).ValueGeneratedNever();
+        builder.HasIndex(w => w.EndedAt);
+    }
+}
+
+public sealed class AccessRequestConfiguration : IEntityTypeConfiguration<AccessRequest>
+{
+    public void Configure(EntityTypeBuilder<AccessRequest> builder)
+    {
+        builder.ToTable("AccessRequests");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.MemberSubject).HasMaxLength(100).IsRequired();
+        builder.Property(a => a.Url).HasMaxLength(AccessRequest.MaxUrlLength).IsRequired();
+        builder.Property(a => a.IdempotencyKey).HasMaxLength(100).IsRequired();
+        builder.HasIndex(a => new { a.MemberSubject, a.IdempotencyKey }).IsUnique();
+    }
+}
+
 public sealed class ContentVersionConfiguration : IEntityTypeConfiguration<ContentVersion>
 {
     public void Configure(EntityTypeBuilder<ContentVersion> builder)

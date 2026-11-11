@@ -53,6 +53,10 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<ContentVersion> ContentVersions => Use(inner.ContentVersions);
 
+    public DbSet<MaintenanceWindow> MaintenanceWindows => Use(inner.MaintenanceWindows);
+
+    public DbSet<AccessRequest> AccessRequests => Use(inner.AccessRequests);
+
     public DbSet<ListingReportEntry> ListingReportEntries => Use(inner.ListingReportEntries);
 
     public DbSet<ListingView> ListingViews => Use(inner.ListingViews);
@@ -154,4 +158,18 @@ public sealed class FailingController : ControllerBase
 
     [HttpGet("boom")]
     public IActionResult Boom() => throw new InvalidOperationException(SecretDetail);
+}
+
+/// <summary>The maintenance switch a test turns on and off without touching configuration.</summary>
+public sealed class FakeMaintenance : Jubilee.Application.Maintenance.IMaintenanceState
+{
+    public bool Enabled { get; set; }
+
+    public DateTimeOffset? BackBy { get; set; }
+
+    public void Off()
+    {
+        Enabled = false;
+        BackBy = null;
+    }
 }

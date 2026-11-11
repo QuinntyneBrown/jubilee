@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
   inject,
@@ -8,7 +8,9 @@ import {
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import {
   ACCOUNT_API,
+  HELP_API,
   HttpContentApi,
+  HttpHelpApi,
   CONTENT_API,
   HttpReportsApi,
   REPORTS_API,
@@ -51,17 +53,24 @@ import {
   SESSION_API,
 } from 'api';
 import { routes } from './app.routes';
+import { errorInterceptor } from './services/error.interceptor';
+import { NavigationTrail } from './services/navigation-trail';
 import { SessionService } from './services/session.service';
 
 /** Composition root: every API contract is bound to its implementation here. */
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([errorInterceptor])),
+    // Starts watching navigation at once, so the forbidden page knows which page was asked for (L2-114).
+    provideAppInitializer(() => {
+      inject(NavigationTrail);
+    }),
     // "Shop products" scrolls to the products (L2-034 AC1).
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     { provide: ACCOUNT_API, useClass: HttpAccountApi },
     { provide: CONTENT_API, useClass: HttpContentApi },
+    { provide: HELP_API, useClass: HttpHelpApi },
     { provide: REPORTS_API, useClass: HttpReportsApi },
     { provide: PROFILE_API, useClass: HttpProfileApi },
     { provide: PASSWORD_RESET_API, useClass: HttpPasswordResetApi },

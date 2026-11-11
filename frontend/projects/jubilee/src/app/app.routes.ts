@@ -214,6 +214,22 @@ export const routes: Routes = [
     title: 'Review a listing · Jubilee',
   },
   {
+    path: 'error',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/server-error/server-error.page').then((m) => m.ServerErrorPage),
+    data: data({ shell: 'bare', page: 'server-error' }),
+    title: 'Something went wrong · Jubilee',
+  },
+  {
+    path: 'maintenance',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/maintenance/maintenance.page').then((m) => m.MaintenancePage),
+    data: data({ shell: 'bare', page: 'maintenance' }),
+    title: 'Being updated · Jubilee',
+  },
+  {
     path: 'forbidden',
     loadComponent: () => import('./pages/forbidden/forbidden.page').then((m) => m.ForbiddenPage),
     data: data({ shell: 'app', page: 'forbidden' }),
