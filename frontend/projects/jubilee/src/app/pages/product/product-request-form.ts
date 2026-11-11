@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProductPage } from 'api';
-import { Icon, Button, Alert, Field, FieldControl, FieldError } from 'components';
+import { Icon, Button, Alert, Field, FieldError, Input } from 'components';
 
 /** A valid selection, handed to the order request (L2-035 AC2). */
 export interface ProductSelection {
@@ -27,7 +27,7 @@ export interface ProductSelection {
  */
 @Component({
   selector: 'jb-product-request-form',
-  imports: [RouterLink, Icon, Button, Alert, Field, FieldControl, FieldError],
+  imports: [RouterLink, Icon, Button, Alert, Field, FieldError, Input],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { style: 'display: contents' },
   templateUrl: './product-request-form.html',
@@ -56,7 +56,9 @@ export class ProductRequestForm {
   });
 
   private readonly optionInputs = viewChildren<ElementRef<HTMLInputElement>>('optionInput');
-  private readonly quantityInput = viewChild<ElementRef<HTMLInputElement>>('quantityInput');
+  private readonly quantityInput = viewChild('quantityInput', {
+    read: ElementRef<HTMLInputElement>,
+  });
 
   /** The bound of the chosen option, or before one is chosen the largest of them. */
   protected readonly max = computed(() => {

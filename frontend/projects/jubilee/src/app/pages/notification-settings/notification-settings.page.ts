@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NotificationPreferences, PROFILE_API, PreferenceFrequency, PreferenceSetting } from 'api';
-import { EmptyState, Icon, Button, Field, FieldControl } from 'components';
+import { EmptyState, Icon, Button, Field, Select } from 'components';
 import { Observable } from 'rxjs';
 import { LoadState, errorReference } from '../../services/load-state';
 import { clockTime, monthYear } from '../../services/message-time';
@@ -68,7 +68,7 @@ const ROWS: Row[] = [
  */
 @Component({
   selector: 'jb-notification-settings-page',
-  imports: [RouterLink, EmptyState, Icon, Button, Field, FieldControl],
+  imports: [RouterLink, EmptyState, Icon, Button, Field, Select],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './notification-settings.page.html',

@@ -100,8 +100,7 @@
             [error]="codes().name ? 'Enter your name.' : null"
           >
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="name"
               type="text"
               autocomplete="name"
@@ -119,8 +118,7 @@
             [error]="codes().role ? 'Enter your role at the church, like pastor or elder.' : null"
           >
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="role"
               type="text"
               placeholder="Pastor, elder, deacon…"
@@ -139,8 +137,7 @@
             [error]="codes().note ? 'Shorten this to ' + noteLimit + ' characters.' : null"
           >
             <textarea
-              class="textarea"
-              jbFieldControl
+              jb-textarea
               name="note"
               rows="3"
               [readOnly]="busy()"

@@ -15,7 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChatMessage, Conversation, MESSAGES_API, RepliesBand } from 'api';
-import { EmptyState, Icon, Button, Alert } from 'components';
+import { EmptyState, Icon, Button, Alert, Textarea } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { MessagesStore } from '../../services/messages.store';
@@ -57,7 +57,7 @@ type Entry =
  */
 @Component({
   selector: 'jb-conversation-page',
-  imports: [FormsModule, RouterLink, EmptyState, Icon, InboxList, Button, Alert],
+  imports: [FormsModule, RouterLink, EmptyState, Icon, InboxList, Button, Alert, Textarea],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './conversation.page.html',
 })

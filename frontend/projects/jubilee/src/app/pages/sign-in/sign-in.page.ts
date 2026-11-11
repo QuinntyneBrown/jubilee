@@ -9,16 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  BrandMark,
-  EmptyState,
-  Icon,
-  Button,
-  Alert,
-  FormSummary,
-  FieldControl,
-  Field,
-} from 'components';
+import { BrandMark, EmptyState, Icon, Button, Alert, FormSummary, Field, Input } from 'components';
 import { sanitiseReturnUrl } from '../../services/return-url';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../toasts/toast.service';
@@ -45,7 +36,7 @@ const GOOGLE_ERRORS: Record<string, string> = {
     Alert,
     FormSummary,
     Field,
-    FieldControl,
+    Input,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },

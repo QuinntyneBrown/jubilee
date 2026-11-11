@@ -20,8 +20,7 @@
     <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
       <div jb-field label="E-mail" controlId="email" [error]="errors().email">
         <input
-          class="input"
-          jbFieldControl
+          jb-input
           name="email"
           type="email"
           autocomplete="email"
@@ -32,8 +31,7 @@
       </div>
       <div jb-field label="Password" controlId="password" [error]="errors().password">
         <input
-          class="input"
-          jbFieldControl
+          jb-input
           name="password"
           type="password"
           autocomplete="current-password"

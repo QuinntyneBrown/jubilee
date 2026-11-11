@@ -11,9 +11,10 @@ import {
   Button,
   Alert,
   FormSummary,
-  FieldControl,
   FieldError,
   Field,
+  Input,
+  Textarea,
 } from 'components';
 
 type FieldName = 'answer' | 'name' | 'role' | 'note';
@@ -39,8 +40,9 @@ const MESSAGES: Record<string, string> = {
     Alert,
     FormSummary,
     Field,
-    FieldControl,
     FieldError,
+    Input,
+    Textarea,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },

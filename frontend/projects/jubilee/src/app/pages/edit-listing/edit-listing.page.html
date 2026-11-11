@@ -109,7 +109,7 @@
                     >Describe photo {{ photo.position }}</label
                   >
                   <input
-                    class="input"
+                    jb-input
                     type="text"
                     [id]="'alt-' + photo.id"
                     [value]="photo.customAlt ?? ''"
@@ -186,8 +186,7 @@
 
           <div jb-field label="Business name" controlId="name" required [error]="errors().name">
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="name"
               type="text"
               required
@@ -205,8 +204,7 @@
             [error]="errors().tagline"
           >
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="tagline"
               type="text"
               required
@@ -222,8 +220,7 @@
             hint="A few sentences on who you are and who you serve."
           >
             <textarea
-              class="textarea"
-              jbFieldControl
+              jb-textarea
               name="about"
               rows="4"
               [attr.maxlength]="maxAbout"
@@ -235,8 +232,7 @@
           <div class="form-grid form-grid--2">
             <div jb-field label="Category" controlId="cat">
               <select
-                class="select"
-                jbFieldControl
+                jb-select
                 name="category"
                 [ngModel]="draft().category"
                 (ngModelChange)="set('category', $event)"
@@ -249,8 +245,7 @@
             </div>
             <div jb-field label="Where" controlId="area">
               <input
-                class="input"
-                jbFieldControl
+                jb-input
                 name="where"
                 type="text"
                 [ngModel]="draft().where"
@@ -262,8 +257,7 @@
           <div class="form-grid form-grid--2">
             <div jb-field label="Hours" controlId="hours" [error]="errors().hours">
               <input
-                class="input"
-                jbFieldControl
+                jb-input
                 name="hours"
                 type="text"
                 [ngModel]="draft().hours"
@@ -273,8 +267,7 @@
             </div>
             <div jb-field label="Website" controlId="web" optional [error]="errors().website">
               <input
-                class="input"
-                jbFieldControl
+                jb-input
                 name="website"
                 type="url"
                 [ngModel]="draft().website"
@@ -291,8 +284,7 @@
             hint="A short green line on your card, like “Free first meeting”. 30 characters at most."
           >
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="highlight"
               type="text"
               [attr.maxlength]="maxHighlight"

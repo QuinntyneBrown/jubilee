@@ -20,7 +20,7 @@ import {
   formatCount,
   Button,
   Field,
-  FieldControl,
+  Select,
 } from 'components';
 import { combineLatest } from 'rxjs';
 import {
@@ -69,7 +69,7 @@ function businesses(count: number): string {
     Pagination,
     Button,
     Field,
-    FieldControl,
+    Select,
   ],
   providers: [CategoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

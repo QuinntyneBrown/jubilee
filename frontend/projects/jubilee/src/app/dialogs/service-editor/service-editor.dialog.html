@@ -35,8 +35,7 @@
       }
       <div jb-field label="Service name" controlId="d-name" required [error]="errors().name">
         <input
-          class="input"
-          jbFieldControl
+          jb-input
           name="name"
           type="text"
           required
@@ -53,8 +52,7 @@
         hint="Length, place or what to bring. 60 characters at most."
       >
         <input
-          class="input"
-          jbFieldControl
+          jb-input
           name="detail"
           type="text"
           maxlength="60"
@@ -66,8 +64,7 @@
       <div class="form-grid form-grid--2">
         <div jb-field label="Pricing" controlId="d-pricing">
           <select
-            class="select"
-            jbFieldControl
+            jb-select
             name="pricing"
             [ngModel]="pricing()"
             (ngModelChange)="setPricing($event)"
@@ -81,8 +78,7 @@
         @if (pricing() === 'amount') {
           <div jb-field label="Price (CAD)" controlId="d-price" [error]="errors().price">
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="price"
               type="text"
               inputmode="decimal"
@@ -95,8 +91,7 @@
       </div>
       <div jb-field label="Members can" controlId="d-action">
         <select
-          class="select"
-          jbFieldControl
+          jb-select
           name="action"
           [ngModel]="action()"
           (ngModelChange)="action.set($event)"
@@ -116,8 +111,7 @@
             [error]="errors().duration"
           >
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="duration"
               type="number"
               min="15"
@@ -164,8 +158,7 @@
             [error]="errors().place"
           >
             <input
-              class="input"
-              jbFieldControl
+              jb-input
               name="place"
               type="text"
               [ngModel]="place()"

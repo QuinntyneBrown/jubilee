@@ -7,12 +7,18 @@
         <p class="subtitle">Find a business, a service or a product.</p>
       </div>
     </div>
-    <form class="search" role="search" style="max-width: 36rem" (submit)="submit($event, sq.value)">
+    <form
+      class="search"
+      role="search"
+      style="max-width: 36rem"
+      (submit)="submit($event, sq.element.value)"
+    >
       <label class="visually-hidden" for="sq">Search Jubilee</label>
       <svg jb-icon name="search"></svg>
       <input
+        jb-input
+        controlSize="lg"
         #sq
-        class="input input--lg"
         id="sq"
         type="search"
         maxlength="100"

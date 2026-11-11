@@ -17,9 +17,9 @@ import {
   Button,
   Alert,
   FormSummary,
-  FieldControl,
   FieldError,
   Field,
+  Input,
 } from 'components';
 import { SessionService } from '../../services/session.service';
 
@@ -85,8 +85,8 @@ function message(field: FieldName, code: string, passwordLength: number): string
     Alert,
     FormSummary,
     Field,
-    FieldControl,
     FieldError,
+    Input,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
