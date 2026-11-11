@@ -88,7 +88,9 @@ export const NOTIFICATIONS: FakeNotification[] = [
 
 export async function stubNotifications(
   page: Page,
-  initial: Partial<Pick<FakeNotifications, 'list' | 'markAll' | 'counts'>> & { items?: FakeNotification[] } = {},
+  initial: Partial<Pick<FakeNotifications, 'list' | 'markAll' | 'counts'>> & {
+    items?: FakeNotification[];
+  } = {},
   member = naomi,
 ): Promise<FakeNotifications> {
   const queue: { id: string; item: FakeNotification }[] = [];
@@ -151,7 +153,9 @@ export async function stubNotifications(
     fake.lastEventIds.push(last);
     const fresh = queue.filter((entry) => last === undefined || Number(entry.id) > Number(last));
     const frames = fresh
-      .map((entry) => `id: ${entry.id}\nevent: notification\ndata: ${JSON.stringify(entry.item)}\n\n`)
+      .map(
+        (entry) => `id: ${entry.id}\nevent: notification\ndata: ${JSON.stringify(entry.item)}\n\n`,
+      )
       .join('');
     const counts = fake.counts
       ? `event: counts\ndata: ${JSON.stringify({

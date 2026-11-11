@@ -609,6 +609,12 @@ export const routes = {
     who: 'visitor',
     stub: 'password-reset',
   },
+  'forgot-password.invalid': {
+    app: '/forgot-password',
+    mock: 'pages/forgot-password/invalid.html',
+    who: 'visitor',
+    stub: 'password-reset',
+  },
   'reset-password': {
     app: '/reset-password/e2e-token',
     mock: 'pages/reset-password/default.html',

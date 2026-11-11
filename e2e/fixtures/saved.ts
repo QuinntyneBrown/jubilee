@@ -46,7 +46,13 @@ const problem = (status: number, body: object) => ({
   body: JSON.stringify({ title: 'Problem', status, correlationId: 'e2e', ...body }),
 });
 
-const card = (slug: string, name: string, tagline: string, categorySlug: string, highlight: string): FakeCard => ({
+const card = (
+  slug: string,
+  name: string,
+  tagline: string,
+  categorySlug: string,
+  highlight: string,
+): FakeCard => ({
   slug,
   name,
   tagline,
@@ -80,7 +86,13 @@ export const SAVED_ITEMS: FakeSavedItem[] = [
     name: 'Flower Creations',
     savedAt: '2026-11-09T14:00:00Z',
     available: true,
-    business: card('flower-creations', 'Flower Creations', 'Fresh Blooms for Every Occasion', 'shops', 'Same-day delivery'),
+    business: card(
+      'flower-creations',
+      'Flower Creations',
+      'Fresh Blooms for Every Occasion',
+      'shops',
+      'Same-day delivery',
+    ),
     product: null,
   },
   {
@@ -89,7 +101,13 @@ export const SAVED_ITEMS: FakeSavedItem[] = [
     name: 'WaterWorks Plumbing & Drains',
     savedAt: '2026-11-08T14:00:00Z',
     available: true,
-    business: card('waterworks', 'WaterWorks Plumbing & Drains', 'Treating Every Customer As Family', 'home-property', 'Emergency calls'),
+    business: card(
+      'waterworks',
+      'WaterWorks Plumbing & Drains',
+      'Treating Every Customer As Family',
+      'home-property',
+      'Emergency calls',
+    ),
     product: null,
   },
   {
@@ -98,7 +116,13 @@ export const SAVED_ITEMS: FakeSavedItem[] = [
     name: 'Legacy Financial',
     savedAt: '2026-11-07T14:00:00Z',
     available: true,
-    business: card('legacy-financial', 'Legacy Financial', 'Build a Legacy. Protect a Legacy. Leave a Legacy.', 'financial-insurance', 'Free first meeting'),
+    business: card(
+      'legacy-financial',
+      'Legacy Financial',
+      'Build a Legacy. Protect a Legacy. Leave a Legacy.',
+      'financial-insurance',
+      'Free first meeting',
+    ),
     product: null,
   },
 ];
@@ -117,7 +141,13 @@ export async function stubSaved(
   page: Page,
   initial: Partial<Pick<FakeSaved, 'list' | 'save'>> & { items?: FakeSavedItem[] } = {},
 ): Promise<FakeSaved> {
-  const fake: FakeSaved = { list: 'ok', save: 'ok', items: structuredClone(SAVED_ITEMS), calls: [], ...initial };
+  const fake: FakeSaved = {
+    list: 'ok',
+    save: 'ok',
+    items: structuredClone(SAVED_ITEMS),
+    calls: [],
+    ...initial,
+  };
   if (initial.items) fake.items = structuredClone(initial.items);
 
   const body = () => ({
@@ -136,7 +166,8 @@ export async function stubSaved(
     fake.calls.push(`${request.method()} ${path}`);
     if (request.method() === 'PUT') {
       if (fake.save === 'offline') return route.fulfill(problem(503, { reference: 'JB-SAV-504' }));
-      if (fake.save === 'limit') return route.fulfill(problem(409, { code: 'SAVED_LIMIT_REACHED' }));
+      if (fake.save === 'limit')
+        return route.fulfill(problem(409, { code: 'SAVED_LIMIT_REACHED' }));
     }
     if (request.method() === 'DELETE' && path.startsWith('items/')) {
       const id = path.slice('items/'.length);

@@ -35,6 +35,11 @@ export interface ParityCase<T extends Screen = Screen> {
   region: (screen: T) => Locator;
   /** The widths the region is on screen at, when it is not both. */
   widths?: readonly ParityWidth[];
+  /**
+   * What a member does to reach the state in the app, through the page object, when the state
+   * has no address of its own (a form submitted with errors). The mock is already in the state.
+   */
+  arrange?: (screen: T) => Promise<void>;
 }
 
 /** The crop of a reference image that shows one case of the component. The reference is light only. */
@@ -88,6 +93,7 @@ export function parity(component: string, { cases, reference }: ParityOptions): 
             await jb.open(item.route, { theme });
             const screen = item.screen(page);
             await screen.ready();
+            if (!BASELINE) await item.arrange?.(screen);
             await expect(item.region(screen), `${item.name} of ${component}`).toHaveScreenshot(
               baselineOf(component, `${item.name}-${width}-${theme}.png`),
               { maxDiffPixelRatio: MOCK_THRESHOLD },
@@ -125,6 +131,7 @@ export function parity(component: string, { cases, reference }: ParityOptions): 
         await jb.open(item.route, { theme: 'light' });
         const screen = item.screen(page);
         await screen.ready();
+        await item.arrange?.(screen);
         await expect(
           item.region(screen),
           `${crop.case} of ${component} against ${crop.frame}`,

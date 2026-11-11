@@ -79,8 +79,18 @@ export const inboxRows = (): FakeRow[] => [
 ];
 
 export const legacyMessages = (): FakeMessage[] => [
-  message('m-1', 'Hi Joanna, thanks for reaching out. Happy to talk through RRSPs and a plan for giving.', '2026-11-10T13:52:00Z', false),
-  message('m-2', 'Thank you! Is Thursday morning possible? Video is easiest for me.', '2026-11-10T14:03:00Z', true),
+  message(
+    'm-1',
+    'Hi Joanna, thanks for reaching out. Happy to talk through RRSPs and a plan for giving.',
+    '2026-11-10T13:52:00Z',
+    false,
+  ),
+  message(
+    'm-2',
+    'Thank you! Is Thursday morning possible? Video is easiest for me.',
+    '2026-11-10T14:03:00Z',
+    true,
+  ),
   message('m-3', 'Thursday at 10:00 works. See you then!', '2026-11-10T14:14:00Z', false),
 ];
 
@@ -169,7 +179,8 @@ export async function stubMessaging(
     const q = new URL(request.url()).searchParams.get('q');
     fake.searches.push(q);
     if (fake.inbox === 'loading') return hang(route);
-    if (fake.inbox === 'error') return route.fulfill(problem(503, 'service_unavailable', 'JB-MSG-503'));
+    if (fake.inbox === 'error')
+      return route.fulfill(problem(503, 'service_unavailable', 'JB-MSG-503'));
     const rows =
       fake.inbox === 'empty'
         ? []
@@ -177,7 +188,11 @@ export async function stubMessaging(
             (r) => !q || `${r.title} ${r.preview}`.toLowerCase().includes(q.toLowerCase()),
           );
     return route.fulfill({
-      json: { totalCount: rows.length, unreadCount: rows.filter((r) => r.unread).length, conversations: rows },
+      json: {
+        totalCount: rows.length,
+        unreadCount: rows.filter((r) => r.unread).length,
+        conversations: rows,
+      },
     });
   });
 
@@ -189,7 +204,8 @@ export async function stubMessaging(
     if (fake.conversation === 'error') {
       return route.fulfill(problem(503, 'service_unavailable', 'JB-MSG-502'));
     }
-    if (fake.conversation === 'not-found') return route.fulfill(problem(404, 'conversation_not_found'));
+    if (fake.conversation === 'not-found')
+      return route.fulfill(problem(404, 'conversation_not_found'));
     const messages = before ? fake.earlier : fake.messages;
     return route.fulfill({
       json: {
