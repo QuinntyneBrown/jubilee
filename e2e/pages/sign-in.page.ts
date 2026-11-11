@@ -22,9 +22,20 @@ export class SignInPage extends ShellPage implements Screen {
   readonly errorState: Locator;
   readonly tryAgain: Locator;
   readonly toast: Locator;
+  /** The brand panel beside the form, from 1024 px (L2-187). */
+  readonly brandPanel: Locator;
+  /** The mark and wordmark that lead to the welcome page: in the panel, or above the card. */
+  readonly lockup: Locator;
+  readonly panelLockup: Locator;
+  /** The card that holds the form under 1024 px; from 1024 px it has no edge. */
+  readonly card: Locator;
 
   constructor(page: Page) {
     super(page);
+    this.brandPanel = this.main.locator('.auth-layout__panel');
+    this.lockup = this.main.getByRole('link', { name: 'Jubilee home' });
+    this.panelLockup = this.brandPanel.getByRole('link', { name: 'Jubilee home' });
+    this.card = this.main.locator('.auth-card');
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.email = this.main.getByLabel('E-mail');
     this.password = this.main.getByLabel('Password');

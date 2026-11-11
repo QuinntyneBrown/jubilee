@@ -1,0 +1,13 @@
+// Block: auth-link. The host is the link. Its weight and its underline say it is a link; the
+// gold is the underline only, never the text.
+:host {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-fg-default);
+  text-decoration: underline var(--border-width-thick) var(--color-accent);
+  text-underline-offset: 0.25em;
+}
+
+:host(:hover) {
+  color: var(--color-fg-default);
+  text-decoration-color: currentColor;
+}

@@ -1,5 +1,4 @@
-<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
-<div class="auth-card card">
+<jb-auth-layout>
   <div jb-empty-state icon="wifi-off" heading="You’re offline" [level]="1">
     Jubilee needs a connection to load this page. Messages you already opened are still readable,
     and anything you send is kept and delivered when you’re back.
@@ -8,4 +7,4 @@
     </button>
     <a slot="actions" jb-button routerLink="/messages">Open messages</a>
   </div>
-</div>
+</jb-auth-layout>

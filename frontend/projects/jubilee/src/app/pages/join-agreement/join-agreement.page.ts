@@ -1,15 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ACCOUNT_API } from 'api';
-import { BrandMark, Button, Alert, FormSummary, FieldError, Checkbox } from 'components';
+import { AuthLayout, Button, Alert, FormSummary, FieldError, Checkbox } from 'components';
 import { SessionService } from '../../services/session.service';
 
 /** GoogleAgreementPage (L2-003): a new Google member accepts the statement of faith and terms. */
 @Component({
   selector: 'jb-join-agreement-page',
-  imports: [RouterLink, BrandMark, Button, Alert, FormSummary, FieldError, Checkbox],
+  imports: [AuthLayout, Button, Alert, FormSummary, FieldError, Checkbox],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'auth-layout' },
   templateUrl: './join-agreement.page.html',
 })
 export class JoinAgreementPage {

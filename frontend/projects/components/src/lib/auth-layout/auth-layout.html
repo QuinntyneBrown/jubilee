@@ -1,0 +1,32 @@
+@if (split()) {
+  <aside class="auth-layout__panel" aria-label="About Jubilee">
+    <a jb-lockup size="xl" onInk routerLink="/welcome" aria-label="Jubilee home"></a>
+    <div class="auth-layout__pitch">
+      <p class="auth-layout__headline">Hire, shop and book with your church family.</p>
+      <p class="auth-layout__lead">Christian-owned businesses across Toronto, all in one place.</p>
+    </div>
+    <p class="auth-layout__legal">© Jubilee · Toronto</p>
+  </aside>
+}
+<div class="auth-layout__body">
+  <a
+    jb-lockup
+    class="auth-brand"
+    [size]="split() ? 'lg' : 'md'"
+    routerLink="/welcome"
+    aria-label="Jubilee home"
+  ></a>
+  <div class="auth-card">
+    @if (heading(); as heading) {
+      <div class="auth-card__head">
+        <h1 class="auth-card__title">{{ heading }}</h1>
+        @if (lead(); as lead) {
+          <p class="auth-card__lead">{{ lead }}</p>
+        }
+      </div>
+    }
+    <ng-content />
+    <p class="auth-card__note"><ng-content select="[slot=note]" /></p>
+  </div>
+  <p class="auth-foot"><ng-content select="[slot=foot]" /></p>
+</div>

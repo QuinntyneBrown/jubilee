@@ -123,6 +123,33 @@ export class ShellPage {
     return this.page.locator(':focus');
   }
 
+  /** The edges of a region in the viewport, in CSS pixels, for a layout that a width decides. */
+  async leftEdge(region: Locator): Promise<number> {
+    return (await this.boxOf(region)).x;
+  }
+
+  async rightEdge(region: Locator): Promise<number> {
+    const box = await this.boxOf(region);
+    return box.x + box.width;
+  }
+
+  async topEdge(region: Locator): Promise<number> {
+    return (await this.boxOf(region)).y;
+  }
+
+  async bottomEdge(region: Locator): Promise<number> {
+    const box = await this.boxOf(region);
+    return box.y + box.height;
+  }
+
+  private async boxOf(
+    region: Locator,
+  ): Promise<{ x: number; y: number; width: number; height: number }> {
+    const box = await region.boundingBox();
+    if (!box) throw new Error('The region is not on screen.');
+    return box;
+  }
+
   dataPage(): Promise<string | null> {
     return this.page.locator('body').getAttribute('data-page');
   }

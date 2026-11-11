@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ACCOUNT_API, JoinRequest } from 'api';
 import {
-  BrandMark,
+  AuthLayout,
   EmptyState,
   Icon,
   Button,
@@ -21,6 +21,7 @@ import {
   Field,
   Input,
   Checkbox,
+  DividerText,
 } from 'components';
 import { googleNotice } from '../../services/google-notice';
 import { sanitiseReturnUrl } from '../../services/return-url';
@@ -81,7 +82,7 @@ function message(field: FieldName, code: string, passwordLength: number): string
   imports: [
     FormsModule,
     RouterLink,
-    BrandMark,
+    AuthLayout,
     EmptyState,
     Icon,
     Button,
@@ -91,9 +92,9 @@ function message(field: FieldName, code: string, passwordLength: number): string
     FieldError,
     Input,
     Checkbox,
+    DividerText,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'auth-layout' },
   templateUrl: './join.page.html',
 })
 export class JoinPage {

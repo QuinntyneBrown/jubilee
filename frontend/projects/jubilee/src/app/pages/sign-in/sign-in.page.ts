@@ -10,7 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
-  BrandMark,
+  AuthLayout,
   EmptyState,
   Icon,
   Button,
@@ -19,6 +19,7 @@ import {
   Field,
   Input,
   Checkbox,
+  DividerText,
 } from 'components';
 import { googleNotice } from '../../services/google-notice';
 import { sanitiseReturnUrl } from '../../services/return-url';
@@ -34,7 +35,7 @@ type View = 'form' | 'submitting' | 'error';
   imports: [
     FormsModule,
     RouterLink,
-    BrandMark,
+    AuthLayout,
     EmptyState,
     Icon,
     Button,
@@ -43,9 +44,9 @@ type View = 'form' | 'submitting' | 'error';
     Field,
     Input,
     Checkbox,
+    DividerText,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'auth-layout' },
   templateUrl: './sign-in.page.html',
 })
 export class SignInPage {

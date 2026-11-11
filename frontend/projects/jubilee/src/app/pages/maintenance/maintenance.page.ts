@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BrandMark, EmptyState, Icon, Button } from 'components';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthLayout, EmptyState, Icon, Button } from 'components';
 import { returnTo } from '../../services/navigation-trail';
 
 /**
@@ -10,9 +10,8 @@ import { returnTo } from '../../services/navigation-trail';
  */
 @Component({
   selector: 'jb-maintenance-page',
-  imports: [BrandMark, EmptyState, Icon, RouterLink, Button],
+  imports: [AuthLayout, EmptyState, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'auth-layout' },
   templateUrl: './maintenance.page.html',
 })
 export class MaintenancePage {

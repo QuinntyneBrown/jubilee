@@ -1,5 +1,4 @@
-<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
-<div class="auth-card card stack">
+<jb-auth-layout split [heading]="view() === 'error' ? null : 'Sign in to Jubilee'">
   @if (view() === 'error') {
     <div jb-empty-state icon="alert" heading="We couldn’t load sign in" [level]="1" [error]="true">
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
@@ -10,7 +9,6 @@
       <a slot="actions" jb-button routerLink="/welcome">Back to welcome</a>
     </div>
   } @else {
-    <h1>Sign in to Jubilee</h1>
     @if (notice() && cancelled()) {
       <div jb-alert tone="warning" role="status">{{ notice() }}</div>
     }
@@ -66,16 +64,16 @@
         Sign in
       </button>
       @if (google()) {
-        <p class="divider-text">or</p>
+        <p jb-divider-text>or</p>
       }
       @if (google()) {
         <a jb-button block size="lg" [href]="googleUrl">Continue with Google</a>
       }
     </form>
   }
-</div>
-@if (view() !== 'error') {
-  <p class="auth-foot">
-    New to Jubilee? <a routerLink="/join" [queryParams]="joinQuery">Join free</a>
-  </p>
-}
+  @if (view() !== 'error') {
+    <span slot="foot"
+      >New to Jubilee? <a routerLink="/join" [queryParams]="joinQuery">Join free</a></span
+    >
+  }
+</jb-auth-layout>

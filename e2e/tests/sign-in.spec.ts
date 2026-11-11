@@ -181,6 +181,58 @@ test.describe('sign in (L2-006)', () => {
   });
 });
 
+test.describe('the Log in frame (L2-187)', () => {
+  test('AC1: from 1024 px a brand panel stands beside the form', async ({ page, jb }) => {
+    const signIn = new SignInPage(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.open('sign-in');
+
+    await expect(signIn.brandPanel).toBeVisible();
+    await expect(signIn.brandPanel).toContainText('Hire, shop and book with your church family.');
+    await expect(signIn.brandPanel).toContainText(
+      'Christian-owned businesses across Toronto, all in one place.',
+    );
+    await expect(signIn.brandPanel).toContainText('© Jubilee · Toronto');
+    // The panel holds the only lockup, and the form stands to its right.
+    await expect(signIn.lockup).toHaveCount(1);
+    await expect(signIn.panelLockup).toBeVisible();
+    expect(await signIn.leftEdge(signIn.card)).toBeGreaterThan(
+      await signIn.rightEdge(signIn.brandPanel),
+    );
+    // One screen, one heading: what the panel says is not a second one.
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+  });
+
+  test('AC2: under 1024 px there is no panel and the lockup is above the card', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    for (const width of [360, 768, 1023]) {
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-in');
+
+      await expect(signIn.brandPanel).toBeHidden();
+      await expect(signIn.lockup).toHaveCount(1);
+      expect(await signIn.bottomEdge(signIn.lockup)).toBeLessThanOrEqual(
+        await signIn.topEdge(signIn.card),
+      );
+    }
+  });
+
+  for (const width of [360, 1280]) {
+    test(`AC3: the lockup leads to the welcome page at ${width} px`, async ({ page, jb }) => {
+      const signIn = new SignInPage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-in');
+
+      await signIn.lockup.click();
+
+      await expect.poll(() => signIn.dataPage()).toBe('welcome');
+    });
+  }
+});
+
 test.describe('continue with Google: off, cancelled or refused (L2-003)', () => {
   test('AC5: without Google sign-in the page shows no Google button and no "or"', async ({
     page,

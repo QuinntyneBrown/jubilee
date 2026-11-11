@@ -1,5 +1,4 @@
-<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
-<div class="auth-card card stack">
+<jb-auth-layout>
   @switch (state()) {
     @case ('loading') {
       <h1 class="visually-hidden">Loading the reference request</h1>
@@ -135,11 +134,13 @@
             Send my answer
           </button>
         </form>
-        <p class="auth-foot">
-          Not expecting this? You can ignore it, or
-          <button jb-button variant="link" type="button" (click)="report()">tell us</button>.
-        </p>
       }
     }
   }
-</div>
+  @if (state() === 'form' && view()) {
+    <span slot="note"
+      >Not expecting this? You can ignore it, or
+      <button jb-button variant="link" type="button" (click)="report()">tell us</button>.</span
+    >
+  }
+</jb-auth-layout>

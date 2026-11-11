@@ -1,5 +1,4 @@
-<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
-<div class="auth-card card stack">
+<jb-auth-layout>
   @switch (view().kind) {
     @case ('loading') {
       <div class="empty" role="status">
@@ -65,7 +64,7 @@
       }
     }
   }
-</div>
-@if (view().kind === 'pending') {
-  <p class="auth-foot">Wrong account? <a routerLink="/sign-out">Sign out</a></p>
-}
+  @if (view().kind === 'pending') {
+    <span slot="foot">Wrong account? <a routerLink="/sign-out">Sign out</a></span>
+  }
+</jb-auth-layout>

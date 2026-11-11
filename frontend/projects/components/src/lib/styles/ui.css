@@ -31,8 +31,8 @@ body {
   min-height: 100dvh;
 }
 h1, h2, h3, h4, p, ul, ol, figure, blockquote { margin: 0; }
-h1 { font: var(--text-h1); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tight); text-wrap: balance; }
-@media (min-width: 48rem) { h1 { font-size: var(--font-size-4xl); } }
+h1 { font: var(--text-h1); font-size: var(--jb-h1-size, var(--font-size-3xl)); letter-spacing: var(--letter-spacing-tight); text-wrap: balance; }
+@media (min-width: 48rem) { h1 { font-size: var(--jb-h1-size, var(--font-size-4xl)); } }
 h2 { font: var(--text-h2); letter-spacing: var(--letter-spacing-tight); text-wrap: balance; }
 h3 { font: var(--text-h3); text-wrap: balance; }
 h4 { font: var(--text-h4); }
@@ -291,7 +291,7 @@ button.avatar { border: 0; padding: 0; cursor: pointer; }
 .skeleton--title { height: 1.5em; width: 40%; } .skeleton--circle { border-radius: 50%; } .skeleton--rect { border-radius: var(--radius-md); }
 .empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-3); padding: var(--space-12) var(--space-6); }
 .empty__icon { width: calc(var(--avatar-size-md) + var(--space-6)); height: calc(var(--avatar-size-md) + var(--space-6)); border-radius: var(--radius-full); display: grid; place-items: center; background: var(--color-accent-subtle); color: var(--color-fg-accent); margin-bottom: var(--space-2); }
-.empty__title { font: var(--text-h3); } .empty__text { color: var(--color-fg-muted); max-width: 36ch; }
+.empty__title { font: var(--text-h3); font-size: var(--jb-empty-title-size, var(--font-size-xl)); } .empty__text { color: var(--color-fg-muted); max-width: 36ch; }
 .empty__actions { display: flex; gap: var(--space-3); margin-top: var(--space-2); flex-wrap: wrap; justify-content: center; }
 .empty--compact { padding: var(--space-8) var(--space-4); }
 .empty--error .empty__icon { background: var(--color-danger-bg); color: var(--color-danger-icon); }
@@ -312,9 +312,6 @@ button.avatar { border: 0; padding: 0; cursor: pointer; }
 .footer { padding: var(--space-8) var(--layout-margin); border-top: var(--border-width-hairline) solid var(--color-border-default); background: var(--color-bg-surface); color: var(--color-fg-muted); font: var(--text-body-sm); display: flex; flex-wrap: wrap; gap: var(--space-4); justify-content: space-between; }
 .footer a { color: inherit; }
 .footer a:hover, .footer a[data-state="hover"] { color: var(--color-fg-default); }
-.auth-layout { min-height: 100dvh; display: grid; place-items: center; padding: var(--space-6) var(--layout-margin); }
-.auth-card { width: 100%; max-width: 26rem; }
-.auth-card .logo { display: flex; justify-content: center; margin-bottom: var(--space-6); }
 
 /* ---------- Animations ----------------------------------------------------- */
 @keyframes spin { to { rotate: 360deg; } }
@@ -598,13 +595,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .skeleton--w30 { width: 30%; } .skeleton--w50 { width: 50%; } .skeleton--w70 { width: 70%; }
 
 /* ---------- Auth and bare pages ---------------------------------------------------------------------- */
-.auth-layout { align-content: center; gap: var(--space-6); }
-.auth-brand { display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tighter); color: var(--color-fg-default); text-decoration: none; }
-.auth-brand .brand-mark { width: var(--icon-size-lg); height: var(--icon-size-lg); }
-.auth-card h1 { font-size: var(--font-size-2xl); }
-.auth-foot { font: var(--text-body-sm); color: var(--color-fg-muted); text-align: center; }
-.divider-text { display: flex; align-items: center; gap: var(--space-3); font: var(--text-caption); color: var(--color-fg-muted); }
-.divider-text::before, .divider-text::after { content: ""; flex: 1; border-top: var(--border-width-hairline) solid var(--color-border-default); }
 .status-page { min-height: 70dvh; display: grid; place-items: center; }
 
 /* ---------- Fixes found in the screenshot sweep ------------------------------------------------------ */
