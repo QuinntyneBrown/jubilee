@@ -32,6 +32,8 @@ export class AccountPage extends ShellPage implements Screen {
   readonly dataWaiting: Locator;
   readonly dataFailed: Locator;
   readonly deleteAccount: Locator;
+  /** The card that holds "Delete account". */
+  readonly dangerZone: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -65,6 +67,7 @@ export class AccountPage extends ShellPage implements Screen {
     this.dataWaiting = this.dataCard.getByRole('status');
     this.dataFailed = this.dataCard.getByRole('alert');
     this.deleteAccount = this.main.getByRole('button', { name: 'Delete my account' });
+    this.dangerZone = this.main.locator('.danger-zone');
   }
 
   errorOf(id: 'first' | 'last' | 'phone' | 'postal'): Locator {

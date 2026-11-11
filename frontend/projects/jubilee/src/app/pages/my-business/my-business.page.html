@@ -20,7 +20,7 @@
       <p class="visually-hidden" role="status">Loading your business…</p>
       <div class="stat-grid" aria-hidden="true">
         @for (item of [1, 2, 3, 4]; track item) {
-          <div class="card">
+          <div jb-card>
             <span jb-skeleton shape="text" width="50"></span>
             <span jb-skeleton shape="title"></span>
           </div>
@@ -102,14 +102,14 @@
       <div style="margin-top: var(--space-6)">
         @if (b.stats; as stats) {
           <div class="stat-grid">
-            <div class="card stat">
+            <div jb-card class="stat">
               <span class="stat__label">Listing views, 7 days</span>
               <span class="stat__value">{{ stats.views.value }}</span>
               <span class="stat__delta" [class.stat__delta--up]="stats.views.change > 0">{{
                 viewsDelta(b)
               }}</span>
             </div>
-            <div class="card stat">
+            <div jb-card class="stat">
               <span class="stat__label">Open requests</span>
               <span class="stat__value">{{ stats.openRequests }}</span>
               <span class="stat__delta" [class.stat__delta--up]="stats.newSinceYesterday > 0">{{
@@ -118,13 +118,13 @@
                   : stats.newSinceYesterday + ' new since yesterday'
               }}</span>
             </div>
-            <div class="card stat">
+            <div jb-card class="stat">
               <span class="stat__label">Unanswered messages</span>
               <span class="stat__value">{{ stats.unansweredMessages }}</span>
               <span class="stat__delta">Reply within a day to keep your badge</span>
             </div>
             @if (stats.saved !== null) {
-              <div class="card stat">
+              <div jb-card class="stat">
                 <span class="stat__label">Saved by members</span>
                 <span class="stat__value">{{ stats.saved }}</span>
                 <span class="stat__delta">This week</span>
@@ -179,8 +179,7 @@
               }
             </section>
             <aside class="section stack">
-              <div class="card stack">
-                <h2 class="card__title">Your listing</h2>
+              <div jb-card heading="Your listing" class="stack">
                 @if (b.summary; as summary) {
                   <ul class="rows">
                     <li class="row">
@@ -297,8 +296,7 @@
             </div>
           }
           <div class="split" style="margin-top: var(--space-6)">
-            <section class="card" aria-labelledby="vp">
-              <h2 id="vp" class="card__title">Verification progress</h2>
+            <section jb-card heading="Verification progress" headingId="vp">
               <div style="margin-top: var(--space-4)">
                 <ol class="timeline">
                   @for (step of steps(b); track step.title) {

@@ -20,6 +20,7 @@ import {
   Input,
   Skeleton,
   Badge,
+  Card,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -45,6 +46,7 @@ const MAX = 5;
     Input,
     Skeleton,
     Badge,
+    Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-featured.page.html',

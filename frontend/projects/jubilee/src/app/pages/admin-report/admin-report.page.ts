@@ -10,7 +10,16 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ADMIN_API, ReportActionKind, ReportDetail } from 'api';
-import { EmptyState, Icon, Button, Alert, MessageBubble, RowListSkeleton, Badge } from 'components';
+import {
+  EmptyState,
+  Icon,
+  Button,
+  Alert,
+  MessageBubble,
+  RowListSkeleton,
+  Badge,
+  Card,
+} from 'components';
 import {
   ReportActionData,
   ReportActionDialog,
@@ -53,6 +62,7 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
     MessageBubble,
     RowListSkeleton,
     Badge,
+    Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-report.page.html',

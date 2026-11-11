@@ -22,6 +22,7 @@ import {
   Input,
   Checkbox,
   BotChallenge,
+  Card,
 } from 'components';
 import { googleNotice } from '../../services/google-notice';
 import { ReturnAfterJoinService } from '../../services/return-after-join.service';
@@ -94,6 +95,7 @@ function message(field: FieldName, code: string, passwordLength: number): string
     Input,
     Checkbox,
     BotChallenge,
+    Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },

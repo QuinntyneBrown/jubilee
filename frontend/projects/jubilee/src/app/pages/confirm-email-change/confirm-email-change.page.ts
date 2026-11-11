@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PROFILE_API } from 'api';
-import { BrandMark, EmptyState, Icon, Button, Spinner } from 'components';
+import { BrandMark, EmptyState, Icon, Button, Spinner, Card } from 'components';
 import { SessionService } from '../../services/session.service';
 
 type View = 'loading' | 'confirmed' | 'expired' | 'in-use' | 'error';
@@ -13,7 +13,7 @@ type View = 'loading' | 'confirmed' | 'expired' | 'in-use' | 'error';
  */
 @Component({
   selector: 'jb-confirm-email-change-page',
-  imports: [RouterLink, BrandMark, EmptyState, Icon, Button, Spinner],
+  imports: [RouterLink, BrandMark, EmptyState, Icon, Button, Spinner, Card],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './confirm-email-change.page.html',
