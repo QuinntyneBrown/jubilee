@@ -20,13 +20,22 @@ platform (Angular, .NET, Playwright, WCAG) over the expedient one (ADR 0035). A 
 an ADR that gives its reason. If a rule in this file or in an ADR conflicts with best practice,
 say so and propose the correction; do not work around it silently.
 
+## Design source of truth
+
+The Magic Patterns design is the source of truth for how Jubilee looks (ADR 0035):
+<https://www.magicpatterns.com/os/vjQEdxvHPvuznVPfxRXYfe/bY9EUiQ7kdsZbenSTHQtty>
+
+It trumps `docs/mocks/` and `docs/design-system/` in ALL cases. Where a mock or a design-system
+page is not aligned with it, update the mock and the design system to match, in the same change
+and before building the component. Never resolve a difference in favour of the mock.
+
 ## Repository layout
 
 - `backend/` — .NET solution
 - `frontend/` — Angular workspace (`jubilee`, `marketing`, `api`, `components`)
 - `e2e/` — Playwright suite
 - `docs/assets/` — the logo (`jubilee-icon.svg`) and other images the docs share
-- `docs/mocks/` — static design reference (the source of truth for the UI)
+- `docs/mocks/` — static design reference: the approved, testable copy of the Magic Patterns design
 - `docs/design-reference/magic-patterns/` — images exported from the Magic Patterns design, the
   baseline of the Magic Patterns parity specs
 - `docs/design-system/` — tokens, foundations, components and patterns extracted from the mocks
@@ -216,7 +225,8 @@ design system).
   `docs/design-reference/magic-patterns/` (3 % threshold). Creating or changing a component is
   not done until `npm run parity` in `e2e/` passes; the implementer and CI run it. This is the
   one exception to the rule above: `npm run parity` covers `tests/parity/` only and is not a
-  sweep. Fix a difference at its source (the component, or the design system and mock first);
+  sweep. The Magic Patterns design wins over the mock: fix a difference at its source (the design
+  system and mock first, then the component);
   never raise a threshold or mask a region to pass.
 - Visual regression compares the app to `docs/mocks` region by region. Update baselines only for
   intentional design changes, after changing the mock first.

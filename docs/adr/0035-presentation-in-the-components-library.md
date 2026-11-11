@@ -49,6 +49,11 @@ its styles, the styles are encapsulated, and only design tokens and layout utili
   `marketing.css`) in the same change, so a rule exists once. A change to the look is still made
   in the design system and its mock first.
 
+- **The Magic Patterns design is the source of the design, above the mocks in every case.** It is
+  at <https://www.magicpatterns.com/os/vjQEdxvHPvuznVPfxRXYfe/bY9EUiQ7kdsZbenSTHQtty>. Where a mock in `docs/mocks/` or a page of `docs/design-system/` is not aligned with
+  it, the mock and the design system are updated to match, in the same change and before the
+  component is built. The mocks stay the approved, testable copy of that design; they never
+  overrule it.
 - **Visual parity is proved per component, by a Playwright spec that passes.** A component is
   not done until its parity spec passes. The spec lives in `e2e/tests/parity/`, one file per
   component, and makes two comparisons of the component's region, found through a page object:
@@ -61,15 +66,16 @@ its styles, the styles are encapsulated, and only design tokens and layout utili
     owner and committed under `docs/design-reference/magic-patterns/`, each named for its frame
     and viewport. Because those images are rendered on another machine, a region fails above
     3 % of differing pixels. A component that the reference does not show (a state the mocks
-    added) says so in its spec, names the nearest frame, and makes the mock comparison only.
+    added) says so in its spec, names the nearest frame, and makes the mock comparison only;
+    the mock of such a state still follows the Magic Patterns design in everything it shares.
 - **The parity specs are run; the sweeps are still not.** `npm run parity` in `e2e/` renders the
   mock baselines for `tests/parity/` and runs those specs against the app. Whoever implements a
   component runs it, and CI runs it. This is the one exception to ADR 0010: the full sweeps
   (`npm run sweeps`, `npm run baseline`, `JB_SWEEPS=1`, `JB_BASELINE=1` over `tests/visual/`,
   `responsive.spec.ts` and `accessibility.spec.ts`) remain owner-run only.
-- **A difference is fixed at its source.** If the app differs from the mock, the component is
-  wrong. If the mock differs from the Magic Patterns reference, the design system and the mock
-  are corrected first, then the component. A threshold is never raised and a region is never
+- **A difference is fixed at its source.** If the mock differs from the Magic Patterns design,
+  the Magic Patterns design wins: the design system and the mock are updated first, then the
+  component. If the app then differs from the mock, the component is wrong. A threshold is never raised and a region is never
   masked to make a spec pass.
 
 ## Consequences
