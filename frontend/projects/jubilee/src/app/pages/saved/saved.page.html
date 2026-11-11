@@ -1,9 +1,4 @@
-<div class="page-header">
-  <div>
-    <h1>Saved</h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
-</div>
+<jb-page-header heading="Saved" [subtitle]="subtitle()"> </jb-page-header>
 @let current = state();
 @switch (current.status) {
   @case ('error') {

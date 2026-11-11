@@ -1,10 +1,5 @@
 @let requests = state();
-<div class="page-header">
-  <div>
-    <h1>Your requests</h1>
-    <p class="subtitle">{{ subtitle() }}</p>
-  </div>
-</div>
+<jb-page-header heading="Your requests" [subtitle]="subtitle()"> </jb-page-header>
 @switch (requests.status) {
   @case ('error') {
     <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your requests">

@@ -1,0 +1,6 @@
+// Block: detail-head, its kicker.
+@use './detail-head-base' as base;
+
+:host {
+  @include base.kicker;
+}

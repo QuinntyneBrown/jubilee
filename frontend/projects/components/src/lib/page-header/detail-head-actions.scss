@@ -1,0 +1,15 @@
+// Block: detail-head, its actions.
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  --jb-btn-primary-flex: 1;
+}
+
+// On a phone the primary action takes the line.
+@media (max-width: 39.99rem) {
+  :host {
+    --jb-btn-primary-flex: 1 1 100%;
+  }
+}

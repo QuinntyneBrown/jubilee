@@ -1,0 +1,6 @@
+// Block: detail-head, its kicker. The label is the kicker of a business.
+@use '../page-header/detail-head-base' as base;
+
+:host {
+  @include base.kicker;
+}

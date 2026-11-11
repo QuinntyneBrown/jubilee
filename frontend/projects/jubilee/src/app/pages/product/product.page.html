@@ -57,7 +57,7 @@
           [tag]="product.soldOut ? 'Sold out' : ''"
         ></div>
       </div>
-      <div class="detail-head">
+      <div jb-detail-head>
         <div class="cluster" style="justify-content: space-between; align-items: flex-start">
           <h1>{{ product.name }}</h1>
           <button
@@ -83,7 +83,7 @@
             <span class="text-muted">· {{ product.deliveryLine }}</span>
           }
         </p>
-        <p class="detail-head__kicker">
+        <p jb-detail-head-kicker>
           Sold by <a [routerLink]="['/b', product.shop.slug]">{{ product.shop.name }}</a>
           @if (product.shop.verified) {
             <svg jb-icon name="verified"></svg>Verified

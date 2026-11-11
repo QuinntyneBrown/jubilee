@@ -1,0 +1,12 @@
+// The kicker of a detail head, shared with the components that are a kicker themselves
+// (verified-business-label).
+@mixin kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+  --jb-icon-size: var(--icon-size-sm);
+  --jb-icon-color: var(--color-success-icon);
+}

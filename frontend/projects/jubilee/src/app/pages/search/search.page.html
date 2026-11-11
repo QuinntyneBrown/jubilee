@@ -1,12 +1,8 @@
 @let state = store.state();
 @switch (state.status) {
   @case ('start') {
-    <div class="page-header">
-      <div>
-        <h1>Search</h1>
-        <p class="subtitle">Find a business, a service or a product.</p>
-      </div>
-    </div>
+    <jb-page-header heading="Search" subtitle="Find a business, a service or a product.">
+    </jb-page-header>
     <form
       class="search"
       role="search"
@@ -67,12 +63,11 @@
     </section>
   }
   @case ('loading') {
-    <div class="page-header">
-      <div>
-        <h1>{{ state.query ? 'Results for “' + state.query + '”' : 'Search' }}</h1>
-        <p class="subtitle">{{ state.query ? 'Searching…' : 'Loading…' }}</p>
-      </div>
-    </div>
+    <jb-page-header
+      [heading]="state.query ? 'Results for “' + state.query + '”' : 'Search'"
+      [subtitle]="state.query ? 'Searching…' : 'Loading…'"
+    >
+    </jb-page-header>
     <p class="visually-hidden" role="status">Loading results…</p>
     <ul jb-rows aria-hidden="true">
       @for (row of [1, 2, 3, 4]; track row) {
@@ -86,12 +81,11 @@
     </ul>
   }
   @case ('error') {
-    <div class="page-header">
-      <div>
-        <h1>{{ state.query ? 'Results for “' + state.query + '”' : 'Search' }}</h1>
-        <p class="subtitle">Search is having trouble.</p>
-      </div>
-    </div>
+    <jb-page-header
+      [heading]="state.query ? 'Results for “' + state.query + '”' : 'Search'"
+      subtitle="Search is having trouble."
+    >
+    </jb-page-header>
     <div jb-empty-state icon="alert" heading="We couldn’t load your results" [error]="true">
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ state.reference }}</code
@@ -105,11 +99,7 @@
   @case ('results') {
     @let results = state.value;
     @if (results.hits.length === 0) {
-      <div class="page-header">
-        <div>
-          <h1>No results for “{{ results.query }}”</h1>
-        </div>
-      </div>
+      <jb-page-header [heading]="'No results for “' + results.query + '”'"> </jb-page-header>
       <div jb-empty-state icon="search" [heading]="'Nothing matches “' + results.query + '”'">
         @if (results.suggestion; as suggestion) {
           Did you mean
@@ -142,12 +132,8 @@
         }
       </div>
     } @else {
-      <div class="page-header">
-        <div>
-          <h1>Results for “{{ results.query }}”</h1>
-          <p class="subtitle">{{ summary() }}</p>
-        </div>
-      </div>
+      <jb-page-header [heading]="'Results for “' + results.query + '”'" [subtitle]="summary()">
+      </jb-page-header>
       <div class="tabs" role="tablist" aria-label="Result type">
         @for (tab of tabs; track tab.kind; let i = $index) {
           <button

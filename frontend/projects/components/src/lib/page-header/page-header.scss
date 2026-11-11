@@ -1,0 +1,19 @@
+// Block: page-header. The host is the header.
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-block: var(--space-6) var(--space-6);
+}
+
+.subtitle {
+  color: var(--color-fg-muted);
+  margin-top: var(--space-1);
+}
+
+// A page without a subtitle draws none.
+.subtitle:empty {
+  display: none;
+}

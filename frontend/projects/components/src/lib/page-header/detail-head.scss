@@ -1,0 +1,6 @@
+// Block: detail-head. The host is the head.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

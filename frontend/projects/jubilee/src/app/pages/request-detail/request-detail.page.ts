@@ -11,7 +11,17 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CancelDecision, MemberRequestDetail, REQUESTS_API } from 'api';
-import { EmptyState, Icon, Button, Alert, Skeleton, Badge, Card, CardFooter } from 'components';
+import {
+  EmptyState,
+  Icon,
+  Button,
+  Alert,
+  Skeleton,
+  Badge,
+  Card,
+  CardFooter,
+  PageHeader,
+} from 'components';
 import { interval } from 'rxjs';
 import {
   CancelRequestData,
@@ -34,7 +44,18 @@ const NOUN = { booking: 'booking', quote: 'quote request', order: 'order' } as c
 /** One request at /requests/:id (L2-048): its status, details, progress and next steps. */
 @Component({
   selector: 'jb-request-detail-page',
-  imports: [RouterLink, EmptyState, Icon, Button, Alert, Skeleton, Badge, Card, CardFooter],
+  imports: [
+    RouterLink,
+    EmptyState,
+    Icon,
+    Button,
+    Alert,
+    Skeleton,
+    Badge,
+    Card,
+    CardFooter,
+    PageHeader,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './request-detail.page.html',
