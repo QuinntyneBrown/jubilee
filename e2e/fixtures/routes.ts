@@ -258,6 +258,16 @@ export const routes = {
     mock: 'pages/statement-of-faith/default.html',
     who: 'visitor',
   },
+  'server-error': {
+    app: '/error?ref=JB-500-7F3K',
+    mock: 'pages/server-error/default.html',
+    who: 'visitor',
+  },
+  maintenance: {
+    app: '/maintenance?backBy=2026-11-11T11:00:00%2B00:00',
+    mock: 'pages/maintenance/default.html',
+    who: 'visitor',
+  },
   terms: { app: '/terms', mock: 'pages/terms/default.html', who: 'visitor' },
   privacy: { app: '/privacy', mock: 'pages/privacy/default.html', who: 'visitor' },
   help: { app: '/help', mock: 'pages/help/default.html', who: 'visitor' },

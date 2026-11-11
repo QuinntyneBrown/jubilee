@@ -26,16 +26,17 @@ one background job.
 
 - **`MaintenanceOptions`** — configuration object with `Enabled` and `BackBy`.
   It is bound to the `Configuration store` with reload on change, so a new value
-  takes effect in running processes. The store's vendor and its propagation
-  delay are `<TO SUPPLY>`.
+  takes effect in running processes. The store is the application configuration (`Maintenance:Enabled`,
+  `Maintenance:BackBy`), which reloads on change; the propagation delay is the
+  reload interval of the host (ADR 0031).
 - **`MaintenanceState`** — application service behind `IMaintenanceState`. It
   exposes the current options and notifies listeners when they change.
 - **`MaintenanceMiddleware`** — placed in `Jubilee API` ahead of routing. While
   `Enabled` is true it answers every page request with HTTP 503 and a
   `Retry-After` header computed from `BackBy`. A document request receives the
   static maintenance page; an API request receives `ProblemDetails` with the
-  code `MAINTENANCE` and the `backBy` value. Paths exempt from the switch (for
-  example health probes) are `<TO SUPPLY>`.
+  code `MAINTENANCE` and the `backBy` value. The only path exempt from the switch is
+  the health probe `/api/health` (ADR 0031).
 - **Static maintenance page** — self-contained HTML document with the copy from
   the mock. It formats `BackBy` in Eastern time as "{time} Eastern on {day}"
   (for example "6:00 a.m. Eastern on Wednesday 11 November") and depends on no
@@ -60,8 +61,8 @@ one background job.
 - **`LinkToken.Extend`** — domain method that moves `ExpiresAt` forward. Other
   purposes, such as password reset, are not extended.
 - **Operator procedure** — the `On-call engineer` sets `Enabled` and `BackBy` in
-  the `Configuration store`. The tool used to change the switch and the access
-  control on it are `<TO SUPPLY>`.
+  the `Configuration store`. The switch is changed where the host's configuration is
+  managed, and access to it is the access to that configuration (ADR 0031).
 
 ## Requirements
 

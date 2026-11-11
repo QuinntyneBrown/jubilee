@@ -1,0 +1,14 @@
+<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
+<div class="auth-card card">
+  <div jb-empty-state icon="settings" heading="Jubilee is being updated" [level]="1">
+    @if (backByText; as when) {
+      We’re back by {{ when }}.
+    } @else {
+      We’ll be back shortly.
+    }
+    Nothing you’ve sent is lost.
+    <button slot="actions" class="btn btn--primary" type="button" (click)="checkAgain()">
+      <svg jb-icon name="refresh"></svg>Check again
+    </button>
+  </div>
+</div>
