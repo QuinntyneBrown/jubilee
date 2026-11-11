@@ -305,3 +305,67 @@ public sealed class DeliveryMethodConfiguration : IEntityTypeConfiguration<Deliv
         builder.HasOne<Listing>().WithMany().HasForeignKey(d => d.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+public sealed class ListingDraftConfiguration : IEntityTypeConfiguration<ListingDraft>
+{
+    public void Configure(EntityTypeBuilder<ListingDraft> builder)
+    {
+        builder.ToTable("ListingDrafts");
+        builder.HasKey(d => d.Id);
+        builder.Property(d => d.Id).ValueGeneratedNever();
+        builder.Property(d => d.OwnerSubject).HasMaxLength(200).IsRequired();
+        builder.Property(d => d.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.Property(d => d.Name).HasMaxLength(ListingDraft.MaxNameLength);
+        builder.Property(d => d.Tagline).HasMaxLength(ListingDraft.MaxTaglineLength);
+        builder.Property(d => d.CategorySlug).HasMaxLength(60);
+        builder.Property(d => d.Highlight).HasMaxLength(60);
+        builder.Property(d => d.Place).HasMaxLength(200);
+        builder.Property(d => d.Church).HasMaxLength(200);
+        builder.Property(d => d.PastorEmail).HasMaxLength(254);
+        builder.HasIndex(d => new { d.OwnerSubject, d.UpdatedAt });
+        builder.HasIndex(d => d.UpdatedAt);
+        builder.HasMany(d => d.Items).WithOne().HasForeignKey(i => i.ListingDraftId).OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(d => d.Items).UsePropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+public sealed class DraftItemConfiguration : IEntityTypeConfiguration<DraftItem>
+{
+    public void Configure(EntityTypeBuilder<DraftItem> builder)
+    {
+        builder.ToTable("DraftItems");
+        builder.HasKey(i => i.Id);
+        builder.Property(i => i.Id).ValueGeneratedNever();
+        builder.Property(i => i.Name).HasMaxLength(DraftItem.MaxNameLength).IsRequired();
+        builder.Property(i => i.Detail).HasMaxLength(DraftItem.MaxDetailLength);
+        builder.Property(i => i.PriceKind).HasConversion<string>().HasMaxLength(16);
+    }
+}
+
+public sealed class ListingSubmissionConfiguration : IEntityTypeConfiguration<ListingSubmission>
+{
+    public void Configure(EntityTypeBuilder<ListingSubmission> builder)
+    {
+        builder.ToTable("ListingSubmissions");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.OwnerSubject).HasMaxLength(200).IsRequired();
+        builder.Property(s => s.Church).HasMaxLength(200).IsRequired();
+        builder.Property(s => s.PastorEmail).HasMaxLength(254).IsRequired();
+        builder.Property(s => s.PastorEmailKey).HasMaxLength(254).IsRequired();
+        builder.Property(s => s.ReferenceToken).HasMaxLength(100).IsRequired();
+        builder.Property(s => s.StatementVersion).HasMaxLength(20).IsRequired();
+        builder.Property(s => s.IdempotencyKey).HasMaxLength(100).IsRequired();
+        builder.Property(s => s.Flags).HasConversion(
+            flags => string.Join(',', flags),
+            text => text.Length == 0 ? new List<string>() : text.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList(),
+            new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<string>>(
+                (a, b) => a != null && b != null && a.SequenceEqual(b),
+                list => list.Aggregate(0, (hash, item) => HashCode.Combine(hash, item.GetHashCode())),
+                list => list.ToList()));
+        builder.HasIndex(s => new { s.OwnerSubject, s.IdempotencyKey }).IsUnique();
+        builder.HasIndex(s => new { s.PastorEmailKey, s.SubmittedAt });
+        builder.HasIndex(s => s.ListingId).IsUnique();
+        builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
