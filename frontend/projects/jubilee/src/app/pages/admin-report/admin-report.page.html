@@ -84,14 +84,14 @@
             You can read this conversation only because this report is open. Your access is
             recorded.
           </p>
-          <ul class="chat__log" aria-label="Messages" style="margin-top: var(--space-3)">
+          <ul jb-message-thread aria-label="Messages" style="margin-top: var(--space-3)">
             @for (
               message of conversation.messages;
               track message.at + message.body;
               let i = $index
             ) {
               @if (newDay(report, i)) {
-                <li class="chat__day">{{ dayOf(message.at) }}</li>
+                <li jb-message-day>{{ dayOf(message.at) }}</li>
               }
               <li
                 jb-message-bubble

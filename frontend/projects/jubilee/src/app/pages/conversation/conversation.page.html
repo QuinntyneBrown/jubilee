@@ -1,6 +1,6 @@
 <div class="inbox inbox--chat">
   <jb-inbox-list [selectedId]="id()" />
-  <div class="inbox__chat chat">
+  <div jb-chat class="inbox__chat">
     @let current = state();
     @if (current.status === 'error') {
       <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this conversation">
@@ -14,22 +14,25 @@
       </div>
     } @else if (current.status === 'loading') {
       <p class="visually-hidden" role="status">Loading this conversation…</p>
-      <ul class="chat__log" aria-hidden="true">
+      <ul jb-message-thread aria-hidden="true">
         <li jb-message-bubble [placeholder]="60"></li>
         <li jb-message-bubble mine [placeholder]="45"></li>
         <li jb-message-bubble [placeholder]="70"></li>
       </ul>
     } @else {
       @let conversation = current.value;
-      <div class="chat__head">
-        <a jb-button variant="ghost" iconOnly routerLink="/messages" aria-label="Back to messages">
+      <div jb-chat-head [heading]="conversation.business.name" [subtitle]="subtitle()">
+        <a
+          slot="leading"
+          jb-button
+          variant="ghost"
+          iconOnly
+          routerLink="/messages"
+          aria-label="Back to messages"
+        >
           <svg jb-icon name="arrow-left"></svg>
         </a>
-        <jb-avatar [name]="conversation.business.name" />
-        <div style="flex: 1; min-width: 0">
-          <h1 class="truncate">{{ conversation.business.name }}</h1>
-          <p class="text-caption truncate">{{ subtitle() }}</p>
-        </div>
+        <jb-avatar slot="leading" [name]="conversation.business.name" />
         @if (muted()) {
           <span jb-badge>Muted</span>
         }
@@ -70,7 +73,7 @@
         </p>
       }
       @if (entries().length === 0) {
-        <div class="chat__log">
+        <div jb-message-thread>
           <div
             jb-empty-state
             [compact]="true"
@@ -86,9 +89,9 @@
           </div>
         </div>
       } @else {
-        <ul class="chat__log" aria-label="Messages">
+        <ul jb-message-thread aria-label="Messages">
           @if (hasMore()) {
-            <li class="chat__day">
+            <li jb-message-day>
               <button
                 jb-button
                 size="sm"
@@ -104,7 +107,7 @@
           @for (entry of entries(); track entry.id) {
             @switch (entry.kind) {
               @case ('day') {
-                <li class="chat__day">{{ entry.label }}</li>
+                <li jb-message-day>{{ entry.label }}</li>
               }
               @case ('message') {
                 <li

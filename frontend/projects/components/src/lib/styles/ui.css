@@ -389,11 +389,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .thread__snippet { display: block; font: var(--text-body-sm); color: var(--color-fg-muted); }
 .thread--unread .thread__name, .thread--unread .thread__snippet { font-weight: var(--font-weight-bold); color: var(--color-fg-default); }
 .thread__dot { display: inline-block; vertical-align: middle; margin-right: var(--space-1); width: var(--indicator-size); height: var(--indicator-size); border-radius: var(--radius-full); background: var(--color-accent-border); flex: none; margin-top: var(--space-2); }
-.chat { display: flex; flex-direction: column; min-height: 32rem; }
-.chat__head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
-.chat__head h1, .chat__head h2 { font: var(--text-h4); }
-.chat__log { flex: 1; display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); margin: 0; list-style: none; }
-.chat__day { align-self: center; font: var(--text-caption); color: var(--color-fg-muted); }
 .composer { display: flex; align-items: flex-end; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: var(--border-width-hairline) solid var(--color-border-default); }
 .composer { --jb-textarea-min-height: var(--control-height-md); --jb-textarea-resize: none; }
 

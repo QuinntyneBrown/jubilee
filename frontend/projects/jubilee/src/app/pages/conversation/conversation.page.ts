@@ -32,6 +32,10 @@ import {
   RequestCard as RequestCardItem,
   Textarea,
   Badge,
+  Chat,
+  ChatHead,
+  MessageThread,
+  MessageDay,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -114,6 +118,10 @@ type Entry =
     Chip,
     Avatar,
     Badge,
+    Chat,
+    ChatHead,
+    MessageThread,
+    MessageDay,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './conversation.page.html',

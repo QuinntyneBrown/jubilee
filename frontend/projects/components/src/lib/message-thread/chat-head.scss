@@ -1,0 +1,17 @@
+// Block: chat, its head.
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.chat__title {
+  flex: 1;
+  min-width: 0;
+}
+
+h1 {
+  font: var(--text-h4);
+}
