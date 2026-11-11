@@ -16,6 +16,8 @@ export class ProductPage extends ShellPage implements Screen {
   readonly soldBy: Locator;
   readonly shopLink: Locator;
   readonly optionGroup: Locator;
+  /** The chips of the option, one per choice. */
+  readonly optionChips: Locator;
   readonly optionError: Locator;
   readonly quantity: Locator;
   readonly quantityError: Locator;
@@ -53,6 +55,7 @@ export class ProductPage extends ShellPage implements Screen {
     this.soldBy = this.main.locator('.detail-head__kicker');
     this.shopLink = this.soldBy.getByRole('link');
     this.optionGroup = this.main.locator('.detail-head fieldset');
+    this.optionChips = this.optionGroup.locator('label.chip');
     this.optionError = this.optionGroup.locator('.field__error');
     this.quantity = this.main.getByLabel('Quantity');
     this.quantityError = this.main.locator('#qty-error');

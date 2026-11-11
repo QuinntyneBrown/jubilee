@@ -1,0 +1,21 @@
+// Block: chip-row.
+:host {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: var(--space-1);
+  margin: var(--space-5) calc(-1 * var(--space-1)) 0;
+  list-style: none;
+}
+
+@media (min-width: 48rem) {
+  :host {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+}
+
+:host(.chip-row--plain) {
+  margin-top: 0;
+}

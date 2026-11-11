@@ -21,6 +21,7 @@ import {
   Button,
   Field,
   Select,
+  Chip,
 } from 'components';
 import { combineLatest } from 'rxjs';
 import {
@@ -70,6 +71,7 @@ function businesses(count: number): string {
     Button,
     Field,
     Select,
+    Chip,
   ],
   providers: [CategoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

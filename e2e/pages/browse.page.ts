@@ -52,6 +52,8 @@ export class BrowsePage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly subline: Locator;
   readonly heroSearch: Locator;
+  /** The row of category chips in the hero. */
+  readonly categoryRow: Locator;
   readonly categoryChips: Locator;
   readonly joinPanel: Locator;
   readonly joinPanelAction: Locator;
@@ -79,6 +81,7 @@ export class BrowsePage extends ShellPage implements Screen {
     this.subline = this.hero.locator('.hero__sub');
     this.heroSearch = this.hero.getByRole('searchbox', { name: 'Search businesses and products' });
     this.categoryChips = this.hero.locator('.chip-row a.chip');
+    this.categoryRow = this.hero.locator('.chip-row');
     this.content = this.main.locator('div.container.page');
     this.joinPanel = this.content.locator('div.band');
     this.joinPanelAction = this.joinPanel.getByRole('link', { name: 'Join free' });

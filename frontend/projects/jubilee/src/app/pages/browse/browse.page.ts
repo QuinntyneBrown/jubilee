@@ -18,6 +18,8 @@ import {
   ProductCard,
   Button,
   Input,
+  Chip,
+  ChipRow,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { RequiresConnection } from '../../directives/requires-connection';
@@ -45,6 +47,8 @@ import { SessionService } from '../../services/session.service';
     ProductCard,
     Button,
     Input,
+    Chip,
+    ChipRow,
   ],
   providers: [DirectoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

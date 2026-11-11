@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CATEGORIES, DIRECTORY_API, Welcome } from 'api';
-import { BusinessCard, CountPipe, Icon, Button } from 'components';
+import { BusinessCard, CountPipe, Icon, Button, Chip, ChipRow } from 'components';
 
 /**
  * The public landing page for visitors (L2-020). Its text does not wait for data: the live
@@ -10,7 +10,7 @@ import { BusinessCard, CountPipe, Icon, Button } from 'components';
  */
 @Component({
   selector: 'jb-welcome-page',
-  imports: [RouterLink, BusinessCard, CountPipe, Icon, Button],
+  imports: [RouterLink, BusinessCard, CountPipe, Icon, Button, Chip, ChipRow],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page' },
   templateUrl: './welcome.page.html',

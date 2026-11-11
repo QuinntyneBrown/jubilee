@@ -33,10 +33,10 @@
             Clear recent searches
           </button>
         </div>
-        <ul class="chip-row chip-row--plain" style="margin-top: var(--space-3)">
+        <ul jb-chip-row plain style="margin-top: var(--space-3)">
           @for (recent of state.value.recent; track recent.id) {
             <li class="cluster">
-              <a class="chip" routerLink="/search" [queryParams]="{ q: recent.query }">{{
+              <a jb-chip routerLink="/search" [queryParams]="{ q: recent.query }">{{
                 recent.query
               }}</a>
               <button
@@ -57,10 +57,10 @@
     }
     <section class="section" aria-labelledby="pop">
       <h2 id="pop">Popular categories</h2>
-      <ul class="chip-row chip-row--plain" style="margin-top: var(--space-3)">
+      <ul jb-chip-row plain style="margin-top: var(--space-3)">
         @for (category of state.value.popularCategories; track category.slug) {
           <li>
-            <a class="chip" [routerLink]="['/c', category.slug]">{{ category.name }}</a>
+            <a jb-chip [routerLink]="['/c', category.slug]">{{ category.name }}</a>
           </li>
         }
       </ul>
