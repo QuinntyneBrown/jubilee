@@ -37,6 +37,7 @@ import {
   RowTitle,
   Rows,
   PageHeader,
+  Section,
 } from 'components';
 import {
   ConfirmRequestData,
@@ -83,6 +84,7 @@ const UNDO_MS = 8000;
     RowTitle,
     Rows,
     PageHeader,
+    Section,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

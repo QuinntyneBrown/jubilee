@@ -14,7 +14,7 @@
         <span jb-skeleton shape="button" size="block"></span>
       </div>
     </div>
-    <section class="section">
+    <section jb-section>
       <span jb-skeleton shape="title"></span>
       @if (thing() === 'shop') {
         <div style="margin-top: var(--space-4)">
@@ -161,16 +161,13 @@
     <div class="split">
       <div>
         @if (isShop) {
-          <section class="section" aria-labelledby="products">
-            <div class="section-head">
-              <h2 id="products">Products</h2>
-              @if (hasProducts) {
-                <span class="text-caption"
-                  >{{ listing.productCount | jbCount }}
-                  {{ listing.productCount === 1 ? 'product' : 'products' }}</span
-                >
-              }
-            </div>
+          <section jb-section heading="Products" headingId="products">
+            @if (hasProducts) {
+              <span slot="action" class="text-caption"
+                >{{ listing.productCount | jbCount }}
+                {{ listing.productCount === 1 ? 'product' : 'products' }}</span
+              >
+            }
             @if (hasProducts) {
               <ul class="card-grid card-grid--3">
                 @for (product of listing.products; track product.slug) {
@@ -194,8 +191,7 @@
             }
           </section>
           @if (hasServices) {
-            <section class="section" aria-labelledby="custom">
-              <div class="section-head"><h2 id="custom">Custom work</h2></div>
+            <section jb-section heading="Custom work" headingId="custom">
               <ul jb-rows>
                 @for (service of listing.services; track service.id) {
                   <li jb-service-row [service]="service" [actionLink]="link('quote')"></li>
@@ -204,8 +200,7 @@
             </section>
           }
         } @else {
-          <section class="section" aria-labelledby="svc">
-            <div class="section-head"><h2 id="svc">Services</h2></div>
+          <section jb-section heading="Services" headingId="svc">
             @if (hasServices) {
               <ul jb-rows>
                 @for (service of listing.services; track service.id) {
@@ -234,31 +229,32 @@
           </section>
         }
         @if (listing.about) {
-          <section class="section" aria-labelledby="about">
+          <section jb-section labelledBy="about">
             <h2 id="about">About</h2>
             <p style="margin-top: var(--space-3)">{{ listing.about }}</p>
           </section>
         }
       </div>
-      <aside jb-card heading="Details" headingId="det" class="section">
-        <dl class="dl" style="margin-top: var(--space-4)">
-          @for (detail of details(); track detail.term) {
-            <dt>{{ detail.term }}</dt>
-            <dd>{{ detail.value }}</dd>
-          }
-        </dl>
-      </aside>
+      <div jb-section>
+        <aside jb-card heading="Details" headingId="det">
+          <dl class="dl" style="margin-top: var(--space-4)">
+            @for (detail of details(); track detail.term) {
+              <dt>{{ detail.term }}</dt>
+              <dd>{{ detail.value }}</dd>
+            }
+          </dl>
+        </aside>
+      </div>
     </div>
     @if (listing.related.length) {
       <section
-        class="section"
-        aria-labelledby="more"
-        style="border-top: 1px solid var(--color-border-default); padding-top: var(--space-8)"
+        jb-section
+        divided
+        [heading]="'More in ' + listing.category.name"
+        headingId="more"
+        actionLabel="See all"
+        [actionLink]="['/c', listing.category.slug]"
       >
-        <div class="section-head">
-          <h2 id="more">More in {{ listing.category.name }}</h2>
-          <a [routerLink]="['/c', listing.category.slug]">See all</a>
-        </div>
         <ul class="card-grid">
           @for (business of listing.related; track business.slug) {
             <li>

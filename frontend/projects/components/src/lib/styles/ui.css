@@ -89,7 +89,6 @@ hr, .divider { border: 0; border-top: var(--border-width-hairline) solid var(--c
 .span-full { grid-column: 1 / -1; }
 .sidebar-layout { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 100dvh; }
 @media (min-width: 64rem) { .sidebar-layout { grid-template-columns: var(--layout-sidebar-width) minmax(0, 1fr); } }
-.section { margin-block: var(--space-8); }
 
 /* ---------- Forms ----------------------------------------------------------- */
 .search { position: relative; min-width: 0; }
@@ -275,8 +274,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .link--standalone .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
 .link--muted { color: var(--color-fg-muted); } .link--muted:hover { color: var(--color-fg-default); }
 a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thickness: var(--border-width-thick); }
-.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2) var(--space-4); margin-bottom: var(--space-4); }
-.section-head a { font: var(--text-label); color: var(--color-fg-default); }
 .only-mobile { display: inline-flex; }
 .only-desktop { display: none; }
 @media (min-width: 48rem) { .only-mobile { display: none; } .only-desktop { display: inline-flex; } }

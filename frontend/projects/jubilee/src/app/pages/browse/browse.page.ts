@@ -23,6 +23,7 @@ import {
   RowListSkeleton,
   Skeleton,
   List,
+  Section,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { RequiresConnection } from '../../directives/requires-connection';
@@ -55,6 +56,7 @@ import { SessionService } from '../../services/session.service';
     RowListSkeleton,
     Skeleton,
     List,
+    Section,
   ],
   providers: [DirectoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

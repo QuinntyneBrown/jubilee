@@ -24,8 +24,7 @@
   </div>
 </section>
 <div class="container page">
-  <section class="section" aria-labelledby="how">
-    <div class="section-head"><h2 id="how">How Jubilee works</h2></div>
+  <section jb-section heading="How Jubilee works" headingId="how">
     <ol class="steps">
       <li>
         <h3>Find someone you can trust</h3>
@@ -52,11 +51,13 @@
   </section>
   @if (welcome(); as welcome) {
     @if (welcome.featured.length) {
-      <section class="section" aria-labelledby="feat">
-        <div class="section-head">
-          <h2 id="feat">Featured this week</h2>
-          <a routerLink="/">Browse all {{ welcome.liveBusinessCount | jbCount }}</a>
-        </div>
+      <section
+        jb-section
+        heading="Featured this week"
+        headingId="feat"
+        [actionLabel]="'Browse all ' + (welcome.liveBusinessCount | jbCount)"
+        actionLink="/"
+      >
         <ul class="card-grid">
           @for (business of welcome.featured; track business.slug) {
             <li>
@@ -67,7 +68,7 @@
       </section>
     }
   }
-  <section class="section band" aria-labelledby="own">
+  <section jb-section class="band" labelledBy="own">
     <div>
       <h2 id="own">Own a business?</h2>
       <p>
