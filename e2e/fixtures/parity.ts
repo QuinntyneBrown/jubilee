@@ -74,6 +74,8 @@ export interface ParityOptions {
 
 /** Brings the region to the middle of the viewport, clear of the fixed bars at its edges. */
 async function centre(region: Locator): Promise<void> {
+  // The bundled face must be drawn before a region is measured or captured.
+  await region.page().evaluate(() => document.fonts.ready.then(() => undefined));
   await region
     .first()
     .evaluate((element) => element.scrollIntoView({ block: 'center', behavior: 'instant' }));

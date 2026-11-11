@@ -1,8 +1,6 @@
-<div class="status-page">
-  <div jb-empty-state icon="compass" heading="We can’t find that page" [level]="1">
-    The link may be old, or the listing may have been removed. Search for the business by name, or
-    start from browse.
-    <a slot="actions" jb-button variant="primary" routerLink="/">Back to browse</a>
-    <a slot="actions" jb-button routerLink="/search"><svg jb-icon name="search"></svg>Search</a>
-  </div>
-</div>
+<jb-status-page icon="compass" heading="We can’t find that page">
+  The link may be old, or the listing may have been removed. Search for the business by name, or
+  start from browse.
+  <a slot="actions" jb-button variant="primary" routerLink="/">Back to browse</a>
+  <a slot="actions" jb-button routerLink="/search"><svg jb-icon name="search"></svg>Search</a>
+</jb-status-page>

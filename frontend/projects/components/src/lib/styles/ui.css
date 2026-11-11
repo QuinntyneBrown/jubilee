@@ -441,7 +441,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 /* ---------- Skeleton shapes ---------------------------------------------------------------------- */
 
 /* ---------- Auth and bare pages ---------------------------------------------------------------------- */
-.status-page { min-height: 70dvh; display: grid; place-items: center; }
 
 /* ---------- Fixes found in the screenshot sweep ------------------------------------------------------ */
 .empty__text, .toast__text { overflow-wrap: anywhere; }

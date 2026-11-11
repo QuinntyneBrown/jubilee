@@ -1,0 +1,4 @@
+<div jb-empty-state [icon]="icon()" [heading]="heading()" [level]="1">
+  <ng-content />
+  <ng-container ngProjectAs="[slot=actions]"><ng-content select="[slot=actions]" /></ng-container>
+</div>
