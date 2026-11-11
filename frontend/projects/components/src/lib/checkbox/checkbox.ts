@@ -5,6 +5,7 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, input, model } fr
  *
  *     <jb-checkbox [(checked)]="keep">Keep me signed in</jb-checkbox>
  *
+ * `hint` is a second, quieter line under the text: what ticking the box does.
  * `controlId` names the box for a page that links to it (an error summary). A page that shows
  * an error for it sets `invalid` and gives the id of the error in `describedBy`.
  */
@@ -20,6 +21,7 @@ export class Checkbox {
   readonly invalid = input(false, { transform: booleanAttribute });
   readonly controlId = input<string | null>(null);
   readonly name = input<string | null>(null);
+  readonly hint = input<string | null>(null);
   /** The id of what describes the box: its error. */
   readonly describedBy = input<string | null>(null);
 

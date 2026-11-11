@@ -78,6 +78,10 @@ public sealed class ConversationsController(ISender sender) : ControllerBase
         }
     }
 
+    [HttpGet("{id:guid}/attachments/{attachmentId:guid}")]
+    public Task<AttachmentLinkDto> AttachmentLink(Guid id, Guid attachmentId, CancellationToken cancellationToken) =>
+        sender.Send(new RenewAttachmentLinkQuery(Subject, id, attachmentId), cancellationToken);
+
     [HttpPut("{id:guid}/mute")]
     public async Task<IActionResult> Mute(Guid id, [FromBody] MuteRequest request, CancellationToken cancellationToken)
     {

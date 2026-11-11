@@ -14,80 +14,71 @@ skinparam class {
 title Class structure — Read the inbox
 
 class MessagesStore <<signal store>> {
-  +rows: Signal<ConversationSummary[]>
+  +rows: Signal<InboxRowDto[]>
   +total: Signal<number>
   +unread: Signal<number>
   +term: Signal<string>
   +load(): void
   +search(term: string): void
   +setMuted(id: string, muted: boolean): void
-  +applyEvent(event: RealtimeEvent): void
 }
-class MessagesApi <<Angular service>> {
-  +list(term: string): Observable<InboxResult>
-  +mute(id: string): Observable<void>
-  +unmute(id: string): Observable<void>
+class RealtimeService <<Angular service>> {
+  +received: Observable<NotificationItem>
 }
-class ListConversationsQuery {
-  +Guid MemberId
-  +string SearchTerm
+class MessagesApi <<service contract>> {
+  +inbox(term: string): Observable<InboxDto>
+  +mute(id: string, muted: boolean): Observable<void>
 }
-class ListConversationsQueryHandler {
-  +Handle(query: ListConversationsQuery): Task<InboxResult>
+class GetInboxQuery {
+  +string Subject
+  +string Search
 }
-class InboxResult {
-  +int Total
-  +int Unread
-  +IReadOnlyList<ConversationSummary> Rows
+class GetInboxQueryHandler {
+  +Handle(query: GetInboxQuery): Task<InboxDto>
 }
-class ConversationSummary {
-  +Guid ConversationId
+class InboxDto {
+  +int TotalCount
+  +int UnreadCount
+  +IReadOnlyList<InboxRowDto> Conversations
+}
+class InboxRowDto {
+  +Guid Id
+  +string Title
   +string BusinessName
-  +string Initials
-  +DateTimeOffset LastActivityAt
-  +string PreviewPrefix
   +string Preview
-  +bool IsUnread
-  +bool IsMuted
-}
-class SetConversationMuteCommand {
-  +Guid ConversationId
-  +Guid MemberId
+  +DateTimeOffset LastMessageAt
+  +bool Unread
   +bool Muted
 }
-class SetConversationMuteCommandHandler {
-  +Handle(command: SetConversationMuteCommand): Task
+class SetConversationMutedCommand {
+  +string Subject
+  +Guid ConversationId
+  +bool Muted
+}
+class SetConversationMutedCommandHandler {
+  +Handle(command: SetConversationMutedCommand): Task
 }
 class Conversation {
   +Guid Id
-  +Guid MemberId
   +Guid ListingId
-  +DateTimeOffset LastActivityAt
-  +ParticipantFor(memberId: Guid): ConversationParticipant
-}
-class ConversationParticipant {
-  +Guid MemberId
-  +ParticipantSide Side
-  +long LastReadSequence
-  +DateTimeOffset? MutedAt
-  +Mute(now: DateTimeOffset): void
-  +Unmute(): void
-  +IsUnread(lastSequence: long): bool
-}
-enum ParticipantSide {
-  Member
-  Business
+  +string MemberSubject
+  +DateTimeOffset LastMessageAt
+  +DateTimeOffset? MemberReadAt
+  +DateTimeOffset? OwnerReadAt
+  +bool MemberMuted
+  +bool OwnerMuted
+  +MarkRead(asOwner: bool, now: DateTimeOffset): void
+  +Mute(asOwner: bool, muted: bool): void
 }
 
 MessagesStore ..> MessagesApi : calls
-MessagesStore "1" o-- "*" ConversationSummary : holds
-MessagesApi ..> ListConversationsQuery : GET /api/conversations
-MessagesApi ..> SetConversationMuteCommand : PUT or DELETE mute
-ListConversationsQueryHandler ..> ListConversationsQuery : handles
-ListConversationsQueryHandler ..> InboxResult : returns
-InboxResult "1" *-- "*" ConversationSummary : contains
-SetConversationMuteCommandHandler ..> SetConversationMuteCommand : handles
-SetConversationMuteCommandHandler --> Conversation : loads
-Conversation "1" *-- "2" ConversationParticipant : has
-ConversationParticipant --> ParticipantSide : has
+InboxList ..> RealtimeService : reads again on message notifications
+MessagesStore "1" o-- "*" InboxRowDto : holds
+MessagesApi ..> GetInboxQuery : GET /api/conversations
+MessagesApi ..> SetConversationMutedCommand : PUT mute
+GetInboxQueryHandler ..> GetInboxQuery : handles
+GetInboxQueryHandler ..> InboxDto : returns
+InboxDto "1" *-- "*" InboxRowDto : contains
+SetConversationMutedCommandHandler ..> SetConversationMutedCommand : handles
+SetConversationMutedCommandHandler --> Conversation : loads / mutates
 @enduml

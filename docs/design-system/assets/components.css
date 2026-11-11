@@ -349,6 +349,9 @@ button.avatar { border: 0; padding: 0; cursor: pointer; }
 .menu__divider { border-top: var(--border-width-hairline) solid var(--color-border-default); margin: var(--space-1) 0; }
 .menu-anchor { position: relative; display: inline-block; }
 .menu-anchor > .popover { top: calc(100% + var(--space-2)); left: 0; }
+.menu-anchor > .menu { top: 100%; left: 0; width: max-content; max-width: min(20rem, 90vw); }
+.menu-anchor > .menu--end { left: auto; right: 0; transform-origin: top right; }
+.menu__item .icon { color: var(--color-fg-muted); }
 .popover { position: absolute; z-index: var(--z-popover); width: max-content; max-width: min(20rem, 90vw); padding: var(--space-4); background: var(--color-bg-surface-raised); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-3); }
 .tooltip { position: absolute; z-index: var(--z-tooltip); padding: var(--space-1) var(--space-2); background: var(--color-bg-inverse); color: var(--color-fg-inverse); border-radius: var(--radius-sm); font: var(--text-caption); width: max-content; max-width: min(16rem, calc(100vw - 2 * var(--layout-margin))); box-shadow: var(--shadow-2); }
 .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; translate: -50% 0; border: var(--space-1) solid transparent; border-top-color: var(--color-bg-inverse); }
@@ -682,9 +685,20 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .bubble--failed { background: var(--color-danger-bg); color: var(--color-danger-fg); border: var(--border-width-hairline) solid var(--color-danger-border); }
 .bubble__meta { display: block; font: var(--text-caption); opacity: 0.8; margin-top: var(--space-1); }
 .bubble__meta button { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; min-height: var(--target-min); }
-.chat__card { align-self: stretch; max-width: 28rem; }
+.bubble__photo { display: block; width: 16rem; max-width: 100%; padding: 0; margin: var(--space-1) 0 var(--space-2); border: 0; border-radius: var(--radius-md); background: none; color: inherit; overflow: hidden; cursor: zoom-in; }
+.bubble__photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--color-bg-subtle-hover); }
+.bubble__photo--missing { display: grid; place-items: center; aspect-ratio: 4 / 3; border: var(--border-width-hairline) dashed currentColor; font: var(--text-caption); cursor: default; }
+.request-card { align-self: stretch; max-width: 28rem; display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4); background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); box-shadow: var(--shadow-1); }
+.request-card__kind { font: var(--text-overline); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-fg-muted); }
+.request-card__title { font: var(--text-label); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); overflow-wrap: anywhere; }
+.request-card__meta { font: var(--text-body-sm); color: var(--color-fg-muted); }
+.request-card__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); }
 .composer { display: flex; align-items: flex-end; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: var(--border-width-hairline) solid var(--color-border-default); }
 .composer .textarea { min-height: var(--control-height-md); resize: none; }
+.attach { position: relative; display: inline-flex; flex: none; }
+.attach__preview { display: block; width: var(--control-height-md); height: var(--control-height-md); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-md); object-fit: cover; }
+.attach__remove { position: absolute; top: calc(-1 * var(--space-2)); right: calc(-1 * var(--space-2)); display: grid; place-items: center; width: var(--target-min); height: var(--target-min); padding: 0; border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-full); background: var(--color-bg-surface-raised); color: var(--color-fg-default); cursor: pointer; }
+.attach__remove .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
 
 /* ---------- Requests, timeline, notifications ------------------------------------------------ */
 .timeline { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }

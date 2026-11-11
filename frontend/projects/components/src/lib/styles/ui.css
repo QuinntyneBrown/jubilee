@@ -207,7 +207,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .drawer__title { font: var(--text-h4); flex: 1; }
 .drawer__body { padding: var(--space-6); overflow: auto; flex: 1; }
 .drawer__footer { display: flex; gap: var(--space-3); justify-content: flex-end; padding: var(--space-4) var(--space-6); border-top: var(--border-width-hairline) solid var(--color-border-default); }
-.menu { position: absolute; z-index: var(--z-dropdown); min-width: 12rem; padding: var(--space-1); margin: var(--space-1) 0 0; list-style: none; background: var(--color-bg-surface-raised); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-3); animation: scale-in var(--duration-fast) var(--ease-enter); transform-origin: top left; }
 .menu__item { display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: var(--control-height-sm); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-sm); background: none; color: var(--color-fg-default); font: var(--text-body-sm); text-align: left; text-decoration: none; cursor: pointer; }
 .menu__item:hover, .menu__item[data-state="hover"] { background: var(--color-bg-subtle); }
 .menu__item:focus-visible, .menu__item[data-state="focus"] { background: var(--color-bg-subtle); outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--jb-menu-item-focus-offset, calc(-1 * var(--focus-ring-width))); }
@@ -218,8 +217,6 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .menu__item--danger { color: var(--color-danger-fg); }
 .menu__item kbd { margin-left: auto; font-size: var(--font-size-xs); }
 .menu__divider { border-top: var(--border-width-hairline) solid var(--color-border-default); margin: var(--space-1) 0; }
-.menu-anchor { position: relative; display: inline-block; }
-.menu-anchor > .popover { top: calc(100% + var(--space-2)); left: 0; }
 .popover { position: absolute; z-index: var(--z-popover); width: max-content; max-width: min(20rem, 90vw); padding: var(--space-4); background: var(--color-bg-surface-raised); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-3); }
 .tooltip { position: absolute; z-index: var(--z-tooltip); padding: var(--space-1) var(--space-2); background: var(--color-bg-inverse); color: var(--color-fg-inverse); border-radius: var(--radius-sm); font: var(--text-caption); width: max-content; max-width: min(16rem, calc(100vw - 2 * var(--layout-margin))); box-shadow: var(--shadow-2); }
 .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; translate: -50% 0; border: var(--space-1) solid transparent; border-top-color: var(--color-bg-inverse); }
@@ -505,13 +502,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .chat__head h1, .chat__head h2 { font: var(--text-h4); }
 .chat__log { flex: 1; display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); margin: 0; list-style: none; }
 .chat__day { align-self: center; font: var(--text-caption); color: var(--color-fg-muted); }
-.bubble { max-width: min(32rem, 85%); padding: var(--space-2) var(--space-3); border-radius: var(--radius-lg); background: var(--color-bg-subtle); align-self: flex-start; overflow-wrap: anywhere; }
-.bubble--me { align-self: flex-end; background: var(--color-bg-inverse); color: var(--color-fg-inverse); }
-.bubble--pending { opacity: 0.7; }
-.bubble--failed { background: var(--color-danger-bg); color: var(--color-danger-fg); border: var(--border-width-hairline) solid var(--color-danger-border); }
-.bubble__meta { display: block; font: var(--text-caption); opacity: 0.8; margin-top: var(--space-1); }
-.bubble__meta button { font: inherit; color: inherit; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; min-height: var(--target-min); }
-.chat__card { align-self: stretch; max-width: 28rem; }
 .composer { display: flex; align-items: flex-end; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: var(--border-width-hairline) solid var(--color-border-default); }
 .composer { --jb-textarea-min-height: var(--control-height-md); --jb-textarea-resize: none; }
 

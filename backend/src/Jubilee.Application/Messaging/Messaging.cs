@@ -2,6 +2,7 @@ using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Errors;
 using Jubilee.Application.Listings;
+using Jubilee.Application.Requests;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +38,22 @@ public sealed record ConversationDto(
     DateTimeOffset? AwayUntil,
     string? Replies,
     bool HasMore,
-    IReadOnlyList<MessageDto> Messages);
+    IReadOnlyList<MessageDto> Messages,
+    IReadOnlyList<RequestCardDto> Requests);
+
+/// <summary>A request between the member and the business, as its card in their conversation reads (L2-057 AC4).</summary>
+public sealed record RequestCardDto(
+    Guid Id,
+    string Kind,
+    string KindLabel,
+    string Title,
+    string? Detail,
+    string Status,
+    string StatusLabel,
+    DateTimeOffset SentAt,
+    string Link);
+
+public sealed record AttachmentLinkDto(string Url);
 
 public sealed record PersonDto(string Name);
 
@@ -64,9 +80,20 @@ internal static class ConversationRules
     public const int NewConversationsPerDay = 10;
     public static readonly TimeSpan ConversationWindow = TimeSpan.FromDays(1);
 
-    public static string CleanBody(string? body)
+    public const int UploadsPerWindow = 30;
+
+    /// <summary>What an inbox row says of a message that is a photo and nothing else (L2-060 AC6).</summary>
+    public const string PhotoPreview = "Photo";
+
+    /// <summary>The text of a message. A message that carries a photo needs none (L2-060 AC6).</summary>
+    public static string CleanBody(string? body, bool hasPhoto = false)
     {
         var trimmed = (body ?? string.Empty).Trim();
+        if (trimmed.Length == 0 && hasPhoto)
+        {
+            return trimmed;
+        }
+
         if (trimmed.Length == 0)
         {
             throw Invalid("REQUIRED");
@@ -77,6 +104,23 @@ internal static class ConversationRules
 
     public static ValidationFailedException Invalid(string code) =>
         new(new Dictionary<string, string> { ["body"] = code });
+
+    /// <summary>A request as its card reads; "View request" goes to the member's request or the owner's Requests.</summary>
+    public static RequestCardDto Card(Request r, bool asOwner) => new(
+        r.Id,
+        IncomingRules.KindWire(r.Kind),
+        $"{IncomingRules.KindLabel(r.Kind)} request",
+        MemberRequestRules.Title(r),
+        r.Kind switch
+        {
+            RequestKind.Booking => $"{MemberRequestRules.Range(r)} · {(r.Mode == MeetingMode.InPerson ? "In person" : "Video")}",
+            RequestKind.Quote => r.NeededBy is { } by ? $"Needed by {by.ToString("ddd d MMM", System.Globalization.CultureInfo.InvariantCulture)}" : null,
+            _ => MemberRequestRules.Detail(r),
+        },
+        RequestLabels.Wire(r.Status),
+        RequestLabels.ForMember(r.Status),
+        r.CreatedAt,
+        asOwner ? "/my-business/requests" : $"/requests/{r.Id}");
 
     public static string FirstName(string name) => name.Trim().Split(' ', 2)[0];
 
@@ -203,7 +247,7 @@ public sealed class SendMessageCommandHandler(IAppDbContext db, TimeProvider clo
             return await ToDto(earlier, request.Subject, cancellationToken);
         }
 
-        var body = ConversationRules.CleanBody(request.Body);
+        var body = ConversationRules.CleanBody(request.Body, request.AttachmentId is not null);
         var now = clock.GetUtcNow();
         await ConversationRules.EnsureMessageBudget(db, request.Subject, now, cancellationToken);
 
@@ -231,7 +275,7 @@ public sealed class SendMessageCommandHandler(IAppDbContext db, TimeProvider clo
                 row.AsOwner ? row.Conversation.MemberSubject : row.Listing.OwnerId,
                 "message",
                 $"New message from {(row.AsOwner ? row.Listing.Name : request.Name)}",
-                body,
+                body.Length == 0 ? ConversationRules.PhotoPreview : body,
                 $"/messages/{row.Conversation.Id}",
                 at);
             await Notifications.MessageMail.QueueAsync(
@@ -302,7 +346,7 @@ public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<Get
                 Last = db.Messages
                     .Where(m => m.ConversationId == r.Conversation.Id && (r.AsOwner || !m.HiddenFromMember))
                     .OrderByDescending(m => m.CreatedAt)
-                    .Select(m => new { m.Body, m.SenderSubject, m.SenderName })
+                    .Select(m => new { m.Body, m.SenderSubject, m.SenderName, m.AttachmentId })
                     .FirstOrDefault(),
                 Unread = db.Messages.Any(m => m.ConversationId == r.Conversation.Id
                     && (r.AsOwner
@@ -317,7 +361,11 @@ public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<Get
             r.AsOwner ? r.MemberName : r.Name,
             r.Name,
             r.Slug,
-            Preview(r.Last?.Body, r.Last?.SenderSubject, r.Last?.SenderName, request.Subject),
+            Preview(
+                r.Last is { Body.Length: 0, AttachmentId: not null } ? ConversationRules.PhotoPreview : r.Last?.Body,
+                r.Last?.SenderSubject,
+                r.Last?.SenderName,
+                request.Subject),
             r.LastMessageAt,
             r.Unread,
             r.AsOwner ? r.OwnerMuted : r.MemberMuted)).ToList();
@@ -356,10 +404,11 @@ public sealed class GetConversationQueryHandler(IAppDbContext db, TimeProvider c
 
         var visible = db.Messages.AsNoTracking()
             .Where(m => m.ConversationId == row.Conversation.Id && (row.AsOwner || !m.HiddenFromMember));
+        DateTimeOffset? upper = null;
         if (request.Before is { } before)
         {
-            var boundary = await visible.Where(m => m.Id == before).Select(m => (DateTimeOffset?)m.CreatedAt).SingleOrDefaultAsync(cancellationToken);
-            if (boundary is { } at)
+            upper = await visible.Where(m => m.Id == before).Select(m => (DateTimeOffset?)m.CreatedAt).SingleOrDefaultAsync(cancellationToken);
+            if (upper is { } at)
             {
                 visible = visible.Where(m => m.CreatedAt < at);
             }
@@ -381,6 +430,22 @@ public sealed class GetConversationQueryHandler(IAppDbContext db, TimeProvider c
             await db.SaveChangesAsync(cancellationToken);
         }
 
+        // The cards of this page: the requests sent since its oldest message and before the message the page ends at.
+        var asked = db.Requests.AsNoTracking()
+            .Where(r => r.ListingId == row.Conversation.ListingId && r.MemberSubject == row.Conversation.MemberSubject);
+        if (hasMore && messages.Count > 0)
+        {
+            var from = messages[0].CreatedAt;
+            asked = asked.Where(r => r.CreatedAt >= from);
+        }
+
+        if (upper is { } boundaryTime)
+        {
+            asked = asked.Where(r => r.CreatedAt < boundaryTime);
+        }
+
+        var cards = (await asked.ToListAsync(cancellationToken)).OrderBy(r => r.CreatedAt).Select(r => ConversationRules.Card(r, row.AsOwner)).ToList();
+
         var away = !row.AsOwner && row.Listing.AwayUntil is { } until && until > now ? until : (DateTimeOffset?)null;
         return new ConversationDto(
             row.Conversation.Id,
@@ -397,7 +462,8 @@ public sealed class GetConversationQueryHandler(IAppDbContext db, TimeProvider c
                 m.CreatedAt,
                 m.SenderSubject == request.Subject,
                 ConversationRules.FirstName(m.SenderName),
-                m.AttachmentId is { } id && types.TryGetValue(id, out var type) ? new AttachmentDto(id, links.Create(id), type) : null))]);
+                m.AttachmentId is { } id && types.TryGetValue(id, out var type) ? new AttachmentDto(id, links.Create(id), type) : null))],
+            cards);
     }
 }
 
@@ -432,8 +498,15 @@ public sealed class ReportConversationCommandHandler(IAppDbContext db, TimeProvi
             throw new ValidationFailedException(new Dictionary<string, string> { ["reason"] = "REQUIRED" });
         }
 
-        db.ConversationReports.Add(ConversationReport.File(
-            row.Conversation.Id, request.Subject, reason.Length > 1000 ? reason[..1000] : reason, clock.GetUtcNow()));
+        // One report at a time from a participant: a repeat while it is open files nothing new (L2-063 AC8).
+        var open = await db.ConversationReports.AnyAsync(
+            r => r.ConversationId == row.Conversation.Id && r.ReporterSubject == request.Subject && r.Status != ReportStatus.Resolved, cancellationToken);
+        if (!open)
+        {
+            db.ConversationReports.Add(ConversationReport.File(
+                row.Conversation.Id, request.Subject, reason.Length > 1000 ? reason[..1000] : reason, clock.GetUtcNow()));
+        }
+
         if (request.Block && !row.AsOwner)
         {
             row.Conversation.Block();
@@ -453,16 +526,46 @@ public sealed class UploadAttachmentCommandHandler(IAppDbContext db, TimeProvide
         var row = await ConversationRules.RowsFor(db, request.Subject)
             .SingleOrDefaultAsync(r => r.Conversation.Id == request.ConversationId, cancellationToken)
             ?? throw new NotFoundException("conversation_not_found", "There is no such conversation.");
+        var now = clock.GetUtcNow();
+        var since = now - ConversationRules.MessageWindow;
+        var recent = await db.MessageAttachments.AsNoTracking()
+            .Where(a => a.UploaderSubject == request.Subject && a.CreatedAt > since)
+            .OrderBy(a => a.CreatedAt).Select(a => a.CreatedAt).ToListAsync(cancellationToken);
+        if (recent.Count >= ConversationRules.UploadsPerWindow)
+        {
+            throw new RateLimitedException("rate_limited", recent[recent.Count - ConversationRules.UploadsPerWindow] + ConversationRules.MessageWindow - now);
+        }
+
         var image = ImageSanitizer.Sanitize(request.Content);
         if (!image.Accepted)
         {
             throw new InvalidImageException(image.Problem == ImageProblem.TooLarge ? "TOO_LARGE" : "INVALID_IMAGE");
         }
 
-        var attachment = MessageAttachment.Store(row.Conversation.Id, request.Subject, image.ContentType, image.Content, clock.GetUtcNow());
+        var attachment = MessageAttachment.Store(row.Conversation.Id, request.Subject, image.ContentType, image.Content, now);
         db.MessageAttachments.Add(attachment);
         await db.SaveChangesAsync(cancellationToken);
         return attachment.Id;
+    }
+}
+
+/// <summary>A new five-minute link to a photo of a conversation, for a participant who may see it (L2-060 AC8).</summary>
+public sealed record RenewAttachmentLinkQuery(string Subject, Guid ConversationId, Guid AttachmentId) : IRequest<AttachmentLinkDto>;
+
+public sealed class RenewAttachmentLinkQueryHandler(IAppDbContext db, IAttachmentLinks links)
+    : IRequestHandler<RenewAttachmentLinkQuery, AttachmentLinkDto>
+{
+    public async Task<AttachmentLinkDto> Handle(RenewAttachmentLinkQuery request, CancellationToken cancellationToken)
+    {
+        var row = await ConversationRules.RowsFor(db, request.Subject)
+            .SingleOrDefaultAsync(r => r.Conversation.Id == request.ConversationId, cancellationToken)
+            ?? throw new NotFoundException("conversation_not_found", "There is no such conversation.");
+        var shown = await db.Messages.AsNoTracking().AnyAsync(
+            m => m.ConversationId == row.Conversation.Id && m.AttachmentId == request.AttachmentId && (row.AsOwner || !m.HiddenFromMember),
+            cancellationToken);
+        return shown
+            ? new AttachmentLinkDto(links.Create(request.AttachmentId))
+            : throw new NotFoundException("attachment_not_found", "There is no such photo.");
     }
 }
 

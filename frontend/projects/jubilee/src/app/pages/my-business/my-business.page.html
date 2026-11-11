@@ -222,6 +222,26 @@
                         <div class="row__meta">{{ summary.reference }}</div>
                       </div>
                     </li>
+                    <li class="row">
+                      <div class="row__body">
+                        @if (b.awayUntil; as until) {
+                          <div class="row__title">Away until {{ awayDay(until) }}</div>
+                          <div class="row__meta">Members who message you are told.</div>
+                        } @else {
+                          <div class="row__title">Away period</div>
+                          <div class="row__meta">Not set</div>
+                        }
+                      </div>
+                      <button
+                        jb-button
+                        size="sm"
+                        type="button"
+                        [attr.aria-label]="b.awayUntil ? 'Change away period' : 'Set away period'"
+                        (click)="openAway(b)"
+                      >
+                        {{ b.awayUntil ? 'Change' : 'Set away period' }}
+                      </button>
+                    </li>
                   </ul>
                 }
                 @if (!b.paused) {

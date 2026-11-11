@@ -406,7 +406,14 @@
         "sending",
         "failed",
         "away",
-        "queued"
+        "queued",
+        "menu",
+        "muted",
+        "photo",
+        "photo-attached",
+        "photo-sending",
+        "requests",
+        "arrived"
       ]
     },
     {
@@ -518,7 +525,8 @@
         "empty",
         "error",
         "pending",
-        "changes-requested"
+        "changes-requested",
+        "away"
       ]
     },
     {
@@ -668,6 +676,20 @@
         "busy",
         "invalid",
         "failed"
+      ]
+    },
+    {
+      "id": "report-conversation",
+      "kind": "dialog",
+      "title": "Report conversation",
+      "opens_from": "conversation",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed",
+        "success",
+        "owner"
       ]
     },
     {
@@ -842,6 +864,19 @@
       "not_applicable": {
         "invalid": "This dialog has no inputs to validate."
       }
+    },
+    {
+      "id": "away-period",
+      "kind": "dialog",
+      "title": "Away period",
+      "opens_from": "my-business",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed",
+        "set"
+      ]
     },
     {
       "id": "approve-listing",

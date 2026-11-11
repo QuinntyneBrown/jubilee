@@ -24,7 +24,7 @@ box "Backend — Jubilee API" #D1FADF
   participant "ConversationsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "ListConversationsQueryHandler" as handler
+  participant "GetInboxQueryHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
@@ -32,13 +32,13 @@ end box
 member -> search : Type "trevor"
 search -> search : Debounce so the query runs within 300 ms (L2-059)
 search -> store : search(term)
-store -> client : list(term)
+store -> client : inbox(term)
 client -> controller : GET /api/conversations?q=trevor
 controller -> controller : Authenticate and apply endpoint policy
-controller -> handler : Send ListConversationsQuery with SearchTerm
+controller -> handler : Send GetInboxQuery with the search term
 handler -> db : Match business name and participant name and message text within the caller's conversations (L2-059)
 db --> handler : Matching rows
-handler --> controller : InboxResult
+handler --> controller : InboxDto
 controller --> client : 200 OK
 client --> store : Rows
 alt no match

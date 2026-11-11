@@ -2,14 +2,34 @@ import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OWN_OFFLINE_FALLBACK, OWN_RETRY } from './http-context';
-import { ChatMessage, Conversation, Inbox, StartedConversation } from '../models/messages';
+import {
+  AttachmentLink,
+  ChatMessage,
+  Conversation,
+  Inbox,
+  StartedConversation,
+  StoredAttachment,
+} from '../models/messages';
 
 /** Contract of the messaging endpoints (L2-055 to L2-063). */
 export interface MessagesApi {
   inbox(search?: string): Observable<Inbox>;
   open(id: string, before?: string): Observable<Conversation>;
   start(listingSlug: string, body: string, idempotencyKey: string): Observable<StartedConversation>;
-  send(id: string, body: string, idempotencyKey: string): Observable<ChatMessage>;
+  send(
+    id: string,
+    body: string,
+    idempotencyKey: string,
+    attachmentId?: string,
+  ): Observable<ChatMessage>;
+  /** Stores a photo for a conversation; the next send names it (L2-060). */
+  attach(id: string, photo: Blob): Observable<StoredAttachment>;
+  /** A new five-minute link to a photo of a conversation (L2-060 AC8). */
+  attachmentLink(id: string, attachmentId: string): Observable<AttachmentLink>;
+  /** Stops, or resumes, the e-mails about new replies in a conversation (L2-061). */
+  mute(id: string, muted: boolean): Observable<void>;
+  /** Reports a conversation to the verification team; a member may block the business with it (L2-063). */
+  report(id: string, reason: string, block: boolean): Observable<void>;
 }
 
 export const MESSAGES_API = new InjectionToken<MessagesApi>('MESSAGES_API');
@@ -47,12 +67,39 @@ export class HttpMessagesApi implements MessagesApi {
     });
   }
 
-  send(id: string, body: string, idempotencyKey: string): Observable<ChatMessage> {
+  send(
+    id: string,
+    body: string,
+    idempotencyKey: string,
+    attachmentId?: string,
+  ): Observable<ChatMessage> {
     return this.http.post<ChatMessage>(
       `/api/conversations/${id}/messages`,
-      { body, idempotencyKey },
+      attachmentId ? { body, idempotencyKey, attachmentId } : { body, idempotencyKey },
       // A message that cannot be sent goes to the outgoing queue, which is its way of trying again.
       { context: new HttpContext().set(OWN_RETRY, true) },
     );
+  }
+
+  attach(id: string, photo: Blob): Observable<StoredAttachment> {
+    const form = new FormData();
+    form.append('file', photo, photo.type === 'image/png' ? 'photo.png' : 'photo.jpg');
+    return this.http.post<StoredAttachment>(`/api/conversations/${id}/attachments`, form, {
+      context: new HttpContext().set(OWN_RETRY, true),
+    });
+  }
+
+  attachmentLink(id: string, attachmentId: string): Observable<AttachmentLink> {
+    return this.http.get<AttachmentLink>(`/api/conversations/${id}/attachments/${attachmentId}`, {
+      context: new HttpContext().set(OWN_OFFLINE_FALLBACK, true),
+    });
+  }
+
+  mute(id: string, muted: boolean): Observable<void> {
+    return this.http.put<void>(`/api/conversations/${id}/mute`, { muted });
+  }
+
+  report(id: string, reason: string, block: boolean): Observable<void> {
+    return this.http.post<void>(`/api/conversations/${id}/report`, { reason, block });
   }
 }

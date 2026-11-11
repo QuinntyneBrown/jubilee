@@ -69,6 +69,8 @@ export interface MyBusiness {
   subtitle: string;
   paused: boolean;
   pausedAt: string | null;
+  /** The instant the owner is back, while an away period is set (L2-062). */
+  awayUntil?: string | null;
   justApproved: boolean;
   newRequests: number;
   stats: BusinessStats | null;
@@ -130,4 +132,9 @@ export interface PauseResult {
   pausedAt: string | null;
   state: BusinessState;
   needsReview: boolean;
+}
+
+/** The owner's away period after a change: the instant they are back, or none (L2-062). */
+export interface AwayPeriod {
+  awayUntil: string | null;
 }

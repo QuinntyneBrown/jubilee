@@ -17,24 +17,22 @@ skinparam package {
 actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ConversationPage" as page
-  participant "ConversationStore" as store
+  participant "RealtimeService" as rt
   participant "MessagesApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "ConversationsController" as controller
-  participant "EventsHub" as hub
+  participant "EventsController" as events
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "GetConversationQueryHandler" as handler
-  participant "MarkConversationReadCommandHandler" as reader
   participant "Conversation" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 member -> page : Open /messages/:id
-page -> store : load(id)
-store -> client : getConversation(id)
+page -> client : open(id)
 client -> controller : GET /api/conversations/{id}
 controller -> controller : Authenticate and apply endpoint policy
 controller -> handler : Send GetConversationQuery
@@ -45,33 +43,37 @@ alt caller is not a participant
   controller --> client : 404 ProblemDetails (L2-057)
   client --> page : Not found
 else participant
-  db --> handler : Header and latest 50 messages and away period
-  handler --> controller : ConversationDto
+  db --> handler : Header and latest 50 messages and away date
+  handler -> db : Load requests of the same member and listing (L2-057)
+  db --> handler : Requests
+  handler -> entity : MarkRead(asOwner, now) (L2-057)
+  entity --> handler : MemberReadAt or OwnerReadAt advanced
+  handler -> db : Save read mark
+  db --> handler : Commit result
+  handler --> controller : ConversationDto with messages and requests
   controller --> client : 200 OK
-  client --> store : Header and items
-  store --> page : Timeline grouped by day
-  opt owner away period is active
+  client --> page : Header and messages and request cards
+  page --> member : Timeline grouped by day with cards at the time sent
+  opt owner away date is in the future
     page --> member : Toast "{Owner} is away until {day}." (L2-062)
   end
-  store -> client : markRead(id)
-  client -> controller : POST /api/conversations/{id}/read
-  controller -> reader : Send MarkConversationReadCommand
-  reader -> entity : MarkRead(memberId) (L2-057)
-  entity --> reader : Read position advanced
-  reader -> db : Save changes and outbox badge event
-  db --> reader : Commit result
-  reader --> controller : Done
-  controller --> client : 204 No Content
   opt member scrolls to the top with more than 50 messages
-    page -> store : loadOlder()
-    store -> client : getMessages(id, before)
-    client -> controller : GET /api/conversations/{id}/messages?before={sequence}&limit=50
-    controller --> client : Older page
-    client --> store : Prepend and keep scroll position (L2-057)
+    page -> client : open(id, before)
+    client -> controller : GET /api/conversations/{id}?before={messageId}
+    controller --> client : Older page and no read mark
+    client --> page : Prepend and keep scroll position (L2-057)
   end
-  opt reply arrives while open
-    hub -> store : message.created
-    store --> page : Append within 2 seconds and announce politely (L2-057)
+  opt reply or request change arrives while open
+    events -> rt : notification event of kind message or request (L2-070)
+    rt -> page : Publish notification
+    page -> page : Kind message targets /messages/{id} or kind request
+    page -> client : open(id)
+    client -> controller : GET /api/conversations/{id}
+    controller --> client : 200 OK and conversation marked read
+    client --> page : Messages and request cards
+    page --> member : Show within 2 seconds and announce "New message from {first name}" with no toast (L2-057)
+    events -> rt : counts event
+    rt --> member : Unread badge corrected
   end
 end
 @enduml

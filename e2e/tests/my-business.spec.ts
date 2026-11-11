@@ -6,6 +6,7 @@ import { ForbiddenPage } from '../pages/forbidden.page';
 import { MyBusinessPage } from '../pages/my-business.page';
 import { PauseListingDialog } from '../pages/pause-listing.dialog';
 import { Toasts } from '../pages/toasts';
+import { AwayPeriodDialog } from '../pages/away-period.dialog';
 
 const OVERVIEW = '/my-business';
 const EDITOR = '/my-business/listing';
@@ -241,6 +242,139 @@ test.describe('run a business listing: pause and resume (L2-096)', () => {
 
     await expect(toasts.withTitle('Back in the verification queue')).toBeVisible();
     await expect(business.subtitle).toHaveText('Pending verification · submitted today');
+  });
+});
+
+test.describe('run a business listing: the away period (L2-062)', () => {
+  test('AC3: "Set away period" asks for the day the owner is back', async ({ page, jb }) => {
+    const business = new MyBusinessPage(page);
+    const dialog = new AwayPeriodDialog(page);
+    await business.setWidth(360);
+    await stubMyBusiness(page);
+    await jb.goto(OVERVIEW);
+    await expect(business.awayRow).toContainText('Away period');
+    await expect(business.awayRow).toContainText('Not set');
+
+    await business.setAway.click();
+
+    await expect(dialog.title).toHaveText('Set an away period');
+    await expect(dialog.description).toHaveText(
+      'Members who message you see that you’re away and when you’re back. Your listing stays public.',
+    );
+    await expect(dialog.backOn).toHaveAttribute('type', 'date');
+    await expect(dialog.backOn).toHaveAttribute('min', '2026-11-11');
+    await expect(dialog.backOn).toBeFocused();
+    await expect(dialog.clear).toHaveCount(0);
+
+    await page.keyboard.press('Escape');
+    await expect(dialog.root).toBeHidden();
+    await expect(business.setAway).toBeFocused();
+  });
+
+  test('AC3, AC5: saving a date shows "Away until" on My business, with Change', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    const dialog = new AwayPeriodDialog(page);
+    const toasts = new Toasts(page);
+    await business.setWidth(1280);
+    const fake = await stubMyBusiness(page);
+    await jb.goto(OVERVIEW);
+
+    await business.setAway.click();
+    await dialog.backOn.fill('2026-11-16');
+    await dialog.save.click();
+
+    await expect(dialog.root).toBeHidden();
+    await expect(toasts.withTitle('Away period set')).toContainText(
+      'Members who message you see you’re away until Mon 16 Nov.',
+    );
+    await expect(business.awayRow).toContainText('Away until Mon 16 Nov');
+    await expect(business.changeAway).toBeVisible();
+    expect(fake.aways).toEqual(['2026-11-16']);
+  });
+
+  for (const [date, message] of [
+    ['', 'Choose a date from tomorrow on.'],
+    ['2026-11-10', 'Choose a date from tomorrow on.'],
+    ['2027-11-11', 'Choose a date within a year.'],
+  ] as const) {
+    test(`AC4: "${date || 'no date'}" is refused under the field and nothing is saved`, async ({
+      page,
+      jb,
+    }) => {
+      const business = new MyBusinessPage(page);
+      const dialog = new AwayPeriodDialog(page);
+      await business.setWidth(1280);
+      const fake = await stubMyBusiness(page);
+      await jb.goto(OVERVIEW);
+      await business.setAway.click();
+
+      await dialog.backOn.fill(date);
+      await dialog.save.click();
+
+      await expect(dialog.backOnError).toHaveText(message);
+      await expect(dialog.backOn).toHaveAttribute('aria-invalid', 'true');
+      await expect(dialog.backOn).toBeFocused();
+      expect(fake.aways).toEqual([]);
+    });
+  }
+
+  test('AC4: a date the server refuses is said under the field', async ({ page, jb }) => {
+    const business = new MyBusinessPage(page);
+    const dialog = new AwayPeriodDialog(page);
+    await business.setWidth(1280);
+    await stubMyBusiness(page, { away: 'in-past' });
+    await jb.goto(OVERVIEW);
+    await business.setAway.click();
+    await dialog.backOn.fill('2026-11-16');
+    await dialog.save.click();
+
+    await expect(dialog.backOnError).toHaveText('Choose a date from tomorrow on.');
+    await expect(dialog.title).toBeVisible();
+  });
+
+  test('AC5: an away period that is set can be changed or cleared', async ({ page, jb }) => {
+    const business = new MyBusinessPage(page);
+    const dialog = new AwayPeriodDialog(page);
+    const toasts = new Toasts(page);
+    await business.setWidth(1280);
+    const fake = await stubMyBusiness(page, { awayUntil: '2026-11-16T05:00:00Z' });
+    await jb.goto(OVERVIEW);
+    await expect(business.awayRow).toContainText('Away until Mon 16 Nov');
+
+    await business.changeAway.click();
+    await expect(dialog.backOn).toHaveValue('2026-11-16');
+    await dialog.clear.click();
+
+    await expect(dialog.root).toBeHidden();
+    await expect(toasts.withTitle('Away period cleared')).toBeVisible();
+    await expect(business.awayRow).toContainText('Not set');
+    expect(fake.aways).toEqual([null]);
+  });
+
+  test('a save that fails says the away period has not changed and can be tried again', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    const dialog = new AwayPeriodDialog(page);
+    await business.setWidth(1280);
+    const fake = await stubMyBusiness(page, { away: 'fails' });
+    await jb.goto(OVERVIEW);
+    await business.setAway.click();
+    await dialog.backOn.fill('2026-11-16');
+    await dialog.save.click();
+
+    await expect(dialog.alert).toContainText('We couldn’t save that');
+    await expect(dialog.alert).toContainText('Your away period has not changed. Try again.');
+    await expect(dialog.backOn).toHaveValue('2026-11-16');
+
+    fake.away = 'ok';
+    await dialog.save.click();
+    await expect(dialog.root).toBeHidden();
+    expect(fake.aways).toEqual(['2026-11-16']);
   });
 });
 
