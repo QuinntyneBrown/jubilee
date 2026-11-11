@@ -6,7 +6,6 @@ import {
   Icon,
   MatchExplanation,
   Button,
-  Input,
   Chip,
   ChipRow,
   Skeleton,
@@ -18,6 +17,7 @@ import {
   Section,
   TabListItem,
   TabList,
+  SearchField,
 } from 'components';
 import { SearchStore } from '../../services/search.store';
 
@@ -49,7 +49,6 @@ function plural(count: number, one: string, many: string): string {
     Icon,
     MatchExplanation,
     Button,
-    Input,
     Chip,
     ChipRow,
     Skeleton,
@@ -60,6 +59,7 @@ function plural(count: number, one: string, many: string): string {
     PageHeader,
     Section,
     TabList,
+    SearchField,
   ],
   providers: [SearchStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -119,8 +119,7 @@ export class SearchPage {
     return hit.kind === 'product' ? 'bag' : hit.kind === 'service' ? 'wrench' : 'store';
   }
 
-  protected submit(event: Event, query: string): void {
-    event.preventDefault();
+  protected submit(query: string): void {
     const q = query.trim();
     void this.router.navigate(['/search'], { queryParams: q ? { q } : {} });
   }

@@ -17,7 +17,6 @@ import {
   Icon,
   ProductCard,
   Button,
-  Input,
   Chip,
   ChipRow,
   RowListSkeleton,
@@ -28,9 +27,10 @@ import {
   Band,
   FeatureGrid,
   FeatureGridItem,
+  SearchField,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
-import { RequiresConnection } from '../../directives/requires-connection';
+import { REQUIRES_CONNECTION } from '../../directives/requires-connection';
 import { clockTime } from '../../services/message-time';
 import { ConnectionService } from '../../services/offline/connection.service';
 import { DirectoryStore } from '../../services/directory.store';
@@ -44,7 +44,6 @@ import { SessionService } from '../../services/session.service';
 @Component({
   selector: 'jb-browse-page',
   imports: [
-    RequiresConnection,
     RouterLink,
     BusinessCard,
     CardGridSkeleton,
@@ -54,7 +53,6 @@ import { SessionService } from '../../services/session.service';
     Icon,
     ProductCard,
     Button,
-    Input,
     Chip,
     ChipRow,
     RowListSkeleton,
@@ -65,6 +63,7 @@ import { SessionService } from '../../services/session.service';
     Band,
     FeatureGrid,
     FeatureGridItem,
+    SearchField,
   ],
   providers: [DirectoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,6 +71,10 @@ import { SessionService } from '../../services/session.service';
   templateUrl: './browse.page.html',
 })
 export class BrowsePage {
+  private readonly connectivity = inject(ConnectionService);
+  /** Search needs a connection: offline, the box of the hero is disabled and says why (L2-122). */
+  protected readonly offline = this.connectivity.isOffline;
+  protected readonly needsConnection = REQUIRES_CONNECTION;
   private readonly router = inject(Router);
   private readonly clock = inject(ClockService);
   protected readonly store = inject(DirectoryStore);
@@ -111,8 +114,7 @@ export class BrowsePage {
     inject(DestroyRef).onDestroy(() => connection.detail.set(null));
   }
 
-  protected search(event: Event, query: string): void {
-    event.preventDefault();
+  protected search(query: string): void {
     const q = query.trim();
     void this.router.navigate(['/search'], { queryParams: q ? { q } : {} });
   }

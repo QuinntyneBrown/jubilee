@@ -1,0 +1,16 @@
+<label class="visually-hidden" [attr.for]="id">{{ label() }}</label>
+<svg jb-icon name="search" class="search__icon"></svg>
+<input
+  jb-input
+  #box
+  type="search"
+  [id]="id"
+  [controlSize]="size()"
+  [placeholder]="placeholder()"
+  [attr.maxlength]="maxLength()"
+  [value]="value()"
+  [disabled]="disabled()"
+  [attr.title]="disabled() ? disabledReason() : null"
+  [attr.aria-description]="disabled() ? disabledReason() : null"
+  (input)="typed.emit(box.element.value)"
+/>

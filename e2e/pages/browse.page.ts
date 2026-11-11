@@ -52,6 +52,8 @@ export class BrowsePage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly subline: Locator;
   readonly heroSearch: Locator;
+  /** The whole search field of the hero, which a phone shows. */
+  readonly heroSearchField: Locator;
   /** The row of category chips in the hero. */
   readonly categoryRow: Locator;
   readonly categoryChips: Locator;
@@ -88,6 +90,7 @@ export class BrowsePage extends ShellPage implements Screen {
     this.heading = this.hero.getByRole('heading', { level: 1 });
     this.subline = this.hero.locator('.hero__sub');
     this.heroSearch = this.hero.getByRole('searchbox', { name: 'Search businesses and products' });
+    this.heroSearchField = this.hero.getByRole('search');
     this.categoryChips = this.hero.locator('.chip-row a.chip');
     this.categoryRow = this.hero.locator('.chip-row');
     this.content = this.main.locator('div.container.page');

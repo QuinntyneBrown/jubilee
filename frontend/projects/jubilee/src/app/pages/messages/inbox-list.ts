@@ -5,11 +5,11 @@ import {
   EmptyState,
   Icon,
   Button,
-  Input,
   List,
   InboxTools,
   ThreadRow,
   ThreadRowSkeleton,
+  SearchField,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { MessagesStore } from '../../services/messages.store';
@@ -30,11 +30,11 @@ const SEARCH_DELAY_MS = 250;
     EmptyState,
     Icon,
     Button,
-    Input,
     List,
     InboxTools,
     ThreadRow,
     ThreadRowSkeleton,
+    SearchField,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './inbox-list.html',
@@ -65,8 +65,7 @@ export class InboxList {
     this.timer = setTimeout(() => this.store.load(value.trim()), SEARCH_DELAY_MS);
   }
 
-  protected searchNow(event: Event): void {
-    event.preventDefault();
+  protected searchNow(): void {
     clearTimeout(this.timer);
     this.store.load(this.text().trim());
   }

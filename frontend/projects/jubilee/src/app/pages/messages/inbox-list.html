@@ -1,16 +1,12 @@
 <div jb-inbox-tools>
-  <form class="search" role="search" (submit)="searchNow($event)">
-    <label class="visually-hidden" for="mq">Search messages</label>
-    <svg jb-icon name="search"></svg>
-    <input
-      jb-input
-      id="mq"
-      type="search"
-      placeholder="Search messages"
-      [value]="text()"
-      (input)="typed($any($event.target).value)"
-    />
-  </form>
+  <form
+    jb-search-field
+    label="Search messages"
+    placeholder="Search messages"
+    [value]="text()"
+    (typed)="typed($event)"
+    (searched)="searchNow()"
+  ></form>
 </div>
 @let inbox = store.state();
 @switch (inbox.status) {

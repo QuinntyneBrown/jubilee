@@ -5,7 +5,7 @@ import { Icon } from '../icon/icon';
 import { ChromeMember, ChromeSection } from '../navigation';
 import { Badge } from '../badge/badge';
 import { Button } from '../button/button';
-import { Input } from '../input/input';
+import { SearchField } from '../search-field/search-field';
 import { Avatar } from 'components';
 
 /**
@@ -14,7 +14,7 @@ import { Avatar } from 'components';
  */
 @Component({
   selector: 'header[jb-top-bar]',
-  imports: [RouterLink, Lockup, Icon, Badge, Button, Input, Avatar],
+  imports: [RouterLink, Lockup, Icon, Badge, Button, SearchField, Avatar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'topbar topbar--ink' },
   templateUrl: './top-bar.html',
@@ -30,9 +30,4 @@ export class TopBar {
   readonly searched = output<string>();
   /** Emits the avatar button when the member opens the account menu (L2-019). */
   readonly accountMenu = output<HTMLElement>();
-
-  protected submit(event: Event, query: string): void {
-    event.preventDefault();
-    this.searched.emit(query.trim());
-  }
 }

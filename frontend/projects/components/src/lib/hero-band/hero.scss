@@ -27,6 +27,24 @@ h1 {
   margin-top: var(--space-3);
 }
 
+// The search of a phone, where the top bar has none: a tall pill under the lead.
+.hero__search {
+  --jb-input-min-height: var(--control-height-lg);
+  --jb-input-radius: var(--radius-full);
+
+  margin-top: var(--space-4);
+}
+
+.hero__search:empty {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .hero__search {
+    display: none;
+  }
+}
+
 @media (min-width: 64rem) {
   :host {
     padding-block: var(--space-10) var(--space-10);

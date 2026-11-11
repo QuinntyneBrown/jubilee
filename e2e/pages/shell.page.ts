@@ -15,6 +15,8 @@ export class ShellPage {
   readonly brand: Locator;
   readonly primaryNav: Locator;
   readonly searchBox: Locator;
+  /** The whole search field of the top bar: its icon and its box. */
+  readonly searchField: Locator;
   readonly searchLink: Locator;
   readonly notifications: Locator;
   readonly avatar: Locator;
@@ -37,6 +39,7 @@ export class ShellPage {
     this.brand = this.topBar.locator('.topbar__brand');
     this.primaryNav = this.topBar.getByRole('navigation', { name: 'Primary', exact: true });
     this.searchBox = this.topBar.getByRole('searchbox', { name: 'Search businesses and products' });
+    this.searchField = this.topBar.getByRole('search');
     this.searchLink = this.topBar.getByRole('link', { name: 'Search', exact: true });
     this.notifications = this.topBar.getByRole('link', { name: /^Notifications/ });
     this.avatar = this.topBar.locator('.avatar');

@@ -8,7 +8,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
  *       <ul jb-chip-row>…</ul>
  *     </section>
  *
- * A lead that is more than words is projected with `ngProjectAs="[slot=lead]"`.
+ * A lead that is more than words is projected with `ngProjectAs="[slot=lead]"`. `slot="search"`
+ * takes the search box a phone shows here, where the top bar has none.
  */
 @Component({
   selector: 'section[jb-hero]',

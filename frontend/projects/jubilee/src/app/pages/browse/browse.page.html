@@ -18,18 +18,15 @@
       }
     }
   </ng-container>
-  <form class="search" role="search" (submit)="search($event, hq.element.value)">
-    <label class="visually-hidden" for="hq">Search businesses and products</label>
-    <svg jb-icon name="search"></svg>
-    <input
-      jb-input
-      #hq
-      jbRequiresConnection
-      id="hq"
-      type="search"
-      placeholder="Plumber, lawyer, Bibles…"
-    />
-  </form>
+  <form
+    jb-search-field
+    slot="search"
+    label="Search businesses and products"
+    placeholder="Plumber, lawyer, Bibles…"
+    [disabled]="offline()"
+    [disabledReason]="needsConnection"
+    (searched)="search($event)"
+  ></form>
   <ul jb-chip-row>
     <li><a jb-chip routerLink="/" selected>All</a></li>
     @for (category of categories; track category.slug) {

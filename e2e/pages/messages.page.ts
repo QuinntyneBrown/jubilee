@@ -7,6 +7,8 @@ import { ShellPage } from './shell.page';
 export class InboxListRegion {
   readonly root: Locator;
   readonly search: Locator;
+  /** The whole search field above the list. */
+  readonly searchField: Locator;
   readonly rows: Locator;
   /** The rows that stand in for conversations while they load. */
   readonly skeletonRows: Locator;
@@ -18,6 +20,7 @@ export class InboxListRegion {
   constructor(page: Page) {
     this.root = page.locator('.inbox__list');
     this.search = this.root.getByRole('searchbox', { name: 'Search messages' });
+    this.searchField = this.root.getByRole('search');
     this.rows = this.root.locator('a.thread');
     this.skeletonRows = this.root.locator('li.thread');
     this.loading = this.root.getByText('Loading your messages…');

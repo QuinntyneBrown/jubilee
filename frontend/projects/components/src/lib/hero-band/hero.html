@@ -4,5 +4,6 @@
   }
   <h1>{{ heading() }}</h1>
   <p class="hero__sub">{{ lead() }}<ng-content select="[slot=lead]" /></p>
+  <div class="hero__search"><ng-content select="[slot=search]" /></div>
   <ng-content />
 </div>
