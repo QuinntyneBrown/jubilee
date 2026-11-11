@@ -26,7 +26,7 @@ export class AccountPage extends ShellPage implements Screen {
   readonly changePassword: Locator;
   readonly errorState: Locator;
   readonly tryAgain: Locator;
-  readonly tabs: Locator;
+  readonly sectionTabs: Locator;
   readonly dataCard: Locator;
   readonly downloadData: Locator;
   readonly dataWaiting: Locator;
@@ -59,7 +59,7 @@ export class AccountPage extends ShellPage implements Screen {
     });
     this.errorState = this.main.getByRole('alert').filter({ hasText: 'JB-ACC-503' });
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
-    this.tabs = this.main.getByRole('navigation', { name: 'Account sections' });
+    this.sectionTabs = this.main.getByRole('navigation', { name: 'Account sections' });
     this.dataCard = this.main.locator('section[aria-labelledby="dat"]');
     this.downloadData = this.main.getByRole('button', { name: 'Download my data' });
     this.dataWaiting = this.dataCard.getByRole('status');
