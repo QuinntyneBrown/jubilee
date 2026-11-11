@@ -43,5 +43,9 @@ public interface IAppDbContext
 
     DbSet<ListingSubmission> ListingSubmissions { get; }
 
+    DbSet<ReferenceLink> ReferenceLinks { get; }
+
+    DbSet<ReferenceAnswer> ReferenceAnswers { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

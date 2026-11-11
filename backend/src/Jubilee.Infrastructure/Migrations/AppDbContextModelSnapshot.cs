@@ -472,11 +472,6 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(254)
                         .HasColumnType("nvarchar(254)");
 
-                    b.Property<string>("ReferenceToken")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("StatementVersion")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -806,6 +801,95 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("MemberSubject", "SearchedAt");
 
                     b.ToTable("RecentSearches", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ReferenceAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AnsweredAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("LinkId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListingId");
+
+                    b.ToTable("ReferenceAnswers", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ReferenceLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Church")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("ClosedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("EndedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ExpiryNoticeSentAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("IssuedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReferenceEmail")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("ListingId", "IssuedAt");
+
+                    b.ToTable("ReferenceLinks", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Request", b =>
@@ -1176,6 +1260,24 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Navigation("Attributes");
 
                     b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ReferenceAnswer", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Listing", null)
+                        .WithMany()
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.ReferenceLink", b =>
+                {
+                    b.HasOne("Jubilee.Domain.Listing", null)
+                        .WithMany()
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Request", b =>

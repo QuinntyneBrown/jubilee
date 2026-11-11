@@ -34,6 +34,12 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 context, StatusCodes.Status404NotFound, "We can't find that.", notFound.Message, notFound.Code);
         }
 
+        if (exception is Application.Reference.GoneException gone)
+        {
+            return ProblemWriter.WriteAsync(
+                context, StatusCodes.Status410Gone, "This request is closed.", gone.Message, gone.Code);
+        }
+
         if (exception is Application.Accounts.ValidationFailedException invalid)
         {
             return ProblemWriter.WriteAsync(

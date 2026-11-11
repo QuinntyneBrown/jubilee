@@ -20,6 +20,15 @@ public sealed class RateLimitOptions
     public int JoinsPerHour { get; set; } = 5;
 
     public int ConfirmationResendsPerHour { get; set; } = 5;
+
+    /// <summary>Opens, answers and reports of reference links allowed per client IP address per minute.</summary>
+    public int ReferenceLinksPerMinute { get; set; } = 30;
+}
+
+/// <summary>Reference links are anonymous, so each client IP address has its own budget (L2-137).</summary>
+public static class ReferenceRateLimit
+{
+    public const string Policy = "reference-links";
 }
 
 /// <summary>Account limits per hour: 5 joins per IP address, 5 confirmation resends per member (L2-137 AC1).</summary>
@@ -90,6 +99,17 @@ public static class DirectoryRateLimit
                 {
                     PermitLimit = Math.Max(1, limit.ConfirmationResendsPerHour),
                     Window = TimeSpan.FromHours(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.AddPolicy(ReferenceRateLimit.Policy, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter($"reference:{client}", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.ReferenceLinksPerMinute),
+                    Window = TimeSpan.FromMinutes(1),
                     QueueLimit = 0,
                 });
             });
