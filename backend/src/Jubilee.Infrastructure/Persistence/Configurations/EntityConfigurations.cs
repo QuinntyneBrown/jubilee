@@ -133,7 +133,9 @@ public sealed class ListingReportConfiguration : IEntityTypeConfiguration<Listin
         builder.HasKey(r => r.Id);
         builder.Property(r => r.Id).ValueGeneratedNever();
         builder.Property(r => r.ReporterSubject).HasMaxLength(100).IsRequired();
+        builder.Property(r => r.ReporterName).HasMaxLength(200).IsRequired();
         builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
+        builder.Property(r => r.ResolutionNote).HasMaxLength(ReportAction.MaxNoteLength);
         builder.HasIndex(r => new { r.ListingId, r.ReporterSubject });
         builder.HasMany(r => r.Entries).WithOne().HasForeignKey(e => e.ReportId).OnDelete(DeleteBehavior.Cascade);
         builder.Navigation(r => r.Entries).UsePropertyAccessMode(PropertyAccessMode.Field);
@@ -382,7 +384,25 @@ public sealed class ConversationReportConfiguration : IEntityTypeConfiguration<C
         builder.Property(r => r.Id).ValueGeneratedNever();
         builder.Property(r => r.ReporterSubject).HasMaxLength(200).IsRequired();
         builder.Property(r => r.Reason).HasMaxLength(1000).IsRequired();
+        builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
+        builder.Property(r => r.ResolutionNote).HasMaxLength(ReportAction.MaxNoteLength);
         builder.HasOne<Conversation>().WithMany().HasForeignKey(r => r.ConversationId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ReportActionConfiguration : IEntityTypeConfiguration<ReportAction>
+{
+    public void Configure(EntityTypeBuilder<ReportAction> builder)
+    {
+        builder.ToTable("ReportActions");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.Kind).HasConversion<string>().HasMaxLength(24);
+        builder.Property(a => a.ResolutionNote).HasMaxLength(ReportAction.MaxNoteLength).IsRequired();
+        builder.Property(a => a.MessageText).HasMaxLength(ReportAction.MaxMessageLength);
+        builder.Property(a => a.Actor).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.ActorName).HasMaxLength(200).IsRequired();
+        builder.HasIndex(a => a.ReportId);
     }
 }
 

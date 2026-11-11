@@ -11,7 +11,7 @@ namespace Jubilee.Application.Listings;
 public sealed record ReportedDto(Guid Id);
 
 /// <summary>A member reports a listing privately to the verification team (L2-039).</summary>
-public sealed record ReportListingCommand(string Subject, string Slug, string? Reason, string? Description, string? IdempotencyKey)
+public sealed record ReportListingCommand(string Subject, string Slug, string? Reason, string? Description, string? IdempotencyKey, string? ReporterName = null)
     : IRequest<ReportedDto>;
 
 public sealed class ReportListingCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<ReportListingCommand, ReportedDto>
@@ -82,7 +82,7 @@ public sealed class ReportListingCommandHandler(IAppDbContext db, TimeProvider c
             .OrderByDescending(r => r.CreatedAt).FirstOrDefault();
         if (report is null || !report.AcceptsAdditionAt(now))
         {
-            report = ListingReport.Open(listing.Id, request.Subject, now);
+            report = ListingReport.Open(listing.Id, request.Subject, request.ReporterName ?? string.Empty, now);
             db.ListingReports.Add(report);
         }
 
