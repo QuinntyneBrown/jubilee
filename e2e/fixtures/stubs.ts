@@ -5,6 +5,7 @@ import { fulfil, recordedAnswer } from './mock-api';
 import { stubMessaging } from './messaging';
 import { esther, stubAdmin } from './admin';
 import { stubIncoming } from './incoming-requests';
+import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubReference } from './reference';
 import type { StubName } from './routes';
 
@@ -221,6 +222,29 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       );
     case 'search-start':
       return stubSearchStart(page, memberSearchStart);
+    case 'member-requests':
+      return stubMemberRequests(page);
+    case 'member-requests-empty':
+      return stubMemberRequests(page, { requests: [] });
+    case 'member-requests-error':
+      return stubMemberRequests(page, { list: 'fails' });
+    case 'request-detail':
+    case 'request-detail-confirmed':
+      return stubMemberRequests(page);
+    case 'request-detail-declined': {
+      const fake = await stubMemberRequests(page);
+      fake.requests.find((r) => r.id === DRAIN)!.declineMessage =
+        'We’re booked solid until December and don’t want to keep you waiting.';
+      fake.answer(DRAIN, 'declined');
+      return fake;
+    }
+    case 'request-detail-cancelled': {
+      const fake = await stubMemberRequests(page);
+      fake.answer(DRAIN, 'cancelled');
+      return fake;
+    }
+    case 'request-detail-error':
+      return stubMemberRequests(page, { detail: 'fails' });
     case 'incoming':
       return stubIncoming(page);
     case 'incoming-empty':

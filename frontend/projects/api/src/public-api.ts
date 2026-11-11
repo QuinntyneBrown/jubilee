@@ -25,3 +25,4 @@ export * from './lib/api/admin-api';
 export * from './lib/models/verification';
 export * from './lib/api/incoming-requests-api';
 export * from './lib/models/incoming-requests';
+export * from './lib/models/member-requests';

@@ -24,6 +24,8 @@ public static class WorkerHost
         builder.Services.AddHostedService<ReferenceExpiryJob>();
         builder.Services.AddHostedService<ReferenceRetentionJob>();
         builder.Services.AddHostedService<ResponseTimeBadgeJob>();
+        builder.Services.AddHostedService<BookingCompletionJob>();
+        builder.Services.AddHostedService<UnansweredRequestJob>();
         return builder;
     }
 }
@@ -208,6 +210,80 @@ public sealed class ResponseTimeBadgeJob(IServiceScopeFactory scopes, ILogger<Re
         catch (OperationCanceledException)
         {
             logger.LogInformation("The response-time job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every five minutes: completes each confirmed booking whose meeting has ended (L2-043 AC5, L2-182).
+/// Safe to repeat.
+/// </summary>
+public sealed class BookingCompletionJob(IServiceScopeFactory scopes, ILogger<BookingCompletionJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var completed = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Requests.CompleteFinishedBookingsCommand(), stoppingToken);
+                    if (completed > 0)
+                    {
+                        logger.LogInformation("Completed {Count} finished bookings.", completed);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Finished bookings could not be completed. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The booking completion job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every hour: reminds an owner once of a request nobody answered in a week (L2-043 AC8, L2-182).
+/// Safe to repeat: a request is reminded of once.
+/// </summary>
+public sealed class UnansweredRequestJob(IServiceScopeFactory scopes, ILogger<UnansweredRequestJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var reminded = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Requests.RemindUnansweredRequestsCommand(), stoppingToken);
+                    if (reminded > 0)
+                    {
+                        logger.LogInformation("Reminded the owners of {Count} unanswered requests.", reminded);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Unanswered requests could not be reminded of. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The unanswered request job is stopping.");
         }
     }
 }

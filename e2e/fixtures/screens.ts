@@ -13,6 +13,8 @@ import {
   ProductWithSizeScreen,
 } from '../pages/product.page';
 import { IncomingRequestsPage } from '../pages/incoming-requests.page';
+import { RequestDetailPage } from '../pages/request-detail.page';
+import { RequestsPage } from '../pages/requests.page';
 import { JoinPage } from '../pages/join.page';
 import { ConversationPage, MessagesPage } from '../pages/messages.page';
 import { SearchPage } from '../pages/search.page';
@@ -29,6 +31,14 @@ export const screens: {
   below?: number;
 }[] = [
   { key: 'welcome', screen: (page) => new WelcomePage(page) },
+  { key: 'requests', screen: (page) => new RequestsPage(page) },
+  { key: 'requests.empty', screen: (page) => new RequestsPage(page) },
+  { key: 'requests.error', screen: (page) => new RequestsPage(page) },
+  { key: 'request-detail', screen: (page) => new RequestDetailPage(page) },
+  { key: 'request-detail.confirmed', screen: (page) => new RequestDetailPage(page) },
+  { key: 'request-detail.declined', screen: (page) => new RequestDetailPage(page) },
+  { key: 'request-detail.cancelled', screen: (page) => new RequestDetailPage(page) },
+  { key: 'request-detail.error', screen: (page) => new RequestDetailPage(page) },
   { key: 'incoming-requests', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'incoming-requests.empty', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'incoming-requests.error', screen: (page) => new IncomingRequestsPage(page) },

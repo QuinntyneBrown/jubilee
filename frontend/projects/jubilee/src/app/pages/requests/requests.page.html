@@ -1,0 +1,101 @@
+@let requests = state();
+<div class="page-header">
+  <div>
+    <h1>Your requests</h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+</div>
+@switch (requests.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your requests">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ requests.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load(tab())">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading your requests…</p>
+    <ul class="rows" aria-hidden="true">
+      @for (item of skeleton; track item) {
+        <li class="row">
+          <span class="skeleton skeleton--avatar"></span>
+          <div class="row__body">
+            <span class="skeleton skeleton--text skeleton--w50"></span>
+            <span class="skeleton skeleton--text skeleton--w70"></span>
+          </div>
+          <span class="skeleton skeleton--btn" style="width: 5rem"></span>
+        </li>
+      }
+    </ul>
+  }
+  @case ('loaded') {
+    @if (requests.value.counts.all === 0) {
+      <div jb-empty-state icon="bag" heading="Book, ask or order to get started">
+        When you book a meeting, ask for a quote or request a product, it shows up here with its
+        status.
+        <a slot="actions" class="btn btn--primary" routerLink="/">Browse businesses</a>
+      </div>
+    } @else {
+      <div class="tabs" role="tablist" aria-label="Request type">
+        @for (item of tabs; track item.tab) {
+          <button
+            class="tab"
+            role="tab"
+            type="button"
+            [attr.aria-selected]="item.tab === tab()"
+            [attr.tabindex]="item.tab === tab() ? null : -1"
+            (click)="load(item.tab)"
+          >
+            {{ item.label }} <span class="badge">{{ requests.value.counts[item.count] }}</span>
+          </button>
+        }
+      </div>
+      @if (rows().length === 0) {
+        <div jb-empty-state [compact]="true" icon="check" [heading]="emptyTab(tab()).heading">
+          {{ emptyTab(tab()).text }}
+          <button slot="actions" class="btn" type="button" (click)="load('all')">
+            Show all requests
+          </button>
+        </div>
+      } @else {
+        <ul class="rows">
+          @for (row of rows(); track row.id) {
+            <li class="row row--stack">
+              <span class="avatar" aria-hidden="true"><svg jb-icon [name]="icon(row)"></svg></span>
+              <div class="row__body">
+                <div class="row__title">
+                  <a [routerLink]="['/requests', row.id]">{{ row.title }}</a>
+                </div>
+                <div class="row__meta">{{ row.kindLabel }} · {{ row.business }}</div>
+                <div class="row__meta">{{ row.detail ?? sent(row) }}</div>
+              </div>
+              <span class="badge" [class]="tone(row) ? 'badge badge--' + tone(row) : 'badge'">{{
+                row.statusLabel
+              }}</span>
+            </li>
+          }
+        </ul>
+        @if (requests.value.nextCursor) {
+          <div style="margin-top: var(--space-4); text-align: center">
+            @if (moreFailed()) {
+              <p class="text-muted" role="alert">We couldn’t load more. Try again.</p>
+            }
+            <button
+              class="btn"
+              type="button"
+              [disabled]="loadingMore()"
+              [attr.aria-busy]="loadingMore() ? 'true' : null"
+              (click)="loadMore()"
+            >
+              Show more
+            </button>
+          </div>
+        }
+      }
+    }
+  }
+}

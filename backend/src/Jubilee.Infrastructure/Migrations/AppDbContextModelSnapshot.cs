@@ -1091,6 +1091,9 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
+                    b.Property<DateTimeOffset?>("NudgedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("OptionLabel")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");

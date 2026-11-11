@@ -1,0 +1,143 @@
+@let requests = state();
+@switch (requests.status) {
+  @case ('error') {
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a routerLink="/requests">Your requests</a></li>
+        <li aria-current="page">Request</li>
+      </ol>
+    </nav>
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this request">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ requests.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/requests">Back to your requests</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the request…</p>
+    <div aria-hidden="true">
+      <span class="skeleton skeleton--text skeleton--w30"></span>
+      <span class="skeleton skeleton--text skeleton--w70" style="height: 2rem"></span>
+      <span class="skeleton skeleton--text skeleton--w50"></span>
+      <div class="split" style="margin-top: var(--space-6)">
+        <span class="skeleton" style="height: 14rem"></span>
+        <span class="skeleton" style="height: 14rem"></span>
+      </div>
+    </div>
+  }
+  @case ('loaded') {
+    @let r = requests.value;
+    <nav aria-label="Breadcrumb">
+      <ol class="breadcrumb">
+        <li><a routerLink="/requests">Your requests</a></li>
+        <li aria-current="page">{{ r.title }}</li>
+      </ol>
+    </nav>
+    <div class="page-header">
+      <div>
+        <h1>{{ r.title }}</h1>
+        <p class="subtitle">
+          {{ r.kindLabel }} · {{ r.business }} ·
+          <span
+            class="badge"
+            [class]="tone[r.status] ? 'badge badge--' + tone[r.status] : 'badge'"
+            >{{ r.statusLabel }}</span
+          >
+        </p>
+      </div>
+    </div>
+    <div
+      class="alert"
+      [class.alert--success]="r.callout.tone === 'success'"
+      [class.alert--warning]="r.callout.tone === 'warning'"
+      role="status"
+    >
+      <svg
+        jb-icon
+        [name]="
+          r.callout.tone === 'success' ? 'check' : r.callout.tone === 'warning' ? 'alert' : 'info'
+        "
+      ></svg>
+      <div class="alert__body">
+        <div class="alert__title">{{ r.callout.title }}</div>
+        @if (r.callout.text) {
+          <div>{{ r.callout.text }}</div>
+        }
+        @if (r.callout.quote) {
+          <div>“{{ r.callout.quote }}”</div>
+        }
+        @if (r.status === 'declined') {
+          <div class="alert__actions">
+            <a [routerLink]="['/c', r.categorySlug]">See other {{ r.categoryWord }}</a>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="split" style="margin-top: var(--space-6)">
+      <section class="card" aria-labelledby="rd">
+        <h2 id="rd" class="card__title">Details</h2>
+        <dl class="dl" style="margin-top: var(--space-4)">
+          @for (line of r.details; track line.label) {
+            <dt>{{ line.label }}</dt>
+            <dd>{{ line.value }}</dd>
+          }
+        </dl>
+        <div class="card__footer" style="justify-content: flex-start; flex-wrap: wrap">
+          @if (r.canAddToCalendar) {
+            <a class="btn btn--primary" [href]="calendarUrl(r)" download>
+              <svg jb-icon name="calendar"></svg>Add to calendar
+            </a>
+          }
+          @if (r.status === 'declined') {
+            <a class="btn btn--primary" [routerLink]="['/c', r.categorySlug]"
+              >Find another {{ r.categoryWord }}</a
+            >
+          }
+          @if (r.conversationId) {
+            <a class="btn" [routerLink]="['/messages', r.conversationId]">
+              <svg jb-icon name="message"></svg>Message
+            </a>
+          } @else {
+            <a class="btn" [routerLink]="['/b', r.businessSlug, 'message']">
+              <svg jb-icon name="message"></svg>Message
+            </a>
+          }
+          @if (r.canAskAgain && r.status !== 'declined') {
+            <a class="btn" [routerLink]="['/b', r.businessSlug]">Ask again</a>
+          }
+          @if (r.canCancel) {
+            <button class="btn btn--ghost" type="button" (click)="openCancel(r)">
+              {{ r.cancelLabel }}
+            </button>
+          }
+        </div>
+      </section>
+      <section class="card" aria-labelledby="rp">
+        <h2 id="rp" class="card__title">Progress</h2>
+        <div style="margin-top: var(--space-4)">
+          <ol class="timeline">
+            @for (step of r.timeline; track $index) {
+              <li
+                [attr.data-complete]="step.state === 'complete' ? '' : null"
+                [attr.data-stopped]="step.state === 'stopped' ? '' : null"
+                [attr.aria-current]="step.state === 'current' ? 'step' : null"
+              >
+                <span class="timeline__dot" aria-hidden="true">{{
+                  step.state === 'complete' ? '✓' : step.state === 'stopped' ? '×' : ''
+                }}</span>
+                <div>
+                  <div class="timeline__title">{{ step.title }}</div>
+                  <div class="timeline__meta">{{ step.meta ?? asked(step.at) }}</div>
+                </div>
+              </li>
+            }
+          </ol>
+        </div>
+      </section>
+    </div>
+  }
+}

@@ -55,8 +55,7 @@ dispatched by `Jubilee Worker`.
   status. The progress timeline reads these records.
 - **Undo rule** — `Request.Cancel` sets `UndoableUntil` on its `RequestTransition` to 8 seconds after
   `OccurredAt`. `UndoLastTransition` succeeds only for the actor of that transition and only before
-  `UndoableUntil`; later calls return HTTP 409 with code `INVALID_TRANSITION`. An allowance for network delay is
-  `<TO SUPPLY>`.
+  `UndoableUntil`; later calls return HTTP 409 with code `INVALID_TRANSITION`. No allowance is made for network delay (ADR 0022).
 - **`InvalidTransitionException`** — raised when the request is already `Declined`, `Cancelled` or `Completed`.
   `ProblemDetailsMiddleware` returns HTTP 409 with code `INVALID_TRANSITION` and the current status, and the
   page reloads the request.

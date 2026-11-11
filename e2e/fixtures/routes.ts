@@ -50,6 +50,14 @@ export type StubName =
   | 'conversation'
   | 'conversation-loading'
   | 'conversation-error'
+  | 'member-requests'
+  | 'member-requests-empty'
+  | 'member-requests-error'
+  | 'request-detail'
+  | 'request-detail-confirmed'
+  | 'request-detail-declined'
+  | 'request-detail-cancelled'
+  | 'request-detail-error'
   | 'incoming'
   | 'incoming-empty'
   | 'incoming-error'
@@ -392,6 +400,54 @@ export const routes = {
     mock: 'pages/search/no-results.html',
     who: 'member',
     stub: 'search-no-results',
+  },
+  requests: {
+    app: '/requests',
+    mock: 'pages/requests/default.html',
+    who: 'member',
+    stub: 'member-requests',
+  },
+  'requests.empty': {
+    app: '/requests',
+    mock: 'pages/requests/empty.html',
+    who: 'member',
+    stub: 'member-requests-empty',
+  },
+  'requests.error': {
+    app: '/requests',
+    mock: 'pages/requests/error.html',
+    who: 'member',
+    stub: 'member-requests-error',
+  },
+  'request-detail': {
+    app: '/requests/7a1e0000-0000-4000-8000-000000000002',
+    mock: 'pages/request-detail/default.html',
+    who: 'member',
+    stub: 'request-detail',
+  },
+  'request-detail.confirmed': {
+    app: '/requests/7a1e0000-0000-4000-8000-000000000001',
+    mock: 'pages/request-detail/confirmed.html',
+    who: 'member',
+    stub: 'request-detail-confirmed',
+  },
+  'request-detail.declined': {
+    app: '/requests/7a1e0000-0000-4000-8000-000000000002',
+    mock: 'pages/request-detail/declined.html',
+    who: 'member',
+    stub: 'request-detail-declined',
+  },
+  'request-detail.cancelled': {
+    app: '/requests/7a1e0000-0000-4000-8000-000000000002',
+    mock: 'pages/request-detail/cancelled.html',
+    who: 'member',
+    stub: 'request-detail-cancelled',
+  },
+  'request-detail.error': {
+    app: '/requests/7a1e0000-0000-4000-8000-000000000002',
+    mock: 'pages/request-detail/error.html',
+    who: 'member',
+    stub: 'request-detail-error',
   },
   'incoming-requests': {
     app: '/my-business/requests',

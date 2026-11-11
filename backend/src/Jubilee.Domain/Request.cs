@@ -82,6 +82,9 @@ public sealed class Request
     /// <summary>How long after a confirm the owner may undo it.</summary>
     public static readonly TimeSpan UndoWindow = TimeSpan.FromSeconds(8);
 
+    /// <summary>A request nobody answered after this long is one the member may cancel or ask again, and the owner is reminded once (L2-043 AC8).</summary>
+    public static readonly TimeSpan UnansweredAfter = TimeSpan.FromDays(7);
+
     /// <summary>The reasons an owner picks from when declining (L2-053 AC1).</summary>
     public static readonly string[] DeclineReasons = ["cant-meet-the-date", "out-of-stock", "outside-what-i-offer", "something-else"];
 
@@ -155,6 +158,9 @@ public sealed class Request
 
     /// <summary>The note the owner wrote to the customer with the decline.</summary>
     public string? DeclineMessage { get; private set; }
+
+    /// <summary>When the owner was reminded of a request nobody answered; set once.</summary>
+    public DateTimeOffset? NudgedAt { get; private set; }
 
     public IReadOnlyList<RequestTransition> Transitions => _transitions;
 
@@ -304,8 +310,26 @@ public sealed class Request
             throw new InvalidTransitionException(Status, RequestStatus.Cancelled);
         }
 
-        MoveTo(RequestStatus.Cancelled, actor, now);
+        MoveTo(RequestStatus.Cancelled, actor, now, now + UndoWindow);
     }
+
+    /// <summary>Takes back a cancel: only its actor, only within the undo window; the request returns to what it was (L2-049 AC3).</summary>
+    public void UndoCancel(string actor, DateTimeOffset now)
+    {
+        var last = _transitions.OrderBy(t => t.At).LastOrDefault();
+        if (Status != RequestStatus.Cancelled || last is not { To: RequestStatus.Cancelled, UndoableUntil: { } until } || last.Actor != actor || now > until)
+        {
+            throw new InvalidTransitionException(Status, RequestStatus.New);
+        }
+
+        MoveTo(last.From, actor, now);
+    }
+
+    /// <summary>Records that the owner was reminded of a request nobody answered (L2-043 AC8).</summary>
+    public void Nudge(DateTimeOffset now) => NudgedAt ??= now;
+
+    /// <summary>Whether a new request has waited long enough for the member to be offered "Cancel or ask again".</summary>
+    public bool IsUnanswered(DateTimeOffset now) => Status == RequestStatus.New && now - CreatedAt >= UnansweredAfter;
 
     /// <summary>A confirmed booking whose meeting has ended, or a confirmed order the owner fulfilled.</summary>
     public void Complete(string actor, DateTimeOffset now)

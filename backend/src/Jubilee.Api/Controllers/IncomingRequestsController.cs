@@ -30,6 +30,10 @@ public sealed class IncomingRequestsController(ISender sender) : ControllerBase
     public Task<RequestDecisionDto> UndoConfirm(Guid id, CancellationToken cancellationToken) =>
         sender.Send(new UndoConfirmRequestCommand(Subject, id), cancellationToken);
 
+    [HttpPost("{id:guid}/fulfil")]
+    public Task<RequestDecisionDto> Fulfil(Guid id, CancellationToken cancellationToken) =>
+        sender.Send(new FulfilRequestCommand(Subject, id), cancellationToken);
+
     [HttpPost("{id:guid}/decline")]
     public Task<RequestDecisionDto> Decline(Guid id, [FromBody] DeclineRequestBody body, CancellationToken cancellationToken) =>
         sender.Send(new DeclineRequestCommand(Subject, id, body.Reason, body.Message), cancellationToken);

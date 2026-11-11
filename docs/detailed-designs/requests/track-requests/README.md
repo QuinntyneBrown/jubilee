@@ -63,9 +63,9 @@ scheduled lifecycle work in `Jubilee Worker`.
   logged (`L2-133`).
 - **`CompleteRequestCommand`** and **`CompleteRequestCommandHandler`** — apply `Confirmed` → `Completed` when
   the owner marks an order fulfilled, through `POST /api/my-business/requests/{id}/fulfil`. The owner-side
-  control for this action is `<TO SUPPLY>`.
+  control for this action is deferred to journey 23 (ADR 0022).
 - **`BookingCompletionJob`** — hosted job in `Jubilee Worker`. It finds each `Confirmed` booking whose meeting
-  end time has passed and calls `Complete` with no actor. The schedule interval is `<TO SUPPLY>`.
+  end time has passed and calls `Complete` with no actor. It runs every 5 minutes (ADR 0022).
 - **`UnansweredRequestJob`** — hosted job in `Jubilee Worker`. For each `New` request with no owner response
   after 7 days it sets `NudgedAt`, writes one owner reminder to the outbox, and the detail page then offers the
   member "Cancel or ask again". `NudgedAt` makes the reminder single (`L2-182`).

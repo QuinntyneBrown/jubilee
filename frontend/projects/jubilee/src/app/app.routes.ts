@@ -111,6 +111,22 @@ export const routes: Routes = [
     title: 'List your business · Jubilee',
   },
   {
+    path: 'requests',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/requests/requests.page').then((m) => m.RequestsPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'requests', section: 'account' }),
+    title: 'Your requests · Jubilee',
+  },
+  {
+    path: 'requests/:id',
+    loadComponent: () =>
+      import('./pages/request-detail/request-detail.page').then((m) => m.RequestDetailPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'request-detail', section: 'account' }),
+    title: 'Request · Jubilee',
+  },
+  {
     path: 'my-business/requests',
     pathMatch: 'full',
     loadComponent: () =>
