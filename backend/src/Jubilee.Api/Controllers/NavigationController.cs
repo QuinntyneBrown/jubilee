@@ -11,5 +11,5 @@ public sealed class NavigationController(ISender sender) : ControllerBase
     /// <summary>The signed-in member's own navigation summary. Anonymous callers get 401.</summary>
     [HttpGet]
     public Task<NavigationSummary> Get(CancellationToken cancellationToken) =>
-        sender.Send(new GetNavigationSummaryQuery(), cancellationToken);
+        sender.Send(new GetNavigationSummaryQuery(User.ToViewer().Subject), cancellationToken);
 }

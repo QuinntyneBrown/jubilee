@@ -141,6 +141,10 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         Logs.Clear();
         await WithDb(async db =>
         {
+            db.RemoveRange(db.ConversationReports);
+            db.RemoveRange(db.Messages);
+            db.RemoveRange(db.MessageAttachments);
+            db.RemoveRange(db.Conversations);
             db.RemoveRange(db.OutboxMessages);
             db.RemoveRange(db.LinkTokens);
             db.RemoveRange(db.Members);

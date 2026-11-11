@@ -33,8 +33,9 @@ is built yet; the names below are the names the design introduces.
 
 - **`BusinessPage`** — Angular page at `/b/:slug`. Its "Message" action opens
   `NewMessageDialog` with the listing's name, the owner's name and the reply-time
-  hint. The source of the reply-time hint ("usually replies within a day") is
-  `<TO SUPPLY>`.
+  hint. The reply-time hint ("usually replies within a day") comes from the listing's
+  stored median first-reply band, the same value the listing page shows as
+  "Replies" (ADR 0014).
 - **`NewMessageDialog`** — Angular dialog built on `DialogShell`. For Legacy
   Financial it is titled "Message Legacy Financial" and states "Trevor Chew
   usually replies within a day. The conversation continues in Messages." It holds
@@ -74,7 +75,8 @@ is built yet; the names below are the names the design introduces.
   `MessageId` and `Created`. The controller returns `201 Created` for a new
   conversation and `200 OK` when an existing conversation is reused.
 - **`ToastService`** — shows the success toast whose single action opens
-  `/messages/:id`. The toast copy is `<TO SUPPLY>`.
+  `/messages/:id`. There is no toast: the dialog closes and
+  `/messages/:id` opens with the sent message in it (ADR 0014).
 - **Failed state** — when the request fails, the dialog stays open, keeps the
   typed text, and shows "We couldn't send that. Your connection dropped before it
   reached us. Nothing was sent and what you typed is still here. Try again." A

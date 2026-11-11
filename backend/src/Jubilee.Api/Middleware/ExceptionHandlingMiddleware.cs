@@ -40,6 +40,13 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 context, StatusCodes.Status422UnprocessableEntity, "Fix the highlighted fields.", code: "validation_failed", errors: invalid.Errors);
         }
 
+        if (exception is RateLimitedException limited)
+        {
+            context.Response.Headers.RetryAfter = Math.Max(1, (int)Math.Ceiling(limited.RetryAfter.TotalSeconds)).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            return ProblemWriter.WriteAsync(
+                context, StatusCodes.Status429TooManyRequests, "Slow down for a moment.", "You're doing that too often.", limited.Code);
+        }
+
         if (exception is ConflictException conflict)
         {
             return ProblemWriter.WriteAsync(

@@ -1,0 +1,33 @@
+<div class="page-header">
+  <div>
+    <h1>Messages</h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+</div>
+@let inbox = store.state();
+@if (inbox.status === 'error') {
+  <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your messages">
+    Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+    <code>{{ inbox.reference }}</code
+    >.
+    <button slot="actions" class="btn btn--primary" type="button" (click)="store.load('')">
+      <svg jb-icon name="refresh"></svg>Try again
+    </button>
+    <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+  </div>
+} @else if (isEmpty()) {
+  <div jb-empty-state icon="message" heading="Start a conversation">
+    Open a business and tap Message to ask a question, get a quote or book a time. Replies land
+    here.
+    <a slot="actions" class="btn btn--primary" routerLink="/">Browse businesses</a>
+  </div>
+} @else {
+  <div class="inbox inbox--list">
+    <jb-inbox-list />
+    <div class="inbox__chat">
+      <div jb-empty-state icon="message" heading="Pick a conversation">
+        Choose one on the left to read and reply.
+      </div>
+    </div>
+  </div>
+}

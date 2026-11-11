@@ -1,0 +1,91 @@
+<div class="inbox__tools">
+  <form class="search" role="search" (submit)="searchNow($event)">
+    <label class="visually-hidden" for="mq">Search messages</label>
+    <svg jb-icon name="search"></svg>
+    <input
+      class="input"
+      id="mq"
+      type="search"
+      placeholder="Search messages"
+      [value]="text()"
+      (input)="typed($any($event.target).value)"
+    />
+  </form>
+</div>
+@let inbox = store.state();
+@switch (inbox.status) {
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading your messages…</p>
+    <ul class="list" aria-hidden="true">
+      @for (row of [1, 2, 3, 4, 5]; track row) {
+        <li class="thread">
+          <span class="skeleton skeleton--avatar"></span>
+          <span class="thread__body">
+            <span class="skeleton skeleton--text skeleton--w50"></span>
+            <span class="skeleton skeleton--text"></span>
+          </span>
+        </li>
+      }
+    </ul>
+  }
+  @case ('error') {
+    <div
+      jb-empty-state
+      [compact]="true"
+      [error]="true"
+      icon="alert"
+      heading="We couldn’t load your messages"
+    >
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ inbox.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="store.load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+    </div>
+  }
+  @case ('loaded') {
+    @if (inbox.value.conversations.length === 0) {
+      <div
+        jb-empty-state
+        [compact]="true"
+        icon="search"
+        [heading]="'No messages match ‘' + store.search() + '’'"
+      >
+        Check the spelling, or search by business name.
+        <button slot="actions" class="btn" type="button" (click)="clear()">Clear search</button>
+      </div>
+    } @else {
+      <ul class="list">
+        @for (row of inbox.value.conversations; track row.id) {
+          <li>
+            <a
+              class="thread"
+              [class.thread--unread]="row.unread"
+              [routerLink]="['/messages', row.id]"
+              [attr.aria-current]="row.id === selectedId() ? 'page' : null"
+            >
+              <span class="avatar" aria-hidden="true">{{ initials(row.title) }}</span>
+              <span class="thread__body">
+                <span class="thread__top">
+                  <span class="thread__name truncate">{{ row.title }}</span>
+                  <span class="thread__time">{{ time(row.lastMessageAt) }}</span>
+                </span>
+                <span class="thread__snippet truncate" style="display: block">
+                  @if (row.unread) {
+                    <span class="thread__dot" aria-hidden="true"></span>
+                    <span class="visually-hidden">Unread. </span>
+                  }
+                  @if (row.muted) {
+                    <span class="visually-hidden">Muted. </span>
+                  }
+                  {{ row.preview }}
+                </span>
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  }
+}

@@ -165,6 +165,11 @@ public sealed class Listing
 
     public void SetAreasServed(AreaServed areasServed) => AreasServed = areasServed;
 
+    /// <summary>When the owner is away until (L2-062); null when not away.</summary>
+    public DateTimeOffset? AwayUntil { get; private set; }
+
+    public void SetAway(DateTimeOffset? until) => AwayUntil = until;
+
     public void SetMedianResponseMinutes(int? minutes) => MedianResponseMinutes = minutes;
 
     private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();

@@ -1,11 +1,14 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -22,13 +25,29 @@ import {
   categoryTile,
 } from 'components';
 import { Subscription } from 'rxjs';
+import {
+  NewMessageData,
+  NewMessageDialog,
+  NewMessageResult,
+} from '../../dialogs/new-message/new-message.dialog';
+import {
+  SignInRequiredData,
+  SignInRequiredDialog,
+} from '../../dialogs/sign-in-required/sign-in-required.dialog';
 import { ListingHints } from '../../services/listing-hints';
 import { LoadState, errorReference } from '../../services/load-state';
+import { SessionService } from '../../services/session.service';
 
 const REPLIES: Record<ReplyTimeBand, string> = {
   'few-hours': 'Usually within a few hours',
   day: 'Usually within a day',
   'few-days': 'Usually within a few days',
+};
+
+const WHO_REPLIES: Record<ReplyTimeBand, string> = {
+  'few-hours': 'usually replies within a few hours',
+  day: 'usually replies within a day',
+  'few-days': 'usually replies within a few days',
 };
 
 const MONTH = new Intl.DateTimeFormat('en-CA', {
@@ -71,7 +90,12 @@ export class BusinessPage {
   private readonly title = inject(Title);
   private readonly hints = inject(ListingHints);
   private request?: Subscription;
+  private readonly session = inject(SessionService);
+  private readonly dialog = inject(Dialog);
   private slug = '';
+  /** True while the address is /b/:slug/message: "Send a message" opens the message dialog. */
+  private readonly composing = signal(false);
+  private composeRef?: { close: () => void };
 
   protected readonly state = signal<LoadState<ListingPage>>({ status: 'loading' });
   private readonly slugValue = signal('');
@@ -112,8 +136,20 @@ export class BusinessPage {
       this.slugValue.set(this.slug);
       this.load();
     });
+    const urls = this.route.url.subscribe((segments) =>
+      this.composing.set(segments.at(-1)?.path === 'message'),
+    );
+    effect(() => {
+      const state = this.state();
+      const composing = this.composing();
+      untracked(() => {
+        if (composing && state.status === 'loaded' && !this.composeRef) this.compose(state.value);
+        if (!composing) this.composeRef?.close();
+      });
+    });
     inject(DestroyRef).onDestroy(() => {
       params.unsubscribe();
+      urls.unsubscribe();
       this.request?.unsubscribe();
     });
   }
@@ -141,6 +177,56 @@ export class BusinessPage {
         }
         this.state.set({ status: 'error', reference: errorReference(error, 'JB-BIZ-503') });
       },
+    });
+  }
+
+  /**
+   * "Send a message" (L2-055): a member writes to the business in a dialog and carries on in
+   * Messages; a visitor is asked to join or sign in first and comes back here (L2-012).
+   */
+  private compose(listing: ListingPage): void {
+    const leave = (): void => {
+      this.composeRef = undefined;
+      // A "Sign in" or "Join" link navigates on its own; do not undo that.
+      setTimeout(() => {
+        if (!this.router.getCurrentNavigation() && this.composing()) {
+          void this.router.navigate(['/b', this.slug], { replaceUrl: true });
+        }
+      });
+    };
+    if (!this.session.member()) {
+      const ref = this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+        data: { title: `Join to message ${listing.name}`, returnUrl: `/b/${this.slug}/message` },
+        ariaLabelledBy: 'dlg-title',
+        ariaDescribedBy: 'dlg-desc',
+        ariaModal: true,
+        backdropClass: 'backdrop',
+      });
+      this.composeRef = ref;
+      ref.closed.subscribe(leave);
+      return;
+    }
+    const who = listing.ownerName?.split(',')[0].trim() || listing.name;
+    const replies = listing.details.replies ? ` ${WHO_REPLIES[listing.details.replies]}` : '';
+    const ref = this.dialog.open<NewMessageResult, NewMessageData>(NewMessageDialog, {
+      data: {
+        slug: listing.slug,
+        businessName: listing.name,
+        intro: replies ? `${who}${replies}.` : `Your message goes to ${who}.`,
+      },
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+    });
+    this.composeRef = ref;
+    ref.closed.subscribe((conversationId) => {
+      if (conversationId) {
+        this.composeRef = undefined;
+        void this.router.navigate(['/messages', conversationId]);
+      } else {
+        leave();
+      }
     });
   }
 

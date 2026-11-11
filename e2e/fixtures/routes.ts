@@ -38,7 +38,14 @@ export type StubName =
   | 'verify-email-expired'
   | 'verify-email-error'
   | 'email-unconfirmed'
-  | 'email-bounced';
+  | 'email-bounced'
+  | 'messages'
+  | 'messages-empty'
+  | 'messages-loading'
+  | 'messages-error'
+  | 'conversation'
+  | 'conversation-loading'
+  | 'conversation-error';
 
 export interface ScreenRoute {
   app: string;
@@ -100,6 +107,53 @@ export const routes = {
     mock: 'notifications/verify-email-banner/danger.html',
     who: 'member',
     stub: 'email-bounced',
+  },
+  messages: {
+    app: '/messages',
+    mock: 'pages/messages/default.html',
+    who: 'member',
+    stub: 'messages',
+  },
+  'messages.empty': {
+    app: '/messages',
+    mock: 'pages/messages/empty.html',
+    who: 'member',
+    stub: 'messages-empty',
+  },
+  'messages.loading': {
+    app: '/messages',
+    mock: 'pages/messages/loading.html',
+    who: 'member',
+    stub: 'messages-loading',
+  },
+  'messages.error': {
+    app: '/messages',
+    mock: 'pages/messages/error.html',
+    who: 'member',
+    stub: 'messages-error',
+  },
+  conversation: {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/default.html',
+    who: 'member',
+    stub: 'conversation',
+  },
+  'conversation.loading': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/loading.html',
+    who: 'member',
+    stub: 'conversation-loading',
+  },
+  'conversation.error': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/error.html',
+    who: 'member',
+    stub: 'conversation-error',
+  },
+  'new-message': {
+    app: '/b/legacy-financial/message',
+    mock: 'dialogs/new-message/default.html',
+    who: 'member',
   },
   welcome: { app: '/welcome', mock: 'pages/welcome/default.html', who: 'visitor' },
   browse: { app: '/', mock: 'pages/browse/default.html', who: 'member' },

@@ -1,0 +1,135 @@
+<div class="inbox inbox--chat">
+  <jb-inbox-list [selectedId]="id()" />
+  <div class="inbox__chat chat">
+    @let current = state();
+    @if (current.status === 'error') {
+      <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this conversation">
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>{{ current.reference }}</code
+        >.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="open()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" class="btn" routerLink="/messages">Back to messages</a>
+      </div>
+    } @else if (current.status === 'loading') {
+      <p class="visually-hidden" role="status">Loading this conversation…</p>
+      <ul class="chat__log" aria-hidden="true">
+        <li class="bubble" style="width: 60%"><span class="skeleton skeleton--text"></span></li>
+        <li class="bubble bubble--me" style="width: 45%">
+          <span class="skeleton skeleton--text"></span>
+        </li>
+        <li class="bubble" style="width: 70%"><span class="skeleton skeleton--text"></span></li>
+      </ul>
+    } @else {
+      @let conversation = current.value;
+      <div class="chat__head">
+        <a class="btn btn--ghost btn--icon" routerLink="/messages" aria-label="Back to messages">
+          <svg jb-icon name="arrow-left"></svg>
+        </a>
+        <span class="avatar" aria-hidden="true">{{ initials(conversation.business.name) }}</span>
+        <div style="flex: 1; min-width: 0">
+          <h1 class="truncate">{{ conversation.business.name }}</h1>
+          <p class="text-caption truncate">{{ subtitle() }}</p>
+        </div>
+        <a
+          class="btn btn--icon"
+          [routerLink]="['/b', conversation.business.slug]"
+          [attr.aria-label]="'View ' + conversation.business.name + '’s listing'"
+        >
+          <svg jb-icon name="store"></svg>
+        </a>
+      </div>
+      @if (conversation.awayUntil) {
+        <p class="alert alert--info" role="status" data-testid="away">
+          <svg jb-icon name="info"></svg>
+          <span class="alert__body"
+            >{{ conversation.counterpart.name }} is away and will reply when they’re back.</span
+          >
+        </p>
+      }
+      @if (entries().length === 0) {
+        <div class="chat__log">
+          <div
+            jb-empty-state
+            [compact]="true"
+            icon="message"
+            [heading]="'Say hello to ' + conversation.counterpart.name"
+          >
+            Ask a question or tell them what you need.
+          </div>
+          <div class="cluster" style="justify-content: center">
+            @for (starter of starters; track starter) {
+              <button class="chip" type="button" (click)="suggest(starter)">{{ starter }}</button>
+            }
+          </div>
+        </div>
+      } @else {
+        <ul class="chat__log" aria-label="Messages">
+          @if (hasMore()) {
+            <li class="chat__day">
+              <button
+                class="btn btn--sm btn--ghost"
+                type="button"
+                [disabled]="loadingEarlier()"
+                (click)="loadEarlier()"
+              >
+                Show earlier messages
+              </button>
+            </li>
+          }
+          @for (entry of entries(); track entry.id) {
+            @switch (entry.kind) {
+              @case ('day') {
+                <li class="chat__day">{{ entry.label }}</li>
+              }
+              @case ('message') {
+                <li class="bubble" [class.bubble--me]="entry.message.mine">
+                  <span class="visually-hidden"
+                    >{{ entry.message.mine ? 'You' : entry.message.senderFirstName }}: </span
+                  ><span style="white-space: pre-wrap">{{ entry.message.body }}</span
+                  ><span class="bubble__meta">{{ entry.time }}</span>
+                </li>
+              }
+              @case ('outgoing') {
+                @if (entry.outgoing.status === 'sending') {
+                  <li class="bubble bubble--me bubble--pending">
+                    <span class="visually-hidden">You: </span
+                    ><span style="white-space: pre-wrap">{{ entry.outgoing.body }}</span
+                    ><span class="bubble__meta" role="status">Sending…</span>
+                  </li>
+                } @else {
+                  <li class="bubble bubble--me bubble--failed" role="alert">
+                    <span class="visually-hidden">You: </span
+                    ><span style="white-space: pre-wrap">{{ entry.outgoing.body }}</span
+                    ><span class="bubble__meta"
+                      >{{ entry.outgoing.problem }}
+                      <button type="button" (click)="retry(entry.outgoing)">Try again</button> ·
+                      <button type="button" (click)="discard(entry.outgoing)">Delete</button></span
+                    >
+                  </li>
+                }
+              }
+            }
+          }
+        </ul>
+      }
+      <form class="composer" #composer (submit)="send($event)">
+        <label class="visually-hidden" for="msg">Message {{ conversation.business.name }}</label>
+        <textarea
+          class="textarea"
+          id="msg"
+          name="message"
+          rows="1"
+          placeholder="Write a message"
+          [ngModel]="text()"
+          (ngModelChange)="text.set($event)"
+          (keydown.enter)="onEnter($event)"
+        ></textarea>
+        <button class="btn btn--primary btn--icon" type="submit" aria-label="Send">
+          <svg jb-icon name="send"></svg>
+        </button>
+      </form>
+    }
+  </div>
+</div>

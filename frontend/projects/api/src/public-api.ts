@@ -13,3 +13,5 @@ export * from './lib/api/search-api';
 export * from './lib/models/search';
 export * from './lib/api/account-api';
 export * from './lib/models/account';
+export * from './lib/api/messages-api';
+export * from './lib/models/messages';
