@@ -214,6 +214,31 @@ export const routes: Routes = [
     title: 'Review a listing · Jubilee',
   },
   {
+    path: 'admin/reports',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/admin-reports/admin-reports.page').then((m) => m.AdminReportsPage),
+    canActivate: [verifierGuard],
+    data: data({ shell: 'app', page: 'admin-reports', section: 'verifications' }),
+    title: 'Reports · Jubilee',
+  },
+  {
+    path: 'admin/reports/:id',
+    loadComponent: () =>
+      import('./pages/admin-report/admin-report.page').then((m) => m.AdminReportPage),
+    canActivate: [verifierGuard],
+    data: data({ shell: 'app', page: 'admin-report', section: 'verifications' }),
+    title: 'Review a report · Jubilee',
+  },
+  {
+    path: 'admin/featured',
+    loadComponent: () =>
+      import('./pages/admin-featured/admin-featured.page').then((m) => m.AdminFeaturedPage),
+    canActivate: [verifierGuard],
+    data: data({ shell: 'app', page: 'admin-featured', section: 'verifications' }),
+    title: 'Featured this week · Jubilee',
+  },
+  {
     path: 'error',
     pathMatch: 'full',
     loadComponent: () =>

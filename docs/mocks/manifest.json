@@ -972,6 +972,59 @@
         "danger",
         "persistent"
       ]
+    },
+    {
+      "id": "admin-reports",
+      "kind": "page",
+      "title": "Reports",
+      "route": "/admin/reports",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results"
+      ]
+    },
+    {
+      "id": "admin-report",
+      "kind": "page",
+      "title": "Report",
+      "route": "/admin/reports/:id",
+      "states": [
+        "default",
+        "conversation",
+        "resolved",
+        "loading",
+        "error"
+      ]
+    },
+    {
+      "id": "admin-featured",
+      "kind": "page",
+      "title": "Featured businesses",
+      "route": "/admin/featured",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "full",
+        "saved"
+      ]
+    },
+    {
+      "id": "report-action",
+      "kind": "dialog",
+      "title": "Report action",
+      "opens_from": "admin-report",
+      "states": [
+        "default",
+        "message",
+        "busy",
+        "invalid",
+        "failed"
+      ]
     }
   ]
 }

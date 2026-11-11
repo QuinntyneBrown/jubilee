@@ -1,0 +1,156 @@
+<div class="page-header">
+  <div>
+    <h1>Featured businesses</h1>
+    <p class="subtitle">
+      Up to {{ max }} live businesses show on the welcome and browse pages for 7 days.
+    </p>
+  </div>
+</div>
+<nav jb-team-nav current="featured"></nav>
+@let weeks = state();
+@switch (weeks.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load the featured weeks">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ weeks.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the featured weeks…</p>
+    <ul class="rows" aria-hidden="true">
+      <li class="row">
+        <div class="row__body">
+          <span class="skeleton skeleton--text skeleton--w50"></span>
+          <span class="skeleton skeleton--text skeleton--w70"></span>
+        </div>
+      </li>
+    </ul>
+  }
+  @case ('loaded') {
+    <form
+      class="card stack"
+      aria-labelledby="fw"
+      style="margin-top: var(--space-4)"
+      (submit)="$event.preventDefault(); save()"
+    >
+      <h2 id="fw" class="card__title">Featured this week</h2>
+      @if (problem(); as message) {
+        <div class="alert alert--danger" role="alert">
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">{{ message }}</div>
+        </div>
+      }
+      <div class="field" style="max-width: 16rem">
+        <label class="field__label" for="start">Starts on</label>
+        <input
+          class="input"
+          id="start"
+          type="date"
+          [min]="today"
+          [ngModel]="startDate()"
+          name="start"
+          aria-describedby="start-help"
+          (ngModelChange)="pick($event)"
+        />
+        <span class="field__help" id="start-help">Shows for 7 days, to {{ endLabel() }}.</span>
+      </div>
+      @if (chosen().length === 0) {
+        <div jb-empty-state [compact]="true" icon="check" heading="Nothing featured yet">
+          Search below and add the businesses to feature. Until you do, the newest verified
+          businesses are shown.
+        </div>
+      } @else {
+        <ol class="rows" aria-label="Featured this week" style="margin-top: var(--space-4)">
+          @for (
+            listing of chosen();
+            track listing.id;
+            let i = $index;
+            let first = $first;
+            let last = $last
+          ) {
+            <li class="row">
+              <span class="badge" aria-hidden="true">{{ i + 1 }}</span>
+              <div class="row__body">
+                <p class="row__title">{{ listing.name }}</p>
+                <p class="row__meta">{{ listing.categorySlug }} · {{ listing.state }}</p>
+              </div>
+              <span class="cluster">
+                <button
+                  class="btn btn--sm btn--icon"
+                  type="button"
+                  [attr.aria-label]="'Move ' + listing.name + ' up'"
+                  [disabled]="first"
+                  (click)="move(i, -1)"
+                >
+                  ↑
+                </button>
+                <button
+                  class="btn btn--sm btn--icon"
+                  type="button"
+                  [attr.aria-label]="'Move ' + listing.name + ' down'"
+                  [disabled]="last"
+                  (click)="move(i, 1)"
+                >
+                  ↓
+                </button>
+                <button class="btn btn--sm" type="button" (click)="remove(i)">
+                  Remove<span class="visually-hidden"> {{ listing.name }}</span>
+                </button>
+              </span>
+            </li>
+          }
+        </ol>
+      }
+      <div class="field" style="margin-top: var(--space-4)">
+        <label class="field__label" for="find">Add a live business</label>
+        <input
+          class="input"
+          id="find"
+          type="search"
+          name="find"
+          placeholder="Search by name"
+          autocomplete="off"
+          [disabled]="full()"
+          [ngModel]="search()"
+          (ngModelChange)="find($event)"
+        />
+        <span class="field__help" role="status"
+          >{{ chosen().length }} of {{ max }} chosen.
+          @if (full()) {
+            Remove one to add another.
+          }
+        </span>
+      </div>
+      @if (available().length > 0) {
+        <ul class="rows" aria-label="Live businesses found">
+          @for (candidate of available(); track candidate.id) {
+            <li class="row">
+              <div class="row__body">
+                <p class="row__title">{{ candidate.name }}</p>
+                <p class="row__meta">{{ candidate.categorySlug }}</p>
+              </div>
+              <button class="btn btn--sm" type="button" (click)="add(candidate)">
+                Add<span class="visually-hidden"> {{ candidate.name }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+      <div class="cluster" style="margin-top: var(--space-4)">
+        <button
+          class="btn btn--primary"
+          type="submit"
+          [disabled]="saving()"
+          [attr.aria-busy]="saving() ? 'true' : null"
+        >
+          Save selection
+        </button>
+      </div>
+    </form>
+  }
+}

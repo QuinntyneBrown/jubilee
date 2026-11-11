@@ -99,6 +99,14 @@ export type StubName =
   | 'admin-review-approved'
   | 'admin-review-changes-requested'
   | 'admin-review-error'
+  | 'moderation-reports'
+  | 'moderation-reports-empty'
+  | 'moderation-reports-error'
+  | 'moderation-report'
+  | 'moderation-report-conversation'
+  | 'moderation-report-error'
+  | 'moderation-featured'
+  | 'moderation-featured-error'
   | 'forbidden';
 
 export interface ScreenRoute {
@@ -735,6 +743,54 @@ export const routes = {
     mock: 'pages/admin-verification/error.html',
     who: 'member',
     stub: 'admin-review-error',
+  },
+  'admin-reports': {
+    app: '/admin/reports',
+    mock: 'pages/admin-reports/default.html',
+    who: 'member',
+    stub: 'moderation-reports',
+  },
+  'admin-reports.empty': {
+    app: '/admin/reports',
+    mock: 'pages/admin-reports/empty.html',
+    who: 'member',
+    stub: 'moderation-reports-empty',
+  },
+  'admin-reports.error': {
+    app: '/admin/reports',
+    mock: 'pages/admin-reports/error.html',
+    who: 'member',
+    stub: 'moderation-reports-error',
+  },
+  'admin-report': {
+    app: '/admin/reports/5b0c7a10-2d4e-4f6a-8b1c-0123456789ab',
+    mock: 'pages/admin-report/default.html',
+    who: 'member',
+    stub: 'moderation-report',
+  },
+  'admin-report.conversation': {
+    app: '/admin/reports/6c1d8b21-3e5f-4a7b-9c2d-123456789abc',
+    mock: 'pages/admin-report/conversation.html',
+    who: 'member',
+    stub: 'moderation-report-conversation',
+  },
+  'admin-report.error': {
+    app: '/admin/reports/5b0c7a10-2d4e-4f6a-8b1c-0123456789ab',
+    mock: 'pages/admin-report/error.html',
+    who: 'member',
+    stub: 'moderation-report-error',
+  },
+  'admin-featured': {
+    app: '/admin/featured',
+    mock: 'pages/admin-featured/default.html',
+    who: 'member',
+    stub: 'moderation-featured',
+  },
+  'admin-featured.error': {
+    app: '/admin/featured',
+    mock: 'pages/admin-featured/error.html',
+    who: 'member',
+    stub: 'moderation-featured-error',
   },
   forbidden: {
     app: '/forbidden',

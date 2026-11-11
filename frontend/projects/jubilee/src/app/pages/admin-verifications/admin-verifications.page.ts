@@ -12,6 +12,7 @@ import { EmptyState, Icon } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { threadTime } from '../../services/message-time';
+import { TeamNav } from '../admin-team-nav/team-nav';
 
 /** How the church reference is named and coloured in the queue; the word always says it too. */
 const REFERENCE: Record<ReferenceState, { label: string; tone: string }> = {
@@ -26,7 +27,7 @@ const REFERENCE: Record<ReferenceState, { label: string; tone: string }> = {
 /** The verification queue at /admin/verifications (L2-099): submitted listings, oldest first. */
 @Component({
   selector: 'jb-admin-verifications-page',
-  imports: [RouterLink, EmptyState, Icon],
+  imports: [RouterLink, EmptyState, Icon, TeamNav],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-verifications.page.html',
 })

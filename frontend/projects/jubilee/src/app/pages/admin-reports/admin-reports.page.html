@@ -1,0 +1,113 @@
+<div class="page-header">
+  <div>
+    <h1>Reports</h1>
+    <p class="subtitle">{{ subtitle() }}</p>
+  </div>
+</div>
+<nav jb-team-nav current="reports"></nav>
+@let reports = state();
+@switch (reports.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load the reports">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ reports.reference }}</code
+      >.
+      <button slot="actions" class="btn btn--primary" type="button" (click)="load(filter())">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the reports…</p>
+    <ul class="rows" aria-hidden="true">
+      @for (item of skeleton; track item) {
+        <li class="row">
+          <div class="row__body">
+            <span class="skeleton skeleton--text skeleton--w50"></span>
+            <span class="skeleton skeleton--text skeleton--w70"></span>
+          </div>
+          <span class="skeleton skeleton--btn" style="width: 5rem"></span>
+        </li>
+      }
+    </ul>
+  }
+  @case ('loaded') {
+    <div class="tabs" role="tablist" aria-label="Report status" style="margin-top: var(--space-4)">
+      @for (tab of filters; track tab.key) {
+        <button
+          class="tab"
+          role="tab"
+          type="button"
+          [attr.aria-selected]="tab.key === filter()"
+          [attr.tabindex]="tab.key === filter() ? null : -1"
+          (click)="load(tab.key)"
+        >
+          {{ tab.label }}
+        </button>
+      }
+    </div>
+    @if (reports.value.items.length === 0) {
+      @if (filter() === 'unresolved') {
+        <div jb-empty-state icon="check" heading="No reports to review">
+          Reports about listings and conversations appear here as soon as a member sends one.
+          <button slot="actions" class="btn" type="button" (click)="load(filter())">
+            <svg jb-icon name="refresh"></svg>Refresh
+          </button>
+        </div>
+      } @else {
+        <div jb-empty-state [compact]="true" icon="check" heading="Nothing here right now">
+          No reports have this status.
+          <button slot="actions" class="btn" type="button" (click)="load('unresolved')">
+            Show unresolved
+          </button>
+        </div>
+      }
+    } @else {
+      <div class="table-wrap" style="margin-top: var(--space-4)">
+        <table class="table">
+          <caption class="visually-hidden">
+            Reports waiting for review
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Business</th>
+              <th scope="col">Reason</th>
+              <th scope="col">Report</th>
+              <th scope="col">Reporter</th>
+              <th scope="col">Received</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of reports.value.items; track item.id) {
+              <tr>
+                <td>
+                  <a [routerLink]="['/admin/reports', item.id]">{{ item.listing.name }}</a>
+                  @if (item.type === 'conversation') {
+                    <span class="text-caption"> conversation</span>
+                  }
+                </td>
+                <td>{{ item.reason }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.reporterName }}</td>
+                <td>{{ received(item) }}</td>
+                <td>
+                  @if (item.overdue) {
+                    <span class="badge badge--warning">Overdue</span>
+                  }
+                  <span
+                    class="badge"
+                    [class.badge--info]="item.status === 'in-review'"
+                    [class.badge--success]="item.status === 'resolved'"
+                    >{{ statusLabel(item) }}</span
+                  >
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+}

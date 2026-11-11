@@ -4,6 +4,7 @@ import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './moc
 import { fulfil, recordedAnswer } from './mock-api';
 import { stubMessaging } from './messaging';
 import { esther, stubAdmin } from './admin';
+import { stubModeration } from './moderation';
 import { stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
 import { stubProfile } from './profile';
@@ -334,6 +335,20 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubAdmin(page, { stage: 'changes-requested' });
     case 'admin-review-error':
       return stubAdmin(page, { review: 'fails' });
+    case 'moderation-reports':
+    case 'moderation-report':
+    case 'moderation-featured':
+      return stubModeration(page);
+    case 'moderation-reports-empty':
+      return stubModeration(page, { reports: 'empty' });
+    case 'moderation-reports-error':
+      return stubModeration(page, { reports: 'fails' });
+    case 'moderation-report-conversation':
+      return stubModeration(page);
+    case 'moderation-report-error':
+      return stubModeration(page, { reports: 'fails' });
+    case 'moderation-featured-error':
+      return stubModeration(page, { featured: 'fails' });
     case 'forbidden':
       return stubAdmin(page, {}, { ...esther, isVerifier: false });
     case 'reference':

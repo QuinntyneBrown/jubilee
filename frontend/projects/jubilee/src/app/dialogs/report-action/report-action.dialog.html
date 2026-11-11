@@ -1,0 +1,94 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+      <svg jb-icon name="shield"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">{{ wording().title }}</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+        {{ wording().text }}
+      </p>
+    </div>
+    <button
+      class="btn btn--ghost btn--icon"
+      type="button"
+      aria-label="Close"
+      [disabled]="busy()"
+      (click)="close()"
+    >
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <form class="dialog__body stack" id="report-action-form" novalidate (ngSubmit)="send()">
+    @if (view() === 'failed') {
+      <div class="alert alert--danger" role="alert">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">We couldn’t save that action</div>
+          <div>Nothing was changed and your note is kept. Try again.</div>
+        </div>
+      </div>
+    }
+    @if (wording().messages) {
+      <div class="field">
+        <label class="field__label" for="r-text">
+          Message <span class="optional">(required)</span>
+        </label>
+        <textarea
+          class="textarea"
+          id="r-text"
+          name="messageText"
+          rows="4"
+          required
+          [readOnly]="busy()"
+          [attr.aria-invalid]="textProblem() ? 'true' : null"
+          [attr.aria-describedby]="textProblem() ? 'r-text-error' : null"
+          [ngModel]="text()"
+          (ngModelChange)="text.set($event)"
+        ></textarea>
+        @if (textProblem()) {
+          <span class="field__error" id="r-text-error">Write the message to send.</span>
+        }
+      </div>
+    }
+    <div class="field">
+      <label class="field__label" for="r-note">
+        Resolution note <span class="optional">(required)</span>
+      </label>
+      <textarea
+        class="textarea"
+        id="r-note"
+        name="resolutionNote"
+        rows="3"
+        required
+        [readOnly]="busy()"
+        [attr.aria-invalid]="noteProblem() ? 'true' : null"
+        [attr.aria-describedby]="noteProblem() ? 'r-note-help r-note-error' : 'r-note-help'"
+        [ngModel]="note()"
+        (ngModelChange)="note.set($event)"
+      ></textarea>
+      @if (noteProblem()) {
+        <span class="field__error" id="r-note-error"
+          >Write a note about what you decided and why.</span
+        >
+      }
+      <span class="field__help" id="r-note-help"
+        >Kept with the report and in the audit log. Never shown to the owner or the reporter.</span
+      >
+    </div>
+  </form>
+  <div class="dialog__footer">
+    <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+    <button
+      class="btn"
+      [class.btn--primary]="!wording().danger"
+      [class.btn--danger]="wording().danger"
+      type="submit"
+      form="report-action-form"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? 'true' : null"
+    >
+      {{ wording().cta }}
+    </button>
+  </div>
+</div>
