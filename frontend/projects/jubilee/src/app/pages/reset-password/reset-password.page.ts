@@ -21,6 +21,7 @@ import {
   Field,
   Input,
   Skeleton,
+  Card,
 } from 'components';
 
 type View = 'loading' | 'form' | 'submitting' | 'success' | 'expired' | 'error';
@@ -71,6 +72,7 @@ function text(code: string, length: number): string {
     Field,
     Input,
     Skeleton,
+    Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },

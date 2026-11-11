@@ -1,5 +1,5 @@
 <a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
-<div class="auth-card card stack">
+<div jb-card class="auth-card stack">
   @if (view() === 'error') {
     <div jb-empty-state icon="alert" heading="We couldn’t load sign in" [level]="1" [error]="true">
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote

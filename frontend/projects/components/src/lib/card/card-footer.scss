@@ -1,0 +1,14 @@
+// Block: card, its footer.
+:host {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+:host(.card__footer--start) {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}

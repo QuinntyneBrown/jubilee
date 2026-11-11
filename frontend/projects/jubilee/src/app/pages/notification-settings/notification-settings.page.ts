@@ -18,6 +18,8 @@ import {
   Skeleton,
   Dot,
   InlineStatus,
+  Card,
+  CardTitle,
 } from 'components';
 import { Observable } from 'rxjs';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -89,6 +91,8 @@ const ROWS: Row[] = [
     Skeleton,
     Dot,
     InlineStatus,
+    Card,
+    CardTitle,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

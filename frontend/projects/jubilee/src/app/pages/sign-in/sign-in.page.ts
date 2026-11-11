@@ -19,6 +19,7 @@ import {
   Field,
   Input,
   Checkbox,
+  Card,
 } from 'components';
 import { googleNotice } from '../../services/google-notice';
 import { sanitiseReturnUrl } from '../../services/return-url';
@@ -43,6 +44,7 @@ type View = 'form' | 'submitting' | 'error';
     Field,
     Input,
     Checkbox,
+    Card,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },

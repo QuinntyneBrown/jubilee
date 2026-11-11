@@ -24,7 +24,7 @@
     </div>
   }
   @case ('loading') {
-    <div class="card stack" style="max-width: 42rem; margin-top: var(--space-6)" aria-hidden="true">
+    <div jb-card narrow class="stack" aria-hidden="true" style="margin-top: var(--space-6)">
       <span jb-skeleton shape="text" width="50"></span>
       <span jb-skeleton shape="text"></span>
       <span jb-skeleton shape="text" width="70"></span>
@@ -33,13 +33,9 @@
   }
   @case ('loaded') {
     @let preferences = current.value;
-    <section
-      class="card stack"
-      style="max-width: 42rem; margin-top: var(--space-6)"
-      aria-labelledby="em"
-    >
+    <section jb-card narrow class="stack" style="margin-top: var(--space-6)" labelledBy="em">
       <div class="cluster cluster--between">
-        <h2 id="em" class="card__title">E-mail me about</h2>
+        <h2 jb-card-title id="em">E-mail me about</h2>
         @switch (status().kind) {
           @case ('saving') {
             <span jb-inline-status live><span jb-dot pulse></span>Saving…</span>

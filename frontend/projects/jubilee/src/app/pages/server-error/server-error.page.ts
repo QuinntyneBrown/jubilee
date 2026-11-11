@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { BrandMark, EmptyState, Icon, Button } from 'components';
+import { BrandMark, EmptyState, Icon, Button, Card } from 'components';
 import { returnTo } from '../../services/navigation-trail';
 
 /**
@@ -10,7 +10,7 @@ import { returnTo } from '../../services/navigation-trail';
  */
 @Component({
   selector: 'jb-server-error-page',
-  imports: [BrandMark, EmptyState, Icon, RouterLink, Button],
+  imports: [BrandMark, EmptyState, Icon, RouterLink, Button, Card],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './server-error.page.html',
