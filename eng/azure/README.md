@@ -42,9 +42,47 @@ certificates for the three host names.
 | `Email__UnsubscribeKey` | a random key |
 | `SCM_DO_BUILD_DURING_DEPLOYMENT` | `false` (the package is already built) |
 
-Not configured yet, so these features are off or stubbed: `Google__ClientId` /
-`Google__ClientSecret` (sign in with Google), `BotChallenge__SecretKey` (Turnstile), and a real
-e-mail sender (the API and the worker still use the logging sender, so no e-mail leaves).
+| `Google__ClientId`, `Google__ClientSecret` | the OAuth client `Jubilee web` (see "Google sign-in" below); the secret exists nowhere else |
+
+Not configured yet, so these features are off or stubbed: `BotChallenge__SecretKey` (Turnstile),
+and a real e-mail sender (the API and the worker still use the logging sender, so no e-mail
+leaves).
+
+## Google sign-in
+
+Set up on 11 November 2026 (ADR 0037). To repeat it:
+
+1. Google Cloud Console, project `Jubilee` (`jubilee-514409`), Google Auth Platform.
+2. Branding: app name `Jubilee`, a support e-mail, home page `https://www.jubilee.to`, privacy
+   policy `https://app.jubilee.to/privacy`, terms `https://app.jubilee.to/terms`, authorised domain
+   `jubilee.to`. No logo: a logo requires Google's verification.
+3. Audience: External, published ("In production"). The scopes `openid`, `email` and `profile`
+   are not sensitive and need no verification.
+4. Clients: one client of type Web application, `Jubilee web`.
+
+   | | |
+   |---|---|
+   | Authorised JavaScript origins | `https://app.jubilee.to`, `http://localhost:4200` |
+   | Authorised redirect URIs | `https://app.jubilee.to/api/auth/google/callback`, `http://localhost:4200/api/auth/google/callback` |
+
+   The redirect URI is `App__PublicBaseUrl` followed by `/api/auth/google/callback`
+   (`GoogleSignInController.RedirectUri()`).
+5. Copy the client ID, and add a client secret (Google shows a secret once, when it is made). In
+   Azure Cloud Shell, set both without echoing the secret or leaving it in the shell history:
+
+   ```
+   read -rp "Google client ID: " GID && read -rsp "Google client secret (hidden): " GSEC && echo \
+     && az webapp config appsettings set -g rg-jubilee-prod -n jubilee-to-app \
+          --settings "Google__ClientId=$GID" "Google__ClientSecret=$GSEC" -o none \
+     && unset GID GSEC
+   ```
+
+   The app restarts by itself; allow it a minute. For local development see "Signing in with
+   Google locally" in the root `README.md`.
+6. Check: `curl -s -o /dev/null -D - https://app.jubilee.to/api/auth/google/start` answers `302`
+   with a `Location` at `accounts.google.com`, and `GET /api/session` reports `"googleSignIn": true`.
+
+Without the two settings Google sign-in is off: the join and sign-in pages show no Google button.
 
 ## DNS (Namecheap, Advanced DNS of `jubilee.to`)
 

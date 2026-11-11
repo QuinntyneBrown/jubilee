@@ -11,7 +11,10 @@
     </div>
   } @else {
     <h1>Sign in to Jubilee</h1>
-    @if (notice()) {
+    @if (notice() && cancelled()) {
+      <div jb-alert tone="warning" role="status">{{ notice() }}</div>
+    }
+    @if (notice() && !cancelled()) {
       <div jb-alert tone="danger" role="alert">{{ notice() }}</div>
     }
     @if (summary().length > 0) {
@@ -62,8 +65,12 @@
       >
         Sign in
       </button>
-      <p class="divider-text">or</p>
-      <a jb-button block size="lg" [href]="googleUrl">Continue with Google</a>
+      @if (google()) {
+        <p class="divider-text">or</p>
+      }
+      @if (google()) {
+        <a jb-button block size="lg" [href]="googleUrl">Continue with Google</a>
+      }
     </form>
   }
 </div>
