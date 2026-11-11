@@ -42,39 +42,36 @@
           </button>
         </div>
       } @else {
-        <div class="table-wrap" style="margin-top: var(--space-4)">
-          <table class="table">
-            <caption class="visually-hidden">
-              Listings waiting for verification
-            </caption>
+        <div jb-table-scroll style="margin-top: var(--space-4)">
+          <table jb-table caption="Listings waiting for verification">
             <thead>
               <tr>
-                <th scope="col">Business</th>
-                <th scope="col">Category</th>
-                <th scope="col">Owner</th>
-                <th scope="col">Church reference</th>
-                <th scope="col">Submitted</th>
-                <th scope="col">Stage</th>
+                <th jb-table-cell scope="col">Business</th>
+                <th jb-table-cell scope="col">Category</th>
+                <th jb-table-cell scope="col">Owner</th>
+                <th jb-table-cell scope="col">Church reference</th>
+                <th jb-table-cell scope="col">Submitted</th>
+                <th jb-table-cell scope="col">Stage</th>
               </tr>
             </thead>
             <tbody>
               @for (row of queue.value.rows; track row.id) {
                 <tr>
-                  <td>
+                  <td jb-table-cell>
                     <a [routerLink]="['/admin/verifications', row.id]">{{ row.name }}</a>
                   </td>
-                  <td>{{ row.categoryName }}</td>
-                  <td>{{ row.ownerName }}</td>
-                  <td>
+                  <td jb-table-cell>{{ row.categoryName }}</td>
+                  <td jb-table-cell>{{ row.ownerName }}</td>
+                  <td jb-table-cell>
                     <span jb-badge [tone]="reference(row).tone">{{ reference(row).label }}</span>
                   </td>
-                  <td>
+                  <td jb-table-cell>
                     {{ submitted(row) }}
                     @if (row.overdue) {
                       <span jb-badge tone="warning">Overdue</span>
                     }
                   </td>
-                  <td>{{ row.stageLabel }}</td>
+                  <td jb-table-cell>{{ row.stageLabel }}</td>
                 </tr>
               }
             </tbody>

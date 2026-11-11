@@ -1,0 +1,14 @@
+// What a heading cell and a value cell of a table share.
+//
+// Knob: --jb-table-cell-padding, set by a dense table.
+@mixin cell {
+  text-align: left;
+  padding: var(--jb-table-cell-padding, var(--space-3) var(--space-4));
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+  vertical-align: middle;
+}
+
+@mixin numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

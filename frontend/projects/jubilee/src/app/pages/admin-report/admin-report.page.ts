@@ -84,6 +84,7 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
     DescriptionItem,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'jb-page container page' },
   templateUrl: './admin-report.page.html',
 })
 export class AdminReportPage implements OnInit {

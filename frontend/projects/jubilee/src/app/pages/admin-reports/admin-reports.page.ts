@@ -17,6 +17,10 @@ import {
   PageHeader,
   TabList,
   Tabs,
+  Table,
+  TableCell,
+  TableScroll,
+  TableHeadCell,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -49,8 +53,13 @@ const STATUS: Record<string, string> = {
     PageHeader,
     TabList,
     Tabs,
+    Table,
+    TableCell,
+    TableScroll,
+    TableHeadCell,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'jb-page container page' },
   templateUrl: './admin-reports.page.html',
 })
 export class AdminReportsPage implements OnInit {

@@ -1,0 +1,24 @@
+// Element: a value cell of the table block. The host is the td.
+@use './table-cell-base' as cell;
+
+:host {
+  @include cell.cell;
+}
+
+:host-context(tr:last-child) {
+  border-bottom: 0;
+}
+
+:host-context(tr:hover),
+:host-context(tr[data-state='hover']) {
+  background: var(--color-bg-subtle);
+}
+
+:host-context(tr[aria-selected='true']),
+:host-context(tr[data-state='selected']) {
+  background: var(--color-accent-subtle);
+}
+
+:host(.num) {
+  @include cell.numeric;
+}

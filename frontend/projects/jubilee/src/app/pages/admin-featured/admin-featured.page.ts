@@ -60,6 +60,7 @@ const MAX = 5;
     Tabs,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'jb-page container page' },
   templateUrl: './admin-featured.page.html',
 })
 export class AdminFeaturedPage implements OnInit {

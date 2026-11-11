@@ -19,6 +19,10 @@ import {
   TabListItem,
   TabList,
   Tabs,
+  Table,
+  TableCell,
+  TableScroll,
+  TableHeadCell,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -48,8 +52,13 @@ const REFERENCE: Record<ReferenceState, { label: string; tone: BadgeTone }> = {
     PageHeader,
     TabList,
     Tabs,
+    Table,
+    TableCell,
+    TableScroll,
+    TableHeadCell,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'jb-page container page' },
   templateUrl: './admin-verifications.page.html',
 })
 export class AdminVerificationsPage implements OnInit {
