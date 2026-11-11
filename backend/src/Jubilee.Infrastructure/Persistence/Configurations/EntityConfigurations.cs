@@ -187,3 +187,62 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
         builder.HasIndex(m => new { m.SentAt, m.NextAttemptAt });
     }
 }
+
+public sealed class ConversationConfiguration : IEntityTypeConfiguration<Conversation>
+{
+    public void Configure(EntityTypeBuilder<Conversation> builder)
+    {
+        builder.ToTable("Conversations");
+        builder.HasKey(c => c.Id);
+        builder.Property(c => c.Id).ValueGeneratedNever();
+        builder.Property(c => c.MemberSubject).HasMaxLength(200).IsRequired();
+        builder.Property(c => c.MemberName).HasMaxLength(200).IsRequired();
+        // One conversation per member and business (L2-055 AC3).
+        builder.HasIndex(c => new { c.ListingId, c.MemberSubject }).IsUnique();
+        builder.HasIndex(c => new { c.MemberSubject, c.LastMessageAt });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(c => c.ListingId).OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
+public sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
+{
+    public void Configure(EntityTypeBuilder<Message> builder)
+    {
+        builder.ToTable("Messages");
+        builder.HasKey(m => m.Id);
+        builder.Property(m => m.Id).ValueGeneratedNever();
+        builder.Property(m => m.SenderSubject).HasMaxLength(200).IsRequired();
+        builder.Property(m => m.SenderName).HasMaxLength(200).IsRequired();
+        builder.Property(m => m.Body).HasMaxLength(Message.MaxBodyLength).IsRequired();
+        builder.Property(m => m.IdempotencyKey).HasMaxLength(100).IsRequired();
+        builder.HasIndex(m => new { m.SenderSubject, m.IdempotencyKey }).IsUnique();
+        builder.HasIndex(m => new { m.ConversationId, m.CreatedAt });
+        builder.HasOne<Conversation>().WithMany().HasForeignKey(m => m.ConversationId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class MessageAttachmentConfiguration : IEntityTypeConfiguration<MessageAttachment>
+{
+    public void Configure(EntityTypeBuilder<MessageAttachment> builder)
+    {
+        builder.ToTable("MessageAttachments");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.UploaderSubject).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.ContentType).HasMaxLength(50).IsRequired();
+        builder.HasOne<Conversation>().WithMany().HasForeignKey(a => a.ConversationId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ConversationReportConfiguration : IEntityTypeConfiguration<ConversationReport>
+{
+    public void Configure(EntityTypeBuilder<ConversationReport> builder)
+    {
+        builder.ToTable("ConversationReports");
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.ReporterSubject).HasMaxLength(200).IsRequired();
+        builder.Property(r => r.Reason).HasMaxLength(1000).IsRequired();
+        builder.HasOne<Conversation>().WithMany().HasForeignKey(r => r.ConversationId).OnDelete(DeleteBehavior.Cascade);
+    }
+}

@@ -27,6 +27,14 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+
+    public DbSet<Message> Messages => Set<Message>();
+
+    public DbSet<MessageAttachment> MessageAttachments => Set<MessageAttachment>();
+
+    public DbSet<ConversationReport> ConversationReports => Set<ConversationReport>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 

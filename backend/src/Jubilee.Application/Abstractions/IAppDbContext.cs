@@ -25,5 +25,13 @@ public interface IAppDbContext
 
     DbSet<OutboxMessage> OutboxMessages { get; }
 
+    DbSet<Conversation> Conversations { get; }
+
+    DbSet<Message> Messages { get; }
+
+    DbSet<MessageAttachment> MessageAttachments { get; }
+
+    DbSet<ConversationReport> ConversationReports { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
