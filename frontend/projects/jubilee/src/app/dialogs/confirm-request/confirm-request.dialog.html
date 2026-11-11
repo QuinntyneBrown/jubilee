@@ -16,20 +16,20 @@
         <div>Nothing was confirmed.</div>
       </div>
     }
-    <dl jb-card variant="well" class="dl">
-      <dt>Customer</dt>
-      <dd>{{ request.customerName }}</dd>
-      <dt>{{ request.kindLabel }}</dt>
-      <dd>{{ request.title }}</dd>
-      @if (request.when) {
-        <dt>{{ whenLabel }}</dt>
-        <dd>{{ request.when }}</dd>
-      }
-      @if (request.total) {
-        <dt>Total</dt>
-        <dd class="price">{{ request.total }}</dd>
-      }
-    </dl>
+    <div jb-card variant="well">
+      <dl jb-description-list>
+        <div jb-description-item term="Customer" [value]="request.customerName"></div>
+        <div jb-description-item [term]="request.kindLabel" [value]="request.title"></div>
+        @if (request.when) {
+          <div jb-description-item [term]="whenLabel" [value]="request.when"></div>
+        }
+        @if (request.total) {
+          <div jb-description-item term="Total">
+            <span class="price">{{ request.total }}</span>
+          </div>
+        }
+      </dl>
+    </div>
     <p class="text-muted">
       {{ firstName }} is told you’ve confirmed and that you’ll message them about payment and
       pickup.

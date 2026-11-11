@@ -122,14 +122,19 @@
               ></textarea>
             </div>
             @if (est) {
-              <dl jb-card variant="well" class="dl">
-                <dt>Item</dt>
-                <dd class="price">{{ est.item }}</dd>
-                <dt>Shipping</dt>
-                <dd class="price">{{ est.shipping }}</dd>
-                <dt>Estimated total</dt>
-                <dd class="price">{{ est.total }}</dd>
-              </dl>
+              <div jb-card variant="well">
+                <dl jb-description-list>
+                  <div jb-description-item term="Item">
+                    <span class="price">{{ est.item }}</span>
+                  </div>
+                  <div jb-description-item term="Shipping">
+                    <span class="price">{{ est.shipping }}</span>
+                  </div>
+                  <div jb-description-item term="Estimated total">
+                    <span class="price">{{ est.total }}</span>
+                  </div>
+                </dl>
+              </div>
             }
           </form>
           <div jb-dialog-footer>

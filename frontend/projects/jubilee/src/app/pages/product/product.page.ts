@@ -26,6 +26,8 @@ import {
   Section,
   Breadcrumb,
   BreadcrumbItem,
+  DescriptionList,
+  DescriptionItem,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { RequestItemData, RequestItemDialog } from '../../dialogs/request-item/request-item.dialog';
@@ -61,6 +63,8 @@ import { ProductRequestForm, ProductSelection } from './product-request-form';
     DetailHeadKicker,
     Section,
     Breadcrumb,
+    DescriptionList,
+    DescriptionItem,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
