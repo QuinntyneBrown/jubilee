@@ -1,0 +1,72 @@
+// Block: badge. The host is the badge.
+//
+// Knob: --jb-badge-margin-left, set by a block that puts a badge after its text (a tab).
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+  min-height: var(--badge-height);
+  border-radius: var(--radius-full);
+  font: var(--text-overline);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-muted);
+  white-space: nowrap;
+  margin-left: var(--jb-badge-margin-left, 0);
+}
+
+// The dot before the text.
+:host::before {
+  content: '';
+  width: var(--indicator-size);
+  height: var(--indicator-size);
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+:host(.badge--info) {
+  background: var(--color-info-bg);
+  color: var(--color-info-fg);
+}
+
+:host(.badge--success) {
+  background: var(--color-success-bg);
+  color: var(--color-success-fg);
+}
+
+:host(.badge--warning) {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-fg);
+}
+
+:host(.badge--danger) {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-fg);
+}
+
+:host(.badge--solid) {
+  background: var(--color-accent);
+  color: var(--color-fg-on-accent);
+}
+
+:host(.badge--count) {
+  min-width: var(--badge-height);
+  justify-content: center;
+  padding-inline: var(--space-1);
+  background: var(--color-accent);
+  color: var(--color-fg-on-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+:host(.badge--count)::before {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  :host {
+    forced-color-adjust: none;
+    border: 1px solid CanvasText;
+  }
+}

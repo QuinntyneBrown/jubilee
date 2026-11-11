@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { RouterLink } from '@angular/router';
 import { Icon } from '../icon/icon';
 import { ChromeMember, ChromeSection } from '../navigation';
-import { UnreadBadge } from '../unread-badge/unread-badge';
+import { Badge } from '../badge/badge';
 
 /**
  * The phone tab bar: the primary navigation under 768 px (L2-112, L2-164). The kit fixes it to
@@ -10,7 +10,7 @@ import { UnreadBadge } from '../unread-badge/unread-badge';
  */
 @Component({
   selector: 'nav[jb-tab-bar]',
-  imports: [RouterLink, Icon, UnreadBadge],
+  imports: [RouterLink, Icon, Badge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'tabbar', 'aria-label': 'Primary, phone' },
   templateUrl: './tab-bar.html',

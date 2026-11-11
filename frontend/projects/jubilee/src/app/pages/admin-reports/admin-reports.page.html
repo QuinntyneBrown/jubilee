@@ -84,12 +84,17 @@
                 <td>{{ received(item) }}</td>
                 <td>
                   @if (item.overdue) {
-                    <span class="badge badge--warning">Overdue</span>
+                    <span jb-badge tone="warning">Overdue</span>
                   }
                   <span
-                    class="badge"
-                    [class.badge--info]="item.status === 'in-review'"
-                    [class.badge--success]="item.status === 'resolved'"
+                    jb-badge
+                    [tone]="
+                      item.status === 'in-review'
+                        ? 'info'
+                        : item.status === 'resolved'
+                          ? 'success'
+                          : null
+                    "
                     >{{ statusLabel(item) }}</span
                   >
                 </td>

@@ -49,6 +49,7 @@ it changes how the product looks, which a component move must not do.
 | Choice cards ("What do you offer?", `list-your-business-1280.png`) | 16 px radius, 2 px ink border when chosen, 40 px icon disc, Inter, other copy | `--radius-lg`, hairline border doubled by a shadow, avatar-size disc, system text face |
 | Category chips on the hero (`home-1280.png`) | about 36 px tall, Inter at a medium weight | 44 px tall (`--control-height-md`), semibold label, system text face |
 | Avatar in the top bar (`home-1280.png`) | 36 px across | `--avatar-size-sm`, 32 px |
+| Unread count in the top bar (`home-1280.png`) | 20 px circle, numeral in Inter | badge height, label face, 1 px wider |
 
 ## Refreshing
 

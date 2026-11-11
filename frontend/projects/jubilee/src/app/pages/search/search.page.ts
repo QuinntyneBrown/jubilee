@@ -10,6 +10,7 @@ import {
   Chip,
   ChipRow,
   Skeleton,
+  Badge,
 } from 'components';
 import { SearchStore } from '../../services/search.store';
 
@@ -35,7 +36,18 @@ function plural(count: number, one: string, many: string): string {
  */
 @Component({
   selector: 'jb-search-page',
-  imports: [RouterLink, EmptyState, Icon, MatchExplanation, Button, Input, Chip, ChipRow, Skeleton],
+  imports: [
+    RouterLink,
+    EmptyState,
+    Icon,
+    MatchExplanation,
+    Button,
+    Input,
+    Chip,
+    ChipRow,
+    Skeleton,
+    Badge,
+  ],
   providers: [SearchStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

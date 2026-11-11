@@ -162,7 +162,7 @@
             (click)="store.choose(tab.kind)"
             (keydown)="moveTab($event, i)"
           >
-            {{ tab.label }} <span class="badge">{{ count(tab.kind) }}</span>
+            {{ tab.label }} <span jb-badge>{{ count(tab.kind) }}</span>
           </button>
         }
       </div>

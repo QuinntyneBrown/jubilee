@@ -4,6 +4,6 @@
   <p class="request-card__meta">{{ text }}</p>
 }
 <div class="request-card__foot">
-  <span class="badge" [class]="tone()">{{ statusLabel() }}</span>
+  <span jb-badge [tone]="tone()">{{ statusLabel() }}</span>
   <a [routerLink]="link()">View request</a>
 </div>

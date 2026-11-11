@@ -42,9 +42,7 @@
     [attr.aria-current]="current() === 'requests' ? 'page' : null"
     >Requests
     @if (openRequests() > 0) {
-      <span class="badge badge--count" [attr.aria-label]="openRequests() + ' open'">{{
-        openRequests()
-      }}</span>
+      <span jb-badge [count]="openRequests()" [label]="openRequests() + ' open'"></span>
     }
   </a>
 </nav>

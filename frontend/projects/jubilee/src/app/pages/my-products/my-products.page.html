@@ -84,9 +84,9 @@
                     <td class="num">{{ price(product) }}</td>
                     <td>
                       @if (product.soldOut) {
-                        <span class="badge badge--warning">Sold out</span>
+                        <span jb-badge tone="warning">Sold out</span>
                       } @else {
-                        <span class="badge badge--success">Listed</span>
+                        <span jb-badge tone="success">Listed</span>
                       }
                     </td>
                     <td class="num">{{ product.requests }}</td>

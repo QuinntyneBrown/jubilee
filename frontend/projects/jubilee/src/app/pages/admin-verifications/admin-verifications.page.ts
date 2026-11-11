@@ -8,14 +8,14 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ADMIN_API, QueueRow, QueueStage, ReferenceState, VerificationQueue } from 'api';
-import { EmptyState, Icon, Button, RowListSkeleton } from 'components';
+import { EmptyState, Icon, Button, RowListSkeleton, Badge, BadgeTone } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { threadTime } from '../../services/message-time';
 import { TeamNav } from '../admin-team-nav/team-nav';
 
 /** How the church reference is named and coloured in the queue; the word always says it too. */
-const REFERENCE: Record<ReferenceState, { label: string; tone: string }> = {
+const REFERENCE: Record<ReferenceState, { label: string; tone: BadgeTone }> = {
   confirmed: { label: 'Confirmed', tone: 'success' },
   waiting: { label: 'Waiting', tone: 'warning' },
   'cant-vouch': { label: 'Can’t vouch', tone: 'danger' },
@@ -27,7 +27,7 @@ const REFERENCE: Record<ReferenceState, { label: string; tone: string }> = {
 /** The verification queue at /admin/verifications (L2-099): submitted listings, oldest first. */
 @Component({
   selector: 'jb-admin-verifications-page',
-  imports: [RouterLink, EmptyState, Icon, TeamNav, Button, RowListSkeleton],
+  imports: [RouterLink, EmptyState, Icon, TeamNav, Button, RowListSkeleton, Badge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-verifications.page.html',
 })
@@ -69,7 +69,7 @@ export class AdminVerificationsPage implements OnInit {
     });
   }
 
-  protected reference(row: QueueRow): { label: string; tone: string } {
+  protected reference(row: QueueRow): { label: string; tone: BadgeTone } {
     return REFERENCE[row.reference];
   }
 

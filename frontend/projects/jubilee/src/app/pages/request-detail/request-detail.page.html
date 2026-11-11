@@ -42,11 +42,7 @@
         <h1>{{ r.title }}</h1>
         <p class="subtitle">
           {{ r.kindLabel }} · {{ r.business }} ·
-          <span
-            class="badge"
-            [class]="tone[r.status] ? 'badge badge--' + tone[r.status] : 'badge'"
-            >{{ r.statusLabel }}</span
-          >
+          <span jb-badge [tone]="tone[r.status]">{{ r.statusLabel }}</span>
         </p>
       </div>
     </div>

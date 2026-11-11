@@ -42,13 +42,11 @@
         <h2 id="em" class="card__title">E-mail me about</h2>
         @switch (status().kind) {
           @case ('saving') {
-            <span class="inline-status" role="status"
-              ><span class="dot dot--pulse"></span>Saving…</span
-            >
+            <span class="inline-status" role="status"><span jb-dot pulse></span>Saving…</span>
           }
           @case ('saved') {
             <span class="inline-status inline-status--success" role="status"
-              ><span class="dot"></span>Saved at {{ $any(status()).at }}</span
+              ><span jb-dot></span>Saved at {{ $any(status()).at }}</span
             >
           }
           @default {
