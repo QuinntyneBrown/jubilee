@@ -15,6 +15,7 @@ import { NOTIFICATIONS, stubNotifications } from './notifications';
 import { stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubReference } from './reference';
+import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
 import type { StubName } from './routes';
 
@@ -272,6 +273,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMyBusiness(page, { overview: 'fails' });
     case 'business-paused':
       return stubMyBusiness(page, { paused: true });
+    case 'listing-draft':
+      return stubListingDrafts(page);
     case 'order':
       return stubOrder(page);
     case 'editor':

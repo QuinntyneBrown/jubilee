@@ -63,17 +63,13 @@
               <span class="row__title" style="display: block">{{ row.title }}</span>
               <span class="row__meta">{{ row.meta }}</span>
             </label>
-            <span class="switch">
-              <input
-                type="checkbox"
-                role="switch"
-                [id]="row.id"
-                [checked]="on(preferences, row)"
-                [disabled]="waiting().has(row.setting)"
-                [attr.aria-busy]="waiting().has(row.setting) ? 'true' : null"
-                (change)="toggle(row, $any($event.target).checked)"
-              />
-            </span>
+            <jb-switch
+              [controlId]="row.id"
+              [checked]="on(preferences, row)"
+              [disabled]="waiting().has(row.setting)"
+              [busy]="waiting().has(row.setting)"
+              (checkedChange)="toggle(row, $event)"
+            />
           </li>
         }
       </ul>

@@ -34,6 +34,8 @@ import {
   Input,
   Select,
   Checkbox,
+  ChoiceCard,
+  ChoiceCards,
 } from 'components';
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
@@ -122,6 +124,8 @@ function summaryFor(field: FieldName, code: string): string {
     Input,
     Select,
     Checkbox,
+    ChoiceCard,
+    ChoiceCards,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',

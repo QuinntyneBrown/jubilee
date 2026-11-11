@@ -1,0 +1,10 @@
+<input
+  type="checkbox"
+  role="switch"
+  [attr.id]="controlId()"
+  [checked]="checked()"
+  [disabled]="disabled()"
+  [attr.aria-busy]="busy() ? 'true' : null"
+  (change)="toggle($event)"
+/>
+<ng-content />
