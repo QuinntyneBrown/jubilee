@@ -29,8 +29,6 @@ parity('page-header', {
     },
     {
       name: 'detail-head',
-      // At 360 px the head is taller than the room above the tab bar, which then covers its end.
-      widths: [1280],
       route: 'business',
       screen: (page) => new BusinessPage(page),
       region: (screen: BusinessPage) => screen.detailHead,

@@ -1,12 +1,10 @@
 @let requests = state();
 @switch (requests.status) {
   @case ('error') {
-    <nav aria-label="Breadcrumb">
-      <ol class="breadcrumb">
-        <li><a routerLink="/requests">Your requests</a></li>
-        <li aria-current="page">Request</li>
-      </ol>
-    </nav>
+    <nav
+      jb-breadcrumb
+      [items]="[{ label: 'Your requests', link: '/requests' }, { label: 'Request' }]"
+    ></nav>
     <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load this request">
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ requests.reference }}</code
@@ -31,12 +29,10 @@
   }
   @case ('loaded') {
     @let r = requests.value;
-    <nav aria-label="Breadcrumb">
-      <ol class="breadcrumb">
-        <li><a routerLink="/requests">Your requests</a></li>
-        <li aria-current="page">{{ r.title }}</li>
-      </ol>
-    </nav>
+    <nav
+      jb-breadcrumb
+      [items]="[{ label: 'Your requests', link: '/requests' }, { label: r.title }]"
+    ></nav>
     <jb-page-header [heading]="r.title">
       <ng-container ngProjectAs="[slot=subtitle]">
         {{ r.kindLabel }} · {{ r.business }} ·

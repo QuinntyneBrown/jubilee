@@ -1,10 +1,5 @@
 @let current = state();
-<nav aria-label="Breadcrumb">
-  <ol class="breadcrumb">
-    <li><a routerLink="/">Browse</a></li>
-    <li aria-current="page">Help</li>
-  </ol>
-</nav>
+<nav jb-breadcrumb [items]="[{ label: 'Browse', link: '/' }, { label: 'Help' }]"></nav>
 @switch (current.status) {
   @case ('loaded') {
     <jb-page-header [heading]="current.value.title" [subtitle]="current.value.lead">

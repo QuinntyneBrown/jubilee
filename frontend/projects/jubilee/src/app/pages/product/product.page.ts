@@ -24,6 +24,8 @@ import {
   DetailHead,
   DetailHeadKicker,
   Section,
+  Breadcrumb,
+  BreadcrumbItem,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { RequestItemData, RequestItemDialog } from '../../dialogs/request-item/request-item.dialog';
@@ -58,6 +60,7 @@ import { ProductRequestForm, ProductSelection } from './product-request-form';
     DetailHead,
     DetailHeadKicker,
     Section,
+    Breadcrumb,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -107,6 +110,15 @@ export class ProductPage {
     return state.status === 'loaded'
       ? state.value.name
       : this.hints.productNameOf(this.slug(), this.productSlug());
+  });
+  /** The trail: Browse, the shop once its name is known, then the product. */
+  protected readonly crumbs = computed<BreadcrumbItem[]>(() => {
+    const shop = this.shopName();
+    return [
+      { label: 'Browse', link: '/' },
+      ...(shop ? [{ label: shop, link: ['/b', this.slug()] }] : []),
+      { label: this.productName() ?? 'Product' },
+    ];
   });
 
   constructor() {

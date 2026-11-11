@@ -1,5 +1,5 @@
 @let current = state();
-<a class="back-link" routerLink="/"><svg jb-icon name="arrow-left"></svg>Back to browse</a>
+<a jb-back-link routerLink="/">Back to browse</a>
 @switch (current.status) {
   @case ('loading') {
     <h1 class="visually-hidden">Loading this {{ thing() }}</h1>

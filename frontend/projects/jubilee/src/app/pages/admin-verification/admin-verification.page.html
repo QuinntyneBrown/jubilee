@@ -26,12 +26,10 @@
   }
   @case ('loaded') {
     @let r = current.value;
-    <nav aria-label="Breadcrumb">
-      <ol class="breadcrumb">
-        <li><a routerLink="/admin/verifications">Verification queue</a></li>
-        <li aria-current="page">{{ r.name }}</li>
-      </ol>
-    </nav>
+    <nav
+      jb-breadcrumb
+      [items]="[{ label: 'Verification queue', link: '/admin/verifications' }, { label: r.name }]"
+    ></nav>
     <jb-page-header [heading]="r.name">
       <ng-container ngProjectAs="[slot=subtitle]">
         {{ r.categoryName }} · submitted {{ when(r.submittedAt) }} ·

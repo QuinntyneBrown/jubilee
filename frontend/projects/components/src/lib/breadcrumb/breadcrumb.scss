@@ -1,0 +1,37 @@
+// Block: breadcrumb. The host is the navigation; the list is the block.
+:host {
+  display: block;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.breadcrumb li + li::before {
+  content: '/';
+  margin-right: var(--space-2);
+  color: var(--color-fg-subtle);
+}
+
+.breadcrumb a {
+  color: var(--color-fg-muted);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.breadcrumb a[data-state='hover'] {
+  color: var(--color-fg-default);
+  text-decoration: underline;
+}
+
+.breadcrumb [aria-current='page'] {
+  color: var(--color-fg-default);
+  font-weight: var(--font-weight-medium);
+}

@@ -1,12 +1,10 @@
 @let current = state();
 @switch (current.status) {
   @case ('loaded') {
-    <nav aria-label="Breadcrumb">
-      <ol class="breadcrumb">
-        <li><a routerLink="/">Browse</a></li>
-        <li aria-current="page">{{ current.value.title }}</li>
-      </ol>
-    </nav>
+    <nav
+      jb-breadcrumb
+      [items]="[{ label: 'Browse', link: '/' }, { label: current.value.title }]"
+    ></nav>
     <article class="prose" style="margin-top: var(--space-4)">
       <h1>{{ current.value.title }}</h1>
       @if (current.value.lead) {
