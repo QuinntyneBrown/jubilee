@@ -27,6 +27,8 @@ say so and propose the correction; do not work around it silently.
 - `e2e/` — Playwright suite
 - `docs/assets/` — the logo (`jubilee-icon.svg`) and other images the docs share
 - `docs/mocks/` — static design reference (the source of truth for the UI)
+- `docs/design-reference/magic-patterns/` — images exported from the Magic Patterns design, the
+  baseline of the Magic Patterns parity specs
 - `docs/design-system/` — tokens, foundations, components and patterns extracted from the mocks
 - `docs/specs/` — requirements (`L1.md` high level, `L2.md` detailed with acceptance criteria)
 - `docs/detailed-designs/` — per-feature designs derived from the requirements
@@ -82,7 +84,7 @@ jubilee/
 │   ├── playwright.config.ts
 │   ├── fixtures/                      `jb-test.ts`, `routes.ts`, data fixtures
 │   ├── pages/                         one page object per screen or dialog
-│   └── tests/                         specs, with `visual/` for mock parity
+│   └── tests/                         specs, with `parity/` per component and `visual/` for the sweeps
 ├── eng/
 ├── docs/
 └── .github/workflows/                 `ci.yml`
@@ -206,7 +208,16 @@ design system).
   regions, and add a sweep where a requirement calls for one. **Never run them**: no agent or CI
   job runs `npm run sweeps`, `npm run baseline` or anything that sets `JB_SWEEPS=1` or
   `JB_BASELINE=1`; only the repository owner runs them, by hand. Done means the behaviour specs
-  pass, not the sweeps.
+  pass, not the sweeps. The per-component parity specs below are the one exception.
+- **Mandatory (ADR 0035): every `components` library component has a visual parity spec that
+  passes.** `e2e/tests/parity/<component>.spec.ts` compares the component's region in the app
+  with the same region in `docs/mocks` (360 px and 1280 px, light and dark, baseline rendered
+  from the mock, 1 % threshold) and with the Magic Patterns reference images committed under
+  `docs/design-reference/magic-patterns/` (3 % threshold). Creating or changing a component is
+  not done until `npm run parity` in `e2e/` passes; the implementer and CI run it. This is the
+  one exception to the rule above: `npm run parity` covers `tests/parity/` only and is not a
+  sweep. Fix a difference at its source (the component, or the design system and mock first);
+  never raise a threshold or mask a region to pass.
 - Visual regression compares the app to `docs/mocks` region by region. Update baselines only for
   intentional design changes, after changing the mock first.
 - Run frontend tests in Chromium only. Do not configure or run Firefox, WebKit, or any other

@@ -3,7 +3,9 @@
 ## Status
 
 Accepted, 11 November 2026. Amends ADR 0002 (the single global component stylesheet), ADR 0008
-(a component now always has a stylesheet) and ADR 0013 (the marketing site's stylesheet).
+(a component now always has a stylesheet), ADR 0013 (the marketing site's stylesheet), and ADR
+0005 and ADR 0010 (a component parity spec runs with every component change; the sweeps stay
+owner-run).
 
 ## Context
 
@@ -47,6 +49,29 @@ its styles, the styles are encapsulated, and only design tokens and layout utili
   `marketing.css`) in the same change, so a rule exists once. A change to the look is still made
   in the design system and its mock first.
 
+- **Visual parity is proved per component, by a Playwright spec that passes.** A component is
+  not done until its parity spec passes. The spec lives in `e2e/tests/parity/`, one file per
+  component, and makes two comparisons of the component's region, found through a page object:
+  - *Mock parity.* The component in the app against the same component in `docs/mocks`, on at
+    least one screen state that shows each of its variants, at 360 px and 1280 px, in the light
+    and the dark theme. The baseline is rendered from the mock on the same machine, as ADR 0005
+    decides, and a region fails above 1 % of differing pixels.
+  - *Magic Patterns parity.* The component in the app against the Magic Patterns design
+    reference. The reference is a set of images exported from Magic Patterns by the repository
+    owner and committed under `docs/design-reference/magic-patterns/`, each named for its frame
+    and viewport. Because those images are rendered on another machine, a region fails above
+    3 % of differing pixels. A component that the reference does not show (a state the mocks
+    added) says so in its spec, names the nearest frame, and makes the mock comparison only.
+- **The parity specs are run; the sweeps are still not.** `npm run parity` in `e2e/` renders the
+  mock baselines for `tests/parity/` and runs those specs against the app. Whoever implements a
+  component runs it, and CI runs it. This is the one exception to ADR 0010: the full sweeps
+  (`npm run sweeps`, `npm run baseline`, `JB_SWEEPS=1`, `JB_BASELINE=1` over `tests/visual/`,
+  `responsive.spec.ts` and `accessibility.spec.ts`) remain owner-run only.
+- **A difference is fixed at its source.** If the app differs from the mock, the component is
+  wrong. If the mock differs from the Magic Patterns reference, the design system and the mock
+  are corrected first, then the component. A threshold is never raised and a region is never
+  masked to make a spec pass.
+
 ## Consequences
 
 - A kit class typed in an application template has no effect once its component has landed, so
@@ -57,6 +82,11 @@ its styles, the styles are encapsulated, and only design tokens and layout utili
   visual sweep. The first component to land changes `design:sync` and `design:check` accordingly.
 - A component whose root is a native element with an attribute selector (`button[jb-button]`)
   styles that root through `:host`, with the block class on the host.
-- Each component issue is larger by its stylesheet. The 46 issues opened from the audit (#39 to
+- The parity run adds a baseline render of the mocks it touches to each component change and to
+  CI; it grows with the number of components, not with the number of screen states, so it stays
+  far smaller than the sweeps.
+- Magic Patterns parity cannot be checked until the reference images are in the repository.
+  Exporting them, and adding `npm run parity`, is the first piece of work.
+- Each component issue is larger by its stylesheet and its parity spec. The 46 issues opened from the audit (#39 to
   #85) require it.
 - ADR 0008's note that no stylesheet exists is superseded: every component has one.

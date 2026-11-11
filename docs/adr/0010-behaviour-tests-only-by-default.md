@@ -4,6 +4,8 @@
 
 Accepted, 10 November 2026. Amends ADR 0005 (visual baselines from the mocks) and the e2e part of
 ADR 0009: the sweeps are kept and maintained, but no default command and no CI job runs them.
+Amended by ADR 0035: the per-component parity specs in `e2e/tests/parity/` are run by whoever
+implements a component and by CI (`npm run parity`); the sweeps below are unchanged.
 
 ## Context
 
