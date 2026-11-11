@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Skeleton } from 'components';
 
 /**
  * Placeholder for a grid of business cards while it loads:
@@ -7,6 +8,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
  */
 @Component({
   selector: 'ul[jb-card-grid-skeleton]',
+  imports: [Skeleton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'card-grid', 'aria-hidden': 'true' },
   templateUrl: './card-grid-skeleton.html',

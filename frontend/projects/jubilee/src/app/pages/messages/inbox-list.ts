@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { EmptyState, Icon, Button, Input } from 'components';
+import { EmptyState, Icon, Button, Input, Skeleton } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { MessagesStore } from '../../services/messages.store';
 import { initialsOf, threadTime } from '../../services/message-time';
@@ -14,7 +14,7 @@ const SEARCH_DELAY_MS = 250;
  */
 @Component({
   selector: 'jb-inbox-list',
-  imports: [RouterLink, EmptyState, Icon, Button, Input],
+  imports: [RouterLink, EmptyState, Icon, Button, Input, Skeleton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'inbox__list' },
   templateUrl: './inbox-list.html',

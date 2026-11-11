@@ -18,7 +18,16 @@ import {
   RequestDecision,
   RequestKind,
 } from 'api';
-import { BusinessCard, EmptyState, Icon, Button, CloseButton, Alert } from 'components';
+import {
+  BusinessCard,
+  EmptyState,
+  Icon,
+  Button,
+  CloseButton,
+  Alert,
+  RowListSkeleton,
+  Skeleton,
+} from 'components';
 import {
   ConfirmRequestData,
   ConfirmRequestDialog,
@@ -53,6 +62,8 @@ const UNDO_MS = 8000;
     Button,
     CloseButton,
     Alert,
+    RowListSkeleton,
+    Skeleton,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
