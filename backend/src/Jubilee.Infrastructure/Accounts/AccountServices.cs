@@ -134,19 +134,6 @@ public sealed class TurnstileBotChallengeVerifier(HttpClient http, IConfiguratio
     private sealed record TurnstileAnswer([property: JsonPropertyName("success")] bool Success);
 }
 
-/// <summary>
-/// Stand-in for the transactional e-mail provider (not chosen yet): it logs who an e-mail went to
-/// and its subject, never the body, which holds a link token.
-/// </summary>
-public sealed class LoggingEmailSender(ILogger<LoggingEmailSender> logger) : IEmailSender
-{
-    public Task SendAsync(string to, string subject, string textBody, CancellationToken cancellationToken, string? unsubscribeUrl = null)
-    {
-        logger.LogInformation("E-mail \"{Subject}\" sent to {To}.", subject, to);
-        return Task.CompletedTask;
-    }
-}
-
 /// <summary>Pending Google sign-ins in the cache, keyed by <c>state</c>, for ten minutes.</summary>
 public sealed class CacheOidcTransactionStore(IDistributedCache cache) : IOidcTransactionStore
 {

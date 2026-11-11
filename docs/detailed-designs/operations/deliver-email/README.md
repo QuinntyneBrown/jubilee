@@ -16,57 +16,65 @@ bounce or a spam complaint has been received. *security e-mail* — message that
 account, such as an e-mail confirmation or a password reset.
 
 No request handler calls the provider. A handler writes an outbox message in the same
-transaction as its state change, and `Jubilee Worker` sends the e-mail. The provider vendor
-and the sending domain are `<TO SUPPLY>`.
+transaction as its state change, and `Jubilee Worker` sends the e-mail. The provider is Azure
+Communication Services Email and the sending domain is `notify.jubilee.to` (ADR 0038).
 
 ## Description
 
-The slice runs from the outbox to the provider and from the provider's webhook back to a
-banner in `Jubilee Web`.
+The slice runs from the outbox to the provider and from the provider's delivery reports back to
+a banner in `Jubilee Web`. ADR 0038 chose the smallest shape that meets `L2-179`; where an
+earlier draft of this design named more (a delivery entity, a suppression list, one file per
+template), the list below says what is built instead.
 
-- **`EmailDelivery`** — entity for one e-mail to one address. It stores the template key, the
-  `EmailCategory`, the `EmailDeliveryStatus`, the attempt count, `FirstAttemptAt` and
-  `NextAttemptAt`. `OutboxDispatcherJob` creates it from an `EmailRequested` outbox message.
-- **`SendEmailJob`** — hosted job in `Jubilee Worker` that sends each due delivery. On a
-  transient failure (timeout, `5xx` or `429` from the provider) it calls `ScheduleRetry`.
-  On a permanent failure it sets the status `Failed` without a retry.
-- **`EmailDelivery.ScheduleRetry`** — retry rule. It sets `NextAttemptAt` by an exponential
-  back-off and sets the status `Failed` when the next attempt would fall more than 24 hours
-  after `FirstAttemptAt`. The back-off intervals are `<TO SUPPLY>`. This window replaces the
-  5-attempt limit of other jobs (`L2-182`) for e-mail sends.
-- **`EmailTemplateRenderer`** — renders each template to an `EmailMessage` with an HTML part
-  and a plain-text part. Each HTML template declares `color-scheme: light dark` and uses
-  colours that hold in both. No template contains a tracking pixel, and open and click
-  tracking are turned off at the provider.
-- **Template tests** — build check that renders each template with sample data and fails
-  when the plain-text part is empty, when an image points outside the Jubilee media domain,
-  or when the dark-scheme styles are missing.
-- **`ProviderEmailSender`** — `IEmailSender` adapter in `Jubilee.Infrastructure`. It calls
-  the provider's send API, forwards the correlation ID, and maps the response to a
-  `SendOutcome` of `Accepted`, `TransientFailure` or `PermanentFailure`.
-- **Sending domain records** — SPF, DKIM and DMARC records for the sending domain, defined in
-  the infrastructure definitions. The DMARC policy is `quarantine` or `reject`. A pipeline
-  check resolves the three records and fails when one is absent or the policy is `none`.
-- **`EmailWebhooksController`** — receives `POST /api/webhooks/email` from the provider.
-  `WebhookSignatureVerifier` checks the provider signature; an invalid signature returns
-  `401`. The endpoint has no session and is exempt from `CsrfMiddleware`.
-- **`RecordEmailEventCommandHandler`** — handles a hard bounce or a spam complaint. It adds a
-  `SuppressedAddress`, calls `Member.MarkEmailUndeliverable` when the address belongs to a
-  member, and writes an outbox event. The provider event identifier makes a repeated webhook
-  a no-op.
-- **`SuppressedAddress`** — record of an undeliverable address, keyed by a hash of the
-  normalized address so that it also covers recipients without an account, such as a church
-  reference.
-- **`DeliverabilityGuard`** — checked by `SendEmailJob` before each send. It refuses each
-  e-mail to an undeliverable address unless the category is `Security`; the delivery then
-  takes the status `Suppressed`.
-- **`EmailUndeliverableBanner`** — Angular banner fed by `SessionService`, which receives the
-  change over `EventsHub` and on the next session load. It shows the danger banner "We
-  couldn't deliver e-mail to {address}. Check the address for a typo." with the action
-  "Change e-mail". The banner is persistent; a confirmed new address removes the suppression
-  flag on the member and clears the banner.
-- **Delivery metrics** — `SendEmailJob` and the webhook handler count sends and bounces
-  through `JubileeMetrics`, which feeds the bounce-rate alert of `L2-176`.
+- **`OutboxMessage`** — one e-mail to one address, written by a handler as a subject and a
+  plain-text body, with the member, an optional category (set for an e-mail a member can turn
+  off, `L2-068`) and the attempt state. `EmailPolicy.Queue` writes the e-mails a member can turn
+  off and skips a member who turned the category off or whose address bounced.
+- **`OutboxDispatcher`** — run by `OutboxDispatcherJob` in `Jubilee Worker`. It takes the due
+  messages, renders each with `EmailLayout`, and hands it to `IEmailSender`. A send that throws
+  is retried: `OutboxMessage.MarkAttemptFailed` waits 2, 4, 8 … minutes, capped at 4 hours, and
+  gives up 24 hours after the e-mail was queued (`L2-179` criterion 3). A sent or abandoned
+  message drops its body, which holds a link token.
+- **`EmailLayout`** — renders the HTML part from the text when the e-mail is sent, so every
+  e-mail has both parts and they cannot drift. A paragraph of the text is a paragraph; a link on
+  a line of its own is a button, named by its path (`/verify-email/` is "Confirm your e-mail") or
+  by the sentence that leads to it ("Answer here: https://…"), with the link repeated as text;
+  a link inside a sentence stays a link; everything is HTML-encoded. The layout
+  (`EmailLayout.html`, embedded in `Jubilee.Application`) is a 600 px table, fluid below that,
+  inline-styled, with `color-scheme: light dark` and a `prefers-color-scheme: dark` block. It
+  adds the header with the wordmark "jubilee" as text, the preheader (the first paragraph after
+  the greeting) and the footer "Jubilee · Toronto’s Christian marketplace" with the unsubscribe
+  link of a notification e-mail. It holds no image, so nothing can track an open.
+- **`EmailMessage`** — what `IEmailSender` takes: recipient, subject, text body, HTML body and
+  the unsubscribe address of a notification e-mail.
+- **`AzureCommunicationEmailSender`** — the `IEmailSender` used when `Email:ConnectionString` is
+  set. It posts to `{endpoint}/emails:send` with an HMAC-SHA256 signed request, both parts,
+  `List-Unsubscribe` and `List-Unsubscribe-Post` (RFC 8058) and
+  `userEngagementTrackingDisabled`. Any answer other than `202` is thrown, so the outbox
+  retries; the sender has no retry of its own.
+- **`LoggingEmailSender`** — the `IEmailSender` used when no provider is configured (local
+  development, the e2e API, tests of the host). Nothing leaves the system; it logs the recipient
+  and the subject, never the body, and with `Email:PreviewFolder` set it writes the HTML and the
+  text of each e-mail there (`L2-179` criterion 7).
+- **Sending domain records** — SPF (TXT), two DKIM CNAME records and the verification TXT at
+  `notify.jubilee.to`, and DMARC with `p=quarantine` at `_dmarc.notify.jubilee.to`, published at
+  Namecheap. `eng/azure/README.md` lists them. The domain's own `@` SPF record belongs to
+  Namecheap's e-mail forwarding and is not touched; that is why the sender is a subdomain.
+- **`EmailEventsController`** — `POST /api/webhooks/email-events`, closed unless the caller
+  sends the shared secret of `Email:WebhookSecret` in `X-Webhook-Secret`. Event Grid posts the
+  Communication Service's `EmailDeliveryReportReceived` events there with that header; the
+  controller answers Event Grid's validation handshake, and a report with the status `Bounced`
+  or `Suppressed` sends `RecordEmailBounceCommand`.
+- **`RecordEmailBounceCommandHandler`** — marks the member whose address it is with
+  `Member.MarkEmailBounced`. `EmailPolicy.Queue` then sends that member no e-mail they could
+  turn off; security e-mails are still sent. An address without an account (a church reference)
+  is not recorded.
+- **Verify-e-mail banner** — `GET /api/session` carries `emailBounced`, and the banner shows
+  "We couldn't deliver e-mail to {address}. Check the address for a typo." with "Change e-mail"
+  (`L2-004` criterion 6). A confirmed new address clears it.
+
+Not built: a per-e-mail delivery record, a suppression list for addresses without an account,
+delivery metrics and the pipeline check that resolves the DNS records.
 
 ## Requirements
 

@@ -44,11 +44,13 @@ certificates for the three host names.
 
 | `Google__ClientId`, `Google__ClientSecret` | the OAuth client `Jubilee web` (see "Google sign-in" below); the secret exists nowhere else |
 
+| `Email__ConnectionString`, `Email__From`, `Email__WebhookSecret` | set by `configure-email.sh` (see "E-mail" below); without the first, no e-mail leaves |
+
 Not configured yet, so this feature is off: the bot challenge of the join form (Cloudflare
 Turnstile). It needs a Turnstile widget for `app.jubilee.to` and two settings: `BotChallenge__SiteKey`
 (public; the join form reads it from `GET /api/session` and shows the challenge) and
 `BotChallenge__SecretKey` (the API verifies the token with it). Set both or neither: with only the
-site key the form sends a token nobody checks, and with only the secret every join is refused. A real e-mail sender is not configured either (the API and the worker still use the logging sender, so no e-mail leaves).
+site key the form sends a token nobody checks, and with only the secret every join is refused.
 
 ## Google sign-in
 
@@ -95,7 +97,45 @@ Without the two settings Google sign-in is off: the join and sign-in pages show 
 | CNAME | `app` | `jubilee-to-app.azurewebsites.net.` |
 | TXT | `asuid`, `asuid.www`, `asuid.app` | the App Service domain verification ID |
 
-The `@` TXT record for e-mail forwarding was left as it was.
+| TXT | `notify` | `v=spf1 include:spf.protection.outlook.com -all` (SPF of the sending domain) |
+| TXT | `notify` | `ms-domain-verification=…`, the value Azure shows for the domain |
+| CNAME | `selector1-azurecomm-prod-net._domainkey.notify` | `selector1-azurecomm-prod-net._domainkey.azurecomm.net` (DKIM) |
+| CNAME | `selector2-azurecomm-prod-net._domainkey.notify` | `selector2-azurecomm-prod-net._domainkey.azurecomm.net` (DKIM) |
+| TXT | `_dmarc.notify` | `v=DMARC1; p=quarantine` |
+
+The `@` TXT record for e-mail forwarding was left as it was. It is the SPF record of `jubilee.to`
+and Namecheap locks it while forwarding is on, which is why e-mail is sent from the subdomain
+`notify.jubilee.to` (ADR 0038).
+
+## E-mail
+
+Jubilee sends through Azure Communication Services Email, from `no-reply@notify.jubilee.to`
+(ADR 0038). The resources are in `rg-jubilee-prod`:
+
+- `jubilee-email`: the Email Communication Service, with the customer-managed domain
+  `notify.jubilee.to` and the sender `no-reply`.
+- `jubilee-communication`: the Communication Service linked to that domain; its connection string
+  is `Email__ConnectionString`.
+- `jubilee-email-delivery`: the Event Grid subscription that posts delivery reports to
+  `https://app.jubilee.to/api/webhooks/email-events` with the header `X-Webhook-Secret`
+  (`Email__WebhookSecret`), so a bounce marks the address undeliverable (L2-179).
+
+To set it up, or to repeat it:
+
+1. Publish the five `notify` records of the DNS table above at Namecheap. The verification value
+   comes from `az communication email domain show --domain-name notify.jubilee.to
+   --email-service-name jubilee-email -g rg-jubilee-prod --query verificationRecords` (the script
+   below creates the domain on its first run and stops until the records are verified).
+2. In Azure Cloud Shell, from a clone of this repository: `bash eng/azure/configure-email.sh`. It
+   creates what is missing, verifies the records, creates the sender, links the domain, sets the
+   three settings without printing them, and subscribes the webhook. Run it again whenever it
+   stops for DNS; it changes nothing that is already in place.
+3. Check: join with a real address at `https://app.jubilee.to/join`; the confirmation e-mail
+   arrives within two minutes. `az webapp log tail` shows a failed send, which the outbox retries
+   for 24 hours.
+
+A new sending domain starts with a low sending limit; ask Azure support to raise it before a
+large mailing. Rotating the key is `az communication regenerate-key` followed by the script.
 
 ## Deploying
 
