@@ -9,15 +9,23 @@ import { defineConfig, devices } from '@playwright/test';
  * - JB_BASELINE=1: the static design reference in docs/mocks, served on :4300, used to render
  *   the visual baselines the app is then compared with.
  *
+ * - JB_PARITY (`npm run parity`, ADR 0035): the component parity specs of tests/parity/ and
+ *   nothing else. `mocks` renders their baselines from docs/mocks and from the Magic Patterns
+ *   reference images; `app` compares the app with them.
+ *
  * ADR 0010: only the behaviour specs run. The sweeps (visual parity, responsive fit, automated
  * accessibility) are kept and maintained but run only when the repository owner runs
  * `npm run sweeps` by hand, which sets JB_SWEEPS=1.
  */
+const parity = process.env['JB_PARITY'] as 'mocks' | 'app' | undefined;
+// The mocks are the target: the sweeps' baseline render, or the parity specs' one.
+const mocks = process.env['JB_BASELINE'] === '1' || parity === 'mocks';
 const baseline = process.env['JB_BASELINE'] === '1';
 const ci = !!process.env['CI'];
 const recording = process.env['JB_RECORD_API'] === '1';
 const sweeps = process.env['JB_SWEEPS'] === '1' || baseline;
 const sweepSpecs = ['visual/**/*.spec.ts', 'responsive.spec.ts', 'accessibility.spec.ts'];
+const paritySpecs = 'parity/**/*.spec.ts';
 
 const mocksServer = {
   command: 'npx http-server ../docs -p 4300 -c-1 --silent',
@@ -51,8 +59,9 @@ const appServers = [
 export default defineConfig({
   testDir: './tests',
   // Baseline runs only render the mocks; behaviour specs need the app.
-  testMatch: baseline ? 'visual/**/*.spec.ts' : '**/*.spec.ts',
-  testIgnore: sweeps ? [] : sweepSpecs,
+  testMatch: parity ? paritySpecs : baseline ? 'visual/**/*.spec.ts' : '**/*.spec.ts',
+  // The parity specs run under `npm run parity` only, the sweeps under `npm run sweeps` only.
+  testIgnore: parity ? [] : sweeps ? [paritySpecs] : [paritySpecs, ...sweepSpecs],
   fullyParallel: true,
   forbidOnly: ci,
   retries: ci ? 1 : 0,
@@ -64,13 +73,13 @@ export default defineConfig({
     toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: 'disabled', caret: 'hide' },
   },
   use: {
-    baseURL: baseline ? 'http://localhost:4300/mocks/' : 'http://localhost:4200',
+    baseURL: mocks ? 'http://localhost:4300/mocks/' : 'http://localhost:4200',
     locale: 'en-CA',
     timezoneId: 'America/Toronto',
     trace: 'off',
   },
   // Chromium only (AGENTS.md).
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: baseline ? [mocksServer] : recording ? [apiServer, ...appServers] : appServers,
+  webServer: mocks ? [mocksServer] : recording ? [apiServer, ...appServers] : appServers,
   globalTeardown: recording ? './fixtures/record-api-teardown.ts' : undefined,
 });

@@ -64,6 +64,10 @@ jobs:
       - name: Run the behaviour specs against the app
         run: npm test
         working-directory: e2e
+      # ADR 0036: the component parity specs, against the mocks and the Magic Patterns reference.
+      - name: Run the component parity specs
+        run: npm run parity
+        working-directory: e2e
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
