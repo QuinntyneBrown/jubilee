@@ -38,16 +38,73 @@ async function stubSignIn(
 }
 
 test.describe('sign in (L2-006)', () => {
-  test('AC3: the page offers Forgot password, Join free and Google', async ({ page, jb }) => {
+  test('AC3: the page welcomes the member back and offers Forgot password and a free account', async ({
+    page,
+    jb,
+  }) => {
     const signIn = new SignInPage(page);
     await jb.open('sign-in');
     await expect.poll(() => signIn.dataPage()).toBe('sign-in');
 
-    await expect(signIn.heading).toHaveText('Sign in to Jubilee');
+    await expect(signIn.heading).toHaveText('Welcome back');
+    await expect(signIn.lead).toHaveText('Log in to message businesses and manage your listing.');
     await expect(signIn.forgotPassword).toHaveAttribute('href', '/forgot-password');
+    await expect(signIn.main).toContainText('New to Jubilee?');
     await expect(signIn.joinFree).toHaveAttribute('href', /^\/join/);
-    await expect(signIn.google).toHaveAttribute('href', '/api/auth/google/start?returnUrl=%2F');
+  });
+
+  for (const width of [360, 1280]) {
+    test(`AC3: "Forgot password?" is on the line of the Password label at ${width} px`, async ({
+      page,
+      jb,
+    }) => {
+      const signIn = new SignInPage(page);
+      await page.setViewportSize({ width, height: 800 });
+      await jb.open('sign-in');
+
+      // Beside the label, above the control.
+      expect(await signIn.bottomEdge(signIn.forgotPassword)).toBeLessThanOrEqual(
+        await signIn.topEdge(signIn.password),
+      );
+      expect(await signIn.topEdge(signIn.forgotPassword)).toBeLessThan(
+        await signIn.bottomEdge(signIn.passwordLabel),
+      );
+      expect(await signIn.leftEdge(signIn.forgotPassword)).toBeGreaterThan(
+        await signIn.leftEdge(signIn.passwordLabel),
+      );
+    });
+  }
+
+  test('AC8: the form has Email, Password and "Keep me logged in", not ticked', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+
+    await expect(signIn.email).toHaveAttribute('placeholder', 'you@example.com');
+    await expect(signIn.email).toHaveAttribute('type', 'email');
+    await expect(signIn.password).toHaveAttribute('type', 'password');
     await expect(signIn.keepSignedIn).not.toBeChecked();
+    await expect(signIn.signIn).toHaveText('Log in');
+  });
+
+  test('L2-003 AC8: Google comes first, with its mark, and "or use email" divides it from the form', async ({
+    page,
+    jb,
+  }) => {
+    const signIn = new SignInPage(page);
+    await jb.open('sign-in');
+
+    await expect(signIn.google).toHaveAttribute('href', '/api/auth/google/start?returnUrl=%2F');
+    await expect(signIn.googleMark).toBeVisible();
+    await expect(signIn.divider).toHaveText('or use email');
+    expect(await signIn.bottomEdge(signIn.google)).toBeLessThanOrEqual(
+      await signIn.topEdge(signIn.divider),
+    );
+    expect(await signIn.bottomEdge(signIn.divider)).toBeLessThanOrEqual(
+      await signIn.topEdge(signIn.email),
+    );
   });
 
   test('AC1: the right e-mail and password sign in, say "Welcome back" and land on browse', async ({
@@ -234,7 +291,7 @@ test.describe('the Log in frame (L2-187)', () => {
 });
 
 test.describe('continue with Google: off, cancelled or refused (L2-003)', () => {
-  test('AC5: without Google sign-in the page shows no Google button and no "or"', async ({
+  test('AC5: without Google sign-in the page shows no Google button and no "or use email"', async ({
     page,
     jb,
   }) => {
@@ -328,7 +385,7 @@ test.describe('the sign-in prompt and return to origin (L2-012)', () => {
     const dialog = page.getByRole('dialog', { name: 'Join to be told when it’s back' });
     await expect(dialog).toBeAttached();
     await dialog.getByRole('link', { name: 'Sign in' }).click();
-    await expect(signIn.heading).toHaveText('Sign in to Jubilee');
+    await expect(signIn.heading).toHaveText('Welcome back');
 
     const alert = page.waitForRequest(
       (request) => request.url().includes('/stock-alert') && request.method() === 'PUT',

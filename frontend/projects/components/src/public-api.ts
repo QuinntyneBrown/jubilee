@@ -21,6 +21,7 @@ export * from './lib/field/field-error';
 export * from './lib/field/field-help';
 export * from './lib/form-summary/form-summary';
 export * from './lib/format/format';
+export * from './lib/google-mark/google-mark';
 export * from './lib/icon/icon';
 export * from './lib/icon/icons';
 export * from './lib/input-group/input-addon';

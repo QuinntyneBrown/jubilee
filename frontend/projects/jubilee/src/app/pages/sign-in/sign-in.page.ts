@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   AuthLayout,
+  AuthLink,
+  GoogleMark,
   EmptyState,
   Icon,
   Button,
@@ -36,6 +38,8 @@ type View = 'form' | 'submitting' | 'error';
     FormsModule,
     RouterLink,
     AuthLayout,
+    AuthLink,
+    GoogleMark,
     EmptyState,
     Icon,
     Button,

@@ -28,3 +28,19 @@
 .field__counter[data-state='invalid'] {
   color: var(--color-danger-fg);
 }
+
+// An action on the line of the label: the field holds it at its top right corner.
+:host:has(> .field__action:not(:empty)) {
+  position: relative;
+}
+
+.field__action {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font: var(--text-label);
+}
+
+.field__action:empty {
+  display: none;
+}

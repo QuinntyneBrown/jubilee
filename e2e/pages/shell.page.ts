@@ -16,6 +16,10 @@ export class ShellPage {
   readonly tabBar: Locator;
   /** The banner between the top bar and the page: verify e-mail, or the connection. */
   readonly chromeBanner: Locator;
+  /** The frame of a page on the bare shell: its brand link, its card and the line under it. */
+  readonly frameBrand: Locator;
+  readonly frameCard: Locator;
+  readonly frameFoot: Locator;
 
   constructor(protected readonly page: Page) {
     this.skipLink = page.locator('a.skip-link');
@@ -30,6 +34,9 @@ export class ShellPage {
     this.footer = page.locator('footer.footer');
     this.tabBar = page.getByRole('navigation', { name: 'Primary, phone' });
     this.chromeBanner = page.locator('.alert.banner');
+    this.frameBrand = this.main.locator('.auth-brand');
+    this.frameCard = this.main.locator('.auth-card');
+    this.frameFoot = this.main.locator('.auth-foot');
   }
 
   /** The chrome's parts, for the visual sweep; the tab bar shows under 768 px only. */
