@@ -81,8 +81,8 @@ introduces.
   business notifications, the search-index removal and the confirmation e-mail.
 
 The backup rotation that removes the data from backups within 35 days of
-deletion is `<TO SUPPLY>`. The copy of the confirmation toast shown on
-`/welcome` is `<TO SUPPLY>`.
+deletion is an operations task outside this repository (ADR 0034). The confirmation toast on
+`/welcome` reads "Your account was deleted" with "We sent you an e-mail to confirm. Your personal data is erased within 30 days."
 
 ## Requirements
 

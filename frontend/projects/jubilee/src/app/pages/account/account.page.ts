@@ -11,8 +11,8 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { Account, PROFILE_API, ProfileForm } from 'api';
+import { Router, RouterLink } from '@angular/router';
+import { ACCOUNT_DATA_API, Account, PROFILE_API, ProfileForm } from 'api';
 import { EmptyState, Icon } from 'components';
 import { Observable, map } from 'rxjs';
 import { ChangeEmailData, ChangeEmailDialog } from '../../dialogs/change-email/change-email.dialog';
@@ -20,6 +20,7 @@ import {
   ChangePasswordData,
   ChangePasswordDialog,
 } from '../../dialogs/change-password/change-password.dialog';
+import { DeleteAccountDialog } from '../../dialogs/delete-account/delete-account.dialog';
 import { LeaveUnsavedDialog } from '../../dialogs/leave-unsaved/leave-unsaved.dialog';
 import { HasUnsavedChanges } from '../../guards/unsaved-changes.guard';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -65,6 +66,8 @@ const MESSAGES: Record<string, string> = {
 })
 export class AccountPage implements OnInit, HasUnsavedChanges {
   private readonly api = inject(PROFILE_API);
+  private readonly dataApi = inject(ACCOUNT_DATA_API);
+  private readonly router = inject(Router);
   private readonly dialog = inject(Dialog);
   private readonly session = inject(SessionService);
   private readonly toasts = inject(ToastService);
@@ -82,6 +85,10 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
   protected readonly problems = signal<Problem[]>([]);
   protected readonly failed = signal(false);
   protected readonly savedNow = signal<string | null>(null);
+
+  protected readonly exportWaiting = signal(false);
+  protected readonly exportBusy = signal(false);
+  protected readonly exportFailed = signal(false);
 
   private readonly saved = signal<ProfileForm | null>(null);
   protected readonly account = computed(() => {
@@ -116,6 +123,52 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
 
   ngOnInit(): void {
     this.load();
+    // A request still waiting is shown as such after a reload; nothing else about it needs saying here.
+    this.dataApi.currentDataExport().subscribe({
+      next: (current) => this.exportWaiting.set(current.status === 'requested'),
+      error: () => undefined,
+    });
+  }
+
+  /** "Download my data": the archive is built in the background and the link arrives by e-mail (L2-018 AC1). */
+  protected requestData(): void {
+    if (this.exportBusy()) return;
+    this.exportBusy.set(true);
+    this.exportFailed.set(false);
+    this.dataApi.requestDataExport().subscribe({
+      next: () => {
+        this.exportBusy.set(false);
+        this.exportWaiting.set(true);
+      },
+      error: () => {
+        this.exportBusy.set(false);
+        this.exportFailed.set(true);
+      },
+    });
+  }
+
+  protected deleteAccount(opener: HTMLElement): void {
+    this.dialog
+      .open<boolean>(DeleteAccountDialog, {
+        ariaLabelledBy: 'dlg-title',
+        ariaDescribedBy: 'dlg-desc',
+        ariaModal: true,
+        backdropClass: 'backdrop',
+        restoreFocus: opener,
+      })
+      .closed.subscribe((deleted) => {
+        if (!deleted) return;
+        // The session is over: becoming a visitor first keeps the welcome page from sending the member back.
+        this.session.resolve().subscribe(() => {
+          void this.router.navigateByUrl('/welcome').then(() =>
+            this.toasts.show({
+              tone: 'success',
+              title: 'Your account was deleted',
+              text: 'We sent you an e-mail to confirm. Your personal data is erased within 30 days.',
+            }),
+          );
+        });
+      });
   }
 
   protected load(): void {

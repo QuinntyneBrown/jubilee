@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { stubAccountData } from './account-data';
 
 // A stand-in for the account page's endpoints (L2-013 to L2-016): profile, e-mail and password change, e-mail
 // preferences. What the app sends is kept so a test can prove it (ADR 0009).
@@ -215,6 +216,9 @@ export async function stubProfile(
     }
     return route.fulfill({ json: fake.preferences });
   });
+
+  // The account page also asks where the data export stands; the default is that none was asked for.
+  await stubAccountData(page);
 
   return fake;
 }

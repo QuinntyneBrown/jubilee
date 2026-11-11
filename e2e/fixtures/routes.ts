@@ -107,6 +107,9 @@ export type StubName =
   | 'moderation-report-error'
   | 'moderation-featured'
   | 'moderation-featured-error'
+  | 'account-data-requested'
+  | 'data-download-done'
+  | 'data-download-unavailable'
   | 'forbidden';
 
 export interface ScreenRoute {
@@ -617,6 +620,24 @@ export const routes = {
     stub: 'reset-password-error',
   },
   account: { app: '/account', mock: 'pages/account/default.html', who: 'member', stub: 'profile' },
+  'account.data-requested': {
+    app: '/account',
+    mock: 'pages/account/data-requested.html',
+    who: 'member',
+    stub: 'account-data-requested',
+  },
+  'data-download.done': {
+    app: '/account/data/e2e-token',
+    mock: 'pages/data-download/done.html',
+    who: 'member',
+    stub: 'data-download-done',
+  },
+  'data-download.unavailable': {
+    app: '/account/data/e2e-token',
+    mock: 'pages/data-download/unavailable.html',
+    who: 'member',
+    stub: 'data-download-unavailable',
+  },
   'account.error': {
     app: '/account',
     mock: 'pages/account/error.html',

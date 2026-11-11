@@ -455,7 +455,9 @@
         "error",
         "invalid",
         "submitting",
-        "success"
+        "success",
+        "data-requested",
+        "data-failed"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
@@ -1024,6 +1026,17 @@
         "busy",
         "invalid",
         "failed"
+      ]
+    },
+    {
+      "id": "data-download",
+      "kind": "page",
+      "title": "Download your data",
+      "route": "/account/data/:token",
+      "states": [
+        "default",
+        "done",
+        "unavailable"
       ]
     }
   ]

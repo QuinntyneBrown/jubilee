@@ -273,6 +273,69 @@
           </li>
         </ul>
       </section>
+      <section
+        class="card stack"
+        style="max-width: 42rem; margin-top: var(--space-6)"
+        aria-labelledby="dat"
+      >
+        <h2 id="dat" class="card__title">Your data</h2>
+        <p class="text-muted">
+          Get a copy of your profile, saved list, requests, messages and notification settings as a
+          JSON file. We e-mail you a link within 24 hours. It works for 7 days.
+        </p>
+        @if (exportFailed()) {
+          <div class="alert alert--danger" role="alert">
+            <svg jb-icon name="alert"></svg>
+            <div class="alert__body">
+              <div class="alert__title">We couldn’t start your download</div>
+              <div>Nothing was changed. Try again, or write to help&#64;jubilee.example.</div>
+            </div>
+          </div>
+        }
+        @if (exportWaiting()) {
+          <div class="alert alert--info" role="status">
+            <svg jb-icon name="info"></svg>
+            <div class="alert__body">
+              <div class="alert__title">We’re preparing your data</div>
+              <div>
+                We’ll e-mail a link to {{ account.email }} within 24 hours. It works for 7 days.
+              </div>
+            </div>
+          </div>
+        }
+        <div>
+          <button
+            class="btn btn--sm"
+            type="button"
+            [disabled]="exportWaiting() || exportBusy()"
+            [attr.aria-busy]="exportBusy() ? 'true' : null"
+            (click)="requestData()"
+          >
+            Download my data
+          </button>
+        </div>
+      </section>
+      <section
+        class="card stack danger-zone"
+        style="max-width: 42rem; margin-top: var(--space-6)"
+        aria-labelledby="dz"
+      >
+        <h2 id="dz" class="card__title">Delete account</h2>
+        <p class="text-muted">
+          Removes your profile, saved list and messages. Open requests are cancelled and the
+          businesses are told.
+        </p>
+        <div>
+          <button
+            #deleteButton
+            class="btn btn--sm"
+            type="button"
+            (click)="deleteAccount(deleteButton)"
+          >
+            <svg jb-icon name="trash"></svg>Delete my account
+          </button>
+        </div>
+      </section>
     }
   }
 </div>

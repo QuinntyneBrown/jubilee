@@ -4,7 +4,7 @@ Static HTML mocks for every page, dialog and notification of Jubilee, Toronto's 
 marketplace, in every state. They are the design reference for the Angular frontend: the app
 keeps the mocks' BEM classes and accessible state semantics.
 
-- **73 screens, 304 mocks:** 43 pages (189 states), 23 dialogs (80 states), 7 notifications (35 states).
+- **74 screens, 309 mocks:** 44 pages (194 states), 23 dialogs (80 states), 7 notifications (35 states).
 - Every mock is responsive (360, 768 and 1280 px), themed light and dark through tokens, and
   keyboard-accessible.
 
