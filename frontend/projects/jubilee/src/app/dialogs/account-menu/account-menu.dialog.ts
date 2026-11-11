@@ -1,7 +1,7 @@
 import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, ElementRef, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Icon, DialogBody, DialogFrame } from 'components';
+import { Icon, DialogBody, DialogFrame, Avatar } from 'components';
 import { SignOutDialog } from '../sign-out/sign-out.dialog';
 
 export interface AccountMenuData {
@@ -19,7 +19,7 @@ export interface AccountMenuData {
  */
 @Component({
   selector: 'jb-account-menu-dialog',
-  imports: [RouterLink, Icon, DialogFrame, DialogBody],
+  imports: [RouterLink, Icon, DialogFrame, DialogBody, Avatar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(keydown)': 'move($event)' },
   templateUrl: './account-menu.dialog.html',

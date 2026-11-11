@@ -1,4 +1,5 @@
 export * from './lib/alert/alert';
+export * from './lib/avatar/avatar';
 export * from './lib/brand-mark/brand-mark';
 export * from './lib/business-card/business-card';
 export * from './lib/button/button';
@@ -42,6 +43,7 @@ export * from './lib/service-row/service-row';
 export * from './lib/site-footer/site-footer';
 export * from './lib/skeleton/skeleton';
 export * from './lib/skip-link/skip-link';
+export * from './lib/spinner/spinner';
 export * from './lib/switch/switch';
 export * from './lib/tab-bar/tab-bar';
 export * from './lib/textarea/textarea';

@@ -65,7 +65,7 @@
               [routerLink]="['/messages', row.id]"
               [attr.aria-current]="row.id === selectedId() ? 'page' : null"
             >
-              <span class="avatar" aria-hidden="true">{{ initials(row.title) }}</span>
+              <jb-avatar [name]="row.title" />
               <span class="thread__body">
                 <span class="thread__top">
                   <span class="thread__name truncate">{{ row.title }}</span>

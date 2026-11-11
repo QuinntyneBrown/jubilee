@@ -27,7 +27,7 @@
         <a jb-button variant="ghost" iconOnly routerLink="/messages" aria-label="Back to messages">
           <svg jb-icon name="arrow-left"></svg>
         </a>
-        <span class="avatar" aria-hidden="true">{{ initials(conversation.business.name) }}</span>
+        <jb-avatar [name]="conversation.business.name" />
         <div style="flex: 1; min-width: 0">
           <h1 class="truncate">{{ conversation.business.name }}</h1>
           <p class="text-caption truncate">{{ subtitle() }}</p>

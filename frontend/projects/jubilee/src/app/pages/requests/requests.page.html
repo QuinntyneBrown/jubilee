@@ -54,7 +54,7 @@
         <ul class="rows">
           @for (row of rows(); track row.id) {
             <li class="row row--stack">
-              <span class="avatar" aria-hidden="true"><svg jb-icon [name]="icon(row)"></svg></span>
+              <jb-avatar><svg jb-icon [name]="icon(row)"></svg></jb-avatar>
               <div class="row__body">
                 <div class="row__title">
                   <a [routerLink]="['/requests', row.id]">{{ row.title }}</a>
