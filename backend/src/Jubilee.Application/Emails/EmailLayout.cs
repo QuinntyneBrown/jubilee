@@ -11,12 +11,14 @@ public sealed record EmailMessage(string To, string Subject, string TextBody, st
 /// <summary>
 /// Renders the HTML part of an e-mail from the text a handler wrote (ADR 0038). Each paragraph of the
 /// text becomes a paragraph; a link on a line of its own becomes a button with the link repeated as
-/// text; everything is HTML-encoded. The layout adds the header with the wordmark, the preheader and
-/// the footer. It holds no image, so there is nothing to track with (L2-179 AC4).
+/// text, named by its path or by the sentence that leads to it ("Answer here: https://…"); a link
+/// inside a sentence stays a link; everything is HTML-encoded. The layout adds the header with the
+/// wordmark, the preheader and the footer. It holds no image, so there is nothing to track with
+/// (L2-179 AC4).
 /// </summary>
 public static partial class EmailLayout
 {
-    private const string Signature = "Jubilee ·";
+    private const string Signature = "Jubilee · Toronto's Christian marketplace";
 
     private const string ParagraphStyle = "margin:0 0 16px;font-size:16px;line-height:24px;color:#0b0e14;";
 
@@ -38,26 +40,43 @@ public static partial class EmailLayout
         ("/reference/", "Answer the request"),
         ("/account/data/", "Download your data"),
         ("/sign-in", "Sign in to Jubilee"),
-        ("/messages", "Open the conversation"),
-        ("/my-business/requests", "Open your requests"),
-        ("/my-business", "Open your business"),
-        ("/requests/", "Open your request"),
-        ("/list", "Open your listing"),
-        ("/b/", "Open the business page"),
     ];
 
     public static EmailMessage Render(string to, string subject, string textBody, string? unsubscribeUrl = null)
     {
+        // The layout has the signature in its footer, so the one the text ends with is left out of the HTML.
         var paragraphs = textBody.ReplaceLineEndings("\n").Split("\n\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Where(p => !p.StartsWith(Signature, StringComparison.Ordinal))
+            .Select(p => p.Replace(Signature, string.Empty, StringComparison.Ordinal).Trim())
+            .Where(p => p.Length > 0)
             .ToList();
         var content = new StringBuilder();
         foreach (var paragraph in paragraphs)
         {
-            content.Append(IsLink(paragraph) ? Button(paragraph) : Paragraph(paragraph));
+            if (IsLink(paragraph))
+            {
+                content.Append(Button(paragraph, LabelFromPath(paragraph)));
+                continue;
+            }
+
+            // "Confirm or decline it: https://…" as the last line: the sentence names the button.
+            var lines = paragraph.Split('\n');
+            var named = NamedLink().Match(lines[^1]);
+            if (!named.Success)
+            {
+                content.Append(Paragraph(paragraph));
+                continue;
+            }
+
+            if (lines.Length > 1)
+            {
+                content.Append(Paragraph(string.Join('\n', lines[..^1])));
+            }
+
+            content.Append(Button(named.Groups[2].Value, named.Groups[1].Value));
         }
 
-        var preheader = paragraphs.FirstOrDefault(p => !IsLink(p) && !p.StartsWith("Hi ", StringComparison.Ordinal)) ?? subject;
+        var preheader = paragraphs.FirstOrDefault(p =>
+            !IsLink(p) && !p.StartsWith("Hi ", StringComparison.Ordinal) && !p.StartsWith("Hello", StringComparison.Ordinal)) ?? subject;
         var footer = unsubscribeUrl is null
             ? string.Empty
             : $"            <p class=\"jb-mail__muted\" style=\"margin:8px 0 0;font-size:13px;line-height:20px;color:#4a505c;\">You get this e-mail because of your notification settings. <a class=\"jb-mail__link\" href=\"{Encode(unsubscribeUrl)}\" style=\"color:#006644;\">Unsubscribe from e-mails like this</a>.</p>\n";
@@ -87,10 +106,17 @@ public static partial class EmailLayout
     [GeneratedRegex(@"https?://[^\s<]+")]
     private static partial Regex LinkInText();
 
-    private static string Button(string link)
+    [GeneratedRegex(@"^([^:\n]{2,60}): (https?://\S+)$")]
+    private static partial Regex NamedLink();
+
+    private static string LabelFromPath(string link)
     {
         var path = new Uri(link).AbsolutePath;
-        var label = Labels.FirstOrDefault(l => path.StartsWith(l.Path, StringComparison.Ordinal)).Label ?? "Open Jubilee";
+        return Labels.FirstOrDefault(l => path.StartsWith(l.Path, StringComparison.Ordinal)).Label ?? "Open Jubilee";
+    }
+
+    private static string Button(string link, string label)
+    {
         var href = Encode(link);
         return
             "            <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:8px 0 16px;\"><tr><td style=\"border-radius:8px;background-color:#ffb81c;\">"
