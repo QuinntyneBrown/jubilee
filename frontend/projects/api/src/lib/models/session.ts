@@ -11,6 +11,7 @@ export type SessionDto =
       emailBounced?: boolean;
       agreementRequired?: boolean;
       isVerifier?: boolean;
+      otherSessionCount?: number;
     };
 
 /** A signed-in member, as the chrome and the pages show them. */
@@ -24,4 +25,11 @@ export interface Member {
   agreementRequired: boolean;
   /** On the Jubilee verification team (L2-098). */
   isVerifier: boolean;
+}
+
+/** The body of `POST /api/session`. */
+export interface SignInRequest {
+  email: string;
+  password: string;
+  keepSignedIn: boolean;
 }

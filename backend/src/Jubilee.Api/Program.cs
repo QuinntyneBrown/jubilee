@@ -3,7 +3,7 @@ using Jubilee.Api.Middleware;
 using Jubilee.Api.RateLimiting;
 using Jubilee.Application;
 using Jubilee.Infrastructure;
-using Microsoft.AspNetCore.Authentication;
+using Jubilee.Api.Sessions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,8 +17,10 @@ builder.Services.AddJubileeRateLimiting(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Sign-in arrives in a later journey. The cookie scheme is in place so that an API caller is
-// answered with a status code, never a redirect to a sign-in page.
+// Sessions live in the database (ADR 0013): the cookie holds an opaque key. A caller whose session
+// has ended is told so (401 SESSION_EXPIRED) and the cookie is removed; a caller who never had one is
+// told to sign in. Either way the answer is a status code, never a redirect.
+builder.Services.AddSingleton<DatabaseTicketStore>();
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -26,29 +28,28 @@ builder.Services
         options.Cookie.Name = "jubilee.session";
         options.Cookie.HttpOnly = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Events.OnValidatePrincipal = async context =>
+        options.ExpireTimeSpan = Jubilee.Domain.SessionPolicy.AbsoluteLifetime;
+        options.SlidingExpiration = false;
+        options.Events.OnRedirectToLogin = async context =>
         {
-            // A session that began before the password last changed has ended (L2-134 AC3).
-            var principal = context.Principal;
-            if (principal?.FindFirst(Jubilee.Api.Controllers.SessionClaims.IssuedAt) is { } issued
-                && long.TryParse(issued.Value, out var ticks)
-                && Guid.TryParse(principal.FindFirst("sub")?.Value, out var memberId))
+            var ended = context.Request.Cookies.ContainsKey(options.Cookie.Name!);
+            if (ended)
             {
-                var db = context.HttpContext.RequestServices.GetRequiredService<Jubilee.Application.Abstractions.IAppDbContext>();
-                var state = await db.Members.Where(m => m.Id == memberId).Select(m => new { m.PasswordChangedAt, m.DeletedAt })
-                    .SingleOrDefaultAsync(context.HttpContext.RequestAborted);
-                // A deleted account has no session left (L2-017 AC3).
-                if (state is not null && (state.DeletedAt is not null || (state.PasswordChangedAt is { } changed && ticks < changed.UtcTicks)))
-                {
-                    context.RejectPrincipal();
-                    await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                }
+                context.Response.Cookies.Delete(options.Cookie.Name!);
             }
+
+            await ProblemWriter.WriteAsync(
+                context.HttpContext, StatusCodes.Status401Unauthorized, "Sign in to continue.",
+                code: ended ? "SESSION_EXPIRED" : "sign_in_required");
         };
-        options.Events.OnRedirectToLogin = context => ProblemWriter.WriteAsync(
-            context.HttpContext, StatusCodes.Status401Unauthorized, "Sign in to continue.", code: "sign_in_required");
         options.Events.OnRedirectToAccessDenied = context => ProblemWriter.WriteAsync(
             context.HttpContext, StatusCodes.Status403Forbidden, "You can't do that.", code: "forbidden");
+    });
+builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
+    .Configure<DatabaseTicketStore, TimeProvider>((options, store, time) =>
+    {
+        options.SessionStore = store;
+        options.TimeProvider = time;
     });
 
 // Every endpoint requires a signed-in caller unless it opts out with [AllowAnonymous].

@@ -45,6 +45,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
+    public DbSet<MemberSession> Sessions => Set<MemberSession>();
+
+    public DbSet<SignInFailure> SignInFailures => Set<SignInFailure>();
+
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
     public DbSet<Conversation> Conversations => Set<Conversation>();

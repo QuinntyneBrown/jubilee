@@ -47,8 +47,8 @@ connectivity loss and is not part of this slice.
 - **`DraftStore`** — service that persists `Draft` records in browser storage,
   keyed by member, route and form key. `take` returns and removes a draft, so a
   draft is restored once. `clearFor` removes drafts when a different member
-  signs in on the same browser. The storage mechanism and the retention period
-  of an unclaimed draft are `<TO SUPPLY>`.
+  signs in on the same browser. Drafts live in `localStorage` of the device
+  and are kept for 30 days (ADR 0013); the first form that holds drafts arrives with the messaging journey.
 - **`ReturnUrlService`** — remembers the return URL and accepts only same-origin
   paths when it is read back.
 - **`SessionExpiredPage`** — Angular page at `/session-expired`. It shows

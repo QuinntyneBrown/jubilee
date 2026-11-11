@@ -23,6 +23,7 @@ something else: a new record supersedes it and both say so.
 | [0017](0017-order-request-decisions.md) | Order requests: delivery methods, server-computed amounts, no tax, stock checked at send | Accepted |
 | [0018](0018-listing-onboarding-decisions.md) | Listing onboarding: drafts, limit, submission flags, expiry | Accepted |
 | [0019](0019-church-reference-decisions.md) | Church reference: hashed links, owner-safe status, resend, remind, change | Accepted |
+| [0013](0013-server-side-sessions.md) | Server-side sessions in the database, sign-in throttling, drafts and the sign-in prompt | Accepted |
 | [0008](0008-frontend-file-per-type.md) | Frontend: one file per type, no single-file components (`templateUrl`, never `template`) | Accepted |
 
 ## Format

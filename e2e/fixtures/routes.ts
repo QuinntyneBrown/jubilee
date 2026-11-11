@@ -125,6 +125,12 @@ export interface ScreenRoute {
 }
 
 export const routes = {
+  'sign-in': { app: '/sign-in', mock: 'pages/sign-in/default.html', who: 'visitor' },
+  'session-expired': {
+    app: '/session-expired',
+    mock: 'pages/session-expired/default.html',
+    who: 'visitor',
+  },
   'sign-up': { app: '/join', mock: 'pages/sign-up/default.html', who: 'visitor' },
   'join-agreement': {
     app: '/join/agreement',

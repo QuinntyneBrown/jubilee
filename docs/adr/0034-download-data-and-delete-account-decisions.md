@@ -26,5 +26,4 @@ Journey 26 (L2-017, L2-018) lets a member take a copy of their data and delete t
 - Removing the data from backups within 35 days (an operations task).
 - The retention schedule for data unrelated to account deletion (L2-148 beyond this journey).
 - Removing deleted listings from the search index through the outbox (the database index is read live, so they leave search at once).
-- A sign-out control (journey 5): deletion signs out through its own call.
 - The reporter name on listing reports is not yet anonymised at erasure.

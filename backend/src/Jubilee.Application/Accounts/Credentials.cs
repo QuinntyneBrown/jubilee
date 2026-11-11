@@ -115,7 +115,7 @@ public sealed class ConfirmEmailChangeCommandHandler(IAppDbContext db, TimeProvi
 }
 
 /// <summary>"Change password" or, for a member who joined with Google, "Set a password" (L2-015).</summary>
-public sealed record ChangePasswordCommand(Guid MemberId, string? CurrentPassword, string? NewPassword, string? RepeatPassword) : IRequest<Member>;
+public sealed record ChangePasswordCommand(Guid MemberId, string? CurrentPassword, string? NewPassword, string? RepeatPassword, Guid? KeepSessionId = null) : IRequest<Member>;
 
 public sealed class ChangePasswordCommandHandler(
     IAppDbContext db, IPasswordHasher hasher, IBreachedPasswordChecker breaches, TimeProvider clock, ILogger<ChangePasswordCommandHandler> logger)
@@ -162,6 +162,11 @@ public sealed class ChangePasswordCommandHandler(
 
         var now = clock.GetUtcNow();
         member.ChangePassword(hasher.Hash(password), now);
+        foreach (var session in await db.Sessions.Where(x => x.MemberId == member.Id && x.EndedAt == null && x.Id != request.KeepSessionId).ToListAsync(cancellationToken))
+        {
+            session.End(now);
+        }
+
         var waiting = await db.LinkTokens
             .Where(t => t.MemberId == member.Id && t.Purpose == LinkTokenPurpose.PasswordReset && t.UsedAt == null && t.SupersededAt == null)
             .ToListAsync(cancellationToken);

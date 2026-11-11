@@ -64,7 +64,12 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
                 .AddAuthentication()
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, _ => { });
             // Authenticate with the test scheme; challenges still go to the API's own scheme.
-            services.PostConfigure<AuthenticationOptions>(o => o.DefaultAuthenticateScheme = TestAuthHandler.SchemeName);
+            // A request with the test header is that test member; any other is judged by its session cookie.
+            services.AddAuthentication().AddPolicyScheme("TestOrCookie", null, o =>
+                o.ForwardDefaultSelector = context => context.Request.Headers.ContainsKey(TestAuthHandler.UserHeader)
+                    ? TestAuthHandler.SchemeName
+                    : Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
+            services.PostConfigure<AuthenticationOptions>(o => o.DefaultAuthenticateScheme = "TestOrCookie");
             services.AddScoped<IAppDbContext>(sp => new OutageAwareDbContext(sp.GetRequiredService<AppDbContext>(), Database));
             services.AddSingleton<ILoggerProvider>(Logs);
             services.RemoveAll<Jubilee.Application.Maintenance.IMaintenanceState>();
@@ -170,6 +175,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.MessageAttachments);
             db.RemoveRange(db.Conversations);
             db.RemoveRange(db.OutboxMessages);
+            db.RemoveRange(db.Sessions);
+            db.RemoveRange(db.SignInFailures);
             db.RemoveRange(db.LinkTokens);
             db.RemoveRange(db.PasswordResetRequests);
             db.RemoveRange(db.Members);

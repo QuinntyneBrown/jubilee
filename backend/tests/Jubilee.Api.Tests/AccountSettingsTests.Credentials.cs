@@ -207,13 +207,14 @@ public sealed partial class AccountSettingsTests
     }
 
     // L2-014 AC5: a link never opened changes nothing; it lasts 24 hours.
+
     [Fact]
     public async Task L2_014_AC5_a_link_that_is_not_opened_in_24_hours_changes_nothing()
     {
         var client = await Join();
         await RequestEmailChange(client);
         var token = await EmailChangeToken();
-        _factory.Clock.Advance(TimeSpan.FromHours(24) + TimeSpan.FromMinutes(1));
+        await StayActive(client, TimeSpan.FromHours(24) + TimeSpan.FromMinutes(1));
 
         var response = await ConfirmEmailChange(token);
 

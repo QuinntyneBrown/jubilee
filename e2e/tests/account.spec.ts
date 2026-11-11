@@ -573,6 +573,7 @@ test.describe('the account menu (L2-019)', () => {
       'Notifications',
       'List your business',
       'Help',
+      'Sign out',
     ]);
     await expect(menu.item('Your account')).toBeFocused();
 

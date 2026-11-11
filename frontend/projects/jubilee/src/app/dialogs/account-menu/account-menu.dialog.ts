@@ -1,7 +1,8 @@
-import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { DIALOG_DATA, Dialog, DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, ElementRef, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Icon } from 'components';
+import { SignOutDialog } from '../sign-out/sign-out.dialog';
 
 export interface AccountMenuData {
   displayName: string;
@@ -26,11 +27,23 @@ export interface AccountMenuData {
 })
 export class AccountMenuDialog {
   private readonly ref = inject<DialogRef<void>>(DialogRef);
+  private readonly dialog = inject(Dialog);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly data = inject<AccountMenuData>(DIALOG_DATA);
 
   protected close(): void {
     this.ref.close();
+  }
+
+  /** "Sign out" asks first, then ends this session only (L2-011). */
+  protected signOut(): void {
+    this.ref.close();
+    this.dialog.open(SignOutDialog, {
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+    });
   }
 
   protected closeIfOutside(event: Event): void {

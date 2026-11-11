@@ -84,6 +84,11 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
             export.Expire();
         }
 
+        foreach (var session in await db.Sessions.Where(x => x.MemberId == member.Id && x.EndedAt == null).ToListAsync(cancellationToken))
+        {
+            session.End(now);
+        }
+
         member.Delete(now);
         AuditLog.Record(db, new Reviewer(subject, "Member"), "account.deleted", "member", subject, null, null, null, now);
         db.OutboxMessages.Add(OutboxMessage.Email(

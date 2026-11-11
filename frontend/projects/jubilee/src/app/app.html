@@ -42,6 +42,11 @@
 <main id="main" tabindex="-1"><router-outlet /></main>
 @if (routeData().shell === 'app') {
   <footer jb-site-footer [year]="year"></footer>
-  <nav jb-tab-bar [member]="member()" [current]="routeData().section ?? null"></nav>
+  <nav
+    jb-tab-bar
+    [member]="member()"
+    [current]="routeData().section ?? null"
+    (accountMenu)="openAccountMenu($event)"
+  ></nav>
 }
 <jb-toast-region />

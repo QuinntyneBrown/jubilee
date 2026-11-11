@@ -275,7 +275,8 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     [ErrorReference("JB-ACC-503")]
     public async Task<IActionResult> ChangePassword(ChangePasswordBody request, CancellationToken cancellationToken)
     {
-        var member = await sender.Send(new ChangePasswordCommand(MemberId(), request.CurrentPassword, request.NewPassword, request.RepeatPassword), cancellationToken);
+        var member = await sender.Send(new ChangePasswordCommand(MemberId(), request.CurrentPassword, request.NewPassword, request.RepeatPassword,
+            Guid.TryParse(User.FindFirst(Jubilee.Api.Sessions.DatabaseTicketStore.SessionIdClaim)?.Value, out var current) ? current : null), cancellationToken);
         await HttpContext.SignInMemberAsync(member);
         return NoContent();
     }
@@ -300,7 +301,7 @@ public static class SessionClaims
 public static class SessionSignIn
 {
     /// <summary>Starts a session for the member: a new identifier, so there is no session fixation (L2-010 AC5).</summary>
-    public static async Task SignInMemberAsync(this HttpContext context, Member member)
+    public static async Task SignInMemberAsync(this HttpContext context, Member member, bool keepSignedIn = false)
     {
         var identity = new ClaimsIdentity(
             [
@@ -314,7 +315,13 @@ public static class SessionSignIn
         await context.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(identity),
-            new AuthenticationProperties { IsPersistent = false });
+            new AuthenticationProperties
+            {
+                IsPersistent = keepSignedIn,
+                ExpiresUtc = keepSignedIn
+                    ? context.RequestServices.GetRequiredService<TimeProvider>().GetUtcNow().Add(SessionPolicy.AbsoluteLifetime)
+                    : null,
+            });
         CsrfToken.Issue(context);
     }
 }

@@ -100,6 +100,19 @@ public sealed partial class AccountDataTests : IClassFixture<JubileeApiFactory>,
         Assert.Equal(0, await Read(db => db.OutboxMessages.CountAsync(o => o.Subject.Contains("data"))));
     }
 
+
+    /// <summary>Moves the clock on in steps shorter than the idle timeout, the member using the app throughout.</summary>
+    private async Task StayActive(HttpClient client, TimeSpan span)
+    {
+        while (span > TimeSpan.Zero)
+        {
+            var step = span > TimeSpan.FromHours(6) ? TimeSpan.FromHours(6) : span;
+            _factory.Clock.Advance(step);
+            await client.GetAsync("/api/account");
+            span -= step;
+        }
+    }
+
     [Fact]
     public async Task L2_018_A_second_request_while_one_waits_returns_the_same_export()
     {
@@ -258,10 +271,10 @@ public sealed partial class AccountDataTests : IClassFixture<JubileeApiFactory>,
         await BuildExports();
         var token = await LinkTokenFor(member);
 
-        _factory.Clock.Advance(TimeSpan.FromDays(6));
+        await StayActive(client, TimeSpan.FromDays(6));
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync($"/api/account/data-exports/{token}")).StatusCode);
 
-        _factory.Clock.Advance(TimeSpan.FromDays(2));
+        await StayActive(client, TimeSpan.FromDays(2));
         Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync($"/api/account/data-exports/{token}")).StatusCode);
         await Run(s => s.GetRequiredService<DataExportBuilder>().ExpireAsync(CancellationToken.None));
         var export = await Read(db => db.DataExports.SingleAsync(e => e.MemberId == member.Id));

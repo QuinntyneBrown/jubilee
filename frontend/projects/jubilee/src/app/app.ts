@@ -91,6 +91,7 @@ export class App {
     const summary = this.navigation.summary();
     return {
       displayName: member.displayName,
+      email: member.email,
       initials: member.initials,
       ownsListing: summary.ownsListing,
       unreadConversationCount: summary.unreadConversationCount,
@@ -131,7 +132,10 @@ export class App {
 
   constructor() {
     this.drainer.start();
-    if (this.session.member()) this.navigation.load();
+    // The counts load when a member is there at start-up and again when one signs in.
+    effect(() => {
+      if (this.session.member()) this.navigation.load();
+    });
     // The open connection runs for a signed-in member only (L2-070).
     effect(() => {
       if (this.session.member()) this.realtime.start();

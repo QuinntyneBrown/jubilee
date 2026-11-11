@@ -36,8 +36,8 @@ The slice runs from the Angular HTTP interceptor to the session store in the
 - **`IBreachedPasswordChecker`** — application service implemented by
   `BreachedPasswordClient`. It sends only a prefix of the password's hash to the
   `Breached-password service` (k-anonymity range query) and compares the
-  returned suffixes locally. Hash function and prefix length follow the service:
-  `<TO SUPPLY>`. Behaviour when the service is unreachable: `<TO SUPPLY>`.
+  returned suffixes locally. The service is Have I Been Pwned: SHA-1, a five-character prefix. When the
+  service does not answer within two seconds the password is accepted (ADR 0012).
 - **`IPasswordHasher`** — application service implemented by
   `Argon2idPasswordHasher`. It hashes with Argon2id, memory `19 MiB` or more,
   iterations `2` or more, and a unique random salt per password. The stored
@@ -65,9 +65,9 @@ The slice runs from the Angular HTTP interceptor to the session store in the
   anonymous.
 - **`CsrfTokenService`** — computes the anti-CSRF token as an HMAC over the
   session identifier with a server-held key. `GET /api/session` returns the
-  token in its body. A caller who is not signed in receives a pre-sign-in
-  session (lifetime `<TO SUPPLY>`), so the join and sign-in forms carry a token
-  as well; sign-in replaces it with a new identifier.
+  token in its body. A caller who is not signed in receives the token in
+  the `XSRF-TOKEN` cookie from the same call (a session cookie, no server-side
+  record), so the join and sign-in forms carry a token as well (ADR 0013).
 - **`CsrfMiddleware`** — for each `POST`, `PUT`, `PATCH` and `DELETE` request it
   compares the `X-CSRF-Token` header with the token for the session in constant
   time. A missing or wrong token ends the request with `403`.
@@ -75,7 +75,7 @@ The slice runs from the Angular HTTP interceptor to the session store in the
   interceptor. `SessionService` keeps the anti-CSRF token in memory only.
   `CsrfInterceptor` adds the `X-CSRF-Token` header to each state-changing call.
 - **`CorsPolicy`** — CORS configuration built from an origin allowlist in
-  configuration (`<TO SUPPLY>`). It allows credentials only for listed origins.
+  configuration (`Cors:Origins`; the app and the API share an origin, so it is empty by default). It allows credentials only for listed origins.
   Start-up fails when the allowlist contains the wildcard `*`.
 - **`SensitiveDataRedactor`** — logging filter that removes the fields
   `password`, `newPassword` and `currentPassword`, the session cookie and the
