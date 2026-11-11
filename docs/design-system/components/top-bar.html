@@ -58,6 +58,7 @@
       <li><a href="../components/tooltip.html">Tooltip</a></li>
       <li><a href="../components/divider.html">Divider</a></li>
       <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/list.html">List</a></li>
       <li><a href="../components/description-list.html">Description list</a></li>
@@ -72,6 +73,7 @@
       <li><a href="../components/message-thread.html">Message thread</a></li>
       <li><a href="../components/notification-item.html">Notification item</a></li>
       <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -101,7 +103,7 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Use the top bar once per page, as the page's banner landmark. It carries global navigation only; section navigation inside My business or Account uses <a href="../components/tabs.html">Tabs</a>, and phones get the <a href="../components/tab-bar.html">Tab bar</a> for the same primary destinations. Auth, error and system pages (sign in, sign up, verify email, 500, offline, maintenance) have no top bar: a single wordmark link on the card is enough.</p>
+      <p>Use the top bar once per page, as the page's banner landmark. It carries global navigation only; section navigation inside My business or Account uses <a href="../components/tabs.html">Tabs</a>, and phones get the <a href="../components/tab-bar.html">Tab bar</a> for the same primary destinations. Auth, error and system pages (sign in, sign up, verify email, 500, offline, maintenance) have no top bar: they sit in the <a href="../components/auth-layout.html">Auth layout</a>, where a single wordmark link is enough.</p>
       <ul>
         <li><b>Ink</b> (<code>.topbar.topbar--ink</code>) is the Jubilee bar and the only one the mocks use: ink background, cream wordmark in the display face with the gold mark, pill search, gold underline on the current link, ghost icon buttons and the gold unread dot.</li>
         <li><b>Plain</b> (<code>.topbar</code>) is the kit base: white surface, hairline bottom border, current link as an accent-subtle pill. No mock uses it on its own; keep it for embedded or back-office surfaces where the brand band would compete with content.</li>

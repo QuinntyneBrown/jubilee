@@ -58,6 +58,7 @@
       <li><a href="../components/tooltip.html">Tooltip</a></li>
       <li><a href="../components/divider.html">Divider</a></li>
       <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/list.html">List</a></li>
       <li><a href="../components/description-list.html">Description list</a></li>
@@ -72,6 +73,7 @@
       <li><a href="../components/message-thread.html">Message thread</a></li>
       <li><a href="../components/notification-item.html">Notification item</a></li>
       <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -96,27 +98,27 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Containers</p>
       <h1>Divider</h1>
-      <p class="ds-lead">A divider is a hairline rule that separates groups of content without adding a surface. Jubilee mostly separates with spacing and the borders built into rows, cards and dialog footers; the standalone divider appears as the "or" rule on the sign-in and sign-up pages.</p>
-      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;hr&gt;</code>, <code>.divider-text</code></span><span class="ds-pill">9 uses in the mocks</span></div>
+      <p class="ds-lead">A divider is a hairline rule that separates groups of content without adding a surface. Jubilee mostly separates with spacing and the borders built into rows, cards and dialog footers; the standalone divider appears as the "or use email" rule on the Log in and Sign up screens.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;hr&gt;</code>, <code>.divider-text</code></span><span class="ds-pill">10 uses in the mocks</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Reach for spacing first and a divider second. Use a horizontal divider to split long content into groups where headings would be too heavy, a vertical divider between groups of controls in a toolbar, and the text divider between two alternative ways to do the same thing ("Continue with Google" <em>or</em> e-mail). Rows, <a href="../components/card.html">Card</a> footers, <a href="../components/dialog.html">Dialog</a> footers and table rows draw their own rules; do not add dividers to them.</p>
+      <p>Reach for spacing first and a divider second. Use a horizontal divider to split long content into groups where headings would be too heavy, a vertical divider between groups of controls in a toolbar, and the text divider between two alternative ways to do the same thing (the Google button, then "or use email" above the form). Rows, <a href="../components/card.html">Card</a> footers, <a href="../components/dialog.html">Dialog</a> footers and table rows draw their own rules; do not add dividers to them.</p>
       <ul>
         <li><b>Horizontal</b>: <code>&lt;hr&gt;</code> or <code>.divider</code>, with <code>--space-6</code> above and below.</li>
         <li><b>Vertical</b>: <code>.divider--vertical</code> inside a flex row; kit only, unused in the mocks.</li>
-        <li><b>Text</b>: <code>.divider-text</code>, a short word between two rules.</li>
+        <li><b>Text</b>: <code>.divider-text</code>, a short phrase between two rules.</li>
       </ul>
     </section>
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
       <div class="ds-anatomy">
         <figure class="ds-anatomy__figure">
-          <div style="width: 100%;"><p class="divider-text">or</p></div>
+          <div style="width: 100%;"><p class="divider-text">or use email</p></div>
           <span class="ds-callout" style="left: 20%; top: 30%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 30%;" aria-hidden="true">2</span>
         </figure>
         <ol class="ds-anatomy__list">
           <li><div><b>Rules</b><small>Hairline (<code>--border-width-hairline</code>) in <code>--color-border-default</code>, flexing to fill the row.</small></div></li>
-          <li><div><b>Label (text divider)</b><small><code>--text-caption</code> in <code>--color-fg-muted</code>, <code>--space-3</code> from each rule.</small></div></li>
+          <li><div><b>Label (text divider)</b><small><code>--text-body-sm</code> in <code>--color-fg-muted</code>, <code>--space-4</code> from each rule. The divider spans its container: the paragraph measure does not apply to it.</small></div></li>
         </ol>
       </div>
     </section>
@@ -135,10 +137,10 @@
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="cluster" style="flex-wrap: nowrap; gap: var(--space-1);"&gt;&lt;button class="btn btn--ghost btn--icon" type="button" aria-label="Edit Gold cross stoneware mug"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;button class="btn btn--ghost btn--icon" type="button" aria-label="Share Gold cross stoneware mug"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M12 3v12m0-12L8 7m4-4 4 4M5 13v6h14v-6"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;span class="divider--vertical" aria-hidden="true"&gt;&lt;/span&gt;&lt;button class="btn btn--ghost btn--icon" type="button" aria-label="Delete Gold cross stoneware mug"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;</code></pre></details></div>
       <h3>Text</h3>
       <div class="ds-example"><div class="ds-example__canvas">
-        <div class="stack" style="width: 100%; max-width: 24rem;"><button class="btn btn--block" type="button">Continue with Google</button><p class="divider-text">or</p><div class="field"><label class="field__label" for="div-email">E-mail</label><input class="input" id="div-email" type="email" value="joanna.adeyemi@example.com"></div></div>
+        <div class="stack" style="width: 100%; max-width: 28.75rem;"><button class="btn btn--block btn--lg" type="button"><svg class="google-mark" aria-hidden="true" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Continue with Google</button><p class="divider-text">or use email</p><div class="field"><label class="field__label" for="div-email">Email</label><input class="input" id="div-email" type="email" value="joanna.adeyemi@example.com" placeholder="you@example.com" autocomplete="email"></div></div>
       </div>
-        <div class="ds-example__caption"><span>From <em>sign in</em>: the word sits between two flexible rules.</span></div>
-        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="stack" style="width: 100%; max-width: 24rem;"&gt;&lt;button class="btn btn--block" type="button"&gt;Continue with Google&lt;/button&gt;&lt;p class="divider-text"&gt;or&lt;/p&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="div-email"&gt;E-mail&lt;/label&gt;&lt;input class="input" id="div-email" type="email" value="joanna.adeyemi@example.com"&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+        <div class="ds-example__caption"><span>From Log in: the phrase sits between two flexible rules, under the Google button and above the form. When Google sign-in is off the button and the divider both go.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="stack" style="width: 100%; max-width: 28.75rem;"&gt;&lt;button class="btn btn--block btn--lg" type="button"&gt;&lt;svg class="google-mark" aria-hidden="true" viewBox="0 0 48 48"&gt;&lt;path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/&gt;&lt;path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/&gt;&lt;path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/&gt;&lt;path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/&gt;&lt;/svg&gt;Continue with Google&lt;/button&gt;&lt;p class="divider-text"&gt;or use email&lt;/p&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="div-email"&gt;Email&lt;/label&gt;&lt;input class="input" id="div-email" type="email" value="joanna.adeyemi@example.com" placeholder="you@example.com" autocomplete="email"&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes" data-na="One weight: a hairline rule. Spacing around a horizontal divider is --space-6; change spacing with layout, not with a thicker rule."><h2><a href="#sizes">Sizes</a></h2>
       <p class="ds-na">One weight: a hairline rule. Spacing around a horizontal divider is --space-6; change spacing with layout, not with a thicker rule.</p>
@@ -155,8 +157,8 @@
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
       <p>The rule is <code>--color-border-default</code> in both themes: a warm grey on cream, a soft line on charcoal. It is decorative and does not need 3:1; the text divider's word does need 4.5:1 and gets it from <code>--color-fg-muted</code>.</p>
       <div class="ds-themes">
-        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div style="padding: var(--space-4);"><p class="divider-text">or</p><hr class="divider"></div></div></div>
-        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div style="padding: var(--space-4);"><p class="divider-text">or</p><hr class="divider"></div></div></div>
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><div style="padding: var(--space-4);"><p class="divider-text">or use email</p><hr class="divider"></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><div style="padding: var(--space-4);"><p class="divider-text">or use email</p><hr class="divider"></div></div></div>
       </div>
     </section>
     <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
@@ -169,18 +171,19 @@
       <h3>Focus</h3>
       <p>Never focusable.</p>
       <h3>Labelling</h3>
-      <p>A separator needs no name. The text divider's word ("or") is real text and is read in order, which is what makes the alternative clear to screen-reader users.</p>
+      <p>A separator needs no name. The text divider's words ("or use email") are real text and are read in order, between the Google button and the first field, which is what makes the alternative clear to screen-reader users.</p>
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Text divider word on canvas</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Text divider word on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Text divider words on canvas</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Text divider words on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
-        <div class="ds-pair"><span>Text divider word on canvas</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Text divider word on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Text divider words on canvas</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div>
+        <div class="ds-pair"><span>Text divider words on surface</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div>
         </div></div>
       </div>
+      <p>Measured with the contrast checker: the words are 8.10:1 on the surface and 7.23:1 on the canvas in light, 9.35:1 and 10.17:1 in dark.</p>
       <h3>Motion</h3>
       <p>None.</p>
       <h3>Touch</h3>
@@ -188,13 +191,14 @@
     </section>
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
-        <li>Text dividers use one lowercase word: "or".</li>
+        <li>The text divider reads "or use email": lowercase, no full stop, and it names what comes next. A bare "or" does not say what the other way is.</li>
+        <li>It appears only with the Google button. When Google sign-in is not configured, neither is shown (L2-003).</li>
         <li>Do not label a horizontal divider; if the group needs a name, use a heading instead.</li>
       </ul>
     </section>
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
       <div class="ds-dodont">
-        <figure class="ds-do"><div class="ds-example__canvas"><div class="stack" style="width: 100%;"><button class="btn btn--block" type="button">Continue with Google</button><p class="divider-text">or</p><button class="btn btn--block" type="button">Use e-mail</button></div></div><figcaption>A text divider between two alternatives.</figcaption></figure>
+        <figure class="ds-do"><div class="ds-example__canvas"><div class="stack" style="width: 100%;"><button class="btn btn--block btn--lg" type="button"><svg class="google-mark" aria-hidden="true" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Continue with Google</button><p class="divider-text">or use email</p><div class="field"><label class="field__label" for="div-do-email">Email</label><input class="input" id="div-do-email" type="email" placeholder="you@example.com" autocomplete="email"></div></div></div><figcaption>A text divider between two ways in, saying which one follows.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><ul class="rows" style="width: 100%;"><li class="row"><span class="row__title">Password</span></li><li><hr class="divider" style="margin: 0;"></li><li class="row"><span class="row__title">Sign out</span></li></ul></div><figcaption>Rows already draw their own rules; an extra divider doubles the line.</figcaption></figure>
         <figure class="ds-do"><div class="ds-example__canvas"><div style="width: 100%;"><h3>Sign-in and security</h3><p class="text-muted" style="margin-top: var(--space-2);">Password changed 14 Oct 2026</p></div></div><figcaption>A heading and space separate a group better than a rule.</figcaption></figure>
         <figure class="ds-dont"><div class="ds-example__canvas"><div style="width: 100%;"><hr class="divider" style="margin-block: var(--space-2);"><p>Password</p><hr class="divider" style="margin-block: var(--space-2);"><p>Sign out</p><hr class="divider" style="margin-block: var(--space-2);"></div></div><figcaption>A rule after every line turns structure into noise.</figcaption></figure>
@@ -209,7 +213,8 @@
           <tr><td>Horizontal spacing</td><td><code>--space-6</code></td><td colspan="2"><span data-token="--space-6"></span></td></tr>
           <tr><td>Vertical spacing</td><td><code>--space-3</code></td><td colspan="2"><span data-token="--space-3"></span></td></tr>
           <tr><td>Vertical minimum height</td><td><code>--icon-size-md</code></td><td colspan="2"><span data-token="--icon-size-md"></span></td></tr>
-          <tr><td>Text label</td><td><code>--text-caption</code></td><td colspan="2"><span data-token="--text-caption"></span></td></tr>
+          <tr><td>Text label</td><td><code>--text-body-sm</code></td><td colspan="2"><span data-token="--text-body-sm"></span></td></tr>
+          <tr><td>Text gap</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr>
           <tr><td>Text colour</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr>
         </tbody>
       </table></div>
@@ -217,21 +222,21 @@
     <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
       <pre><code>&lt;hr class="divider"&gt;
 &lt;span class="divider--vertical" aria-hidden="true"&gt;&lt;/span&gt;
-&lt;p class="divider-text"&gt;or&lt;/p&gt;</code></pre>
+&lt;p class="divider-text"&gt;or use email&lt;/p&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>hr</code> / <code>.divider</code></td><td>Horizontal hairline, <code>--space-6</code> above and below.</td></tr>
         <tr><td><code>.divider--vertical</code></td><td>Vertical hairline in a flex row.</td></tr>
-        <tr><td><code>.divider-text</code></td><td>Word between two flexible rules.</td></tr>
+        <tr><td><code>.divider-text</code></td><td>Phrase between two flexible rules.</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
       <p>Extracted from these mocks:</p>
       <ul>
-        <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> ("or" between Google and e-mail)</li>
+        <li><a href="../../mocks/pages/sign-in/default.html">pages/sign-in/default</a> ("or use email" between the Google button and the form)</li>
         <li><a href="../../mocks/pages/sign-up/default.html">pages/sign-up/default</a> (the same)</li>
         <li><a href="../../mocks/pages/sign-in/invalid.html">pages/sign-in/invalid</a> (the same in the invalid state)</li>
       </ul>
-      <p>Drift fixed during extraction: no <code>&lt;hr&gt;</code> or <code>.divider</code> appears in the mocks; separation comes from component borders and spacing, which is the intended approach. The rules were raw <code>1px</code> borders; they are now <code>--border-width-hairline</code>. <code>.divider--vertical</code> is unused.</p>
+      <p>Drift fixed during extraction: no <code>&lt;hr&gt;</code> or <code>.divider</code> appears in the mocks; separation comes from component borders and spacing, which is the intended approach. The rules were raw <code>1px</code> borders; they are now <code>--border-width-hairline</code>. <code>.divider--vertical</code> is unused. Since <a href="../../adr/0038-log-in-and-sign-up-screens.md">ADR 0038</a> the text divider is <code>--text-body-sm</code> with a <code>--space-4</code> gap and reads "or use email" above the form; before, it was a caption-size "or" under it.</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>

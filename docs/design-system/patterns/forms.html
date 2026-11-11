@@ -58,6 +58,7 @@
       <li><a href="../components/tooltip.html">Tooltip</a></li>
       <li><a href="../components/divider.html">Divider</a></li>
       <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/list.html">List</a></li>
       <li><a href="../components/description-list.html">Description list</a></li>
@@ -72,6 +73,7 @@
       <li><a href="../components/message-thread.html">Message thread</a></li>
       <li><a href="../components/notification-item.html">Notification item</a></li>
       <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
       <li><a href="../components/toast.html">Toast</a></li>
       <li><a href="../components/alert.html">Alert and banner</a></li>
       <li><a href="../components/inline-message.html">Inline message</a></li>
@@ -112,7 +114,7 @@
     <section class="ds-section" id="when"><h2><a href="#when">When to use</a></h2>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Situation</th><th scope="col">Use</th><th scope="col">Example in the mocks</th></tr></thead><tbody>
         <tr><td>One to three fields that finish a task in place</td><td>Form inside a <a href="../components/dialog.html">Dialog</a></td><td>Book a meeting, Decline request, Report listing</td></tr>
-        <tr><td>Account entry, recovery and tokens</td><td>Auth card (<code>.auth-layout</code> + <code>.auth-card</code>), block buttons</td><td>Sign in, Join, Forgot password, Reset password</td></tr>
+        <tr><td>Account entry, recovery and tokens</td><td><a href="../components/auth-layout.html">Auth layout</a>: its split frame for Log in and Sign up, its default card for the rest; block buttons</td><td>Log in, Sign up, Forgot password, Reset password</td></tr>
         <tr><td>Long application with distinct parts</td><td>One page split into <code>&lt;fieldset&gt;</code> sections, <em>Save draft</em> beside the primary</td><td>List your business, Edit listing</td></tr>
         <tr><td>Settings that apply one by one</td><td>Rows of <a href="../components/switch.html">Switch</a>es that save on change, with an inline status</td><td>Notification settings</td></tr>
         <tr><td>Settings that apply together</td><td>Card form with a <em>Save changes</em> primary</td><td>Your account</td></tr>
@@ -121,34 +123,30 @@
       <p>Use a <a href="../components/stepper.html">Stepper</a> only if an application is split across screens. <em>List your business</em> is deliberately one page in sections, with a live preview of the card beside it, so the owner sees everything they are committing to before <em>Submit for verification</em>.</p>
     </section>
     <section class="ds-section" id="structure"><h2><a href="#structure">Structure</a></h2>
-      <p>The anatomy of a submitted form with problems: the summary is an <code>alert--danger</code> with <code>.form-summary</code>, <code>role="alert"</code> and <code>tabindex="-1"</code>; each item links to its field. Each field is label, optional help, control, error, in that order.</p>
+      <p>The anatomy of a submitted form with problems: the summary is an <code>alert--danger</code> with <code>.form-summary</code>, <code>role="alert"</code> and <code>tabindex="-1"</code>; each item links to its field. Each field is label, optional help, control, error, in that order; on Sign up, shown here, the hint sits under the control and an error goes between the two.</p>
       <div class="ds-example"><div class="ds-example__canvas ds-example__canvas--canvas">
-        <form class="card stack" style="width: 100%; max-width: 26rem;" novalidate aria-labelledby="fm-title">
+        <form class="card stack" style="width: 100%; max-width: 28.75rem;" novalidate aria-labelledby="fm-title">
           <h2 id="fm-title" class="card__title">Join Jubilee</h2>
-          <div class="alert alert--danger form-summary" role="alert" id="fm-summary" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Fix 2 things to continue</div><ul class="stack--sm" style="margin: 0; padding-left: var(--space-5);"><li><a href="#fm-email">An account already uses this e-mail</a></li><li><a href="#fm-agree">Agree to the statement of faith to join</a></li></ul></div></div>
-          <div class="form-grid form-grid--2">
-            <div class="field"><label class="field__label" for="fm-first">First name <span class="optional">(required)</span></label><input class="input" id="fm-first" type="text" value="Joanna" autocomplete="given-name" required></div>
-            <div class="field"><label class="field__label" for="fm-last">Last name <span class="optional">(required)</span></label><input class="input" id="fm-last" type="text" value="Adeyemi" autocomplete="family-name" required></div>
-          </div>
-          <div class="field"><label class="field__label" for="fm-email">E-mail <span class="optional">(required)</span></label><input class="input" id="fm-email" type="email" value="joanna.adeyemi@example.com" autocomplete="email" aria-invalid="true" aria-describedby="fm-email-error" required><span class="field__error" id="fm-email-error">An account already uses this e-mail. Sign in instead, or use another address.</span></div>
-          <div class="field"><label class="field__label" for="fm-church">Home church <span class="optional">(optional)</span></label><span class="field__help" id="fm-church-help">Shown to no one. Helps us recommend businesses near you.</span><input class="input" id="fm-church" type="text" value="Grace Toronto Church" aria-describedby="fm-church-help"></div>
-          <div><label class="choice"><input type="checkbox" id="fm-agree" aria-invalid="true" aria-describedby="fm-agree-error"><span class="choice__text">I agree to Jubilee’s statement of faith and terms.</span></label><span class="field__error" id="fm-agree-error">Agree to the statement of faith to join.</span></div>
+          <div class="alert alert--danger form-summary" role="alert" id="fm-summary" tabindex="-1"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">Fix 2 things to continue</div><ul><li><a href="#fm-email">An account already uses this e-mail</a></li><li><a href="#fm-agree">Agree to the statement of faith to join</a></li></ul></div></div>
+          <div class="form-grid form-grid--2"><div class="field"><label class="field__label" for="fm-first">First name</label><input class="input" id="fm-first" type="text" value="Joanna" required autocomplete="given-name"></div><div class="field"><label class="field__label" for="fm-last">Last name</label><input class="input" id="fm-last" type="text" value="Adeyemi" required autocomplete="family-name"></div></div>
+          <div class="field"><label class="field__label" for="fm-email">Email</label><input class="input" id="fm-email" type="email" value="joanna.adeyemi@example.com" placeholder="you@example.com" autocomplete="email" aria-invalid="true" aria-describedby="fm-email-error" required><span class="field__error" id="fm-email-error">An account already uses this e-mail. Log in instead, or use another address.</span></div>
+          <div class="field"><label class="field__label" for="fm-password">Password</label><span class="password-input"><input class="input" id="fm-password" type="password" value="" aria-describedby="fm-password-help" required autocomplete="new-password"><button class="password-input__toggle" type="button" aria-label="Show password"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></span><span class="field__help" id="fm-password-help">At least 10 characters.</span></div>
+          <div class="field"><label class="field__label" for="fm-church">Home church <span class="optional">(optional)</span></label><input class="input" id="fm-church" type="text" value="Grace Toronto Church" placeholder="e.g. The Meeting House" aria-describedby="fm-church-help"><span class="field__help" id="fm-church-help">Shown to no one. Helps us recommend businesses near you.</span></div>
+          <div><label class="choice"><input type="checkbox" id="fm-agree" aria-invalid="true" aria-describedby="fm-agree-error"><span class="choice__text">I am 18 or older and agree to Jubilee’s <a href="../../mocks/pages/statement-of-faith/default.html">statement of faith</a> and <a href="../../mocks/pages/terms/default.html">terms</a>.</span></label><span class="field__error" id="fm-agree-error">Agree to the statement of faith to join.</span></div>
           <button class="btn btn--primary btn--block btn--lg" type="submit">Create account</button>
         </form>
       </div>
-        <div class="ds-example__caption"><span>Join, after pressing <em>Create account</em>. Focus moves to the summary; each link jumps to its field. Values the member typed are kept.</span></div>
-        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;form class="card stack" style="width: 100%; max-width: 26rem;" novalidate aria-labelledby="fm-title"&gt;
-  &lt;h2 id="fm-title" class="card__title"&gt;Join Jubilee&lt;/h2&gt;
-  &lt;div class="alert alert--danger form-summary" role="alert" id="fm-summary" tabindex="-1"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v6M12 16h.01"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;Fix 2 things to continue&lt;/div&gt;&lt;ul class="stack--sm" style="margin: 0; padding-left: var(--space-5);"&gt;&lt;li&gt;&lt;a href="#fm-email"&gt;An account already uses this e-mail&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="#fm-agree"&gt;Agree to the statement of faith to join&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;/div&gt;
-  &lt;div class="form-grid form-grid--2"&gt;
-    &lt;div class="field"&gt;&lt;label class="field__label" for="fm-first"&gt;First name &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fm-first" type="text" value="Joanna" autocomplete="given-name" required&gt;&lt;/div&gt;
-    &lt;div class="field"&gt;&lt;label class="field__label" for="fm-last"&gt;Last name &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fm-last" type="text" value="Adeyemi" autocomplete="family-name" required&gt;&lt;/div&gt;
-  &lt;/div&gt;
-  &lt;div class="field"&gt;&lt;label class="field__label" for="fm-email"&gt;E-mail &lt;span class="optional"&gt;(required)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fm-email" type="email" value="joanna.adeyemi@example.com" autocomplete="email" aria-invalid="true" aria-describedby="fm-email-error" required&gt;&lt;span class="field__error" id="fm-email-error"&gt;An account already uses this e-mail. Sign in instead, or use another address.&lt;/span&gt;&lt;/div&gt;
-  &lt;div class="field"&gt;&lt;label class="field__label" for="fm-church"&gt;Home church &lt;span class="optional"&gt;(optional)&lt;/span&gt;&lt;/label&gt;&lt;span class="field__help" id="fm-church-help"&gt;Shown to no one. Helps us recommend businesses near you.&lt;/span&gt;&lt;input class="input" id="fm-church" type="text" value="Grace Toronto Church" aria-describedby="fm-church-help"&gt;&lt;/div&gt;
-  &lt;div&gt;&lt;label class="choice"&gt;&lt;input type="checkbox" id="fm-agree" aria-invalid="true" aria-describedby="fm-agree-error"&gt;&lt;span class="choice__text"&gt;I agree to Jubilee’s statement of faith and terms.&lt;/span&gt;&lt;/label&gt;&lt;span class="field__error" id="fm-agree-error"&gt;Agree to the statement of faith to join.&lt;/span&gt;&lt;/div&gt;
-  &lt;button class="btn btn--primary btn--block btn--lg" type="submit"&gt;Create account&lt;/button&gt;
-&lt;/form&gt;</code></pre></details></div>
+        <div class="ds-example__caption"><span>Sign up, after pressing <em>Create account</em>. Focus moves to the summary; each link jumps to its field. What the visitor typed is kept, except the password. Only the optional field is marked; the others carry <code>required</code>.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;form class="card stack" style="width: 100%; max-width: 28.75rem;" novalidate aria-labelledby="fm-title"&gt;
+          &lt;h2 id="fm-title" class="card__title"&gt;Join Jubilee&lt;/h2&gt;
+          &lt;div class="alert alert--danger form-summary" role="alert" id="fm-summary" tabindex="-1"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="M12 7v6M12 16h.01"/&gt;&lt;/svg&gt;&lt;div class="alert__body"&gt;&lt;div class="alert__title"&gt;Fix 2 things to continue&lt;/div&gt;&lt;ul&gt;&lt;li&gt;&lt;a href="#fm-email"&gt;An account already uses this e-mail&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href="#fm-agree"&gt;Agree to the statement of faith to join&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;div class="form-grid form-grid--2"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fm-first"&gt;First name&lt;/label&gt;&lt;input class="input" id="fm-first" type="text" value="Joanna" required autocomplete="given-name"&gt;&lt;/div&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="fm-last"&gt;Last name&lt;/label&gt;&lt;input class="input" id="fm-last" type="text" value="Adeyemi" required autocomplete="family-name"&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;div class="field"&gt;&lt;label class="field__label" for="fm-email"&gt;Email&lt;/label&gt;&lt;input class="input" id="fm-email" type="email" value="joanna.adeyemi@example.com" placeholder="you@example.com" autocomplete="email" aria-invalid="true" aria-describedby="fm-email-error" required&gt;&lt;span class="field__error" id="fm-email-error"&gt;An account already uses this e-mail. Log in instead, or use another address.&lt;/span&gt;&lt;/div&gt;
+          &lt;div class="field"&gt;&lt;label class="field__label" for="fm-password"&gt;Password&lt;/label&gt;&lt;span class="password-input"&gt;&lt;input class="input" id="fm-password" type="password" value="" aria-describedby="fm-password-help" required autocomplete="new-password"&gt;&lt;button class="password-input__toggle" type="button" aria-label="Show password"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/&gt;&lt;circle cx="12" cy="12" r="3"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/span&gt;&lt;span class="field__help" id="fm-password-help"&gt;At least 10 characters.&lt;/span&gt;&lt;/div&gt;
+          &lt;div class="field"&gt;&lt;label class="field__label" for="fm-church"&gt;Home church &lt;span class="optional"&gt;(optional)&lt;/span&gt;&lt;/label&gt;&lt;input class="input" id="fm-church" type="text" value="Grace Toronto Church" placeholder="e.g. The Meeting House" aria-describedby="fm-church-help"&gt;&lt;span class="field__help" id="fm-church-help"&gt;Shown to no one. Helps us recommend businesses near you.&lt;/span&gt;&lt;/div&gt;
+          &lt;div&gt;&lt;label class="choice"&gt;&lt;input type="checkbox" id="fm-agree" aria-invalid="true" aria-describedby="fm-agree-error"&gt;&lt;span class="choice__text"&gt;I am 18 or older and agree to Jubilee’s &lt;a href="../../mocks/pages/statement-of-faith/default.html"&gt;statement of faith&lt;/a&gt; and &lt;a href="../../mocks/pages/terms/default.html"&gt;terms&lt;/a&gt;.&lt;/span&gt;&lt;/label&gt;&lt;span class="field__error" id="fm-agree-error"&gt;Agree to the statement of faith to join.&lt;/span&gt;&lt;/div&gt;
+          &lt;button class="btn btn--primary btn--block btn--lg" type="submit"&gt;Create account&lt;/button&gt;
+        &lt;/form&gt;</code></pre></details></div>
       <h3>Sections and actions</h3>
       <p>Long forms group fields in <code>&lt;fieldset&gt;</code>s with a <code>&lt;legend&gt;</code> and an explanation in <code>.field__help</code>. The form ends with <code>.form-actions</code>: secondary actions first, the primary last, right-aligned on wide screens.</p>
       <div class="ds-example"><div class="ds-example__canvas">
@@ -182,7 +180,8 @@
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Element</th><th scope="col">Rule</th></tr></thead><tbody>
         <tr><td>Label</td><td><code>&lt;label class="field__label" for&gt;</code></td><td>Always visible. Never replaced by a placeholder.</td></tr>
         <tr><td>Required or optional marker</td><td><code>&lt;span class="optional"&gt;</code> inside the label</td><td>"(required)" or "(optional)" in subtle text; see Content.</td></tr>
-        <tr><td>Help</td><td><code>.field__help</code> with an id</td><td>Between label and control, so it is read before typing. Referenced by <code>aria-describedby</code>.</td></tr>
+        <tr><td>Label action</td><td><code>.field__action</code> after the label</td><td>Optional. A link on the line of the label, at its right end: "Forgot password?" on Log in.</td></tr>
+        <tr><td>Help</td><td><code>.field__help</code> with an id</td><td>Between label and control, so it is read before typing. On Sign up it sits under the control, after any error. Referenced by <code>aria-describedby</code>.</td></tr>
         <tr><td>Control</td><td><code>.input</code>, <code>.select</code>, <code>.textarea</code>, <code>.choice</code>, <code>.choice-card</code>, <code>.switch</code></td><td>Carries <code>autocomplete</code> for personal data, <code>required</code>, and <code>aria-invalid="true"</code> when wrong.</td></tr>
         <tr><td>Error</td><td><code>.field__error</code> with an id</td><td>Directly under the control; added to <code>aria-describedby</code> after the help id.</td></tr>
         <tr><td>Counter</td><td><code>.field__counter</code></td><td>Under the control for capped text (tagline, 90 characters).</td></tr>
@@ -258,8 +257,8 @@
     <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
       <ul>
         <li>Labels are nouns in sentence case, no colon: "E-mail", "Pastor’s e-mail", "One line on what you do".</li>
-        <li>Mark fields explicitly when a form mixes required and optional fields: "(required)" or "(optional)" on every label, as Join does. A form where every field is required and the purpose is obvious (Sign in, Forgot password) marks nothing.</li>
-        <li>Help says why or how, before the input: "Shown under your name everywhere on Jubilee. 90 characters at most."</li>
+        <li>Mark fields explicitly when a form mixes required and optional fields: "(required)" or "(optional)" on every label, as Edit listing does. Sign up is the exception: it marks only "Home church (optional)", and its required controls carry <code>required</code> alone (L2-126). A form where every field is required and the purpose is obvious (Log in, Forgot password) marks nothing.</li>
+        <li>Help says why or how, before the input: "Shown under your name everywhere on Jubilee. 90 characters at most." Sign up sets its hints under the input, as designed.</li>
         <li>Errors say what to do, in the member’s terms, with an example when the format matters: "Enter your pastor’s e-mail address, like name@church.ca." Never "Invalid input" or "Field required".</li>
         <li>The summary title counts: "Fix 2 things to continue". Its items repeat the first sentence of each inline error.</li>
         <li>The primary names the outcome: "Create account", "Submit for verification", "Send request", "Decline request". Never "Submit" or "OK".</li>
