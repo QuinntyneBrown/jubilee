@@ -53,5 +53,7 @@ public interface IAppDbContext
 
     DbSet<AuditRecord> AuditRecords { get; }
 
+    DbSet<ResponseTimeStat> ResponseTimeStats { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -186,6 +186,7 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
         builder.Property(m => m.Subject).HasMaxLength(200).IsRequired();
         builder.Property(m => m.TextBody).HasMaxLength(4000).IsRequired();
         builder.HasIndex(m => new { m.SentAt, m.NextAttemptAt });
+        builder.HasIndex(m => m.CorrelationId);
     }
 }
 
@@ -266,6 +267,8 @@ public sealed class RequestConfiguration : IEntityTypeConfiguration<Request>
         builder.Property(r => r.OptionLabel).HasMaxLength(100);
         builder.Property(r => r.DeliveryLabel).HasMaxLength(200);
         builder.Property(r => r.ShippingAddress).HasMaxLength(500);
+        builder.Property(r => r.DeclineReason).HasMaxLength(40);
+        builder.Property(r => r.DeclineMessage).HasMaxLength(Request.MaxNoteLength);
         builder.Property(r => r.Kind).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Mode).HasConversion<string>().HasMaxLength(16);
@@ -465,5 +468,16 @@ public sealed class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRec
         builder.HasIndex(a => a.At);
         builder.HasIndex(a => new { a.TargetType, a.TargetId });
         builder.HasIndex(a => a.Actor);
+    }
+}
+
+public sealed class ResponseTimeStatConfiguration : IEntityTypeConfiguration<ResponseTimeStat>
+{
+    public void Configure(EntityTypeBuilder<ResponseTimeStat> builder)
+    {
+        builder.ToTable("ResponseTimeStats");
+        builder.HasKey(s => s.ListingId);
+        builder.Property(s => s.ListingId).ValueGeneratedNever();
+        builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }

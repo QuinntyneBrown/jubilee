@@ -36,6 +36,9 @@ public sealed class GetNavigationSummaryQueryHandler(IAppDbContext db) : IReques
         var waiting = request.IsVerifier
             ? await db.Listings.CountAsync(l => l.Stage == Domain.ListingStage.ReadyToReview && l.DeletedAt == null, cancellationToken)
             : 0;
-        return new NavigationSummary(unread, 0, 0, owns, request.IsVerifier, waiting);
+        var newRequests = owns && request.Subject is not null
+            ? await (from r in db.Requests join l in db.Listings on r.ListingId equals l.Id where l.OwnerId == request.Subject && r.Status == Domain.RequestStatus.New select r.Id).CountAsync(cancellationToken)
+            : 0;
+        return new NavigationSummary(unread, 0, newRequests, owns, request.IsVerifier, waiting);
     }
 }
