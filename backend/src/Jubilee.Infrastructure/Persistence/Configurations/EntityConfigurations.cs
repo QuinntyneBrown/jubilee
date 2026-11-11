@@ -260,7 +260,9 @@ public sealed class RequestConfiguration : IEntityTypeConfiguration<Request>
         builder.Property(r => r.IdempotencyKey).HasMaxLength(100).IsRequired();
         builder.Property(r => r.ServiceName).HasMaxLength(200);
         builder.Property(r => r.Location).HasMaxLength(200);
-        builder.Property(r => r.Note).HasMaxLength(Request.MaxNoteLength);
+        builder.Property(r => r.Note).HasMaxLength(Request.MaxDescriptionLength);
+        builder.Property(r => r.Budget).HasMaxLength(Request.MaxBudgetLength);
+        builder.Property(r => r.Phone).HasMaxLength(10);
         builder.Property(r => r.Kind).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Mode).HasConversion<string>().HasMaxLength(16);
