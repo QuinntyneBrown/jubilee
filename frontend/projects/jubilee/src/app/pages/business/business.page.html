@@ -71,13 +71,9 @@
     @let hasProducts = listing.products.length > 0;
     @let isOwner = listing.viewerRelation === 'owner';
     @if (isOwner) {
-      <div class="alert" role="status">
-        <svg jb-icon name="info"></svg>
-        <div class="alert__body">
-          <div class="alert__title">This is how members see your listing</div>
-          <div>It’s live and verified. Changes you make are published straight away.</div>
-          <div class="alert__actions"><a routerLink="/my-business">Go to My business</a></div>
-        </div>
+      <div jb-alert heading="This is how members see your listing">
+        <div>It’s live and verified. Changes you make are published straight away.</div>
+        <a slot="actions" routerLink="/my-business">Go to My business</a>
       </div>
     }
     <div class="split" style="margin-top: var(--space-2)">

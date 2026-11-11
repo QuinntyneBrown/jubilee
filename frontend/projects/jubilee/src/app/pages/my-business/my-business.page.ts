@@ -18,7 +18,7 @@ import {
   RequestDecision,
   RequestKind,
 } from 'api';
-import { BusinessCard, EmptyState, Icon, Button, CloseButton } from 'components';
+import { BusinessCard, EmptyState, Icon, Button, CloseButton, Alert } from 'components';
 import {
   ConfirmRequestData,
   ConfirmRequestDialog,
@@ -44,7 +44,16 @@ const UNDO_MS = 8000;
 /** My business at /my-business (L2-085, L2-086): the week in numbers, what needs a reply, where verification stands. */
 @Component({
   selector: 'jb-my-business-page',
-  imports: [BusinessCard, RouterLink, EmptyState, Icon, WorkspaceHeader, Button, CloseButton],
+  imports: [
+    BusinessCard,
+    RouterLink,
+    EmptyState,
+    Icon,
+    WorkspaceHeader,
+    Button,
+    CloseButton,
+    Alert,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './my-business.page.html',

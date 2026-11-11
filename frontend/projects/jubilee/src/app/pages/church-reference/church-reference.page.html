@@ -61,30 +61,34 @@
         <h1>Can you confirm {{ request.ownerName }}?</h1>
         <p class="text-muted">{{ request.intro }}</p>
         @if (problems().length) {
-          <div class="alert alert--danger form-summary" role="alert" id="summary" tabindex="-1">
-            <svg jb-icon name="alert"></svg>
-            <div class="alert__body">
-              <div class="alert__title">
-                Fix {{ problems().length }} {{ problems().length === 1 ? 'thing' : 'things' }} to
-                continue
-              </div>
-              <ul class="alert__list">
-                @for (problem of problems(); track problem.field) {
-                  <li>
-                    <a [href]="'#' + problem.id" (click)="goTo($event, problem.id)">{{
-                      problem.summary
-                    }}</a>
-                  </li>
-                }
-              </ul>
-            </div>
+          <div
+            jb-alert
+            tone="danger"
+            [heading]="
+              'Fix ' +
+              problems().length +
+              ' ' +
+              (problems().length === 1 ? 'thing' : 'things') +
+              ' to continue'
+            "
+            class="form-summary"
+            role="alert"
+            id="summary"
+            tabindex="-1"
+          >
+            <ul class="alert__list">
+              @for (problem of problems(); track problem.field) {
+                <li>
+                  <a [href]="'#' + problem.id" (click)="goTo($event, problem.id)">{{
+                    problem.summary
+                  }}</a>
+                </li>
+              }
+            </ul>
           </div>
         }
         @if (failed()) {
-          <div class="alert alert--danger" role="alert">
-            <svg jb-icon name="alert"></svg>
-            <div class="alert__body">We couldn’t send that. Try again.</div>
-          </div>
+          <div jb-alert tone="danger" role="alert">We couldn’t send that. Try again.</div>
         }
         <form class="stack" novalidate (submit)="$event.preventDefault(); send()">
           <fieldset [disabled]="busy()">

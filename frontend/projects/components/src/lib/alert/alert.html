@@ -1,0 +1,9 @@
+<svg jb-icon class="alert__icon" [name]="shownIcon()"></svg>
+<span class="alert__body">
+  @if (heading(); as heading) {
+    <span class="alert__title">{{ heading }}</span>
+  }
+  <ng-content />
+  <span class="alert__actions"><ng-content select="[slot=actions]" /></span>
+</span>
+<ng-content select="[jb-close-button]" />

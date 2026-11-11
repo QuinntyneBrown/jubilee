@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ADMIN_API, ReportActionKind, ReportDetail } from 'api';
-import { EmptyState, Icon, Button } from 'components';
+import { EmptyState, Icon, Button, Alert } from 'components';
 import {
   ReportActionData,
   ReportActionDialog,
@@ -43,7 +43,7 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
  */
 @Component({
   selector: 'jb-admin-report-page',
-  imports: [RouterLink, EmptyState, Icon, TeamNav, Button],
+  imports: [RouterLink, EmptyState, Icon, TeamNav, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-report.page.html',
 })

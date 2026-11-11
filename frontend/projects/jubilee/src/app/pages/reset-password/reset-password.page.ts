@@ -13,7 +13,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
-import { BrandMark, EmptyState, Icon, Button } from 'components';
+import { BrandMark, EmptyState, Icon, Button, Alert } from 'components';
 
 type View = 'loading' | 'form' | 'submitting' | 'success' | 'expired' | 'error';
 type Field = 'password' | 'confirm';
@@ -52,7 +52,7 @@ function text(code: string, length: number): string {
  */
 @Component({
   selector: 'jb-reset-password-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button],
+  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './reset-password.page.html',
@@ -61,7 +61,7 @@ export class ResetPasswordPage implements OnInit {
   private readonly api = inject(PASSWORD_RESET_API);
   private readonly document = inject(DOCUMENT);
   private readonly token = inject(ActivatedRoute).snapshot.paramMap.get('token') ?? '';
-  private readonly summaryRef = viewChild<ElementRef<HTMLElement>>('summaryBox');
+  private readonly summaryRef = viewChild('summaryBox', { read: ElementRef<HTMLElement> });
 
   protected readonly view = signal<View>('loading');
   protected readonly accountEmail = signal('');

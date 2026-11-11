@@ -35,60 +35,55 @@
       @let account = current.value;
       @if (savedNow(); as when) {
         <div
-          class="alert alert--success"
-          role="status"
+          jb-alert
+          tone="success"
+          heading="Profile saved"
           style="max-width: 42rem; margin-bottom: var(--space-4)"
         >
-          <svg jb-icon name="check"></svg>
-          <div class="alert__body">
-            <div class="alert__title">Profile saved</div>
-            <div>{{ when }}. Businesses see your new phone number on requests from now on.</div>
-          </div>
+          <div>{{ when }}. Businesses see your new phone number on requests from now on.</div>
         </div>
       }
       @if (failed()) {
         <div
-          class="alert alert--danger"
+          jb-alert
+          tone="danger"
+          heading="We couldn’t save your profile"
           role="alert"
           style="max-width: 42rem; margin-bottom: var(--space-4)"
         >
-          <svg jb-icon name="alert"></svg>
-          <div class="alert__body">
-            <div class="alert__title">We couldn’t save your profile</div>
-            <div>
-              Your connection dropped before it reached us. Nothing changed and what you typed is
-              still here. Try again.
-            </div>
+          <div>
+            Your connection dropped before it reached us. Nothing changed and what you typed is
+            still here. Try again.
           </div>
         </div>
       }
       @if (problems().length > 0) {
         <div
-          class="alert alert--danger form-summary"
+          jb-alert
+          tone="danger"
+          [heading]="
+            'Fix ' +
+            problems().length +
+            ' ' +
+            (problems().length === 1 ? 'thing' : 'things') +
+            ' to continue'
+          "
+          class="form-summary"
           role="alert"
           id="summary"
           tabindex="-1"
           #summaryBox
           style="max-width: 42rem; margin-bottom: var(--space-4)"
         >
-          <svg jb-icon name="alert"></svg>
-          <div class="alert__body">
-            <div class="alert__title">
-              Fix {{ problems().length }} {{ problems().length === 1 ? 'thing' : 'things' }} to
-              continue
-            </div>
-            <ul class="alert__list">
-              @for (item of problems(); track item.field) {
-                <li>
-                  <a
-                    [href]="'#' + item.id"
-                    (click)="$event.preventDefault(); focusField(item.id)"
-                    >{{ item.text }}</a
-                  >
-                </li>
-              }
-            </ul>
-          </div>
+          <ul class="alert__list">
+            @for (item of problems(); track item.field) {
+              <li>
+                <a [href]="'#' + item.id" (click)="$event.preventDefault(); focusField(item.id)">{{
+                  item.text
+                }}</a>
+              </li>
+            }
+          </ul>
         </div>
       }
       <form
@@ -281,22 +276,14 @@
           JSON file. We e-mail you a link within 24 hours. It works for 7 days.
         </p>
         @if (exportFailed()) {
-          <div class="alert alert--danger" role="alert">
-            <svg jb-icon name="alert"></svg>
-            <div class="alert__body">
-              <div class="alert__title">We couldn’t start your download</div>
-              <div>Nothing was changed. Try again, or write to help&#64;jubilee.example.</div>
-            </div>
+          <div jb-alert tone="danger" heading="We couldn’t start your download" role="alert">
+            <div>Nothing was changed. Try again, or write to help&#64;jubilee.example.</div>
           </div>
         }
         @if (exportWaiting()) {
-          <div class="alert alert--info" role="status">
-            <svg jb-icon name="info"></svg>
-            <div class="alert__body">
-              <div class="alert__title">We’re preparing your data</div>
-              <div>
-                We’ll e-mail a link to {{ account.email }} within 24 hours. It works for 7 days.
-              </div>
+          <div jb-alert heading="We’re preparing your data">
+            <div>
+              We’ll e-mail a link to {{ account.email }} within 24 hours. It works for 7 days.
             </div>
           </div>
         }

@@ -62,48 +62,38 @@
       </div>
     } @else {
       @if (b.paused) {
-        <div class="alert banner" role="status">
-          <svg jb-icon name="info"></svg>
-          <div class="alert__body">
-            <span
-              ><strong>Your listing is paused.</strong> It’s hidden from browse and search until you
-              resume it.</span
-            >
-            <span class="alert__actions" style="margin: 0">
-              <button
-                jb-button
-                size="sm"
-                type="button"
-                [disabled]="resuming()"
-                [busy]="resuming()"
-                (click)="resume()"
-              >
-                Resume listing
-              </button>
-            </span>
-          </div>
+        <div jb-alert banner>
+          <span
+            ><strong>Your listing is paused.</strong> It’s hidden from browse and search until you
+            resume it.</span
+          >
+
+          <button
+            slot="actions"
+            jb-button
+            size="sm"
+            type="button"
+            [disabled]="resuming()"
+            [busy]="resuming()"
+            (click)="resume()"
+          >
+            Resume listing
+          </button>
         </div>
         @if (resumeFailed()) {
-          <div class="alert alert--danger" role="alert">
-            <svg jb-icon name="alert"></svg>
-            <div class="alert__body">
-              <div class="alert__title">We couldn’t resume it</div>
-              <div>Your listing is still paused. Try again.</div>
-            </div>
+          <div jb-alert tone="danger" heading="We couldn’t resume it" role="alert">
+            <div>Your listing is still paused. Try again.</div>
           </div>
         }
       } @else if (b.justApproved && !bannerDismissed()) {
-        <div class="alert banner alert--success" role="status">
-          <svg jb-icon name="check"></svg>
-          <div class="alert__body">
-            <span
-              ><strong>{{ b.name }} is verified and live.</strong> Members can find you in
-              {{ b.categorySlug === 'shops' ? 'Shops' : 'the directory' }}.</span
-            >
-            <span class="alert__actions" style="margin: 0">
-              <a [routerLink]="['/b', b.slug]">View listing</a>
-            </span>
-          </div>
+        <div jb-alert tone="success" banner>
+          <span
+            ><strong>{{ b.name }} is verified and live.</strong> Members can find you in
+            {{ b.categorySlug === 'shops' ? 'Shops' : 'the directory' }}.</span
+          >
+
+          <a slot="actions" [routerLink]="['/b', b.slug]">View listing</a>
+
           <button
             jb-close-button
             type="button"
@@ -265,41 +255,37 @@
           </div>
         } @else {
           @if (b.state === 'changes-requested' && b.verification?.changesRequested; as changes) {
-            <div class="alert alert--warning" role="status">
-              <svg jb-icon name="alert"></svg>
-              <div class="alert__body">
-                <div class="alert__title">
-                  {{ changes.areas.length === 1 ? 'One change needed' : 'Changes needed' }} before
-                  we can publish
-                </div>
-                <div>
-                  {{ changes.message }}
-                  {{ changes.reviewerFirstName }} from the verification team.
-                </div>
-                <div class="alert__actions">
-                  <a jb-button size="sm" variant="primary" routerLink="/my-business/listing"
-                    >Edit listing</a
-                  >
-                </div>
+            <div
+              jb-alert
+              tone="warning"
+              [heading]="
+                (changes.areas.length === 1 ? 'One change needed' : 'Changes needed') +
+                ' before we can publish'
+              "
+            >
+              <div>
+                {{ changes.message }}
+                {{ changes.reviewerFirstName }} from the verification team.
               </div>
+
+              <a
+                slot="actions"
+                jb-button
+                size="sm"
+                variant="primary"
+                routerLink="/my-business/listing"
+                >Edit listing</a
+              >
             </div>
           } @else if (b.state === 'declined' && b.verification?.declined; as declined) {
-            <div class="alert alert--danger" role="status">
-              <svg jb-icon name="alert"></svg>
-              <div class="alert__body">
-                <div class="alert__title">We couldn’t verify this listing</div>
-                <div>{{ declined.reason }}</div>
-              </div>
+            <div jb-alert tone="danger" heading="We couldn’t verify this listing">
+              <div>{{ declined.reason }}</div>
             </div>
           } @else if (b.state === 'pending-reference' && b.reference; as reference) {
-            <div class="alert" role="status">
-              <svg jb-icon name="info"></svg>
-              <div class="alert__body">
-                <div class="alert__title">Waiting for your church reference</div>
-                <div>
-                  We e-mailed {{ reference.referenceEmail }} at {{ reference.church }}. Once they
-                  answer, we review and publish within two business days.
-                </div>
+            <div jb-alert heading="Waiting for your church reference">
+              <div>
+                We e-mailed {{ reference.referenceEmail }} at {{ reference.church }}. Once they
+                answer, we review and publish within two business days.
               </div>
             </div>
           }

@@ -3,21 +3,22 @@
   <h1>One more step</h1>
   <p class="text-muted">Joining with Google. Agree to continue.</p>
   @if (invalid()) {
-    <div class="alert alert--danger form-summary" role="alert" id="summary" tabindex="-1">
-      <svg jb-icon name="alert"></svg>
-      <div class="alert__body">
-        <div class="alert__title">Fix 1 thing to continue</div>
-        <ul class="alert__list">
-          <li><a href="#agree">Agree to the statement of faith to join</a></li>
-        </ul>
-      </div>
+    <div
+      jb-alert
+      tone="danger"
+      heading="Fix 1 thing to continue"
+      class="form-summary"
+      role="alert"
+      id="summary"
+      tabindex="-1"
+    >
+      <ul class="alert__list">
+        <li><a href="#agree">Agree to the statement of faith to join</a></li>
+      </ul>
     </div>
   }
   @if (failed()) {
-    <div class="alert alert--danger" role="alert">
-      <svg jb-icon name="alert"></svg>
-      <div class="alert__body">We couldn’t save that. Try again.</div>
-    </div>
+    <div jb-alert tone="danger" role="alert">We couldn’t save that. Try again.</div>
   }
   <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">
     <div>

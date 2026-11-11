@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { Alert, AlertTone } from '../alert/alert';
 import { Icon } from '../icon/icon';
 import { Button } from '../button/button';
 import { CloseButton } from '../button/close-button';
@@ -15,16 +16,10 @@ export type ConnectionBannerKind = 'offline' | 'unreachable' | 'slow' | 'back-on
  */
 @Component({
   selector: 'div[jb-connection-banner]',
-  imports: [Icon, Button, CloseButton],
+  imports: [Alert, Icon, Button, CloseButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    class: 'alert banner',
-    '[class.alert--warning]': 'kind() === "offline" || kind() === "slow"',
-    '[class.alert--danger]': 'kind() === "unreachable"',
-    '[class.alert--success]': 'kind() === "back-online"',
-    role: 'status',
-  },
   templateUrl: './connection-banner.html',
+  styleUrl: './connection-banner.scss',
 })
 export class ConnectionBanner {
   readonly kind = input.required<ConnectionBannerKind>();
@@ -38,4 +33,15 @@ export class ConnectionBanner {
   readonly statusUrl = input('');
   readonly retry = output<void>();
   readonly dismiss = output<void>();
+
+  protected readonly tone = computed<AlertTone>(() => {
+    switch (this.kind()) {
+      case 'unreachable':
+        return 'danger';
+      case 'back-online':
+        return 'success';
+      default:
+        return 'warning';
+    }
+  });
 }

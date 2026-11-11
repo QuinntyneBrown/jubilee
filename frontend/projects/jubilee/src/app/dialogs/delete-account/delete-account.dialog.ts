@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ACCOUNT_DATA_API, DeletionSummary } from 'api';
-import { Icon, Button } from 'components';
+import { Icon, Button, Alert } from 'components';
 
 type View = 'loading' | 'form' | 'busy' | 'failed' | 'unavailable';
 
@@ -23,7 +23,7 @@ const PHRASE = 'DELETE';
  */
 @Component({
   selector: 'jb-delete-account-dialog',
-  imports: [FormsModule, Icon, Button],
+  imports: [FormsModule, Icon, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './delete-account.dialog.html',

@@ -42,11 +42,8 @@
         </a>
       </div>
       @if (conversation.awayUntil) {
-        <p class="alert alert--info" role="status" data-testid="away">
-          <svg jb-icon name="info"></svg>
-          <span class="alert__body"
-            >{{ conversation.counterpart.name }} is away and will reply when they’re back.</span
-          >
+        <p jb-alert data-testid="away">
+          {{ conversation.counterpart.name }} is away and will reply when they’re back.
         </p>
       }
       @if (entries().length === 0) {

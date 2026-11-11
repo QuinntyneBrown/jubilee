@@ -12,34 +12,34 @@
   } @else {
     <h1>Sign in to Jubilee</h1>
     @if (notice()) {
-      <div class="alert alert--danger" role="alert">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">{{ notice() }}</div>
-      </div>
+      <div jb-alert tone="danger" role="alert">{{ notice() }}</div>
     }
     @if (summary().length > 0) {
       <div
-        class="alert alert--danger form-summary"
+        jb-alert
+        tone="danger"
+        [heading]="
+          'Fix ' +
+          summary().length +
+          ' ' +
+          (summary().length === 1 ? 'thing' : 'things') +
+          ' to continue'
+        "
+        class="form-summary"
         role="alert"
         id="summary"
         tabindex="-1"
         #summaryBox
       >
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">
-            Fix {{ summary().length }} {{ summary().length === 1 ? 'thing' : 'things' }} to continue
-          </div>
-          <ul class="alert__list">
-            @for (item of summary(); track item.id) {
-              <li>
-                <a [href]="'#' + item.id" (click)="$event.preventDefault(); focusField(item.id)">{{
-                  item.text
-                }}</a>
-              </li>
-            }
-          </ul>
-        </div>
+        <ul class="alert__list">
+          @for (item of summary(); track item.id) {
+            <li>
+              <a [href]="'#' + item.id" (click)="$event.preventDefault(); focusField(item.id)">{{
+                item.text
+              }}</a>
+            </li>
+          }
+        </ul>
       </div>
     }
     <form class="stack" novalidate (submit)="$event.preventDefault(); submit()">

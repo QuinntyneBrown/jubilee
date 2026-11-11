@@ -44,20 +44,18 @@
   }
 </div>
 @if (item.soldOut) {
-  <div class="alert alert--warning" role="status">
-    <svg jb-icon name="alert"></svg>
-    <div class="alert__body">
-      <div class="alert__title">
-        {{
-          item.options.length
-            ? 'Sold out in every ' + (item.optionName ?? 'option').toLowerCase()
-            : 'Sold out'
-        }}
-      </div>
-      @if (item.restockNote) {
-        <div>{{ item.restockNote }}</div>
-      }
-    </div>
+  <div
+    jb-alert
+    tone="warning"
+    [heading]="
+      item.options.length
+        ? 'Sold out in every ' + (item.optionName ?? 'option').toLowerCase()
+        : 'Sold out'
+    "
+  >
+    @if (item.restockNote) {
+      <div>{{ item.restockNote }}</div>
+    }
   </div>
 }
 <div class="detail-head__actions">

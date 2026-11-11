@@ -10,7 +10,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ListingChanges, ListingEditor, ListingPhoto, MY_BUSINESS_API } from 'api';
-import { BusinessCard, EmptyState, Icon, Button, CloseButton } from 'components';
+import { BusinessCard, EmptyState, Icon, Button, CloseButton, Alert } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
 import { WorkspaceHeader } from '../my-business/workspace-header';
 
@@ -39,6 +39,7 @@ type Saving = 'idle' | 'saving';
     WorkspaceHeader,
     Button,
     CloseButton,
+    Alert,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

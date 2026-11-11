@@ -147,12 +147,7 @@
         }
       </section>
       @if (report.status === 'resolved') {
-        <p class="alert alert--info" role="status">
-          <svg jb-icon name="info"></svg>
-          <span class="alert__body"
-            >This report is resolved. No more actions can be taken on it.</span
-          >
-        </p>
+        <p jb-alert>This report is resolved. No more actions can be taken on it.</p>
       } @else {
         <section class="card" aria-labelledby="act">
           <h2 id="act" class="card__title">Resolve</h2>

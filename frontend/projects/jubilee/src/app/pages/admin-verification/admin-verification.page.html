@@ -67,70 +67,45 @@
       }
     </div>
     @if (decided(); as result) {
-      <div class="alert alert--success" role="status">
-        <svg jb-icon name="verified"></svg>
-        <div class="alert__body">
-          <div class="alert__title">
-            {{ result.stage === 'live' ? 'Approved and live' : result.stageLabel }}
-          </div>
-          <div>{{ r.owner.name.split(' ')[0] }} has been e-mailed.</div>
-        </div>
+      <div
+        jb-alert
+        tone="success"
+        icon="verified"
+        [heading]="result.stage === 'live' ? 'Approved and live' : result.stageLabel"
+      >
+        <div>{{ r.owner.name.split(' ')[0] }} has been e-mailed.</div>
       </div>
     } @else if (r.stage === 'live' && r.decision; as decision) {
-      <div class="alert alert--success" role="status">
-        <svg jb-icon name="verified"></svg>
-        <div class="alert__body">
-          <div class="alert__title">Approved and live</div>
-          <div>
-            {{ decision.decidedByName }} approved {{ r.name }} {{ when(decision.decidedAt) }}.
-          </div>
+      <div jb-alert tone="success" icon="verified" heading="Approved and live">
+        <div>
+          {{ decision.decidedByName }} approved {{ r.name }} {{ when(decision.decidedAt) }}.
         </div>
       </div>
     } @else if (r.stage === 'changes-requested' && r.decision; as decision) {
-      <div class="alert alert--warning" role="status">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">Waiting on the owner</div>
-          <div>
-            {{ decision.decidedByName }} asked for {{ decision.areas.length }}
-            {{ decision.areas.length === 1 ? 'change' : 'changes' }}
-            {{ when(decision.decidedAt) }}. The listing returns to the queue when they resubmit.
-          </div>
+      <div jb-alert tone="warning" heading="Waiting on the owner">
+        <div>
+          {{ decision.decidedByName }} asked for {{ decision.areas.length }}
+          {{ decision.areas.length === 1 ? 'change' : 'changes' }}
+          {{ when(decision.decidedAt) }}. The listing returns to the queue when they resubmit.
         </div>
       </div>
     } @else if (r.stage === 'declined') {
-      <div class="alert alert--danger" role="status">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">Declined</div>
-          <div>This listing was closed. The owner has been told why.</div>
-        </div>
+      <div jb-alert tone="danger" heading="Declined">
+        <div>This listing was closed. The owner has been told why.</div>
       </div>
     }
     @if (r.isOwnListing) {
-      <div class="alert alert--info" role="status">
-        <svg jb-icon name="info"></svg>
-        <div class="alert__body">
-          <div class="alert__title">This is your own listing</div>
-          <div>Another member of the team has to decide on it.</div>
-        </div>
+      <div jb-alert heading="This is your own listing">
+        <div>Another member of the team has to decide on it.</div>
       </div>
     } @else if (open() && r.cannotDecideBecause; as because) {
-      <div class="alert alert--warning" role="status">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">Not ready to approve</div>
-          <div>{{ because }}</div>
-        </div>
+      <div jb-alert tone="warning" heading="Not ready to approve">
+        <div>{{ because }}</div>
       </div>
     }
     @if (r.changedSinceRequest.length > 0) {
-      <div class="alert alert--info" role="status">
-        <svg jb-icon name="info"></svg>
-        <div class="alert__body">
-          <div class="alert__title">Changed since your request</div>
-          <div>{{ r.changedSinceRequest.join(', ') }}</div>
-        </div>
+      <div jb-alert heading="Changed since your request">
+        <div>{{ r.changedSinceRequest.join(', ') }}</div>
       </div>
     }
     <div class="split" style="margin-top: var(--space-6)">

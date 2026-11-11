@@ -14,6 +14,8 @@ export class ShellPage {
   readonly avatar: Locator;
   readonly footer: Locator;
   readonly tabBar: Locator;
+  /** The banner between the top bar and the page: verify e-mail, or the connection. */
+  readonly chromeBanner: Locator;
 
   constructor(protected readonly page: Page) {
     this.skipLink = page.locator('a.skip-link');
@@ -27,6 +29,7 @@ export class ShellPage {
     this.avatar = this.topBar.locator('.avatar');
     this.footer = page.locator('footer.footer');
     this.tabBar = page.getByRole('navigation', { name: 'Primary, phone' });
+    this.chromeBanner = page.locator('.alert.banner');
   }
 
   /** The chrome's parts, for the visual sweep; the tab bar shows under 768 px only. */

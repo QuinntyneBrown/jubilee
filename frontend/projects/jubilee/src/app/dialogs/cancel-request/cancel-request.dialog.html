@@ -28,12 +28,8 @@
   </div>
   @if (view() === 'failed') {
     <div class="dialog__body stack">
-      <div class="alert alert--danger" role="alert">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">We couldn’t cancel it</div>
-          <div>The request is still open. Check your connection and try again.</div>
-        </div>
+      <div jb-alert tone="danger" heading="We couldn’t cancel it" role="alert">
+        <div>The request is still open. Check your connection and try again.</div>
       </div>
     </div>
   }

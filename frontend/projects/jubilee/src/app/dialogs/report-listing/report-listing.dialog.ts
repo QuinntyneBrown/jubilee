@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { REPORTS_API, ReportReason } from 'api';
-import { Icon, Button } from 'components';
+import { Icon, Button, Alert } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from '../../services/message-time';
 
@@ -47,7 +47,7 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-report-listing-dialog',
-  imports: [FormsModule, Icon, Button],
+  imports: [FormsModule, Icon, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './report-listing.dialog.html',

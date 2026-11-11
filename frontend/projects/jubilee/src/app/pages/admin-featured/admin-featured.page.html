@@ -40,10 +40,7 @@
     >
       <h2 id="fw" class="card__title">Featured this week</h2>
       @if (problem(); as message) {
-        <div class="alert alert--danger" role="alert">
-          <svg jb-icon name="alert"></svg>
-          <div class="alert__body">{{ message }}</div>
-        </div>
+        <div jb-alert tone="danger" role="alert">{{ message }}</div>
       }
       <div class="field" style="max-width: 16rem">
         <label class="field__label" for="start">Starts on</label>

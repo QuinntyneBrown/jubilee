@@ -1,0 +1,94 @@
+// Block: alert, with its full-width variant, banner. The host is the div.
+:host {
+  --alert-bg: var(--color-info-bg);
+  --alert-fg: var(--color-info-fg);
+  --alert-border: var(--color-info-border);
+  --alert-icon: var(--color-info-icon);
+  // The close button sits in the corner of the padding.
+  --jb-close-margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-1)) 0 0;
+
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border-width-hairline) solid var(--alert-border);
+  border-left-width: var(--border-width-accent);
+  border-radius: var(--radius-md);
+  background: var(--alert-bg);
+  color: var(--alert-fg);
+}
+
+:host(.alert--success) {
+  --alert-bg: var(--color-success-bg);
+  --alert-fg: var(--color-success-fg);
+  --alert-border: var(--color-success-border);
+  --alert-icon: var(--color-success-icon);
+}
+
+:host(.alert--warning) {
+  --alert-bg: var(--color-warning-bg);
+  --alert-fg: var(--color-warning-fg);
+  --alert-border: var(--color-warning-border);
+  --alert-icon: var(--color-warning-icon);
+}
+
+:host(.alert--danger) {
+  --alert-bg: var(--color-danger-bg);
+  --alert-fg: var(--color-danger-fg);
+  --alert-border: var(--color-danger-border);
+  --alert-icon: var(--color-danger-icon);
+}
+
+.alert__icon {
+  color: var(--alert-icon);
+  margin-top: var(--space-0-5);
+}
+
+.alert__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  overflow-wrap: anywhere;
+}
+
+.alert__title {
+  font: var(--text-label);
+}
+
+// The actions are set in the alert's own colour and label style: links through the link
+// knobs, buttons through the knobs of jb-button.
+.alert__actions {
+  --jb-link-color: currentColor;
+  --jb-link-hover-color: currentColor;
+  --jb-btn-fg: currentColor;
+  --jb-btn-font-weight: var(--font-weight-medium);
+
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+  font: var(--text-label);
+}
+
+.alert__actions:empty {
+  display: none;
+}
+
+:host(.banner) {
+  border-radius: 0;
+  border-left-width: var(--border-width-hairline);
+  border-top: 0;
+  border-inline: 0;
+  justify-content: center;
+}
+
+:host(.banner) .alert__body {
+  flex: 0 1 auto;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+:host(.banner) .alert__actions {
+  margin: 0;
+}

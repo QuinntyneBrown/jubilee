@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Meta } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { REFERENCE_API, ReferenceAnswerValue, ReferenceRequestView } from 'api';
-import { BrandMark, Icon, Button } from 'components';
+import { BrandMark, Icon, Button, Alert } from 'components';
 
 type Field = 'answer' | 'name' | 'role' | 'note';
 
@@ -21,7 +21,7 @@ const MESSAGES: Record<string, string> = {
 /** ChurchReferencePage (L2-081, L2-082): a pastor or elder confirms or declines the owner, without an account. */
 @Component({
   selector: 'jb-church-reference-page',
-  imports: [FormsModule, RouterLink, BrandMark, Icon, Button],
+  imports: [FormsModule, RouterLink, BrandMark, Icon, Button, Alert],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './church-reference.page.html',

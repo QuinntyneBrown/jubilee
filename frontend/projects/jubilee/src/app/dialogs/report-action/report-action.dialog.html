@@ -23,12 +23,8 @@
   </div>
   <form class="dialog__body stack" id="report-action-form" novalidate (ngSubmit)="send()">
     @if (view() === 'failed') {
-      <div class="alert alert--danger" role="alert">
-        <svg jb-icon name="alert"></svg>
-        <div class="alert__body">
-          <div class="alert__title">We couldn’t save that action</div>
-          <div>Nothing was changed and your note is kept. Try again.</div>
-        </div>
+      <div jb-alert tone="danger" heading="We couldn’t save that action" role="alert">
+        <div>Nothing was changed and your note is kept. Try again.</div>
       </div>
     }
     @if (wording().messages) {
