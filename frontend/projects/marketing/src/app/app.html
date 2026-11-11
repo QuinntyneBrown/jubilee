@@ -3,9 +3,7 @@
   <a slot="brand" jb-lockup size="sm" href="#top" aria-label="Jubilee home"></a>
   <a slot="action" jb-marketing-button variant="pill" [href]="browseUrl">
     Open Jubilee
-    <svg class="mkt-icon" aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M7 7h10v10M7 17 17 7" />
-    </svg>
+    <svg jb-icon name="arrow-up-right"></svg>
   </a>
 </header>
 <main id="main" tabindex="-1">
@@ -22,15 +20,11 @@
       <div class="mkt-hero__actions">
         <a jb-marketing-button [href]="browseUrl">
           Start browsing
-          <svg class="mkt-icon" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M7 7h10v10M7 17 17 7" />
-          </svg>
+          <svg jb-icon name="arrow-up-right"></svg>
         </a>
-        <a jb-marketing-link href="#film">
+        <a jb-marketing-link iconSize="sm" href="#film">
           Watch the film
-          <svg class="mkt-icon mkt-icon--sm" aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M12 5v14M19 12l-7 7-7-7" />
-          </svg>
+          <svg jb-icon name="arrow-down"></svg>
         </a>
       </div>
       <p class="mkt-hero__note">Free for members · Every business church-verified</p>
@@ -72,9 +66,7 @@
     </h2>
     <a jb-marketing-button [href]="browseUrl">
       Start browsing
-      <svg class="mkt-icon" aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M7 7h10v10M7 17 17 7" />
-      </svg>
+      <svg jb-icon name="arrow-up-right"></svg>
     </a>
   </section>
 </main>

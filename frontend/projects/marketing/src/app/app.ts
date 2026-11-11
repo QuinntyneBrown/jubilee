@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
   AppGlimpse,
   FloatingNote,
+  Icon,
   Lockup,
   MarketingButton,
   MarketingFooter,
@@ -22,6 +23,7 @@ import { InsideTheApp } from './inside-the-app/inside-the-app';
 @Component({
   selector: 'jb-root',
   imports: [
+    Icon,
     MarketingFooter,
     MarketingNav,
     SkipLink,
