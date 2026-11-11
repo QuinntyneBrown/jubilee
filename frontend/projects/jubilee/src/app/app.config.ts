@@ -15,7 +15,9 @@ import {
   HttpListingsApi,
   HttpMessagesApi,
   HttpListingDraftsApi,
+  HttpReferenceApi,
   HttpRequestsApi,
+  REFERENCE_API,
   LISTING_DRAFTS_API,
   MESSAGES_API,
   REQUESTS_API,
@@ -45,6 +47,7 @@ export const appConfig: ApplicationConfig = {
     { provide: MESSAGES_API, useClass: HttpMessagesApi },
     { provide: REQUESTS_API, useClass: HttpRequestsApi },
     { provide: LISTING_DRAFTS_API, useClass: HttpListingDraftsApi },
+    { provide: REFERENCE_API, useClass: HttpReferenceApi },
     provideAppInitializer(() => inject(SessionService).resolve()),
   ],
 };

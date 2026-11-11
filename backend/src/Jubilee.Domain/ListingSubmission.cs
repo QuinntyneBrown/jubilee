@@ -31,9 +31,6 @@ public sealed class ListingSubmission
     /// <summary>The pastor's e-mail in lower case, for counting how often it is named.</summary>
     public string PastorEmailKey { get; private set; } = string.Empty;
 
-    /// <summary>The secret in the link of the reference request (journey 11 answers it).</summary>
-    public string ReferenceToken { get; private set; } = string.Empty;
-
     public string StatementVersion { get; private set; } = string.Empty;
 
     public DateTimeOffset AgreedAt { get; private set; }
@@ -46,8 +43,24 @@ public sealed class ListingSubmission
     /// <summary>What the review screen flags: <c>CONTACT_IN_TEXT</c>, <c>REFERENCE_REUSED</c>.</summary>
     public List<string> Flags { get; private set; } = [];
 
+    public void AddFlag(string flag)
+    {
+        if (!Flags.Contains(flag))
+        {
+            Flags = [.. Flags, flag];
+        }
+    }
+
+    /// <summary>The owner named another church reference (L2-084 AC3).</summary>
+    public void ChangeReference(string church, string pastorEmail)
+    {
+        Church = church;
+        PastorEmail = pastorEmail;
+        PastorEmailKey = pastorEmail.ToLowerInvariant();
+    }
+
     public static ListingSubmission Record(
-        Guid listingId, string ownerSubject, string church, string pastorEmail, string referenceToken,
+        Guid listingId, string ownerSubject, string church, string pastorEmail,
         string idempotencyKey, IEnumerable<string> flags, DateTimeOffset now) => new()
         {
             Id = Guid.NewGuid(),
@@ -56,7 +69,6 @@ public sealed class ListingSubmission
             Church = church,
             PastorEmail = pastorEmail,
             PastorEmailKey = pastorEmail.ToLowerInvariant(),
-            ReferenceToken = referenceToken,
             StatementVersion = StatementOfFaith.Version,
             AgreedAt = now,
             SubmittedAt = now,

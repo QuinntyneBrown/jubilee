@@ -1,0 +1,196 @@
+<a class="auth-brand" routerLink="/welcome"><svg jb-brand-mark></svg>jubilee</a>
+<div class="auth-card card stack">
+  @switch (state()) {
+    @case ('loading') {
+      <h1 class="visually-hidden">Loading the reference request</h1>
+      <p class="visually-hidden" role="status">Loading the reference request…</p>
+      <span class="skeleton skeleton--title"></span>
+      <span class="skeleton skeleton--text skeleton--w30"></span>
+      <span class="skeleton skeleton--rect" style="height: var(--control-height-md)"></span>
+      <span class="skeleton skeleton--text skeleton--w30"></span>
+      <span class="skeleton skeleton--rect" style="height: var(--control-height-md)"></span>
+      <span class="skeleton skeleton--btn"></span>
+    }
+    @case ('error') {
+      <div class="empty empty--error" role="alert">
+        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="alert"></svg></div>
+        <h1 class="empty__title">We couldn’t load the reference request</h1>
+        <p class="empty__text">
+          Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+          quote <code>JB-REF-502</code>.
+        </p>
+        <button class="btn btn--primary" type="button" (click)="load()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a class="btn" routerLink="/welcome">Back to welcome</a>
+      </div>
+    }
+    @case ('closed') {
+      <div class="empty">
+        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="info"></svg></div>
+        <h1 class="empty__title">This request is closed</h1>
+        <p class="empty__text">{{ closedText() }}</p>
+        <a class="btn" routerLink="/welcome">About Jubilee</a>
+      </div>
+    }
+    @case ('reported') {
+      <div class="empty">
+        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="verified"></svg></div>
+        <h1 class="empty__title">Thank you. We’ve closed this request</h1>
+        <p class="empty__text">
+          We’ve told the Jubilee verification team that you weren’t expecting this. The link no
+          longer works and you won’t be contacted again about this listing.
+        </p>
+        <a class="btn" routerLink="/welcome">About Jubilee</a>
+      </div>
+    }
+    @case ('sent') {
+      <div class="empty">
+        <div class="empty__icon" aria-hidden="true"><svg jb-icon name="verified"></svg></div>
+        <h1 class="empty__title">Thank you, {{ thanks() }}</h1>
+        <p class="empty__text">
+          Your answer went privately to the Jubilee verification team. {{ view()?.ownerFirstName }}
+          will hear from us within two business days. You won’t be contacted again about this
+          listing.
+        </p>
+        <a class="btn" routerLink="/welcome">See what Jubilee is</a>
+      </div>
+    }
+    @default {
+      @if (view(); as request) {
+        <h1>Can you confirm {{ request.ownerName }}?</h1>
+        <p class="text-muted">{{ request.intro }}</p>
+        @if (problems().length) {
+          <div class="alert alert--danger form-summary" role="alert" id="summary" tabindex="-1">
+            <svg jb-icon name="alert"></svg>
+            <div class="alert__body">
+              <div class="alert__title">
+                Fix {{ problems().length }} {{ problems().length === 1 ? 'thing' : 'things' }} to
+                continue
+              </div>
+              <ul class="alert__list">
+                @for (problem of problems(); track problem.field) {
+                  <li>
+                    <a [href]="'#' + problem.id" (click)="goTo($event, problem.id)">{{
+                      problem.summary
+                    }}</a>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        }
+        @if (failed()) {
+          <div class="alert alert--danger" role="alert">
+            <svg jb-icon name="alert"></svg>
+            <div class="alert__body">We couldn’t send that. Try again.</div>
+          </div>
+        }
+        <form class="stack" novalidate (submit)="$event.preventDefault(); send()">
+          <fieldset [disabled]="busy()">
+            <legend>
+              {{ request.question }} <span class="optional text-muted">(required)</span>
+            </legend>
+            @for (option of request.answers; track option.value; let i = $index) {
+              <label class="choice">
+                <input
+                  type="radio"
+                  name="know"
+                  [id]="'know-' + i"
+                  [value]="option.value"
+                  [checked]="answer() === option.value"
+                  [attr.aria-invalid]="codes().answer ? 'true' : null"
+                  [attr.aria-describedby]="codes().answer ? 'know-error' : null"
+                  (change)="answer.set(option.value); clear('answer')"
+                />
+                <span class="choice__text"
+                  >{{ option.label }}<small>{{ option.hint }}</small></span
+                >
+              </label>
+            }
+            @if (codes().answer) {
+              <span class="field__error" id="know-error">{{ problems()[0].message }}</span>
+            }
+          </fieldset>
+          <div class="field">
+            <label class="field__label" for="name"
+              >Your name <span class="optional">(required)</span></label
+            >
+            <input
+              class="input"
+              id="name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              required
+              [readOnly]="busy()"
+              [attr.aria-invalid]="codes().name ? 'true' : null"
+              [attr.aria-describedby]="codes().name ? 'name-error' : null"
+              [ngModel]="name()"
+              (ngModelChange)="name.set($event); clear('name')"
+            />
+            @if (codes().name) {
+              <span class="field__error" id="name-error">Enter your name.</span>
+            }
+          </div>
+          <div class="field">
+            <label class="field__label" for="role"
+              >Your role <span class="optional">(required)</span></label
+            >
+            <input
+              class="input"
+              id="role"
+              name="role"
+              type="text"
+              placeholder="Pastor, elder, deacon…"
+              required
+              [readOnly]="busy()"
+              [attr.aria-invalid]="codes().role ? 'true' : null"
+              [attr.aria-describedby]="codes().role ? 'role-error' : null"
+              [ngModel]="role()"
+              (ngModelChange)="role.set($event); clear('role')"
+            />
+            @if (codes().role) {
+              <span class="field__error" id="role-error"
+                >Enter your role at the church, like pastor or elder.</span
+              >
+            }
+          </div>
+          <div class="field">
+            <label class="field__label" for="note"
+              >Anything we should know <span class="optional">(optional)</span></label
+            >
+            <span class="field__help" id="note-help"
+              >Only the Jubilee verification team reads this.</span
+            >
+            <textarea
+              class="textarea"
+              id="note"
+              name="note"
+              rows="3"
+              aria-describedby="note-help"
+              [readOnly]="busy()"
+              [attr.aria-invalid]="codes().note ? 'true' : null"
+              [ngModel]="note()"
+              (ngModelChange)="note.set($event); clear('note')"
+            ></textarea>
+            @if (codes().note) {
+              <span class="field__error">Shorten this to {{ noteLimit }} characters.</span>
+            }
+          </div>
+          <button
+            class="btn btn--primary btn--block btn--lg"
+            type="submit"
+            [attr.aria-busy]="busy() ? 'true' : null"
+          >
+            Send my answer
+          </button>
+        </form>
+        <p class="auth-foot">
+          Not expecting this? You can ignore it, or
+          <button class="btn btn--link" type="button" (click)="report()">tell us</button>.
+        </p>
+      }
+    }
+  }
+</div>

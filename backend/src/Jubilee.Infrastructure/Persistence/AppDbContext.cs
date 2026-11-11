@@ -45,6 +45,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ListingSubmission> ListingSubmissions => Set<ListingSubmission>();
 
+    public DbSet<ReferenceLink> ReferenceLinks => Set<ReferenceLink>();
+
+    public DbSet<ReferenceAnswer> ReferenceAnswers => Set<ReferenceAnswer>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 

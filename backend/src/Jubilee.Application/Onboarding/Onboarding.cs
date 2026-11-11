@@ -265,11 +265,11 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
         db.Listings.Add(listing);
         AddItems(listing, input, now);
 
-        var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(24)).ToLowerInvariant();
         var submission = ListingSubmission.Record(
-            listing.Id, command.Subject, input.Church!.Trim(), address.Value, token, key, flags, now);
+            listing.Id, command.Subject, input.Church!.Trim(), address.Value, key, flags, now);
         db.ListingSubmissions.Add(submission);
-        db.OutboxMessages.Add(ReferenceRequest(listing, command.Name, submission, now));
+        var (_, ownerFirst) = await Reference.ReferenceRequests.OwnerNames(db, command.Subject, cancellationToken);
+        Reference.ReferenceRequests.Issue(db, settings, listing, command.Name, ownerFirst, submission, ReferenceLinkKind.Initial, [], now);
         db.ListingDrafts.Remove(draft);
         await db.SaveChangesAsync(cancellationToken);
         return Result(listing, submission);
@@ -351,15 +351,6 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
             db.Services.Add(Service.Create(listing.Id, i + 1, item.Name, item.Detail ?? string.Empty, price, ServiceAction.Ask));
         }
     }
-
-    /// <summary>Only the reference's name for the business goes out: never the tagline, the products or the owner's other details (L2-074 AC1).</summary>
-    private OutboxMessage ReferenceRequest(Listing listing, string ownerName, ListingSubmission submission, DateTimeOffset now) =>
-        OutboxMessage.Email(
-            null,
-            submission.PastorEmail,
-            $"Can you confirm {listing.Name}? A reference request from Jubilee",
-            $"Hello,\n\n{ownerName} has named you as a church reference for {listing.Name}, a business they would like to list on Jubilee, Toronto's Christian marketplace.\n\nWe only ask whether you know them and can confirm the commitments in our statement of faith. It takes a minute and we contact you privately; you do not need an account.\n\nAnswer here: {settings.PublicBaseUrl.TrimEnd('/')}/reference/{submission.ReferenceToken}\n\nIf you do not know {ownerName}, you can ignore this e-mail.\n\nJubilee · Toronto's Christian marketplace\n",
-            now);
 }
 
 internal static class Slugs

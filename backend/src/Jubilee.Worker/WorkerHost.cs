@@ -21,6 +21,7 @@ public static class WorkerHost
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddHostedService<OutboxDispatcherJob>();
         builder.Services.AddHostedService<ListingDraftExpiryJob>();
+        builder.Services.AddHostedService<ReferenceExpiryJob>();
         return builder;
     }
 }
@@ -97,6 +98,43 @@ public sealed class ListingDraftExpiryJob(IServiceScopeFactory scopes, ILogger<L
         catch (OperationCanceledException)
         {
             logger.LogInformation("The draft expiry job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Once a day: e-mails an owner whose church reference did not answer within 14 days, once per link
+/// (L2-084 AC4). The sweep is idempotent, so a repeat or a second instance changes nothing.
+/// </summary>
+public sealed class ReferenceExpiryJob(IServiceScopeFactory scopes, ILogger<ReferenceExpiryJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(24));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sent = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Reference.NotifyExpiredReferencesCommand(), stoppingToken);
+                    if (sent > 0)
+                    {
+                        logger.LogInformation("Told {Count} owners that their reference link expired.", sent);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "Expired reference links could not be handled. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The reference expiry job is stopping.");
         }
     }
 }

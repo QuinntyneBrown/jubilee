@@ -3,6 +3,7 @@ import { categories } from './categories';
 import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
 import { fulfil, recordedAnswer } from './mock-api';
 import { stubMessaging } from './messaging';
+import { stubReference } from './reference';
 import type { StubName } from './routes';
 
 const home = '**/api/directory/home';
@@ -218,6 +219,14 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       );
     case 'search-start':
       return stubSearchStart(page, memberSearchStart);
+    case 'reference':
+      return stubReference(page);
+    case 'reference-loading':
+      return stubReference(page, { outcome: 'hang' });
+    case 'reference-error':
+      return stubReference(page, { outcome: 'load-fails' });
+    case 'reference-expired':
+      return stubReference(page, { outcome: 'closed' });
     case 'verify-email-pending':
       return stubSession(page, unconfirmedSession);
     case 'verify-email-loading':

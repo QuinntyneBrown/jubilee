@@ -19,3 +19,5 @@ export * from './lib/api/requests-api';
 export * from './lib/models/requests';
 export * from './lib/api/listing-drafts-api';
 export * from './lib/models/listing-drafts';
+export * from './lib/api/reference-api';
+export * from './lib/models/reference';

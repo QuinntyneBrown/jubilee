@@ -47,7 +47,7 @@ The feature is a vertical slice from the `/reference/:token` page to the
   `POST /api/reference-requests/answer` and
   `POST /api/reference-requests/report`.
 - **`ReferenceRequestsController`** — ASP.NET Core controller. It applies
-  `RateLimitMiddleware` limits (values `<TO SUPPLY>`) and redacts the token
+  `RateLimitMiddleware` limits (30 requests a minute per client IP address, ADR 0019) and redacts the token
   from logs.
 - **`OpenReferenceRequestQueryHandler`** — finds the token by hash and returns
   a `ReferenceRequestView` with the owner wording, the business and the church.
@@ -57,7 +57,7 @@ The feature is a vertical slice from the `/reference/:token` page to the
   listing." with "About Jubilee". An unknown token returns HTTP 404 with the
   same code and no listing data, and the page shows the same closed page
   without a name. A 404 status on the HTML document of the route depends on
-  the hosting set-up and is `<TO SUPPLY>`.
+  the hosting set-up; the API answers 404 and the page shows the closed page (ADR 0019).
 - **`SubmitReferenceAnswerCommandValidator`** — the same rules as the browser
   form. Code `ANSWER_REQUIRED` maps to "Choose one answer so we know how to
   treat this reference." Code `ROLE_REQUIRED` maps to "Enter your role at the
@@ -70,8 +70,8 @@ The feature is a vertical slice from the `/reference/:token` page to the
   two business days. You won't be contacted again about this listing."
 - **`ReportUnexpectedRequestCommandHandler`** — handles "tell us" under "Not
   expecting this? You can ignore it, or tell us." It closes the link and
-  notifies the verification team. The stage the listing takes after a report is
-  `<TO SUPPLY>`.
+  notifies the verification team. After a report the listing takes the stage
+  `Needs a decision` and the submission is flagged `REFERENCE_REPORTED` (ADR 0019).
 - **`ResendReferenceRequestCommandHandler`** — handles "Send the request again"
   from My business through `POST /api/listings/{listingId}/reference/resend`.
   It revokes the open token, so the old link stops working, and queues a fresh

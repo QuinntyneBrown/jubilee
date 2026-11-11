@@ -32,6 +32,10 @@ export type StubName =
   | 'search-error'
   | 'search-no-results'
   | 'search-start'
+  | 'reference'
+  | 'reference-loading'
+  | 'reference-error'
+  | 'reference-expired'
   | 'verify-email-pending'
   | 'verify-email-loading'
   | 'verify-email-success'
@@ -169,6 +173,30 @@ export const routes = {
     app: '/b/luzandre/p/faith-heavyweight-tee-charcoal/request?option=M&quantity=1',
     mock: 'dialogs/order-request/default.html',
     who: 'member',
+  },
+  'church-reference': {
+    app: '/reference/e2e-token',
+    mock: 'pages/church-reference/default.html',
+    who: 'visitor',
+    stub: 'reference',
+  },
+  'church-reference.loading': {
+    app: '/reference/e2e-token',
+    mock: 'pages/church-reference/loading.html',
+    who: 'visitor',
+    stub: 'reference-loading',
+  },
+  'church-reference.error': {
+    app: '/reference/e2e-token',
+    mock: 'pages/church-reference/error.html',
+    who: 'visitor',
+    stub: 'reference-error',
+  },
+  'church-reference.expired': {
+    app: '/reference/e2e-token',
+    mock: 'pages/church-reference/expired.html',
+    who: 'visitor',
+    stub: 'reference-expired',
   },
   'list-business': {
     app: '/list',

@@ -353,7 +353,6 @@ public sealed class ListingSubmissionConfiguration : IEntityTypeConfiguration<Li
         builder.Property(s => s.Church).HasMaxLength(200).IsRequired();
         builder.Property(s => s.PastorEmail).HasMaxLength(254).IsRequired();
         builder.Property(s => s.PastorEmailKey).HasMaxLength(254).IsRequired();
-        builder.Property(s => s.ReferenceToken).HasMaxLength(100).IsRequired();
         builder.Property(s => s.StatementVersion).HasMaxLength(20).IsRequired();
         builder.Property(s => s.IdempotencyKey).HasMaxLength(100).IsRequired();
         builder.Property(s => s.Flags).HasConversion(
@@ -367,5 +366,36 @@ public sealed class ListingSubmissionConfiguration : IEntityTypeConfiguration<Li
         builder.HasIndex(s => new { s.PastorEmailKey, s.SubmittedAt });
         builder.HasIndex(s => s.ListingId).IsUnique();
         builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ReferenceLinkConfiguration : IEntityTypeConfiguration<ReferenceLink>
+{
+    public void Configure(EntityTypeBuilder<ReferenceLink> builder)
+    {
+        builder.ToTable("ReferenceLinks");
+        builder.HasKey(l => l.Id);
+        builder.Property(l => l.Id).ValueGeneratedNever();
+        builder.Property(l => l.TokenHash).HasMaxLength(64).IsRequired();
+        builder.Property(l => l.ReferenceEmail).HasMaxLength(254).IsRequired();
+        builder.Property(l => l.Church).HasMaxLength(200).IsRequired();
+        builder.HasIndex(l => l.TokenHash).IsUnique();
+        builder.HasIndex(l => new { l.ListingId, l.IssuedAt });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(l => l.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class ReferenceAnswerConfiguration : IEntityTypeConfiguration<ReferenceAnswer>
+{
+    public void Configure(EntityTypeBuilder<ReferenceAnswer> builder)
+    {
+        builder.ToTable("ReferenceAnswers");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.Name).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.Role).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.Note).HasMaxLength(1000);
+        builder.HasIndex(a => a.ListingId);
+        builder.HasOne<Listing>().WithMany().HasForeignKey(a => a.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
