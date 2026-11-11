@@ -37,6 +37,13 @@ export class MarketingHomePage implements Screen {
   readonly inside: Locator;
   readonly seeAll: Locator;
   readonly cards: Locator;
+  readonly featuredCards: Locator;
+  readonly cardNames: Locator;
+  readonly cardTags: Locator;
+  readonly cardTaglines: Locator;
+  readonly cardHighlights: Locator;
+  readonly cardVerified: Locator;
+  readonly cardVerifiedIcons: Locator;
   readonly forBusinesses: Locator;
   readonly points: Locator;
   readonly listYourBusiness: Locator;
@@ -82,6 +89,13 @@ export class MarketingHomePage implements Screen {
     this.inside = this.main.locator('section#inside');
     this.seeAll = this.inside.getByRole('link', { name: /^See all/ });
     this.cards = this.inside.locator('a.mkt-card');
+    this.featuredCards = this.inside.locator('a.mkt-card--featured');
+    this.cardNames = this.cards.locator('.mkt-card__name');
+    this.cardTags = this.cards.locator('.mkt-card__tag');
+    this.cardTaglines = this.cards.locator('.mkt-card__tagline');
+    this.cardHighlights = this.cards.locator('.mkt-card__highlight');
+    this.cardVerified = this.cards.locator('.mkt-card__verified');
+    this.cardVerifiedIcons = this.cardVerified.locator('svg');
     this.forBusinesses = this.main.locator('section#businesses');
     this.points = this.forBusinesses.locator('.mkt-points > li');
     this.listYourBusiness = this.forBusinesses.getByRole('link', {

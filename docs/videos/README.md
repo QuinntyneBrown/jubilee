@@ -4,68 +4,81 @@ One folder per video. The text files are the source; the media is generated from
 
 | # | Video | Runtime | What it is |
 |---|---|---|---|
-| 01 | [Meet Jubilee](01-jubilee-pitch/README.md) | 0:42 | Narrated, animated pitch for Toronto's Christian community: why join, what you can do, why list. |
+| 01 | [Meet Jubilee](01-jubilee-pitch/README.md) | 1:04 | The pitch film for Toronto's Christian community: why join, what you can do, why list. Nine scenes cut to a 100 BPM grid, built from the Magic Patterns design. |
 
-## How a pitch video is built
+## How a pitch film is built
 
 ```
 docs/videos/NN-topic/
-  script.md        narration, one `##` section per scene            (written)
-  slides.html      the animated deck, one <section> per scene        (written)
-  shots.json       which mocks to screenshot for the deck            (written)
-  README.md        outline and run sheet                             (written)
-  music.mp3        background track                                  (supplied)
-  shots/           mock screenshots                                  (generated)
-  narration.wav    Kokoro narration                                  (generated)
-  timing.js        start and end of every sentence                   (generated)
-  captions.vtt     captions in video time, a sidecar file            (generated)
-  NN-topic.mp3     narration mixed over the music                    (generated)
-  NN-topic.mp4     1920x1080, 30 fps                                 (generated)
+  slides.html        the page that plays the film                          (written)
+  film.js            the scenes: markup and the functions that move it     (written)
+  narration.json     the lines, their windows and the words on a beat      (written)
+  script.md          the transcript                                        (written)
+  README.md          outline and run sheet                                 (written)
+  narration.wav      the fitted voice alone                                (generated)
+  timing.js          captions and spoken segments in film seconds          (generated)
+  music.mp3          the track alone                                       (generated)
+  sfx.mp3            the sound effects alone                               (generated)
+  captions.vtt       captions in film time, a sidecar file                 (generated)
+  NN-topic.mp3       voice, effects and ducked music                       (generated)
+  NN-topic.mp4       1920x1080, 60 fps, captions burned in                 (generated)
 ```
 
 ```sh
-pip install kokoro-onnx soundfile numpy
-python tools/video-audio/generate_audio.py docs/videos/NN-topic --dry-run   # validate script, estimate length
-python tools/video-audio/generate_audio.py docs/videos/NN-topic             # narration.wav + timing.js
-node tools/video-build/build.mjs docs/videos/NN-topic --shots               # screenshot the mocks
-node tools/video-build/build.mjs docs/videos/NN-topic --check               # resolve cues, print the schedule
-node tools/video-build/build.mjs docs/videos/NN-topic --frame 12.5 f.png    # look at one frame
-node tools/video-build/build.mjs docs/videos/NN-topic                       # mp3 + captions.vtt + mp4
+pip install kokoro-onnx numpy
+python tools/video-audio/film_audio.py docs/videos/NN-topic                 # voice, music, effects, mix, timing.js
+python tools/video-audio/film_audio.py docs/videos/NN-topic --keep-voice    # the same, reusing narration.wav
+node tools/video-build/build.mjs docs/videos/NN-topic --check               # print the schedule and the captions
+node tools/video-build/build.mjs docs/videos/NN-topic --frame 22.8 f.png    # look at one frame (film seconds)
+node tools/video-build/build.mjs docs/videos/NN-topic                       # captions.vtt + mp4
 ```
 
-- **Voice.** Kokoro-82M (`af_heart`, speed 1.1), downloaded once from Hugging Face
-  (`onnx-community/Kokoro-82M-v1.0-ONNX`) into `.cache/kokoro` and run locally. Free, no key.
-  `--voice` or `KOKORO_VOICE` picks another voice; `pronunciations.json` holds spoken replacements.
-- **Music.** `music.mp3` in the folder, or `--music <file>`. It plays at full level through the
-  music-only intro and outro and is ducked under the narration. The builder measures the track and
-  sets its level, so a quiet or a loud track mixes the same. Set `data-bpm` to the track's tempo
-  and `data-music-start` to a downbeat in it, and the beat pulses land on the beat.
-  `tools/video-audio/placeholder_music.py` synthesizes a stand-in groove until a track is chosen.
-- **Captions** are off by default: the MP4 has none, `captions.vtt` is a sidecar, and the deck has a
-  Captions button (or press `c`, or open `slides.html?captions=1`). `--burn-captions` burns them in.
-- The builder needs Node with Playwright (Chromium) and ffmpeg with libx264 (`FFMPEG_PATH` overrides).
+- **The builder** needs Node with Playwright (Chromium) and ffmpeg with libx264 (`FFMPEG_PATH`
+  overrides). Playwright is installed in `e2e/`; run the builder with
+  `NODE_PATH=e2e/node_modules` so it finds that copy. It also needs a network connection: the deck
+  hotlinks its photos and the Inter font (see below). The full render takes several minutes
+  (3,888 frames for 64.8 s).
+- **The audio is a synthesized stand-in.** `film_audio.py` writes the music and the sound effects
+  with numpy and speaks the narration with Kokoro-82M (`af_heart`), run locally. The design's audio
+  brief asks for a composed track and a recorded voice; when those exist, replace
+  `NN-topic.mp3` with the real mix (same length, same hit points) and rebuild the MP4.
+  The script is specific to video 01: its score follows that film's bar-by-bar brief.
+- **Voice.** The model and voice are looked for in `KOKORO_DIR`, `.cache/kokoro` and the Hugging
+  Face cache, and downloaded once from `onnx-community/Kokoro-82M-v1.0-ONNX` otherwise. Free, no
+  key. `--voice` or `KOKORO_VOICE` picks another voice.
+- **Captions** are burned into the MP4, as the build spec asks (for silent autoplay on the
+  marketing site). `--no-captions` renders without them; `captions.vtt` is written either way. In
+  the deck, the Captions button or `c` toggles them, and `slides.html?captions=0` starts without.
 
 ## The deck
 
-`slides.html` loads `assets/pitch.css` and `assets/pitch.js`. The stage is 1920x1080 and every pixel
-is a function of the clock, so the page plays live against the MP3 and the builder renders it frame
-by frame. The background is a WebGL fragment shader; confetti and the wipe between scenes are drawn
-on a 2D canvas.
+`slides.html` loads `assets/pitch.css`, `assets/pitch.js` (the runtime) and the folder's `film.js`
+(the scenes). The stage is 1920x1080. A film is a list of scenes of exactly three bars each
+(7.2 s at 100 BPM; `data-bpm` on `<body>` sets the tempo), and every pixel is a pure function of
+film time: the page plays live against the MP3, and the builder seeks it frame by frame through
+`PITCH.seek(seconds)`. Nothing uses CSS animation or transition.
 
-On `<body>`: `data-intro` and `data-outro` (seconds of music before and after the narration),
-`data-bpm` (the music's tempo, for beat pulses), `data-music-start` (seconds into the track where
-the video begins; the beat pulses count from there, so make it a downbeat) and `data-audio`.
+`film.js` calls `PITCH.film([{ id, build }])`. `build(S)` returns the scene's HTML; inside it:
 
-On a `<section>`: `data-cue`, the first words of the sentence in `script.md` that starts the scene.
-The first section has no cue and covers the intro.
-
-On any element inside a section:
-
-| Attribute | Meaning |
+| Helper | What it does |
 |---|---|
-| `data-in` | Entrance: `pop`, `stamp`, `up`, `left`, `right`, `rise`, `drop`. |
-| `data-sentence` | Enter when the nth sentence after the cue starts (0 is the cue sentence). |
-| `data-at`, `data-dur` | Seconds after that moment, and how long the entrance takes. |
-| `data-rot`, `data-tilt="x,y"` | Resting rotation and 3D tilt in degrees. |
-| `data-float`, `data-beat`, `data-drift="x,y"` | Idle bob in px, pulse on the beat, steady travel in px/s. |
-| `data-count` | Count up to this number. |
+| `S.ref((el, t) => …)` | Marks an element; the function runs on every frame with the scene-local time. |
+| `S.words(at, text, { accent, accentClass, stagger })` | Masked word rise: each word slides up from behind its line, 300 ms, 50 ms stagger. |
+| `S.rise(at)` | Fade and 24 px rise for supporting text and UI. |
+| `S.drawnMark(size, { draw, bar })`, `S.wordmark(size, p)` | The J mark drawing itself and the "jubilee" wordmark rising letter by letter. |
+| `S.wipe(p)` | The gold crossbar wipe: 0 off left, 0.5 covering, 1 off right. Marks a change of act. |
+| `S.seal(size, spin)` | The "vouched for by a local church" seal. |
+| `S.aurora(intensity, { horizon, colors })` | The WebGL aurora background. |
+| `S.confetti(bursts, count)` | Canvas confetti, solved in closed form so any frame draws alone. |
+
+`PITCH` also exposes the clock and the named curves: `b(n)` (beat n of a scene), `enter`, `exit`,
+`prog`, `pulse`, `beatsBetween`, `brand`, `outBack`, `outExpo`, `inOutCubic`, `inQuart`.
+
+Open `slides.html?guides=1` (or press `g`) for the safe areas, the timecode and the beat grid, and
+`slides.html?t=22.8` to open paused on a film time.
+
+**Fonts and photos.** Archivo is the repository's variable file with the width axis
+(`docs/design-system/assets/fonts/Archivo.woff2`); headings are set at width 112. Inter and every
+photo are not in the repository: the deck loads Inter from Google Fonts and the photos from the
+Magic Patterns CDN, as the design does. The runtime waits for both before the first frame and the
+builder stops if either fails to load.

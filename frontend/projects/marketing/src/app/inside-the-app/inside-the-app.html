@@ -4,6 +4,28 @@
       <h2 id="inside-title" class="mkt-h2">
         Shops and services, <span class="mkt-accent">side by side.</span>
       </h2>
+      <p class="mkt-lead">
+        From a Sunday altar bouquet to a retirement plan, the people behind every page share your
+        values.
+      </p>
     </div>
+    <a class="mkt-link mkt-inside__all" [href]="browseUrl">
+      See all {{ count }} businesses
+      <svg class="mkt-icon" aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M7 7h10v10M7 17 17 7" />
+      </svg>
+    </a>
   </div>
+  <ul class="mkt-cards">
+    @for (business of cards; track business.name; let first = $first) {
+      <li [class.mkt-cards__lead]="first">
+        <a
+          jb-marketing-business-card
+          [business]="business"
+          [featured]="first"
+          [href]="browseUrl"
+        ></a>
+      </li>
+    }
+  </ul>
 </section>
