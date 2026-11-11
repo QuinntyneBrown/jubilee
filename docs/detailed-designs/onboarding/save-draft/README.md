@@ -58,10 +58,10 @@ with one scheduled job in `Jubilee Worker`.
   writes a `DraftExpiryNotice` message to the outbox. It deletes each draft
   whose notice was sent `14 days` earlier and that is still untouched. The job
   is idempotent, runs at most once per schedule across instances and records
-  its last success (L2-182). The schedule interval is `<TO SUPPLY>`.
+  its last success (L2-182). The schedule interval is 24 hours (ADR 0018).
 - **`OutboxDispatcherJob`** — hosted job that sends the queued notice through
   `IEmailSender` to the `E-mail provider`. The wording of the notice is
-  `<TO SUPPLY>`.
+  "Your draft of {title} will be deleted in 14 days", telling the owner to continue at `/list` (ADR 0018).
 - **Load error state** — when the draft fails to load, the API returns HTTP 503
   `ProblemDetails` with the error reference `JB-LST-503` and the correlation
   ID. The page shows "We couldn't load your draft" with the reference, "Try

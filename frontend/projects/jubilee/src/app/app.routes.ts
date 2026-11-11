@@ -94,6 +94,25 @@ export const routes: Routes = [
     title: 'Conversation · Jubilee',
   },
   {
+    path: 'list',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/list-business/list-business.page').then((m) => m.ListBusinessPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'list-business', section: 'business' }),
+    title: 'List your business · Jubilee',
+  },
+  {
+    path: 'statement-of-faith',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/statement-of-faith/statement-of-faith.page').then(
+        (m) => m.StatementOfFaithPage,
+      ),
+    data: data({ shell: 'app', page: 'statement-of-faith' }),
+    title: 'Statement of faith · Jubilee',
+  },
+  {
     path: 'join',
     pathMatch: 'full',
     loadComponent: () => import('./pages/join/join.page').then((m) => m.JoinPage),

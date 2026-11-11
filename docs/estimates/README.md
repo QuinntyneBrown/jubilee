@@ -17,7 +17,7 @@
 | [messaging](messaging.md) | 17 days | 0% |
 | [requests](requests.md) | 34 days | 0% |
 | [notifications](notifications.md) | 16 days | 0% |
-| [onboarding](onboarding.md) | 15 days | 0% |
+| [onboarding](onboarding.md) | 15 days | 83% |
 | [church-reference](church-reference.md) | 10 days | 0% |
 | [verification](verification.md) | 20 days | 0% |
 | [owner-workspace](owner-workspace.md) | 20 days | 0% |

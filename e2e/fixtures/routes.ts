@@ -170,6 +170,16 @@ export const routes = {
     mock: 'dialogs/order-request/default.html',
     who: 'member',
   },
+  'list-business': {
+    app: '/list',
+    mock: 'pages/list-business/default.html',
+    who: 'member',
+  },
+  'statement-of-faith': {
+    app: '/statement-of-faith',
+    mock: 'pages/statement-of-faith/default.html',
+    who: 'visitor',
+  },
   welcome: { app: '/welcome', mock: 'pages/welcome/default.html', who: 'visitor' },
   browse: { app: '/', mock: 'pages/browse/default.html', who: 'member' },
   'browse.signed-out': { app: '/', mock: 'pages/browse/signed-out.html', who: 'visitor' },
