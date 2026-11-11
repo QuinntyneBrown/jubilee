@@ -1,0 +1,9 @@
+// Block: row, its price.
+:host {
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+:host(.row__price--free) {
+  color: var(--color-success-fg);
+}

@@ -20,6 +20,10 @@ import {
   InlineStatus,
   Card,
   CardTitle,
+  RowMeta,
+  RowTitle,
+  Rows,
+  Row,
 } from 'components';
 import { Observable } from 'rxjs';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -27,7 +31,7 @@ import { clockTime, monthYear } from '../../services/message-time';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from '../../toasts/toast.service';
 
-interface Row {
+interface SettingRow {
   setting: PreferenceSetting;
   key: 'messages' | 'requests' | 'reminders' | 'newBusinesses' | 'tips';
   id: string;
@@ -35,7 +39,7 @@ interface Row {
   meta: string;
 }
 
-const ROWS: Row[] = [
+const ROWS: SettingRow[] = [
   {
     setting: 'messages',
     key: 'messages',
@@ -93,6 +97,10 @@ const ROWS: Row[] = [
     InlineStatus,
     Card,
     CardTitle,
+    Row,
+    RowMeta,
+    RowTitle,
+    Rows,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -134,11 +142,11 @@ export class NotificationSettingsPage implements OnInit {
     });
   }
 
-  protected on(preferences: NotificationPreferences, row: Row): boolean {
+  protected on(preferences: NotificationPreferences, row: SettingRow): boolean {
     return preferences[row.key];
   }
 
-  protected toggle(row: Row, enabled: boolean): void {
+  protected toggle(row: SettingRow, enabled: boolean): void {
     this.change(
       row.setting,
       row.title,

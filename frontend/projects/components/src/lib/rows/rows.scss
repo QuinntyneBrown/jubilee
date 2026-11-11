@@ -1,0 +1,6 @@
+// Block: rows. The host is the list.
+@use './row-base' as base;
+
+:host {
+  @include base.rows;
+}

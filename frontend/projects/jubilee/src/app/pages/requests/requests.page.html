@@ -51,18 +51,18 @@
           </button>
         </div>
       } @else {
-        <ul class="rows">
+        <ul jb-rows>
           @for (row of rows(); track row.id) {
-            <li class="row row--stack">
-              <jb-avatar><svg jb-icon [name]="icon(row)"></svg></jb-avatar>
-              <div class="row__body">
-                <div class="row__title">
-                  <a [routerLink]="['/requests', row.id]">{{ row.title }}</a>
-                </div>
-                <div class="row__meta">{{ row.kindLabel }} · {{ row.business }}</div>
-                <div class="row__meta">{{ row.detail ?? sent(row) }}</div>
+            <li jb-row stack>
+              <jb-avatar slot="leading"><svg jb-icon [name]="icon(row)"></svg></jb-avatar>
+
+              <div jb-row-title>
+                <a [routerLink]="['/requests', row.id]">{{ row.title }}</a>
               </div>
-              <span jb-badge [tone]="tone(row)">{{ row.statusLabel }}</span>
+              <div jb-row-meta>{{ row.kindLabel }} · {{ row.business }}</div>
+              <div jb-row-meta>{{ row.detail ?? sent(row) }}</div>
+
+              <span slot="trailing" jb-badge [tone]="tone(row)">{{ row.statusLabel }}</span>
             </li>
           }
         </ul>

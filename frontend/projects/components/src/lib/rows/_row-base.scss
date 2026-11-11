@@ -1,0 +1,26 @@
+// The rules a row shares with the components that are a row themselves (service-row,
+// row-list-skeleton).
+@mixin rows {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+@mixin row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+
+  // On a phone the small buttons of a row are a comfortable target.
+  @media (max-width: 47.99rem) {
+    --jb-btn-sm-min-height: var(--target-comfortable);
+  }
+}
+
+@mixin row-body {
+  flex: 1;
+  min-width: 0;
+}

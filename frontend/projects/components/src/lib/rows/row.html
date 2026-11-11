@@ -1,0 +1,8 @@
+<ng-content select="[slot=leading]" />
+@if (labelFor(); as control) {
+  <label class="row__body" [for]="control"><ng-container [ngTemplateOutlet]="body" /></label>
+} @else {
+  <div class="row__body"><ng-container [ngTemplateOutlet]="body" /></div>
+}
+<ng-content select="[slot=trailing]" />
+<ng-template #body><ng-content /></ng-template>

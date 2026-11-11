@@ -1,0 +1,10 @@
+// Block: row. A service row is a row whose content is fixed.
+@use '../rows/row-base' as base;
+
+:host {
+  @include base.row;
+}
+
+.row__body {
+  @include base.row-body;
+}

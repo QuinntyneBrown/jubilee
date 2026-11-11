@@ -1,0 +1,50 @@
+// Block: dir-row. The host is the link.
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-1);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+  color: inherit;
+  text-decoration: none;
+  min-height: var(--target-comfortable);
+}
+
+:host(:hover),
+:host([data-state='hover']) {
+  background: var(--color-bg-subtle);
+}
+
+:host(:active),
+:host([data-state='active']) {
+  background: var(--color-bg-subtle-hover);
+}
+
+.dir-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.dir-row__name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: var(--text-label);
+  font-size: var(--font-size-md);
+}
+
+.dir-row__name .icon {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  color: var(--color-success-icon);
+}
+
+.dir-row__tagline {
+  display: block;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+:host > .icon {
+  color: var(--color-fg-subtle);
+}

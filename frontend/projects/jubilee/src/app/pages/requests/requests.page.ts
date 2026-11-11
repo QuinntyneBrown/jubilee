@@ -25,6 +25,10 @@ import {
   Avatar,
   Badge,
   BadgeTone,
+  Row,
+  RowMeta,
+  RowTitle,
+  Rows,
 } from 'components';
 import { interval } from 'rxjs';
 import { ClockService } from '../../services/clock.service';
@@ -49,7 +53,19 @@ const ICON: Record<string, IconName> = { booking: 'calendar', quote: 'message', 
 /** Your requests at /requests (L2-047): every booking, quote and order the member sent. */
 @Component({
   selector: 'jb-requests-page',
-  imports: [RouterLink, EmptyState, Icon, Button, RowListSkeleton, Avatar, Badge],
+  imports: [
+    RouterLink,
+    EmptyState,
+    Icon,
+    Button,
+    RowListSkeleton,
+    Avatar,
+    Badge,
+    Row,
+    RowMeta,
+    RowTitle,
+    Rows,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './requests.page.html',

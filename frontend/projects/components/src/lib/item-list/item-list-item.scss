@@ -1,0 +1,12 @@
+// Block: item-list, one item.
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+:host(:last-child) {
+  border-bottom: 0;
+}
