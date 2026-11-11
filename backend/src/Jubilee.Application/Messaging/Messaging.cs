@@ -35,6 +35,7 @@ public sealed record ConversationDto(
     bool Muted,
     bool CanBlock,
     DateTimeOffset? AwayUntil,
+    string? Replies,
     bool HasMore,
     IReadOnlyList<MessageDto> Messages);
 
@@ -364,6 +365,7 @@ public sealed class GetConversationQueryHandler(IAppDbContext db, TimeProvider c
             row.AsOwner ? row.Conversation.OwnerMuted : row.Conversation.MemberMuted,
             !row.AsOwner,
             away,
+            row.AsOwner ? null : WireValues.Of(row.Listing.ReplyTimeBand),
             hasMore,
             [.. messages.Select(m => new MessageDto(
                 m.Id,

@@ -10,6 +10,7 @@ import {
   ProductWithSizeScreen,
 } from '../pages/product.page';
 import { JoinPage } from '../pages/join.page';
+import { ConversationPage, MessagesPage } from '../pages/messages.page';
 import { SearchPage } from '../pages/search.page';
 import { VerifyEmailPage } from '../pages/verify-email.page';
 import { WelcomePage } from '../pages/welcome.page';
@@ -54,6 +55,13 @@ export const screens: {
   { key: 'product.error', screen: (page) => new ProductPage(page) },
   { key: 'product.sold-out', screen: (page) => new ProductPage(page) },
   { key: 'product.alert-requested', screen: (page) => new ProductPage(page) },
+  { key: 'messages', screen: (page) => new MessagesPage(page) },
+  { key: 'messages.empty', screen: (page) => new MessagesPage(page) },
+  { key: 'messages.loading', screen: (page) => new MessagesPage(page) },
+  { key: 'messages.error', screen: (page) => new MessagesPage(page) },
+  { key: 'conversation', screen: (page) => new ConversationPage(page) },
+  { key: 'conversation.loading', screen: (page) => new ConversationPage(page) },
+  { key: 'conversation.error', screen: (page) => new ConversationPage(page) },
   { key: 'search', screen: (page) => new SearchPage(page) },
   { key: 'search.loading', screen: (page) => new SearchPage(page) },
   { key: 'search.empty', screen: (page) => new SearchPage(page) },

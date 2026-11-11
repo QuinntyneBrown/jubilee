@@ -40,6 +40,7 @@ export const ICONS = {
   plus: [path('M12 5v14M5 12h14')],
   refresh: [path('M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4')],
   search: [circle(11, 11, 7), path('m20 20-3.5-3.5')],
+  send: [path('M4 12 20 4l-5 16-3-7z')],
   share: [path('M12 3v12m0-12L8 7m4-4 4 4M5 13v6h14v-6')],
   shield: [path('M12 3 5 6v6c0 4.500 3 8 7 9 4-1 7-4.500 7-9V6z')],
   shirt: [path('M8 4 3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 0 1-8 0z')],

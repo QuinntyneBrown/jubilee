@@ -1,3 +1,4 @@
+using Jubilee.Api.Errors;
 using Jubilee.Api.Middleware;
 using Jubilee.Application.Messaging;
 using MediatR;
@@ -24,6 +25,7 @@ public sealed class ConversationsController(ISender sender) : ControllerBase
     private string Name => User.FindFirst("name")?.Value ?? "Member";
 
     [HttpGet]
+    [ErrorReference("JB-MSG-503")]
     public Task<InboxDto> Inbox([FromQuery] string? q, CancellationToken cancellationToken) =>
         sender.Send(new GetInboxQuery(Subject, q), cancellationToken);
 
@@ -37,6 +39,7 @@ public sealed class ConversationsController(ISender sender) : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [ErrorReference("JB-MSG-502")]
     public Task<ConversationDto> Open(Guid id, [FromQuery] Guid? before, CancellationToken cancellationToken) =>
         sender.Send(new GetConversationQuery(Subject, id, before), cancellationToken);
 

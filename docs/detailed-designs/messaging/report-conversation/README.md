@@ -33,8 +33,8 @@ The feature is a vertical slice from the conversation page to the database.
 
 - **`ReportConversationDialog`** — Angular dialog opened by "Report
   conversation" in the conversation menu. It collects a reason, optional
-  details, and the choice to block the other side. The reason options and the
-  dialog copy are `<TO SUPPLY>`; no mock exists for this dialog.
+  details, and the choice to block the other side. The reason is free text of 1 to 1,000
+  characters (ADR 0014). The dialog needs a mock before it is built; the API exists.
 - **`MessagesApi`** — typed HTTP client for
   `POST /api/conversations/{id}/reports`, `PUT /api/conversations/{id}/block`
   and `DELETE /api/conversations/{id}/block`. The report request carries an
@@ -57,7 +57,8 @@ The feature is a vertical slice from the conversation page to the database.
   It calls `Conversation.CanSend` before `AddMessage`. For a blocked sender it
   stores nothing, writes no outbox row, and the API returns HTTP `403` with code
   `MESSAGE_REFUSED`. The response and the composer copy do not state that a block
-  exists; the copy is `<TO SUPPLY>`.
+  exists; a blocked business is answered `201` as if delivered, and the message is stored
+  but never shown to the member (ADR 0014).
 - **`AdminReportsController`** — ASP.NET Core controller for
   `GET /api/admin/reports/{reportId}/conversation`, restricted to the `Verifier`
   and `Admin` roles.

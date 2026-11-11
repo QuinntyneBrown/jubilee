@@ -61,7 +61,9 @@ The feature is a vertical slice from the Messages page to the database.
   participant name or message text matches, and it applies the participant
   filter before the match so search never reaches another member's
   conversations. The text-matching mechanism in `Jubilee database` is
-  `<TO SUPPLY>`. Paging of the list is `<TO SUPPLY>`.
+  a case-insensitive contains match over the business name, the owner's name, the
+  member's name and the message text. The list holds at most 200 conversations
+  and is not paged yet (ADR 0014).
 - **`InboxResult`** and **`ConversationSummary`** — response types carrying
   `Total`, `Unread` and one summary per row with `IsUnread` and `IsMuted`.
 - **`SetConversationMuteCommandHandler`** — MediatR handler behind both mute

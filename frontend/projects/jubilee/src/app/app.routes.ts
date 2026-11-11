@@ -1,6 +1,7 @@
-import { Routes } from '@angular/router';
+import { Routes, UrlMatchResult, UrlSegment } from '@angular/router';
 import { ChromeSection } from 'components';
 import { guestGuard } from './guards/guest.guard';
+import { memberGuard } from './guards/member.guard';
 import { welcomeRedirectGuard } from './guards/welcome-redirect.guard';
 
 /**
@@ -15,6 +16,17 @@ export interface JbRouteData {
 }
 
 const data = (value: JbRouteData): JbRouteData => value;
+
+/**
+ * The listing page, and the same page with the message dialog open: /b/:slug/message. One
+ * route serves both so that opening the dialog does not load the page, or count a view, again.
+ */
+export function businessMatcher(segments: UrlSegment[]): UrlMatchResult | null {
+  if (segments[0]?.path !== 'b' || !segments[1]) return null;
+  const message = segments.length === 3 && segments[2].path === 'message';
+  if (segments.length !== 2 && !message) return null;
+  return { consumed: segments, posParams: { slug: segments[1] } };
+}
 
 export const routes: Routes = [
   {
@@ -44,7 +56,7 @@ export const routes: Routes = [
     title: 'Category · Jubilee',
   },
   {
-    path: 'b/:slug',
+    matcher: businessMatcher,
     loadComponent: () => import('./pages/business/business.page').then((m) => m.BusinessPage),
     data: data({ shell: 'app', page: 'business', section: 'browse' }),
     title: 'Business · Jubilee',
@@ -54,6 +66,22 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/product/product.page').then((m) => m.ProductPage),
     data: data({ shell: 'app', page: 'product', section: 'browse' }),
     title: 'Product · Jubilee',
+  },
+  {
+    path: 'messages',
+    pathMatch: 'full',
+    loadComponent: () => import('./pages/messages/messages.page').then((m) => m.MessagesPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'messages', section: 'messages' }),
+    title: 'Messages · Jubilee',
+  },
+  {
+    path: 'messages/:id',
+    loadComponent: () =>
+      import('./pages/conversation/conversation.page').then((m) => m.ConversationPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'conversation', section: 'messages' }),
+    title: 'Conversation · Jubilee',
   },
   {
     path: 'join',

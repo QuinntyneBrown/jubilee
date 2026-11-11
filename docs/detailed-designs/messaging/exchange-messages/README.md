@@ -46,7 +46,7 @@ The feature is a vertical slice from the conversation page to the database and
 - **Empty conversation** — a conversation with no messages shows "Say hello to
   {first name}. Ask a question or tell him what you need." and up to three
   suggested openers that fill the composer when pressed. The opener texts are
-  `<TO SUPPLY>`.
+  "Do you offer a first meeting?", "What does it cost?" and "Can we meet by video?" (ADR 0014).
 - **`MessageComposer`** — Angular component. On a device with a physical
   keyboard, Enter sends and Shift+Enter adds a new line. Empty or
   whitespace-only text sends nothing. The composer clears as soon as a send
@@ -84,8 +84,8 @@ The feature is a vertical slice from the conversation page to the database and
 - **`UploadMessagePhotoCommandHandler`** — checks the content type by magic
   bytes, accepts JPEG and PNG up to `5 MB` and `8,000 × 8,000` pixels, re-encodes
   the image, strips metadata, submits it to the `Malware scanner`, and stores it
-  through `IMediaStore` under a random name (L2-138). The thumbnail size is
-  `<TO SUPPLY>`. The attachment route returns a signed URL valid for `5 minutes`
+  through `IMediaStore` under a random name (L2-138). The photo is shown
+  at its stored size, scaled to the bubble (ADR 0014); no separate thumbnail is made. The attachment route returns a signed URL valid for `5 minutes`
   to a participant only.
 - **`Conversation`**, **`Message`**, **`MessageAttachment`** — domain entities.
   `Message.Kind` is `Text` or `RequestCard`; `Conversation.AddRequestCard` adds a
@@ -94,8 +94,8 @@ The feature is a vertical slice from the conversation page to the database and
   active, opening the conversation or sending a message shows the info toast
   "{Owner} is away until {day}. He'll see your message when he's back." After the
   return date no notice is shown. The owner route is
-  `PUT /api/listings/{id}/away`; the screen on which an owner sets the period is
-  `<TO SUPPLY>`.
+  `PUT /api/listings/{id}/away`; the screen on which an owner sets the period belongs to the owner workspace
+  journey (ADR 0014); until then `Listing.AwayUntil` is read and shown, not set from the app.
 
 ## Requirements
 

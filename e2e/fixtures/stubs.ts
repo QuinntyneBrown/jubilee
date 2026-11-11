@@ -2,6 +2,7 @@ import type { Page, Route } from '@playwright/test';
 import { categories } from './categories';
 import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
 import { fulfil, recordedAnswer } from './mock-api';
+import { stubMessaging } from './messaging';
 import type { StubName } from './routes';
 
 const home = '**/api/directory/home';
@@ -104,6 +105,20 @@ export function patchListing(
 /** Installs the API answers that put a screen in a state the seeded data cannot produce. */
 export async function applyStub(page: Page, name: StubName): Promise<unknown> {
   switch (name) {
+    case 'messages':
+      return stubMessaging(page);
+    case 'messages-empty':
+      return stubMessaging(page, { inbox: 'empty' });
+    case 'messages-loading':
+      return stubMessaging(page, { inbox: 'loading' });
+    case 'messages-error':
+      return stubMessaging(page, { inbox: 'error' });
+    case 'conversation':
+      return stubMessaging(page);
+    case 'conversation-loading':
+      return stubMessaging(page, { conversation: 'loading' });
+    case 'conversation-error':
+      return stubMessaging(page, { conversation: 'error' });
     case 'browse-loading':
       return page.route(home, pending);
     case 'browse-empty':

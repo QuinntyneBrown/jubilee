@@ -395,7 +395,8 @@
         "empty",
         "error",
         "sending",
-        "failed"
+        "failed",
+        "away"
       ]
     },
     {
