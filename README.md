@@ -33,7 +33,6 @@ does not take payment; members pay the business directly.
 
 ## Contents
 
-- [Features](#features)
 - [Architecture](#architecture)
 - [Getting started](#getting-started)
 - [Building and testing](#building-and-testing)
@@ -45,27 +44,6 @@ does not take payment; members pay the business directly.
 - [Security](#security)
 - [Support](#support)
 - [License](#license)
-
-## Features
-
-These are the planned features. Each one is specified in [`docs/specs/L2.md`](docs/specs/L2.md).
-The directory is built; the others follow in the order of the journeys.
-
-| Feature | What it does | Status |
-|---|---|---|
-| **Directory** | A welcome page, a browse home with featured businesses, and category pages with filters, sorting and pagination. Only verified, live listings are public. | Built |
-| **Search** | Keyword search across businesses, services and products, with grouped results. | Planned |
-| **Business and product pages** | A page per service business or shop, and a page per product. | Planned |
-| **Requests** | Book a meeting, ask for a quote or request a product, without paying. Follow each request and cancel an open one. | Planned |
-| **Messaging** | Private one-to-one conversations between a member and a business. | Planned |
-| **Notifications** | A notification centre, toasts, banners and e-mail, according to preferences. | Planned |
-| **Business onboarding** | List a business for free, name a church reference and submit it for verification. | Planned |
-| **Church reference** | A pastor or elder confirms an owner through a private, single-use link. | Planned |
-| **Owner workspace** | Monitor a listing, edit it, manage products and services, answer requests. | Planned |
-| **Verification team** | A review queue, approval, change requests and report handling. | Planned |
-| **Accounts** | Join by e-mail or Google, confirm the address, reset a password, download data and delete the account. | Planned |
-| **Offline use** | Cached pages and a queue for outgoing messages on a poor connection. | Planned |
-| **Accessible and responsive** | WCAG 2.2 AA, light and dark themes, every viewport from 360 px. | Ongoing |
 
 ## Architecture
 
