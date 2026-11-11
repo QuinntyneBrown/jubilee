@@ -59,6 +59,7 @@
   <a
     class="btn btn--ghost btn--icon"
     routerLink="/notifications"
+    [attr.aria-current]="current() === 'notifications' ? 'page' : null"
     [attr.aria-label]="
       member.unreadNotificationCount > 0
         ? 'Notifications, ' + member.unreadNotificationCount + ' unread'

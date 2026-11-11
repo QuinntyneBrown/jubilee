@@ -21,6 +21,11 @@ export class NavigationStore {
 
   readonly summary = this.current.asReadonly();
 
+  /** Takes the counts the event stream sends (L2-065 AC4). */
+  apply(summary: NavigationSummary): void {
+    this.current.set(summary);
+  }
+
   load(): void {
     this.api.getSummary().subscribe({
       next: (summary) => this.current.set(summary),

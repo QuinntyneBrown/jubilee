@@ -11,4 +11,5 @@ export interface ChromeMember {
 }
 
 /** The primary destination a page belongs to, marked with `aria-current="page"`. */
-export type ChromeSection = 'browse' | 'messages' | 'business' | 'account' | 'verifications' | null;
+export type ChromeSection =
+  'browse' | 'messages' | 'business' | 'account' | 'notifications' | 'verifications' | null;

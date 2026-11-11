@@ -30,3 +30,5 @@ export * from './lib/models/my-business';
 export * from './lib/api/catalogue-api';
 export * from './lib/models/catalogue';
 export * from './lib/models/member-requests';
+export * from './lib/api/notifications-api';
+export * from './lib/models/notifications';

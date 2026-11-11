@@ -14,6 +14,7 @@ import {
 } from '../pages/product.page';
 import { EditListingPage } from '../pages/edit-listing.page';
 import { IncomingRequestsPage } from '../pages/incoming-requests.page';
+import { NotificationsPage } from '../pages/notifications.page';
 import { MyProductsPage } from '../pages/my-products.page';
 import { MyServicesPage } from '../pages/my-services.page';
 import { MyBusinessPage } from '../pages/my-business.page';
@@ -52,6 +53,10 @@ export const screens: {
   { key: 'my-business.empty', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.error', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.paused', screen: (page) => new MyBusinessPage(page) },
+  { key: 'notifications', screen: (page) => new NotificationsPage(page) },
+  { key: 'notifications.read', screen: (page) => new NotificationsPage(page) },
+  { key: 'notifications.empty', screen: (page) => new NotificationsPage(page) },
+  { key: 'notifications.error', screen: (page) => new NotificationsPage(page) },
   { key: 'my-products', screen: (page) => new MyProductsPage(page) },
   { key: 'my-products.empty', screen: (page) => new MyProductsPage(page) },
   { key: 'my-products.error', screen: (page) => new MyProductsPage(page) },

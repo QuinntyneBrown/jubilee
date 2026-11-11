@@ -127,6 +127,15 @@ export const routes: Routes = [
     title: 'Request · Jubilee',
   },
   {
+    path: 'notifications',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/notifications/notifications.page').then((m) => m.NotificationsPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'notifications', section: 'notifications' }),
+    title: 'Notifications · Jubilee',
+  },
+  {
     path: 'my-business',
     pathMatch: 'full',
     loadComponent: () =>

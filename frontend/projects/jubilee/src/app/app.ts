@@ -23,6 +23,7 @@ import { filter, map, startWith } from 'rxjs';
 import { JbRouteData } from './app.routes';
 import { ClockService } from './services/clock.service';
 import { NavigationStore } from './services/navigation.store';
+import { RealtimeService } from './services/realtime.service';
 import { SessionService } from './services/session.service';
 import { ToastRegion } from './toasts/toast-region';
 
@@ -39,8 +40,9 @@ export class App {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
-  private readonly session = inject(SessionService);
+  protected readonly session = inject(SessionService);
   private readonly navigation = inject(NavigationStore);
+  private readonly realtime = inject(RealtimeService);
   private readonly account = inject(ACCOUNT_API);
   protected readonly year = inject(ClockService).year();
 
@@ -84,6 +86,10 @@ export class App {
     this.unconfirmed()?.emailBounced ? 'bounced' : this.resent() ? 'sent' : 'persistent',
   );
 
+  /** Shown once when the address was unconfirmed and now is, until it is dismissed (L2-005 AC4, L2-067 AC2). */
+  protected readonly confirmedBanner = signal(false);
+  private wasUnconfirmed = false;
+
   /** The query of the search page, kept in the top bar's search box (L2-029 AC5). */
   protected readonly searchQuery = toSignal(
     this.router.events.pipe(
@@ -100,6 +106,17 @@ export class App {
 
   constructor() {
     if (this.session.member()) this.navigation.load();
+    // The open connection runs for a signed-in member only (L2-070).
+    effect(() => {
+      if (this.session.member()) this.realtime.start();
+      else this.realtime.stop();
+    });
+    effect(() => {
+      const unconfirmed = this.unconfirmed() !== null;
+      if (this.wasUnconfirmed && !unconfirmed && this.session.member())
+        this.confirmedBanner.set(true);
+      this.wasUnconfirmed = unconfirmed;
+    });
     effect(() => {
       this.document.body.dataset['page'] = this.routeData().page;
     });
@@ -114,6 +131,10 @@ export class App {
         });
       }
     });
+  }
+
+  protected dismissConfirmed(): void {
+    this.confirmedBanner.set(false);
   }
 
   protected resend(): void {

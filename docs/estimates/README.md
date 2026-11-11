@@ -16,7 +16,7 @@
 | [security](security.md) | 26 days | 11% |
 | [messaging](messaging.md) | 17 days | 0% |
 | [requests](requests.md) | 34 days | 80% |
-| [notifications](notifications.md) | 16 days | 0% |
+| [notifications](notifications.md) | 16 days | 85% |
 | [onboarding](onboarding.md) | 15 days | 83% |
 | [church-reference](church-reference.md) | 10 days | 78% |
 | [verification](verification.md) | 20 days | 52% |

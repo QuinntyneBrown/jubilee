@@ -69,6 +69,10 @@ export type StubName =
   | 'business-paused'
   | 'editor'
   | 'editor-error'
+  | 'notifications'
+  | 'notifications-read'
+  | 'notifications-empty'
+  | 'notifications-error'
   | 'products'
   | 'products-empty'
   | 'products-error'
@@ -528,6 +532,30 @@ export const routes = {
     mock: 'pages/edit-listing/error.html',
     who: 'member',
     stub: 'editor-error',
+  },
+  notifications: {
+    app: '/notifications',
+    mock: 'pages/notifications/default.html',
+    who: 'member',
+    stub: 'notifications',
+  },
+  'notifications.read': {
+    app: '/notifications',
+    mock: 'pages/notifications/read.html',
+    who: 'member',
+    stub: 'notifications-read',
+  },
+  'notifications.empty': {
+    app: '/notifications',
+    mock: 'pages/notifications/empty.html',
+    who: 'member',
+    stub: 'notifications-empty',
+  },
+  'notifications.error': {
+    app: '/notifications',
+    mock: 'pages/notifications/error.html',
+    who: 'member',
+    stub: 'notifications-error',
   },
   'my-products': {
     app: '/my-business/products',
