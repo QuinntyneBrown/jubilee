@@ -6,7 +6,8 @@
   price()
 }}</span>
 <a
-  class="btn btn--sm"
+  jb-button
+  size="sm"
   [routerLink]="actionLink()"
   [queryParams]="{ service: service().id }"
   [attr.aria-label]="label() + ' ' + service().name"

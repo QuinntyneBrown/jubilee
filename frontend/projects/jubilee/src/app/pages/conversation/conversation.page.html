@@ -7,10 +7,10 @@
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>{{ current.reference }}</code
         >.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="open()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="open()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <a slot="actions" class="btn" routerLink="/messages">Back to messages</a>
+        <a slot="actions" jb-button routerLink="/messages">Back to messages</a>
       </div>
     } @else if (current.status === 'loading') {
       <p class="visually-hidden" role="status">Loading this conversation…</p>
@@ -24,7 +24,7 @@
     } @else {
       @let conversation = current.value;
       <div class="chat__head">
-        <a class="btn btn--ghost btn--icon" routerLink="/messages" aria-label="Back to messages">
+        <a jb-button variant="ghost" iconOnly routerLink="/messages" aria-label="Back to messages">
           <svg jb-icon name="arrow-left"></svg>
         </a>
         <span class="avatar" aria-hidden="true">{{ initials(conversation.business.name) }}</span>
@@ -33,7 +33,8 @@
           <p class="text-caption truncate">{{ subtitle() }}</p>
         </div>
         <a
-          class="btn btn--icon"
+          jb-button
+          iconOnly
           [routerLink]="['/b', conversation.business.slug]"
           [attr.aria-label]="'View ' + conversation.business.name + '’s listing'"
         >
@@ -69,7 +70,9 @@
           @if (hasMore()) {
             <li class="chat__day">
               <button
-                class="btn btn--sm btn--ghost"
+                jb-button
+                size="sm"
+                variant="ghost"
                 type="button"
                 [disabled]="loadingEarlier()"
                 (click)="loadEarlier()"
@@ -148,7 +151,7 @@
           (ngModelChange)="text.set($event)"
           (keydown.enter)="onEnter($event)"
         ></textarea>
-        <button class="btn btn--primary btn--icon" type="submit" aria-label="Send">
+        <button jb-button variant="primary" iconOnly type="submit" aria-label="Send">
           <svg jb-icon name="send"></svg>
         </button>
       </form>

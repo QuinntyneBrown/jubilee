@@ -1,0 +1,163 @@
+// Block: btn. The host is the native button or link.
+:host {
+  --btn-bg: var(--color-bg-surface);
+  --btn-fg: var(--color-fg-default);
+  --btn-border: var(--color-border-strong);
+  --btn-bg-hover: var(--color-bg-subtle);
+  --btn-bg-active: var(--color-bg-subtle-hover);
+  // An icon in a button follows the size of its label.
+  --jb-icon-size: 1.25em;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--control-height-md);
+  padding: 0 var(--space-4);
+  font: var(--text-label);
+  font-size: var(--font-size-md);
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: var(--border-width-hairline) solid var(--btn-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  position: relative;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+:host(:hover) {
+  background: var(--btn-bg-hover);
+}
+
+:host(:active) {
+  background: var(--btn-bg-active);
+  transform: translateY(1px);
+}
+
+:host(:disabled),
+:host([aria-disabled='true']) {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+:host(.btn--primary) {
+  --btn-bg: var(--color-accent);
+  --btn-fg: var(--color-fg-on-accent);
+  --btn-border: var(--color-accent-border);
+  --btn-bg-hover: var(--color-accent-hover);
+  --btn-bg-active: var(--color-accent-active);
+
+  font-weight: var(--font-weight-semibold);
+}
+
+:host(.btn--primary:hover) {
+  box-shadow: var(--shadow-1);
+}
+
+:host(.btn--danger) {
+  --btn-bg: var(--color-danger-solid);
+  --btn-fg: var(--color-fg-on-danger);
+  --btn-border: var(--color-danger-solid);
+  --btn-bg-hover: var(--color-danger-solid-hover);
+  --btn-bg-active: var(--color-danger-solid-hover);
+}
+
+:host(.btn--ghost) {
+  --btn-bg: transparent;
+  --btn-border: var(--jb-btn-ghost-border, transparent);
+  --btn-fg: var(--jb-btn-ghost-fg, var(--color-fg-default));
+  --btn-bg-hover: var(--jb-btn-ghost-bg-hover, var(--color-bg-subtle));
+  --btn-bg-active: var(--jb-btn-ghost-bg-active, var(--color-bg-subtle-hover));
+}
+
+:host(.btn--link) {
+  --btn-bg: transparent;
+  --btn-border: transparent;
+  --btn-fg: var(--color-fg-link);
+  --btn-bg-hover: var(--color-accent-subtle);
+
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+:host(.btn--sm) {
+  min-height: var(--jb-btn-sm-min-height, var(--control-height-sm));
+  padding-inline: var(--space-3);
+  font-size: var(--font-size-sm);
+}
+
+:host(.btn--lg) {
+  min-height: var(--control-height-lg);
+  padding-inline: var(--space-6);
+  font-size: var(--font-size-lg);
+}
+
+:host(.btn--block) {
+  display: flex;
+  width: 100%;
+}
+
+:host(.btn--icon) {
+  padding: 0;
+  width: var(--control-height-md);
+  flex: none;
+}
+
+:host(.btn--icon.btn--lg) {
+  width: var(--control-height-lg);
+}
+
+:host(.btn--icon.btn--sm) {
+  width: var(--control-height-sm);
+}
+
+:host([aria-busy='true']) {
+  color: transparent;
+  pointer-events: none;
+}
+
+:host([aria-busy='true'])::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  border: var(--border-width-thick) solid var(--btn-fg);
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: btn-spin var(--duration-spin) linear infinite;
+}
+
+@keyframes btn-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host(:active) {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :host {
+    forced-color-adjust: none;
+    border: 1px solid CanvasText;
+  }
+
+  :host(.btn--primary) {
+    background: Highlight;
+    color: HighlightText;
+  }
+}

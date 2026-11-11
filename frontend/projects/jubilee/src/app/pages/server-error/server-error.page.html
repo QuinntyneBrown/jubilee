@@ -3,10 +3,10 @@
   <div jb-empty-state icon="alert" heading="Something went wrong on our side" [level]="1">
     Your messages and requests are safe. Try again in a minute; if it keeps happening, tell us and
     quote the reference below.
-    <button slot="actions" class="btn btn--primary" type="button" (click)="tryAgain()">
+    <button slot="actions" jb-button variant="primary" type="button" (click)="tryAgain()">
       <svg jb-icon name="refresh"></svg>Try again
     </button>
-    <a slot="actions" class="btn" routerLink="/help">Get help</a>
+    <a slot="actions" jb-button routerLink="/help">Get help</a>
   </div>
   @if (reference) {
     <p class="text-caption">

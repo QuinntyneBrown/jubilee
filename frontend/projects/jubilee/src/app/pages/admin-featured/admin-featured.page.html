@@ -14,10 +14,10 @@
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ weeks.reference }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
     </div>
   }
   @case ('loading') {
@@ -81,7 +81,9 @@
               </div>
               <span class="cluster">
                 <button
-                  class="btn btn--sm btn--icon"
+                  jb-button
+                  size="sm"
+                  iconOnly
                   type="button"
                   [attr.aria-label]="'Move ' + listing.name + ' up'"
                   [disabled]="first"
@@ -90,7 +92,9 @@
                   ↑
                 </button>
                 <button
-                  class="btn btn--sm btn--icon"
+                  jb-button
+                  size="sm"
+                  iconOnly
                   type="button"
                   [attr.aria-label]="'Move ' + listing.name + ' down'"
                   [disabled]="last"
@@ -98,7 +102,7 @@
                 >
                   ↓
                 </button>
-                <button class="btn btn--sm" type="button" (click)="remove(i)">
+                <button jb-button size="sm" type="button" (click)="remove(i)">
                   Remove<span class="visually-hidden"> {{ listing.name }}</span>
                 </button>
               </span>
@@ -134,7 +138,7 @@
                 <p class="row__title">{{ candidate.name }}</p>
                 <p class="row__meta">{{ candidate.categorySlug }}</p>
               </div>
-              <button class="btn btn--sm" type="button" (click)="add(candidate)">
+              <button jb-button size="sm" type="button" (click)="add(candidate)">
                 Add<span class="visually-hidden"> {{ candidate.name }}</span>
               </button>
             </li>
@@ -142,12 +146,7 @@
         </ul>
       }
       <div class="cluster" style="margin-top: var(--space-4)">
-        <button
-          class="btn btn--primary"
-          type="submit"
-          [disabled]="saving()"
-          [attr.aria-busy]="saving() ? 'true' : null"
-        >
+        <button jb-button variant="primary" type="submit" [disabled]="saving()" [busy]="saving()">
           Save selection
         </button>
       </div>

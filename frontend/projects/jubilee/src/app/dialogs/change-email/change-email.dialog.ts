@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PROFILE_API } from 'api';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 
 export interface ChangeEmailData {
   /** A member who joined with Google has no password to give. */
@@ -34,7 +34,7 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-change-email-dialog',
-  imports: [FormsModule, Icon],
+  imports: [FormsModule, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './change-email.dialog.html',

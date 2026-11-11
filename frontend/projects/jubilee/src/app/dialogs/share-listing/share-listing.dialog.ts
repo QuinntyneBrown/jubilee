@@ -1,7 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '@angular/core';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 
 export interface ShareListingData {
   slug: string;
@@ -17,7 +17,7 @@ const COPIED_MS = 2000;
  */
 @Component({
   selector: 'jb-share-listing-dialog',
-  imports: [Icon],
+  imports: [Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './share-listing.dialog.html',

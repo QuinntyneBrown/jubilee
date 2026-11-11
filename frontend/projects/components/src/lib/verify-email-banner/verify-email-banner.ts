@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Icon } from '../icon/icon';
+import { Button } from '../button/button';
+import { CloseButton } from '../button/close-button';
 
 /** The states of the banner that asks an unconfirmed member to confirm the address (L2-005). */
 export type VerifyEmailBannerState = 'persistent' | 'sent' | 'bounced' | 'expired' | 'confirmed';
@@ -12,7 +14,7 @@ export type VerifyEmailBannerState = 'persistent' | 'sent' | 'bounced' | 'expire
  */
 @Component({
   selector: 'div[jb-verify-email-banner]',
-  imports: [Icon, RouterLink],
+  imports: [Icon, RouterLink, Button, CloseButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'alert banner',

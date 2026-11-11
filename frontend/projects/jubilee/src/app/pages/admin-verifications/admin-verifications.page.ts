@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ADMIN_API, QueueRow, QueueStage, ReferenceState, VerificationQueue } from 'api';
-import { EmptyState, Icon } from 'components';
+import { EmptyState, Icon, Button } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
 import { threadTime } from '../../services/message-time';
@@ -27,7 +27,7 @@ const REFERENCE: Record<ReferenceState, { label: string; tone: string }> = {
 /** The verification queue at /admin/verifications (L2-099): submitted listings, oldest first. */
 @Component({
   selector: 'jb-admin-verifications-page',
-  imports: [RouterLink, EmptyState, Icon, TeamNav],
+  imports: [RouterLink, EmptyState, Icon, TeamNav, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-verifications.page.html',
 })

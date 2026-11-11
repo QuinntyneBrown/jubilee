@@ -4,6 +4,7 @@ import { BrandMark } from '../brand-mark/brand-mark';
 import { Icon } from '../icon/icon';
 import { ChromeMember, ChromeSection } from '../navigation';
 import { UnreadBadge } from '../unread-badge/unread-badge';
+import { Button } from '../button/button';
 
 /**
  * The ink top bar. Which parts show at which width is decided by the kit's media queries
@@ -11,7 +12,7 @@ import { UnreadBadge } from '../unread-badge/unread-badge';
  */
 @Component({
   selector: 'header[jb-top-bar]',
-  imports: [RouterLink, BrandMark, Icon, UnreadBadge],
+  imports: [RouterLink, BrandMark, Icon, UnreadBadge, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'topbar topbar--ink' },
   templateUrl: './top-bar.html',

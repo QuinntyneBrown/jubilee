@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { EmptyState, Icon } from 'components';
+import { EmptyState, Icon, Button } from 'components';
 import { MessagesStore } from '../../services/messages.store';
 import { NavigationStore } from '../../services/navigation.store';
 import { InboxList } from './inbox-list';
@@ -8,7 +8,7 @@ import { InboxList } from './inbox-list';
 /** The Messages page at /messages (L2-056): the member's conversations, newest first. */
 @Component({
   selector: 'jb-messages-page',
-  imports: [RouterLink, EmptyState, Icon, InboxList],
+  imports: [RouterLink, EmptyState, Icon, InboxList, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './messages.page.html',
 })

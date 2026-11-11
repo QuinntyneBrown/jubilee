@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 
 export type WorkspaceSection = 'overview' | 'listing' | 'products' | 'services' | 'requests';
 
@@ -10,7 +10,7 @@ export type WorkspaceSection = 'overview' | 'listing' | 'products' | 'services' 
  */
 @Component({
   selector: 'jb-workspace-header',
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-header.html',
 })

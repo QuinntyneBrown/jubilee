@@ -1,0 +1,17 @@
+// Block: close. The host is the native button.
+:host {
+  display: grid;
+  place-items: center;
+  width: var(--target-min);
+  height: var(--target-min);
+  margin: var(--jb-close-margin, 0);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+:host(:hover) {
+  background: color-mix(in srgb, currentColor var(--jb-close-hover-mix, 8%), transparent);
+}

@@ -11,7 +11,7 @@
         It is kept in your draft. Nothing is public until you submit and are verified.
       </p>
     </div>
-    <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+    <button jb-button variant="ghost" iconOnly type="button" aria-label="Close" (click)="close()">
       <svg jb-icon name="close"></svg>
     </button>
   </div>
@@ -95,8 +95,8 @@
     }
   </form>
   <div class="dialog__footer">
-    <button class="btn" type="button" (click)="close()">Cancel</button>
-    <button class="btn btn--primary" type="submit" form="item-form">
+    <button jb-button type="button" (click)="close()">Cancel</button>
+    <button jb-button variant="primary" type="submit" form="item-form">
       {{ isService ? 'Add service' : 'Add product' }}
     </button>
   </div>

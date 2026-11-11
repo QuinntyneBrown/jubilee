@@ -13,7 +13,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ACCOUNT_DATA_API, Account, PROFILE_API, ProfileForm } from 'api';
-import { EmptyState, Icon } from 'components';
+import { EmptyState, Icon, Button } from 'components';
 import { Observable, map } from 'rxjs';
 import { ChangeEmailData, ChangeEmailDialog } from '../../dialogs/change-email/change-email.dialog';
 import {
@@ -59,7 +59,7 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-account-page',
-  imports: [FormsModule, RouterLink, EmptyState, Icon],
+  imports: [FormsModule, RouterLink, EmptyState, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page', '(window:beforeunload)': 'warnOnClose($event)' },
   templateUrl: './account.page.html',

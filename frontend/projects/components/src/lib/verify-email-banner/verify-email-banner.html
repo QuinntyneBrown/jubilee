@@ -24,13 +24,13 @@
         typo.</span
       >
       <span class="alert__actions"
-        ><a class="btn btn--sm" routerLink="/account">Change e-mail</a></span
+        ><a jb-button size="sm" routerLink="/account">Change e-mail</a></span
       >
     }
     @case ('expired') {
       <span><strong>Your confirmation link expired.</strong> Links work for 24 hours.</span>
       <span class="alert__actions"
-        ><button class="btn btn--sm" type="button" [disabled]="busy()" (click)="resend.emit()">
+        ><button jb-button size="sm" type="button" [disabled]="busy()" (click)="resend.emit()">
           Send a new link
         </button></span
       >
@@ -41,7 +41,7 @@
         {{ email() }}.</span
       >
       <span class="alert__actions"
-        ><button class="btn btn--sm" type="button" [disabled]="busy()" (click)="resend.emit()">
+        ><button jb-button size="sm" type="button" [disabled]="busy()" (click)="resend.emit()">
           Send it again</button
         ><a routerLink="/account">Change e-mail</a></span
       >
@@ -49,7 +49,5 @@
   }
 </div>
 @if (state() === 'confirmed') {
-  <button class="close" type="button" aria-label="Dismiss" (click)="dismiss.emit()">
-    <svg jb-icon name="close"></svg>
-  </button>
+  <button jb-close-button type="button" aria-label="Dismiss" (click)="dismiss.emit()"></button>
 }

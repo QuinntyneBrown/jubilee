@@ -18,7 +18,7 @@
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>{{ current.reference }}</code
         >.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
       </div>
@@ -141,9 +141,10 @@
             {{ account.emailStatus === 'confirmed' ? 'Confirmed.' : 'Not confirmed yet.' }}
             <button
               #changeEmailButton
-              class="btn btn--link"
+              jb-button
+              variant="link"
               type="button"
-              (click)="changeEmail(changeEmailButton)"
+              (click)="changeEmail(changeEmailButton.element)"
             >
               Change e-mail
             </button>
@@ -237,15 +238,10 @@
         </div>
         <div class="form-actions">
           <span class="inline-status" style="margin-right: auto">{{ lastSaved() }}</span>
-          <button class="btn" type="button" [disabled]="!dirty() || saving()" (click)="discard()">
+          <button jb-button type="button" [disabled]="!dirty() || saving()" (click)="discard()">
             Discard changes
           </button>
-          <button
-            class="btn btn--primary"
-            type="submit"
-            [disabled]="saving()"
-            [attr.aria-busy]="saving() ? 'true' : null"
-          >
+          <button jb-button variant="primary" type="submit" [disabled]="saving()" [busy]="saving()">
             {{ saving() ? 'Saving…' : 'Save profile' }}
           </button>
         </div>
@@ -264,9 +260,10 @@
             </div>
             <button
               #changePasswordButton
-              class="btn btn--sm"
+              jb-button
+              size="sm"
               type="button"
-              (click)="changePassword(changePasswordButton)"
+              (click)="changePassword(changePasswordButton.element)"
             >
               {{ account.hasPassword ? 'Change password' : 'Set a password' }}
             </button>
@@ -305,10 +302,11 @@
         }
         <div>
           <button
-            class="btn btn--sm"
+            jb-button
+            size="sm"
             type="button"
             [disabled]="exportWaiting() || exportBusy()"
-            [attr.aria-busy]="exportBusy() ? 'true' : null"
+            [busy]="exportBusy()"
             (click)="requestData()"
           >
             Download my data
@@ -328,9 +326,10 @@
         <div>
           <button
             #deleteButton
-            class="btn btn--sm"
+            jb-button
+            size="sm"
             type="button"
-            (click)="deleteAccount(deleteButton)"
+            (click)="deleteAccount(deleteButton.element)"
           >
             <svg jb-icon name="trash"></svg>Delete my account
           </button>

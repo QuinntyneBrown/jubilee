@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MarketingButton } from 'components';
 import { APP_URL } from '../app-url';
 
 /** "Run a Christian-owned business? Be found.": the section for owners (L2-183 AC6). */
 @Component({
   selector: 'jb-for-businesses',
+  imports: [MarketingButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './for-businesses.html',
 })

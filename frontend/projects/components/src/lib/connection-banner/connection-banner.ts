@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Icon } from '../icon/icon';
+import { Button } from '../button/button';
+import { CloseButton } from '../button/close-button';
 
 /** What the banner says about the connection (L2-067, L2-121). */
 export type ConnectionBannerKind = 'offline' | 'unreachable' | 'slow' | 'back-online';
@@ -13,7 +15,7 @@ export type ConnectionBannerKind = 'offline' | 'unreachable' | 'slow' | 'back-on
  */
 @Component({
   selector: 'div[jb-connection-banner]',
-  imports: [Icon],
+  imports: [Icon, Button, CloseButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'alert banner',

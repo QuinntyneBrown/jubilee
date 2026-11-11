@@ -11,10 +11,10 @@
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ requests.reference }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/requests">Back to your requests</a>
+      <a slot="actions" jb-button routerLink="/requests">Back to your requests</a>
     </div>
   }
   @case ('loading') {
@@ -88,29 +88,29 @@
         </dl>
         <div class="card__footer" style="justify-content: flex-start; flex-wrap: wrap">
           @if (r.canAddToCalendar) {
-            <a class="btn btn--primary" [href]="calendarUrl(r)" download>
+            <a jb-button variant="primary" [href]="calendarUrl(r)" download>
               <svg jb-icon name="calendar"></svg>Add to calendar
             </a>
           }
           @if (r.status === 'declined') {
-            <a class="btn btn--primary" [routerLink]="['/c', r.categorySlug]"
+            <a jb-button variant="primary" [routerLink]="['/c', r.categorySlug]"
               >Find another {{ r.categoryWord }}</a
             >
           }
           @if (r.conversationId) {
-            <a class="btn" [routerLink]="['/messages', r.conversationId]">
+            <a jb-button [routerLink]="['/messages', r.conversationId]">
               <svg jb-icon name="message"></svg>Message
             </a>
           } @else {
-            <a class="btn" [routerLink]="['/b', r.businessSlug, 'message']">
+            <a jb-button [routerLink]="['/b', r.businessSlug, 'message']">
               <svg jb-icon name="message"></svg>Message
             </a>
           }
           @if (r.canAskAgain && r.status !== 'declined') {
-            <a class="btn" [routerLink]="['/b', r.businessSlug]">Ask again</a>
+            <a jb-button [routerLink]="['/b', r.businessSlug]">Ask again</a>
           }
           @if (r.canCancel) {
-            <button class="btn btn--ghost" type="button" (click)="openCancel(r)">
+            <button jb-button variant="ghost" type="button" (click)="openCancel(r)">
               {{ r.cancelLabel }}
             </button>
           }

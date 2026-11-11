@@ -33,6 +33,17 @@ app with. Each is a full-page capture of one frame of the published design,
   `marketing-home-360.png` and `marketing-home-1280.png` and adds its rows to the table. Until
   then the marketing components are compared with the mocks only.
 
+## Known differences
+
+Where the design system and the mocks differ from the reference, the difference is listed here
+and the parity spec carries it as `knownDifference`, so the comparison is reported as a known
+failure until the design system and the mock are corrected. The owner decides each correction:
+it changes how the product looks, which a component move must not do.
+
+| Component | Reference | Design system and mocks |
+|---|---|---|
+| Button (top-bar action, `home-1280.png`) | 38 px tall, no border, Inter semibold | 32 px tall (`--control-height-sm`), hairline border, system text face |
+
 ## Refreshing
 
 Capture the frame again from the published site at the same viewport width, with fonts loaded and

@@ -43,7 +43,7 @@
       <aside class="card stack">
         <h2>Still stuck?</h2>
         <p class="text-muted">Write to us and a person answers within one business day.</p>
-        <a class="btn btn--primary" [href]="'mailto:' + address">
+        <a jb-button variant="primary" [href]="'mailto:' + address">
           <svg jb-icon name="mail"></svg>E-mail {{ address }}
         </a>
       </aside>
@@ -55,10 +55,10 @@
       <a [href]="'mailto:' + address">{{ address }}</a> and quote
       <code>{{ current.reference }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
     </div>
   }
   @default {

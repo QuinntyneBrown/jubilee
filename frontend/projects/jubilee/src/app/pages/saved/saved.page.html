@@ -11,10 +11,10 @@
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ current.reference }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
     </div>
   }
   @case ('loading') {
@@ -35,7 +35,7 @@
       @if (saved.items.length === 0) {
         <div jb-empty-state icon="heart" heading="Save businesses to find them again">
           Tap the heart on any listing or product. Your saved list is private.
-          <a slot="actions" class="btn btn--primary" routerLink="/">Browse businesses</a>
+          <a slot="actions" jb-button variant="primary" routerLink="/">Browse businesses</a>
         </div>
       } @else {
         <ul class="card-grid">
@@ -57,7 +57,9 @@
               }
               <button
                 #removeButton
-                class="btn btn--icon btn--sm"
+                jb-button
+                iconOnly
+                size="sm"
                 type="button"
                 [attr.aria-label]="'Remove ' + item.name + ' from saved'"
                 (click)="remove(item, null)"

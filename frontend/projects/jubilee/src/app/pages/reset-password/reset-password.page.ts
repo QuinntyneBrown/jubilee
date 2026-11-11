@@ -13,7 +13,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PASSWORD_RESET_API } from 'api';
-import { BrandMark, EmptyState, Icon } from 'components';
+import { BrandMark, EmptyState, Icon, Button } from 'components';
 
 type View = 'loading' | 'form' | 'submitting' | 'success' | 'expired' | 'error';
 type Field = 'password' | 'confirm';
@@ -52,7 +52,7 @@ function text(code: string, length: number): string {
  */
 @Component({
   selector: 'jb-reset-password-page',
-  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon],
+  imports: [FormsModule, RouterLink, BrandMark, EmptyState, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'auth-layout' },
   templateUrl: './reset-password.page.html',

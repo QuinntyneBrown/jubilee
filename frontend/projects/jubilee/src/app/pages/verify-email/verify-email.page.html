@@ -11,8 +11,8 @@
     @case ('confirmed') {
       <div jb-empty-state icon="verified" heading="E-mail confirmed" [level]="1">
         {{ thanks() }} You can now message businesses, book meetings and list your own.
-        <a slot="actions" class="btn btn--primary" routerLink="/">Start browsing</a>
-        <a slot="actions" class="btn" routerLink="/list">List your business</a>
+        <a slot="actions" jb-button variant="primary" routerLink="/">Start browsing</a>
+        <a slot="actions" jb-button routerLink="/list">List your business</a>
       </div>
     }
     @case ('expired') {
@@ -22,11 +22,11 @@
           We can send a fresh one to {{ signedIn.email }}.
         }
         @if (member()) {
-          <button slot="actions" class="btn btn--primary" type="button" (click)="resend()">
+          <button slot="actions" jb-button variant="primary" type="button" (click)="resend()">
             Send a new link
           </button>
         } @else {
-          <a slot="actions" class="btn btn--primary" routerLink="/sign-in"
+          <a slot="actions" jb-button variant="primary" routerLink="/sign-in"
             >Sign in for a new link</a
           >
         }
@@ -42,20 +42,20 @@
       >
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>JB-VERIFY-502</code>.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="confirm()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="confirm()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <a slot="actions" class="btn" routerLink="/welcome">Back to welcome</a>
+        <a slot="actions" jb-button routerLink="/welcome">Back to welcome</a>
       </div>
     }
     @default {
       <div jb-empty-state icon="message" heading="Confirm your e-mail" [level]="1">
         We sent a link to <strong>{{ member()?.email }}</strong
         >. Open it on this device to finish joining.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="resend()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="resend()">
           Send it again
         </button>
-        <a slot="actions" class="btn" routerLink="/account">Use another e-mail</a>
+        <a slot="actions" jb-button routerLink="/account">Use another e-mail</a>
       </div>
       @if (sent()) {
         <p class="text-muted" role="status">We sent a new link to {{ member()?.email }}.</p>

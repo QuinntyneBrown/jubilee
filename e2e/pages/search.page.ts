@@ -16,6 +16,7 @@ export class SearchPage extends ShellPage implements Screen {
   readonly errorState: Locator;
   readonly errorReference: Locator;
   readonly tryAgain: Locator;
+  readonly backToBrowse: Locator;
   readonly loadingStatus: Locator;
   readonly skeletons: Locator;
   readonly pageSearchBox: Locator;
@@ -39,6 +40,7 @@ export class SearchPage extends ShellPage implements Screen {
     this.errorState = this.main.getByRole('alert');
     this.errorReference = this.errorState.locator('code');
     this.tryAgain = this.errorState.getByRole('button', { name: 'Try again' });
+    this.backToBrowse = this.errorState.getByRole('link', { name: 'Back to browse' });
     this.loadingStatus = this.main.getByRole('status');
     this.skeletons = this.main.locator('.skeleton');
     this.pageSearchBox = this.main.getByRole('searchbox', { name: 'Search Jubilee' });

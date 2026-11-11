@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ADMIN_API, CHANGE_AREAS, DecisionResult } from 'api';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 
 export interface RequestChangesData {
   id: string;
@@ -24,7 +24,7 @@ type View = 'form' | 'busy' | 'failed';
  */
 @Component({
   selector: 'jb-request-changes-dialog',
-  imports: [FormsModule, Icon],
+  imports: [FormsModule, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './request-changes.dialog.html',

@@ -22,10 +22,10 @@
       Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
       <code>{{ state.reference }}</code
       >.
-      <button slot="actions" class="btn btn--primary" type="button" (click)="store.load()">
+      <button slot="actions" jb-button variant="primary" type="button" (click)="store.load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
     </div>
   }
   @case ('loaded') {
@@ -34,10 +34,10 @@
       <div jb-empty-state icon="wrench" heading="No one has listed here yet">
         Know a Christian {{ category()?.trades ?? 'business owner' }} in Toronto? Invite them to
         list free, or list your own business.
-        <a slot="actions" class="btn btn--primary" routerLink="/list"
+        <a slot="actions" jb-button variant="primary" routerLink="/list"
           ><svg jb-icon name="plus"></svg>List your business</a
         >
-        <a slot="actions" class="btn" routerLink="/">Browse other categories</a>
+        <a slot="actions" jb-button routerLink="/">Browse other categories</a>
       </div>
     } @else {
       <div class="cluster cluster--between" style="margin-bottom: var(--space-6)">
@@ -54,7 +54,8 @@
           }
         </div>
         <button
-          class="btn only-mobile"
+          jb-button
+          class="only-mobile"
           type="button"
           (click)="openFilters(page.category.slug, page.matchCount)"
         >
@@ -80,11 +81,11 @@
       @if (page.matchCount === 0) {
         <div jb-empty-state icon="filter" heading="No businesses match these filters">
           {{ suggestion(page.suggestions) }}
-          <a slot="actions" class="btn btn--primary" [routerLink]="[]" (click)="store.clear()"
+          <a slot="actions" jb-button variant="primary" [routerLink]="[]" (click)="store.clear()"
             >Clear all filters</a
           >
           @if (recentFilter(); as recent) {
-            <button slot="actions" class="btn" type="button" (click)="store.remove(recent.filter)">
+            <button slot="actions" jb-button type="button" (click)="store.remove(recent.filter)">
               Remove “{{ recent.label }}”
             </button>
           }

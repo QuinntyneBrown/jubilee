@@ -11,21 +11,23 @@
     @case ('confirmed') {
       <div jb-empty-state icon="verified" heading="E-mail changed" [level]="1">
         Your Jubilee e-mail is now the address you confirmed. Use it the next time you sign in.
-        <a slot="actions" class="btn btn--primary" routerLink="/account">Go to your account</a>
+        <a slot="actions" jb-button variant="primary" routerLink="/account">Go to your account</a>
       </div>
     }
     @case ('in-use') {
       <div jb-empty-state icon="info" heading="An account already uses this e-mail" [level]="1">
         Someone else took that address after you asked. Your e-mail has not changed. Choose another
         address from your account.
-        <a slot="actions" class="btn btn--primary" routerLink="/account">Choose another e-mail</a>
+        <a slot="actions" jb-button variant="primary" routerLink="/account"
+          >Choose another e-mail</a
+        >
       </div>
     }
     @case ('expired') {
       <div jb-empty-state icon="info" heading="This link has expired" [level]="1">
         The link to confirm a new e-mail works for 24 hours, and only once. Your e-mail has not
         changed. Ask for a new link from your account.
-        <a slot="actions" class="btn btn--primary" routerLink="/account">Change e-mail again</a>
+        <a slot="actions" jb-button variant="primary" routerLink="/account">Change e-mail again</a>
       </div>
     }
     @default {
@@ -38,10 +40,10 @@
       >
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>JB-VERIFY-502</code>.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="confirm()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="confirm()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <a slot="actions" class="btn" routerLink="/welcome">Back to welcome</a>
+        <a slot="actions" jb-button routerLink="/welcome">Back to welcome</a>
       </div>
     }
   }

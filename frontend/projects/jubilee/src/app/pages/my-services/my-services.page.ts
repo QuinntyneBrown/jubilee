@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { CATALOGUE_API, DeletedItem, OwnerService, OwnerServices } from 'api';
-import { EmptyState, Icon, formatServicePrice } from 'components';
+import { EmptyState, Icon, formatServicePrice, Button } from 'components';
 import { DeleteItemData, DeleteItemDialog } from '../../dialogs/delete-item/delete-item.dialog';
 import {
   ServiceEditorData,
@@ -24,7 +24,7 @@ import { WorkspaceHeader } from '../my-business/workspace-header';
 /** My products at /my-business/services (L2-092, L2-093): the service list, with add, edit, delete and reorder. */
 @Component({
   selector: 'jb-my-services-page',
-  imports: [EmptyState, Icon, WorkspaceHeader],
+  imports: [EmptyState, Icon, WorkspaceHeader, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './my-services.page.html',

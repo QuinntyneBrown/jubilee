@@ -7,10 +7,10 @@
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>{{ view.reference }}</code
         >.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <a slot="actions" class="btn" routerLink="/my-business">Back to overview</a>
+        <a slot="actions" jb-button routerLink="/my-business">Back to overview</a>
       </div>
     </div>
   }
@@ -64,9 +64,12 @@
                   <a [routerLink]="['/b', e.slug]">View public listing</a>
                 </div>
               </div>
-              <button class="close" type="button" aria-label="Dismiss" (click)="dismissSaved()">
-                <svg jb-icon name="close"></svg>
-              </button>
+              <button
+                jb-close-button
+                type="button"
+                aria-label="Dismiss"
+                (click)="dismissSaved()"
+              ></button>
             </div>
           }
           @if (failure() === 'conflict') {
@@ -77,7 +80,7 @@
                   This listing changed since you opened it. Reload to see the latest.
                 </div>
                 <div class="alert__actions">
-                  <button class="btn btn--sm" type="button" (click)="load()">Reload</button>
+                  <button jb-button size="sm" type="button" (click)="load()">Reload</button>
                 </div>
               </div>
             </div>
@@ -141,7 +144,9 @@
                   />
                   <div class="cluster">
                     <button
-                      class="btn btn--sm btn--icon"
+                      jb-button
+                      size="sm"
+                      iconOnly
                       type="button"
                       [attr.aria-label]="'Move photo ' + photo.position + ' earlier'"
                       [disabled]="photo.position === 1 || photoBusy()"
@@ -150,7 +155,9 @@
                       ↑
                     </button>
                     <button
-                      class="btn btn--sm btn--icon"
+                      jb-button
+                      size="sm"
+                      iconOnly
                       type="button"
                       [attr.aria-label]="'Move photo ' + photo.position + ' later'"
                       [disabled]="photo.position === photos().length || photoBusy()"
@@ -159,7 +166,8 @@
                       ↓
                     </button>
                     <button
-                      class="btn btn--sm"
+                      jb-button
+                      size="sm"
                       type="button"
                       [attr.aria-label]="'Remove photo ' + photo.position"
                       [disabled]="photoBusy()"
@@ -182,10 +190,10 @@
                     (change)="add(picker)"
                   />
                   <button
-                    class="btn"
+                    jb-button
                     type="button"
                     [disabled]="photoBusy()"
-                    [attr.aria-busy]="photoBusy() ? 'true' : null"
+                    [busy]="photoBusy()"
                     (click)="choose(picker)"
                   >
                     <svg jb-icon name="plus"></svg>Add photo
@@ -352,16 +360,10 @@
             <span class="inline-status" style="margin-right: auto">{{
               busy() ? 'Saving…' : 'Changes are published when you save'
             }}</span>
-            <button class="btn" type="button" [disabled]="busy()" (click)="discard()">
+            <button jb-button type="button" [disabled]="busy()" (click)="discard()">
               Discard changes
             </button>
-            <button
-              class="btn btn--primary"
-              type="submit"
-              [attr.aria-busy]="busy() ? 'true' : null"
-            >
-              Save listing
-            </button>
+            <button jb-button variant="primary" type="submit" [busy]="busy()">Save listing</button>
           </div>
         </form>
         <aside class="split__sticky" aria-labelledby="pv">

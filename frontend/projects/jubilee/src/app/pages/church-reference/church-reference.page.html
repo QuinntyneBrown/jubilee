@@ -19,10 +19,10 @@
           Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
           quote <code>JB-REF-502</code>.
         </p>
-        <button class="btn btn--primary" type="button" (click)="load()">
+        <button jb-button variant="primary" type="button" (click)="load()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <a class="btn" routerLink="/welcome">Back to welcome</a>
+        <a jb-button routerLink="/welcome">Back to welcome</a>
       </div>
     }
     @case ('closed') {
@@ -30,7 +30,7 @@
         <div class="empty__icon" aria-hidden="true"><svg jb-icon name="info"></svg></div>
         <h1 class="empty__title">This request is closed</h1>
         <p class="empty__text">{{ closedText() }}</p>
-        <a class="btn" routerLink="/welcome">About Jubilee</a>
+        <a jb-button routerLink="/welcome">About Jubilee</a>
       </div>
     }
     @case ('reported') {
@@ -41,7 +41,7 @@
           We’ve told the Jubilee verification team that you weren’t expecting this. The link no
           longer works and you won’t be contacted again about this listing.
         </p>
-        <a class="btn" routerLink="/welcome">About Jubilee</a>
+        <a jb-button routerLink="/welcome">About Jubilee</a>
       </div>
     }
     @case ('sent') {
@@ -53,7 +53,7 @@
           will hear from us within two business days. You won’t be contacted again about this
           listing.
         </p>
-        <a class="btn" routerLink="/welcome">See what Jubilee is</a>
+        <a jb-button routerLink="/welcome">See what Jubilee is</a>
       </div>
     }
     @default {
@@ -178,17 +178,13 @@
               <span class="field__error">Shorten this to {{ noteLimit }} characters.</span>
             }
           </div>
-          <button
-            class="btn btn--primary btn--block btn--lg"
-            type="submit"
-            [attr.aria-busy]="busy() ? 'true' : null"
-          >
+          <button jb-button variant="primary" block size="lg" type="submit" [busy]="busy()">
             Send my answer
           </button>
         </form>
         <p class="auth-foot">
           Not expecting this? You can ignore it, or
-          <button class="btn btn--link" type="button" (click)="report()">tell us</button>.
+          <button jb-button variant="link" type="button" (click)="report()">tell us</button>.
         </p>
       }
     }

@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ADMIN_API, DecisionResult } from 'api';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 
 export interface DeclineListingData {
   id: string;
@@ -22,7 +22,7 @@ type View = 'form' | 'busy' | 'failed';
 /** DeclineListingDialog (L2-104): closes a listing the church reference could not vouch for, with a reason. */
 @Component({
   selector: 'jb-decline-listing-dialog',
-  imports: [FormsModule, Icon],
+  imports: [FormsModule, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './decline-listing.dialog.html',

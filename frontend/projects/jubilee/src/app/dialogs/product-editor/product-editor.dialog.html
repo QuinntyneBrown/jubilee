@@ -10,7 +10,9 @@
       </p>
     </div>
     <button
-      class="btn btn--ghost btn--icon"
+      jb-button
+      variant="ghost"
+      iconOnly
       type="button"
       aria-label="Close"
       [disabled]="busy()"
@@ -128,13 +130,13 @@
     </div>
     <div class="dialog__footer">
       @if (view() === 'discard') {
-        <button class="btn" type="button" cdkFocusInitial (click)="keepEditing()">
+        <button jb-button type="button" cdkFocusInitial (click)="keepEditing()">
           Keep editing
         </button>
-        <button class="btn btn--danger" type="button" (click)="discard()">Discard</button>
+        <button jb-button variant="danger" type="button" (click)="discard()">Discard</button>
       } @else {
-        <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
-        <button class="btn btn--primary" type="submit" [attr.aria-busy]="busy() ? 'true' : null">
+        <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+        <button jb-button variant="primary" type="submit" [busy]="busy()">
           {{ editing ? 'Save changes' : 'Add product' }}
         </button>
       }

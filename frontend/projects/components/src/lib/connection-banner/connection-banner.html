@@ -10,7 +10,7 @@
         {{ detail() ?? 'Messages you write are sent when you reconnect.' }}</span
       >
       <span class="alert__actions"
-        ><button class="btn btn--sm" type="button" (click)="retry.emit()">
+        ><button jb-button size="sm" type="button" (click)="retry.emit()">
           <svg jb-icon name="refresh"></svg>Try again
         </button></span
       >
@@ -25,7 +25,7 @@
         }
       </span>
       <span class="alert__actions"
-        ><a class="btn btn--sm" [href]="statusUrl()" target="_blank" rel="noopener noreferrer"
+        ><a jb-button size="sm" [href]="statusUrl()" target="_blank" rel="noopener noreferrer"
           >Check status</a
         ></span
       >
@@ -44,7 +44,5 @@
   }
 </div>
 @if (kind() === 'back-online') {
-  <button class="close" type="button" aria-label="Dismiss" (click)="dismiss.emit()">
-    <svg jb-icon name="close"></svg>
-  </button>
+  <button jb-close-button type="button" aria-label="Dismiss" (click)="dismiss.emit()"></button>
 }

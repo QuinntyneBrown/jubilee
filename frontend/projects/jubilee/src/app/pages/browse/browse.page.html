@@ -71,14 +71,14 @@
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>{{ state.reference }}</code
         >.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="store.load()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="store.load()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
         @if (member()) {
-          <a slot="actions" class="btn" routerLink="/messages">Open messages</a>
+          <a slot="actions" jb-button routerLink="/messages">Open messages</a>
         }
         @if (!member()) {
-          <a slot="actions" class="btn" routerLink="/sign-in">Sign in</a>
+          <a slot="actions" jb-button routerLink="/sign-in">Sign in</a>
         }
       </div>
     }
@@ -88,7 +88,7 @@
         <div jb-empty-state icon="store" heading="No businesses are listed yet">
           Jubilee has just opened in Toronto. Be the first: list your business free and you’re live
           once your pastor confirms you.
-          <a slot="actions" class="btn btn--primary" routerLink="/list"
+          <a slot="actions" jb-button variant="primary" routerLink="/list"
             ><svg jb-icon name="plus"></svg>List your business</a
           >
         </div>
@@ -99,7 +99,7 @@
               <h2>New here?</h2>
               <p>Join free to message businesses, book meetings and save favourites.</p>
             </div>
-            <a class="btn btn--primary" routerLink="/join">Join free</a>
+            <a jb-button variant="primary" routerLink="/join">Join free</a>
           </div>
         }
         @if (directory.featured.length) {

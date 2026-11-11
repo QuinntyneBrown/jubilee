@@ -1,7 +1,7 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 import { SessionService } from '../../services/session.service';
 
 /**
@@ -10,7 +10,7 @@ import { SessionService } from '../../services/session.service';
  */
 @Component({
   selector: 'jb-sign-out-dialog',
-  imports: [Icon],
+  imports: [Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog', '(click)': 'closeIfOutside($event)' },
   templateUrl: './sign-out.dialog.html',

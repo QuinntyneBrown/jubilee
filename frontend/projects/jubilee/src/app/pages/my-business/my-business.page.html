@@ -7,10 +7,10 @@
         Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
         quote <code>{{ view.reference }}</code
         >.
-        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+        <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
           <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+        <a slot="actions" jb-button routerLink="/">Back to browse</a>
       </div>
     </div>
   }
@@ -55,10 +55,10 @@
       <div jb-empty-state icon="store" heading="List your business free">
         Tell members what you offer, name a pastor or elder as your reference, and you’re live once
         they confirm. It takes about ten minutes.
-        <a slot="actions" class="btn btn--primary" routerLink="/list-business">
+        <a slot="actions" jb-button variant="primary" routerLink="/list-business">
           <svg jb-icon name="plus"></svg>List your business
         </a>
-        <a slot="actions" class="btn" routerLink="/help">How verification works</a>
+        <a slot="actions" jb-button routerLink="/help">How verification works</a>
       </div>
     } @else {
       @if (b.paused) {
@@ -71,10 +71,11 @@
             >
             <span class="alert__actions" style="margin: 0">
               <button
-                class="btn btn--sm"
+                jb-button
+                size="sm"
                 type="button"
                 [disabled]="resuming()"
-                [attr.aria-busy]="resuming() ? 'true' : null"
+                [busy]="resuming()"
                 (click)="resume()"
               >
                 Resume listing
@@ -104,13 +105,11 @@
             </span>
           </div>
           <button
-            class="close"
+            jb-close-button
             type="button"
             aria-label="Dismiss"
             (click)="bannerDismissed.set(true)"
-          >
-            <svg jb-icon name="close"></svg>
-          </button>
+          ></button>
         </div>
       }
       <jb-workspace-header
@@ -178,7 +177,8 @@
                       </div>
                       <div class="row__actions">
                         <button
-                          class="btn btn--sm"
+                          jb-button
+                          size="sm"
                           type="button"
                           [attr.aria-label]="'Decline request from ' + row.customerName"
                           (click)="openDecline(row)"
@@ -186,7 +186,9 @@
                           Decline
                         </button>
                         <button
-                          class="btn btn--sm btn--primary"
+                          jb-button
+                          size="sm"
+                          variant="primary"
                           type="button"
                           [attr.aria-label]="'Confirm request from ' + row.customerName"
                           (click)="openConfirm(row)"
@@ -215,7 +217,8 @@
                         }
                       </div>
                       <a
-                        class="btn btn--sm"
+                        jb-button
+                        size="sm"
                         routerLink="/my-business/products"
                         aria-label="Manage products"
                         >Manage</a
@@ -229,7 +232,8 @@
                         </div>
                       </div>
                       <a
-                        class="btn btn--sm"
+                        jb-button
+                        size="sm"
                         routerLink="/my-business/services"
                         aria-label="Manage services"
                         >Manage</a
@@ -245,7 +249,13 @@
                 }
                 @if (!b.paused) {
                   <div>
-                    <button class="btn btn--sm btn--ghost" type="button" (click)="openPause(b)">
+                    <button
+                      jb-button
+                      size="sm"
+                      variant="ghost"
+                      type="button"
+                      (click)="openPause(b)"
+                    >
                       Pause listing
                     </button>
                   </div>
@@ -267,7 +277,7 @@
                   {{ changes.reviewerFirstName }} from the verification team.
                 </div>
                 <div class="alert__actions">
-                  <a class="btn btn--sm btn--primary" routerLink="/my-business/listing"
+                  <a jb-button size="sm" variant="primary" routerLink="/my-business/listing"
                     >Edit listing</a
                   >
                 </div>

@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ADMIN_API, ReportActionKind, ReportDetail } from 'api';
-import { Icon } from 'components';
+import { Icon, Button } from 'components';
 
 export interface ReportActionData {
   reportId: string;
@@ -31,7 +31,7 @@ interface Wording {
 /** The dialog that collects the required resolution note (and the message text) for a report action (L2-105 AC2). */
 @Component({
   selector: 'jb-report-action-dialog',
-  imports: [FormsModule, Icon],
+  imports: [FormsModule, Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dialog' },
   templateUrl: './report-action.dialog.html',

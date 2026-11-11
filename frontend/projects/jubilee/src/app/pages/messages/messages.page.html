@@ -10,16 +10,16 @@
     Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
     <code>{{ inbox.reference }}</code
     >.
-    <button slot="actions" class="btn btn--primary" type="button" (click)="store.load('')">
+    <button slot="actions" jb-button variant="primary" type="button" (click)="store.load('')">
       <svg jb-icon name="refresh"></svg>Try again
     </button>
-    <a slot="actions" class="btn" routerLink="/">Back to browse</a>
+    <a slot="actions" jb-button routerLink="/">Back to browse</a>
   </div>
 } @else if (isEmpty()) {
   <div jb-empty-state icon="message" heading="Start a conversation">
     Open a business and tap Message to ask a question, get a quote or book a time. Replies land
     here.
-    <a slot="actions" class="btn btn--primary" routerLink="/">Browse businesses</a>
+    <a slot="actions" jb-button variant="primary" routerLink="/">Browse businesses</a>
   </div>
 } @else {
   <div class="inbox inbox--list">
