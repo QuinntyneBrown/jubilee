@@ -29,8 +29,7 @@
     }
     <div jb-field label="Reason" controlId="d-why">
       <select
-        class="select"
-        jbFieldControl
+        jb-select
         name="reason"
         [disabled]="busy()"
         [ngModel]="reason()"
@@ -52,8 +51,7 @@
       "
     >
       <textarea
-        class="textarea"
-        jbFieldControl
+        jb-textarea
         name="message"
         rows="3"
         required

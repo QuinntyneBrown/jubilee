@@ -1,12 +1,12 @@
 <a class="topbar__brand" [routerLink]="member() ? '/' : '/welcome'"
   ><svg jb-brand-mark></svg>jubilee</a
 >
-<form class="search" role="search" (submit)="submit($event, q.value)">
+<form class="search" role="search" (submit)="submit($event, q.element.value)">
   <label class="visually-hidden" for="q">Search businesses and products</label>
   <svg jb-icon name="search"></svg>
   <input
+    jb-input
     #q
-    class="input"
     id="q"
     type="search"
     maxlength="100"

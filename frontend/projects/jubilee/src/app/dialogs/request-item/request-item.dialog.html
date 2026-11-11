@@ -129,8 +129,7 @@
                 [error]="addressProblem()"
               >
                 <textarea
-                  class="textarea"
-                  jbFieldControl
+                  jb-textarea
                   name="address"
                   rows="2"
                   required
@@ -143,8 +142,7 @@
             }
             <div jb-field [label]="'Note to ' + opts.shop.name" controlId="d-note" optional>
               <textarea
-                class="textarea"
-                jbFieldControl
+                jb-textarea
                 name="note"
                 rows="2"
                 maxlength="1000"

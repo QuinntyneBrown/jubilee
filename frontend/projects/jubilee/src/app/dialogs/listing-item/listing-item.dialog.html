@@ -24,8 +24,7 @@
       [error]="nameProblem()"
     >
       <input
-        class="input"
-        jbFieldControl
+        jb-input
         name="name"
         type="text"
         maxlength="120"
@@ -44,8 +43,7 @@
         hint="Length, place or what to bring. 60 characters at most."
       >
         <input
-          class="input"
-          jbFieldControl
+          jb-input
           name="detail"
           type="text"
           maxlength="60"
@@ -55,8 +53,7 @@
       </div>
       <div jb-field label="Pricing" controlId="d-pricing">
         <select
-          class="select"
-          jbFieldControl
+          jb-select
           name="pricing"
           [ngModel]="pricing()"
           (ngModelChange)="pricing.set($event)"
@@ -70,8 +67,7 @@
     @if (!isService || pricing() === 'amount') {
       <div jb-field label="Price (CAD)" controlId="d-price" required [error]="priceProblem()">
         <input
-          class="input"
-          jbFieldControl
+          jb-input
           name="price"
           type="text"
           inputmode="decimal"

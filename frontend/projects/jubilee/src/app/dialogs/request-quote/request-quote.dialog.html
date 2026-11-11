@@ -93,8 +93,7 @@
               [error]="found.description"
             >
               <textarea
-                class="textarea"
-                jbFieldControl
+                jb-textarea
                 name="description"
                 rows="4"
                 maxlength="2000"
@@ -107,8 +106,7 @@
             <div class="form-grid form-grid--2">
               <div jb-field label="Needed by" controlId="d-when" optional [error]="found.neededBy">
                 <input
-                  class="input"
-                  jbFieldControl
+                  jb-input
                   name="neededBy"
                   type="date"
                   [readOnly]="busy()"
@@ -118,8 +116,7 @@
               </div>
               <div jb-field label="Budget" controlId="d-budget" optional>
                 <input
-                  class="input"
-                  jbFieldControl
+                  jb-input
                   name="budget"
                   type="text"
                   maxlength="60"
@@ -138,8 +135,7 @@
               [error]="found.phone"
             >
               <input
-                class="input"
-                jbFieldControl
+                jb-input
                 name="phone"
                 type="tel"
                 [readOnly]="busy()"

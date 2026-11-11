@@ -21,7 +21,7 @@
   color: var(--jb-btn-fg, var(--btn-fg));
   background: var(--btn-bg);
   border: var(--border-width-hairline) solid var(--btn-border);
-  border-radius: var(--radius-full);
+  border-radius: var(--jb-btn-radius, var(--radius-full));
   cursor: pointer;
   text-decoration: none;
   user-select: none;
