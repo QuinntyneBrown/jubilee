@@ -100,6 +100,31 @@ export class ShellPage {
     return this.page.evaluate(() => parseFloat(getComputedStyle(document.body).paddingBottom));
   }
 
+  async setViewport(width: number, height: number): Promise<void> {
+    await this.page.setViewportSize({ width, height });
+  }
+
+  /**
+   * Space between the footer and the bottom of the page, in CSS px, not counting what the
+   * page reserves for the tab bar. The page is never shorter than the viewport.
+   */
+  async spaceBelowFooter(): Promise<number> {
+    return this.footer.evaluate((footer) => {
+      const root = document.documentElement;
+      const pageBottom = Math.max(root.scrollHeight, root.clientHeight);
+      const reserved = parseFloat(getComputedStyle(document.body).paddingBottom);
+      const footerBottom = footer.getBoundingClientRect().bottom + window.scrollY;
+      return pageBottom - reserved - footerBottom;
+    });
+  }
+
+  /** True when the page is taller than the viewport, i.e. it scrolls. */
+  async scrollsVertically(): Promise<boolean> {
+    return this.page.evaluate(
+      () => document.documentElement.scrollHeight > document.documentElement.clientHeight,
+    );
+  }
+
   /** True when the page is wider than the viewport, i.e. it scrolls sideways. */
   async overflowsHorizontally(): Promise<boolean> {
     return this.page.evaluate(
