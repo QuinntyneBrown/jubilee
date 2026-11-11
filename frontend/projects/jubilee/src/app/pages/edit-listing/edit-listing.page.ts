@@ -27,9 +27,9 @@ import {
   Skeleton,
   InlineStatus,
   Card,
+  WorkspaceHeader,
 } from 'components';
 import { LoadState, errorReference } from '../../services/load-state';
-import { WorkspaceHeader } from '../my-business/workspace-header';
 
 export const MAX_NAME = 80;
 export const MAX_TAGLINE = 90;

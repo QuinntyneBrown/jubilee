@@ -90,3 +90,4 @@ export * from './lib/top-bar/top-bar';
 export * from './lib/verified-business-label/verified-business-label';
 export * from './lib/verified-mark/verified-mark';
 export * from './lib/verify-email-banner/verify-email-banner';
+export * from './lib/workspace-header/workspace-header';

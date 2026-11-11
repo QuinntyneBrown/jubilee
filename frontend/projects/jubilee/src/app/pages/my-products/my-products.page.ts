@@ -20,6 +20,7 @@ import {
   Button,
   RowListSkeleton,
   Badge,
+  WorkspaceHeader,
 } from 'components';
 import { DeleteItemData, DeleteItemDialog } from '../../dialogs/delete-item/delete-item.dialog';
 import {
@@ -29,7 +30,6 @@ import {
 } from '../../dialogs/product-editor/product-editor.dialog';
 import { LoadState, errorReference as errorRef } from '../../services/load-state';
 import { ToastService } from '../../toasts/toast.service';
-import { WorkspaceHeader } from '../my-business/workspace-header';
 
 /** My products at /my-business/products (L2-089, L2-090): the shop's catalogue, with add, edit, delete and reorder. */
 @Component({

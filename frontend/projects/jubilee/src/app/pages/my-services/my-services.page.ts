@@ -22,6 +22,7 @@ import {
   RowPrice,
   RowTitle,
   Rows,
+  WorkspaceHeader,
 } from 'components';
 import { DeleteItemData, DeleteItemDialog } from '../../dialogs/delete-item/delete-item.dialog';
 import {
@@ -31,7 +32,6 @@ import {
 } from '../../dialogs/service-editor/service-editor.dialog';
 import { LoadState, errorReference as errorRef } from '../../services/load-state';
 import { ToastService } from '../../toasts/toast.service';
-import { WorkspaceHeader } from '../my-business/workspace-header';
 
 /** My products at /my-business/services (L2-092, L2-093): the service list, with add, edit, delete and reorder. */
 @Component({

@@ -38,6 +38,7 @@ import {
   Rows,
   PageHeader,
   Section,
+  WorkspaceHeader,
 } from 'components';
 import {
   ConfirmRequestData,
@@ -57,7 +58,6 @@ import { LoadState, errorReference } from '../../services/load-state';
 import { dayLabel, threadTime } from '../../services/message-time';
 import { NavigationStore } from '../../services/navigation.store';
 import { ToastService } from '../../toasts/toast.service';
-import { WorkspaceHeader } from './workspace-header';
 
 /** How long an owner can take back a confirmation (L2-052 AC4). */
 const UNDO_MS = 8000;
