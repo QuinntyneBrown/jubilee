@@ -1,0 +1,196 @@
+@let opts = options();
+@let est = estimate();
+<div class="dialog__panel">
+  @if (view() === 'success') {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="verified"></svg>
+      </div>
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">Request sent to {{ opts?.shop?.name }}</h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          {{ sentText() }}
+        </p>
+      </div>
+      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    <div class="dialog__footer">
+      <a class="btn" [routerLink]="['/b', opts?.shop?.slug]" (click)="close()">Keep shopping</a>
+      <a
+        class="btn btn--primary"
+        [routerLink]="['/requests', booked()?.id]"
+        cdkFocusInitial
+        (click)="close()"
+        >View request</a
+      >
+    </div>
+  } @else {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="bag"></svg>
+      </div>
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">Request this item</h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          @if (opts) {
+            No payment now. {{ opts.shop.name }} confirms and you pay them directly.
+          } @else {
+            No payment now. The shop confirms and you pay them directly.
+          }
+        </p>
+      </div>
+      <button
+        class="btn btn--ghost btn--icon"
+        type="button"
+        aria-label="Close"
+        [disabled]="busy()"
+        (click)="close()"
+      >
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    @switch (view()) {
+      @case ('loading') {
+        <div class="dialog__body">
+          <p role="status" class="text-muted">Loading…</p>
+        </div>
+      }
+      @case ('unavailable') {
+        <div class="dialog__body stack">
+          <div class="alert alert--danger" role="alert">
+            <svg jb-icon name="alert"></svg>
+            <div class="alert__body">
+              <div class="alert__title">Requests aren’t available right now</div>
+              <div>Nothing is lost. Close this and try again in a moment, or send a message.</div>
+            </div>
+          </div>
+        </div>
+        <div class="dialog__footer">
+          <button class="btn btn--primary" type="button" (click)="close()">Close</button>
+        </div>
+      }
+      @default {
+        @if (opts) {
+          <form class="dialog__body stack" id="order-form" novalidate (ngSubmit)="send()">
+            @if (view() === 'failed') {
+              <div class="alert alert--danger" role="alert">
+                <svg jb-icon name="alert"></svg>
+                <div class="alert__body">
+                  <div class="alert__title">{{ failure().title }}</div>
+                  <div>{{ failure().text }}</div>
+                </div>
+              </div>
+            }
+            @if (stockProblem()) {
+              <div class="alert alert--danger" role="alert">
+                <svg jb-icon name="alert"></svg>
+                <div class="alert__body">{{ stockProblem() }}</div>
+              </div>
+            }
+            <ul class="item-list">
+              <li>
+                <div
+                  jb-media-tile
+                  class="media--thumb"
+                  [tint]="opts.product.tile.tint"
+                  [icon]="opts.product.tile.icon"
+                ></div>
+                <span class="item-list__name"
+                  >{{ opts.product.name }}<br />
+                  <span class="row__meta">
+                    @if (data.option) {
+                      {{ opts.product.optionName }} {{ data.option }} ×
+                    } @else {
+                      ×
+                    }
+                    {{ data.quantity }}</span
+                  ></span
+                >
+                <span class="price">{{ unitPrice(opts.product.priceCents * data.quantity) }}</span>
+              </li>
+            </ul>
+            <fieldset>
+              <legend>How would you like to get it?</legend>
+              @for (m of opts.deliveryMethods; track m.id) {
+                <label class="choice">
+                  <input
+                    type="radio"
+                    name="get"
+                    [value]="m.id"
+                    [checked]="methodId() === m.id"
+                    [disabled]="busy()"
+                    (change)="pickMethod(m.id)"
+                  /><span class="choice__text"
+                    >{{ m.label }}<small>{{ m.detail }}</small></span
+                  >
+                </label>
+              }
+            </fieldset>
+            @if (ships()) {
+              <div class="field">
+                <label class="field__label" for="d-addr"
+                  >Shipping address <span class="optional">(required)</span></label
+                >
+                <textarea
+                  class="textarea"
+                  id="d-addr"
+                  name="address"
+                  rows="2"
+                  required
+                  autocomplete="street-address"
+                  [readOnly]="busy()"
+                  [attr.aria-invalid]="addressProblem() ? 'true' : null"
+                  [attr.aria-describedby]="addressProblem() ? 'd-addr-error' : null"
+                  [ngModel]="address()"
+                  (ngModelChange)="address.set($event)"
+                ></textarea>
+                @if (addressProblem()) {
+                  <span class="field__error" id="d-addr-error">{{ addressProblem() }}</span>
+                }
+              </div>
+            }
+            <div class="field">
+              <label class="field__label" for="d-note"
+                >Note to {{ opts.shop.name }} <span class="optional">(optional)</span></label
+              >
+              <textarea
+                class="textarea"
+                id="d-note"
+                name="note"
+                rows="2"
+                maxlength="1000"
+                placeholder="Gift wrap, timing, anything else"
+                [readOnly]="busy()"
+                [ngModel]="note()"
+                (ngModelChange)="note.set($event)"
+              ></textarea>
+            </div>
+            @if (est) {
+              <dl class="dl well">
+                <dt>Item</dt>
+                <dd class="price">{{ est.item }}</dd>
+                <dt>Shipping</dt>
+                <dd class="price">{{ est.shipping }}</dd>
+                <dt>Estimated total</dt>
+                <dd class="price">{{ est.total }}</dd>
+              </dl>
+            }
+          </form>
+          <div class="dialog__footer">
+            <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+            <button
+              class="btn btn--primary"
+              type="submit"
+              form="order-form"
+              [attr.aria-busy]="busy() ? 'true' : null"
+            >
+              Send request
+            </button>
+          </div>
+        }
+      }
+    }
+  }
+</div>

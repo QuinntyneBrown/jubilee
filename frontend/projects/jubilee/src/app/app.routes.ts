@@ -28,6 +28,16 @@ export function businessMatcher(segments: UrlSegment[]): UrlMatchResult | null {
   return { consumed: segments, posParams: { slug: segments[1] } };
 }
 
+/** A product page, and the same page with the order request open: /b/:slug/p/:product[/request]. */
+export function productMatcher(segments: UrlSegment[]): UrlMatchResult | null {
+  if (segments[0]?.path !== 'b' || !segments[1] || segments[2]?.path !== 'p' || !segments[3]) {
+    return null;
+  }
+  const dialog = segments.length === 5 && segments[4].path === 'request';
+  if (segments.length !== 4 && !dialog) return null;
+  return { consumed: segments, posParams: { slug: segments[1], product: segments[3] } };
+}
+
 export const routes: Routes = [
   {
     path: '',
@@ -62,7 +72,7 @@ export const routes: Routes = [
     title: 'Business · Jubilee',
   },
   {
-    path: 'b/:slug/p/:product',
+    matcher: productMatcher,
     loadComponent: () => import('./pages/product/product.page').then((m) => m.ProductPage),
     data: data({ shell: 'app', page: 'product', section: 'browse' }),
     title: 'Product · Jubilee',

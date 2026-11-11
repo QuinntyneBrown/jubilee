@@ -1,3 +1,5 @@
+import type { ProductCard } from './directory';
+
 export interface BookingService {
   id: string;
   name: string;
@@ -62,5 +64,55 @@ export interface RequestQuoteRequest {
   neededBy: string | null;
   budget: string | null;
   phone: string | null;
+  idempotencyKey: string;
+}
+
+export interface OrderOption {
+  label: string;
+  maxQuantity: number;
+}
+
+export interface DeliveryMethod {
+  id: string;
+  kind: 'ship' | 'pickup';
+  label: string;
+  /** For example "Canada Post, $9 flat · 3–6 business days". */
+  detail: string;
+  feeCents: number;
+}
+
+/** `GET /api/listings/{slug}/products/{product}/order`: what the order dialog needs to open. */
+export interface OrderOptions {
+  shop: { name: string; slug: string };
+  ownerFirstName: string;
+  usuallyReplies: string | null;
+  /** For example "Made to order: ready in 5–7 days."; null when the shop gives none. */
+  leadTime: string | null;
+  product: {
+    id: string;
+    slug: string;
+    name: string;
+    priceCents: number;
+    perUnit: boolean;
+    optionName: string | null;
+    options: OrderOption[];
+    minimumQuantity: number;
+    maxQuantity: number;
+    tile: ProductCard['tile'];
+  };
+  deliveryMethods: DeliveryMethod[];
+  freeShippingOverCents: number | null;
+  lastShippingAddress: string | null;
+}
+
+/** The body of an order request: no price, shipping or total; the server computes them. */
+export interface RequestItemRequest {
+  listingSlug: string;
+  productSlug: string;
+  option: string | null;
+  quantity: number;
+  deliveryMethodId: string;
+  shippingAddress: string | null;
+  note: string | null;
   idempotencyKey: string;
 }

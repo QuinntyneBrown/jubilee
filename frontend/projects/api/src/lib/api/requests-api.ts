@@ -6,7 +6,9 @@ import {
   BookMeetingRequest,
   BookedRequest,
   BookingOptions,
+  OrderOptions,
   QuoteOptions,
+  RequestItemRequest,
   RequestQuoteRequest,
 } from '../models/requests';
 
@@ -17,6 +19,8 @@ export interface RequestsApi {
   bookMeeting(request: BookMeetingRequest): Observable<BookedRequest>;
   quoteOptions(slug: string): Observable<QuoteOptions>;
   requestQuote(request: RequestQuoteRequest): Observable<BookedRequest>;
+  orderOptions(shopSlug: string, productSlug: string): Observable<OrderOptions>;
+  requestItem(request: RequestItemRequest): Observable<BookedRequest>;
   /** The address of the calendar file of a confirmed booking. */
   calendarUrl(requestId: string): string;
 }
@@ -48,6 +52,16 @@ export class HttpRequestsApi implements RequestsApi {
 
   requestQuote(request: RequestQuoteRequest): Observable<BookedRequest> {
     return this.http.post<BookedRequest>('/api/requests/quotes', request);
+  }
+
+  orderOptions(shopSlug: string, productSlug: string): Observable<OrderOptions> {
+    return this.http.get<OrderOptions>(
+      `/api/listings/${encodeURIComponent(shopSlug)}/products/${encodeURIComponent(productSlug)}/order`,
+    );
+  }
+
+  requestItem(request: RequestItemRequest): Observable<BookedRequest> {
+    return this.http.post<BookedRequest>('/api/requests/orders', request);
   }
 
   calendarUrl(requestId: string): string {

@@ -5,14 +5,17 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LISTINGS_API, ProductPage as ProductPageModel } from 'api';
 import { EmptyState, Icon, MediaTile, PricePipe, ProductCard } from 'components';
 import { Subscription } from 'rxjs';
+import { RequestItemData, RequestItemDialog } from '../../dialogs/request-item/request-item.dialog';
 import {
   SignInRequiredData,
   SignInRequiredDialog,
@@ -43,6 +46,8 @@ export class ProductPage {
   private readonly session = inject(SessionService);
   private readonly dialog = inject(Dialog);
   private request?: Subscription;
+  private composeRef?: { close: () => void };
+  private readonly requesting = signal(false);
 
   protected readonly slug = signal('');
   protected readonly productSlug = signal('');
@@ -68,7 +73,21 @@ export class ProductPage {
       this.productSlug.set(map.get('product') ?? '');
       this.load();
     });
+    const urls = this.route.url.subscribe((segments) =>
+      this.requesting.set(segments.length === 5 && segments[4].path === 'request'),
+    );
+    effect(() => {
+      const state = this.state();
+      const requesting = this.requesting();
+      untracked(() => {
+        if (requesting && state.status === 'loaded' && !this.composeRef) {
+          this.openOrder(state.value);
+        }
+        if (!requesting) this.composeRef?.close();
+      });
+    });
     inject(DestroyRef).onDestroy(() => {
+      urls.unsubscribe();
       params.unsubscribe();
       this.request?.unsubscribe();
     });
@@ -115,6 +134,44 @@ export class ProductPage {
     this.api.requestStockAlert(product.id).subscribe({
       next: () => this.alertRequested.set(true),
     });
+  }
+
+  /**
+   * "Request this item" (L2-046): a member asks the shop in a dialog over the product; a visitor
+   * is asked to join or sign in first and comes back to the same selection.
+   */
+  private openOrder(product: ProductPageModel): void {
+    const query = this.route.snapshot.queryParamMap;
+    const option = query.get('option');
+    const quantity = Number(query.get('quantity')) || product.minimumQuantity;
+    const back = this.router.url;
+    const leave = (): void => {
+      this.composeRef = undefined;
+      setTimeout(() => {
+        if (!this.router.getCurrentNavigation() && this.requesting()) {
+          void this.router.navigate(['/b', this.slug(), 'p', this.productSlug()], {
+            replaceUrl: true,
+          });
+        }
+      });
+    };
+    const ref = this.session.member()
+      ? this.dialog.open<void, RequestItemData>(RequestItemDialog, {
+          data: { shopSlug: this.slug(), productSlug: this.productSlug(), option, quantity },
+          ariaLabelledBy: 'dlg-title',
+          ariaDescribedBy: 'dlg-desc',
+          ariaModal: true,
+          backdropClass: 'backdrop',
+        })
+      : this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+          data: { title: `Join to request ${product.name}`, returnUrl: back },
+          ariaLabelledBy: 'dlg-title',
+          ariaDescribedBy: 'dlg-desc',
+          ariaModal: true,
+          backdropClass: 'backdrop',
+        });
+    this.composeRef = ref;
+    ref.closed.subscribe(leave);
   }
 
   /** Hands a valid selection to the order request (journey 9; ADR 0007). */

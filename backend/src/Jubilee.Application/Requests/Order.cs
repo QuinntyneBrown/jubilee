@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
+using Jubilee.Application.Directory;
 using Jubilee.Application.Errors;
 using Jubilee.Application.Listings;
 using Jubilee.Domain;
@@ -21,7 +22,8 @@ public sealed record OrderProductDto(
     string? OptionName,
     IReadOnlyList<OrderOptionDto> Options,
     int MinimumQuantity,
-    int MaxQuantity);
+    int MaxQuantity,
+    ProductTileDto Tile);
 
 public sealed record DeliveryMethodDto(Guid Id, string Kind, string Label, string Detail, int FeeCents);
 
@@ -96,7 +98,8 @@ public sealed class GetOrderOptionsQueryHandler(IAppDbContext db) : IRequestHand
                 product.OptionName,
                 [.. product.OrderedOptions.Select(o => new OrderOptionDto(o.Label, o.MaxQuantity))],
                 product.MinimumQuantity,
-                product.MaxQuantity),
+                product.MaxQuantity,
+                new ProductTileDto(WireValues.Of(product.TileTint), WireValues.Of(product.TileIcon))),
             [.. methods.Select(m => new DeliveryMethodDto(m.Id, m.Kind == DeliveryKind.Ship ? "ship" : "pickup", m.Label, m.Estimate, m.FeeCents))],
             shop.FreeShippingOverCents,
             last);
