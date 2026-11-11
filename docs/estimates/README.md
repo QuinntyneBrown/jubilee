@@ -1,6 +1,6 @@
 # Estimates
 
-- Overall effort: 363 days
+- Overall effort: 367 days
 - Complete: 10%
 
 | Subsystem | Effort | Complete |
@@ -26,6 +26,7 @@
 | [performance](performance.md) | 9 days | 6% |
 | [operations](operations.md) | 30 days | 9% |
 | [offline](offline.md) | 12 days | 83% |
+| [marketing](marketing.md) | 4 days | 90% |
 
 ## Roadmap
 

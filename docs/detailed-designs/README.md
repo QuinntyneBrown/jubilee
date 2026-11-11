@@ -144,6 +144,12 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Run background jobs](operations/run-background-jobs/README.md) | `L2-182`, `L2-175` |
 | [Stay available](operations/stay-available/README.md) | `L2-174`, `L2-181` |
 
+### marketing
+
+| Feature | L2 requirements cited |
+|---|---|
+| [Show the marketing site](marketing/show-marketing-site/README.md) | `L2-183`, `L2-184`, `L2-185`, `L2-186` |
+
 ### owner-workspace
 
 | Feature | L2 requirements cited |

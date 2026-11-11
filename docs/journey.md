@@ -34,8 +34,9 @@ Effort is working days for one intermediate developer, tests included.
 | 24 | Use Jubilee offline | Browse cached pages and queue messages on poor connections. | 7 | [24-use-jubilee-offline.md](prompts/24-use-jubilee-offline.md) |
 | 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | [25-moderate-reports-and-feature-businesses.md](prompts/25-moderate-reports-and-feature-businesses.md) |
 | 26 | Download data and delete account | Export personal data or permanently delete the account. | 5 | [26-download-data-and-delete-account.md](prompts/26-download-data-and-delete-account.md) |
+| 27 | Meet Jubilee on the marketing site | Read the marketing page, watch the pitch film, open the app or start listing. | 4 | (none: built from the Magic Patterns reference) |
 
-**Total: 164 days** for the 26 journeys.
+**Total: 168 days** for the 27 journeys.
 
 ## Notes
 

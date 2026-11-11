@@ -1,0 +1,12 @@
+@startuml c4-container
+title Jubilee Marketing: containers
+actor Visitor
+rectangle "Jubilee Marketing\n[Angular application, static]" as mkt
+rectangle "Jubilee Web\n[Angular single-page application]" as web
+rectangle "Image host\n[cdn.magicpatterns.com]" as img
+rectangle "Google Fonts\n[Inter]" as fonts
+Visitor --> mkt : reads the page, plays the film
+mkt --> web : links to browse and to list a business
+mkt --> img : photos (HTTPS)
+mkt --> fonts : Inter (HTTPS)
+@enduml
