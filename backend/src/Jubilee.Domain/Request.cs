@@ -70,6 +70,10 @@ public sealed class Request
 {
     public const int MaxNoteLength = 1000;
 
+    public const int MaxDescriptionLength = 2000;
+
+    public const int MaxBudgetLength = 60;
+
     private readonly List<RequestTransition> _transitions = [];
 
     private Request()
@@ -106,7 +110,16 @@ public sealed class Request
 
     public string? Location { get; private set; }
 
+    /// <summary>A booking note, or what a quote request describes.</summary>
     public string? Note { get; private set; }
+
+    /// <summary>A quote request: the date the work is needed by.</summary>
+    public DateOnly? NeededBy { get; private set; }
+
+    public string? Budget { get; private set; }
+
+    /// <summary>Ten digits, shared with the business for this request only.</summary>
+    public string? Phone { get; private set; }
 
     public IReadOnlyList<RequestTransition> Transitions => _transitions;
 
@@ -139,6 +152,35 @@ public sealed class Request
             Mode = mode,
             Location = location,
             Note = string.IsNullOrWhiteSpace(note) ? null : note.Trim(),
+        };
+
+    public static Request AskForQuote(
+        string memberSubject,
+        string memberName,
+        Guid listingId,
+        Guid? serviceId,
+        string? serviceName,
+        string description,
+        DateOnly? neededBy,
+        string? budget,
+        string? phone,
+        string idempotencyKey,
+        DateTimeOffset now) => new()
+        {
+            Id = Guid.NewGuid(),
+            Kind = RequestKind.Quote,
+            MemberSubject = memberSubject,
+            MemberName = memberName,
+            ListingId = listingId,
+            Status = RequestStatus.New,
+            CreatedAt = now,
+            IdempotencyKey = idempotencyKey,
+            ServiceId = serviceId,
+            ServiceName = serviceName,
+            Note = description.Trim(),
+            NeededBy = neededBy,
+            Budget = string.IsNullOrWhiteSpace(budget) ? null : budget.Trim(),
+            Phone = phone,
         };
 
     /// <summary>The owner confirms a new request.</summary>

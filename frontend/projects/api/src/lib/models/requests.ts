@@ -46,3 +46,21 @@ export interface BookedRequest {
   status: string;
   memberStatus: string;
 }
+
+/** `GET /api/listings/{slug}/quote`: what the quote dialog needs to open. */
+export interface QuoteOptions {
+  business: { name: string; slug: string };
+  ownerFirstName: string;
+  /** For example "within a few hours"; null with too few replies. */
+  usuallyReplies: string | null;
+}
+
+export interface RequestQuoteRequest {
+  listingSlug: string;
+  serviceId: string | null;
+  description: string;
+  neededBy: string | null;
+  budget: string | null;
+  phone: string | null;
+  idempotencyKey: string;
+}

@@ -26,6 +26,7 @@ import {
 } from 'components';
 import { Subscription } from 'rxjs';
 import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
+import { RequestQuoteDialog } from '../../dialogs/request-quote/request-quote.dialog';
 import {
   NewMessageData,
   NewMessageDialog,
@@ -95,7 +96,7 @@ export class BusinessPage {
   private readonly dialog = inject(Dialog);
   private slug = '';
   /** Which dialog the address asks for: /b/:slug/message or /b/:slug/book. */
-  private readonly composing = signal<'message' | 'book' | null>(null);
+  private readonly composing = signal<'message' | 'book' | 'quote' | null>(null);
   private composeRef?: { close: () => void };
 
   protected readonly state = signal<LoadState<ListingPage>>({ status: 'loading' });
@@ -139,8 +140,8 @@ export class BusinessPage {
     });
     const urls = this.route.url.subscribe((segments) =>
       this.composing.set(
-        segments.length === 3 && ['message', 'book'].includes(segments[2].path)
-          ? (segments[2].path as 'message' | 'book')
+        segments.length === 3 && ['message', 'book', 'quote'].includes(segments[2].path)
+          ? (segments[2].path as 'message' | 'book' | 'quote')
           : null,
       ),
     );
@@ -149,7 +150,8 @@ export class BusinessPage {
       const composing = this.composing();
       untracked(() => {
         if (composing && state.status === 'loaded' && !this.composeRef) {
-          if (composing === 'book') this.openBooking(state.value);
+          if (composing === 'book' || composing === 'quote')
+            this.openRequest(state.value, composing);
           else this.compose(state.value);
         }
         if (!composing) this.composeRef?.close();
@@ -242,9 +244,9 @@ export class BusinessPage {
    * "Book a meeting" (L2-044): a member asks for a time in a dialog; a visitor is asked to join
    * or sign in first and comes back to the same service.
    */
-  private openBooking(listing: ListingPage): void {
+  private openRequest(listing: ListingPage, kind: 'book' | 'quote'): void {
     const service = this.route.snapshot.queryParamMap.get('service');
-    const back = `/b/${this.slug}/book${service ? `?service=${service}` : ''}`;
+    const back = `/b/${this.slug}/${kind}${service ? `?service=${service}` : ''}`;
     const leave = (): void => {
       this.composeRef = undefined;
       setTimeout(() => {
@@ -254,15 +256,24 @@ export class BusinessPage {
       });
     };
     const ref = this.session.member()
-      ? this.dialog.open<void, BookMeetingData>(BookMeetingDialog, {
-          data: { slug: listing.slug, serviceId: service },
-          ariaLabelledBy: 'dlg-title',
-          ariaDescribedBy: 'dlg-desc',
-          ariaModal: true,
-          backdropClass: 'backdrop',
-        })
+      ? this.dialog.open<void, BookMeetingData>(
+          kind === 'book' ? BookMeetingDialog : RequestQuoteDialog,
+          {
+            data: { slug: listing.slug, serviceId: service },
+            ariaLabelledBy: 'dlg-title',
+            ariaDescribedBy: 'dlg-desc',
+            ariaModal: true,
+            backdropClass: 'backdrop',
+          },
+        )
       : this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
-          data: { title: `Join to book ${listing.name}`, returnUrl: back },
+          data: {
+            title:
+              kind === 'book'
+                ? `Join to book ${listing.name}`
+                : `Join to ask ${listing.name} for a quote`,
+            returnUrl: back,
+          },
           ariaLabelledBy: 'dlg-title',
           ariaDescribedBy: 'dlg-desc',
           ariaModal: true,

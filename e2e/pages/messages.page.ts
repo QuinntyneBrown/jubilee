@@ -207,3 +207,36 @@ export class BookMeetingDialog {
     return this.times.filter({ hasText: label });
   }
 }
+
+/** The dialog that asks a business for a quote (L2-045). */
+export class RequestQuoteDialog {
+  readonly root: Locator;
+  readonly title: Locator;
+  readonly description: Locator;
+  readonly what: Locator;
+  readonly neededBy: Locator;
+  readonly budget: Locator;
+  readonly phone: Locator;
+  readonly phoneHelp: Locator;
+  readonly fieldError: Locator;
+  readonly alert: Locator;
+  readonly send: Locator;
+  readonly cancel: Locator;
+  readonly viewRequest: Locator;
+
+  constructor(page: Page) {
+    this.root = page.getByRole('dialog');
+    this.title = this.root.locator('.dialog__title');
+    this.description = this.root.locator('#dlg-desc');
+    this.what = this.root.getByLabel('What do you need?');
+    this.neededBy = this.root.getByLabel('Needed by');
+    this.budget = this.root.getByLabel('Budget');
+    this.phone = this.root.getByLabel('Phone');
+    this.phoneHelp = this.root.locator('#d-phone-help');
+    this.fieldError = this.root.locator('.field__error');
+    this.alert = this.root.getByRole('alert');
+    this.send = this.root.getByRole('button', { name: 'Send request' });
+    this.cancel = this.root.getByRole('button', { name: 'Cancel' });
+    this.viewRequest = this.root.getByRole('link', { name: 'View request' });
+  }
+}

@@ -1,0 +1,190 @@
+@let opts = options();
+@let found = problems();
+<div class="dialog__panel">
+  @if (view() === 'success') {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="verified"></svg>
+      </div>
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">
+          Quote request sent to {{ opts?.business?.name }}
+        </h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          {{ opts?.ownerFirstName }}
+          @if (opts?.usuallyReplies) {
+            usually replies {{ opts?.usuallyReplies }}.
+          } @else {
+            will reply with a quote.
+          }
+          {{ opts?.ownerFirstName }}’s quote arrives in your messages.
+        </p>
+      </div>
+      <button class="btn btn--ghost btn--icon" type="button" aria-label="Close" (click)="close()">
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    <div class="dialog__footer">
+      <button class="btn" type="button" (click)="close()">Close</button>
+      <a
+        class="btn btn--primary"
+        [routerLink]="['/requests', booked()?.id]"
+        cdkFocusInitial
+        (click)="close()"
+        >View request</a
+      >
+    </div>
+  } @else {
+    <div class="dialog__header">
+      <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+        <svg jb-icon name="message"></svg>
+      </div>
+      <div style="flex: 1">
+        <h2 class="dialog__title" id="dlg-title">
+          Ask {{ opts ? opts.business.name : 'the business' }} for a quote
+        </h2>
+        <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+          Tell {{ opts ? opts.ownerFirstName : 'them' }} what you have in mind. There’s no
+          obligation to buy.
+        </p>
+      </div>
+      <button
+        class="btn btn--ghost btn--icon"
+        type="button"
+        aria-label="Close"
+        [disabled]="busy()"
+        (click)="close()"
+      >
+        <svg jb-icon name="close"></svg>
+      </button>
+    </div>
+    @switch (view()) {
+      @case ('loading') {
+        <div class="dialog__body">
+          <p role="status" class="text-muted">Loading…</p>
+        </div>
+      }
+      @case ('unavailable') {
+        <div class="dialog__body stack">
+          <div class="alert alert--danger" role="alert">
+            <svg jb-icon name="alert"></svg>
+            <div class="alert__body">
+              <div class="alert__title">Quotes aren’t available right now</div>
+              <div>Nothing is lost. Close this and try again in a moment, or send a message.</div>
+            </div>
+          </div>
+        </div>
+        <div class="dialog__footer">
+          <button class="btn btn--primary" type="button" (click)="close()">Close</button>
+        </div>
+      }
+      @default {
+        @if (opts) {
+          <form class="dialog__body stack" id="quote-form" novalidate (ngSubmit)="send()">
+            @if (view() === 'failed') {
+              <div class="alert alert--danger" role="alert">
+                <svg jb-icon name="alert"></svg>
+                <div class="alert__body">
+                  <div class="alert__title">{{ failure().title }}</div>
+                  <div>{{ failure().text }}</div>
+                </div>
+              </div>
+            }
+            <div class="field">
+              <label class="field__label" for="d-what"
+                >What do you need? <span class="optional">(required)</span></label
+              >
+              <textarea
+                class="textarea"
+                id="d-what"
+                name="description"
+                rows="4"
+                maxlength="2000"
+                required
+                [readOnly]="busy()"
+                [attr.aria-invalid]="found.description ? 'true' : null"
+                [attr.aria-describedby]="found.description ? 'd-what-error' : null"
+                [ngModel]="description()"
+                (ngModelChange)="description.set($event)"
+              ></textarea>
+              @if (found.description) {
+                <span class="field__error" id="d-what-error">{{ found.description }}</span>
+              }
+            </div>
+            <div class="form-grid form-grid--2">
+              <div class="field">
+                <label class="field__label" for="d-when"
+                  >Needed by <span class="optional">(optional)</span></label
+                >
+                <input
+                  class="input"
+                  id="d-when"
+                  name="neededBy"
+                  type="date"
+                  [readOnly]="busy()"
+                  [attr.aria-invalid]="found.neededBy ? 'true' : null"
+                  [attr.aria-describedby]="found.neededBy ? 'd-when-error' : null"
+                  [ngModel]="neededBy()"
+                  (ngModelChange)="neededBy.set($event)"
+                />
+                @if (found.neededBy) {
+                  <span class="field__error" id="d-when-error">{{ found.neededBy }}</span>
+                }
+              </div>
+              <div class="field">
+                <label class="field__label" for="d-budget"
+                  >Budget <span class="optional">(optional)</span></label
+                >
+                <input
+                  class="input"
+                  id="d-budget"
+                  name="budget"
+                  type="text"
+                  maxlength="60"
+                  [readOnly]="busy()"
+                  [ngModel]="budget()"
+                  (ngModelChange)="budget.set($event)"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="d-phone"
+                >Phone <span class="optional">(optional)</span></label
+              >
+              <span class="field__help" id="d-phone-help"
+                >Shared with {{ opts.business.name }} for this request only.</span
+              >
+              <input
+                class="input"
+                id="d-phone"
+                name="phone"
+                type="tel"
+                [readOnly]="busy()"
+                [attr.aria-invalid]="found.phone ? 'true' : null"
+                [attr.aria-describedby]="
+                  found.phone ? 'd-phone-help d-phone-error' : 'd-phone-help'
+                "
+                [ngModel]="phone()"
+                (ngModelChange)="phone.set($event)"
+              />
+              @if (found.phone) {
+                <span class="field__error" id="d-phone-error">{{ found.phone }}</span>
+              }
+            </div>
+          </form>
+          <div class="dialog__footer">
+            <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+            <button
+              class="btn btn--primary"
+              type="submit"
+              form="quote-form"
+              [attr.aria-busy]="busy() ? 'true' : null"
+            >
+              Send request
+            </button>
+          </div>
+        }
+      }
+    }
+  }
+</div>

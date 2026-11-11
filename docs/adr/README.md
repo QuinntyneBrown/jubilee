@@ -19,6 +19,7 @@ something else: a new record supersedes it and both say so.
 | [0012](0012-account-join-decisions.md) | Joining: Argon2id, outbox e-mail, confirmation links, the bounce webhook secret and Google linking | Accepted |
 | [0014](0014-messaging-decisions.md) | Messaging: one conversation per business, read marks, photos, limits, report and block | Accepted |
 | [0015](0015-booking-decisions.md) | Booking: weekday-bitmask hours, fixed slots, one request lifecycle, idempotent bookings | Accepted |
+| [0016](0016-quote-request-decisions.md) | Quote requests: one request row, ten-digit phone, field codes, no pronouns | Accepted |
 | [0008](0008-frontend-file-per-type.md) | Frontend: one file per type, no single-file components (`templateUrl`, never `template`) | Accepted |
 
 ## Format
