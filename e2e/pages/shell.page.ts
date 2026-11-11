@@ -13,6 +13,8 @@ export class ShellPage {
   readonly statusPage: Locator;
   /** The lists of labels and values in the page. */
   readonly descriptionLists: Locator;
+  /** The framed tables in the page. */
+  readonly tables: Locator;
   readonly topBar: Locator;
   readonly brand: Locator;
   readonly primaryNav: Locator;
@@ -38,6 +40,7 @@ export class ShellPage {
     this.sectionHeads = this.main.locator('.section-head');
     this.statusPage = this.main.locator('.status-page');
     this.descriptionLists = this.main.locator('dl.dl');
+    this.tables = this.main.locator('.table-wrap');
     this.topBar = page.locator('header.topbar');
     this.brand = this.topBar.locator('.topbar__brand');
     this.primaryNav = this.topBar.getByRole('navigation', { name: 'Primary', exact: true });

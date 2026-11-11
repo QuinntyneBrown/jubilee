@@ -48,18 +48,15 @@
           @if (list.total >= list.max) {
             <p class="text-muted" role="status">You can list up to {{ list.max }} products.</p>
           }
-          <div class="table-wrap">
-            <table class="table">
-              <caption class="visually-hidden">
-                Your products
-              </caption>
+          <div jb-table-scroll>
+            <table jb-table caption="Your products">
               <thead>
                 <tr>
-                  <th scope="col">Product</th>
-                  <th scope="col" class="num">Price</th>
-                  <th scope="col">Status</th>
-                  <th scope="col" class="num">Requests</th>
-                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                  <th jb-table-cell scope="col">Product</th>
+                  <th jb-table-cell scope="col" numeric>Price</th>
+                  <th jb-table-cell scope="col">Status</th>
+                  <th jb-table-cell scope="col" numeric>Requests</th>
+                  <th jb-table-cell scope="col"><span class="visually-hidden">Actions</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -70,7 +67,7 @@
                   let last = $last
                 ) {
                   <tr>
-                    <td>
+                    <td jb-table-cell>
                       <div class="cluster" style="flex-wrap: nowrap">
                         <div
                           jb-media-tile
@@ -81,16 +78,16 @@
                         <span>{{ title(product) }}</span>
                       </div>
                     </td>
-                    <td class="num">{{ price(product) }}</td>
-                    <td>
+                    <td jb-table-cell numeric>{{ price(product) }}</td>
+                    <td jb-table-cell>
                       @if (product.soldOut) {
                         <span jb-badge tone="warning">Sold out</span>
                       } @else {
                         <span jb-badge tone="success">Listed</span>
                       }
                     </td>
-                    <td class="num">{{ product.requests }}</td>
-                    <td>
+                    <td jb-table-cell numeric>{{ product.requests }}</td>
+                    <td jb-table-cell>
                       <div
                         class="cluster cluster--end"
                         style="flex-wrap: nowrap; gap: var(--space-1)"

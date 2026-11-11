@@ -43,35 +43,32 @@
         </div>
       }
     } @else {
-      <div class="table-wrap" style="margin-top: var(--space-4)">
-        <table class="table">
-          <caption class="visually-hidden">
-            Reports waiting for review
-          </caption>
+      <div jb-table-scroll style="margin-top: var(--space-4)">
+        <table jb-table caption="Reports waiting for review">
           <thead>
             <tr>
-              <th scope="col">Business</th>
-              <th scope="col">Reason</th>
-              <th scope="col">Report</th>
-              <th scope="col">Reporter</th>
-              <th scope="col">Received</th>
-              <th scope="col">Status</th>
+              <th jb-table-cell scope="col">Business</th>
+              <th jb-table-cell scope="col">Reason</th>
+              <th jb-table-cell scope="col">Report</th>
+              <th jb-table-cell scope="col">Reporter</th>
+              <th jb-table-cell scope="col">Received</th>
+              <th jb-table-cell scope="col">Status</th>
             </tr>
           </thead>
           <tbody>
             @for (item of reports.value.items; track item.id) {
               <tr>
-                <td>
+                <td jb-table-cell>
                   <a [routerLink]="['/admin/reports', item.id]">{{ item.listing.name }}</a>
                   @if (item.type === 'conversation') {
                     <span class="text-caption"> conversation</span>
                   }
                 </td>
-                <td>{{ item.reason }}</td>
-                <td>{{ item.description }}</td>
-                <td>{{ item.reporterName }}</td>
-                <td>{{ received(item) }}</td>
-                <td>
+                <td jb-table-cell>{{ item.reason }}</td>
+                <td jb-table-cell>{{ item.description }}</td>
+                <td jb-table-cell>{{ item.reporterName }}</td>
+                <td jb-table-cell>{{ received(item) }}</td>
+                <td jb-table-cell>
                   @if (item.overdue) {
                     <span jb-badge tone="warning">Overdue</span>
                   }

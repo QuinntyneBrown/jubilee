@@ -1,0 +1,17 @@
+// Element: a heading cell of the table block. The host is the th.
+@use './table-cell-base' as cell;
+
+:host {
+  @include cell.cell;
+
+  background: var(--color-bg-surface-sunken);
+  font: var(--text-label);
+  color: var(--color-fg-muted);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+
+:host(.num) {
+  @include cell.numeric;
+}

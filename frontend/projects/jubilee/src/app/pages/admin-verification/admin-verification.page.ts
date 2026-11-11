@@ -77,6 +77,7 @@ const WAITING_STATES: ReferenceState[] = ['waiting', 'expired', 'deleted'];
     DescriptionItem,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'jb-page container page' },
   templateUrl: './admin-verification.page.html',
 })
 export class AdminVerificationPage implements OnInit {
