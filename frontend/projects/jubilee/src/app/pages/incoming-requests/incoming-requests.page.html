@@ -74,22 +74,22 @@
           </div>
         }
       } @else {
-        <ul class="rows">
+        <ul jb-rows>
           @for (row of requests.value.rows; track row.id) {
-            <li class="row row--stack">
-              <jb-avatar [initials]="row.customerInitials" />
-              <div class="row__body">
-                <div class="row__title">{{ row.title }}</div>
-                <div class="row__meta">
-                  {{ row.kindLabel }} · {{ row.customerName }} · {{ sent(row) }}
-                  @if (!isNew(row)) {
-                    · <span jb-badge>{{ row.statusLabel }}</span>
-                  }
-                </div>
-                <div class="row__meta">{{ row.detail }}</div>
+            <li jb-row stack>
+              <jb-avatar slot="leading" [initials]="row.customerInitials" />
+
+              <div jb-row-title>{{ row.title }}</div>
+              <div jb-row-meta>
+                {{ row.kindLabel }} · {{ row.customerName }} · {{ sent(row) }}
+                @if (!isNew(row)) {
+                  · <span jb-badge>{{ row.statusLabel }}</span>
+                }
               </div>
+              <div jb-row-meta>{{ row.detail }}</div>
+
               @if (isNew(row)) {
-                <div class="row__actions">
+                <div slot="trailing" jb-row-actions>
                   <button
                     jb-button
                     size="sm"

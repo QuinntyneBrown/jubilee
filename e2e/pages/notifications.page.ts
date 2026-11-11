@@ -19,7 +19,7 @@ export class NotificationsPage extends ShellPage implements Screen {
     super(page);
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.subtitle = this.main.locator('.subtitle');
-    this.items = this.main.locator('ul.list > li');
+    this.items = this.main.locator('ul.card--list > li');
     this.markAll = this.main.getByRole('button', { name: 'Mark all as read' });
     this.settings = this.main.getByRole('link', { name: 'Settings' });
     this.empty = this.main.locator('.empty');

@@ -21,6 +21,10 @@ import {
   Skeleton,
   Badge,
   Card,
+  Row,
+  RowMeta,
+  RowTitle,
+  Rows,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { LoadState, errorReference } from '../../services/load-state';
@@ -47,6 +51,10 @@ const MAX = 5;
     Skeleton,
     Badge,
     Card,
+    Row,
+    RowMeta,
+    RowTitle,
+    Rows,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-featured.page.html',

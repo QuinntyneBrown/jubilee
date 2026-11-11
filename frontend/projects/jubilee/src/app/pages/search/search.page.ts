@@ -11,6 +11,10 @@ import {
   ChipRow,
   Skeleton,
   Badge,
+  Row,
+  RowMeta,
+  RowTitle,
+  Rows,
 } from 'components';
 import { SearchStore } from '../../services/search.store';
 
@@ -47,6 +51,10 @@ function plural(count: number, one: string, many: string): string {
     ChipRow,
     Skeleton,
     Badge,
+    Row,
+    RowMeta,
+    RowTitle,
+    Rows,
   ],
   providers: [SearchStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

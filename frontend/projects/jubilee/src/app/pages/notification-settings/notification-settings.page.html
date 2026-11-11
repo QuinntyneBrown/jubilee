@@ -50,14 +50,14 @@
           }
         }
       </div>
-      <ul class="rows">
+      <ul jb-rows>
         @for (row of rows; track row.id) {
-          <li class="row">
-            <label class="row__body" [for]="row.id">
-              <span class="row__title" style="display: block">{{ row.title }}</span>
-              <span class="row__meta">{{ row.meta }}</span>
-            </label>
+          <li jb-row [labelFor]="row.id">
+            <span jb-row-title>{{ row.title }}</span>
+            <span jb-row-meta>{{ row.meta }}</span>
+
             <jb-switch
+              slot="trailing"
               [controlId]="row.id"
               [checked]="on(preferences, row)"
               [disabled]="waiting().has(row.setting)"

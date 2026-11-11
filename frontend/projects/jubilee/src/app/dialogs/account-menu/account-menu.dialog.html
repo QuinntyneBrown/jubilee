@@ -3,11 +3,11 @@
     <div class="cluster">
       <jb-avatar brand [initials]="data.initials" />
       <div>
-        <div class="row__title">{{ data.displayName }}</div>
-        <div class="row__meta">{{ data.email }}</div>
+        <div jb-row-title>{{ data.displayName }}</div>
+        <div jb-row-meta>{{ data.email }}</div>
       </div>
     </div>
-    <ul class="list" style="margin-inline: calc(-1 * var(--space-3))">
+    <ul jb-list style="margin-inline: calc(-1 * var(--space-3))">
       <li>
         <a class="menu__item" routerLink="/account" cdkFocusInitial (click)="close()">
           <svg jb-icon name="user"></svg>Your account

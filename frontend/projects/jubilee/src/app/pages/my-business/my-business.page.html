@@ -142,17 +142,17 @@
                   New requests from members show up here.
                 </div>
               } @else {
-                <ul class="rows">
+                <ul jb-rows>
                   @for (row of b.needsReply; track row.id) {
-                    <li class="row row--stack">
-                      <jb-avatar [name]="row.customerName" />
-                      <div class="row__body">
-                        <div class="row__title">{{ row.title }}</div>
-                        <div class="row__meta">
-                          {{ row.kindLabel }} · {{ row.customerName }} · {{ sent(row) }}
-                        </div>
+                    <li jb-row stack>
+                      <jb-avatar slot="leading" [name]="row.customerName" />
+
+                      <div jb-row-title>{{ row.title }}</div>
+                      <div jb-row-meta>
+                        {{ row.kindLabel }} · {{ row.customerName }} · {{ sent(row) }}
                       </div>
-                      <div class="row__actions">
+
+                      <div slot="trailing" jb-row-actions>
                         <button
                           jb-button
                           size="sm"
@@ -181,18 +181,18 @@
             <aside class="section stack">
               <div jb-card heading="Your listing" class="stack">
                 @if (b.summary; as summary) {
-                  <ul class="rows">
-                    <li class="row">
-                      <div class="row__body">
-                        <div class="row__title">
-                          {{ summary.products }}
-                          {{ summary.products === 1 ? 'product' : 'products' }}
-                        </div>
-                        @if (summary.soldOut > 0) {
-                          <div class="row__meta">{{ summary.soldOut }} sold out</div>
-                        }
+                  <ul jb-rows>
+                    <li jb-row>
+                      <div jb-row-title>
+                        {{ summary.products }}
+                        {{ summary.products === 1 ? 'product' : 'products' }}
                       </div>
+                      @if (summary.soldOut > 0) {
+                        <div jb-row-meta>{{ summary.soldOut }} sold out</div>
+                      }
+
                       <a
+                        slot="trailing"
                         jb-button
                         size="sm"
                         routerLink="/my-business/products"
@@ -200,14 +200,14 @@
                         >Manage</a
                       >
                     </li>
-                    <li class="row">
-                      <div class="row__body">
-                        <div class="row__title">
-                          {{ summary.services }}
-                          {{ summary.services === 1 ? 'service' : 'services' }}
-                        </div>
+                    <li jb-row>
+                      <div jb-row-title>
+                        {{ summary.services }}
+                        {{ summary.services === 1 ? 'service' : 'services' }}
                       </div>
+
                       <a
+                        slot="trailing"
                         jb-button
                         size="sm"
                         routerLink="/my-business/services"
@@ -215,23 +215,21 @@
                         >Manage</a
                       >
                     </li>
-                    <li class="row">
-                      <div class="row__body">
-                        <div class="row__title">Church reference</div>
-                        <div class="row__meta">{{ summary.reference }}</div>
-                      </div>
+                    <li jb-row>
+                      <div jb-row-title>Church reference</div>
+                      <div jb-row-meta>{{ summary.reference }}</div>
                     </li>
-                    <li class="row">
-                      <div class="row__body">
-                        @if (b.awayUntil; as until) {
-                          <div class="row__title">Away until {{ awayDay(until) }}</div>
-                          <div class="row__meta">Members who message you are told.</div>
-                        } @else {
-                          <div class="row__title">Away period</div>
-                          <div class="row__meta">Not set</div>
-                        }
-                      </div>
+                    <li jb-row>
+                      @if (b.awayUntil; as until) {
+                        <div jb-row-title>Away until {{ awayDay(until) }}</div>
+                        <div jb-row-meta>Members who message you are told.</div>
+                      } @else {
+                        <div jb-row-title>Away period</div>
+                        <div jb-row-meta>Not set</div>
+                      }
+
                       <button
+                        slot="trailing"
                         jb-button
                         size="sm"
                         type="button"

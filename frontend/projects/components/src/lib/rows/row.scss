@@ -1,0 +1,16 @@
+// Block: row. The host is the row.
+@use './row-base' as base;
+
+:host {
+  @include base.row;
+}
+
+.row__body {
+  @include base.row-body;
+}
+
+@media (max-width: 39.99rem) {
+  :host(.row--stack) {
+    flex-wrap: wrap;
+  }
+}

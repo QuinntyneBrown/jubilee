@@ -18,7 +18,19 @@ import {
   IncomingTab,
   RequestDecision,
 } from 'api';
-import { EmptyState, Icon, Button, RowListSkeleton, Avatar, Badge } from 'components';
+import {
+  EmptyState,
+  Icon,
+  Button,
+  RowListSkeleton,
+  Avatar,
+  Badge,
+  Row,
+  RowActions,
+  RowMeta,
+  RowTitle,
+  Rows,
+} from 'components';
 import { interval } from 'rxjs';
 import {
   ConfirmRequestData,
@@ -51,7 +63,21 @@ const TABS: { tab: IncomingTab; label: string }[] = [
 /** The owner's requests at /my-business/requests (L2-051): confirm or decline what members asked for. */
 @Component({
   selector: 'jb-incoming-requests-page',
-  imports: [RouterLink, EmptyState, Icon, WorkspaceHeader, Button, RowListSkeleton, Avatar, Badge],
+  imports: [
+    RouterLink,
+    EmptyState,
+    Icon,
+    WorkspaceHeader,
+    Button,
+    RowListSkeleton,
+    Avatar,
+    Badge,
+    Row,
+    RowActions,
+    RowMeta,
+    RowTitle,
+    Rows,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './incoming-requests.page.html',

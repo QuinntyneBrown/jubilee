@@ -9,6 +9,8 @@
   --jb-icon-size: 1.25em;
 
   display: inline-flex;
+  // Knob: --jb-btn-flex, set by a block whose buttons share a line (row actions).
+  flex: var(--jb-btn-flex, initial);
   align-items: center;
   justify-content: center;
   gap: var(--space-2);

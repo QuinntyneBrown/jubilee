@@ -124,18 +124,16 @@
         @if (report.actions.length === 0) {
           <p class="text-muted" style="margin-top: var(--space-3)">No action has been taken yet.</p>
         } @else {
-          <ul class="rows" style="margin-top: var(--space-3)">
+          <ul jb-rows style="margin-top: var(--space-3)">
             @for (action of report.actions; track action.at) {
-              <li class="row">
-                <div class="row__body">
-                  <p class="row__title">{{ actionTitle(action.kind) }}</p>
-                  <p class="row__meta">
-                    {{ action.by }} · {{ when(action.at) }} · “{{ action.resolutionNote }}”
-                    @if (action.messageText) {
-                      <br />Message: “{{ action.messageText }}”
-                    }
-                  </p>
-                </div>
+              <li jb-row>
+                <p jb-row-title>{{ actionTitle(action.kind) }}</p>
+                <p jb-row-meta>
+                  {{ action.by }} · {{ when(action.at) }} · “{{ action.resolutionNote }}”
+                  @if (action.messageText) {
+                    <br />Message: “{{ action.messageText }}”
+                  }
+                </p>
               </li>
             }
           </ul>

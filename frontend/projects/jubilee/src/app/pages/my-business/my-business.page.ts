@@ -31,6 +31,11 @@ import {
   Avatar,
   initialsOf,
   Card,
+  Row,
+  RowActions,
+  RowMeta,
+  RowTitle,
+  Rows,
 } from 'components';
 import {
   ConfirmRequestData,
@@ -71,6 +76,11 @@ const UNDO_MS = 8000;
     Skeleton,
     Avatar,
     Card,
+    Row,
+    RowActions,
+    RowMeta,
+    RowTitle,
+    Rows,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },

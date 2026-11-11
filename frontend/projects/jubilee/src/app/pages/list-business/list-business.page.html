@@ -190,9 +190,9 @@
                   Add a few to start. You can add the rest later.
                 }
               </p>
-              <ul class="item-list" style="margin-top: var(--space-2)">
+              <ul jb-item-list style="margin-top: var(--space-2)">
                 @for (item of items(); track $index) {
-                  <li>
+                  <li jb-item-list-item>
                     @if (!isServices()) {
                       <div
                         jb-media-tile
@@ -201,7 +201,7 @@
                         [icon]="tile().icon"
                       ></div>
                     }
-                    <span class="item-list__name"
+                    <span jb-item-list-name
                       >{{ item.name }}
                       @if (item.detail) {
                         <span class="text-muted"> · {{ item.detail }}</span>
@@ -229,7 +229,7 @@
                     </button>
                   </li>
                 }
-                <li>
+                <li jb-item-list-item>
                   <button jb-button variant="link" type="button" (click)="addItem()">
                     <svg jb-icon name="plus"></svg
                     >{{ isServices() ? 'Add a service' : 'Add a product' }}

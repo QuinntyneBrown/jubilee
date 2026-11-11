@@ -69,6 +69,7 @@ it changes how the product looks, which a component move must not do.
 | Category chips on the hero (`home-1280.png`) | about 36 px tall, Inter at a medium weight | 44 px tall (`--control-height-md`), semibold label, system text face |
 | Avatar in the top bar (`home-1280.png`) | 36 px across | `--avatar-size-sm`, 32 px |
 | Unread count in the top bar (`home-1280.png`) | 20 px circle, numeral in Inter | badge height, label face, 1 px wider |
+| Service row (`business-services-1280.png`) | in a 768 px column, 77 px tall around a 42 px Book button, Inter | in a 704 px column, 79 px tall around a 32 px button (`--control-height-sm`), system text face |
 
 ## Refreshing
 

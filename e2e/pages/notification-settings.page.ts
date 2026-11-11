@@ -14,6 +14,8 @@ export class NotificationSettingsPage extends ShellPage implements Screen {
   readonly sectionTabs: Locator;
   /** Every switch, in the order of the page. */
   readonly switches: Locator;
+  /** One setting: its words and its switch. */
+  readonly settingRows: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -22,6 +24,7 @@ export class NotificationSettingsPage extends ShellPage implements Screen {
     this.status = this.main.locator('.cluster--between .inline-status');
     this.frequency = this.main.getByLabel('How often');
     this.securityNote = this.main.locator('.text-caption');
+    this.settingRows = this.main.locator('li.row');
     this.errorState = this.main.getByRole('alert').filter({ hasText: 'JB-PREF-503' });
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.sectionTabs = this.main.getByRole('navigation', { name: 'Account sections' });

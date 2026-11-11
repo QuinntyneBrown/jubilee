@@ -1,0 +1,12 @@
+// Block: row, its title.
+:host {
+  font: var(--text-label);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+// Inside a label the title is a span; it still takes its own line.
+:host(span) {
+  display: block;
+}

@@ -19,6 +19,10 @@ import {
   RowListSkeleton,
   Badge,
   Card,
+  Row,
+  RowMeta,
+  RowTitle,
+  Rows,
 } from 'components';
 import {
   ReportActionData,
@@ -63,6 +67,10 @@ const ACTION_TITLE: Record<ReportActionKind, string> = {
     RowListSkeleton,
     Badge,
     Card,
+    Row,
+    RowMeta,
+    RowTitle,
+    Rows,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-report.page.html',

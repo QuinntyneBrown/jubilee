@@ -22,6 +22,7 @@ import {
   ChipRow,
   RowListSkeleton,
   Skeleton,
+  List,
 } from 'components';
 import { ClockService } from '../../services/clock.service';
 import { RequiresConnection } from '../../directives/requires-connection';
@@ -53,6 +54,7 @@ import { SessionService } from '../../services/session.service';
     ChipRow,
     RowListSkeleton,
     Skeleton,
+    List,
   ],
   providers: [DirectoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,

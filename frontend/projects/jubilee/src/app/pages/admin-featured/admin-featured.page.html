@@ -22,12 +22,10 @@
   }
   @case ('loading') {
     <p class="visually-hidden" role="status">Loading the featured weeks…</p>
-    <ul class="rows" aria-hidden="true">
-      <li class="row">
-        <div class="row__body">
-          <span jb-skeleton shape="text" width="50"></span>
-          <span jb-skeleton shape="text" width="70"></span>
-        </div>
+    <ul jb-rows aria-hidden="true">
+      <li jb-row>
+        <span jb-skeleton shape="text" width="50"></span>
+        <span jb-skeleton shape="text" width="70"></span>
       </li>
     </ul>
   }
@@ -65,7 +63,7 @@
           businesses are shown.
         </div>
       } @else {
-        <ol class="rows" aria-label="Featured this week" style="margin-top: var(--space-4)">
+        <ol jb-rows aria-label="Featured this week" style="margin-top: var(--space-4)">
           @for (
             listing of chosen();
             track listing.id;
@@ -73,13 +71,13 @@
             let first = $first;
             let last = $last
           ) {
-            <li class="row">
-              <span jb-badge aria-hidden="true">{{ i + 1 }}</span>
-              <div class="row__body">
-                <p class="row__title">{{ listing.name }}</p>
-                <p class="row__meta">{{ listing.categorySlug }} · {{ listing.state }}</p>
-              </div>
-              <span class="cluster">
+            <li jb-row>
+              <span slot="leading" jb-badge aria-hidden="true">{{ i + 1 }}</span>
+
+              <p jb-row-title>{{ listing.name }}</p>
+              <p jb-row-meta>{{ listing.categorySlug }} · {{ listing.state }}</p>
+
+              <span slot="trailing" class="cluster">
                 <button
                   jb-button
                   size="sm"
@@ -129,14 +127,13 @@
         </span>
       </div>
       @if (available().length > 0) {
-        <ul class="rows" aria-label="Live businesses found">
+        <ul jb-rows aria-label="Live businesses found">
           @for (candidate of available(); track candidate.id) {
-            <li class="row">
-              <div class="row__body">
-                <p class="row__title">{{ candidate.name }}</p>
-                <p class="row__meta">{{ candidate.categorySlug }}</p>
-              </div>
-              <button jb-button size="sm" type="button" (click)="add(candidate)">
+            <li jb-row>
+              <p jb-row-title>{{ candidate.name }}</p>
+              <p jb-row-meta>{{ candidate.categorySlug }}</p>
+
+              <button slot="trailing" jb-button size="sm" type="button" (click)="add(candidate)">
                 Add<span class="visually-hidden"> {{ candidate.name }}</span>
               </button>
             </li>

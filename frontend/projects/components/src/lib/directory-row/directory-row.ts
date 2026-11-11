@@ -19,6 +19,7 @@ export interface DirectoryRowView {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'dir-row' },
   templateUrl: './directory-row.html',
+  styleUrl: './directory-row.scss',
 })
 export class DirectoryRow {
   readonly business = input.required<DirectoryRowView>();
