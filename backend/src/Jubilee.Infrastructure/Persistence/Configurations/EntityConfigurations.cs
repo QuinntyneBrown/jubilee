@@ -23,6 +23,7 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Ignore(l => l.ReplyTimeBand);
         builder.Property(l => l.Kind).HasConversion<string>().HasMaxLength(16);
         builder.Property(l => l.OwnerName).HasMaxLength(200);
+        builder.Property(l => l.MeetingArea).HasMaxLength(100);
         builder.Property(l => l.OwnerId).HasMaxLength(200);
         builder.HasIndex(l => l.OwnerId);
         builder.PrimitiveCollection(l => l.Credentials).IsRequired();
@@ -244,5 +245,43 @@ public sealed class ConversationReportConfiguration : IEntityTypeConfiguration<C
         builder.Property(r => r.ReporterSubject).HasMaxLength(200).IsRequired();
         builder.Property(r => r.Reason).HasMaxLength(1000).IsRequired();
         builder.HasOne<Conversation>().WithMany().HasForeignKey(r => r.ConversationId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class RequestConfiguration : IEntityTypeConfiguration<Request>
+{
+    public void Configure(EntityTypeBuilder<Request> builder)
+    {
+        builder.ToTable("Requests");
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.MemberSubject).HasMaxLength(200).IsRequired();
+        builder.Property(r => r.MemberName).HasMaxLength(200).IsRequired();
+        builder.Property(r => r.IdempotencyKey).HasMaxLength(100).IsRequired();
+        builder.Property(r => r.ServiceName).HasMaxLength(200);
+        builder.Property(r => r.Location).HasMaxLength(200);
+        builder.Property(r => r.Note).HasMaxLength(Request.MaxNoteLength);
+        builder.Property(r => r.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
+        builder.Property(r => r.Mode).HasConversion<string>().HasMaxLength(16);
+        builder.HasIndex(r => new { r.MemberSubject, r.IdempotencyKey }).IsUnique();
+        builder.HasIndex(r => new { r.MemberSubject, r.CreatedAt });
+        builder.HasIndex(r => new { r.ListingId, r.CreatedAt });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(r => r.ListingId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(r => r.Transitions).WithOne().HasForeignKey(t => t.RequestId).OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(r => r.Transitions).UsePropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+public sealed class RequestTransitionConfiguration : IEntityTypeConfiguration<RequestTransition>
+{
+    public void Configure(EntityTypeBuilder<RequestTransition> builder)
+    {
+        builder.ToTable("RequestTransitions");
+        builder.HasKey(t => t.Id);
+        builder.Property(t => t.Id).ValueGeneratedNever();
+        builder.Property(t => t.From).HasConversion<string>().HasMaxLength(16);
+        builder.Property(t => t.To).HasConversion<string>().HasMaxLength(16);
+        builder.Property(t => t.Actor).HasMaxLength(200).IsRequired();
     }
 }
