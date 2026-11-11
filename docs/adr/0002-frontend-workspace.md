@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted, 10 November 2026.
+Accepted, 10 November 2026. Amended by ADR 0035: components own their styles, one `.scss` each;
+the global stylesheet keeps foundations only.
 
 ## Context
 

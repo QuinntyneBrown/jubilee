@@ -148,6 +148,10 @@ F2 to F5 remove about 70% of the hand-written presentation and should go first.
 
 ## Enforcement
 
+**Decided after this audit (ADR 0035):** the build form below is adopted. Every component has
+its own encapsulated `name.scss` with BEM names, and the global stylesheet keeps foundations only.
+The components are tracked as issues #39 to #85.
+
 `AGENTS.md` forbids tests that assert the shape of the codebase, so the rule must be held by
 lint, the build and review.
 

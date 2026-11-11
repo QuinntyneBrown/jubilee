@@ -13,6 +13,13 @@ Roles, requirements and the journeys to build are in `docs/specs/L1.md`, `docs/s
 The first journey (discover businesses) is implemented and created the layout below; every later
 feature follows it. `docs/estimates/` tracks how far each design is.
 
+## Prefer best practice
+
+Where there is more than one way to build something, choose the established best practice of the
+platform (Angular, .NET, Playwright, WCAG) over the expedient one (ADR 0035). A departure needs
+an ADR that gives its reason. If a rule in this file or in an ADR conflicts with best practice,
+say so and propose the correction; do not work around it silently.
+
 ## Repository layout
 
 - `backend/` — .NET solution
@@ -69,7 +76,7 @@ jubilee/
 │       ├── api/src/lib/               service contracts, implementations, view models, helpers
 │       │   ├── api/
 │       │   └── models/
-│       ├── components/src/lib/        `jb-*` UI atoms, one folder per component, plus `styles/`
+│       ├── components/src/lib/        every `jb-*` presentation component, one folder each, plus `styles/`
 │       └── marketing/src/app/         the marketing site: one page, one folder per section
 ├── e2e/
 │   ├── playwright.config.ts
@@ -129,12 +136,28 @@ design system).
   owns lint; CI fails on either. Run `npm run lint` and `npm run format:check` in `frontend/`. The
   husky pre-commit hook fixes staged frontend files.
 - Component selectors use `jb-*`; TypeScript class, file, and folder names omit the `Jb` prefix.
-- **File per type, no single-file components** (ADR 0008). A component is `name.ts` + `name.html`
-  (+ `name.scss` when it has styles) using `templateUrl`/`styleUrl`; never an inline `template` or
-  `styles`, however short.
+- **Presentation lives in `components` only** (ADR 0035). Every presentation component is built
+  in the `components` library and imported by `jubilee` and `marketing`. An application project
+  declares pages, dialogs and its root as containers that compose `jb-*` components; it declares
+  no presentation component, no hand-written button, field, alert or dialog frame, no inline
+  `style` and no stylesheet. The only classes an application template writes are the layout and
+  text utilities (`stack`, `cluster`, `split`, `form-grid`, `container`, `visually-hidden`,
+  `truncate`, `text-muted`, `text-caption`, `only-*`).
+- **File per type, no single-file components** (ADR 0008, ADR 0035). A library component is
+  `name.ts` + `name.html` + `name.scss` using `templateUrl`/`styleUrl`; never an inline `template`
+  or `styles`, however short. A page or dialog in an application project is `name.ts` +
+  `name.html` and has no stylesheet.
+- **One encapsulated stylesheet per component, named with BEM** (ADR 0035). `name.scss` holds
+  every rule of its component and nothing else, under Angular's default encapsulation (never
+  `ViewEncapsulation.None`). The component is the block, named as in the design system; parts
+  are `block__element`, variants are `block--modifier`; a state assistive technology must know is
+  an attribute (`aria-current`, `aria-invalid`, `disabled`) and is styled through it. A
+  stylesheet never styles another component's block. When a component lands, its rules leave
+  the global `ui.css` or `marketing.css` in the same change.
 - Components preserve the mock design's BEM classes and accessible state semantics; e2e locators
   depend on that parity.
-- Keep component styles encapsulated and global styles limited to shared foundations and utilities.
+- Global styles are foundations only: tokens, `@font-face`, the reset and the layout and text
+  utilities.
 - Read design tokens by role, never hex values; the token set lives in `components`.
   Component-scoped knobs keep the `--jb-` prefix.
 - **Fonts are bundled, never left to the system.** Archivo, the display face, is one variable
