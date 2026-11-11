@@ -8,26 +8,48 @@
   <strong>Toronto's Christian marketplace.</strong>
 </p>
 
+<p align="center">
+  <a href="https://github.com/QuinntyneBrown/jubilee/actions/workflows/ci.yml"><img src="https://github.com/QuinntyneBrown/jubilee/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/.NET-10-512BD4.svg" alt=".NET 10">
+  <img src="https://img.shields.io/badge/Angular-22-DD0031.svg" alt="Angular 22">
+  <img src="https://img.shields.io/badge/tested%20with-Playwright-2EAD33.svg" alt="Tested with Playwright">
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="Pull requests welcome"></a>
+</p>
+
+<p align="center">
+  <a href="#getting-started">Getting started</a> ·
+  <a href="docs/specs/L1.md">Requirements</a> ·
+  <a href="docs/mocks/README.md">Mocks</a> ·
+  <a href="docs/design-system/README.md">Design system</a> ·
+  <a href="docs/adr/README.md">Architecture decisions</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
 Jubilee is a directory of verified Christian-owned businesses in Toronto. A member finds a
 business, messages it, books a meeting, asks for a quote or requests a product, and the business
 confirms or declines. Every listing is confirmed by a pastor or elder before it goes live. Jubilee
 does not take payment; members pay the business directly.
 
-> **Status: the first of 26 journeys is implemented.** A visitor can open the welcome page, browse
-> the directory and filter, sort and page through a category. The [user journeys](docs/journey.md)
-> list what is built next, in order of value to the user, and
+> [!NOTE]
+> **Project status: the first of 26 journeys is implemented.** A visitor can open the welcome
+> page, browse the directory and filter, sort and page through a category. The
+> [user journeys](docs/journey.md) list what is built next, in order of value to the user, and
 > [`docs/estimates/`](docs/estimates/README.md) tracks how far each design is.
 
-## Table of contents
+## Contents
 
 - [Features](#features)
-- [Project structure](#project-structure)
+- [Architecture](#architecture)
 - [Getting started](#getting-started)
-- [Running the tests](#running-the-tests)
+- [Building and testing](#building-and-testing)
+- [Repository structure](#repository-structure)
 - [Documentation](#documentation)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
+- [Code of conduct](#code-of-conduct)
 - [Security](#security)
+- [Support](#support)
 - [License](#license)
 
 ## Features
@@ -35,60 +57,54 @@ does not take payment; members pay the business directly.
 These are the planned features. Each one is specified in [`docs/specs/L2.md`](docs/specs/L2.md).
 The directory is built; the others follow in the order of the journeys.
 
-- **Directory.** A welcome page, a browse home with featured businesses, and category pages with
-  filters, sorting and pagination. Only verified, live listings are public.
-- **Search.** Keyword search across businesses, services and products, with grouped results.
-- **Business and product pages.** A page per service business or shop, and a page per product.
-- **Requests.** Book a meeting, ask for a quote or request a product, without paying. Follow each
-  request and cancel an open one.
-- **Messaging.** Private one-to-one conversations between a member and a business.
-- **Notifications.** A notification centre, toasts, banners and e-mail, according to preferences.
-- **Business onboarding.** List a business for free, name a church reference and submit it for
-  verification.
-- **Church reference.** A pastor or elder confirms an owner through a private, single-use link.
-- **Owner workspace.** Monitor a listing, edit it, manage products and services, answer requests.
-- **Verification team.** A review queue, approval, change requests and report handling.
-- **Accounts.** Join by e-mail or Google, confirm the address, reset a password, download data and
-  delete the account.
-- **Offline use.** Cached pages and a queue for outgoing messages on a poor connection.
-- **Accessible and responsive.** WCAG 2.2 AA, light and dark themes, every viewport from 360 px.
+| Feature | What it does | Status |
+|---|---|---|
+| **Directory** | A welcome page, a browse home with featured businesses, and category pages with filters, sorting and pagination. Only verified, live listings are public. | Built |
+| **Search** | Keyword search across businesses, services and products, with grouped results. | Planned |
+| **Business and product pages** | A page per service business or shop, and a page per product. | Planned |
+| **Requests** | Book a meeting, ask for a quote or request a product, without paying. Follow each request and cancel an open one. | Planned |
+| **Messaging** | Private one-to-one conversations between a member and a business. | Planned |
+| **Notifications** | A notification centre, toasts, banners and e-mail, according to preferences. | Planned |
+| **Business onboarding** | List a business for free, name a church reference and submit it for verification. | Planned |
+| **Church reference** | A pastor or elder confirms an owner through a private, single-use link. | Planned |
+| **Owner workspace** | Monitor a listing, edit it, manage products and services, answer requests. | Planned |
+| **Verification team** | A review queue, approval, change requests and report handling. | Planned |
+| **Accounts** | Join by e-mail or Google, confirm the address, reset a password, download data and delete the account. | Planned |
+| **Offline use** | Cached pages and a queue for outgoing messages on a poor connection. | Planned |
+| **Accessible and responsive** | WCAG 2.2 AA, light and dark themes, every viewport from 360 px. | Ongoing |
 
-## Project structure
+## Architecture
 
-The layout is defined in [`AGENTS.md`](AGENTS.md).
+| Part | Technology | Responsibility |
+|---|---|---|
+| `backend/` | .NET 10, ASP.NET Core, EF Core, MediatR | Accounts, listings, requests, messaging, notifications and verification |
+| `frontend/` | Angular 22, Angular CDK | The app (`jubilee`), the marketing site (`marketing`), service contracts (`api`) and `jb-*` UI atoms (`components`) |
+| `e2e/` | Playwright (Chromium) | Behaviour tests against the app, with every `/api` request answered from a recording |
+| `docs/` | Markdown, HTML, PlantUML | Requirements, mocks, design system, detailed designs and architecture decisions |
 
-```
-jubilee/
-├── backend/                .NET solution (Jubilee.sln)
-│   ├── src/                Jubilee.Domain, .Application, .Infrastructure, .Api, .Worker, .Cli
-│   └── tests/              one test project per source project
-├── frontend/               Angular workspace
-│   └── projects/           jubilee (the app), api (service contracts), components (jb-* atoms)
-├── e2e/                    Playwright suite: fixtures, page objects, specs
-├── eng/                    local engineering scripts
-├── docs/
-│   ├── specs/              requirements: L1.md (high level), L2.md (acceptance criteria)
-│   ├── mocks/              static HTML mocks of every screen in every state
-│   ├── design-system/      tokens, foundations, components and patterns
-│   ├── detailed-designs/   one design per feature, grouped by subsystem
-│   ├── adr/                architecture decisions
-│   ├── estimates/          effort and percent complete per design
-│   ├── journey.md          the user journeys, with effort estimates
-│   └── prompts/            one implementation prompt per journey
-├── AGENTS.md               rules for people and coding agents working in this repository
-└── README.md
-```
+The backend layers depend in one direction only: `Domain` ← `Application` ← `Infrastructure` ←
+`Api` / `Worker` / `Cli`. The rules behind that, and the frontend and end-to-end conventions, are
+in [`AGENTS.md`](AGENTS.md) and the [architecture decision records](docs/adr/README.md).
 
 ## Getting started
 
-You need the [.NET 10 SDK](https://dotnet.microsoft.com/download), [Node.js 22](https://nodejs.org)
-and [PowerShell 7](https://learn.microsoft.com/powershell/) (`pwsh`). SQL Server is needed only
-for the full local stack; the quick start runs on SQLite, and the tests need no database at all
-(ADR 0009).
+### Prerequisites
+
+| Tool | Version | Notes |
+|---|---|---|
+| [.NET SDK](https://dotnet.microsoft.com/download) | 10.0 | Pinned by [`backend/global.json`](backend/global.json) |
+| [Node.js](https://nodejs.org) | 22 | npm 10 |
+| [PowerShell](https://learn.microsoft.com/powershell/) | 7 (`pwsh`) | Runs the scripts in `eng/` |
+| SQL Server | Any supported edition | Optional; only for the full local stack |
+
+The quick start runs on SQLite, and the tests need no database at all
+([ADR 0009](docs/adr/0009-tests-without-a-backend-or-database.md)).
+
+### Quick start
 
 1. Clone the repository and install the frontend and end-to-end dependencies.
 
-   ```
+   ```shell
    git clone https://github.com/QuinntyneBrown/jubilee.git
    cd jubilee
    npm ci --prefix frontend
@@ -98,63 +114,105 @@ for the full local stack; the quick start runs on SQLite, and the tests need no 
 2. Start the API with the demo data. It listens on `http://localhost:5080`, uses SQLite and needs
    no database server.
 
-   ```
+   ```shell
    pwsh eng/Start-E2eApi.ps1
    ```
 
 3. In a second terminal, start the app and open `http://localhost:4200`. The development server
    sends `/api` to the API.
 
-   ```
+   ```shell
    npm start --prefix frontend
    ```
+
+### Marketing site
 
 The marketing site is a second application in the same workspace and needs no API. It copies the
 pitch film from `docs/videos/` and serves on `http://localhost:4201`:
 
-```
+```shell
 npm run start:marketing --prefix frontend
 ```
 
-To run against SQL Server instead, set the connection string `ConnectionStrings:Jubilee` and run
-`pwsh eng/Start-FreshStack.ps1`. It resets the database, applies the migrations, seeds the demo
-data and starts the API and the app. The API never applies migrations by itself; the `jubilee`
-command-line tool does:
+### Running against SQL Server
 
-```
+Set the connection string `ConnectionStrings:Jubilee` and run `pwsh eng/Start-FreshStack.ps1`. It
+resets the database, applies the migrations, seeds the demo data and starts the API and the app.
+The API never applies migrations by itself; the `jubilee` command-line tool does:
+
+```shell
 dotnet run --project backend/src/Jubilee.Cli -- migrate
 dotnet run --project backend/src/Jubilee.Cli -- seed
 dotnet run --project backend/src/Jubilee.Cli -- reset
 ```
 
-The design can be read without running anything: open `docs/mocks/index.html` for every page,
-dialog and notification (press `t` to switch themes) and `docs/design-system/index.html` for the
-tokens and components.
+### Reading the design without running anything
 
-## Running the tests
+Open `docs/mocks/index.html` for every page, dialog and notification (press `t` to switch themes)
+and `docs/design-system/index.html` for the tokens and components.
+
+## Building and testing
 
 | What | Command | Where |
 |---|---|---|
+| Build the frontend | `npm run build` | `frontend/` |
 | Backend tests | `pwsh eng/Test-Backend.ps1` | repository root |
 | Frontend lint | `npm run lint` | `frontend/` |
 | Frontend format check | `npm run format:check` | `frontend/` |
 | Design-system copy is current | `npm run design:check` | `frontend/` |
+| End-to-end type check | `npm run typecheck` | `e2e/` |
 | End-to-end behaviour tests | `npm test` | `e2e/` |
-| Visual, responsive and accessibility sweeps (by hand only) | `npm run sweeps` | `e2e/` |
+| Visual, responsive and accessibility sweeps | `npm run sweeps` | `e2e/` (repository owner, by hand only) |
 
-The backend tests run on EF Core InMemory and need no database. The end-to-end suite runs in
-Chromium only; run `npx playwright install chromium` in `e2e/` once. It starts the app by itself,
-or uses the one already running, and never reaches the API: every `/api` request is answered from
-the recorded responses in `e2e/fixtures/api/responses.json` (ADR 0009). When an endpoint's answer
-changes, start `pwsh eng/Start-E2eApi.ps1` and run `npm run record-api` in `e2e/` to refresh the
-recording.
+- The backend tests run on EF Core InMemory and need no database.
+- The end-to-end suite runs in Chromium only; run `npx playwright install chromium` in `e2e/`
+  once. It starts the app by itself, or uses the one already running, and never reaches the API:
+  every `/api` request is answered from the recorded responses in
+  `e2e/fixtures/api/responses.json` ([ADR 0009](docs/adr/0009-tests-without-a-backend-or-database.md)).
+  When an endpoint's answer changes, start `pwsh eng/Start-E2eApi.ps1` and run
+  `npm run record-api` in `e2e/` to refresh the recording.
+- `npm test` runs the behaviour specs only
+  ([ADR 0010](docs/adr/0010-behaviour-tests-only-by-default.md)). The sweeps render the mocks in
+  `docs/mocks` to screenshots, then compare the app with them region by region. CI never runs the
+  sweeps, and the screenshots are not committed: to change how a screen looks, change its mock
+  first.
 
-`npm test` runs the behaviour specs only (ADR 0010). `npm run sweeps` is run by hand: it renders
-the mocks in `docs/mocks` to screenshots, then compares the app with them region by region and
-runs the responsive and accessibility sweeps. CI never runs the sweeps. The screenshots are not
-committed: to change how a screen looks, change its mock first.
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs all of the above except the sweeps on
-every pull request.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs everything above except the sweeps on
+every push to `main` and every pull request.
+
+## Repository structure
+
+The full layout and its rules are in [`AGENTS.md`](AGENTS.md).
+
+```
+jubilee/
+├── backend/                .NET solution (Jubilee.sln)
+│   ├── src/                Jubilee.Domain, .Application, .Infrastructure, .Api, .Worker, .Cli
+│   └── tests/              one test project per source project
+├── frontend/               Angular workspace
+│   └── projects/           jubilee (the app), marketing, api (service contracts), components (jb-* atoms)
+├── e2e/                    Playwright suite: fixtures, page objects, specs
+├── eng/                    local engineering scripts
+├── tools/                  scripts that build the narrated videos
+├── docs/
+│   ├── specs/              requirements: L1.md (high level), L2.md (acceptance criteria)
+│   ├── mocks/              static HTML mocks of every screen in every state
+│   ├── design-system/      tokens, foundations, components and patterns
+│   ├── detailed-designs/   one design per feature, grouped by subsystem
+│   ├── adr/                architecture decisions
+│   ├── estimates/          effort and percent complete per design
+│   ├── videos/             narrated videos, one folder each
+│   ├── journey.md          the user journeys, with effort estimates
+│   └── prompts/            one implementation prompt per journey
+├── .github/                CI workflow, issue and pull request templates
+├── AGENTS.md               rules for people and coding agents working in this repository
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── SECURITY.md
+├── SUPPORT.md
+└── README.md
+```
 
 ## Documentation
 
@@ -169,6 +227,7 @@ every pull request.
 | [Estimates](docs/estimates/README.md) | Effort and percent complete for every design |
 | [User journeys](docs/journey.md) | The 26 journeys to implement, with effort estimates |
 | [Implementation prompts](docs/prompts/) | One ready-to-run prompt per journey |
+| [Videos](docs/videos/README.md) | Narrated videos and how they are built |
 | [AGENTS.md](AGENTS.md) | Repository layout, architecture rules and the required workflow |
 
 ## Roadmap
@@ -176,26 +235,38 @@ every pull request.
 The journeys in [`docs/journey.md`](docs/journey.md) are ordered by the value they add to the
 user:
 
-1. Find a business: discover, view and search.
-2. Join and make contact: accounts, messaging and requests.
-3. Fill the directory: list a business, church reference and verification.
-4. Follow through: answering and tracking requests, the owner workspace and notifications.
-5. Convenience and housekeeping: saved lists, settings, policies, offline use and moderation.
+1. **Find a business:** discover, view and search.
+2. **Join and make contact:** accounts, messaging and requests.
+3. **Fill the directory:** list a business, church reference and verification.
+4. **Follow through:** answering and tracking requests, the owner workspace and notifications.
+5. **Convenience and housekeeping:** saved lists, settings, policies, offline use and moderation.
 
 ## Contributing
 
-Read [`AGENTS.md`](AGENTS.md) before you change anything. In short:
+Contributions are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for the workflow, and
+[`AGENTS.md`](AGENTS.md) for the architecture rules, before you open a pull request. In short:
 
 - Every change to production behaviour needs a requirement, a detailed design and a mock before
   any code is written.
 - Work in small slices, and write the failing acceptance test first.
 - Keep the requirements, designs, mocks, tests and code in agreement.
 
+## Code of conduct
+
+This project has adopted the [Contributor Covenant](CODE_OF_CONDUCT.md). By taking part you agree
+to uphold it.
+
 ## Security
 
-Do not report a security problem in a public issue. Contact the repository owner privately through
-their [GitHub profile](https://github.com/QuinntyneBrown).
+Do not report a security vulnerability in a public issue. See [`SECURITY.md`](SECURITY.md) for how
+to report one privately.
+
+## Support
+
+See [`SUPPORT.md`](SUPPORT.md) for how to ask a question, report a bug or request a feature.
 
 ## License
 
-No licence has been chosen yet. Until one is added, all rights are reserved.
+Copyright (c) 2026 Quinntyne Brown.
+
+Licensed under the [MIT License](LICENSE).
