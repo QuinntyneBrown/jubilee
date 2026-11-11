@@ -1,0 +1,145 @@
+// Block: mkt-card, the business card with a photo. The host is the link.
+//
+// It reads the marketing page's grounds: --jb-mkt-paper, --jb-mkt-accent, --jb-mkt-accent-text.
+:host {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  text-align: left;
+}
+
+.mkt-card__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-fg-default) 5%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg-default) 5%, transparent);
+}
+
+.mkt-card__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transition: transform 300ms ease-out;
+}
+
+:host(:hover) .mkt-card__photo {
+  transform: scale(1.03);
+}
+
+.mkt-card__tag {
+  position: absolute;
+  left: var(--space-3);
+  top: var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--jb-mkt-paper);
+  padding: var(--space-1) 0.625rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.mkt-card__body {
+  padding-top: var(--space-3);
+}
+
+.mkt-card__name {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-stretch: var(--font-stretch-wide);
+  font-size: var(--font-size-md);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.mkt-card__tagline {
+  margin-top: var(--space-1);
+  font-size: var(--font-size-sm);
+  line-height: 1.43;
+  color: color-mix(in srgb, var(--color-fg-default) 75%, transparent);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.mkt-card__meta {
+  margin-top: 0.375rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem var(--space-2);
+  font-size: 0.8125rem;
+}
+
+.mkt-card__highlight {
+  font-weight: var(--font-weight-semibold);
+  color: var(--jb-mkt-accent-text);
+}
+
+.mkt-card__verified {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-fg-subtle);
+}
+
+.mkt-card__check {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--jb-mkt-accent);
+}
+
+@media (min-width: 40rem) {
+  .mkt-card__name {
+    font-size: var(--font-size-lg);
+  }
+}
+
+// The featured card: nothing is clamped, and from the desktop layout its photo takes the height
+// of the two rows beside it.
+:host(.mkt-card--featured) .mkt-card__name {
+  display: block;
+  font-size: var(--font-size-2xl);
+}
+
+:host(.mkt-card--featured) .mkt-card__tagline {
+  display: block;
+  max-width: 32rem;
+  font-size: 0.9375rem;
+}
+
+@media (min-width: 40rem) {
+  :host(.mkt-card--featured) .mkt-card__name {
+    font-size: var(--font-size-3xl);
+  }
+
+  :host(.mkt-card--featured) .mkt-card__tagline {
+    font-size: var(--font-size-md);
+  }
+}
+
+@media (min-width: 64rem) {
+  :host(.mkt-card--featured) .mkt-card__media {
+    aspect-ratio: auto;
+    min-height: 280px;
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mkt-card__photo {
+    transition: none;
+  }
+}

@@ -16,15 +16,10 @@
       </svg>
     </a>
   </div>
-  <ul class="mkt-cards">
+  <ul jb-photo-card-grid>
     @for (business of cards; track business.name; let first = $first) {
-      <li [class.mkt-cards__lead]="first">
-        <a
-          jb-marketing-business-card
-          [business]="business"
-          [featured]="first"
-          [href]="browseUrl"
-        ></a>
+      <li jb-photo-card-grid-item [lead]="first">
+        <a jb-photo-business-card [business]="business" [featured]="first" [href]="browseUrl"></a>
       </li>
     }
   </ul>

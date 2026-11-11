@@ -1,0 +1,10 @@
+// Element: one place in the mkt-cards block. The host is the list item.
+:host(.mkt-cards__lead) {
+  grid-column: span 2;
+}
+
+@media (min-width: 64rem) {
+  :host(.mkt-cards__lead) {
+    grid-row: span 2;
+  }
+}
