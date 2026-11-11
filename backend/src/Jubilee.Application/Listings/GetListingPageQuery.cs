@@ -73,7 +73,8 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
         var shopProducts = db.Products.AsNoTracking().Where(p => p.ListingId == listing.Id && !p.IsDeleted);
         var productCount = await shopProducts.CountAsync(cancellationToken);
         var products = await shopProducts
-            .OrderByDescending(p => p.CreatedAt)
+            .OrderBy(p => p.Position)
+            .ThenByDescending(p => p.CreatedAt)
             .ThenBy(p => p.Slug)
             .Take(MaxProducts)
             .ToListAsync(cancellationToken);

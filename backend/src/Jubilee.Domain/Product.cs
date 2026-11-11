@@ -22,6 +22,24 @@ public sealed class Product
 
     public bool IsDeleted { get; private set; }
 
+    /// <summary>The owner's order of the products, from 1; products never ordered share 0 and follow newest first (L2-090).</summary>
+    public int Position { get; private set; }
+
+    /// <summary>The key of the request that created the product, so a repeat of it creates nothing (L2-132).</summary>
+    public string? IdempotencyKey { get; private set; }
+
+    /// <summary>When the owner deleted the product; past requests keep their snapshot (L2-092).</summary>
+    public DateTimeOffset? DeletedAt { get; private set; }
+
+    /// <summary>A shop lists this many products at most (L2-089 AC4).</summary>
+    public const int MaxPerListing = 100;
+
+    public const int MaxNameLength = 120;
+
+    public const int MaxDescriptionLength = 1000;
+
+    public const int MaxCents = 10_000_000;
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     public TileTint TileTint { get; private set; }
@@ -87,7 +105,28 @@ public sealed class Product
             CreatedAt = now,
         };
 
-    public void Delete() => IsDeleted = true;
+    public void Delete(DateTimeOffset? now = null)
+    {
+        IsDeleted = true;
+        DeletedAt ??= now;
+    }
+
+    /// <summary>Puts the product at the end of the owner's order and remembers the key that created it.</summary>
+    public void Place(int position, string? idempotencyKey)
+    {
+        Position = position;
+        IdempotencyKey = idempotencyKey;
+    }
+
+    public void MoveTo(int position) => Position = position;
+
+    /// <summary>The owner's edit of the words and the price; the slug stays, so links keep working (L2-091).</summary>
+    public void Revise(string name, int priceCents, string? description)
+    {
+        Name = name;
+        PriceCents = priceCents;
+        Description = Clean(description);
+    }
 
     public void Describe(ProductDescription description)
     {

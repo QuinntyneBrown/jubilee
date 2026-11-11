@@ -894,6 +894,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("DeliveryLine")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -901,6 +904,10 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("IdempotencyKey")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -924,6 +931,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<string>("OptionName")
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
 
                     b.Property<int>("PriceCents")
                         .HasColumnType("int");
@@ -1301,6 +1311,17 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int?>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdempotencyKey")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("InPersonPlace")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<Guid>("ListingId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1308,6 +1329,12 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("nvarchar(120)");
+
+                    b.Property<bool>("OffersInPerson")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("OffersVideo")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Position")
                         .HasColumnType("int");

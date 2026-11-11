@@ -53,6 +53,7 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.DeliveryLine).HasMaxLength(200);
         builder.Property(p => p.OptionName).HasMaxLength(40);
         builder.Property(p => p.RestockNote).HasMaxLength(200);
+        builder.Property(p => p.IdempotencyKey).HasMaxLength(64);
         builder.Property(p => p.MinimumQuantity).HasDefaultValue(1);
         builder.Ignore(p => p.IsSoldOut);
         builder.Ignore(p => p.MaxQuantity);
@@ -111,6 +112,8 @@ public sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
         builder.Property(s => s.Detail).HasMaxLength(200).IsRequired();
         builder.Property(s => s.PriceKind).HasConversion<string>().HasMaxLength(16);
         builder.Property(s => s.Action).HasConversion<string>().HasMaxLength(16);
+        builder.Property(s => s.InPersonPlace).HasMaxLength(200);
+        builder.Property(s => s.IdempotencyKey).HasMaxLength(64);
         builder.HasIndex(s => new { s.ListingId, s.Position });
         builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
