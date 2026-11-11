@@ -145,6 +145,24 @@ export const routes: Routes = [
     title: 'Edit listing · Jubilee',
   },
   {
+    path: 'my-business/products',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/my-products/my-products.page').then((m) => m.MyProductsPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'my-products', section: 'business' }),
+    title: 'Products · Jubilee',
+  },
+  {
+    path: 'my-business/services',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/my-services/my-services.page').then((m) => m.MyServicesPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'my-services', section: 'business' }),
+    title: 'Services · Jubilee',
+  },
+  {
     path: 'my-business/requests',
     pathMatch: 'full',
     loadComponent: () =>

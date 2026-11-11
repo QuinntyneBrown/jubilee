@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.OwnerWorkspace;
 
-public sealed record ProductOptionDto(string Label, int? Stock);
+public sealed record OwnerProductOptionDto(string Label, int? Stock);
 
 /// <summary>One row of the owner's products (L2-089).</summary>
 public sealed record ProductRowDto(
@@ -26,12 +26,12 @@ public sealed record ProductRowDto(
     string Icon,
     int MinimumQuantity,
     string? OptionName,
-    IReadOnlyList<ProductOptionDto> Options,
+    IReadOnlyList<OwnerProductOptionDto> Options,
     int Requests);
 
-public sealed record ProductsDto(string Business, string Slug, int Total, int SoldOut, int Max, IReadOnlyList<ProductRowDto> Rows);
+public sealed record ProductsDto(string Business, string Slug, string Subtitle, bool Live, int Total, int SoldOut, int Max, IReadOnlyList<ProductRowDto> Rows);
 
-public sealed record ServiceRowDto(
+public sealed record OwnerServiceRowDto(
     Guid Id,
     string Name,
     string Detail,
@@ -43,7 +43,7 @@ public sealed record ServiceRowDto(
     bool OffersInPerson,
     string? InPersonPlace);
 
-public sealed record ServicesDto(string Business, string Slug, int Total, int Max, IReadOnlyList<ServiceRowDto> Rows);
+public sealed record ServicesDto(string Business, string Slug, string Subtitle, bool Live, int Total, int Max, IReadOnlyList<OwnerServiceRowDto> Rows);
 
 /// <summary>What deleting an item removed, for the toast and the record (L2-092, L2-095).</summary>
 public sealed record DeletedItemDto(Guid Id, string Name, int PastRequests);
@@ -102,10 +102,10 @@ internal static partial class CatalogueRules
         WireValues.Of(product.TileIcon),
         product.MinimumQuantity,
         product.OptionName,
-        [.. product.OrderedOptions.Select(o => new ProductOptionDto(o.Label, o.Stock))],
+        [.. product.OrderedOptions.Select(o => new OwnerProductOptionDto(o.Label, o.Stock))],
         requests);
 
-    public static ServiceRowDto Row(Service service) => new(
+    public static OwnerServiceRowDto Row(Service service) => new(
         service.Id,
         service.Name,
         service.Detail,
@@ -132,7 +132,7 @@ internal static partial class CatalogueRules
 
 public sealed record ListProductsQuery(string Subject) : IRequest<ProductsDto>;
 
-public sealed class ListProductsQueryHandler(IAppDbContext db) : IRequestHandler<ListProductsQuery, ProductsDto>
+public sealed class ListProductsQueryHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<ListProductsQuery, ProductsDto>
 {
     public async Task<ProductsDto> Handle(ListProductsQuery request, CancellationToken cancellationToken)
     {
@@ -143,6 +143,8 @@ public sealed class ListProductsQueryHandler(IAppDbContext db) : IRequestHandler
         return new ProductsDto(
             listing.Name,
             listing.Slug,
+            await Workspace.SubtitleOf(db, listing, clock.GetUtcNow(), cancellationToken),
+            listing.IsPublic(),
             products.Count,
             products.Count(p => p.IsSoldOut),
             Product.MaxPerListing,
@@ -160,7 +162,7 @@ public sealed record SaveProductCommand(
     string? Description,
     int? MinimumQuantity,
     string? OptionName,
-    IReadOnlyList<ProductOptionDto>? Options,
+    IReadOnlyList<OwnerProductOptionDto>? Options,
     string? IdempotencyKey) : IRequest<ProductRowDto>;
 
 public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<SaveProductCommand, ProductRowDto>
@@ -255,7 +257,7 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
         return CatalogueRules.Row(product, counts.GetValueOrDefault(product.Id));
     }
 
-    private static void Apply(Product product, SaveProductCommand request, IReadOnlyList<ProductOptionDto> options)
+    private static void Apply(Product product, SaveProductCommand request, IReadOnlyList<OwnerProductOptionDto> options)
     {
         if (request.MinimumQuantity is { } minimum)
         {
@@ -325,14 +327,14 @@ public sealed class MoveProductCommandHandler(IAppDbContext db, IMediator mediat
 
 public sealed record ListServicesQuery(string Subject) : IRequest<ServicesDto>;
 
-public sealed class ListServicesQueryHandler(IAppDbContext db) : IRequestHandler<ListServicesQuery, ServicesDto>
+public sealed class ListServicesQueryHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<ListServicesQuery, ServicesDto>
 {
     public async Task<ServicesDto> Handle(ListServicesQuery request, CancellationToken cancellationToken)
     {
         var listing = await Workspace.Owned(db, request.Subject, cancellationToken);
         var services = (await db.Services.AsNoTracking().Where(s => s.ListingId == listing.Id).ToListAsync(cancellationToken))
             .OrderBy(s => s.Position).ToList();
-        return new ServicesDto(listing.Name, listing.Slug, services.Count, Service.MaxPerListing, [.. services.Select(CatalogueRules.Row)]);
+        return new ServicesDto(listing.Name, listing.Slug, await Workspace.SubtitleOf(db, listing, clock.GetUtcNow(), cancellationToken), listing.IsPublic(), services.Count, Service.MaxPerListing, [.. services.Select(CatalogueRules.Row)]);
     }
 }
 
@@ -349,11 +351,11 @@ public sealed record SaveServiceCommand(
     bool OffersVideo,
     bool OffersInPerson,
     string? Place,
-    string? IdempotencyKey) : IRequest<ServiceRowDto>;
+    string? IdempotencyKey) : IRequest<OwnerServiceRowDto>;
 
-public sealed class SaveServiceCommandHandler(IAppDbContext db) : IRequestHandler<SaveServiceCommand, ServiceRowDto>
+public sealed class SaveServiceCommandHandler(IAppDbContext db) : IRequestHandler<SaveServiceCommand, OwnerServiceRowDto>
 {
-    public async Task<ServiceRowDto> Handle(SaveServiceCommand request, CancellationToken cancellationToken)
+    public async Task<OwnerServiceRowDto> Handle(SaveServiceCommand request, CancellationToken cancellationToken)
     {
         var listing = await Workspace.Owned(db, request.Subject, cancellationToken);
         var name = request.Name?.Trim() ?? string.Empty;

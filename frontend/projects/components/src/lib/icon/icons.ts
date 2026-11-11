@@ -18,7 +18,9 @@ const rect = (x: number, y: number, width: number, height: number, rx: number): 
 /** The icons of the design system (docs/design-system/foundations/iconography.html). */
 export const ICONS = {
   alert: [path('M12 4 2.500 20h19zM12 10v4M12 17h.01')],
+  'arrow-down': [path('M12 5v14m0 0 6-6m-6 6-6-6')],
   'arrow-left': [path('M19 12H5m0 0 6-6m-6 6 6 6')],
+  'arrow-up': [path('M12 19V5m0 0-6 6m6-6 6 6')],
   bag: [path('M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2')],
   bell: [path('M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0')],
   book: [path('M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6')],
@@ -53,6 +55,7 @@ export const ICONS = {
   ],
   user: [circle(12, 8, 4), path('M4 21a8 8 0 0 1 16 0')],
   verified: [circle(12, 12, 9), path('m8 12 3 3 5-6')],
+  trash: [path('M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13')],
   wrench: [path('M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9zM14 6l3-3')],
 } as const satisfies Record<string, readonly IconShape[]>;
 

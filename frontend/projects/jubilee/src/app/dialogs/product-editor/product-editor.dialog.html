@@ -1,0 +1,143 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--info" aria-hidden="true">
+      <svg jb-icon name="bag"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">{{ editing ? 'Edit product' : 'Add a product' }}</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">
+        Changes show on your public listing as soon as you save.
+      </p>
+    </div>
+    <button
+      class="btn btn--ghost btn--icon"
+      type="button"
+      aria-label="Close"
+      [disabled]="busy()"
+      (click)="close()"
+    >
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  <form novalidate style="display: contents" (ngSubmit)="save()">
+    <div class="dialog__body stack">
+      @if (view() === 'failed') {
+        <div class="alert alert--danger" role="alert">
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">We couldn’t save the product</div>
+            <div>{{ failure() }}</div>
+          </div>
+        </div>
+      }
+      @if (view() === 'discard') {
+        <div class="alert alert--warning" role="alert">
+          <svg jb-icon name="alert"></svg>
+          <div class="alert__body">
+            <div class="alert__title">Discard what you typed?</div>
+            <div>Your changes to this product have not been saved.</div>
+          </div>
+        </div>
+      }
+      <div class="field">
+        <label class="field__label" for="d-name"
+          >Product name <span class="optional">(required)</span></label
+        >
+        <input
+          class="input"
+          id="d-name"
+          name="name"
+          type="text"
+          required
+          [ngModel]="name()"
+          (ngModelChange)="name.set($event)"
+          [readOnly]="busy()"
+          [attr.aria-invalid]="errors().name ? 'true' : null"
+          [attr.aria-describedby]="errors().name ? 'd-name-error' : null"
+        />
+        @if (errors().name; as message) {
+          <span class="field__error" id="d-name-error">{{ message }}</span>
+        }
+      </div>
+      <div class="form-grid form-grid--2">
+        <div class="field">
+          <label class="field__label" for="d-price"
+            >Price (CAD) <span class="optional">(required)</span></label
+          >
+          <input
+            class="input"
+            id="d-price"
+            name="price"
+            type="text"
+            inputmode="decimal"
+            required
+            [ngModel]="price()"
+            (ngModelChange)="price.set($event)"
+            [readOnly]="busy()"
+            [attr.aria-invalid]="errors().price ? 'true' : null"
+            [attr.aria-describedby]="errors().price ? 'd-price-error' : null"
+          />
+          @if (errors().price; as message) {
+            <span class="field__error" id="d-price-error">{{ message }}</span>
+          }
+        </div>
+        @if (!hasOptions) {
+          <div class="field">
+            <label class="field__label" for="d-stock">In stock</label>
+            <span class="field__help" id="d-stock-help">0 shows as sold out.</span>
+            <input
+              class="input"
+              id="d-stock"
+              name="stock"
+              type="number"
+              min="0"
+              max="9999"
+              [ngModel]="stock()"
+              (ngModelChange)="stock.set($event === null ? '' : '' + $event)"
+              [readOnly]="busy()"
+              [attr.aria-invalid]="errors().stock ? 'true' : null"
+              [attr.aria-describedby]="
+                errors().stock ? 'd-stock-help d-stock-error' : 'd-stock-help'
+              "
+            />
+            @if (errors().stock; as message) {
+              <span class="field__error" id="d-stock-error">{{ message }}</span>
+            }
+          </div>
+        }
+      </div>
+      <div class="field">
+        <label class="field__label" for="d-desc"
+          >Description <span class="optional">(optional)</span></label
+        >
+        <textarea
+          class="textarea"
+          id="d-desc"
+          name="description"
+          rows="3"
+          maxlength="1000"
+          [ngModel]="description()"
+          (ngModelChange)="description.set($event)"
+          [readOnly]="busy()"
+          [attr.aria-invalid]="errors().description ? 'true' : null"
+        ></textarea>
+        @if (errors().description; as message) {
+          <span class="field__error">{{ message }}</span>
+        }
+      </div>
+    </div>
+    <div class="dialog__footer">
+      @if (view() === 'discard') {
+        <button class="btn" type="button" cdkFocusInitial (click)="keepEditing()">
+          Keep editing
+        </button>
+        <button class="btn btn--danger" type="button" (click)="discard()">Discard</button>
+      } @else {
+        <button class="btn" type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+        <button class="btn btn--primary" type="submit" [attr.aria-busy]="busy() ? 'true' : null">
+          {{ editing ? 'Save changes' : 'Add product' }}
+        </button>
+      }
+    </div>
+  </form>
+</div>

@@ -20,7 +20,7 @@
 | [onboarding](onboarding.md) | 15 days | 83% |
 | [church-reference](church-reference.md) | 10 days | 78% |
 | [verification](verification.md) | 20 days | 52% |
-| [owner-workspace](owner-workspace.md) | 20 days | 50% |
+| [owner-workspace](owner-workspace.md) | 20 days | 90% |
 | [privacy](privacy.md) | 16 days | 0% |
 | [accessibility](accessibility.md) | 10 days | 0% |
 | [performance](performance.md) | 9 days | 6% |

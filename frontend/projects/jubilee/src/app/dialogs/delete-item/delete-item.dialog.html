@@ -1,0 +1,45 @@
+<div class="dialog__panel">
+  <div class="dialog__header">
+    <div class="dialog__icon dialog__icon--danger" aria-hidden="true">
+      <svg jb-icon name="alert"></svg>
+    </div>
+    <div style="flex: 1">
+      <h2 class="dialog__title" id="dlg-title">Delete “{{ data.name }}”?</h2>
+      <p id="dlg-desc" class="text-muted" style="margin-top: var(--space-1)">{{ consequence() }}</p>
+    </div>
+    <button
+      class="btn btn--ghost btn--icon"
+      type="button"
+      aria-label="Close"
+      [disabled]="busy()"
+      (click)="close()"
+    >
+      <svg jb-icon name="close"></svg>
+    </button>
+  </div>
+  @if (view() === 'failed') {
+    <div class="dialog__body stack">
+      <div class="alert alert--danger" role="alert">
+        <svg jb-icon name="alert"></svg>
+        <div class="alert__body">
+          <div class="alert__title">We couldn’t delete it</div>
+          <div>The {{ data.kind }} is still listed. Try again.</div>
+        </div>
+      </div>
+    </div>
+  }
+  <div class="dialog__footer">
+    <button class="btn" type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
+      Keep {{ data.kind }}
+    </button>
+    <button
+      class="btn btn--danger"
+      type="button"
+      [disabled]="busy()"
+      [attr.aria-busy]="busy() ? 'true' : null"
+      (click)="delete()"
+    >
+      {{ view() === 'failed' ? 'Try again' : 'Delete ' + data.kind }}
+    </button>
+  </div>
+</div>

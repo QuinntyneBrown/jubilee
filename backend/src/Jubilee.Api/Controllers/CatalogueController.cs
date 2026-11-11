@@ -15,7 +15,7 @@ public sealed record SaveProductBody(
     string? Description,
     int? MinimumQuantity,
     string? OptionName,
-    List<ProductOptionDto>? Options,
+    List<OwnerProductOptionDto>? Options,
     string? IdempotencyKey);
 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
@@ -76,7 +76,7 @@ public sealed class CatalogueController(ISender sender) : ControllerBase
 
     [HttpPut("services/{id:guid}")]
     [ErrorReference("JB-SVC-504")]
-    public Task<ServiceRowDto> ChangeService(Guid id, [FromBody] SaveServiceBody body, CancellationToken cancellationToken) =>
+    public Task<OwnerServiceRowDto> ChangeService(Guid id, [FromBody] SaveServiceBody body, CancellationToken cancellationToken) =>
         sender.Send(Command(id, body), cancellationToken);
 
     [HttpDelete("services/{id:guid}")]

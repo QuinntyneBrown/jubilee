@@ -11,6 +11,8 @@ import {
   HttpAccountApi,
   ADMIN_API,
   INCOMING_REQUESTS_API,
+  CATALOGUE_API,
+  HttpCatalogueApi,
   MY_BUSINESS_API,
   HttpMyBusinessApi,
   HttpIncomingRequestsApi,
@@ -57,6 +59,7 @@ export const appConfig: ApplicationConfig = {
     { provide: ADMIN_API, useClass: HttpAdminApi },
     { provide: INCOMING_REQUESTS_API, useClass: HttpIncomingRequestsApi },
     { provide: MY_BUSINESS_API, useClass: HttpMyBusinessApi },
+    { provide: CATALOGUE_API, useClass: HttpCatalogueApi },
     provideAppInitializer(() => inject(SessionService).resolve()),
   ],
 };

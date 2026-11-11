@@ -98,6 +98,37 @@ internal static class Workspace
         _ => "declined",
     };
 
+    public static string Month(DateTimeOffset at) => at.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+
+    public static string SubmittedWords(DateTimeOffset? at, DateTimeOffset now)
+    {
+        if (at is null)
+        {
+            return "today";
+        }
+
+        var days = (int)(now - at.Value).TotalDays;
+        return days <= 0 ? "today" : days == 1 ? "yesterday" : $"{days} days ago";
+    }
+
+    /// <summary>The line under the business name on every page of the workspace (L2-097 AC3).</summary>
+    public static string Subtitle(Listing listing, DateTimeOffset? submittedAt, DateTimeOffset now) => State(listing) switch
+    {
+        "live" => $"Verified · live since {Month(listing.ApprovedAt ?? now)}",
+        "paused" => "Verified · paused, not public",
+        "changes-requested" => "Changes requested · not public yet",
+        "declined" => "Declined · not public",
+        "draft" => "Draft · not submitted yet",
+        _ => $"Pending verification · submitted {SubmittedWords(submittedAt, now)}",
+    };
+
+    public static async Task<string> SubtitleOf(IAppDbContext db, Listing listing, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var submitted = await db.ListingSubmissions.AsNoTracking()
+            .Where(x => x.ListingId == listing.Id).Select(x => (DateTimeOffset?)x.SubmittedAt).SingleOrDefaultAsync(cancellationToken);
+        return Subtitle(listing, submitted, now);
+    }
+
     public static string DefaultAlt(string business, int position) => $"{business} photo {position}";
 
     public static async Task<ListingEditorDto> Editor(IAppDbContext db, Listing listing, CancellationToken cancellationToken)
@@ -170,7 +201,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
                 products.Count,
                 products.Count(p => p.IsSoldOut),
                 services,
-                $"Confirmed {Month(listing.ApprovedAt ?? now)} · Verified");
+                $"Confirmed {Workspace.Month(listing.ApprovedAt ?? now)} · Verified");
         }
 
         ReferenceStatusDto? reference = null;
@@ -185,15 +216,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             verification = await mediator.Send(new GetOwnerVerificationQuery(request.Subject, listing.Id), cancellationToken);
         }
 
-        var subtitle = state switch
-        {
-            "live" => $"Verified · live since {Month(listing.ApprovedAt ?? now)}",
-            "paused" => "Verified · paused, not public",
-            "changes-requested" => "Changes requested · not public yet",
-            "declined" => "Declined · not public",
-            "draft" => "Draft · not submitted yet",
-            _ => $"Pending verification · submitted {SubmittedWords(submission?.SubmittedAt, now)}",
-        };
+        var subtitle = Workspace.Subtitle(listing, submission?.SubmittedAt, now);
 
         var needs = fresh.Take(3).Select(r => new NeedsReplyDto(
             r.Id, r.Kind.ToString().ToLowerInvariant(), r.Kind.ToString(), r.MemberName, r.ServiceName ?? r.Kind.ToString(), r.CreatedAt)).ToList();
@@ -215,19 +238,6 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             summary,
             reference,
             verification);
-    }
-
-    private static string Month(DateTimeOffset at) => at.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
-
-    private static string SubmittedWords(DateTimeOffset? at, DateTimeOffset now)
-    {
-        if (at is null)
-        {
-            return "today";
-        }
-
-        var days = (int)(now - at.Value).TotalDays;
-        return days <= 0 ? "today" : days == 1 ? "yesterday" : $"{days} days ago";
     }
 }
 

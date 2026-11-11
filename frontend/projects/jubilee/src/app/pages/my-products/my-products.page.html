@@ -1,0 +1,153 @@
+@switch (state().status) {
+  @case ('error') {
+    <jb-workspace-header heading="My business" subtitle="" current="products" />
+    <div style="margin-top: var(--space-6)">
+      <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load your products">
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>{{ errorReference() }}</code
+        >.
+        <button slot="actions" class="btn btn--primary" type="button" (click)="load()">
+          Try again
+        </button>
+        <a slot="actions" class="btn" href="/my-business">Back to overview</a>
+      </div>
+    </div>
+  }
+  @case ('loading') {
+    <jb-workspace-header heading="My business" subtitle="Loading…" current="products" />
+    <div style="margin-top: var(--space-6)">
+      <p class="visually-hidden" role="status">Loading your products…</p>
+      <ul class="rows" aria-hidden="true">
+        @for (item of skeleton; track item) {
+          <li class="row">
+            <span class="skeleton skeleton--thumb"></span>
+            <div class="row__body">
+              <span class="skeleton skeleton--text skeleton--w50"></span>
+              <span class="skeleton skeleton--text skeleton--w30"></span>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+  @case ('loaded') {
+    @if (products(); as list) {
+      <jb-workspace-header
+        [heading]="list.business"
+        [subtitle]="list.subtitle"
+        current="products"
+        [slug]="list.slug"
+        [live]="list.live"
+      />
+      <div style="margin-top: var(--space-6)">
+        <span class="visually-hidden" role="status">{{ announcement() }}</span>
+        @if (list.rows.length === 0) {
+          <div jb-empty-state icon="bag" heading="No products yet">
+            Add your first product and it shows on your public listing straight away.
+            <button slot="actions" class="btn btn--primary" type="button" (click)="add(list)">
+              Add product
+            </button>
+          </div>
+        } @else {
+          <div class="cluster cluster--between" style="margin-bottom: var(--space-4)">
+            <p class="text-muted">{{ summary() }}</p>
+            <button class="btn btn--primary" type="button" (click)="add(list)">
+              <svg jb-icon name="plus"></svg>Add product
+            </button>
+          </div>
+          @if (list.total >= list.max) {
+            <p class="text-muted" role="status">You can list up to {{ list.max }} products.</p>
+          }
+          <div class="table-wrap">
+            <table class="table">
+              <caption class="visually-hidden">
+                Your products
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Product</th>
+                  <th scope="col" class="num">Price</th>
+                  <th scope="col">Status</th>
+                  <th scope="col" class="num">Requests</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (
+                  product of list.rows;
+                  track product.id;
+                  let first = $first;
+                  let last = $last
+                ) {
+                  <tr>
+                    <td>
+                      <div class="cluster" style="flex-wrap: nowrap">
+                        <div
+                          jb-media-tile
+                          class="media--thumb"
+                          [tint]="tint(product)"
+                          [icon]="icon(product)"
+                        ></div>
+                        <span>{{ title(product) }}</span>
+                      </div>
+                    </td>
+                    <td class="num">{{ price(product) }}</td>
+                    <td>
+                      @if (product.soldOut) {
+                        <span class="badge badge--warning">Sold out</span>
+                      } @else {
+                        <span class="badge badge--success">Listed</span>
+                      }
+                    </td>
+                    <td class="num">{{ product.requests }}</td>
+                    <td>
+                      <div
+                        class="cluster cluster--end"
+                        style="flex-wrap: nowrap; gap: var(--space-1)"
+                      >
+                        <button
+                          class="btn btn--icon btn--ghost btn--sm"
+                          type="button"
+                          [attr.aria-label]="'Move ' + product.name + ' up'"
+                          [disabled]="first || moving()"
+                          (click)="move(list, product, -1)"
+                        >
+                          <svg jb-icon name="arrow-up"></svg>
+                        </button>
+                        <button
+                          class="btn btn--icon btn--ghost btn--sm"
+                          type="button"
+                          [attr.aria-label]="'Move ' + product.name + ' down'"
+                          [disabled]="last || moving()"
+                          (click)="move(list, product, 1)"
+                        >
+                          <svg jb-icon name="arrow-down"></svg>
+                        </button>
+                        <button
+                          class="btn btn--icon btn--ghost btn--sm"
+                          type="button"
+                          [attr.aria-label]="'Edit ' + product.name"
+                          (click)="edit(product)"
+                        >
+                          <svg jb-icon name="edit"></svg>
+                        </button>
+                        <button
+                          class="btn btn--icon btn--ghost btn--sm"
+                          type="button"
+                          [attr.aria-label]="'Delete ' + product.name"
+                          (click)="remove(product)"
+                        >
+                          <svg jb-icon name="trash"></svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+  }
+}
