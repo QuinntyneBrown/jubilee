@@ -202,3 +202,14 @@ Run on 10 November 2026, all from the repository root:
 | Mocks before vs after | all 271 mocks at 360 and 1280 px, both themes, old CSS vs system CSS | median change 0.1% of pixels: badge size, chip and tab colours, gold progress and focus details. `.media--ink` tiles are now a deeper neutral |
 
 Each token in `tokens.css` appears in the token table of exactly one foundation page (checked by script).
+
+Run again on 11 November 2026, after Log in and Sign up were redrawn (ADR 0038):
+
+| Check | Command | Result |
+|---|---|---|
+| Contrast, both themes | `python .claude/skills/extracting-design-systems/scripts/check_contrast.py docs/design-system/tokens/tokens.css` | 161 pairs passed, 0 failed. No pair was added: every text pair of the split frame was already listed |
+| Contrast of the pairs the change uses | the same script with `--pairs` on a list of 20 pairs, both themes | 40 passed. On ink: text 19.32:1, muted text 10.17:1. On the surface: title 19.32:1 light and 14.24:1 dark, muted text 8.10:1 and 9.35:1. Primary label 11.15:1. The gold underline of `.auth-link` is 1.73:1 on the surface and 1.55:1 on the canvas in light; it is not the sole carrier (the link is semibold and in the text colour) |
+| Structure | `python .claude/skills/extracting-design-systems/scripts/check_design_system.py docs/design-system` | 74 pages (53 components, 8 patterns), no error in any page; 3 errors in `assets/marketing.css` (raw `rgb()`), which this change does not touch |
+| No horizontal scroll | every page at 360px and 1280px in light and dark (Playwright) | 74 of 74 pages fit |
+| Screenshots reviewed | auth-layout, lockup, divider, form-field, text-field, button, checkbox, form-layout, inline-message, iconography and the forms pattern at 360 and 1280 px, light and dark | no overflow or clipped specimens; the split frame keeps the proportions of the design reference |
+| Live contrast badges | every `data-contrast` cell on every page, both themes | all pass except two older failures, on pages this change touched only for the navigation: `--color-fg-on-accent` on `--color-info-solid` (3.74:1, color page, light) and `--color-border-on-brand` on `--color-bg-brand` (1.57:1 against a 3:1 minimum, hero-band page) |
