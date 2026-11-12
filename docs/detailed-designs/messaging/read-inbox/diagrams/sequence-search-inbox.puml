@@ -30,7 +30,7 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 member -> search : Type "trevor" in "Search messages"
-search -> search : Wait 250 ms after the last keystroke so the list shows within 300 ms (L2-059)
+search -> search : Wait 150 ms after the last keystroke so the list shows within 300 ms (L2-059)
 search -> store : load(term)
 store -> client : inbox(term)
 client -> controller : GET /api/conversations?q=trevor

@@ -59,7 +59,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
   Open a business and tap Message to ask a question, get a quote or book a time.
   Replies land here." with the action "Browse businesses".
 - **Search** — `jb-search-field`, labelled "Search messages". `InboxList` waits
-  `250 ms` after the last keystroke before it asks, so the filtered list appears
+  `150 ms` after the last keystroke before it asks, so the filtered list appears
   within `300 ms`; pressing Enter searches at once. With no match it shows "No
   messages match “roofing”. Check the spelling, or search by business name."
   with "Clear search"; the term is quoted in double quotation marks.

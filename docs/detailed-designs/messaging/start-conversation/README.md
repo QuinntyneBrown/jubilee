@@ -36,7 +36,8 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
   `/b/:slug/message`, which is the same route with the dialog open, so opening
   the dialog neither reloads the page nor counts another view (ADR 0014). The
   page opens `NewMessageDialog` with `NewMessageData`: the listing's `slug`, the
-  `businessName`, the `ownerFirstName` and the `intro`. The intro carries the
+  `businessName`, `answeredBy` (the owner's first name, or the business when no
+  owner is named) and the `intro`. The intro carries the
   reply-time hint ("Trevor Chew usually replies within a day."), taken from the
   listing's stored median first-reply band, the same value the listing page
   shows as "Replies". With too few replies the intro says who the message goes

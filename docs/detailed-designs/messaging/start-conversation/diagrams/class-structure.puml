@@ -24,7 +24,7 @@ class NewMessageDialog <<CDK dialog>> {
 class NewMessageData <<TypeScript>> {
   +slug: string
   +businessName: string
-  +ownerFirstName: string
+  +answeredBy: string
   +intro: string
 }
 enum View {

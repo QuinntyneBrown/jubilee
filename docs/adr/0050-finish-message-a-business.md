@@ -106,6 +106,14 @@ a real scanner in a test.
 - **An attempt on someone else's conversation is logged (L2-133 AC2).** The exception middleware
   logs a `404` whose code is `conversation_not_found` at `Warning`, with the caller's subject and
   the path through `LoggedPath` (ADR 0049), as it already logs a `403`.
+- **A web address in a message stays text.** L2-063 AC4 asked for links "rendered as text with
+  `rel`", which says two things at once. Messages are shown as the text that was typed, with no
+  link, which is the safer reading and what was built; the criterion now says so, and keeps the
+  `rel` rule for the day addresses are made into links.
+- **Every limit is said in the same words (L2-137 AC1).** A send, a first message or a report
+  that meets its limit says "You’re doing that a lot. Try again in {n} minutes.", with the wait
+  from `Retry-After` (`tryAgainIn`), in the bubble and in the two dialogs. The search waits 150 ms
+  after the last keystroke, not 250, to stay well inside the 300 ms of L2-059 AC1.
 - **Small corrections to what is said.** The dialog's hint names the owner's first name
   ("Be specific and Trevor can answer in one reply."); the dialog stops input at 4,000 characters
   and counts down the last 200; an empty conversation says "Say hello to Trevor" and "tell them

@@ -168,7 +168,8 @@ ADR 0050.
   index on `(SenderSubject, IdempotencyKey)` of `Messages`: a repeat answers the
   original message and writes nothing (L2-132, ADR 0014). No middleware takes
   part. The handler refuses more than 30 messages in 10 minutes per member with
-  `429` and `Retry-After` (L2-137).
+  `429` and `Retry-After` (L2-137); the bubble says "Not sent. You’re doing that
+  a lot. Try again in {n} minutes.".
 - **`UploadAttachmentCommandHandler`** — runs three steps in order and stops at
   the first failure (ADR 0050). First `ImageSanitizer.Sanitize` decides the type
   from the bytes, accepts JPEG and PNG up to `5 MB` and `8,000` pixels wide, and
@@ -206,7 +207,10 @@ ADR 0050.
 - **Signed link** — a stored photo is served only from
   `/api/attachments/{id}?expires=…&sig=…` by `AttachmentsController`, where `sig`
   is an HMAC-SHA256 of the id and the expiry made by `IAttachmentLinks`
-  (`AttachmentLinks`) with `Attachments:SigningKey`. The link is valid for
+  (`AttachmentLinks`) with `Attachments:SigningKey`. Without that setting the
+  Development environment signs with a key that is in the source code, and every
+  other environment makes a random key when it starts, so a link is never signed
+  with a key anyone can read (ADR 0050). The link is valid for
   `5 minutes` and is served with `X-Content-Type-Options: nosniff` and
   `Cache-Control: private, no-store` (ADR 0014). Each message read carries a new
   link. `GetAttachmentQueryHandler` checks the signature and the expiry, then
