@@ -1,0 +1,39 @@
+@startuml
+title UML sequence behaviour — Open a screen of the admin application
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Staff member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "staffGuard" as guard
+  participant "StaffSessionService" as session
+  participant "AdminRoot and jb-admin-bar" as shell
+  participant "VerificationQueuePage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "StaffSessionController" as ctrl
+  participant "AdminVerificationsController" as admin
+end box
+actor -> guard : Open /verifications
+guard -> session : load()
+session -> ctrl : GET /api/staff/session
+alt no staff session
+  ctrl --> session : 401 sign_in_required
+  session --> guard : null
+  guard --> actor : Redirect to /sign-in?returnUrl=/verifications (L2-188)
+else staff session
+  ctrl --> session : Name - roles - verificationCount (L2-190)
+  session --> guard : StaffMemberView
+  guard --> shell : Activate the route
+  shell --> actor : Admin bar with "Verifications {n}" - Reports - Featured (L2-098, L2-188)
+  alt staff member holds verifier
+    page -> admin : GET /api/admin/verifications
+    admin --> page : Queue
+    page --> actor : Verification queue
+  else only admin
+    page --> actor : "Nothing here for your role" (L2-188)
+  end
+end
+@enduml

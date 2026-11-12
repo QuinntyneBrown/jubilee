@@ -1,0 +1,35 @@
+@startuml
+title UML sequence behaviour — A staff request through the admin host
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Staff member" as actor
+box "Frontend — Admin host" #E0F2FE
+  participant "App Service front end" as front
+  participant "server.js (admin)" as proxy
+end box
+box "Backend — App host" #D1FADF
+  participant "App Service front end" as appfront
+  participant "server.js (app)" as appproxy
+end box
+box "Backend — Jubilee API" #ECFDF3
+  participant "ForwardedHeaders" as fwd
+  participant "StaffProxyMiddleware" as key
+  participant "StaffNetworkMiddleware" as net
+  participant "Staff endpoint" as ep
+end box
+actor -> front : GET admin.jubilee.to/api/admin/verifications
+front -> front : Access restriction - allow-list (L2-192)
+front -> proxy : X-Forwarded-For ends with the staff address
+proxy -> appfront : X-Jubilee-Client-Address = staff address - X-Jubilee-Proxy-Key
+appfront -> appproxy : X-Forwarded-For ends with the admin host's outbound address
+appproxy -> fwd : From loopback
+fwd -> key : Remote address = admin outbound address
+key -> key : Proxy key matches (fixed time)
+key -> net : Remote address = staff address - both headers removed
+net -> net : Staff address in StaffAccess:AllowedNetworks
+net -> ep : Continue to authentication (L2-191)
+ep --> actor : Answer
+@enduml

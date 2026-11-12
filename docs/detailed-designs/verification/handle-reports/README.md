@@ -22,7 +22,7 @@ it, and each such access is written to the audit log.
 
 The slice adds two admin pages, one controller, three handlers and the outbox
 handling in `Jubilee Worker`. No mocks exist for the admin reports pages; their
-routes are `/admin/reports` and `/admin/reports/:id`; the mocks are `pages/admin-reports`, `pages/admin-report`
+routes are `/reports` and `/reports/:id` in the admin application (`admin/run-admin-application`); the mocks are `pages/admin-reports`, `pages/admin-report`
 and `dialogs/report-action`, and the copy is in them (ADR 0033).
 
 - **`AdminReportsPage`** — Angular page that lists reports with listing, reason,
@@ -36,7 +36,7 @@ and `dialogs/report-action`, and the copy is in them (ADR 0033).
   and, for the two message actions, the message text.
 - **`AdminReportsController`** — exposes `GET /api/admin/reports`,
   `POST /api/admin/reports/{id}/open` and
-  `POST /api/admin/reports/{id}/actions` under `VerifierPolicy`. A member
+  `POST /api/admin/reports/{id}/actions` under `RequiresVerifier`, the staff policy (`security/authorize-staff-requests`). A member
   without the `verifier` role receives HTTP 403.
 - **`GetReportsQueryHandler`** — returns `ReportListItem` rows. It sets
   `Overdue` when `BusinessDayCalendar` reports more than one business day since

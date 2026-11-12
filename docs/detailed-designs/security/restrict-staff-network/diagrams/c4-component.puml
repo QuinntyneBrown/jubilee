@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Restrict staff access by network
+
+Container_Boundary(api, "Jubilee API") {
+  Component(fwd, "ForwardedHeaders", "ASP.NET Core middleware", "Trusts the last X-Forwarded-For entry from loopback only")
+  Component(proxy, "StaffProxyMiddleware", "Middleware", "Uses X-Jubilee-Client-Address when the proxy key matches - strips both")
+  Component(net, "StaffNetworkMiddleware", "Middleware", "403 NETWORK_NOT_ALLOWED on /api/admin and /api/staff")
+  Component(networks, "StaffNetworks", "Options", "Allow-list from StaffAccess:AllowedNetworks")
+  Component(authn, "Authentication and authorization", "ASP.NET Core", "Runs only after the network check")
+}
+Rel(fwd, proxy, "Then")
+Rel(proxy, net, "Then")
+Rel(net, networks, "Asks")
+Rel(net, authn, "Then, when allowed")
+@enduml

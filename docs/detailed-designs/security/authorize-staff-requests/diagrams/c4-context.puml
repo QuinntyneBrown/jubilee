@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Authorize staff requests
+
+Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(member, "Member", "Signed in to the app")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+Rel(staff, jubilee, "Calls /api/admin/* with a staff session", "HTTPS")
+Rel(member, jubilee, "Is refused on /api/admin/* - 403 STAFF_SESSION_REQUIRED", "HTTPS")
+@enduml

@@ -15,6 +15,7 @@ the names the designs introduce.
 | Container | Technology | Responsibility |
 |---|---|---|
 | `Jubilee Web` | Angular single-page application | Pages, dialogs and notifications from `docs/mocks/` |
+| `Jubilee Admin Web` | Angular single-page application | The admin application: staff sign-in and the verification and moderation screens (ADR 0040) |
 | `Jubilee service worker` | Angular service worker | Offline cache and outgoing message queue |
 | `Jubilee API` | ASP.NET Core | JSON API under `/api`, real-time hub, authentication, authorization |
 | `Jubilee Worker` | .NET worker service | Background jobs, outbox dispatch, e-mail sending, search indexing |
@@ -38,6 +39,12 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Announce to screen readers](accessibility/announce-to-screen-readers/README.md) | `L2-157`, `L2-159`, `L2-066` |
 | [Operate by keyboard](accessibility/operate-by-keyboard/README.md) | `L2-158`, `L2-162`, `L2-112`, `L2-130` |
 
+### admin
+
+| Feature | L2 requirements cited |
+|---|---|
+| [Run the admin application](admin/run-admin-application/README.md) | `L2-188`, `L2-194`, `L2-098` |
+
 ### accounts
 
 | Feature | L2 requirements cited |
@@ -53,6 +60,7 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Manage session](accounts/manage-session/README.md) | `L2-010`, `L2-011`, `L2-116`, `L2-135` |
 | [Reset password](accounts/reset-password/README.md) | `L2-008`, `L2-009`, `L2-134`, `L2-140`, `L2-141`, `L2-137` |
 | [Sign in](accounts/sign-in/README.md) | `L2-006`, `L2-007`, `L2-012`, `L2-141`, `L2-137`, `L2-010`, `L2-187` |
+| [Sign in as staff](accounts/sign-in-as-staff/README.md) | `L2-189`, `L2-190`, `L2-193`, `L2-098` |
 
 ### church-reference
 
@@ -138,7 +146,7 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 |---|---|
 | [Back up and recover](operations/back-up-and-recover/README.md) | `L2-177`, `L2-180` |
 | [Deliver e-mail](operations/deliver-email/README.md) | `L2-179`, `L2-004`, `L2-068` |
-| [Deploy safely](operations/deploy-safely/README.md) | `L2-178`, `L2-133`, `L2-180` |
+| [Deploy safely](operations/deploy-safely/README.md) | `L2-178`, `L2-195`, `L2-133`, `L2-180` |
 | [Observe the system](operations/observe-the-system/README.md) | `L2-175`, `L2-176`, `L2-118` |
 | [Record audit log](operations/record-audit-log/README.md) | `L2-180`, `L2-133`, `L2-150`, `L2-098` |
 | [Run background jobs](operations/run-background-jobs/README.md) | `L2-182`, `L2-175` |
@@ -202,8 +210,10 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 |---|---|
 | [Assure security](security/assure-security/README.md) | `L2-142`, `L2-143`, `L2-144`, `L2-180`, `L2-133` |
 | [Authorize requests](security/authorize-requests/README.md) | `L2-133`, `L2-143` |
+| [Authorize staff requests](security/authorize-staff-requests/README.md) | `L2-191`, `L2-098`, `L2-133` |
 | [Limit abuse](security/limit-abuse/README.md) | `L2-137`, `L2-141`, `L2-007`, `L2-008`, `L2-143` |
 | [Protect credentials and sessions](security/protect-credentials-and-sessions/README.md) | `L2-134`, `L2-135`, `L2-010`, `L2-009` |
+| [Restrict staff access by network](security/restrict-staff-network/README.md) | `L2-192`, `L2-189` |
 | [Secure transport and tokens](security/secure-transport-and-tokens/README.md) | `L2-139`, `L2-140`, `L2-136`, `L2-080` |
 | [Secure uploads](security/secure-uploads/README.md) | `L2-138`, `L2-133`, `L2-135` |
 | [Validate input](security/validate-input/README.md) | `L2-136`, `L2-139`, `L2-002` |

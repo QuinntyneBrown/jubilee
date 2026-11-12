@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Sign in as staff
+
+Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(owner, "Jubilee administrator", "Runs the CLI with the database connection")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(entra, "Microsoft Entra ID", "Staff directory - OpenID Connect provider with a second factor")
+Rel(staff, jubilee, "Presses Sign in with your staff account in", "HTTPS")
+Rel(staff, entra, "Signs in with a second factor at", "HTTPS")
+Rel(jubilee, entra, "Redirects to - exchanges the code with - reads signing keys from", "OpenID Connect")
+Rel(owner, jubilee, "Grants and revokes staff roles with jubilee staff", "CLI")
+@enduml

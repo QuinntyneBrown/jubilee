@@ -1,0 +1,38 @@
+@startuml
+title UML sequence behaviour — An admin-only request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Caller" as actor
+box "Backend — Jubilee API" #D1FADF
+  participant "Authorization (StaffPolicies)" as authz
+  participant "Staff scheme" as staff
+  participant "Default scheme" as member
+  participant "AdminVerificationsController" as ctrl
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> authz : GET /api/admin/verifications
+authz -> staff : Authenticate
+staff -> db : Find the key within Kind staff
+alt staff session with the verifier role
+  authz -> ctrl : Allowed
+  ctrl --> actor : 200 queue
+else staff session without the role
+  authz -> staff : Forbid
+  staff --> actor : 403 FORBIDDEN (L2-191)
+else no staff session
+  authz -> staff : Challenge
+  staff -> member : Authenticate the member session
+  alt member session
+    staff --> actor : 403 STAFF_SESSION_REQUIRED (L2-191)
+  else ended staff cookie
+    staff --> actor : 401 SESSION_EXPIRED
+  else nothing
+    staff --> actor : 401 sign_in_required (L2-191)
+  end
+end
+@enduml

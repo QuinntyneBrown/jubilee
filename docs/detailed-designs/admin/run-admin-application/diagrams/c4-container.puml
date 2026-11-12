@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Run the admin application
+
+Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(member, "Member", "Uses the app")
+System_Boundary(j, "Jubilee") {
+  Container(admin, "Jubilee Admin Web", "Angular SPA on admin.jubilee.to", "Staff sign-in and the five staff screens")
+  Container(adminhost, "Admin host", "Node server.js on jubilee-to-admin", "Serves the admin application - proxies /api with the caller's address")
+  Container(web, "Jubilee Web", "Angular SPA on app.jubilee.to", "Member and owner journeys - the moved page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Staff and member endpoints")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings - reports - staff accounts - sessions")
+}
+System_Ext(entra, "Microsoft Entra ID", "Staff directory - OpenID Connect provider with a second factor")
+Rel(staff, adminhost, "Opens", "HTTPS")
+Rel(adminhost, admin, "Serves")
+Rel(admin, adminhost, "Calls /api", "JSON/HTTPS")
+Rel(adminhost, api, "Proxies /api with X-Jubilee-Client-Address", "HTTPS")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls member endpoints", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, entra, "Exchanges the code", "OpenID Connect")
+@enduml

@@ -1,0 +1,32 @@
+@startuml
+title UML sequence behaviour — Sign out and staff session end
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Staff member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "jb-admin-bar" as bar
+  participant "sessionExpiryInterceptor" as expiry
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "StaffSessionController" as ctrl
+  participant "Staff scheme" as scheme
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> bar : Press "Sign out"
+bar -> ctrl : DELETE /api/staff/session
+ctrl -> scheme : SignOut
+scheme -> db : End the staff session
+ctrl --> bar : 204 and the cookie removed
+bar --> actor : /signed-out "You've signed out of the admin application." (L2-190)
+== later ==
+actor -> scheme : Any request after 30 min idle or 8 h
+scheme -> db : Find the key within Kind staff
+db --> scheme : Session expired - ended now
+scheme --> expiry : 401 SESSION_EXPIRED
+expiry --> actor : /session-expired "Your staff session ended." (L2-190)
+@enduml

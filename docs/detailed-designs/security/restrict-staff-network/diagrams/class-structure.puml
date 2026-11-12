@@ -1,0 +1,37 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Restrict staff access by network
+
+class StaffAccessOptions {
+  +string[] AllowedNetworks
+  +string? ProxyKey
+}
+class StaffNetworks {
+  -IPNetwork[] networks
+  +{static} Parse(entries: string[]): StaffNetworks
+  +Allows(address: IPAddress?): bool
+}
+class StaffNetworkMiddleware {
+  +InvokeAsync(context: HttpContext): Task
+  -IsStaffPath(path: PathString): bool
+}
+class StaffProxyMiddleware {
+  +ProxyKeyHeader = "X-Jubilee-Proxy-Key"
+  +ClientAddressHeader = "X-Jubilee-Client-Address"
+  +InvokeAsync(context: HttpContext): Task
+}
+class ForwardedHeadersOptions
+StaffNetworks ..> StaffAccessOptions : built from
+StaffNetworkMiddleware --> StaffNetworks : asks
+StaffProxyMiddleware ..> StaffAccessOptions : reads ProxyKey
+ForwardedHeadersOptions ..> StaffProxyMiddleware : runs before
+@enduml

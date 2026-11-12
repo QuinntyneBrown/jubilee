@@ -21,9 +21,9 @@ actions and are written to the audit log (`L2-180`).
 
 The slice has an admin write path and a public read path.
 
-- **`FeaturedBusinessesPage`** — Angular admin page. It lets a verifier search
+- **`FeaturedBusinessesPage`** — Angular page of the admin application (`admin/run-admin-application`). It lets a verifier search
   live listings, order up to five of them, and pick the start date. It stops the
-  selection at five. No mock exists; its route is `/admin/featured`; the mock
+  selection at five. No mock exists; its route is `/featured` in the admin application; the mock
   is `pages/admin-featured` and the copy is in it (ADR 0033).
 - **`FeaturedStrip`** — Angular component used by `WelcomePage` and
   `BrowsePage`. It renders "Featured this week" with one `BusinessCard` per
@@ -31,7 +31,7 @@ The slice has an admin write path and a public read path.
 - **`AdminApi`** and **`DirectoryApi`** — typed HTTP clients for the admin
   write and the public read.
 - **`AdminFeaturedController`** — exposes
-  `PUT /api/admin/featured-weeks/{startDate}` under `VerifierPolicy`. The PUT
+  `PUT /api/admin/featured-weeks/{startDate}` under `RequiresVerifier`, the staff policy (`security/authorize-staff-requests`). The PUT
   replaces the whole selection for that start date, so a repeated request has
   no further effect.
 - **`SetFeaturedWeekCommand`** and **`SetFeaturedWeekCommandValidator`** — carry

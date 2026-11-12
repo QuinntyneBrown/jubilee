@@ -1,0 +1,22 @@
+@startuml
+title UML sequence behaviour — Follow an old admin link in the app
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Anyone" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Router" as router
+  participant "AdminMovedPage" as page
+end box
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "staffGuard" as guard
+end box
+actor -> router : Open /admin/verifications/{id}
+router -> page : Route admin/** (shell app)
+page -> page : Map the path to /verifications/{id} - any other path to /verifications (L2-194)
+page --> actor : "This page has moved" - "Open the admin application" - "Back to browse"
+actor -> guard : Follow ADMIN_URL + /verifications/{id}
+guard --> actor : Staff sign-in or the review (L2-188)
+@enduml

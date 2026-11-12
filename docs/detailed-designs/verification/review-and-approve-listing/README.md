@@ -3,7 +3,8 @@
 ## Overview
 
 A submitted listing becomes public only after a member of the verification team
-approves it. This feature covers the review page at `/admin/verifications/:id`
+approves it. This feature covers the review page at `/verifications/:id` in the admin application
+(`admin/run-admin-application`)
 and the "Approve and publish" decision. The other two decisions, requesting
 changes and declining, belong to the `request-changes` feature.
 
@@ -26,7 +27,7 @@ the same listing, the second decision is refused with HTTP 409.
 The feature is a vertical slice from the review page to the database, with
 `Jubilee Worker` carrying the side effects of approval.
 
-- **`VerificationReviewPage`** — Angular page at `/admin/verifications/:id`. It
+- **`VerificationReviewPage`** — Angular page of the admin application at `/verifications/:id`. It
   shows the name, the line "{category} · submitted {when} · {stage}", the
   actions "Request changes" and "Approve and publish", the Owner panel (name,
   e-mail with confirmation status, member since, other listings), the Church
@@ -50,7 +51,7 @@ The feature is a vertical slice from the review page to the database, with
 - **`AdminVerificationsController`** — exposes
   `GET /api/admin/verifications/{id}`,
   `PUT /api/admin/verifications/{id}/checklist/{item}` and
-  `POST /api/admin/verifications/{id}/approve` under `VerifierPolicy`. It
+  `POST /api/admin/verifications/{id}/approve` under `RequiresVerifier`, the staff policy (`security/authorize-staff-requests`). It
   refuses the approve command with HTTP 403 when the caller owns the listing.
 - **`GetListingReviewQueryHandler`** — assembles `ListingReviewDto` from the
   listing, owner, church reference, flags and ticks. It appends an `AuditEntry`
@@ -88,7 +89,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-100` | `L1-014` | The system shall show one listing to review at `/admin/verifications/:id` with the Owner panel, the private Church reference panel, submission flags, a checklist whose ticks are saved with the reviewer and time, and the preview "How members see you". The system shall disable approval while the listing is "Waiting on reference" and shall refuse a second decision on the same listing with HTTP 409. |
+| `L2-100` | `L1-014` | The system shall show one listing to review at `/verifications/:id` in the admin application with the Owner panel, the private Church reference panel, submission flags, a checklist whose ticks are saved with the reviewer and time, and the preview "How members see you". The system shall disable approval while the listing is "Waiting on reference" and shall refuse a second decision on the same listing with HTTP 409. |
 | `L2-101` | `L1-014` | The system shall confirm approval in a dialog, shall require a note when a checklist item is unticked, and on confirmation shall make the listing live and verified, show it in public lists within 60 seconds, and e-mail and notify the owner. The decision shall be written to the audit log with the verifier, time and checklist state, and the 90-day deletion clock for the reference answer shall start. |
 | `L2-098` | `L1-014` | A verifier who owns a listing shall not approve or request changes on it, and every admin API shall return HTTP 403 to a member without the `verifier` role. |
 | `L2-146` | `L1-020` | A reference's answer, name, role and note shall be visible only to verifiers through the review screen, and shall be permanently deleted 90 days after a verification decision. |

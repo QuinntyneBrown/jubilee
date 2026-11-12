@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Sign in as staff with a second factor
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Staff member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "StaffSignInPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "StaffSignInController" as ctrl
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "CompleteStaffSignInCommandHandler" as handler
+  participant "StaffMember" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IStaffIdentityClient" as oidc
+  database "Cache" as cache
+  database "Jubilee database" as db
+end box
+participant "Microsoft Entra ID" as entra
+actor -> page : Press "Sign in with your staff account"
+page --> actor : "Signing in…" (L2-189)
+page -> ctrl : GET /api/staff/sign-in/start?returnUrl=...
+ctrl -> cache : Save OidcTransaction - state - nonce - PKCE verifier
+ctrl --> actor : 302 to Entra with prompt=login and code challenge
+actor -> entra : Password and second factor
+entra --> actor : 302 to /api/staff/sign-in/callback with code and state
+actor -> ctrl : GET /api/staff/sign-in/callback
+ctrl -> cache : Consume the transaction
+alt unknown state - provider error - invalid token
+  ctrl --> actor : 302 to /sign-in?error=sso (JB-STAFF-503)
+else cancelled at Entra
+  ctrl --> actor : 302 to /sign-in?error=cancelled
+else token valid
+  ctrl -> oidc : Redeem(code, verifier, nonce)
+  oidc -> entra : Token request
+  entra --> oidc : ID token with amr
+  oidc --> ctrl : StaffIdentity
+  ctrl -> handler : CompleteStaffSignInCommand
+  alt amr lacks mfa
+    handler --> ctrl : NoSecondFactor
+    ctrl --> actor : 302 to /sign-in?error=second-factor (L2-189)
+  else no staff account with a role
+    handler -> db : Find by tenant and object - then by e-mail
+    handler --> ctrl : NotStaff
+    ctrl --> actor : 302 to /sign-in?error=not-staff (L2-189)
+  else staff account
+    handler -> entity : BindTo(tenant, object) on first sign-in (L2-193)
+    handler -> db : Save
+    handler --> ctrl : SignedIn with roles and matching member
+    ctrl -> db : Store a new Staff session - Kind staff (L2-190)
+    ctrl --> actor : 302 with __Host-jubilee.staff to the return path
+  end
+end
+@enduml

@@ -1,0 +1,57 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Run the admin application
+
+class StaffMemberView <<view model>> {
+  +string displayName
+  +string initials
+  +string email
+  +StaffRole[] roles
+  +number verificationCount
+}
+enum StaffRole {
+  verifier
+  admin
+}
+class StaffSessionService {
+  +member: Signal<StaffMemberView | null>
+  +isVerifier: Signal<boolean>
+  +load(): Promise<StaffMemberView | null>
+  +signOut(): Observable<void>
+  +clear(): void
+}
+interface StaffSessionApi {
+  +current(): Observable<StaffMemberView>
+  +signOut(): Observable<void>
+  +signInUrl(returnUrl: string): string
+}
+class AdminRoot {
+  #routeData: Signal<AdminRouteData>
+  #signOut(): void
+}
+class AdminBar <<jb-admin-bar>> {
+  +name: string
+  +roles: StaffRole[]
+  +current: string | null
+  +verificationCount: number
+  +signOut: OutputEmitter<void>
+}
+class AdminMovedPage {
+  #target: string
+}
+StaffSessionService --> StaffSessionApi : uses
+StaffSessionService o-- StaffMemberView : holds
+StaffMemberView --> StaffRole
+AdminRoot --> StaffSessionService : reads
+AdminRoot ..> AdminBar : composes
+AdminMovedPage ..> "ADMIN_URL" : reads token
+@enduml
