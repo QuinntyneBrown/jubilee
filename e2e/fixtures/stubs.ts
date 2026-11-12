@@ -19,6 +19,7 @@ import { OTHER_BUSINESSES, SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
+import { stubQuote } from './quote';
 import type { StubName } from './routes';
 import { joannaSession, keepDraft, stubSession as stubSignedInSession } from './session';
 
@@ -485,6 +486,9 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubListingDrafts(page);
     case 'order':
       return stubOrder(page);
+    case 'quote':
+      // The mock shows the phone of the member's profile already filled in (L2-045 AC7).
+      return stubQuote(page, { phone: '416-555-0142' });
     case 'editor':
       return stubMyBusiness(page);
     case 'editor-photos':

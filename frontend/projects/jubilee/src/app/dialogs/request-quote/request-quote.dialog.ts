@@ -42,8 +42,8 @@ type FieldName = 'description' | 'neededBy' | 'phone';
 const SUBMIT_TIMEOUT_MS = 10_000;
 
 /**
- * RequestQuoteDialog (L2-045): describe what is needed, optionally when, a budget and a phone,
- * and send it. Nothing is charged. A retry reuses the idempotency key (L2-132); each message sits
+ * RequestQuoteDialog (L2-045): describe what is needed, optionally when, a budget and a phone
+ * (prefilled from the profile), and send it. Nothing is charged. A retry reuses the idempotency key (L2-132); each message sits
  * under its field and focus goes to the first invalid one (L2-126).
  */
 @Component({
@@ -91,6 +91,9 @@ export class RequestQuoteDialog implements OnInit {
     this.api.quoteOptions(this.data.slug).subscribe({
       next: (options) => {
         this.options.set(options);
+        // The profile's phone is where the field starts (L2-045 AC7). The member can change or
+        // clear it; it is sent with this request and never saved back to the profile.
+        this.phone.set(options.phone ?? '');
         this.view.set('form');
         // The form appears after the dialog opened, so focus goes to the first field here.
         setTimeout(() => this.host.nativeElement.querySelector<HTMLElement>('#d-what')?.focus());

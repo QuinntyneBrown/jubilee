@@ -81,6 +81,61 @@ public sealed class QuoteTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
         Assert.Equal("within a few hours", options.GetProperty("usuallyReplies").GetString());
     }
 
+    // L2-045 AC7: a member with a phone in the profile, signed in as that member.
+    private async Task<(Member Member, HttpClient Client)> AMember(string firstName, string? phone)
+    {
+        var member = Member.Join(EmailAddress.TryParse($"{firstName.ToLowerInvariant()}@example.com")!, firstName, "Mensah", null, "hash", ListingMother.Now);
+        member.ConfirmEmail();
+        member.UpdateProfile(firstName, "Mensah", phone, null, null, null, null, ListingMother.Now);
+        await _factory.Arrange(member);
+        return (member, _factory.CreateMemberClient($"{firstName} Mensah", member.Id.ToString()));
+    }
+
+    // L2-045 AC7
+    [Fact]
+    public async Task L2_045_AC7_the_options_carry_the_phone_of_the_members_profile_written_with_dashes()
+    {
+        var (_, ruth) = await AMember("Ruth", "4165550142");
+
+        var options = await _factory.GetJson("/api/listings/luzandre-com/quote", ruth);
+
+        Assert.Equal("416-555-0142", options.GetProperty("phone").GetString());
+    }
+
+    // L2-045 AC7
+    [Fact]
+    public async Task L2_045_AC7_a_member_with_no_phone_in_the_profile_gets_none_and_nobody_gets_another_members()
+    {
+        await AMember("Ruth", "4165550142");
+        var (_, esther) = await AMember("Esther", null);
+
+        var without = await _factory.GetJson("/api/listings/luzandre-com/quote", esther);
+        var noRecord = await _factory.GetJson("/api/listings/luzandre-com/quote", Joanna());
+
+        Assert.Equal(JsonValueKind.Null, without.GetProperty("phone").ValueKind);
+        Assert.Equal(JsonValueKind.Null, noRecord.GetProperty("phone").ValueKind);
+    }
+
+    // L2-045 AC7: the number sent goes with the request only
+    [Theory]
+    [InlineData("647-555-0199", "6475550199")]
+    [InlineData(null, null)]
+    public async Task L2_045_AC7_a_phone_changed_or_cleared_in_the_dialog_is_kept_on_the_request_and_the_profile_stays(string? sent, string? stored)
+    {
+        var (member, ruth) = await AMember("Ruth", "4165550142");
+
+        var response = await Ask(ruth, phone: sent);
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        await _factory.WithDb(async db =>
+        {
+            Assert.Equal(stored, (await db.Requests.AsNoTracking().SingleAsync()).Phone);
+            Assert.Equal("4165550142", (await db.Members.AsNoTracking().SingleAsync(m => m.Id == member.Id)).Phone);
+        });
+        var options = await _factory.GetJson("/api/listings/luzandre-com/quote", ruth);
+        Assert.Equal("416-555-0142", options.GetProperty("phone").GetString());
+    }
+
     [Fact]
     public async Task L2_045_the_options_of_a_business_that_is_not_listed_are_not_found()
     {

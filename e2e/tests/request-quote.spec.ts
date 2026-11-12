@@ -1,5 +1,6 @@
 import { expect, test } from '../fixtures/jb-test';
 import { stubQuote } from '../fixtures/quote';
+import { joannaSession, keepDraft, stubSession } from '../fixtures/session';
 import { BusinessPage } from '../pages/business.page';
 import { RequestQuoteDialog } from '../pages/messages.page';
 import { SignInRequiredDialog } from '../pages/sign-in-required.dialog';
@@ -143,6 +144,107 @@ test.describe('request a quote (L2-045)', () => {
     });
     expect(fake.sends[0].idempotencyKey).toMatch(/^[\w-]{8,}$/);
   });
+
+  test('AC7: the phone of the profile is already filled in and is sent as it is', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new RequestQuoteDialog(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubQuote(page, { phone: '416-555-0142' });
+    await jb.goto('/b/luzandre/quote');
+
+    await expect(dialog.phone).toHaveValue('416-555-0142');
+    await expect(dialog.phone).toBeEditable();
+    await expect(dialog.what).toBeFocused();
+
+    await dialog.what.fill(NEED);
+    await dialog.send.click();
+
+    await expect(dialog.title).toHaveText('Quote request sent to Luzandre.com');
+    expect(fake.sends[0].phone).toBe('416-555-0142');
+    expect(fake.accountWrites).toEqual([]);
+  });
+
+  test('AC7: a phone changed in the dialog goes with the request and the profile is not written', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new RequestQuoteDialog(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubQuote(page, { phone: '416-555-0142' });
+    await jb.goto('/b/luzandre/quote');
+    await expect(dialog.phone).toHaveValue('416-555-0142');
+    await dialog.what.fill(NEED);
+
+    await dialog.phone.fill('647-555-0199');
+    await dialog.send.click();
+
+    await expect(dialog.title).toHaveText('Quote request sent to Luzandre.com');
+    expect(fake.sends[0].phone).toBe('647-555-0199');
+    expect(fake.accountWrites).toEqual([]);
+  });
+
+  test('AC7: a phone cleared in the dialog is not sent, by keyboard alone', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new RequestQuoteDialog(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubQuote(page, { phone: '416-555-0142' });
+    await jb.goto('/b/luzandre/quote');
+    await expect(dialog.what).toBeFocused();
+    await expect(dialog.phone).toHaveValue('416-555-0142');
+
+    await page.keyboard.type(NEED);
+    await dialog.tabTo(dialog.phone);
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.press('Delete');
+    await page.keyboard.press('Enter');
+
+    await expect(dialog.title).toHaveText('Quote request sent to Luzandre.com');
+    expect(fake.sends[0].phone).toBeNull();
+    expect(fake.accountWrites).toEqual([]);
+  });
+
+  test('AC7: a member with no phone in the profile finds the field empty', async ({ page, jb }) => {
+    const dialog = new RequestQuoteDialog(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    await stubQuote(page, { phone: null });
+    await jb.goto('/b/luzandre/quote');
+
+    await expect(dialog.what).toBeFocused();
+    await expect(dialog.phone).toHaveValue('');
+  });
+
+  for (const [kept, what] of [
+    ['647-555-0199', 'another number'],
+    ['', 'no number'],
+  ]) {
+    test(`AC7: a draft that kept ${what} is restored over the phone of the profile`, async ({
+      page,
+      jb,
+    }) => {
+      const dialog = new RequestQuoteDialog(page);
+      await new BusinessPage(page).setWidth(1280);
+      await stubSession(page, { signedIn: true });
+      await keepDraft(page, {
+        email: joannaSession.email,
+        address: '/b/luzandre/quote',
+        key: 'quote',
+        values: { description: NEED, neededBy: '', budget: '', phone: kept },
+      });
+      await stubQuote(page, { phone: '416-555-0142' });
+      await jb.goto('/b/luzandre/quote');
+
+      await expect(dialog.what).toHaveValue(NEED);
+      await expect(dialog.phone).toHaveValue(kept);
+    });
+  }
 
   test('without a known reply time the dialog says it will reply', async ({ page, jb }) => {
     const dialog = new RequestQuoteDialog(page);

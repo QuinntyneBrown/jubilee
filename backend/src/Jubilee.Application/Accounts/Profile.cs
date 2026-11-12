@@ -39,8 +39,12 @@ internal static partial class Profiles
 {
     public static AccountDto ToDto(Member m) => new(
         m.FirstName, m.LastName, m.Email, m.EmailStatus == EmailStatus.Confirmed ? "confirmed" : "unconfirmed",
-        m.Phone is { Length: 10 } p ? $"{p[..3]}-{p[3..6]}-{p[6..]}" : null,
+        FormatPhone(m.Phone),
         m.PostalCode, m.HomeChurch, m.HomeChurchAddress, m.Pronouns, m.CreatedAt, m.ProfileSavedAt, m.PasswordHash is not null, m.PasswordChangedAt);
+
+    /// <summary>The ten stored digits written like <c>416-555-0142</c>; null when there is no phone.</summary>
+    public static string? FormatPhone(string? digits) =>
+        digits is { Length: 10 } p ? $"{p[..3]}-{p[3..6]}-{p[6..]}" : null;
 
     [GeneratedRegex("[^0-9]")]
     private static partial Regex NotDigit();

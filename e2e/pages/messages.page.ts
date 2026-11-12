@@ -457,6 +457,15 @@ export class RequestQuoteDialog {
     this.cancel = this.root.getByRole('button', { name: 'Cancel' });
     this.viewRequest = this.root.getByRole('link', { name: 'View request' });
   }
+
+  /** Moves the focus with Tab until it is on `field`, as a keyboard user does. */
+  async tabTo(field: Locator): Promise<void> {
+    for (let presses = 0; presses < 8; presses++) {
+      if (await field.evaluate((element) => element === document.activeElement)) return;
+      await this.root.page().keyboard.press('Tab');
+    }
+    throw new Error('Tab did not reach the field');
+  }
 }
 
 /** The dialog that asks a shop for a product (L2-046). */

@@ -33,7 +33,7 @@ public sealed class ListingBookingController(ISender sender) : ControllerBase
 
     [HttpGet("quote")]
     public Task<QuoteOptionsDto> QuoteOptions(string slug, CancellationToken cancellationToken) =>
-        sender.Send(new GetQuoteOptionsQuery(slug), cancellationToken);
+        sender.Send(new GetQuoteOptionsQuery(User.ToViewer().Subject!, slug), cancellationToken);
 
     [HttpGet("products/{product}/order")]
     public Task<OrderOptionsDto> OrderOptions(string slug, string product, CancellationToken cancellationToken) =>
