@@ -17,13 +17,14 @@ public sealed record SanitizedImage(string ContentType, byte[] Content, ImagePro
 
 /// <summary>
 /// Decides what an upload is from its bytes, never from its name or the type the client claims,
-/// accepts only JPEG and PNG up to 5 MB and 8000 pixels wide, and drops everything that is not
+/// accepts only JPEG and PNG up to 5 MB and 8000 by 8000 pixels, and drops everything that is not
 /// picture data: EXIF and other metadata segments, text chunks and comments.
 /// </summary>
 public static class ImageSanitizer
 {
     public const int MaxBytes = 5 * 1024 * 1024;
     public const int MaxWidth = 8000;
+    public const int MaxHeight = 8000;
 
     private static readonly byte[] PngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 
@@ -66,7 +67,7 @@ public static class ImageSanitizer
             var type = System.Text.Encoding.ASCII.GetString(bytes, position + 4, 4);
             if (type == "IHDR" && length >= 13)
             {
-                if (ReadInt(bytes, position + 8) > MaxWidth)
+                if (ReadInt(bytes, position + 8) > MaxWidth || ReadInt(bytes, position + 12) > MaxHeight)
                 {
                     return SanitizedImage.Refused(ImageProblem.TooLarge);
                 }
@@ -147,8 +148,9 @@ public static class ImageSanitizer
                     return SanitizedImage.Refused(ImageProblem.NotAnImage);
                 }
 
+                var height = (bytes[position + 5] << 8) | bytes[position + 6];
                 var width = (bytes[position + 7] << 8) | bytes[position + 8];
-                if (width > MaxWidth)
+                if (width > MaxWidth || height > MaxHeight)
                 {
                     return SanitizedImage.Refused(ImageProblem.TooLarge);
                 }

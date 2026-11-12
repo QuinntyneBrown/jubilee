@@ -32,7 +32,7 @@ public sealed class FileMediaStore(string root) : IMediaStore
     private string Folder(string key) => System.IO.Path.Combine(root, Safe(key));
 
     private string Path(string key, int width, string format) =>
-        System.IO.Path.Combine(Folder(key), $"{width}.{(format == "webp" ? "webp" : "jpg")}");
+        System.IO.Path.Combine(Folder(key), $"{width}.{format switch { "webp" => "webp", "png" => "png", _ => "jpg" }}");
 
     private static string Safe(string key) =>
         key.All(Uri.IsHexDigit) ? key : throw new ArgumentException("A media key is hexadecimal.", nameof(key));

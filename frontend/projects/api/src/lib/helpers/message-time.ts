@@ -97,6 +97,18 @@ export function dayLabel(iso: string): string {
   return `${then.weekday} ${then.day} ${then.month}`;
 }
 
+const WEEKDAY = new Intl.DateTimeFormat('en-CA', { timeZone: ZONE, weekday: 'long' });
+
+/**
+ * The day an owner who is away is back (L2-062 AC1): the weekday ("Thursday") when it is within
+ * the next six days in Toronto, so that it names one day only, and "Mon 23 Nov" after that.
+ */
+export function awayDay(iso: string, now: Date): string {
+  const back = new Date(iso);
+  const days = Math.round((Date.parse(isoDay(back)) - Date.parse(isoDay(now))) / DAY);
+  return days <= 6 ? WEEKDAY.format(back) : dayLabel(iso);
+}
+
 /** "14 Oct 2026" (L2-015 "Changed"). */
 export function fullDate(iso: string): string {
   const then = parts(new Date(iso));

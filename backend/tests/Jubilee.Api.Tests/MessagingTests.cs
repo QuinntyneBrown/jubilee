@@ -157,6 +157,37 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         Assert.Equal("EMAIL_UNCONFIRMED", (await Json(response)).GetProperty("code").GetString());
     }
 
+    [Fact]
+    public async Task L2_005_AC2_a_member_with_an_unconfirmed_e_mail_cannot_write_or_attach_in_a_conversation_they_already_have()
+    {
+        await _factory.CreateClient().PostAsJsonAsync("/api/account/join", new
+        {
+            firstName = "Una", lastName = "Confirmed", email = "una@example.com", password = "correct horse 13",
+            homeChurch = (string?)null, agreementAccepted = true,
+        });
+        Member member = default!;
+        Listing legacy = default!;
+        await _factory.WithDb(async db =>
+        {
+            member = await db.Members.AsNoTracking().SingleAsync(m => m.EmailKey == "una@example.com");
+            legacy = await db.Listings.AsNoTracking().SingleAsync(l => l.Slug == "legacy-financial");
+        });
+        var conversation = Conversation.Start(legacy.Id, member.Id.ToString(), "Una Confirmed", _factory.Clock.GetUtcNow());
+        await _factory.Arrange(conversation);
+        var asUna = _factory.CreateMemberClient("Una Confirmed", member.Id.ToString());
+
+        var message = await Send(asUna, conversation.Id.ToString(), "Hello");
+        var photo = await Upload(asUna, conversation.Id.ToString(), Png());
+
+        Assert.Equal(HttpStatusCode.Forbidden, message.StatusCode);
+        Assert.Equal("EMAIL_UNCONFIRMED", (await Json(message)).GetProperty("code").GetString());
+        Assert.Equal(HttpStatusCode.Forbidden, photo.StatusCode);
+        Assert.Equal("EMAIL_UNCONFIRMED", (await Json(photo)).GetProperty("code").GetString());
+        Assert.Equal(0, await Count(db => db.Messages));
+        Assert.Equal(0, await Count(db => db.MessageAttachments));
+        Assert.Empty(_factory.Scanner.Scanned);
+    }
+
     // L2-132 AC1, AC2
     [Fact]
     public async Task L2_132_a_repeated_idempotency_key_returns_the_original_and_creates_nothing()
@@ -220,6 +251,92 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         Assert.Equal("Joanna Adeyemi", addressed.GetProperty("title").GetString());
         Assert.Equal("Legacy Financial", addressed.GetProperty("businessName").GetString());
         Assert.True(addressed.GetProperty("unread").GetBoolean());
+    }
+
+    // L2-056 AC7
+    private async Task<List<string>> ManyWriteToLegacy(int count, bool sameInstant = false)
+    {
+        var ids = new List<string>();
+        for (var number = 1; number <= count; number++)
+        {
+            ids.Add(await StartedId(_factory.CreateMemberClient($"Member {number:00}", $"member|m{number}")));
+            if (!sameInstant)
+            {
+                _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+            }
+        }
+
+        return ids;
+    }
+
+    private static List<string> Ids(JsonElement inbox) =>
+        [.. inbox.GetProperty("conversations").EnumerateArray().Select(r => r.GetProperty("id").GetString()!)];
+
+    [Fact]
+    public async Task L2_056_AC7_the_inbox_answers_the_50_newest_and_the_next_50_follow_with_the_counts_of_the_whole_inbox()
+    {
+        var started = await ManyWriteToLegacy(53);
+        var trevor = Trevor();
+
+        var first = await Json(await trevor.GetAsync("/api/conversations"));
+        var second = await Json(await trevor.GetAsync("/api/conversations?skip=50"));
+
+        Assert.Equal(53, first.GetProperty("totalCount").GetInt32());
+        Assert.Equal(53, first.GetProperty("unreadCount").GetInt32());
+        Assert.Equal(Enumerable.Reverse(started).Take(50), Ids(first));
+        Assert.Equal(53, second.GetProperty("totalCount").GetInt32());
+        Assert.Equal(53, second.GetProperty("unreadCount").GetInt32());
+        Assert.Equal(Enumerable.Reverse(started).Skip(50), Ids(second));
+    }
+
+    [Fact]
+    public async Task L2_056_AC7_conversations_touched_in_the_same_instant_keep_one_order_across_pages()
+    {
+        var started = await ManyWriteToLegacy(53, sameInstant: true);
+        var trevor = Trevor();
+
+        var first = Ids(await Json(await trevor.GetAsync("/api/conversations")));
+        var second = Ids(await Json(await trevor.GetAsync("/api/conversations?skip=50")));
+
+        Assert.Equal(50, first.Count);
+        Assert.Equal(3, second.Count);
+        Assert.Equal(started.Order(), first.Concat(second).Order());
+    }
+
+    [Fact]
+    public async Task L2_056_AC7_L2_059_a_search_is_paged_the_same_way_and_counts_what_it_found()
+    {
+        await ManyWriteToLegacy(53);
+        var trevor = Trevor();
+
+        var found = await Json(await trevor.GetAsync("/api/conversations?q=member%205"));
+        var all = await Json(await trevor.GetAsync("/api/conversations?q=member"));
+        var rest = await Json(await trevor.GetAsync("/api/conversations?q=member&skip=50"));
+
+        // "Member 50" to "Member 53".
+        Assert.Equal(4, found.GetProperty("totalCount").GetInt32());
+        Assert.Equal(4, Ids(found).Count);
+        Assert.Equal(53, all.GetProperty("totalCount").GetInt32());
+        Assert.Equal(50, Ids(all).Count);
+        Assert.Equal(3, Ids(rest).Count);
+        Assert.Empty(Ids(all).Intersect(Ids(rest)));
+    }
+
+    [Fact]
+    public async Task L2_056_AC7_past_the_end_or_before_the_start_nothing_breaks_and_nobody_elses_rows_appear()
+    {
+        await ManyWriteToLegacy(3);
+        var trevor = Trevor();
+
+        var past = await Json(await trevor.GetAsync("/api/conversations?skip=500"));
+        var negative = await Json(await trevor.GetAsync("/api/conversations?skip=-5"));
+        var naomi = await Json(await Naomi().GetAsync("/api/conversations?skip=1"));
+
+        Assert.Empty(Ids(past));
+        Assert.Equal(3, past.GetProperty("totalCount").GetInt32());
+        Assert.Equal(3, Ids(negative).Count);
+        Assert.Empty(Ids(naomi));
+        Assert.Equal(0, naomi.GetProperty("totalCount").GetInt32());
     }
 
     // L2-057 AC1, AC2
@@ -402,6 +519,84 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         Assert.Equal(2, await Count(db => db.ConversationReports));
         Assert.Equal(HttpStatusCode.UnprocessableEntity,
             (await Joanna().PostAsJsonAsync($"/api/conversations/{id}/report", new { reason = "", block = false })).StatusCode);
+    }
+
+    // L2-137 AC1
+    [Fact]
+    public async Task L2_137_AC1_the_11th_report_of_a_conversation_in_a_day_is_refused_with_retry_after()
+    {
+        var conversations = await ManyWriteToLegacy(11, sameInstant: true);
+        var trevor = Trevor();
+        foreach (var conversation in conversations.Take(10))
+        {
+            Assert.Equal(HttpStatusCode.NoContent,
+                (await trevor.PostAsJsonAsync($"/api/conversations/{conversation}/report", new { reason = "Spam", block = false })).StatusCode);
+        }
+
+        var refused = await trevor.PostAsJsonAsync($"/api/conversations/{conversations[10]}/report", new { reason = "Spam", block = false });
+        // A conversation he has already reported files nothing new, so it is not refused (L2-063 AC8).
+        var repeat = await trevor.PostAsJsonAsync($"/api/conversations/{conversations[0]}/report", new { reason = "Still spam", block = false });
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, refused.StatusCode);
+        Assert.NotNull(refused.Headers.RetryAfter);
+        Assert.InRange(refused.Headers.RetryAfter!.Delta!.Value, TimeSpan.FromHours(23), TimeSpan.FromHours(24));
+        Assert.Equal(HttpStatusCode.NoContent, repeat.StatusCode);
+        Assert.Equal(10, await Count(db => db.ConversationReports));
+
+        _factory.Clock.Advance(TimeSpan.FromHours(24) + TimeSpan.FromMinutes(1));
+        Assert.Equal(HttpStatusCode.NoContent,
+            (await trevor.PostAsJsonAsync($"/api/conversations/{conversations[10]}/report", new { reason = "Spam", block = false })).StatusCode);
+        Assert.Equal(11, await Count(db => db.ConversationReports));
+    }
+
+    [Fact]
+    public async Task L2_137_AC1_a_member_at_the_report_limit_can_still_block_a_business_they_already_reported()
+    {
+        var joanna = Joanna();
+        var legacy = await StartedId(joanna);
+        await joanna.PostAsJsonAsync($"/api/conversations/{legacy}/report", new { reason = "Spam", block = false });
+        for (var number = 1; number <= 9; number++)
+        {
+            var listing = ListingMother.Public($"business-{number}", "shops", $"Business {number}");
+            listing.AssignOwner($"member|owner{number}");
+            await _factory.Arrange(listing);
+            var id = await StartedId(joanna, $"business-{number}");
+            await joanna.PostAsJsonAsync($"/api/conversations/{id}/report", new { reason = "Spam", block = false });
+        }
+
+        Assert.Equal(10, await Count(db => db.ConversationReports));
+        var blocked = await joanna.PostAsJsonAsync($"/api/conversations/{legacy}/report", new { reason = "And block them", block = true });
+
+        Assert.Equal(HttpStatusCode.NoContent, blocked.StatusCode);
+        Assert.Equal(10, await Count(db => db.ConversationReports));
+        await Send(Trevor(), legacy, "Are you still there?");
+        var seen = await Json(await joanna.GetAsync($"/api/conversations/{legacy}"));
+        Assert.DoesNotContain(seen.GetProperty("messages").EnumerateArray(), m => m.GetProperty("body").GetString() == "Are you still there?");
+    }
+
+    // L2-133 AC2
+    [Fact]
+    public async Task L2_133_AC2_an_attempt_on_someone_elses_conversation_is_not_found_and_logged()
+    {
+        var id = await StartedId(Joanna());
+        _factory.Logs.Clear();
+
+        var opened = await Naomi().GetAsync($"/api/conversations/{id}");
+        var written = await Send(Naomi(), id, "Let me in");
+
+        Assert.Equal(HttpStatusCode.NotFound, opened.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, written.StatusCode);
+        var attempts = _factory.Logs.Entries
+            .Where(e => e.Level == Microsoft.Extensions.Logging.LogLevel.Warning && e.Message.Contains("conversation_not_found", StringComparison.Ordinal))
+            .ToList();
+        Assert.Equal(2, attempts.Count);
+        Assert.All(attempts, attempt =>
+        {
+            Assert.Contains(NaomiId, attempt.Message, StringComparison.Ordinal);
+            Assert.Contains($"/api/conversations/{id}", attempt.Message, StringComparison.Ordinal);
+        });
+        Assert.Contains("GET", attempts[0].Message, StringComparison.Ordinal);
+        Assert.Contains("POST", attempts[1].Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -645,11 +840,13 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         return ~crc;
     }
 
+    /// <summary>The bytes the media store keeps for an attachment (L2-138 AC5).</summary>
     private async Task<byte[]> StoredAttachment(Guid id)
     {
-        byte[] bytes = [];
-        await _factory.WithDb(async db => bytes = (await db.MessageAttachments.AsNoTracking().SingleAsync(a => a.Id == id)).Content);
-        return bytes;
+        MessageAttachment row = default!;
+        await _factory.WithDb(async db => row = await db.MessageAttachments.AsNoTracking().SingleAsync(a => a.Id == id));
+        var bytes = await _factory.Media.Read(row.Key, 0, row.ContentType == "image/png" ? "png" : "jpeg", CancellationToken.None);
+        return bytes ?? [];
     }
 
     private static byte[] Jpeg() =>
@@ -743,6 +940,166 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         Assert.Equal(HttpStatusCode.UnprocessableEntity, tooBig.StatusCode);
         Assert.Equal("TOO_LARGE", (await Json(tooBig)).GetProperty("code").GetString());
         Assert.Equal(HttpStatusCode.UnprocessableEntity, tooWide.StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_138_AC1_a_photo_over_8000_pixels_high_is_refused()
+    {
+        var joanna = Joanna();
+        var id = await StartedId(joanna);
+
+        var tooTall = await Upload(joanna, id, Png(10, 8001));
+        var justFits = await Upload(joanna, id, Png(8000, 8000));
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, tooTall.StatusCode);
+        Assert.Equal("TOO_LARGE", (await Json(tooTall)).GetProperty("code").GetString());
+        Assert.Equal(HttpStatusCode.Created, justFits.StatusCode);
+    }
+
+    // L2-138 AC5
+    [Fact]
+    public async Task L2_138_AC5_a_photo_is_kept_by_the_media_store_under_a_random_name_and_not_in_the_database()
+    {
+        var joanna = Joanna();
+        var id = await StartedId(joanna);
+
+        var first = (await Json(await Upload(joanna, id, Png(), name: "passport-of-joanna.png"))).GetProperty("id").GetGuid();
+        var second = (await Json(await Upload(joanna, id, Png(), name: "passport-of-joanna.png"))).GetProperty("id").GetGuid();
+
+        var rows = new List<MessageAttachment>();
+        await _factory.WithDb(async db => rows = await db.MessageAttachments.AsNoTracking().ToListAsync());
+        Assert.Equal(2, rows.Count);
+        Assert.All(rows, row =>
+        {
+            Assert.Matches("^[0-9a-f]{32}$", row.Key);
+            Assert.Null(row.Content);
+        });
+        Assert.NotEqual(rows[0].Key, rows[1].Key);
+        Assert.Equal(rows.Select(r => r.Key).Order(), _factory.Media.Keys.Order());
+        Assert.NotEmpty(await StoredAttachment(first));
+        Assert.Equal(await StoredAttachment(first), await StoredAttachment(second));
+    }
+
+    // L2-060 AC9, L2-138 AC4
+    [Fact]
+    public async Task L2_060_AC9_a_photo_is_scanned_after_its_checks_and_before_it_is_stored()
+    {
+        var joanna = Joanna();
+        var id = await StartedId(joanna);
+
+        var upload = await Upload(joanna, id, Png());
+
+        Assert.Equal(HttpStatusCode.Created, upload.StatusCode);
+        var scanned = Assert.Single(_factory.Scanner.Scanned);
+        // What was scanned is what is kept: the photo without its metadata.
+        Assert.DoesNotContain("Secret Photographer", System.Text.Encoding.ASCII.GetString(scanned));
+        Assert.Equal(scanned, await StoredAttachment((await Json(upload)).GetProperty("id").GetGuid()));
+    }
+
+    [Fact]
+    public async Task L2_060_AC9_a_file_that_fails_its_checks_is_never_given_to_the_scanner()
+    {
+        var joanna = Joanna();
+        var id = await StartedId(joanna);
+
+        await Upload(joanna, id, "just words"u8.ToArray());
+
+        Assert.Empty(_factory.Scanner.Scanned);
+    }
+
+    [Fact]
+    public async Task L2_060_AC9_L2_138_AC4_a_photo_the_scanner_calls_infected_is_refused_and_nothing_is_stored_or_served()
+    {
+        var joanna = Joanna();
+        var id = await StartedId(joanna);
+        _factory.Scanner.Verdict = Application.Abstractions.ScanVerdict.Infected;
+
+        var upload = await Upload(joanna, id, Png());
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, upload.StatusCode);
+        Assert.Equal("FAILED_SCAN", (await Json(upload)).GetProperty("code").GetString());
+        Assert.Equal(0, await Count(db => db.MessageAttachments));
+        Assert.Empty(_factory.Media.Keys);
+        // With nothing stored there is no id to send, so the other participant can receive nothing.
+        var conversation = await Json(await Trevor().GetAsync($"/api/conversations/{id}"));
+        Assert.All(conversation.GetProperty("messages").EnumerateArray(), m => Assert.Equal(JsonValueKind.Null, m.GetProperty("attachment").ValueKind));
+    }
+
+    [Fact]
+    public async Task L2_060_AC9_L2_138_AC4_when_the_scan_cannot_be_done_the_photo_is_refused_and_a_later_try_stores_it()
+    {
+        var joanna = Joanna();
+        var id = await StartedId(joanna);
+        _factory.Scanner.Verdict = Application.Abstractions.ScanVerdict.Unavailable;
+
+        var refused = await Upload(joanna, id, Png());
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, refused.StatusCode);
+        Assert.Equal("SCAN_UNAVAILABLE", (await Json(refused)).GetProperty("code").GetString());
+        Assert.Equal(0, await Count(db => db.MessageAttachments));
+        Assert.Empty(_factory.Media.Keys);
+
+        _factory.Scanner.Verdict = Application.Abstractions.ScanVerdict.Clean;
+        var again = await Upload(joanna, id, Png());
+
+        Assert.Equal(HttpStatusCode.Created, again.StatusCode);
+        Assert.Equal(1, await Count(db => db.MessageAttachments));
+    }
+
+    [Fact]
+    public async Task L2_060_AC9_the_other_participant_opens_only_a_photo_that_was_scanned_and_stored()
+    {
+        var joanna = Joanna();
+        var id = await StartedId(joanna);
+        var attachmentId = (await Json(await Upload(joanna, id, Png()))).GetProperty("id").GetString();
+        await joanna.PostAsJsonAsync($"/api/conversations/{id}/messages", new { body = "", idempotencyKey = "scan-1", attachmentId });
+
+        var seen = await Json(await Trevor().GetAsync($"/api/conversations/{id}"));
+        var url = seen.GetProperty("messages").EnumerateArray().Last().GetProperty("attachment").GetProperty("url").GetString()!;
+        var photo = await _factory.CreateClient().GetAsync(url);
+
+        Assert.Equal(HttpStatusCode.OK, photo.StatusCode);
+        Assert.Equal(Assert.Single(_factory.Scanner.Scanned), await photo.Content.ReadAsByteArrayAsync());
+    }
+
+    [Fact]
+    public async Task L2_060_AC4_a_photo_whose_bytes_are_gone_from_the_store_is_not_found()
+    {
+        var joanna = Joanna();
+        var id = await StartedId(joanna);
+        var attachmentId = (await Json(await Upload(joanna, id, Png()))).GetProperty("id").GetString();
+        await joanna.PostAsJsonAsync($"/api/conversations/{id}/messages", new { body = "", idempotencyKey = "gone-1", attachmentId });
+        var url = (await Json(await joanna.GetAsync($"/api/conversations/{id}"))).GetProperty("messages").EnumerateArray().Last()
+            .GetProperty("attachment").GetProperty("url").GetString()!;
+        _factory.Media.Clear();
+
+        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync(url)).StatusCode);
+    }
+
+    // A row stored before the media store held message photos keeps its bytes in the database (ADR 0051).
+    [Fact]
+    public async Task L2_060_AC4_a_photo_stored_before_the_media_store_is_still_delivered()
+    {
+        var joanna = Joanna();
+        var id = await StartedId(joanna);
+        var attachmentId = (await Json(await Upload(joanna, id, Png()))).GetProperty("id").GetGuid();
+        var bytes = await StoredAttachment(attachmentId);
+        await joanna.PostAsJsonAsync($"/api/conversations/{id}/messages", new { body = "", idempotencyKey = "old-1", attachmentId });
+        await _factory.WithDb(async db =>
+        {
+            var row = await db.MessageAttachments.SingleAsync(a => a.Id == attachmentId);
+            db.Entry(row).Property(a => a.Key).CurrentValue = string.Empty;
+            db.Entry(row).Property(a => a.Content).CurrentValue = bytes;
+            await db.SaveChangesAsync();
+        });
+        _factory.Media.Clear();
+        var url = (await Json(await joanna.GetAsync($"/api/conversations/{id}"))).GetProperty("messages").EnumerateArray().Last()
+            .GetProperty("attachment").GetProperty("url").GetString()!;
+
+        var photo = await _factory.CreateClient().GetAsync(url);
+
+        Assert.Equal(HttpStatusCode.OK, photo.StatusCode);
+        Assert.Equal(bytes, await photo.Content.ReadAsByteArrayAsync());
     }
 
     [Fact]

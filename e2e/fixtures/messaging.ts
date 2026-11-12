@@ -79,6 +79,62 @@ export const inboxRows = (): FakeRow[] => [
   ),
 ];
 
+/**
+ * A long inbox (L2-056 AC7): the four conversations of the mock, then enough others, each older
+ * than the one before, to make `count` in all.
+ */
+export const manyRows = (count: number): FakeRow[] => [
+  ...inboxRows(),
+  ...Array.from({ length: count - 4 }, (_, index) => {
+    const number = String(index + 1).padStart(2, '0');
+    const at = new Date(Date.parse('2026-10-20T15:00:00Z') - index * 3_600_000).toISOString();
+    return row(
+      `c-${number}`,
+      `Business ${number}`,
+      `business-${number}`,
+      'See you soon.',
+      at,
+      false,
+    );
+  }),
+];
+
+/**
+ * An owner's inbox (docs/mocks/pages/messages/owner.html): her own conversations with businesses,
+ * and two that members hold with her business. For those the title is the member (L2-056 AC6).
+ */
+export const ownerRows = (): FakeRow[] => {
+  const [legacy, , books] = inboxRows();
+  const withLuzandre = (
+    id: string,
+    member: string,
+    preview: string,
+    at: string,
+    unread: boolean,
+  ) => ({
+    ...row(id, member, 'luzandre-com', preview, at, unread),
+    businessName: 'Luzandre.com',
+  });
+  return [
+    legacy,
+    withLuzandre(
+      'c-samuel',
+      'Samuel Park',
+      'Samuel: Could the team tees be ready by the 20th?',
+      '2026-11-09T15:00:00Z',
+      true,
+    ),
+    books,
+    withLuzandre(
+      'c-ruth',
+      'Ruth Mensah',
+      'You: The mug set ships Monday.',
+      '2026-10-28T15:00:00Z',
+      false,
+    ),
+  ];
+};
+
 export const legacyMessages = (): FakeMessage[] => [
   message(
     'm-1',
@@ -200,14 +256,23 @@ export const photoMessages = (): FakeMessage[] => [
   },
 ];
 
-export type Delivery = 'ok' | 'fail' | 'hang' | 'rate-limited' | 'unconfirmed';
+/** `held` keeps a send unanswered until `release()` is called, then stores it. */
+export type Delivery = 'ok' | 'fail' | 'hang' | 'held' | 'rate-limited' | 'unconfirmed';
 
 /** What the fake answers, and what it was asked; a test changes these while it runs. */
 export interface FakeMessaging {
   inbox: 'ok' | 'empty' | 'loading' | 'error';
+  /** How a read of the inbox past its first page is answered (L2-056 AC7). */
+  paging: 'ok' | 'hang' | 'fail';
+  /** The `skip` of each read of the inbox past its first page. */
+  pages: number[];
+  /** Says the inbox holds this many conversations, whatever `rows` holds; null counts `rows`. */
+  inboxTotal: number | null;
   conversation: 'ok' | 'loading' | 'error' | 'not-found';
   /** How the next sends and starts are answered. */
   delivery: Delivery;
+  /** Answers the sends that `held` is keeping. */
+  release(): void;
   awayUntil: string | null;
   muted: boolean;
   /** How saving a mute is answered. */
@@ -216,10 +281,15 @@ export interface FakeMessaging {
   /** False for an owner, who cannot block (L2-063 AC5). */
   canBlock: boolean;
   /** How a report is answered. */
-  reporting: 'ok' | 'fail';
+  reporting: 'ok' | 'fail' | 'rate-limited';
   reports: { reason: string; block: boolean }[];
-  /** How an upload is answered: stored, cut off, never answered, or refused as not a photo. */
-  uploading: 'ok' | 'fail' | 'hang' | 'refused';
+  /**
+   * How an upload is answered: stored, cut off, never answered, refused as not a photo, refused by
+   * the malware scan (`infected`), or refused because the scan could not be done (`unchecked`).
+   */
+  uploading: 'ok' | 'fail' | 'hang' | 'refused' | 'infected' | 'unchecked';
+  /** Every upload the app tried, stored or not. */
+  uploadAttempts: number;
   uploads: { bytes: number; contentType: string }[];
   /** `expired` answers a photo's first link with 404, as after five minutes. */
   links: 'ok' | 'expired';
@@ -244,6 +314,8 @@ export interface FakeMessaging {
   searches: (string | null)[];
   opened: { before: string | null }[];
   sends: { body: string; idempotencyKey: string; attachmentId?: string }[];
+  /** Every send and start the app tried, answered or not: a retry must carry the key of its first try. */
+  attempts: { body: string; idempotencyKey: string }[];
   starts: { listingSlug: string; body: string; idempotencyKey: string }[];
 }
 
@@ -263,10 +335,17 @@ export async function stubMessaging(
   initial: Partial<FakeMessaging> = {},
 ): Promise<FakeMessaging> {
   const events: { id: string; item: object }[] = [];
+  const held: (() => void)[] = [];
   const fake: FakeMessaging = {
     inbox: 'ok',
+    paging: 'ok',
+    pages: [],
+    inboxTotal: null,
     conversation: 'ok',
     delivery: 'ok',
+    release() {
+      for (const answer of held.splice(0)) answer();
+    },
     awayUntil: null,
     muted: false,
     muting: 'ok',
@@ -275,6 +354,7 @@ export async function stubMessaging(
     reporting: 'ok',
     reports: [],
     uploading: 'ok',
+    uploadAttempts: 0,
     uploads: [],
     links: 'ok',
     renewing: 'ok',
@@ -322,6 +402,7 @@ export async function stubMessaging(
     searches: [],
     opened: [],
     sends: [],
+    attempts: [],
     starts: [],
     ...initial,
   };
@@ -365,6 +446,7 @@ export async function stubMessaging(
     const request = route.request();
     if (request.method() === 'POST') {
       const body = request.postDataJSON() as FakeMessaging['starts'][number];
+      fake.attempts.push(body);
       const failure = fail(route);
       if (failure) return failure;
       fake.starts.push(body);
@@ -373,8 +455,17 @@ export async function stubMessaging(
         json: { conversationId: 'c-legacy', messageId: 'm-started' },
       });
     }
-    const q = new URL(request.url()).searchParams.get('q');
-    fake.searches.push(q);
+    const params = new URL(request.url()).searchParams;
+    const q = params.get('q');
+    const skip = Number(params.get('skip') ?? 0);
+    if (skip > 0) {
+      fake.pages.push(skip);
+      if (fake.paging === 'hang') return hang(route);
+      if (fake.paging === 'fail')
+        return route.fulfill(problem(503, 'service_unavailable', 'JB-MSG-503'));
+    } else {
+      fake.searches.push(q);
+    }
     if (fake.inbox === 'loading') return hang(route);
     if (fake.inbox === 'error')
       return route.fulfill(problem(503, 'service_unavailable', 'JB-MSG-503'));
@@ -384,11 +475,12 @@ export async function stubMessaging(
         : fake.rows.filter(
             (r) => !q || `${r.title} ${r.preview}`.toLowerCase().includes(q.toLowerCase()),
           );
+    // The API answers 50 at a time, with the counts of the whole inbox or search.
     return route.fulfill({
       json: {
-        totalCount: rows.length,
+        totalCount: fake.inboxTotal ?? rows.length,
         unreadCount: rows.filter((r) => r.unread).length,
-        conversations: rows,
+        conversations: rows.slice(skip, skip + 50),
       },
     });
   });
@@ -420,8 +512,10 @@ export async function stubMessaging(
     });
   });
 
-  await page.route('**/api/conversations/c-legacy/messages', (route) => {
+  await page.route('**/api/conversations/c-legacy/messages', async (route) => {
     const body = route.request().postDataJSON() as FakeMessaging['sends'][number];
+    fake.attempts.push(body);
+    if (fake.delivery === 'held') await new Promise<void>((resolve) => held.push(resolve));
     const failure = fail(route);
     if (failure) return failure;
     fake.sends.push(body);
@@ -446,9 +540,12 @@ export async function stubMessaging(
       if (fake.renewing === 'fail') return route.fulfill(problem(404, 'attachment_not_found'));
       return route.fulfill({ json: { url: signed(id, 'renewed') } });
     }
+    fake.uploadAttempts += 1;
     if (fake.uploading === 'hang') return hang(route);
     if (fake.uploading === 'fail') return route.abort('failed');
     if (fake.uploading === 'refused') return route.fulfill(problem(422, 'INVALID_IMAGE'));
+    if (fake.uploading === 'infected') return route.fulfill(problem(422, 'FAILED_SCAN'));
+    if (fake.uploading === 'unchecked') return route.fulfill(problem(503, 'SCAN_UNAVAILABLE'));
     const body = request.postDataBuffer() ?? Buffer.alloc(0);
     const type = /Content-Type: ([^\r\n]+)/i.exec(body.subarray(0, 400).toString('latin1'));
     fake.uploads.push({ bytes: body.length, contentType: type?.[1] ?? '' });
@@ -464,6 +561,11 @@ export async function stubMessaging(
 
   await page.route('**/api/conversations/c-legacy/report', (route) => {
     if (fake.reporting === 'fail') return route.abort('failed');
+    if (fake.reporting === 'rate-limited')
+      return route.fulfill({
+        ...problem(429, 'rate_limited'),
+        headers: { 'Retry-After': '2520' },
+      });
     fake.reports.push(route.request().postDataJSON() as FakeMessaging['reports'][number]);
     return route.fulfill({ status: 204 });
   });

@@ -75,12 +75,19 @@ public sealed record StartedConversationDto(Guid ConversationId, Guid MessageId)
 internal static class ConversationRules
 {
     public const int PageSize = 50;
+
+    /// <summary>How many conversations one answer of the inbox holds (L2-056 AC7).</summary>
+    public const int InboxPageSize = 50;
     public const int MessagesPerWindow = 30;
     public static readonly TimeSpan MessageWindow = TimeSpan.FromMinutes(10);
     public const int NewConversationsPerDay = 10;
     public static readonly TimeSpan ConversationWindow = TimeSpan.FromDays(1);
 
     public const int UploadsPerWindow = 30;
+
+    /// <summary>How many conversations a person may report in 24 hours (L2-137 AC1).</summary>
+    public const int ReportsPerDay = 10;
+    public static readonly TimeSpan ReportWindow = TimeSpan.FromDays(1);
 
     /// <summary>What an inbox row says of a message that is a photo and nothing else (L2-060 AC6).</summary>
     public const string PhotoPreview = "Photo";
@@ -310,8 +317,11 @@ public sealed class SendMessageCommandHandler(IAppDbContext db, TimeProvider clo
     }
 }
 
-/// <summary>The inbox: a person's conversations, newest first, optionally searched (L2-056, L2-059).</summary>
-public sealed record GetInboxQuery(string Subject, string? Search) : IRequest<InboxDto>;
+/// <summary>
+/// The inbox: a person's conversations, newest first, optionally searched, 50 at a time after the
+/// first <see cref="Skip"/> (L2-056, L2-059). The counts are of the whole inbox or search.
+/// </summary>
+public sealed record GetInboxQuery(string Subject, string? Search, int Skip = 0) : IRequest<InboxDto>;
 
 public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<GetInboxQuery, InboxDto>
 {
@@ -330,9 +340,21 @@ public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<Get
                     && m.Body.ToLower().Contains(term)));
         }
 
+        var total = await rows.CountAsync(cancellationToken);
+        var unread = await rows.CountAsync(
+            r => db.Messages.Any(m => m.ConversationId == r.Conversation.Id
+                && (r.AsOwner
+                    ? !m.FromOwner && (r.Conversation.OwnerReadAt == null || m.CreatedAt > r.Conversation.OwnerReadAt)
+                    : m.FromOwner && !m.HiddenFromMember
+                        && (r.Conversation.MemberReadAt == null || m.CreatedAt > r.Conversation.MemberReadAt))),
+            cancellationToken);
+
+        // The id settles the order of conversations touched in the same instant, so pages never overlap.
         var listed = await rows
             .OrderByDescending(r => r.Conversation.LastMessageAt)
-            .Take(200)
+            .ThenBy(r => r.Conversation.Id)
+            .Skip(Math.Max(0, request.Skip))
+            .Take(ConversationRules.InboxPageSize)
             .Select(r => new
             {
                 r.Conversation.Id,
@@ -369,7 +391,7 @@ public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<Get
             r.LastMessageAt,
             r.Unread,
             r.AsOwner ? r.OwnerMuted : r.MemberMuted)).ToList();
-        return new InboxDto(conversations.Count, conversations.Count(c => c.Unread), conversations);
+        return new InboxDto(total, unread, conversations);
     }
 
     private static string Preview(string? body, string? sender, string? senderName, string subject)
@@ -503,8 +525,22 @@ public sealed class ReportConversationCommandHandler(IAppDbContext db, TimeProvi
             r => r.ConversationId == row.Conversation.Id && r.ReporterSubject == request.Subject && r.Status != ReportStatus.Resolved, cancellationToken);
         if (!open)
         {
+            // Ten reports in 24 hours, counted from the stored ones, as the message limits are (L2-137 AC1).
+            var now = clock.GetUtcNow();
+            var since = now - ConversationRules.ReportWindow;
+            var filed = await db.ConversationReports.AsNoTracking()
+                .Where(r => r.ReporterSubject == request.Subject && r.CreatedAt > since)
+                .OrderBy(r => r.CreatedAt)
+                .Select(r => r.CreatedAt)
+                .ToListAsync(cancellationToken);
+            if (filed.Count >= ConversationRules.ReportsPerDay)
+            {
+                throw new RateLimitedException(
+                    "rate_limited", filed[filed.Count - ConversationRules.ReportsPerDay] + ConversationRules.ReportWindow - now);
+            }
+
             db.ConversationReports.Add(ConversationReport.File(
-                row.Conversation.Id, request.Subject, reason.Length > 1000 ? reason[..1000] : reason, clock.GetUtcNow()));
+                row.Conversation.Id, request.Subject, reason.Length > 1000 ? reason[..1000] : reason, now));
         }
 
         if (request.Block && !row.AsOwner)
@@ -516,10 +552,14 @@ public sealed class ReportConversationCommandHandler(IAppDbContext db, TimeProvi
     }
 }
 
-/// <summary>Stores a photo for a conversation after taking the metadata out of it (L2-060, L2-138).</summary>
+/// <summary>
+/// Stores a photo for a conversation: its metadata is taken out, it is scanned for malware, and only
+/// then do its bytes go to the media store under a random name (L2-060 AC9, L2-138).
+/// </summary>
 public sealed record UploadAttachmentCommand(string Subject, Guid ConversationId, byte[] Content) : IRequest<Guid>;
 
-public sealed class UploadAttachmentCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<UploadAttachmentCommand, Guid>
+public sealed class UploadAttachmentCommandHandler(IAppDbContext db, TimeProvider clock, IMalwareScanner scanner, IMediaStore store)
+    : IRequestHandler<UploadAttachmentCommand, Guid>
 {
     public async Task<Guid> Handle(UploadAttachmentCommand request, CancellationToken cancellationToken)
     {
@@ -542,11 +582,47 @@ public sealed class UploadAttachmentCommandHandler(IAppDbContext db, TimeProvide
             throw new InvalidImageException(image.Problem == ImageProblem.TooLarge ? "TOO_LARGE" : "INVALID_IMAGE");
         }
 
-        var attachment = MessageAttachment.Store(row.Conversation.Id, request.Subject, image.ContentType, image.Content, now);
-        db.MessageAttachments.Add(attachment);
-        await db.SaveChangesAsync(cancellationToken);
+        // Nothing is stored that was not scanned, so the other participant can never be sent it.
+        switch (await scanner.Scan(image.Content, cancellationToken))
+        {
+            case ScanVerdict.Infected:
+                throw new InvalidImageException("FAILED_SCAN");
+            case ScanVerdict.Unavailable:
+                throw new ScanUnavailableException();
+        }
+
+        var key = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(16)).ToLowerInvariant();
+        var attachment = MessageAttachment.Store(row.Conversation.Id, request.Subject, image.ContentType, key, now);
+        await store.Save(key, AttachmentFiles.Width, AttachmentFiles.Format(image.ContentType), image.Content, cancellationToken);
+        try
+        {
+            db.MessageAttachments.Add(attachment);
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            // Without its row nobody can reach the photo: do not leave it behind.
+            await store.Delete(key, CancellationToken.None);
+            throw;
+        }
+
         return attachment.Id;
     }
+}
+
+/// <summary>How a message photo is named in the media store: one file, in the format it was uploaded in.</summary>
+internal static class AttachmentFiles
+{
+    /// <summary>A message photo has one size, its own; listing photos use the widths of their renditions.</summary>
+    public const int Width = 0;
+
+    public static string Format(string contentType) => contentType == "image/png" ? "png" : "jpeg";
+}
+
+/// <summary>The malware scanner could not be asked, so the photo was not accepted (L2-138 AC4).</summary>
+public sealed class ScanUnavailableException() : Exception("We couldn't check that photo just now.")
+{
+    public const string Code = "SCAN_UNAVAILABLE";
 }
 
 /// <summary>A new five-minute link to a photo of a conversation, for a participant who may see it (L2-060 AC8).</summary>
@@ -580,7 +656,8 @@ public sealed record GetAttachmentQuery(Guid Id, long Expires, string Signature)
 
 public sealed record AttachmentContent(string ContentType, byte[] Content);
 
-public sealed class GetAttachmentQueryHandler(IAppDbContext db, IAttachmentLinks links) : IRequestHandler<GetAttachmentQuery, AttachmentContent>
+public sealed class GetAttachmentQueryHandler(IAppDbContext db, IAttachmentLinks links, IMediaStore store)
+    : IRequestHandler<GetAttachmentQuery, AttachmentContent>
 {
     public async Task<AttachmentContent> Handle(GetAttachmentQuery request, CancellationToken cancellationToken)
     {
@@ -591,6 +668,12 @@ public sealed class GetAttachmentQueryHandler(IAppDbContext db, IAttachmentLinks
 
         var attachment = await db.MessageAttachments.AsNoTracking().SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException("attachment_not_found", "There is no such photo.");
-        return new AttachmentContent(attachment.ContentType, attachment.Content);
+        // A row stored before the media store kept message photos has its bytes in the row (ADR 0051).
+        var content = attachment.Key.Length > 0
+            ? await store.Read(attachment.Key, AttachmentFiles.Width, AttachmentFiles.Format(attachment.ContentType), cancellationToken)
+            : attachment.Content;
+        return content is null
+            ? throw new NotFoundException("attachment_not_found", "There is no such photo.")
+            : new AttachmentContent(attachment.ContentType, content);
     }
 }

@@ -34,14 +34,15 @@ end box
 member -> page : Open /messages/:id
 page -> client : open(id)
 client -> controller : GET /api/conversations/{id}
-controller -> controller : Authenticate and apply endpoint policy
+controller -> controller : Authenticate
 controller -> handler : Send GetConversationQuery
 handler -> db : Load conversation for a participant (L2-133)
 alt caller is not a participant
   db --> handler : No row
   handler --> controller : Not found
-  controller --> client : 404 ProblemDetails (L2-057)
+  controller --> client : 404 conversation_not_found, logged at Warning (L2-057)
   client --> page : Not found
+  page --> member : Not-found screen
 else participant
   db --> handler : Header and latest 50 messages and away date
   handler -> db : Load requests of the same member and listing (L2-057)
@@ -54,14 +55,16 @@ else participant
   controller --> client : 200 OK
   client --> page : Header and messages and request cards
   page --> member : Timeline grouped by day with cards at the time sent
-  opt owner away date is in the future
-    page --> member : Toast "{Owner} is away until {day}." (L2-062)
+  opt awayUntil is later than the clock
+    page -> page : awayDay(awayUntil, now)
+    page --> member : Line above the messages and info toast "{Owner first name} is away until {day}" (L2-062)
   end
-  opt member scrolls to the top with more than 50 messages
+  opt member presses "Show earlier messages"
     page -> client : open(id, before)
     client -> controller : GET /api/conversations/{id}?before={messageId}
     controller --> client : Older page and no read mark
-    client --> page : Prepend and keep scroll position (L2-057)
+    client --> page : Older messages
+    page --> member : Add them above and bring the message that was at the top back to the top (L2-057)
   end
   opt reply or request change arrives while open
     events -> rt : notification event of kind message or request (L2-070)

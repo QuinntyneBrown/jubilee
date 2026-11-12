@@ -426,6 +426,7 @@ public sealed class MessageAttachmentConfiguration : IEntityTypeConfiguration<Me
         builder.Property(a => a.Id).ValueGeneratedNever();
         builder.Property(a => a.UploaderSubject).HasMaxLength(200).IsRequired();
         builder.Property(a => a.ContentType).HasMaxLength(50).IsRequired();
+        builder.Property(a => a.Key).HasMaxLength(32).IsRequired();
         builder.HasOne<Conversation>().WithMany().HasForeignKey(a => a.ConversationId).OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -27,9 +27,12 @@ box "Backend — Jubilee API" #D1FADF
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "UploadAttachmentCommandHandler" as handler
+  participant "ImageSanitizer" as sanitizer
   participant "SendMessageCommandHandler" as sender
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IMalwareScanner" as scan
+  participant "IMediaStore" as store
   database "Jubilee database" as db
 end box
 member -> attach : Press "Attach a photo" and choose a file
@@ -39,8 +42,8 @@ photo -> photo : Read the first bytes
 alt not a JPEG or PNG
   photo --> page : Rejected
   page -> toast : Error toast "Photo couldn't be attached. Use a JPG or PNG under 5 MB." (L2-060)
-else over 5 MB or over 4,096 pixels on a side
-  photo -> toast : Warning toast "Photo is large. Shrinking it to 5 MB before sending."
+else over 5 MB
+  page -> toast : Warning toast "Photo is large. Shrinking it to 5 MB before sending."
   photo -> photo : Draw to a canvas of at most 4,096 pixels and encode JPEG at 0.85 down to 0.5 then smaller
   alt cannot be decoded or brought under 5 MB
     photo --> page : Rejected
@@ -48,7 +51,7 @@ else over 5 MB or over 4,096 pixels on a side
   else shrunk
     photo --> page : Blob of 5 MB or less
   end
-else JPEG or PNG within the limits
+else JPEG or PNG within the limit
   photo --> page : Blob
 end
 opt photo accepted
@@ -57,25 +60,50 @@ opt photo accepted
   page --> member : Bubble with the photo and "Sending…" (L2-060)
   page -> client : attach(id, blob)
   client -> controller : POST /api/conversations/{id}/attachments
-  controller -> controller : Authenticate and apply endpoint policy
+  controller -> controller : Authenticate and check RequiresConfirmedEmail
   controller -> handler : Send UploadAttachmentCommand
-  handler -> db : Load conversation for a participant (L2-133)
+  handler -> db : Load conversation for a participant (L2-133) and count uploads
   db --> handler : Conversation
-  handler -> handler : Check bytes and size and width then remove metadata (L2-138)
-  handler -> db : Save MessageAttachment
-  db --> handler : Commit result
-  handler --> controller : Attachment ID
-  controller --> client : 201 Created or 422 or 429 past 30 uploads in 10 minutes
-  client --> page : Attachment ID kept for a retry
-  page -> client : send(id, text, key, attachmentId)
-  client -> controller : POST /api/conversations/{id}/messages
-  controller -> sender : Send SendMessageCommand
-  sender -> db : Save message once per (SenderSubject, IdempotencyKey)
-  db --> sender : Commit result
-  sender --> controller : MessageDto with a signed link
-  controller --> client : 201 Created
-  client --> page : Confirmed message
-  page --> member : Replace "Sending…" with the time
+  handler -> sanitizer : Sanitize(bytes) (L2-138)
+  alt not a JPEG or PNG or over 5 MB or over 8,000 pixels wide
+    sanitizer --> handler : Refused
+    handler --> controller : InvalidImageException
+    controller --> client : 422 INVALID_IMAGE or TOO_LARGE and nothing stored
+  else accepted
+    sanitizer --> handler : Bytes without metadata
+    handler -> scan : Scan(bytes)
+    alt Infected
+      scan --> handler : ScanVerdict.Infected
+      handler --> controller : Refused
+      controller --> client : 422 FAILED_SCAN and nothing stored (L2-138)
+      client --> page : Error
+      page --> member : "Not sent. This photo didn’t pass our safety check."
+    else Unavailable
+      scan --> handler : ScanVerdict.Unavailable
+      handler --> controller : Refused
+      controller --> client : 503 SCAN_UNAVAILABLE and nothing stored (L2-138)
+      client --> page : Error
+      page --> member : "Not sent. We couldn’t check this photo just now." with "Try again"
+    else Clean
+      scan --> handler : ScanVerdict.Clean
+      handler -> store : Save(key, 0, format, bytes) with a random key of 128 bits
+      store --> handler : Stored
+      handler -> db : Save MessageAttachment with Key and ContentType
+      db --> handler : Commit result
+      handler --> controller : Attachment ID
+      controller --> client : 201 Created
+      client --> page : Attachment ID kept for a retry
+      page -> client : send(id, text, key, attachmentId)
+      client -> controller : POST /api/conversations/{id}/messages
+      controller -> sender : Send SendMessageCommand
+      sender -> db : Save message once per (SenderSubject, IdempotencyKey)
+      db --> sender : Commit result
+      sender --> controller : MessageDto with a signed link
+      controller --> client : 201 Created
+      client --> page : Confirmed message
+      page --> member : Replace "Sending…" with the time
+    end
+  end
 end
 opt image fails to load or "View photo" is pressed
   page -> client : attachmentLink(id, attachmentId)

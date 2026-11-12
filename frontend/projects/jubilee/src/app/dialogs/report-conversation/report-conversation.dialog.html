@@ -29,7 +29,7 @@
       (ngSubmit)="send()"
     >
       @if (view() === 'failed') {
-        <div jb-alert tone="danger" heading="We couldn’t send that" role="alert">
+        <div jb-alert tone="danger" [heading]="failureHeading()" role="alert">
           <div>{{ failure() }}</div>
         </div>
       }

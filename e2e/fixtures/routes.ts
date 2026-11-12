@@ -74,6 +74,9 @@ export type StubName =
   | 'messages-empty'
   | 'messages-loading'
   | 'messages-error'
+  | 'messages-more'
+  | 'messages-owner'
+  | 'conversation-away'
   | 'conversation'
   | 'conversation-loading'
   | 'conversation-error'
@@ -328,6 +331,18 @@ export const routes = {
     who: 'member',
     stub: 'messages-error',
   },
+  'messages.more': {
+    app: '/messages',
+    mock: 'pages/messages/more.html',
+    who: 'member',
+    stub: 'messages-more',
+  },
+  'messages.owner': {
+    app: '/messages',
+    mock: 'pages/messages/owner.html',
+    who: 'member',
+    stub: 'messages-owner',
+  },
   conversation: {
     app: '/messages/c-legacy',
     mock: 'pages/conversation/default.html',
@@ -345,6 +360,12 @@ export const routes = {
     mock: 'pages/conversation/error.html',
     who: 'member',
     stub: 'conversation-error',
+  },
+  'conversation.away': {
+    app: '/messages/c-legacy',
+    mock: 'pages/conversation/away.html',
+    who: 'member',
+    stub: 'conversation-away',
   },
   'conversation.menu': {
     app: '/messages/c-legacy',

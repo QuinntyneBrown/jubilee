@@ -15,32 +15,31 @@ title Class structure — Exchange messages
 
 class ConversationPage <<Angular page>> {
   +messages: Signal<ChatMessage[]>
-  +requests: Signal<RequestCard[]>
-  +outgoing: Signal<OutgoingMessage[]>
-  +load(id: string): void
+  +cards: Signal<RequestCard[]>
+  +outgoing: Signal<Outgoing[]>
+  +open(): void
   +loadEarlier(): void
   +send(): void
-  +retry(clientId: string): void
-  +discard(clientId: string): void
-  +renewPhoto(attachmentId: string): void
+  +retry(outgoing: Outgoing): void
+  +discard(outgoing: Outgoing): void
+  +renewPhoto(message: ChatMessage): void
 }
-class OutgoingMessage <<TypeScript>> {
-  +clientId: string
-  +idempotencyKey: string
-  +text: string
-  +photo: Blob?
+class Outgoing <<TypeScript>> {
+  +key: string
+  +body: string
+  +status: 'sending' | 'failed'
+  +problem: string
+  +photo: OutgoingPhoto?
+}
+class OutgoingPhoto <<TypeScript>> {
+  +blob: Blob
+  +preview: string
   +attachmentId: string?
-  +status: SendStatus
-}
-enum SendStatus {
-  Sending
-  WaitingToSend
-  Failed
 }
 class PhotoAttachmentService <<Angular service>> {
-  +maxBytes: number = 5 MB
-  +maxSide: number = 4096
-  +prepare(file: File): Promise<Blob>
+  +typeOf(file: Blob): Promise<string?>
+  +needsShrinking(file: Blob): boolean
+  +prepare(file: Blob): Promise<PreparedPhoto?>
 }
 class RealtimeService <<Angular service>> {
   +received: Observable<NotificationItem>
@@ -59,6 +58,27 @@ class SendMessageCommandHandler {
 }
 class GetConversationQueryHandler {
   +Handle(query: GetConversationQuery): Task<ConversationDto>
+}
+class UploadAttachmentCommandHandler {
+  +Handle(command: UploadAttachmentCommand): Task<Guid>
+}
+class ImageSanitizer <<static>> {
+  +const int MaxBytes = 5 MB
+  +const int MaxWidth = 8000
+  +Sanitize(bytes: byte[]): SanitizedImage
+}
+interface IMalwareScanner {
+  +Scan(content: byte[], cancellationToken: CancellationToken): Task<ScanVerdict>
+}
+enum ScanVerdict {
+  Clean
+  Infected
+  Unavailable
+}
+interface IMediaStore {
+  +Save(key: string, width: int, format: string, data: byte[]): Task
+  +Read(key: string, width: int, format: string): Task<byte[]?>
+  +Delete(key: string): Task
 }
 class ConversationDto {
   +bool Muted
@@ -98,8 +118,10 @@ class Message {
 class MessageAttachment {
   +Guid Id
   +Guid ConversationId
+  +string UploaderSubject
+  +string Key
   +string ContentType
-  +byte[] Content
+  +byte[]? Content
 }
 class Listing {
   +Guid Id
@@ -107,8 +129,8 @@ class Listing {
   +SetAway(until: DateTimeOffset?): void
 }
 
-ConversationPage "1" o-- "*" OutgoingMessage : tracks
-OutgoingMessage --> SendStatus : has
+ConversationPage "1" o-- "*" Outgoing : tracks
+Outgoing --> "0..1" OutgoingPhoto : carries
 ConversationPage ..> PhotoAttachmentService : uses
 ConversationPage ..> RealtimeService : listens to
 ConversationPage ..> SendMessageCommand : POST messages
@@ -116,6 +138,12 @@ SendMessageCommandHandler ..> SendMessageCommand : handles
 SendMessageCommandHandler --> Conversation : loads / mutates
 GetConversationQueryHandler --> Conversation : loads / marks read
 GetConversationQueryHandler ..> ConversationDto : returns
+UploadAttachmentCommandHandler ..> ImageSanitizer : 1. checks
+UploadAttachmentCommandHandler ..> IMalwareScanner : 2. scans
+UploadAttachmentCommandHandler ..> IMediaStore : 3. saves bytes
+UploadAttachmentCommandHandler --> MessageAttachment : 4. stores
+IMalwareScanner ..> ScanVerdict : answers
+MessageAttachment ..> IMediaStore : bytes named by Key
 ConversationDto "1" *-- "*" RequestCardDto : carries
 Conversation "1" *-- "*" Message : contains
 Message "1" --> "0..1" MessageAttachment : carries

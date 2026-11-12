@@ -1431,7 +1431,6 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("Content")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("ContentType")
@@ -1444,6 +1443,11 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("UploaderSubject")
                         .IsRequired()

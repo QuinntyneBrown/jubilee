@@ -17,9 +17,15 @@ export class InboxListRegion {
   readonly noResults: Locator;
   readonly clearSearch: Locator;
   readonly error: Locator;
+  /** "Show more conversations", under the list while there are more than it shows (L2-056 AC7). */
+  readonly showMore: Locator;
+  /** What a screen reader is told while more conversations load and when they are shown. */
+  readonly moreStatus: Locator;
 
   constructor(page: Page) {
     this.root = page.locator('.inbox__list');
+    this.showMore = this.root.getByRole('button', { name: 'Show more conversations' });
+    this.moreStatus = this.root.locator('[data-testid="more-status"]');
     this.search = this.root.getByRole('searchbox', { name: 'Search messages' });
     this.searchField = this.root.getByRole('search');
     this.rows = this.root.locator('a.thread');
@@ -32,6 +38,11 @@ export class InboxListRegion {
 
   row(name: string | RegExp): Locator {
     return this.rows.filter({ hasText: name });
+  }
+
+  /** How far down the document a row starts, wherever the page is scrolled to. */
+  topOf(row: Locator): Promise<number> {
+    return row.evaluate((element) => element.getBoundingClientRect().top + window.scrollY);
   }
 
   name(row: Locator): Locator {
@@ -53,7 +64,11 @@ export class MessagesPage extends ShellPage implements Screen {
   readonly subtitle: Locator;
   readonly list: InboxListRegion;
   readonly pickPrompt: Locator;
+  /** The whole "Pick a conversation" block of the right pane: its heading and what it says. */
+  readonly pickBlock: Locator;
   readonly emptyState: Locator;
+  /** The whole "Start a conversation" block: its heading, what it says and its action. */
+  readonly emptyBlock: Locator;
   readonly browseBusinesses: Locator;
   readonly errorState: Locator;
   readonly errorReference: Locator;
@@ -65,7 +80,13 @@ export class MessagesPage extends ShellPage implements Screen {
     this.subtitle = this.main.locator('.subtitle');
     this.list = new InboxListRegion(page);
     this.pickPrompt = this.main.getByRole('heading', { name: 'Pick a conversation' });
+    this.pickBlock = this.main
+      .locator('.empty')
+      .filter({ has: page.getByRole('heading', { name: 'Pick a conversation' }) });
     this.emptyState = this.main.getByRole('heading', { name: 'Start a conversation' });
+    this.emptyBlock = this.main
+      .locator('.empty')
+      .filter({ has: page.getByRole('heading', { name: 'Start a conversation' }) });
     this.browseBusinesses = this.main.getByRole('link', { name: 'Browse businesses' });
     this.errorState = this.main.getByRole('alert');
     this.errorReference = this.errorState.locator('code');
@@ -138,6 +159,9 @@ export class ConversationPage extends ShellPage implements Screen {
   /** Everything in the timeline, in order: day separators, bubbles and cards. */
   readonly timeline: Locator;
   readonly showEarlier: Locator;
+  /** A conversation with no message yet: who to say hello to, and the suggested openers (L2-057 AC3). */
+  readonly sayHello: Locator;
+  readonly openers: Locator;
   readonly linksInMessages: Locator;
   readonly away: Locator;
   readonly announcement: Locator;
@@ -173,6 +197,8 @@ export class ConversationPage extends ShellPage implements Screen {
     this.cards = this.log.locator('.request-card');
     this.timeline = this.log.locator('> li');
     this.showEarlier = this.log.getByRole('button', { name: 'Show earlier messages' });
+    this.sayHello = this.main.locator('.chat .empty');
+    this.openers = this.main.locator('.chat .chip');
     this.linksInMessages = this.bubbles.getByRole('link');
     this.away = this.main.locator('[data-testid="away"]');
     this.announcement = this.main.locator('.chat > [role="status"].visually-hidden');
@@ -200,6 +226,31 @@ export class ConversationPage extends ShellPage implements Screen {
 
   bubble(text: string | RegExp): BubbleRegion {
     return new BubbleRegion(this.bubbles.filter({ hasText: text }));
+  }
+
+  /** How far down the screen something starts, as the member sees it now. */
+  screenTop(locator: Locator): Promise<number> {
+    return locator.evaluate((element) => Math.round(element.getBoundingClientRect().top));
+  }
+
+  /** `screenTop` once the page has stopped moving: the same in two looks, 150 ms apart. */
+  async settledScreenTop(locator: Locator): Promise<number> {
+    let last = await this.screenTop(locator);
+    for (let look = 0; look < 20; look++) {
+      await this.page.waitForTimeout(150);
+      const now = await this.screenTop(locator);
+      if (now === last) return now;
+      last = now;
+    }
+    return last;
+  }
+
+  /** The box something takes on the page, wherever the page is scrolled to. */
+  pageBox(locator: Locator): Promise<{ top: number; height: number; width: number }> {
+    return locator.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return { top: box.top + window.scrollY, height: box.height, width: box.width };
+    });
   }
 
   async ready(): Promise<void> {
@@ -298,6 +349,10 @@ export class NewMessageDialog {
   readonly title: Locator;
   readonly description: Locator;
   readonly message: Locator;
+  readonly messageLabel: Locator;
+  readonly hint: Locator;
+  /** How many characters are left, shown for the last 200 (L2-055 AC5). */
+  readonly counter: Locator;
   readonly fieldError: Locator;
   readonly alert: Locator;
   readonly send: Locator;
@@ -306,6 +361,9 @@ export class NewMessageDialog {
 
   constructor(page: Page) {
     this.root = page.getByRole('dialog');
+    this.messageLabel = this.root.locator('.field__label');
+    this.hint = this.root.locator('.field__help');
+    this.counter = this.root.locator('.field__counter');
     this.panel = this.root.locator('.dialog__panel');
     this.title = this.root.locator('.dialog__title');
     this.description = this.root.locator('#dlg-desc');
@@ -315,6 +373,17 @@ export class NewMessageDialog {
     this.send = this.root.getByRole('button', { name: 'Send message' });
     this.cancel = this.root.getByRole('button', { name: 'Cancel' });
     this.close = this.root.getByRole('button', { name: 'Close' });
+  }
+
+  /**
+   * Puts text in the field as a script would, past the limit that stops typing and pasting at
+   * 4,000 characters, to prove the dialog itself still refuses a longer message.
+   */
+  async putPastTheLimit(text: string): Promise<void> {
+    await this.message.evaluate((field, value) => {
+      (field as HTMLTextAreaElement).value = value;
+      field.dispatchEvent(new Event('input', { bubbles: true }));
+    }, text);
   }
 }
 

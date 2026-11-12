@@ -13,90 +13,121 @@ skinparam class {
 ' --------------------------
 title Class structure — Secure uploads
 
-enum MediaUse {
-  ListingPhoto
-  ProductPhoto
-  MessagePhoto
+class UploadAttachmentCommand {
+  +string Subject
+  +Guid ConversationId
+  +byte[] Content
 }
 
-enum MediaStatus {
-  Quarantined
-  Published
-  Rejected
+class UploadAttachmentCommandHandler {
+  +Handle(command: UploadAttachmentCommand): Task<Guid>
 }
 
-enum UploadRejection {
+class ImageSanitizer <<static>> {
+  +const int MaxBytes = 5 MB
+  +const int MaxWidth = 8000
+  +Sanitize(bytes: byte[]): SanitizedImage
+}
+
+class SanitizedImage {
+  +string ContentType
+  +byte[] Content
+  +ImageProblem Problem
+  +bool Accepted
+}
+
+enum ImageProblem {
+  None
   NotAnImage
   TooLarge
-  DimensionsTooLarge
-  Unreadable
-  FailedScan
-}
-
-enum ImageFormat {
-  Jpeg
-  Png
-}
-
-class MediaObject {
-  +Guid Id
-  +Guid OwnerMemberId
-  +MediaUse Use
-  +string StorageKey
-  +ImageFormat Format
-  +long SizeBytes
-  +int Width
-  +int Height
-  +MediaStatus Status
-  +Publish(): void
-  +Reject(reason: UploadRejection): void
-}
-
-class UploadPhotoCommand {
-  +Stream Content
-  +MediaUse Use
-}
-
-class UploadPhotoCommandHandler {
-  +Handle(command: UploadPhotoCommand): Task<Result<MediaObject>>
-}
-
-class ImageInspector {
-  +long MaxBytes = 5 MB
-  +int MaxSide = 8000
-  +Inspect(content: Stream): Result<ImageInfo>
-}
-
-class ImageInfo {
-  +ImageFormat Format
-  +int Width
-  +int Height
-}
-
-class ImageReencoder {
-  +Reencode(content: Stream, info: ImageInfo): Result<Stream>
 }
 
 interface IMalwareScanner {
-  +ScanAsync(storageKey: string): Task<bool>
+  +Scan(content: byte[], cancellationToken: CancellationToken): Task<ScanVerdict>
 }
+
+enum ScanVerdict {
+  Clean
+  Infected
+  Unavailable
+}
+
+class ClamAvMalwareScanner
+class NoMalwareScanner
+class UnavailableMalwareScanner
 
 interface IMediaStore {
-  +PutQuarantineAsync(storageKey: string, content: Stream, format: ImageFormat): Task
-  +PublishAsync(storageKey: string): Task
-  +DeleteAsync(storageKey: string): Task
+  +Save(key: string, width: int, format: string, data: byte[]): Task
+  +Read(key: string, width: int, format: string): Task<byte[]?>
+  +Delete(key: string): Task
 }
 
-UploadPhotoCommandHandler ..> UploadPhotoCommand : handles
-UploadPhotoCommandHandler ..> ImageInspector : inspects
-UploadPhotoCommandHandler ..> ImageReencoder : re-encodes
-UploadPhotoCommandHandler ..> IMalwareScanner : scans
-UploadPhotoCommandHandler ..> IMediaStore : stores
-UploadPhotoCommandHandler --> "1" MediaObject : creates
-ImageInspector ..> ImageInfo : returns
-ImageInfo --> ImageFormat : has
-MediaObject --> MediaStatus : has
-MediaObject --> MediaUse : has
-MediaObject ..> UploadRejection : rejected with
-UploadPhotoCommand --> MediaUse : names
+class FileMediaStore
+
+class MessageAttachment {
+  +Guid Id
+  +Guid ConversationId
+  +string UploaderSubject
+  +string Key
+  +string ContentType
+  +byte[]? Content
+}
+
+class AddPhotoCommand {
+  +string Subject
+  +byte[] Content
+}
+
+class AddPhotoCommandHandler {
+  +Handle(command: AddPhotoCommand): Task<ListingEditorDto>
+}
+
+interface IImageProcessor {
+  +Process(upload: Stream): ProcessedImage
+}
+
+class SkiaImageProcessor {
+  +const int MaxBytes = 5 MB
+  +const int MaxSide = 8000
+  +int[] Widths = 320, 640, 1280
+}
+
+class ProcessedImage {
+  +int Width
+  +int Height
+  +IReadOnlyList<Rendition> Renditions
+}
+
+class Rendition {
+  +int Width
+  +string Format
+  +byte[] Data
+}
+
+class ListingPhoto {
+  +Guid Id
+  +Guid ListingId
+  +string Key
+  +int Position
+}
+
+UploadAttachmentCommandHandler ..> UploadAttachmentCommand : handles
+UploadAttachmentCommandHandler ..> ImageSanitizer : 1. checks
+UploadAttachmentCommandHandler ..> IMalwareScanner : 2. scans
+UploadAttachmentCommandHandler ..> IMediaStore : 3. stores
+UploadAttachmentCommandHandler --> "1" MessageAttachment : 4. creates
+ImageSanitizer ..> SanitizedImage : returns
+SanitizedImage --> ImageProblem : has
+IMalwareScanner ..> ScanVerdict : answers
+ClamAvMalwareScanner ..|> IMalwareScanner
+NoMalwareScanner ..|> IMalwareScanner
+UnavailableMalwareScanner ..|> IMalwareScanner
+FileMediaStore ..|> IMediaStore
+AddPhotoCommandHandler ..> AddPhotoCommand : handles
+AddPhotoCommandHandler ..> IImageProcessor : 1. checks and re-encodes
+AddPhotoCommandHandler ..> IMediaStore : 2. stores each rendition
+AddPhotoCommandHandler --> "1" ListingPhoto : 3. creates
+SkiaImageProcessor ..|> IImageProcessor
+IImageProcessor ..> ProcessedImage : returns
+ProcessedImage "1" *-- "*" Rendition : contains
 @enduml

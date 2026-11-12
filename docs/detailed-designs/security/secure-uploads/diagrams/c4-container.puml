@@ -3,19 +3,21 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Secure uploads
 
-Person(owner, "Owner", "Uploads and views photos")
+Person(owner, "Owner", "Uploads listing photos")
+Person(member, "Member", "Attaches photos to messages")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "Photo picker with early type and size check")
-  Container(api, "Jubilee API", "ASP.NET Core", "Inspects magic bytes. Re-encodes. Stores. Requests the scan")
-  ContainerDb(db, "Jubilee database", "SQL Server", "MediaObject records with status")
-  ContainerDb(media, "Media storage", "Object storage + CDN", "Private quarantine container and public container on a cookieless domain")
+  Container(web, "Jubilee Web", "Angular single-page application", "Attach a photo in the composer and the Photos area of Edit listing")
+  Container(api, "Jubilee API", "ASP.NET Core", "Checks magic bytes and size. Removes metadata. Scans message photos. Stores and serves")
+  ContainerDb(db, "Jubilee database", "SQL Server", "MessageAttachment and ListingPhoto rows with the random key")
+  ContainerDb(media, "Media store", "Folder outside the web root", "Photo bytes under random keys")
 }
-System_Ext(scanner, "Malware scanner", "Scans quarantine objects")
+System_Ext(scanner, "Malware scanner", "clamd daemon")
 
 Rel(owner, web, "Uses", "HTTPS")
+Rel(member, web, "Uses", "HTTPS")
 Rel(web, api, "Posts photo to", "multipart/HTTPS")
-Rel(api, media, "Writes quarantine and published objects to", "HTTPS")
-Rel(api, scanner, "Requests scan from", "HTTPS")
-Rel(api, db, "Records MediaObject in", "EF Core")
-Rel(owner, media, "Fetches published photo from", "HTTPS without cookies")
+Rel(api, scanner, "Scans a message photo before storing it", "INSTREAM/TCP 3310")
+Rel(api, media, "Saves and reads photo bytes", "File system")
+Rel(api, db, "Records the row in", "EF Core")
+Rel(web, api, "Fetches /media/{key} and signed /api/attachments links", "HTTPS")
 @enduml

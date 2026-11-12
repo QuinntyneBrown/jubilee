@@ -13,35 +13,44 @@ skinparam class {
 ' --------------------------
 title Class structure — Start a conversation
 
-class NewMessageDialog <<Angular dialog>> {
-  +listing: ListingSummary
-  +text: FormControl<string>
-  +state: DialogState
-  -idempotencyKey: string
+class NewMessageDialog <<CDK dialog>> {
+  +data: NewMessageData
+  +text: Signal<string>
+  +view: Signal<View>
+  -key: string
   +send(): void
-  +remaining(): number
+  +close(): void
 }
-enum DialogState {
-  Default
-  Invalid
-  Busy
-  Failed
+class NewMessageData <<TypeScript>> {
+  +slug: string
+  +businessName: string
+  +answeredBy: string
+  +intro: string
+}
+enum View {
+  form
+  invalid
+  busy
+  failed
 }
 class MessagesApi <<service contract>> {
-  +start(listingSlug: string, body: string, idempotencyKey: string): Observable<StartedConversationDto>
+  +start(listingSlug: string, body: string, idempotencyKey: string): Observable<StartedConversation>
 }
 class ConversationsController {
   +Start(request: StartConversationRequest): Task<IActionResult>
 }
 class StartConversationCommand {
   +string Subject
+  +string Name
   +string ListingSlug
   +string Body
   +string IdempotencyKey
 }
-class StartConversationCommandValidator {
-  +const int MaxLength = 4000
-  +Validate(command: StartConversationCommand): ValidationResult
+class ConversationRules <<static>> {
+  +const int MessagesPerWindow = 30
+  +const int NewConversationsPerDay = 10
+  +CleanBody(body: string, hasPhoto: bool): string
+  +EnsureMessageBudget(db: IAppDbContext, sender: string, now: DateTimeOffset): Task
 }
 class StartConversationCommandHandler {
   +Handle(command: StartConversationCommand): Task<StartedConversationDto>
@@ -59,6 +68,7 @@ class Conversation {
   +NextMessageTime(now: DateTimeOffset): DateTimeOffset
 }
 class Message {
+  +const int MaxBodyLength = 4000
   +Guid Id
   +string SenderSubject
   +string Body
@@ -66,12 +76,13 @@ class Message {
   +string IdempotencyKey
 }
 
-NewMessageDialog --> DialogState : has
+NewMessageDialog --> NewMessageData : opened with
+NewMessageDialog --> View : has
 NewMessageDialog ..> MessagesApi : calls
 MessagesApi ..> ConversationsController : POST /api/conversations
 ConversationsController ..> StartConversationCommand : sends
-StartConversationCommandValidator ..> StartConversationCommand : validates
 StartConversationCommandHandler ..> StartConversationCommand : handles
+StartConversationCommandHandler ..> ConversationRules : checks text and limits
 StartConversationCommandHandler ..> StartedConversationDto : returns
 StartConversationCommandHandler --> Conversation : finds or creates
 StartConversationCommandHandler ..> Message : looks up by sender and idempotency key

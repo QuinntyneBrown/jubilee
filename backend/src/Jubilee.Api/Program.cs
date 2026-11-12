@@ -17,6 +17,13 @@ if (string.Equals(builder.Configuration["StaffSignIn:Provider"], "Development", 
         $"StaffSignIn:Provider=Development is only allowed in the Development environment, not {builder.Environment.EnvironmentName}.");
 }
 
+// On a developer's machine, and in the e2e API, no malware scanner runs: say so rather than refuse
+// every photo. Everywhere else a missing scanner means no photo is accepted (L2-138 AC4, ADR 0051).
+if (builder.Environment.IsDevelopment() && string.IsNullOrWhiteSpace(builder.Configuration["Malware:Scanner"]))
+{
+    builder.Configuration["Malware:Scanner"] = "none";
+}
+
 builder.Services.AddApplication();
 // The caller's address (ADR 0040): X-Forwarded-For is believed only from server.js on loopback, and
 // only its last entry, the one App Service's front end appended. ASPNETCORE_FORWARDEDHEADERS_ENABLED is
@@ -97,6 +104,11 @@ builder.Services.AddAuthorizationBuilder()
     .AddStaffPolicies();
 
 var app = builder.Build();
+
+if (app.Services.GetRequiredService<Jubilee.Application.Abstractions.IMalwareScanner>() is Jubilee.Infrastructure.Media.NoMalwareScanner)
+{
+    app.Logger.LogWarning("Malware:Scanner is none: message photos are stored without a malware scan. This is for development only.");
+}
 
 app.UseForwardedHeaders();
 app.UseMiddleware<StaffProxyMiddleware>();

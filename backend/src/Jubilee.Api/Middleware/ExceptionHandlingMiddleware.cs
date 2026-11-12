@@ -1,3 +1,4 @@
+using Jubilee.Api.Controllers;
 using Jubilee.Api.Errors;
 using Jubilee.Application.Errors;
 
@@ -30,6 +31,20 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
     {
         if (exception is NotFoundException notFound)
         {
+            if (notFound.Code == "conversation_not_found")
+            {
+                // Asking for a conversation that is not yours is answered as if there were none, and
+                // the attempt is logged (L2-133 AC2).
+                logger.LogWarning(
+                    "Refused ({Code}) for {Actor} from {Address} on {Method} {Path}. CorrelationId {CorrelationId}",
+                    notFound.Code,
+                    context.User.ToViewer().Subject ?? "anonymous",
+                    context.Connection.RemoteIpAddress,
+                    context.Request.Method,
+                    LoggedPath.Of(context),
+                    context.TraceIdentifier);
+            }
+
             return ProblemWriter.WriteAsync(
                 context, StatusCodes.Status404NotFound, "We can't find that.", notFound.Message, notFound.Code);
         }

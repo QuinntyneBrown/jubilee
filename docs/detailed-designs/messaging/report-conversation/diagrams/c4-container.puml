@@ -3,16 +3,18 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Report a conversation
 
-Person(member, "Member", "Mutes and reports and blocks")
+Person(member, "Member or Owner", "Mutes and reports and may block")
 Person(verifier, "Verification team member", "Reviews reports")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "Conversation page with menu and report dialog and admin report view")
-  Container(api, "Jubilee API", "ASP.NET Core", "Mute and report endpoints and staff access policy")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and reports and audit entries")
+  Container(web, "Jubilee Web", "Angular single-page application", "Conversation page with menu and report dialog")
+  Container(admin, "Jubilee Admin", "Angular single-page application", "Reports list and report page with the reported conversation")
+  Container(api, "Jubilee API", "ASP.NET Core", "Mute and report endpoints and the admin report endpoints")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and reports and audit records")
 }
 
 Rel(member, web, "Uses", "HTTPS")
-Rel(verifier, web, "Uses", "HTTPS")
-Rel(web, api, "Calls mute and report and admin endpoints", "JSON/HTTPS")
+Rel(verifier, admin, "Uses with a staff session", "HTTPS")
+Rel(web, api, "Calls mute and report endpoints", "JSON/HTTPS")
+Rel(admin, api, "Calls /api/admin/reports", "JSON/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")
 @enduml

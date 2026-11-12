@@ -370,6 +370,7 @@ export class BusinessPage {
       data: {
         slug: listing.slug,
         businessName: listing.name,
+        answeredBy: listing.ownerName ? who.split(' ')[0] : listing.name,
         intro: replies ? `${who}${replies}.` : `Your message goes to ${who}.`,
       },
       ariaLabelledBy: 'dlg-title',

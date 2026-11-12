@@ -4,7 +4,9 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  Injector,
   OnInit,
+  afterNextRender,
   computed,
   effect,
   inject,
@@ -40,7 +42,7 @@ import {
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { MessagesStore } from '../../services/messages.store';
-import { clockTime, dayHeading, dayKey, newKey } from 'api';
+import { awayDay, clockTime, dayHeading, dayKey, newKey, tryAgainIn } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
 import { RealtimeService } from '../../services/realtime.service';
 import { ConnectionService } from '../../services/offline/connection.service';
@@ -145,6 +147,8 @@ export class ConversationPage implements OnInit {
   private readonly dialog = inject(Dialog);
   private readonly photos = inject(PhotoAttachmentService);
   private readonly realtime = inject(RealtimeService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   protected readonly starters = STARTERS;
   protected readonly state = signal<LoadState<Conversation>>({ status: 'loading' });
@@ -179,6 +183,17 @@ export class ConversationPage implements OnInit {
     const replies = conversation.replies ? ` · ${REPLIES[conversation.replies]}` : '';
     return `${conversation.counterpart.name}${replies}`;
   });
+
+  /** The first name of the other side: "Trevor" of "Trevor Chew" (L2-057 AC3, L2-062 AC1). */
+  protected readonly firstName = computed(
+    () => this.conversation()?.counterpart.name.trim().split(' ')[0] ?? '',
+  );
+
+  /** The day the owner is back, while they are away; null once that day has come (L2-062). */
+  protected readonly awayUntil = computed(() => this.awayDayOf(this.conversation()));
+
+  /** The return day the member has been told of in this visit: it is said once (L2-062 AC1). */
+  private awayTold: string | null = null;
 
   protected readonly entries = computed<Entry[]>(() => {
     const now = this.clock.now();
@@ -235,9 +250,14 @@ export class ConversationPage implements OnInit {
       if (item.kind === 'message' && item.target === `/messages/${this.id()}`) this.refresh(true);
       else if (item.kind === 'request') this.refresh(false);
     });
-    // Keep the newest message in view after the log changes.
+    // Keep the newest message in view after the log changes, unless earlier messages were just
+    // added above: then the member stays where they were reading (L2-057 AC7).
     effect(() => {
       this.entries();
+      if (this.keepPlace) {
+        this.keepPlace = false;
+        return;
+      }
       queueMicrotask(() => this.composer()?.nativeElement.scrollIntoView?.({ block: 'end' }));
     });
   }
@@ -253,6 +273,7 @@ export class ConversationPage implements OnInit {
   protected open(): void {
     this.state.set({ status: 'loading' });
     this.outgoing.set([]);
+    this.awayTold = null;
     this.api.open(this.id()).subscribe({
       next: (conversation) => {
         this.messages.set(conversation.messages);
@@ -264,6 +285,7 @@ export class ConversationPage implements OnInit {
         // Opening marks the conversation read, so the counts change.
         this.store.load();
         this.navigation.load();
+        this.tellAway();
       },
       error: (error: unknown) => {
         if (this.isOfflineFailure(error)) {
@@ -299,6 +321,30 @@ export class ConversationPage implements OnInit {
     this.hasMore.set(saved.data.hasMore);
     this.muted.set(saved.data.muted);
     this.state.set({ status: 'loaded', value: saved.data });
+  }
+
+  private awayDayOf(conversation: Conversation | null): string | null {
+    const until = conversation?.awayUntil;
+    const now = this.clock.now();
+    return until && Date.parse(until) > now.getTime() ? awayDay(until, now) : null;
+  }
+
+  /**
+   * The toast of L2-062 AC1: the owner is away until a day. It is shown when the conversation
+   * opens, or at the next message sent when the away period became known while it was open, and
+   * once only: a toast at every send would sit over "Send". Nothing is said once the day has
+   * come (AC2).
+   */
+  private tellAway(): void {
+    const conversation = this.conversation();
+    const day = this.awayDayOf(conversation);
+    if (!conversation || !day || conversation.awayUntil === this.awayTold) return;
+    this.awayTold = conversation.awayUntil;
+    this.toasts.show({
+      tone: 'info',
+      title: `${this.firstName()} is away until ${day}`,
+      text: 'They’ll see your message when they’re back.',
+    });
   }
 
   /** Reads the latest messages again without a loading state, and says so when a reply came. */
@@ -380,12 +426,38 @@ export class ConversationPage implements OnInit {
     void this.queue.remove(queued);
   }
 
+  /** Set while earlier messages are added, so the log is not scrolled to its end for them. */
+  private keepPlace = false;
+
   protected loadEarlier(): void {
     const first = this.messages()[0];
     if (!first || this.loadingEarlier()) return;
     this.loadingEarlier.set(true);
     this.api.open(this.id(), first.id).subscribe({
       next: (page) => {
+        // The message at the top is where the member is reading: it stays where it is on the screen.
+        const reading = this.host.nativeElement.querySelector<HTMLElement>(
+          `[data-message="${first.id}"]`,
+        );
+        const top = reading?.getBoundingClientRect().top;
+        this.keepPlace = page.messages.length > 0 || (page.requests ?? []).length > 0;
+        const restore = (): void => {
+          if (reading && top !== undefined) {
+            window.scrollBy({
+              top: reading.getBoundingClientRect().top - top,
+              behavior: 'instant',
+            });
+          }
+        };
+        // Once when the messages are in the page, and once more after the browser has settled its
+        // own scroll position for what was added above.
+        afterNextRender(
+          () => {
+            restore();
+            requestAnimationFrame(restore);
+          },
+          { injector: this.injector },
+        );
         this.messages.update((current) => [...page.messages, ...current]);
         this.cards.update((cards) => mergeCards(page.requests ?? [], cards));
         this.hasMore.set(page.hasMore);
@@ -523,6 +595,7 @@ export class ConversationPage implements OnInit {
           list.some((m) => m.id === message.id) ? list : [...list, message],
         );
         this.store.load();
+        this.tellAway();
       },
       error: (error: unknown) => {
         if (
@@ -557,11 +630,19 @@ function mergeCards(shown: RequestCard[], read: RequestCard[]): RequestCard[] {
 }
 
 function problemOf(error: unknown, upload = false): string {
-  if (upload && error instanceof HttpErrorResponse && error.status === 422)
-    return 'Not sent. Use a JPG or PNG under 5 MB.';
+  if (upload && error instanceof HttpErrorResponse) {
+    // The photo was scanned, or could not be, before anything was stored (L2-060 AC9).
+    const code = (error.error as { code?: string } | null)?.code;
+    if (error.status === 422 && code === 'FAILED_SCAN')
+      return 'Not sent. This photo didn’t pass our safety check.';
+    if (error.status === 503 && code === 'SCAN_UNAVAILABLE')
+      return 'Not sent. We couldn’t check this photo just now.';
+    if (error.status === 422) return 'Not sent. Use a JPG or PNG under 5 MB.';
+  }
   if (error instanceof HttpErrorResponse) {
     const code = (error.error as { code?: string } | null)?.code;
-    if (error.status === 429) return 'Not sent. You’re sending quickly; wait a few minutes.';
+    // The words of L2-137 AC1, with the wait the API named.
+    if (error.status === 429) return `Not sent. You’re doing that a lot. ${tryAgainIn(error)}`;
     if (error.status === 403 && code === 'EMAIL_UNCONFIRMED')
       return 'Not sent. Confirm your e-mail first.';
     if (error.status === 422) return 'Not sent. Check the message.';

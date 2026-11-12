@@ -31,22 +31,23 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
 end box
 member -> page : Press Enter or the send button
 page -> page : Ignore empty or whitespace-only text with no photo (L2-058)
-page -> page : Create a pending message with a new idempotency key
+page -> page : Create an Outgoing item with a new idempotency key
 page --> member : Clear composer and show "Sending…" (L2-058)
 page -> client : send(id, text, key)
 client -> controller : POST /api/conversations/{id}/messages with idempotencyKey
-controller -> controller : Authenticate and apply endpoint policy
+controller -> controller : Authenticate and check RequiresConfirmedEmail
 controller -> handler : Send SendMessageCommand
 handler -> db : Load conversation for a participant (L2-133)
-db --> handler : Conversation and listing away date
+db --> handler : Conversation and listing
 handler -> db : Look up (SenderSubject, IdempotencyKey) (L2-132)
 alt key already stored
   db --> handler : Original message
 else new key
   db --> handler : No row
+  handler -> handler : ConversationRules.CleanBody and 30 messages in 10 minutes (L2-137)
   handler -> entity : NextMessageTime(now)
   entity --> handler : Time never before the last message
-  handler -> db : Save message
+  handler -> db : Save message and the other side's notification
   db --> handler : Commit result
 end
 handler --> controller : MessageDto
@@ -54,8 +55,8 @@ controller --> client : 201 Created
 alt response received
   client --> page : Confirmed message
   page --> member : Replace "Sending…" with the time
-  opt owner away date is in the future
-    page --> member : Toast "{Owner} is away until {day}." (L2-062)
+  opt awayUntil is later than the clock and that day was not said in this visit
+    page --> member : Info toast "{Owner first name} is away until {day}" (L2-062)
   end
 else request fails
   client --> page : Network or server error

@@ -13,7 +13,8 @@ import {
 
 /** Contract of the messaging endpoints (L2-055 to L2-063). */
 export interface MessagesApi {
-  inbox(search?: string): Observable<Inbox>;
+  /** The 50 conversations after the first `skip`, newest first, with the counts of them all (L2-056 AC7). */
+  inbox(search?: string, skip?: number): Observable<Inbox>;
   open(id: string, before?: string): Observable<Conversation>;
   start(listingSlug: string, body: string, idempotencyKey: string): Observable<StartedConversation>;
   send(
@@ -38,8 +39,10 @@ export const MESSAGES_API = new InjectionToken<MessagesApi>('MESSAGES_API');
 export class HttpMessagesApi implements MessagesApi {
   private readonly http = inject(HttpClient);
 
-  inbox(search?: string): Observable<Inbox> {
-    const params = search ? new HttpParams().set('q', search) : undefined;
+  inbox(search?: string, skip?: number): Observable<Inbox> {
+    let params = new HttpParams();
+    if (search) params = params.set('q', search);
+    if (skip) params = params.set('skip', skip);
     // The inbox is also the list beside an open conversation, so its store decides about the offline page.
     return this.http.get<Inbox>('/api/conversations', {
       params,

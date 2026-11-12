@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Upload a photo
+title UML sequence behaviour — Upload a message photo
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,59 +14,57 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Owner" as user
+actor "Member" as user
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "PhotoPicker" as picker
-  participant "MediaApi" as client
+  participant "ConversationPage" as page
+  participant "MessagesApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "MediaController" as controller
+  participant "ConversationsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "UploadPhotoCommandHandler" as handler
-  participant "ImageInspector" as inspector
-  participant "ImageReencoder" as reencoder
+  participant "UploadAttachmentCommandHandler" as handler
+  participant "ImageSanitizer" as sanitizer
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  participant "ObjectStorageMediaStore" as store
-  participant "MalwareScannerClient" as scan
+  participant "ClamAvMalwareScanner" as scan
+  participant "FileMediaStore" as store
   database "Jubilee database" as db
 end box
-participant "Malware scanner" as scanner
-user -> picker : Choose a photo
-picker -> picker : Early check of type and size
-picker -> client : upload(file, use)
-client -> controller : POST /api/media/photos
-controller -> controller : Authenticate, verify anti-CSRF token, cap body at 5 MB
-controller -> handler : Send UploadPhotoCommand
-handler -> inspector : Inspect magic bytes, size and header dimensions (L2-138)
-inspector --> handler : ImageInfo or rejection
-alt Not JPEG or PNG, over 5 MB, or over 8,000 pixels on a side
-  handler --> controller : UploadRejection
-  controller --> client : 422 with per-field code. Nothing stored (L2-138)
-else Inspection passed
-  handler -> reencoder : Decode and re-encode without metadata (L2-138)
-  reencoder --> handler : New image bytes
-  handler -> store : PutQuarantineAsync(random key, bytes, format)
-  store --> handler : Stored in private container
-  handler -> scan : ScanAsync(key)
-  scan -> scanner : Scan object
-  scanner --> scan : Verdict
-  scan --> handler : Clean or not
-  alt Infected, scan error or timeout
-    handler -> store : DeleteAsync(key)
-    store --> handler : Deleted
-    handler --> controller : UploadRejection FailedScan
-    controller --> client : 422 with per-field code. Never served (L2-138)
+participant "clamd" as scanner
+user -> page : Send a message with a photo
+page -> client : attach(id, blob)
+client -> controller : POST /api/conversations/{id}/attachments
+controller -> controller : Authenticate, verify anti-CSRF token and confirmed e-mail, cap body at 6 MB
+controller -> handler : Send UploadAttachmentCommand
+handler -> db : Load conversation for a participant (L2-133) and count uploads
+db --> handler : Conversation
+handler -> sanitizer : Sanitize(bytes): magic bytes, size and width (L2-138)
+alt Not JPEG or PNG, over 5 MB, or over 8,000 pixels wide
+  sanitizer --> handler : Refused with ImageProblem
+  handler --> controller : InvalidImageException
+  controller --> client : 422 INVALID_IMAGE or TOO_LARGE. Nothing stored (L2-138)
+else Check passed
+  sanitizer --> handler : Bytes without metadata
+  handler -> scan : Scan(bytes)
+  scan -> scanner : INSTREAM with the bytes, 10 second limit
+  scanner --> scan : One line of answer, or none in time
+  scan --> handler : ScanVerdict
+  alt Infected
+    handler --> controller : Refused
+    controller --> client : 422 FAILED_SCAN. Nothing stored, never served (L2-138)
+  else Unavailable
+    handler --> controller : Refused
+    controller --> client : 503 SCAN_UNAVAILABLE. Nothing stored (L2-138)
   else Clean
-    handler -> store : PublishAsync(key) with fixed Content-Type
-    store --> handler : Published on the media domain
-    handler -> db : Save MediaObject with status Published
+    handler -> store : Save(random key of 128 bits, 0, jpeg or png, bytes)
+    store --> handler : Written outside the web root
+    handler -> db : Save MessageAttachment with Key and ContentType
     db --> handler : Commit result
-    handler --> controller : MediaObject
-    controller --> client : 201 Created with media id and URL
+    handler --> controller : Attachment ID
+    controller --> client : 201 Created with the id
   end
 end
-client --> picker : Result
-picker --> user : Show the photo or "Use a JPG or PNG under 5 MB."
+client --> page : Result
+page --> user : Send the message with the photo, or say why it was not sent
 @enduml

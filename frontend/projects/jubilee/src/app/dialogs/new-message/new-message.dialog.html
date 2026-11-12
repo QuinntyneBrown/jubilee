@@ -17,7 +17,8 @@
       label="Your message"
       controlId="d-msg"
       required
-      [hint]="'Be specific and ' + data.businessName + ' can answer in one reply.'"
+      [hint]="'Be specific and ' + data.answeredBy + ' can answer in one reply.'"
+      [counter]="counter()"
       [error]="view() === 'invalid' ? error() : null"
     >
       <textarea
@@ -26,6 +27,7 @@
         rows="5"
         cdkFocusInitial
         required
+        [attr.maxlength]="max"
         [readOnly]="busy()"
         [ngModel]="text()"
         (ngModelChange)="text.set($event)"

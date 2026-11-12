@@ -34,6 +34,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
 
     public InMemoryMediaStore Media { get; } = new();
 
+    public FakeMalwareScanner Scanner { get; } = new();
+
     public FakeEmailSender Emails { get; } = new();
 
     public FakeBotChallenge Bot { get; } = new();
@@ -91,6 +93,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             services.AddSingleton<Jubilee.Application.Maintenance.IMaintenanceState>(Maintenance);
             services.RemoveAll<Jubilee.Application.Abstractions.IMediaStore>();
             services.AddSingleton<Jubilee.Application.Abstractions.IMediaStore>(Media);
+            services.RemoveAll<Jubilee.Application.Abstractions.IMalwareScanner>();
+            services.AddSingleton<Jubilee.Application.Abstractions.IMalwareScanner>(Scanner);
             services.RemoveAll<Jubilee.Application.Staff.IStaffIdentityClient>();
             services.AddSingleton<Jubilee.Application.Staff.IStaffIdentityClient>(StaffDirectory);
             services.RemoveAll<Jubilee.Application.Accounts.IEmailSender>();
@@ -185,6 +189,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         Emails.Clear();
         Emails.Failing = false;
         Media.Clear();
+        Scanner.Reset();
         Bot.Passes = true;
         Google.Identity = new("google-1", "g@example.com", true, "Gina", "Gordon");
         Logs.Clear();

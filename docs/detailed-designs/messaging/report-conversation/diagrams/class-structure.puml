@@ -14,15 +14,16 @@ skinparam class {
 title Class structure — Report a conversation
 
 class ReportConversationDialog <<CDK dialog>> {
-  +business: string
-  +canBlock: boolean
-  +reason: FormControl<string>
-  +block: FormControl<boolean>
-  +submit(): void
+  +data: ReportConversationData
+  +what: Signal<string>
+  +block: Signal<boolean>
+  +send(): void
+  +close(): void
 }
-class MessageTextComponent <<Angular component>> {
-  +text: string
-  +segments(): TextSegment[]
+class ReportConversationData <<TypeScript>> {
+  +conversationId: string
+  +businessName: string
+  +canBlock: boolean
 }
 class ReportConversationCommand {
   +string Subject
@@ -33,6 +34,9 @@ class ReportConversationCommand {
 class ReportConversationCommandHandler {
   +Handle(command: ReportConversationCommand): Task
 }
+class ConversationRules <<static>> {
+  +const int ReportsPerDay = 10
+}
 class ConversationReport {
   +Guid Id
   +Guid ConversationId
@@ -41,6 +45,8 @@ class ConversationReport {
   +ReportStatus Status
   +DateTimeOffset CreatedAt
   +{static} File(conversationId: Guid, reporterSubject: string, reason: string, now: DateTimeOffset): ConversationReport
+  +StartReview(): void
+  +Resolve(note: string, now: DateTimeOffset): void
 }
 enum ReportStatus {
   Open
@@ -60,25 +66,44 @@ class Message {
   +bool FromOwner
   +bool HiddenFromMember
 }
-class ReportedConversationAccessPolicy {
-  +Authorize(staff: Member, conversationId: Guid): Task<bool>
+class OpenReportCommand {
+  +Reviewer Reviewer
+  +Guid ReportId
 }
-class AuditEntry {
+class OpenReportCommandHandler {
+  +Handle(command: OpenReportCommand): Task<ReportDetailDto>
+}
+class ReportDetailDto {
   +Guid Id
-  +Guid ActorMemberId
+  +string Status
+  +ReportedConversationDto? Conversation
+}
+class ReportedConversationDto {
+  +string MemberName
+  +IReadOnlyList<ReportedMessageDto> Messages
+}
+class AuditRecord {
+  +Guid Id
+  +string Actor
+  +string ActorName
   +string Action
-  +string Target
-  +DateTimeOffset OccurredAt
+  +string TargetType
+  +string TargetId
   +string Reason
 }
 
+ReportConversationDialog --> ReportConversationData : opened with
 ReportConversationDialog ..> ReportConversationCommand : POST report
 ReportConversationCommandHandler ..> ReportConversationCommand : handles
+ReportConversationCommandHandler ..> ConversationRules : counts the day's reports
 ReportConversationCommandHandler --> ConversationReport : files at most one unresolved
 ReportConversationCommandHandler --> Conversation : blocks when the member chose it
 ConversationReport --> ReportStatus : has
 ConversationReport "*" --> "1" Conversation : attaches
 Conversation "1" *-- "*" Message : contains
-ReportedConversationAccessPolicy ..> ConversationReport : requires an open
-ReportedConversationAccessPolicy ..> AuditEntry : records
+OpenReportCommandHandler ..> OpenReportCommand : handles
+OpenReportCommandHandler ..> ConversationReport : requires an unresolved
+OpenReportCommandHandler ..> ReportDetailDto : returns
+ReportDetailDto --> "0..1" ReportedConversationDto : carries while open
+OpenReportCommandHandler ..> AuditRecord : records conversation.viewed
 @enduml

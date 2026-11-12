@@ -1,5 +1,12 @@
 import { expect, test } from '../fixtures/jb-test';
-import { legacyMessages, photoMessages, requestCards, stubMessaging } from '../fixtures/messaging';
+import {
+  legacyMessages,
+  manyRows,
+  ownerRows,
+  photoMessages,
+  requestCards,
+  stubMessaging,
+} from '../fixtures/messaging';
 import { brokenLargeJpeg, largePng, pdfNamedJpeg, smallJpeg } from '../fixtures/photos';
 import { BusinessPage } from '../pages/business.page';
 import { NotFoundPage } from '../pages/not-found.page';
@@ -56,7 +63,49 @@ test.describe('the inbox (L2-056)', () => {
 
     await expect(messages.subtitle).toHaveText('No conversations yet');
     await expect(messages.emptyState).toBeVisible();
+    await expect(messages.emptyBlock).toContainText(
+      'Open a business and tap Message to ask a question, get a quote or book a time. Replies land here.',
+    );
     await expect(messages.browseBusinesses).toHaveAttribute('href', '/');
+  });
+
+  test('AC5: on a wide screen with no conversation open, the right pane says to pick one', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1024);
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages');
+
+    await expect(messages.pickPrompt).toBeVisible();
+    await expect(messages.pickBlock).toContainText('Choose one on the left to read and reply.');
+
+    await messages.setWidth(1023);
+    await expect(messages.pickPrompt).toBeHidden();
+    await expect(messages.list.rows).toHaveCount(4);
+  });
+
+  test('AC6: an owner’s conversations with members are named with the member and the business', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { rows: ownerRows() });
+    await jb.goto('/messages');
+
+    await expect(messages.list.rows).toHaveCount(4);
+    await expect(messages.list.name(messages.list.rows.nth(0))).toHaveText('Legacy Financial');
+    await expect(messages.list.name(messages.list.rows.nth(1))).toHaveText(
+      'Samuel Park · Luzandre.com',
+    );
+    await expect(messages.list.name(messages.list.rows.nth(3))).toHaveText(
+      'Ruth Mensah · Luzandre.com',
+    );
+    await expect(messages.list.snippet(messages.list.rows.nth(1))).toContainText('Unread.');
   });
 
   test('the inbox says it is loading', async ({ page, jb }) => {
@@ -91,6 +140,179 @@ test.describe('the inbox (L2-056)', () => {
   });
 });
 
+test.describe('a long inbox (L2-056 AC7)', () => {
+  test('AC7: the newest 50 are listed with the counts of the whole inbox, and "Show more conversations" adds the rest', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(64) });
+    await jb.goto('/messages');
+
+    await expect(messages.subtitle).toHaveText('64 conversations · 2 unread');
+    await expect(messages.list.rows).toHaveCount(50);
+
+    await messages.list.showMore.click();
+
+    await expect(messages.list.rows).toHaveCount(64);
+    await expect(messages.list.name(messages.list.rows.nth(63))).toHaveText('Business 60');
+    await expect(messages.list.moreStatus).toHaveText('14 more conversations shown.');
+    await expect(messages.list.showMore).toHaveCount(0);
+    expect(fake.pages).toEqual([50]);
+    await expect(messages.subtitle).toHaveText('64 conversations · 2 unread');
+  });
+
+  test('AC7: with 50 conversations or fewer there is no button', async ({ page, jb }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { rows: manyRows(50) });
+    await jb.goto('/messages');
+
+    await expect(messages.list.rows).toHaveCount(50);
+    await expect(messages.list.showMore).toHaveCount(0);
+  });
+
+  test('AC7: by keyboard the button adds 50 at a time and keeps focus; when it goes, focus is on the first row added', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(120) });
+    await jb.goto('/messages');
+    await expect(messages.list.rows).toHaveCount(50);
+
+    await messages.list.showMore.focus();
+    const lastShown = await messages.list.topOf(messages.list.rows.nth(49));
+    await page.keyboard.press('Enter');
+
+    await expect(messages.list.rows).toHaveCount(100);
+    await expect(messages.list.moreStatus).toHaveText('50 more conversations shown.');
+    await expect(messages.list.showMore).toBeFocused();
+    // The rows are added below: what was shown has not moved.
+    expect(await messages.list.topOf(messages.list.rows.nth(49))).toBe(lastShown);
+
+    await page.keyboard.press('Enter');
+
+    await expect(messages.list.rows).toHaveCount(120);
+    await expect(messages.list.showMore).toHaveCount(0);
+    await expect(messages.list.rows.nth(100)).toBeFocused();
+    expect(fake.pages).toEqual([50, 100]);
+  });
+
+  test.describe('on a phone', () => {
+    test.use({ hasTouch: true, viewport: { width: 360, height: 760 } });
+
+    test('AC7: the button is pressed by touch and the list grows', async ({ page, jb }) => {
+      const messages = new MessagesPage(page);
+      await jb.signInAs('member');
+      await stubMessaging(page, { rows: manyRows(51) });
+      await jb.goto('/messages');
+      await expect(messages.list.rows).toHaveCount(50);
+
+      await messages.list.showMore.tap();
+
+      await expect(messages.list.rows).toHaveCount(51);
+      await expect(messages.list.moreStatus).toHaveText('1 more conversation shown.');
+    });
+  });
+
+  test('AC7: while more load the button is busy, says so, and cannot ask twice', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(64), paging: 'hang' });
+    await jb.goto('/messages');
+
+    await messages.list.showMore.click();
+
+    await expect(messages.list.showMore).toHaveAttribute('aria-busy', 'true');
+    await expect(messages.list.moreStatus).toHaveText('Loading more conversations…');
+    await messages.list.showMore.click({ force: true });
+    expect(fake.pages).toEqual([50]);
+  });
+
+  test('AC7: when more cannot be loaded the rows stay, a toast says so and the button tries again', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    const toasts = new Toasts(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(64), paging: 'fail' });
+    await jb.goto('/messages');
+
+    await messages.list.showMore.click();
+
+    await expect(toasts.withTitle('We couldn’t load more conversations')).toContainText(
+      'Try again.',
+    );
+    await expect(messages.list.rows).toHaveCount(50);
+
+    fake.paging = 'ok';
+    await messages.list.showMore.click();
+
+    await expect(messages.list.rows).toHaveCount(64);
+  });
+
+  test('AC7: a search is paged the same way', async ({ page, jb }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { rows: manyRows(64) });
+    await jb.goto('/messages');
+    await expect(messages.list.rows).toHaveCount(50);
+
+    await messages.list.search.fill('business');
+
+    await expect(messages.list.name(messages.list.rows.first())).toHaveText('Business 01');
+    await expect(messages.list.rows).toHaveCount(50);
+    await messages.list.showMore.click();
+    await expect(messages.list.rows).toHaveCount(60);
+    await expect(messages.list.showMore).toHaveCount(0);
+  });
+
+  test('AC7, L2-070: a new message moves its conversation to the top and keeps the rows already loaded', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(64), live: true });
+    await jb.goto('/messages');
+    await messages.list.showMore.click();
+    await expect(messages.list.rows).toHaveCount(64);
+
+    fake.arrive('Are you still looking for a quote?', 'c-60');
+
+    await expect(messages.list.name(messages.list.rows.first())).toHaveText('Business 60');
+    await expect(messages.list.rows).toHaveCount(64);
+    await expect(messages.list.showMore).toHaveCount(0);
+  });
+
+  test('AC7: the list beside an open conversation is paged too', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { rows: manyRows(64) });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.list.rows).toHaveCount(50);
+
+    await conversation.list.showMore.click();
+
+    await expect(conversation.list.rows).toHaveCount(64);
+  });
+});
+
 test.describe('search messages (L2-059)', () => {
   test('AC1, AC2: typing searches the conversations and a miss offers to clear the search', async ({
     page,
@@ -108,11 +330,36 @@ test.describe('search messages (L2-059)', () => {
     expect(fake.searches.at(-1)).toBe('legacy');
 
     await messages.list.search.fill('roofing');
-    await expect(messages.list.noResults).toContainText('No messages match ‘roofing’');
+    await expect(messages.list.noResults).toContainText('No messages match “roofing”');
+    await expect(messages.list.noResults).toContainText(
+      'Check the spelling, or search by business name.',
+    );
 
     await messages.list.clearSearch.click();
     await expect(messages.list.rows).toHaveCount(4);
     await expect(messages.list.search).toHaveValue('');
+  });
+
+  test('AC1: the search is asked within 300 ms of the last keystroke, once', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages');
+    await expect(messages.list.rows).toHaveCount(4);
+    const asked = page.waitForRequest((request) => request.url().includes('q=trevor'));
+
+    await messages.list.search.pressSequentially('trevor');
+    const lastKey = Date.now();
+    await asked;
+
+    expect(Date.now() - lastKey).toBeLessThan(300);
+    await expect(messages.list.rows).toHaveCount(1);
+    // One request for the whole word, none for the letters on the way.
+    expect(fake.searches.filter((q) => q !== null)).toEqual(['trevor']);
   });
 });
 
@@ -182,6 +429,87 @@ test.describe('a conversation (L2-057)', () => {
     expect(fake.opened.at(-1)?.before).toBe('m-1');
   });
 
+  test('AC7: the message the member was reading stays where it was when earlier ones are added', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    // A conversation of 100 messages: the latest 50 are open, and 50 more wait above them.
+    const fifty = (label: string, from: string) =>
+      Array.from({ length: 50 }, (_, index) => ({
+        id: `m-${label}-${index}`,
+        body: `${label} message ${index + 1}`,
+        sentAt: new Date(Date.parse(from) + index * 60_000).toISOString(),
+        mine: index % 2 === 0,
+        senderFirstName: index % 2 === 0 ? 'Joanna' : 'Trevor',
+        attachment: null,
+      }));
+    await stubMessaging(page, {
+      hasMore: true,
+      messages: fifty('Later', '2026-11-10T12:00:00Z'),
+      earlier: fifty('Earlier', '2026-11-09T14:00:00Z'),
+      requests: [],
+    });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(50);
+    const reading = conversation.bubbles.first();
+    await expect(reading).toContainText('Later message 1');
+    await expect(conversation.list.rows).toHaveCount(4);
+    // The conversation opens at its newest message; the member goes up to the oldest one shown.
+    await conversation.settledScreenTop(reading);
+    await conversation.showEarlier.focus();
+    const before = await conversation.settledScreenTop(reading);
+    await expect(reading).toBeInViewport();
+
+    await page.keyboard.press('Enter');
+
+    await expect(conversation.bubbles).toHaveCount(100);
+    const stillReading = conversation.bubbles.nth(50);
+    await expect(stillReading).toContainText('Later message 1');
+    await expect(stillReading).toBeInViewport();
+    // Fifty messages were added above it, and it has not moved on the screen.
+    await expect
+      .poll(() => conversation.screenTop(stillReading))
+      .toBeGreaterThanOrEqual(before - 2);
+    await expect.poll(() => conversation.screenTop(stillReading)).toBeLessThanOrEqual(before + 2);
+    await expect(conversation.bubbles.first()).toContainText('Earlier message 1');
+    await expect(conversation.bubbles.first()).not.toBeInViewport();
+  });
+
+  test('AC3: a conversation with no message says hello to the owner by first name and offers three openers', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { messages: [], requests: [] });
+    await jb.goto('/messages/c-legacy');
+
+    await expect(conversation.sayHello).toContainText('Say hello to Trevor');
+    await expect(conversation.sayHello).not.toContainText('Trevor Chew');
+    await expect(conversation.sayHello).toContainText('Ask a question or tell them what you need.');
+    await expect(conversation.openers).toHaveText([
+      'Do you offer a first meeting?',
+      'What does it cost?',
+      'Can we meet by video?',
+    ]);
+
+    await conversation.openers.nth(1).click();
+    await expect(conversation.composer).toHaveValue('What does it cost?');
+    expect(fake.sends).toEqual([]);
+
+    // By keyboard too: another opener replaces the text, and Enter in the composer sends it.
+    await conversation.openers.nth(2).focus();
+    await page.keyboard.press('Enter');
+    await expect(conversation.composer).toHaveValue('Can we meet by video?');
+    await conversation.composer.press('Enter');
+    await expect(conversation.bubbles).toHaveCount(1);
+    expect(fake.sends[0].body).toBe('Can we meet by video?');
+  });
+
   test('it says it is loading', async ({ page, jb }) => {
     const conversation = new ConversationPage(page);
     await jb.signInAs('member');
@@ -242,6 +570,168 @@ test.describe('a conversation (L2-057)', () => {
     await jb.goto('/messages/c-legacy');
 
     await expect(conversation.away).toContainText('Trevor Chew is away');
+  });
+});
+
+test.describe('an owner who is away (L2-062)', () => {
+  // The mocks' today is Tuesday 10 November; an away period ends at the start of its day in Toronto.
+  const THURSDAY = '2026-11-12T05:00:00Z';
+
+  test('AC1: opening the conversation shows a toast and a line, both with the day the owner is back', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    await jb.goto('/messages/c-legacy');
+
+    const toast = toasts.withTitle('Trevor is away until Thursday');
+    await expect(toast).toContainText('They’ll see your message when they’re back.');
+    await expect(toasts.info('Trevor is away until Thursday')).toHaveCount(1);
+    await expect(conversation.away).toHaveText(
+      'Trevor Chew is away until Thursday and will reply when they’re back.',
+    );
+  });
+
+  test('AC1: a day more than six days ahead is named by its date', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: '2026-11-23T05:00:00Z' });
+    await jb.goto('/messages/c-legacy');
+
+    await expect(toasts.withTitle('Trevor is away until Mon 23 Nov')).toHaveCount(1);
+    await expect(conversation.away).toContainText('is away until Mon 23 Nov');
+  });
+
+  test('AC1: the toast is shown once for a visit: sending does not repeat it, opening again does', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    await jb.goto('/messages/c-legacy');
+    const toast = toasts.withTitle('Trevor is away until Thursday');
+    await toasts.dismiss(toast).click();
+    await expect(toast).toHaveCount(0);
+
+    // The toast is gone, so "Send" is free to press, and sending brings no second toast.
+    await conversation.composer.fill('No rush, see you when you’re back.');
+    await conversation.send.click();
+    await conversation.composer.fill('One more thing.');
+    await conversation.send.click();
+    await expect(conversation.bubbles).toHaveCount(5);
+    await expect(toast).toHaveCount(0);
+    await expect(conversation.away).toContainText('is away until Thursday');
+
+    await jb.goto('/messages/c-legacy');
+    await expect(toast).toHaveCount(1);
+  });
+
+  test('AC1: an owner who goes away while the conversation is open is named by a toast when the next message is sent, by keyboard', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { live: true });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(3);
+    const toast = toasts.withTitle('Trevor is away until Thursday');
+
+    // Trevor sets an away period and writes once more; the open conversation reads itself again.
+    fake.awayUntil = THURSDAY;
+    fake.arrive('I’m away from tomorrow, back Thursday.');
+    await expect(conversation.bubbles).toHaveCount(4);
+    await expect(conversation.away).toContainText('is away until Thursday');
+    await expect(toast).toHaveCount(0);
+
+    await conversation.composer.fill('Thank you, enjoy the break.');
+    await conversation.composer.press('Enter');
+
+    await expect(conversation.bubbles).toHaveCount(5);
+    await expect(toast).toHaveCount(1);
+    await expect(toast).toContainText('They’ll see your message when they’re back.');
+
+    await toasts.dismiss(toast).click();
+    await conversation.composer.fill('See you Thursday.');
+    await conversation.composer.press('Enter');
+    await expect(conversation.bubbles).toHaveCount(6);
+    await expect(toast).toHaveCount(0);
+  });
+
+  test('AC2: once the day has come, opening and sending show no away notice', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    // Friday 13 November: the owner came back the day before.
+    await jb.goto('/messages/c-legacy', 'light', new Date('2026-11-13T14:00:00Z'));
+    await expect(conversation.bubbles).toHaveCount(3);
+
+    await conversation.composer.fill('Welcome back');
+    await conversation.send.click();
+
+    await expect(conversation.bubbles).toHaveCount(4);
+    await expect(toasts.withTitle(/is away/)).toHaveCount(0);
+    await expect(conversation.away).toHaveCount(0);
+  });
+
+  test('AC2: the day comes before the next message is sent, and it shows no toast', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { live: true });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(3);
+    // The away period becomes known while the conversation is open, so no toast has been shown.
+    fake.awayUntil = THURSDAY;
+    fake.arrive('I’m away from tomorrow, back Thursday.');
+    await expect(conversation.away).toContainText('is away until Thursday');
+    // Thursday, 9:00 a.m.: Trevor is back.
+    await page.clock.setFixedTime(new Date('2026-11-12T14:00:00Z'));
+
+    await conversation.composer.fill('Welcome back');
+    await conversation.send.click();
+
+    await expect(conversation.bubbles).toHaveCount(5);
+    await expect(toasts.withTitle(/is away/)).toHaveCount(0);
+  });
+
+  test('L2-055 AC3: a first message to an owner who is away opens the conversation, which says so', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new NewMessageDialog(page);
+    const toasts = new Toasts(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    await jb.goto('/b/legacy-financial/message');
+
+    await dialog.message.fill('Hello Trevor');
+    await dialog.send.click();
+
+    await expect(page).toHaveURL(/\/messages\/c-legacy$/);
+    await expect(toasts.withTitle('Trevor is away until Thursday')).toHaveCount(1);
+    await expect(toasts.withTitle(/sent/i)).toHaveCount(0);
   });
 });
 
@@ -665,6 +1155,57 @@ test.describe('photo attachments (L2-060)', () => {
     expect(fake.sends).toHaveLength(1);
   });
 
+  test('AC9: a photo that did not pass the safety check is not sent, and the bubble says so', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { uploading: 'infected' });
+    await jb.goto('/messages/c-legacy');
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.composer.fill('The statement');
+    await conversation.send.click();
+
+    const bubble = conversation.bubble('The statement');
+    await expect(bubble.time).toContainText('Not sent. This photo didn’t pass our safety check.');
+    await expect(bubble.photo).toBeVisible();
+    expect(fake.sends).toEqual([]);
+    expect(fake.uploads).toEqual([]);
+
+    await bubble.delete.click();
+    await expect(conversation.bubbles).toHaveCount(3);
+  });
+
+  test('AC9: when the photo cannot be checked the bubble says so, and "Try again" uploads it again and sends once', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { uploading: 'unchecked' });
+    await jb.goto('/messages/c-legacy');
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.composer.fill('The statement');
+    await conversation.send.click();
+
+    const bubble = conversation.bubble('The statement');
+    await expect(bubble.time).toContainText('Not sent. We couldn’t check this photo just now.');
+    expect(fake.sends).toEqual([]);
+
+    fake.uploading = 'ok';
+    await bubble.tryAgain.focus();
+    await page.keyboard.press('Enter');
+
+    await expect(bubble.time).toHaveText('9:00 a.m.');
+    expect(fake.uploadAttempts).toBe(2);
+    expect(fake.uploads).toHaveLength(1);
+    expect(fake.sends).toHaveLength(1);
+    expect(fake.sends[0].attachmentId).toBe('a-1');
+  });
+
   test('AC2: a photo over 5 MB is shrunk on the device, with a warning, before it is sent', async ({
     page,
     jb,
@@ -925,6 +1466,28 @@ test.describe('report a conversation (L2-063)', () => {
     );
     expect(fake.reports).toEqual([{ reason: 'Spam, three times a day.', block: false }]);
   });
+
+  test('L2-137 AC1: a member who has reported ten conversations today is told how long to wait, and keeps what was typed', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const dialog = new ReportConversationDialog(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { reporting: 'rate-limited' });
+    await jb.goto('/messages/c-legacy');
+    await conversation.more.click();
+    await conversation.menuItem('Report conversation').click();
+    await dialog.what.fill('Spam, three times a day.');
+    await dialog.send.click();
+
+    await expect(dialog.alert).toContainText('You’re doing that a lot');
+    await expect(dialog.alert).toContainText('Try again in 42 minutes.');
+    await expect(dialog.alert).not.toContainText('connection');
+    await expect(dialog.what).toHaveValue('Spam, three times a day.');
+    expect(fake.reports).toEqual([]);
+  });
 });
 
 test.describe('send a message (L2-058)', () => {
@@ -1010,6 +1573,8 @@ test.describe('send a message (L2-058)', () => {
     const failed = conversation.bubble('Can we do Thursday?');
     await expect(failed.root).toHaveClass(/bubble--failed/);
     await expect(failed.time).toContainText('Not sent. Check your connection.');
+    await expect(failed.root).toContainText('Can we do Thursday?');
+    await expect(failed.delete).toBeVisible();
 
     fake.delivery = 'ok';
     await failed.tryAgain.click();
@@ -1017,6 +1582,36 @@ test.describe('send a message (L2-058)', () => {
     await expect(conversation.bubble('Can we do Thursday?').time).toHaveText('9:00 a.m.');
     expect(fake.sends).toHaveLength(1);
     expect(fake.sends[0].body).toBe('Can we do Thursday?');
+    // Two tries reached the API, and the second carried the key of the first.
+    expect(fake.attempts).toHaveLength(2);
+    expect(fake.attempts[1].idempotencyKey).toBe(fake.attempts[0].idempotencyKey);
+    expect(fake.attempts[0].idempotencyKey).toMatch(/^[\w-]{8,}$/);
+  });
+
+  test('AC1: when the server confirms, the time takes the place of "Sending…" and nothing moves', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { delivery: 'held' });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(3);
+
+    await conversation.composer.fill('Should I bring last year’s tax return?');
+    await conversation.send.click();
+    const bubble = conversation.bubble('Should I bring');
+    await expect(bubble.status).toHaveText('Sending…');
+    const sending = await conversation.pageBox(bubble.root);
+    const composerWhileSending = await conversation.pageBox(conversation.composerForm);
+
+    fake.delivery = 'ok';
+    fake.release();
+
+    await expect(bubble.time).toHaveText('9:00 a.m.');
+    expect(await conversation.pageBox(bubble.root)).toEqual(sending);
+    expect(await conversation.pageBox(conversation.composerForm)).toEqual(composerWhileSending);
   });
 
   test('AC3: a failed message can be deleted', async ({ page, jb }) => {
@@ -1045,7 +1640,9 @@ test.describe('send a message (L2-058)', () => {
     await conversation.composer.fill('Hello again');
     await conversation.send.click();
 
-    await expect(conversation.bubble('Hello again').time).toContainText('wait a few minutes');
+    await expect(conversation.bubble('Hello again').time).toContainText(
+      'Not sent. You’re doing that a lot. Try again in 1 minute.',
+    );
   });
 });
 
@@ -1070,6 +1667,57 @@ test.describe('message a business (L2-055)', () => {
       'Trevor Chew usually replies within a day. The conversation continues in Messages.',
     );
     await expect(dialog.message).toBeFocused();
+    await expect(dialog.messageLabel).toHaveText('Your message (required)');
+    await expect(dialog.hint).toHaveText('Be specific and Trevor can answer in one reply.');
+    await expect(dialog.counter).toHaveCount(0);
+  });
+
+  test('AC5: typing stops at 4,000 characters, and a counter shows for the last 200', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new NewMessageDialog(page);
+    await new BusinessPage(page).setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/b/legacy-financial/message');
+
+    await dialog.message.fill('a'.repeat(3799));
+    await expect(dialog.counter).toHaveCount(0);
+
+    await page.keyboard.type('b');
+    await expect(dialog.counter).toHaveText('200 characters left');
+
+    await dialog.message.fill('a'.repeat(3998));
+    await page.keyboard.type('b');
+    await expect(dialog.counter).toHaveText('1 character left');
+
+    // Three more keys: only the first fits.
+    await page.keyboard.type('cde');
+    await expect(dialog.counter).toHaveText('0 characters left');
+    await expect(dialog.message).toHaveValue(`${'a'.repeat(3998)}bc`);
+
+    await dialog.send.click();
+    await expect(page).toHaveURL(/\/messages\/c-legacy$/);
+    expect(fake.starts[0].body).toHaveLength(4000);
+  });
+
+  test('L2-137 AC1: starting conversations too fast says how long to wait and keeps the text', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new NewMessageDialog(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { delivery: 'rate-limited' });
+    await jb.goto('/b/legacy-financial/message');
+
+    await dialog.message.fill('Hello Trevor');
+    await dialog.send.click();
+
+    await expect(dialog.alert).toContainText('You’re doing that a lot');
+    await expect(dialog.alert).toContainText('Try again in 1 minute.');
+    await expect(dialog.message).toHaveValue('Hello Trevor');
   });
 
   test('AC3: sending starts the conversation and opens it in Messages', async ({ page, jb }) => {
@@ -1110,14 +1758,17 @@ test.describe('message a business (L2-055)', () => {
     expect(fake.starts).toHaveLength(0);
   });
 
-  test('AC5: more than 4,000 characters is not sent', async ({ page, jb }) => {
+  test('AC5: more than 4,000 characters, put there past the limit, is not sent', async ({
+    page,
+    jb,
+  }) => {
     const dialog = new NewMessageDialog(page);
     await new BusinessPage(page).setWidth(1280);
     await jb.signInAs('member');
     const fake = await stubMessaging(page);
     await jb.goto('/b/legacy-financial/message');
 
-    await dialog.message.fill('a'.repeat(4001));
+    await dialog.putPastTheLimit('a'.repeat(4001));
     await dialog.send.click();
 
     await expect(dialog.fieldError).toContainText('4,000 characters');
@@ -1153,13 +1804,18 @@ test.describe('message a business (L2-055)', () => {
     await dialog.send.click();
 
     await expect(dialog.alert).toContainText('We couldn’t send that');
+    await expect(dialog.alert).toContainText(
+      'Your connection dropped before it reached us. Nothing was sent and what you typed is still here. Try again.',
+    );
     await expect(dialog.message).toHaveValue('Hello Trevor');
+    const firstKey = fake.attempts[0].idempotencyKey;
 
     fake.delivery = 'ok';
     await dialog.send.click();
 
     await expect(page).toHaveURL(/\/messages\/c-legacy$/);
     expect(fake.starts).toHaveLength(1);
+    expect(fake.starts[0].idempotencyKey).toBe(firstKey);
   });
 
   test('L2-005 AC2: a member who has not confirmed the e-mail is told to', async ({ page, jb }) => {
