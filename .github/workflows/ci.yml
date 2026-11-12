@@ -22,6 +22,17 @@ jobs:
         shell: pwsh
         run: ./eng/Test-Backend.ps1
 
+  hosting:
+    # eng/azure/server.js serves the three sites; its tests need Node and nothing else (ADR 0046).
+    name: Hosting server tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: node --test eng/azure/
+
   frontend:
     name: Frontend lint, format and build
     runs-on: ubuntu-latest
