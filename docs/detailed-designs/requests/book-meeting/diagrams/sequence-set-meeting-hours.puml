@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — set meeting hours
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyServicesPage" as page
+  participant "MeetingHoursDialog" as dialog
+  participant "CatalogueApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "CatalogueController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SetMeetingHoursCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Meeting hours"
+page -> dialog : Open with the hours in force (ServicesDto.MeetingHours)
+actor -> dialog : Tick days, set "From", "Until" and "A time every", press "Save hours"
+dialog -> dialog : Check days, times and slot length for feedback (L2-220)
+dialog -> client : setMeetingHours(days, opensAt, closesAt, slotMinutes)
+client -> controller : PUT /api/my-business/meeting-hours
+controller -> controller : Authenticate
+controller -> handler : Send SetMeetingHoursCommand
+handler -> db : Load the caller's own listing (Workspace.Owned, L2-133)
+alt the caller owns no listing
+  handler --> controller : Forbidden
+  controller --> client : 403 FORBIDDEN
+else invalid hours
+  handler --> controller : Validation failure
+  controller --> client : 422 with REQUIRED, INVALID, BEFORE_OPENS or TOO_SHORT per field
+  client --> dialog : Field errors
+  dialog --> actor : Show each error under its field
+else valid hours
+  handler -> entity : SetMeetingHours(days, opensAt, closesAt, slotMinutes)
+  handler -> db : Save the listing; requests already sent are not touched
+  handler --> controller : MeetingHoursDto
+  controller --> client : 200 hours in force
+  client --> dialog : Hours
+  dialog --> page : Close with the hours
+  page --> actor : Toast "Meeting hours saved" and focus back on "Meeting hours"
+end
+@enduml

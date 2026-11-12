@@ -71,6 +71,23 @@ export interface OwnerServices {
   total: number;
   max: number;
   rows: OwnerService[];
+  /** When meetings can be booked (L2-220). */
+  meetingHours: MeetingHours;
+}
+
+/** What the owner sets about meeting hours (L2-220): days of the week (0 is Sunday) and Toronto times as `HH:mm`. */
+export interface MeetingHoursInput {
+  days: number[];
+  opensAt: string;
+  closesAt: string;
+  slotMinutes: number;
+}
+
+/** The meeting hours in force: the owner's, or the ones proposed while `ownerSet` is false. */
+export interface MeetingHours extends MeetingHoursInput {
+  /** The days in words, such as "Monday to Friday". */
+  meetsOn: string;
+  ownerSet: boolean;
 }
 
 export interface ServiceInput {

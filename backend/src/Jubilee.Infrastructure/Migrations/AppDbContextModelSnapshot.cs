@@ -789,7 +789,16 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<TimeOnly?>("MeetingClosesAt")
+                        .HasColumnType("time");
+
                     b.Property<int>("MeetingDays")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly?>("MeetingOpensAt")
+                        .HasColumnType("time");
+
+                    b.Property<int?>("MeetingSlotMinutes")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")

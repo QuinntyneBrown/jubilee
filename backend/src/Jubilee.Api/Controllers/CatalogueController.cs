@@ -34,6 +34,10 @@ public sealed record SaveServiceBody(
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record MoveItemBody(int Position);
 
+/// <summary>When meetings can be booked: days of the week (0 is Sunday), times of day in Toronto as <c>HH:mm</c> and the slot length (L2-220).</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record MeetingHoursBody(List<int>? Days, string? OpensAt, string? ClosesAt, int? SlotMinutes);
+
 /// <summary>The owner's products and services: list, add, change, delete and reorder (L2-089 to L2-095).</summary>
 [ApiController]
 [Route("api/my-business")]
@@ -68,6 +72,10 @@ public sealed class CatalogueController(ISender sender) : ControllerBase
     [ErrorReference("JB-SVC-503")]
     public Task<ServicesDto> Services(CancellationToken cancellationToken) =>
         sender.Send(new ListServicesQuery(Subject), cancellationToken);
+
+    [HttpPut("meeting-hours")]
+    public Task<MeetingHoursDto> MeetingHours([FromBody] MeetingHoursBody body, CancellationToken cancellationToken) =>
+        sender.Send(new SetMeetingHoursCommand(Subject, body.Days, body.OpensAt, body.ClosesAt, body.SlotMinutes), cancellationToken);
 
     [HttpPost("services")]
     [ErrorReference("JB-SVC-504")]

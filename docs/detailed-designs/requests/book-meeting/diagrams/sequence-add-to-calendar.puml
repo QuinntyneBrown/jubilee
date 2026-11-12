@@ -32,16 +32,16 @@ end box
 actor -> page : Press "Add to calendar"
 page -> client : calendarUrl(requestId)
 client -> controller : GET /api/requests/{id}/calendar.ics
-controller -> controller : Authenticate and apply endpoint policy
+controller -> controller : Authenticate
 controller -> handler : Send GetBookingCalendarQuery
 handler -> db : Load booking owned by the caller (L2-133)
-db --> handler : Request with BookingDetails or nothing
+db --> handler : Request with its transitions or nothing
 alt booking not found for this member
   handler --> controller : Not found
   controller --> client : 404 ProblemDetails
   client --> page : Error
 else booking found
-  handler -> builder : Build(request, businessName, requestUrl)
+  handler -> builder : Build(request, business, publicBaseUrl, now)
   alt status is Cancelled
     builder --> handler : Event with STATUS:CANCELLED (L2-050)
   else status is Confirmed or Completed

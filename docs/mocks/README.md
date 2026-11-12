@@ -4,7 +4,7 @@ Static HTML mocks for every page, dialog and notification of Jubilee, Toronto's 
 marketplace, in every state. They are the design reference for the Angular frontend: the app
 keeps the mocks' BEM classes and accessible state semantics.
 
-- **84 screens, 433 mocks:** 49 pages (283 states), 28 dialogs (114 states), 7 notifications (36 states).
+- **85 screens, 438 mocks:** 49 pages (283 states), 29 dialogs (119 states), 7 notifications (36 states).
 - Every mock is responsive (360, 768 and 1280 px), themed light and dark through tokens, and
   keyboard-accessible.
 - **19 e-mails** in [`emails/`](emails/index.html) (L2-179, ADR 0038): each as the HTML a mail
@@ -195,6 +195,7 @@ Legend: ✅ mock exists · ➖ not applicable (reason in manifest) · ❌ missin
 | Delete service (`delete-service`) | [✅](dialogs/delete-service/default.html) | [✅](dialogs/delete-service/busy.html) | ➖ | [✅](dialogs/delete-service/failed.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Pause listing (`unpublish-listing`) | [✅](dialogs/unpublish-listing/default.html) | [✅](dialogs/unpublish-listing/busy.html) | ➖ | [✅](dialogs/unpublish-listing/failed.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Away period (`away-period`) | [✅](dialogs/away-period/default.html) | [✅](dialogs/away-period/busy.html) | [✅](dialogs/away-period/invalid.html) | [✅](dialogs/away-period/failed.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | [✅](dialogs/away-period/set.html) |  |  |  |
+| Meeting hours (`meeting-hours`) | [✅](dialogs/meeting-hours/default.html) | [✅](dialogs/meeting-hours/busy.html) | [✅](dialogs/meeting-hours/invalid.html) | [✅](dialogs/meeting-hours/failed.html) | [✅](dialogs/meeting-hours/success.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | `L2-220` |
 | Approve listing (`approve-listing`) | [✅](dialogs/approve-listing/default.html) | [✅](dialogs/approve-listing/busy.html) | ➖ | [✅](dialogs/approve-listing/failed.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | [✅](dialogs/approve-listing/note-required.html) |  |  |
 | Request changes (`request-changes`) | [✅](dialogs/request-changes/default.html) | [✅](dialogs/request-changes/busy.html) | [✅](dialogs/request-changes/invalid.html) | [✅](dialogs/request-changes/failed.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | Decline listing (`decline-listing`) | [✅](dialogs/decline-listing/default.html) | [✅](dialogs/decline-listing/busy.html) | [✅](dialogs/decline-listing/invalid.html) | [✅](dialogs/decline-listing/failed.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |

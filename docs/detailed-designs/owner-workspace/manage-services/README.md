@@ -29,7 +29,9 @@ The feature is a vertical slice from the services page in `Jubilee Web` to the
   detail, price ("Free", an amount, or "Ask") and "Edit" and "Delete" actions.
   The empty state reads "No services yet. Offer custom work, consultations or
   lessons? Add them here so members can book or ask for a quote." The load-error
-  state carries `JB-SVC-503`.
+  state carries `JB-SVC-503`. "Meeting hours" opens `MeetingHoursDialog` with the
+  hours the list returns as `meetingHours` (`L2-220`; the dialog and its endpoint
+  are described in `requests/book-meeting`).
 - **`ReorderControls`** — shared drag handle and move up and move down buttons,
   also used by `manage-products`.
 - **`ServiceEditorDialog`** — dialog titled "Add a service" or "Edit service".

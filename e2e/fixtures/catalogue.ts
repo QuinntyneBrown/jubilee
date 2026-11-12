@@ -31,6 +31,39 @@ interface FakeService {
   inPersonPlace: string | null;
 }
 
+/** When meetings can be booked (L2-220), as the API gives it. */
+export interface FakeMeetingHours {
+  days: number[];
+  opensAt: string;
+  closesAt: string;
+  slotMinutes: number;
+  meetsOn: string;
+  ownerSet: boolean;
+}
+
+/** What an owner who never saved hours is shown (L2-220 AC1). */
+export const SUGGESTED_HOURS: FakeMeetingHours = {
+  days: [1, 2, 3, 4, 5],
+  opensAt: '09:00',
+  closesAt: '17:00',
+  slotMinutes: 30,
+  meetsOn: 'Monday to Friday',
+  ownerSet: false,
+};
+
+const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+/** "Monday to Friday", "Tuesday, Thursday and Saturday": the days in words, as the API says them. */
+export function meetsOn(days: number[]): string {
+  const week = [1, 2, 3, 4, 5, 6, 0].filter((day) => days.includes(day));
+  const names = week.map((day) => WEEKDAYS[day]);
+  const run = week.length > 2 && week.every((day, i) => i === 0 || (week[i - 1] + 1) % 7 === day);
+  if (run) return `${names[0]} to ${names.at(-1)}`;
+  return names.length <= 1
+    ? (names[0] ?? '')
+    : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+}
+
 export interface FakeCatalogue {
   /** `fails` answers the list with a 503; `forbidden` with a 403. */
   products: CatalogueOutcome;
@@ -39,6 +72,10 @@ export interface FakeCatalogue {
   save: 'ok' | 'fails' | 'hangs' | 'limit';
   remove: 'ok' | 'fails';
   move: 'ok' | 'fails';
+  /** Saving meeting hours: `fails` answers 500, `hangs` never answers, `refused` answers 422 on "Until". */
+  hours: 'ok' | 'fails' | 'hangs' | 'refused';
+  meetingHours: FakeMeetingHours;
+  hoursSaves: Record<string, unknown>[];
   productRows: FakeProduct[];
   serviceRows: FakeService[];
   productSaves: Record<string, unknown>[];
@@ -119,6 +156,9 @@ export async function stubCatalogue(
     save: 'ok',
     remove: 'ok',
     move: 'ok',
+    hours: 'ok',
+    meetingHours: structuredClone(SUGGESTED_HOURS),
+    hoursSaves: [],
     productRows: structuredClone(PRODUCTS),
     serviceRows: structuredClone(SERVICES),
     productSaves: [],
@@ -157,6 +197,7 @@ export async function stubCatalogue(
     total: fake.serviceRows.length,
     max: 50,
     rows: fake.serviceRows,
+    meetingHours: fake.meetingHours,
   });
 
   const listFailure = (outcome: CatalogueOutcome, reference: string) => {
@@ -246,6 +287,20 @@ export async function stubCatalogue(
       status: 201,
       json: { ...productView(created), stockChange: stockChange(null, created.stock) },
     });
+  });
+
+  await page.route('**/api/my-business/meeting-hours', (route: Route) => {
+    const body = route.request().postDataJSON() as Omit<FakeMeetingHours, 'meetsOn' | 'ownerSet'>;
+    fake.hoursSaves.push(body);
+    if (fake.hours === 'hangs') return;
+    if (fake.hours === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
+    if (fake.hours === 'refused') {
+      return route.fulfill(
+        problem(422, { code: 'validation_failed', errors: { closesAt: 'BEFORE_OPENS' } }),
+      );
+    }
+    fake.meetingHours = { ...body, meetsOn: meetsOn(body.days), ownerSet: true };
+    return route.fulfill({ json: fake.meetingHours });
   });
 
   await page.route(/\/api\/my-business\/services(\/.*)?$/, async (route: Route) => {

@@ -7,6 +7,7 @@ export class MyServicesPage extends ShellPage implements Screen {
   readonly heading: Locator;
   readonly summary: Locator;
   readonly add: Locator;
+  readonly meetingHours: Locator;
   readonly rows: Locator;
   readonly limit: Locator;
   readonly empty: Locator;
@@ -19,6 +20,7 @@ export class MyServicesPage extends ShellPage implements Screen {
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.summary = this.main.locator('p.text-muted').first();
     this.add = this.main.getByRole('button', { name: 'Add service' }).first();
+    this.meetingHours = this.main.getByRole('button', { name: 'Meeting hours' });
     this.rows = this.main.locator('ul.rows > li');
     this.limit = this.main.getByText('You can list up to 50 services.');
     this.empty = this.main.locator('.empty');

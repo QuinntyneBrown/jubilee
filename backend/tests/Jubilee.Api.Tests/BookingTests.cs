@@ -178,6 +178,29 @@ public sealed class BookingTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
         Assert.Contains("Discovery meeting", mail.TextBody);
     }
 
+    // L2-044 AC4, AC5: the owner is told in the app when the request arrives, the member when it is confirmed
+    [Fact]
+    public async Task L2_044_AC5_the_owner_gets_an_in_app_notification_and_the_member_gets_one_when_it_is_confirmed()
+    {
+        var trevor = _factory.CreateMemberClient("Trevor Chew", TrevorId);
+        var booked = await Json(await Book(Joanna()));
+
+        var owners = (await Json(await trevor.GetAsync("/api/notifications"))).GetProperty("items");
+        var told = Assert.Single(owners.EnumerateArray());
+        Assert.Equal("New booking request from Joanna Adeyemi", told.GetProperty("title").GetString());
+        Assert.Equal("Discovery meeting · Thu 12 Nov, 10:00", told.GetProperty("detail").GetString());
+        Assert.Equal("request", told.GetProperty("kind").GetString());
+        Assert.Equal("/my-business/requests", told.GetProperty("target").GetString());
+        Assert.Empty((await Json(await Joanna().GetAsync("/api/notifications"))).GetProperty("items").EnumerateArray());
+
+        Assert.Equal(HttpStatusCode.OK, (await trevor.PostAsync($"/api/my-business/requests/{booked.GetProperty("id").GetGuid()}/confirm", null)).StatusCode);
+
+        var members = (await Json(await Joanna().GetAsync("/api/notifications"))).GetProperty("items");
+        var confirmed = Assert.Single(members.EnumerateArray());
+        Assert.Contains("confirmed", confirmed.GetProperty("title").GetString());
+        Assert.Equal($"/requests/{booked.GetProperty("id").GetGuid()}", confirmed.GetProperty("target").GetString());
+    }
+
     [Fact]
     public async Task L2_044_a_note_of_exactly_1000_characters_is_kept()
     {

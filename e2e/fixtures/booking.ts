@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { meetsOn } from './catalogue';
 
 // A stand-in for the booking endpoints (L2-044 to L2-046). The requests the app makes are kept so
 // a test can prove what it sent (ADR 0009).
@@ -10,6 +11,8 @@ export interface FakeBooking {
   /** Days (YYYY-MM-DD) the business does not meet, by weekday: 0 Sunday, 6 Saturday. */
   closedWeekdays: number[];
   area: string | null;
+  /** The owner's saved meeting hours (L2-220); without them the default times are offered. */
+  hours: { days: number[]; opensAt: string; closesAt: string; slotMinutes: number } | null;
   availabilityAsked: { day: string; serviceId: string }[];
   sends: {
     listingSlug: string;
@@ -24,11 +27,31 @@ export interface FakeBooking {
 
 export const SLOTS = ['09:00', '10:00', '13:30', '16:00', '19:00'];
 
-const options = (area: string | null) => ({
+const LENGTHS: Record<string, number> = { 's-discovery': 30, 's-rrsp': 60 };
+
+const minutes = (time: string) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3));
+
+/** The times of a day inside saved hours, as the API computes them: every slot length while the meeting ends by closing. */
+function slotsInside(hours: NonNullable<FakeBooking['hours']>, serviceId: string): string[] {
+  const slots: string[] = [];
+  const length = LENGTHS[serviceId] ?? 30;
+  for (
+    let start = minutes(hours.opensAt);
+    start + length <= minutes(hours.closesAt);
+    start += hours.slotMinutes
+  ) {
+    slots.push(
+      `${String(Math.floor(start / 60)).padStart(2, '0')}:${String(start % 60).padStart(2, '0')}`,
+    );
+  }
+  return slots;
+}
+
+const options = (area: string | null, days: number[]) => ({
   business: { name: 'Legacy Financial', slug: 'legacy-financial' },
   ownerFirstName: 'Trevor',
-  meetsOn: 'Monday to Friday',
-  meetingDays: [1, 2, 3, 4, 5],
+  meetsOn: meetsOn(days),
+  meetingDays: days,
   area,
   usuallyConfirms: 'within a day',
   maxDaysAhead: 180,
@@ -64,13 +87,14 @@ export async function stubBooking(
     delivery: 'ok',
     closedWeekdays: [0, 6],
     area: 'North York',
+    hours: null,
     availabilityAsked: [],
     sends: [],
     ...initial,
   };
 
   await page.route('**/api/listings/legacy-financial/booking', (route) =>
-    route.fulfill({ json: options(fake.area) }),
+    route.fulfill({ json: options(fake.area, fake.hours?.days ?? [1, 2, 3, 4, 5]) }),
   );
 
   await page.route(/\/api\/listings\/legacy-financial\/availability\?.*/, (route) => {
@@ -79,8 +103,11 @@ export async function stubBooking(
     const serviceId = url.searchParams.get('serviceId') ?? '';
     fake.availabilityAsked.push({ day, serviceId });
     const weekday = new Date(`${day}T12:00:00Z`).getUTCDay();
-    const open = !fake.closedWeekdays.includes(weekday);
-    return route.fulfill({ json: { day, available: open, slots: open ? SLOTS : [] } });
+    const open = fake.hours
+      ? fake.hours.days.includes(weekday)
+      : !fake.closedWeekdays.includes(weekday);
+    const slots = fake.hours ? slotsInside(fake.hours, serviceId) : SLOTS;
+    return route.fulfill({ json: { day, available: open, slots: open ? slots : [] } });
   });
 
   await page.route('**/api/requests/bookings', (route: Route) => {

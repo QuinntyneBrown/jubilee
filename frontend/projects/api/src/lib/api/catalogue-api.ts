@@ -3,6 +3,8 @@ import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   DeletedItem,
+  MeetingHours,
+  MeetingHoursInput,
   OwnerProduct,
   OwnerProducts,
   OwnerService,
@@ -21,6 +23,8 @@ export interface CatalogueApi {
   saveService(id: string | null, input: ServiceInput): Observable<OwnerService>;
   deleteService(id: string): Observable<DeletedItem>;
   moveService(id: string, position: number): Observable<OwnerServices>;
+  /** Replaces the hours in which meetings can be booked (L2-220). */
+  setMeetingHours(input: MeetingHoursInput): Observable<MeetingHours>;
 }
 
 export const CATALOGUE_API = new InjectionToken<CatalogueApi>('CATALOGUE_API');
@@ -63,5 +67,9 @@ export class HttpCatalogueApi implements CatalogueApi {
 
   moveService(id: string, position: number): Observable<OwnerServices> {
     return this.http.put<OwnerServices>(`/api/my-business/services/${id}/position`, { position });
+  }
+
+  setMeetingHours(input: MeetingHoursInput): Observable<MeetingHours> {
+    return this.http.put<MeetingHours>('/api/my-business/meeting-hours', input);
   }
 }

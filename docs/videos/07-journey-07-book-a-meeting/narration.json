@@ -1,0 +1,57 @@
+{
+  "title": "07 · Journey 7: Book a meeting",
+  "scenes": [
+    {
+      "id": "intro",
+      "say": "Journey seven: book a meeting. A member requests a meeting time for a service with a business. This run takes the journey from ninety-five percent to complete."
+    },
+    {
+      "id": "services",
+      "say": "Until now, every business met at the same five fixed times. Now the owner decides. Naomi owns Luzandre.com, and My services has a new button: Meeting hours."
+    },
+    {
+      "id": "dialog",
+      "say": "The dialog shows the hours in force: the days of the week, from and until as Toronto times, and how often a time is offered. Requests she already has keep their times."
+    },
+    {
+      "id": "days",
+      "say": "Naomi meets on Tuesday, Thursday and Saturday, so she unticks the other days and ticks Saturday."
+    },
+    {
+      "id": "invalid",
+      "say": "She sets from to ten, and by mistake until to nine. Save hours saves nothing, and the field says: choose a time after ten a.m."
+    },
+    {
+      "id": "saved",
+      "say": "She corrects it to noon and saves. The dialog closes, and My services says: meeting hours saved."
+    },
+    {
+      "id": "member",
+      "say": "Now a member. Joanna books a meeting with Legacy Financial, a business that saved those same hours. She picks a Thursday and is offered four times: every thirty minutes from ten, each ending by noon."
+    },
+    {
+      "id": "longer",
+      "say": "A sixty-minute review must end by noon as well, so eleven thirty is no longer offered."
+    },
+    {
+      "id": "closed",
+      "say": "A Friday is not one of the days. The dialog says Trevor can't meet on that day, and names the days he does."
+    },
+    {
+      "id": "send",
+      "say": "Joanna goes back to Thursday, chooses ten thirty and sends the request. Nothing is charged. Trevor confirms it or declines."
+    },
+    {
+      "id": "rules",
+      "say": "Behind the screen, the API decides, and checks again whatever the dialog checked. The hours are Toronto times of day on either side of a clock change, only the owner sets them, and requests already sent keep their day, time and status. Nineteen API test cases prove it."
+    },
+    {
+      "id": "proved",
+      "say": "Two criteria that had no test now have one. In the browser, the note of a booking stops at one thousand characters. In the API, the owner gets an in-app notification of the booking, and the member one when it is confirmed."
+    },
+    {
+      "id": "close",
+      "say": "Requirement two hundred and twenty and decision record forty-eight hold this work, and journey seven is complete. Left for the owner: the visual, responsive and accessibility sweeps. Different hours on different days, calendars and double booking are not built."
+    }
+  ]
+}

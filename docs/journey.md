@@ -22,7 +22,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 4 | Join Jubilee | Create an account by e-mail or Google and confirm the address. | 8 | 89% |
 | 5 | Sign in and out | Sign in, stay signed in safely, and sign out. | 6 | 100% |
 | 6 | Message a business | Hold a private conversation with a business from an inbox. | 12 | 94% |
-| 7 | Book a meeting | Request a meeting time for a service with a business. | 6 | 95% |
+| 7 | Book a meeting | Request a meeting time for a service with a business. | 6 | 100% |
 | 8 | Request a quote | Describe a job and ask a business for a quote. | 3 | 95% |
 | 9 | Request a product | Send a shop an order request for a product, without payment. | 3 | 95% |
 | 10 | List a business | Describe a business and submit it for verification. | 12 | 87% |

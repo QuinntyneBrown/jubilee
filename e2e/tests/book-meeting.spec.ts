@@ -171,6 +171,24 @@ test.describe('book a meeting (L2-044)', () => {
     expect(fake.sends).toHaveLength(1);
   });
 
+  test('L2-044 AC6: the note stops at 1,000 characters', async ({ page, jb }) => {
+    const dialog = new BookMeetingDialog(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubBooking(page);
+    await jb.goto('/b/legacy-financial/book');
+    await dialog.day.fill('2026-11-12');
+    await dialog.time('10:00 a.m.').click();
+
+    await dialog.note.fill('n'.repeat(990));
+    await dialog.note.pressSequentially('0123456789-and-more');
+
+    await expect(dialog.note).toHaveValue('n'.repeat(990) + '0123456789');
+    await dialog.send.click();
+    await expect(dialog.title).toHaveText('Request sent to Legacy Financial');
+    expect(fake.sends[0].note).toHaveLength(1000);
+  });
+
   test('an unconfirmed e-mail is told to confirm first', async ({ page, jb }) => {
     const dialog = new BookMeetingDialog(page);
     await new BusinessPage(page).setWidth(1280);

@@ -9,7 +9,14 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { CATALOGUE_API, DeletedItem, OwnerService, OwnerServices } from 'api';
+import {
+  CATALOGUE_API,
+  DeletedItem,
+  MeetingHours,
+  OwnerService,
+  OwnerServices,
+  slotLabel,
+} from 'api';
 import {
   EmptyState,
   Icon,
@@ -25,6 +32,10 @@ import {
   WorkspaceHeader,
 } from 'components';
 import { DeleteItemData, DeleteItemDialog } from '../../dialogs/delete-item/delete-item.dialog';
+import {
+  MeetingHoursData,
+  MeetingHoursDialog,
+} from '../../dialogs/meeting-hours/meeting-hours.dialog';
 import {
   ServiceEditorData,
   ServiceEditorDialog,
@@ -151,6 +162,24 @@ export class MyServicesPage implements OnInit {
               text: `“${saved.service.name}” is updated.`,
             },
       );
+    });
+  }
+
+  /** "Meeting hours" (L2-220): a CDK dialog; the list is read again when it saved. */
+  protected openHours(services: OwnerServices): void {
+    const ref = this.dialog.open<MeetingHours, MeetingHoursData>(MeetingHoursDialog, {
+      data: { hours: services.meetingHours },
+      autoFocus: '#d-day-1',
+      ...this.dialogOptions(),
+    });
+    ref.closed.subscribe((hours) => {
+      if (!hours) return;
+      this.fetch();
+      this.toasts.show({
+        tone: 'success',
+        title: 'Meeting hours saved',
+        text: `Members are offered times ${hours.meetsOn}, ${slotLabel(hours.opensAt)} to ${slotLabel(hours.closesAt)}`,
+      });
     });
   }
 

@@ -17,3 +17,4 @@ Book a meeting needs a storage model for business hours, a slot rule and a way t
 ## Consequences
 
 Owner-editable hours and slot lengths are later work; the model can grow without changing the request.
+They were built in ADR 0048 (`L2-220`): the fixed slots now stand only until an owner saves meeting hours.
