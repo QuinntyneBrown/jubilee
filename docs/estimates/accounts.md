@@ -15,13 +15,13 @@
 | sign-in | 4 days | 100% |
 | sign-in-as-staff | 5 days | 90% |
 
-## Left in journey 4 (ADR 0048)
+## Left in journey 4 (ADR 0049)
 
 - Owner step, which keeps join-with-email at 95%: a Turnstile widget and its keys in Azure. The join form shows the bot challenge and sends its token once `BotChallenge__SiteKey` and `BotChallenge__SecretKey` are set on `jubilee-to-app` (`eng/azure/README.md`); until then L2-137 AC2 is proven by tests only (`BotChallengeTests`, `join.spec.ts`).
 - Outside this journey (`docs/detailed-designs/security/`): a CSP on the SPA host and the TLS redirect.
 - The states that need a press (`limit` of the waiting page and of the banner, the `unconfirmed*` states of the change e-mail dialog, and `invalid`, `submitting`, `success` and `error` of the join form) have no `routes.ts` entry; the behaviour spec covers them.
 
-confirm-email (ADR 0048): the unconfirmed address is changed in `ChangeUnconfirmedEmailDialog` from the waiting page and the banner, with its invalid, sending, in-use and limit states (L2-004 AC5, AC8 to AC10); the resend limit is said in the banner, on the waiting page and on "Check your e-mail" (L2-005 AC5); `LoggedPath` keeps tokens out of the logs (L2-140 AC3). With tests: `join.spec.ts`, `TokenRedactionTests`. The return to the started action after joining (L2-012 AC2) and the `__Host-` cookie (L2-135 AC1) were built by journey 5 (ADR 0046).
+confirm-email (ADR 0049): the unconfirmed address is changed in `ChangeUnconfirmedEmailDialog` from the waiting page and the banner, with its invalid, sending, in-use and limit states (L2-004 AC5, AC8 to AC10); the resend limit is said in the banner, on the waiting page and on "Check your e-mail" (L2-005 AC5); `LoggedPath` keeps tokens out of the logs (L2-140 AC3). With tests: `join.spec.ts`, `TokenRedactionTests`. The return to the started action after joining (L2-012 AC2) and the `__Host-` cookie (L2-135 AC1) were built by journey 5 (ADR 0046).
 
 reset-password (ADR 0026): the forgot-password and reset-password pages, the queued request with the 3-an-hour limit, hashed single-use 60-minute links, the reset that ends earlier sessions, the security e-mail and the smallest password sign-in are done with tests. Deferred: a 429 for reset requests, the on-call alert and the session list (journey 20).
 

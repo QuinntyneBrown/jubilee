@@ -3,7 +3,7 @@ import { stubResendLimited, stubUnconfirmedEmailChange } from '../../../e2e/fixt
 import { ChangeUnconfirmedEmailDialog } from '../../../e2e/pages/change-unconfirmed-email.dialog';
 import { VerifyEmailBannerRegion } from '../../../e2e/pages/verify-email.page';
 
-// Video 07: journey 4, join Jubilee. An unconfirmed member changes a mistyped address in the
+// Video 08: journey 4, join Jubilee. An unconfirmed member changes a mistyped address in the
 // dialog, meets an address in use and the resend limit, against the recorded API and the stubs of
 // the behaviour spec (ADR 0009); two cards say what the run did behind the screen. Built by
 // `node tools/video-demo/build.mjs` (docs/videos/README.md).

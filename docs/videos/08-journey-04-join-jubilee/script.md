@@ -1,4 +1,4 @@
-# 07 · Journey 4: Join Jubilee
+# 08 · Journey 4: Join Jubilee
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 

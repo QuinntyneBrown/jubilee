@@ -1,15 +1,15 @@
-# 07 · Journey 4: Join Jubilee
+# 08 · Journey 4: Join Jubilee
 
 > **Runtime:** 1:32 (91.9 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 4
 
-**Video:** [07-journey-04-join-jubilee.mp4](07-journey-04-join-jubilee.mp4) · **Audio:** [07-journey-04-join-jubilee.mp3](07-journey-04-join-jubilee.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [08-journey-04-join-jubilee.mp4](08-journey-04-join-jubilee.mp4) · **Audio:** [08-journey-04-join-jubilee.mp3](08-journey-04-join-jubilee.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## What it shows
 
 The run of `docs/prompts/04-join-jubilee.md`, which took journey 4 from 89% to 98%. Joanna has
 joined and has not confirmed her address. In the app itself she changes a mistyped address in the
 dialog "Use another e-mail", meets an address another account uses, and reaches the resend limit
-(ADR 0048). Two cards say what the run did behind the screen and what is left for the owner.
+(ADR 0049). Two cards say what the run did behind the screen and what is left for the owner.
 
 ## What the pictures prove, and what only the tests prove
 
@@ -46,8 +46,8 @@ not shown. The `__Host-` prefix of the member cookie was built by journey 5 (ADR
 
 ```sh
 pip install edge-tts
-node tools/video-demo/build.mjs docs/videos/07-journey-04-join-jubilee --check   # speak the lines, print their lengths
-node tools/video-demo/build.mjs docs/videos/07-journey-04-join-jubilee           # record and encode
+node tools/video-demo/build.mjs docs/videos/08-journey-04-join-jubilee --check   # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/08-journey-04-join-jubilee           # record and encode
 ```
 
 `narration.json` holds the lines and `demo.spec.ts` drives the app, one `demo.scene` per line. The

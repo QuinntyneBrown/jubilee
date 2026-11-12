@@ -23,7 +23,7 @@ const IN_USE = 'An account already uses this e-mail. Use another address.';
 
 /**
  * ChangeUnconfirmedEmailDialog (L2-004 AC5, AC8 to AC10): "Use another e-mail". An unconfirmed member
- * replaces a mistyped address; no password is asked, because the address is not proven yet (ADR 0048).
+ * replaces a mistyped address; no password is asked, because the address is not proven yet (ADR 0049).
  * The API answers the same whether or not the address was free (L2-141 AC1), so the dialog reads the
  * session afterwards: the address it reports says whether the new one was taken.
  */
