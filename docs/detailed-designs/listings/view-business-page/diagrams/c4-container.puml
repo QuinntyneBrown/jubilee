@@ -5,16 +5,18 @@ title Containers — View a business page
 
 Person(member, "Visitor or Member", "Reads a listing")
 Person(owner, "Owner", "Views their own listing")
+Person(team, "Verification team", "Previews a listing that is not public")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Service business page and shop page at /b/:slug")
   Container(api, "Jubilee API", "ASP.NET Core", "Serves listing pages and records listing views")
   Container(worker, "Jubilee Worker", ".NET worker service", "Computes the reply-time band of each listing")
-  ContainerDb(cache, "Cache", "Redis", "Public listing pages for at most 60 seconds and view de-duplication keys")
+  ContainerDb(cache, "Cache", "Redis", "Public listing pages for at most 60 seconds")
   ContainerDb(db, "Jubilee database", "SQL Server", "Listings and services and products and listing views")
   ContainerDb(media, "Media storage", "Object storage + CDN", "Cover and product photos")
 }
 Rel(member, web, "Uses", "HTTPS")
 Rel(owner, web, "Uses", "HTTPS")
+Rel(team, web, "Uses", "HTTPS")
 Rel(web, api, "Loads the listing page from", "JSON/HTTPS")
 Rel(web, media, "Loads photos from", "HTTPS")
 Rel(api, cache, "Reads and writes", "Redis protocol")

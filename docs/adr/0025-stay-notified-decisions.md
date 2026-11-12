@@ -22,5 +22,5 @@ A member learns what happened to their requests, messages and account in the not
 - The in-browser unsubscribe page: the endpoint works; its page arrives with journey 20.
 - The offline and connection banners (L2-121): journey 24.
 - Mail templates and branding (L2-179 AC1 and AC4): no mail provider is chosen.
-- The "new businesses" and "product back in stock" notifications: they need saving (journey 19) and the public listing work of journey 21.
+- The "new businesses" notification: it needs the public listing work of journey 21. The "product back in stock" notification was built with journey 2 (ADR 0045).
 - Provider bounce webhooks beyond what exists.

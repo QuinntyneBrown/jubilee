@@ -24,21 +24,21 @@ box "Backend — Jubilee API" #D1FADF
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "GetListingPageQueryHandler" as handler
-  participant "ListingVisibilityPolicy" as policy
+  participant "PublicListingFilter" as policy
   participant "RecordListingViewCommandHandler" as views
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
+  database "IDirectoryReadCache" as cache
   database "Jubilee database" as db
 end box
 actor -> page : Open /b/legacy-financial
-page -> client : getListingPage(slug)
+page -> client : getListing(slug)
 client -> controller : GET /api/listings/legacy-financial
 controller -> controller : Read the session if one exists
 controller -> handler : Send GetListingPageQuery
 handler -> db : Load Listing with services and products by slug
 db --> handler : Listing or none
-handler -> policy : Evaluate(listing, viewer)
+handler -> policy : Apply to the listing
 alt No listing or not public for this viewer
   policy --> handler : NotFound (L2-028)
   handler --> controller : NotFound
@@ -58,13 +58,13 @@ else Public listing
   alt ListingKind is Services
     page --> actor : Show header and services and About and Details (L2-033)
   else ListingKind is Shop
-    page --> actor : Show header and products and "Custom work" and Details (L2-034)
+    page --> actor : Show header and products, "Sold out" on each sold-out card, "Custom work" and Details (L2-034)
   end
   page -> client : recordView(slug)
   client -> controller : POST /api/listings/legacy-financial/views
   controller -> views : Send RecordListingViewCommand
-  views -> cache : Set the visitor key for 30 minutes if absent
-  cache --> views : New or repeated
+  views -> db : Look for a view by the same visitor in the last 30 minutes
+  db --> views : New or repeated
   opt New view and not a known bot
     views -> db : Insert ListingView
     db --> views : Saved

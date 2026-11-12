@@ -17,51 +17,60 @@ skinparam package {
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ProductEditorDialog" as dialog
+  participant "MyProductsPage" as page
   participant "ToastService" as toast
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "ProductsController" as controller
+  participant "CatalogueController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SaveProductCommandHandler" as handler
   participant "Product" as product
+  participant "StockAlertNotifier" as notifier
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 box "Backend — Jubilee Worker" #D1FADF
   participant "OutboxDispatcherJob" as job
-  participant "StockAlertNotifier" as notifier
 end box
 participant "E-mail provider" as email
 actor -> dialog : Save a product with a new stock value
-dialog -> controller : Update the product through the owner API
-controller -> product : SetStock(optionId, stock)
-alt Stock in every option becomes 0
-  product --> controller : StockChange BecameSoldOut
-  controller -> db : Save changes in one unit of work
-  db --> controller : Commit result
-  controller --> dialog : 200 with stockChange becameSoldOut
-  dialog -> toast : Show the warning toast
+dialog -> controller : PUT /api/my-business/products/{id}
+controller -> handler : Send SaveProductCommand
+handler -> product : SetStock(stock)
+alt Stock becomes 0
+  product --> handler : StockChange BecameSoldOut
+  handler -> db : Save changes
+  db --> handler : Commit result
+  handler --> controller : ProductRowDto with stockChange became-sold-out
+  controller --> dialog : 200
+  dialog --> page : Close with the saved product
+  page -> toast : Show the warning toast
   toast --> actor : "“{product}” is sold out. Members can still ask to be told when it's back." (L2-036)
 else Stock rises from 0 to above 0
-  product --> controller : StockChange BackInStock
-  controller -> db : Save the product and a ProductBackInStock outbox message in one transaction
-  db --> controller : Commit result
-  controller --> dialog : 200 with stockChange backInStock
-  dialog --> actor : Close the editor
-  job -> db : Read the undispatched OutboxMessage
-  db --> job : ProductBackInStock
-  job -> notifier : HandleAsync(message)
-  notifier -> db : Load StockAlert rows with NotifiedAt empty
+  product --> handler : StockChange BackInStock
+  handler -> notifier : TellAsync(product)
+  notifier -> db : Load the shop and the StockAlert rows with NotifiedAt empty
   db --> notifier : Waiting members
-  loop Each waiting member
-    notifier -> db : Set NotifiedAt and insert the in-app Notification (L2-036)
-    db --> notifier : Saved
-    notifier -> email : Send the back-in-stock e-mail once (L2-036)
-    email --> notifier : Accepted
+  loop Each waiting member, when the shop is public
+    notifier -> notifier : Set NotifiedAt and add the Notification "{product} is back in stock" (L2-036)
+    opt "Request updates" e-mail is on and the address is confirmed (L2-068)
+      notifier -> notifier : Queue one e-mail in the outbox
+    end
   end
-  notifier --> job : Handled
-  job -> db : Mark the OutboxMessage dispatched
+  notifier --> handler : Done
+  handler -> db : Save the product, the alerts, the notifications and the e-mails in one transaction
+  db --> handler : Commit result
+  handler --> controller : ProductRowDto with stockChange back-in-stock
+  controller --> dialog : 200
+  dialog --> page : Close with the saved product
+  page -> toast : Show "Product updated"
+  job -> db : Read the e-mails that are due
+  db --> job : The back-in-stock e-mail
+  job -> email : Send it once, with its unsubscribe link
+  email --> job : Accepted
+  job -> db : Mark the e-mail sent
   db --> job : Saved
 end
 @enduml

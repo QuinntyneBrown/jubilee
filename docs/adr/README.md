@@ -39,6 +39,7 @@ something else: a new record supersedes it and both say so.
 | [0041](0041-remove-church-reference-and-add-home-church-address.md) | The church reference is removed: submit goes straight to Ready to review, two stages and the reference data go; an optional home church address is added | Accepted |
 | [0043](0043-member-feedback.md) | Member feedback: one feedback record of four kinds, a corner dialog for the panel, check-ins addressed by id, statuses and replies shown while writing them is deferred | Accepted |
 | [0044](0044-launching-soon.md) | Launching soon: the marketing site sends two forms to `/api/launch` on its own origin, links nowhere outside itself, `APP_URL` removed, submissions read with the CLI, the way back is a revert | Accepted |
+| [0045](0045-finish-view-business-and-products.md) | Finish viewing a business and its products: back-in-stock notices written with the stock change, once per alert, under "Request updates"; `stockChange` for the owner's toast; `status` for the preview of a listing that is not public | Accepted |
 
 ## Format
 
