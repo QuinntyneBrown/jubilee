@@ -43,6 +43,7 @@ certificates for the four host names.
 | `App__PublicBaseUrl` | `https://app.jubilee.to` |
 | `Media__Root` | `/home/data/media` (persistent storage) |
 | `Email__UnsubscribeKey` | a random key |
+| `Email__MailingAddress` | Jubilee's mailing address, printed in the weekly note of new businesses and the tips for owners; while it is not set neither is sent (L2-149 AC1, ADR 0053). **Not set yet: an owner step** |
 | `SCM_DO_BUILD_DURING_DEPLOYMENT` | `false` (the package is already built) |
 
 | `Google__ClientId`, `Google__ClientSecret` | the OAuth client `Jubilee web` (see "Google sign-in" below); the secret exists nowhere else |

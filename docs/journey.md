@@ -32,10 +32,10 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 89% |
 | 15 | Run a business listing | Monitor the listing, edit its details, pause or resume it. | 9 | 100% |
 | 16 | Manage products and services | Add, edit, reorder and delete products and services. | 8 | 90% |
-| 17 | Stay notified | Receive events through the notification centre, toasts, banners and e-mail. | 9 | 89% |
+| 17 | Stay notified | Receive events through the notification centre, toasts, banners and e-mail. | 9 | 100% |
 | 18 | Recover a forgotten password | Request a reset link by e-mail and set a new password. | 3 | 90% |
 | 19 | Save listings for later | Save businesses and products to a private list. | 3 | 90% |
-| 20 | Manage profile and settings | Edit profile, change e-mail or password, choose which e-mails arrive. | 6 | 83% |
+| 20 | Manage profile and settings | Edit profile, change e-mail or password, choose which e-mails arrive. | 6 | 93% |
 | 21 | Share or report a listing | Share a listing's link or report a problem with it. | 3 | 78% |
 | 22 | Read policies and get help | Read the statement of faith, terms, privacy notice and help. | 2 | 85% |
 | 23 | Recover from errors | See clear pages for missing, forbidden, failed or maintenance states. | 3 | 79% |
@@ -48,7 +48,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 95% |
 
-**Total: 217 days** for the 30 journeys, **93% complete** weighted by effort.
+**Total: 217 days** for the 30 journeys, **94% complete** weighted by effort.
 
 ## Notes
 

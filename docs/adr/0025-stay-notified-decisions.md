@@ -18,6 +18,8 @@ A member learns what happened to their requests, messages and account in the not
 
 ## Deferred
 
+ADR 0053 has since closed the daily summary, the unsubscribe page and the "new businesses" notification below, and the settings screens, the banners and the mail layout landed with journeys 4, 20 and 24 and ADR 0038.
+
 - Choosing preferences and the daily-summary frequency (L2-016 AC6): the settings screens belong to journeys 4 and 20.
 - The in-browser unsubscribe page: the endpoint works; its page arrives with journey 20.
 - The offline and connection banners (L2-121): journey 24.

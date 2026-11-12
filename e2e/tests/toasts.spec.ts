@@ -162,4 +162,30 @@ test.describe('toasts (L2-066)', () => {
     await expect(toasts.all).toHaveCount(3);
     expect(await toasts.titles()).toEqual([FAILED, 'Request update 2', 'Request update 3']);
   });
+
+  test('AC4: on a phone the toast sits above the tab bar; from 640 px it is at the bottom right, 24rem wide', async ({
+    page,
+    jb,
+  }) => {
+    const toasts = new Toasts(page);
+    const centre = new NotificationsPage(page);
+    const fake = await stubNotifications(page, { items: [] });
+    await centre.setWidth(360);
+    await jb.goto('/notifications');
+    fake.push(arrival(1));
+    const toast = toasts.info('Request update 1');
+    await expect(toast).toBeVisible();
+
+    const onPhone = (await toast.boundingBox())!;
+    const tabBar = (await centre.tabBar.boundingBox())!;
+    expect(onPhone.y + onPhone.height).toBeLessThanOrEqual(tabBar.y);
+
+    await centre.setWidth(1280);
+    await expect(centre.tabBar).toBeHidden();
+    const onDesktop = (await toast.boundingBox())!;
+    const viewport = page.viewportSize()!;
+    expect(onDesktop.width).toBe(384);
+    expect(viewport.width - (onDesktop.x + onDesktop.width)).toBeLessThanOrEqual(32);
+    expect(viewport.height - (onDesktop.y + onDesktop.height)).toBeLessThanOrEqual(32);
+  });
 });
