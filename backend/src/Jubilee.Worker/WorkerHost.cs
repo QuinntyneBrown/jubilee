@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 namespace Jubilee.Worker;
 
 /// <summary>
-/// The background jobs host. It runs the outbox dispatch (e-mail sending); search indexing is added
-/// when a search engine replaces the database index (ADR 0011).
+/// The background jobs host. It runs the outbox dispatch (e-mail sending) and the scheduled jobs.
+/// Search has no job here: it reads the listings themselves, so nothing is indexed (ADR 0011).
 /// </summary>
 public static class WorkerHost
 {
