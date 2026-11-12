@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { BookedRequest, REQUESTS_API, SpaceTerm } from 'api';
+import { BookedRequest, ClockService, REQUESTS_API, SpaceTerm, isoDay, newKey } from 'api';
 import {
   Alert,
   Button,
@@ -28,8 +28,6 @@ import {
   formatRent,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
-import { ClockService } from '../../services/clock.service';
-import { isoDay, newKey } from '../../services/message-time';
 
 /** What the dialog knows of the space from its page: no extra read is needed. */
 export interface RequestSpaceData {

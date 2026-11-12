@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Jubilee.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddSpaceRequests : Migration
+    public partial class AddSpaces : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,6 +41,18 @@ namespace Jubilee.Infrastructure.Migrations
                 table: "Requests",
                 type: "int",
                 nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Space",
+                table: "Listings",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "Space",
+                table: "ListingDrafts",
+                type: "nvarchar(max)",
+                nullable: true);
         }
 
         /// <inheritdoc />
@@ -65,6 +77,14 @@ namespace Jubilee.Infrastructure.Migrations
             migrationBuilder.DropColumn(
                 name: "StayMonths",
                 table: "Requests");
+
+            migrationBuilder.DropColumn(
+                name: "Space",
+                table: "Listings");
+
+            migrationBuilder.DropColumn(
+                name: "Space",
+                table: "ListingDrafts");
         }
     }
 }

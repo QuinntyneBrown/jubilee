@@ -2,7 +2,7 @@ import { LISTING_ID, SPACE_REVIEW as SPACE, stubAdmin } from '../fixtures/admin'
 import { expect, test } from '../fixtures/jb-test';
 import { AdminVerificationPage } from '../pages/admin-verification.page';
 
-const REVIEW = `/admin/verifications/${LISTING_ID}`;
+const REVIEW = `/verifications/${LISTING_ID}`;
 
 test.describe('verify a space (L2-191)', () => {
   test('L2-191 AC3: the review of a space shows its terms and details and never its exact address', async ({
@@ -12,7 +12,7 @@ test.describe('verify a space (L2-191)', () => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
     await stubAdmin(page, { listing: SPACE });
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await expect(review.heading).toHaveText(SPACE.name);
     await expect(review.subtitle).toContainText('Rooms & rentals');
@@ -48,7 +48,7 @@ test.describe('verify a space (L2-191)', () => {
         space: { ...SPACE.space, term: 'room', household: 'Two of us, both nurses.' },
       },
     });
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await expect(review.spaceRow('Term')).toHaveText('Room');
     await expect(review.spaceRow('Household')).toHaveText('Two of us, both nurses.');

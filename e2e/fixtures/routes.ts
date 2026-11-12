@@ -1046,9 +1046,10 @@ export const routes = {
     stub: 'admin-review-changes-requested',
   },
   'admin-verification.space': {
-    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
     mock: 'pages/admin-verification/space.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'admin-review-space',
   },
   'admin-verification.error': {
