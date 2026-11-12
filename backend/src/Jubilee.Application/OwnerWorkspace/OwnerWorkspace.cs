@@ -62,7 +62,8 @@ public sealed record ListingEditorDto(
     string? Highlight,
     IReadOnlyList<CategoryOptionDto> Categories,
     IReadOnlyList<ListingPhotoDto> Photos,
-    bool RecheckRequested);
+    bool RecheckRequested,
+    Onboarding.SpaceDraftDto? Space = null);
 
 public sealed record PauseResultDto(bool Paused, DateTimeOffset? PausedAt, string State, bool NeedsReview);
 
@@ -153,9 +154,11 @@ internal static class Workspace
             listing.Hours,
             listing.Website,
             listing.Highlight,
-            [.. Category.All.Select(c => new CategoryOptionDto(c.Slug, c.Name))],
+            [.. Category.All.Where(c => (c.Slug == Category.RoomsSlug) == (listing.Kind == ListingKind.Space))
+                .Select(c => new CategoryOptionDto(c.Slug, c.Name))],
             [.. photos.Select((p, i) => new ListingPhotoDto(p.Id, p.Key, i + 1, p.Alt ?? DefaultAlt(listing.Name, i + 1), p.Alt, p.Width, p.Height))],
-            listing.RecheckRequestedAt is not null);
+            listing.RecheckRequestedAt is not null,
+            listing.Space is null ? null : Onboarding.SpaceDraftDto.From(listing.Space));
     }
 }
 
@@ -268,7 +271,7 @@ public sealed class GetListingEditorQueryHandler(IAppDbContext db) : IRequestHan
 
 public sealed record SaveListingCommand(
     string Subject, int Version, string? Name, string? Tagline, string? CategorySlug, string? About, string? Where,
-    string? Hours, string? Website, string? Highlight) : IRequest<ListingEditorDto>;
+    string? Hours, string? Website, string? Highlight, Onboarding.SpaceInput? Space = null) : IRequest<ListingEditorDto>;
 
 public sealed class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<SaveListingCommand, ListingEditorDto>
 {
@@ -298,18 +301,36 @@ public sealed class SaveListingCommandHandler(IAppDbContext db, TimeProvider clo
             errors["tagline"] = "TOO_LONG";
         }
 
-        if (Category.All.All(c => c.Slug != request.CategorySlug))
+        var isSpace = listing.Kind == ListingKind.Space;
+        if (isSpace)
         {
-            errors["category"] = "INVALID";
-        }
+            // A space stays in Rooms & rentals and has no hours; its own fields are checked as when it was listed (L2-200).
+            if (request.CategorySlug != Category.RoomsSlug)
+            {
+                errors["category"] = "CATEGORY_LOCKED";
+            }
 
-        if (hours.Length == 0)
-        {
-            errors["hours"] = "REQUIRED";
+            Onboarding.Drafts.ValidateSpace(request.Space, errors);
         }
-        else if (hours.Length > Workspace.MaxHours)
+        else
         {
-            errors["hours"] = "TOO_LONG";
+            if (Category.All.All(c => c.Slug != request.CategorySlug))
+            {
+                errors["category"] = "INVALID";
+            }
+            else if (request.CategorySlug == Category.RoomsSlug)
+            {
+                errors["category"] = "CATEGORY_LOCKED";
+            }
+
+            if (hours.Length == 0)
+            {
+                errors["hours"] = "REQUIRED";
+            }
+            else if (hours.Length > Workspace.MaxHours)
+            {
+                errors["hours"] = "TOO_LONG";
+            }
         }
 
         if (website.Length > 0
@@ -347,7 +368,14 @@ public sealed class SaveListingCommandHandler(IAppDbContext db, TimeProvider clo
 
         var now = clock.GetUtcNow();
         var before = $"{listing.Name} | {listing.CategorySlug}";
-        var reworded = listing.Edit(name, tagline, request.CategorySlug!, request.About, request.Where, hours, website, request.Highlight, now);
+        var space = isSpace ? Onboarding.Drafts.SpaceFrom(request.Space) : null;
+        var reworded = listing.Edit(
+            name, tagline, request.CategorySlug!, request.About, space?.Neighbourhood ?? request.Where, hours, website, request.Highlight, now);
+        if (space is not null)
+        {
+            listing.DescribeSpace(space);
+        }
+
         if (reworded && listing.Stage == ListingStage.Live)
         {
             db.AuditRecords.Add(AuditRecord.Make(

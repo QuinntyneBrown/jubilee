@@ -509,6 +509,13 @@ public sealed class ListingDraftConfiguration : IEntityTypeConfiguration<Listing
         builder.HasIndex(d => d.UpdatedAt);
         builder.HasMany(d => d.Items).WithOne().HasForeignKey(i => i.ListingDraftId).OnDelete(DeleteBehavior.Cascade);
         builder.Navigation(d => d.Items).UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        // A space draft keeps its rental details as one JSON column, like its listing (ADR 0040).
+        builder.OwnsOne(d => d.Space, s =>
+        {
+            s.ToJson("Space");
+            s.Ignore(x => x.MinimumStayLabel);
+        });
     }
 }
 

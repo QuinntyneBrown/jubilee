@@ -1,3 +1,5 @@
+using Jubilee.Application.Directory;
+
 namespace Jubilee.Application.Search;
 
 public static class SearchResultKind
@@ -13,7 +15,10 @@ public sealed record HighlightRange(int Start, int Length);
 /// <summary>Plain text plus highlight ranges, never markup (design: MatchExplanation).</summary>
 public sealed record MatchExplanation(string Text, IReadOnlyList<HighlightRange> Highlights);
 
-/// <summary>One result. <see cref="Slug"/> is always the business's slug.</summary>
+/// <summary>
+/// One result. <see cref="Slug"/> is always the business's slug. A space's result carries its space
+/// card, which never holds the exact address (L2-195).
+/// </summary>
 public sealed record SearchHit(
     string Kind,
     string Name,
@@ -21,7 +26,8 @@ public sealed record SearchHit(
     string? ProductSlug,
     string BusinessName,
     string CategorySlug,
-    MatchExplanation? Explanation);
+    MatchExplanation? Explanation,
+    SpaceCardDto? Space = null);
 
 /// <summary>A close term for a query that matched nothing, and the category it belongs to.</summary>
 public sealed record SearchSuggestion(string CloseTerm, string? CategorySlug);

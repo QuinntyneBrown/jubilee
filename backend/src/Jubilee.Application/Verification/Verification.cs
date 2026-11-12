@@ -232,7 +232,36 @@ public sealed record VerificationReviewDto(
     ReviewDecision? Decision,
     IReadOnlyList<string> ChangedSinceRequest,
     bool IsOwnListing,
-    string? CannotDecideBecause);
+    string? CannotDecideBecause,
+    ReviewSpace? Space = null);
+
+/// <summary>What the verification team reads of a space: every field but its exact address (L2-191 AC3).</summary>
+public sealed record ReviewSpace(
+    string Term,
+    int Rent,
+    string Per,
+    string Available,
+    string MinimumStayLabel,
+    string Neighbourhood,
+    string Place,
+    IReadOnlyList<string> Facts,
+    IReadOnlyList<string> Included,
+    string? Household,
+    IReadOnlyList<string> Rules)
+{
+    public static ReviewSpace From(SpaceDetails space) => new(
+        WireValues.Of(space.Term),
+        space.Rent,
+        SpaceTerms.Per(space.Term),
+        space.Available,
+        space.MinimumStayLabel,
+        space.Neighbourhood,
+        space.Place,
+        space.Facts,
+        space.Included,
+        space.Household,
+        space.Rules);
+}
 
 internal static class Reviews
 {
@@ -311,7 +340,7 @@ public sealed class GetVerificationReviewQueryHandler(IAppDbContext db, TimeProv
             listing.Name,
             listing.Tagline,
             listing.About,
-            listing.Kind == ListingKind.Shop ? "products" : "services",
+            Onboarding.ListingDraftDto.Wire(listing.Kind),
             listing.CategorySlug,
             Category.Find(listing.CategorySlug)?.Name ?? listing.CategorySlug,
             submission.SubmittedAt,
@@ -353,7 +382,8 @@ public sealed class GetVerificationReviewQueryHandler(IAppDbContext db, TimeProv
                     ListingStage.ChangesRequested => "Waiting on the owner.",
                     ListingStage.Live or ListingStage.Declined => "A decision has been made.",
                     _ => null,
-                });
+                },
+            listing.Space is null ? null : ReviewSpace.From(listing.Space));
     }
 }
 

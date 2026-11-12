@@ -11,7 +11,8 @@ namespace Jubilee.Api.Controllers;
 /// <summary>The owner's edit of the listing's page. Unknown fields are refused (L2-133 AC4).</summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record SaveListingBody(
-    int Version, string? Name, string? Tagline, string? Category, string? About, string? Where, string? Hours, string? Website, string? Highlight);
+    int Version, string? Name, string? Tagline, string? Category, string? About, string? Where, string? Hours, string? Website, string? Highlight,
+    SpaceDraftRequest? Space = null);
 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record MovePhotoBody(int Position);
@@ -44,7 +45,8 @@ public sealed class MyBusinessController(ISender sender) : ControllerBase
     [ErrorReference("JB-LST-504")]
     public Task<ListingEditorDto> Save([FromBody] SaveListingBody body, CancellationToken cancellationToken) =>
         sender.Send(new SaveListingCommand(
-            Subject, body.Version, body.Name, body.Tagline, body.Category, body.About, body.Where, body.Hours, body.Website, body.Highlight),
+            Subject, body.Version, body.Name, body.Tagline, body.Category, body.About, body.Where, body.Hours, body.Website, body.Highlight,
+            body.Space?.ToInput()),
             cancellationToken);
 
     [HttpPost("pause")]

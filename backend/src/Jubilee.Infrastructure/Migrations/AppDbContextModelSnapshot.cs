@@ -2092,6 +2092,56 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.ListingDraft", b =>
+                {
+                    b.OwnsOne("Jubilee.Domain.SpaceDetails", "Space", b1 =>
+                        {
+                            b1.Property<Guid>("ListingDraftId");
+
+                            b1.Property<string>("Address")
+                                .IsRequired();
+
+                            b1.Property<string>("Available")
+                                .IsRequired();
+
+                            b1.PrimitiveCollection<string>("Facts")
+                                .IsRequired();
+
+                            b1.Property<string>("Household");
+
+                            b1.PrimitiveCollection<string>("Included")
+                                .IsRequired();
+
+                            b1.Property<int>("MinimumStay");
+
+                            b1.Property<string>("Neighbourhood")
+                                .IsRequired();
+
+                            b1.Property<string>("Place")
+                                .IsRequired();
+
+                            b1.Property<int>("Rent");
+
+                            b1.PrimitiveCollection<string>("Rules")
+                                .IsRequired();
+
+                            b1.Property<int>("Term");
+
+                            b1.HasKey("ListingDraftId");
+
+                            b1.ToTable("ListingDrafts");
+
+                            b1
+                                .ToJson("Space")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ListingDraftId");
+                        });
+
+                    b.Navigation("Space");
+                });
+
             modelBuilder.Entity("Jubilee.Domain.ListingReport", b =>
                 {
                     b.HasOne("Jubilee.Domain.Listing", null)

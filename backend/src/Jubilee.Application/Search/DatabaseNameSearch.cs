@@ -1,4 +1,5 @@
 using Jubilee.Application.Abstractions;
+using Jubilee.Application.Directory;
 using Jubilee.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,8 @@ public sealed class DatabaseNameSearch(IAppDbContext db)
             .Where(l => SearchAnalyzer.Fold(l.Name).Contains(folded, StringComparison.Ordinal))
             .OrderByDescending(l => l.RecommendedScore)
             .ThenBy(l => l.SortName)
-            .Select(l => new SearchHit(SearchResultKind.Business, l.Name, l.Slug, null, l.Name, l.CategorySlug, null))
+            .Select(l => new SearchHit(
+                SearchResultKind.Business, l.Name, l.Slug, null, l.Name, l.CategorySlug, null, l.Space is null ? null : SpaceCardDto.From(l)))
             .ToList();
         return new SearchResults(query, hits.Count, 0, 0, false, hits, null);
     }

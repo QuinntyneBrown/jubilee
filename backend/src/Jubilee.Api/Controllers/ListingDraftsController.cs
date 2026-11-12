@@ -10,6 +10,25 @@ namespace Jubilee.Api.Controllers;
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record DraftItemRequest(string? Name, string? Detail, string? PriceKind, int? PriceCents);
 
+/// <summary>The space fields of the form (L2-190). Unknown fields are refused.</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record SpaceDraftRequest(
+    string? Term,
+    int? Rent,
+    string? Available,
+    int? MinimumStay,
+    string? Neighbourhood,
+    string? Address,
+    string? Place,
+    IReadOnlyList<string>? Facts,
+    IReadOnlyList<string>? Included,
+    string? Household,
+    IReadOnlyList<string>? Rules)
+{
+    public SpaceInput ToInput() =>
+        new(Term, Rent, Available, MinimumStay, Neighbourhood, Address, Place, Facts, Included, Household, Rules);
+}
+
 /// <summary>
 /// The listing form. It has no stage, owner or verified field: unknown fields are refused with 400
 /// and nothing is changed (L2-133 AC4).
@@ -26,11 +45,13 @@ public sealed record ListingDraftRequest(
     string? PastorEmail,
     bool Agreed,
     IReadOnlyList<DraftItemRequest>? Items,
-    string? IdempotencyKey)
+    string? IdempotencyKey,
+    SpaceDraftRequest? Space = null)
 {
     public DraftInput ToInput() => new(
         Kind, Name, Tagline, CategorySlug, Highlight, Place, Church, PastorEmail, Agreed,
-        Items?.Select(i => new DraftItemInput(i.Name, i.Detail, i.PriceKind, i.PriceCents)).ToList());
+        Items?.Select(i => new DraftItemInput(i.Name, i.Detail, i.PriceKind, i.PriceCents)).ToList(),
+        Space?.ToInput());
 }
 
 /// <summary>Listing a business: drafts, saving them and submitting for verification (L2-071 to L2-079).</summary>

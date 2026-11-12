@@ -25,7 +25,8 @@ public sealed record ListingDraftDto(
     string PastorEmail,
     bool Agreed,
     DateTimeOffset UpdatedAt,
-    IReadOnlyList<DraftItemDto> Items)
+    IReadOnlyList<DraftItemDto> Items,
+    SpaceDraftDto? Space = null)
 {
     public static ListingDraftDto From(ListingDraft draft) => new(
         draft.Id,
@@ -39,10 +40,58 @@ public sealed record ListingDraftDto(
         draft.PastorEmail,
         draft.Agreed,
         draft.UpdatedAt,
-        [.. draft.Items.OrderBy(i => i.Position).Select(i => new DraftItemDto(i.Name, i.Detail, WireValues.Of(i.PriceKind), i.PriceCents))]);
+        [.. draft.Items.OrderBy(i => i.Position).Select(i => new DraftItemDto(i.Name, i.Detail, WireValues.Of(i.PriceKind), i.PriceCents))],
+        draft.Space is null ? null : SpaceDraftDto.From(draft.Space));
 
-    public static string Wire(ListingKind kind) => kind == ListingKind.Shop ? "products" : "services";
+    public static string Wire(ListingKind kind) => kind switch
+    {
+        ListingKind.Shop => "products",
+        ListingKind.Space => "space",
+        _ => "services",
+    };
 }
+
+/// <summary>A space draft's rental details as its owner typed them, address included (L2-190 AC10).</summary>
+public sealed record SpaceDraftDto(
+    string Term,
+    int? Rent,
+    string Available,
+    int MinimumStay,
+    string Neighbourhood,
+    string Address,
+    string Place,
+    IReadOnlyList<string> Facts,
+    IReadOnlyList<string> Included,
+    string? Household,
+    IReadOnlyList<string> Rules)
+{
+    public static SpaceDraftDto From(SpaceDetails space) => new(
+        WireValues.Of(space.Term),
+        space.Rent > 0 ? space.Rent : null,
+        space.Available,
+        space.MinimumStay,
+        space.Neighbourhood,
+        space.Address,
+        space.Place,
+        space.Facts,
+        space.Included,
+        space.Household,
+        space.Rules);
+}
+
+/// <summary>The space fields of the form (L2-190).</summary>
+public sealed record SpaceInput(
+    string? Term,
+    int? Rent,
+    string? Available,
+    int? MinimumStay,
+    string? Neighbourhood,
+    string? Address,
+    string? Place,
+    IReadOnlyList<string>? Facts,
+    IReadOnlyList<string>? Included,
+    string? Household,
+    IReadOnlyList<string>? Rules);
 
 /// <summary>What the form holds; saving a draft accepts any of it, submitting validates it.</summary>
 public sealed record DraftInput(
@@ -55,19 +104,74 @@ public sealed record DraftInput(
     string? Church,
     string? PastorEmail,
     bool Agreed,
-    IReadOnlyList<DraftItemInput>? Items);
+    IReadOnlyList<DraftItemInput>? Items,
+    SpaceInput? Space = null);
 
 public sealed record DraftItemInput(string? Name, string? Detail, string? PriceKind, int? PriceCents);
 
 public sealed record SubmittedListingDto(
     Guid ListingId, string Slug, string Name, string Kind, string Stage, string Church, string PastorEmail, DateTimeOffset SubmittedAt);
 
-internal static class Drafts
+public static class Drafts
 {
     public const int MaxListings = 5;
 
-    public static ListingKind KindOf(string? kind) =>
-        string.Equals(kind, "services", StringComparison.OrdinalIgnoreCase) ? ListingKind.Services : ListingKind.Shop;
+    public static ListingKind KindOf(string? kind) => kind?.ToLowerInvariant() switch
+    {
+        "services" => ListingKind.Services,
+        "space" => ListingKind.Space,
+        _ => ListingKind.Shop,
+    };
+
+    /// <summary>The term chosen, or Short stay, the first choice, when none was (L2-189 AC2).</summary>
+    public static SpaceTerm TermOf(SpaceInput? space) => WireValues.ParseTerm(space?.Term) ?? SpaceTerm.ShortStay;
+
+    public static SpaceDetails? SpaceOf(DraftInput input)
+    {
+        if (KindOf(input.Kind) != ListingKind.Space)
+        {
+            return null;
+        }
+
+        return SpaceFrom(input.Space);
+    }
+
+    public static SpaceDetails SpaceFrom(SpaceInput? space) => SpaceDetails.Create(
+        TermOf(space), space?.Rent ?? 0, space?.Available, space?.MinimumStay ?? 0, space?.Neighbourhood, space?.Address,
+        space?.Place, space?.Facts, space?.Included, space?.Household, space?.Rules);
+
+    /// <summary>The space fields every term needs, and the household a Room or Roommate needs (L2-190 AC6 to AC8).</summary>
+    public static void ValidateSpace(SpaceInput? space, Dictionary<string, string> errors)
+    {
+        if (space?.Rent is not { } rent || rent <= 0)
+        {
+            errors["space.rent"] = "REQUIRED";
+        }
+        else if (rent > SpaceTerms.MaxRent)
+        {
+            errors["space.rent"] = "TOO_HIGH";
+        }
+
+        if (string.IsNullOrWhiteSpace(space?.Available))
+        {
+            errors["space.available"] = "REQUIRED";
+        }
+
+        if (string.IsNullOrWhiteSpace(space?.Neighbourhood))
+        {
+            errors["space.neighbourhood"] = "REQUIRED";
+        }
+
+        if (string.IsNullOrWhiteSpace(space?.Address))
+        {
+            errors["space.address"] = "REQUIRED";
+        }
+
+        if (SpaceTerms.AsksForHousehold(Drafts.TermOf(space)) && string.IsNullOrWhiteSpace(space?.Household))
+        {
+            errors["space.household"] = "REQUIRED";
+        }
+    }
 
     public static ServicePriceKind PriceKindOf(string? kind) => kind?.ToLowerInvariant() switch
     {
@@ -88,7 +192,7 @@ internal static class Drafts
     public static void Apply(ListingDraft draft, DraftInput input, DateTimeOffset now) =>
         draft.Save(
             KindOf(input.Kind), input.Name, input.Tagline, input.CategorySlug, input.Highlight, input.Place,
-            input.Church, input.PastorEmail, input.Agreed, ItemsOf(input), now);
+            input.Church, input.PastorEmail, input.Agreed, ItemsOf(input), now, SpaceOf(input));
 
     public static async Task<ListingDraft> Owned(IAppDbContext db, string subject, Guid id, CancellationToken cancellationToken) =>
         await db.ListingDrafts.Include(d => d.Items).SingleOrDefaultAsync(d => d.Id == id && d.OwnerSubject == subject, cancellationToken)
@@ -205,7 +309,12 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
             errors["tagline"] = $"TOO_LONG:{tagline.Length.ToString(CultureInfo.InvariantCulture)}";
         }
 
-        if (input.CategorySlug is null || Category.Find(input.CategorySlug) is null)
+        if (Drafts.KindOf(input.Kind) == ListingKind.Space)
+        {
+            // A space always sits in Rooms & rentals, so it has no category to choose (L2-189 AC3).
+            Drafts.ValidateSpace(input.Space, errors);
+        }
+        else if (input.CategorySlug is null || Category.Find(input.CategorySlug) is null)
         {
             errors["categorySlug"] = "REQUIRED";
         }
@@ -256,14 +365,25 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
             flags.Add("REFERENCE_REUSED");
         }
 
-        var listing = Listing.Create(await UniqueSlug(name, cancellationToken), name, tagline, input.CategorySlug!, now);
+        var space = Drafts.SpaceOf(input);
+        var listing = Listing.Create(
+            await UniqueSlug(name, cancellationToken), name, tagline, space is null ? input.CategorySlug! : Category.RoomsSlug, now);
         listing.SetKind(Drafts.KindOf(input.Kind));
         listing.AssignOwner(command.Subject);
-        listing.Describe(new ListingProfile(command.Name, [], null, input.Place?.Trim(), null, null, null, null));
+
+        // The public place of a space is its neighbourhood; the exact address stays in its details (L2-199).
+        listing.Describe(new ListingProfile(command.Name, [], null, space?.Neighbourhood ?? input.Place?.Trim(), null, null, null, null));
         listing.SetHighlight(input.Highlight);
         listing.MoveTo(ListingStage.PendingReference);
         db.Listings.Add(listing);
-        AddItems(listing, input, now);
+        if (space is null)
+        {
+            AddItems(listing, input, now);
+        }
+        else
+        {
+            listing.DescribeSpace(space);
+        }
 
         var submission = ListingSubmission.Record(
             listing.Id, command.Subject, input.Church!.Trim(), address.Value, key, flags, now);
