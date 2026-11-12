@@ -1,0 +1,106 @@
+WEBVTT
+
+00:00:00.483 --> 00:00:05.687
+Journey nine: request a product. A member sends a shop an order request
+
+00:00:05.687 --> 00:00:10.305
+for a product, without payment. This run takes the journey from
+
+00:00:10.305 --> 00:00:12.651
+ninety-five percent to complete.
+
+00:00:13.506 --> 00:00:19.320
+Joanna is a member. On Luzandre.com she opens the Faith heavyweight tee,
+
+00:00:19.320 --> 00:00:24.810
+chooses size M and a quantity of two, and presses Request this item.
+
+00:00:25.511 --> 00:00:28.763
+The dialog says it first: no payment now.
+
+00:00:28.763 --> 00:00:32.570
+Luzandre.com confirms and you pay them directly.
+
+00:00:32.570 --> 00:00:38.281
+Below are the tee, the size and the quantity, and the shop's ways to get
+
+00:00:38.281 --> 00:00:38.519
+it.
+
+00:00:39.221 --> 00:00:44.081
+Ship to me needs a shipping address, filled in from the last one she
+
+00:00:44.081 --> 00:00:48.798
+used. The estimate reads: item sixty-eight dollars, shipping nine,
+
+00:00:48.798 --> 00:00:52.157
+estimated total seventy-seven dollars plus tax.
+
+00:00:52.859 --> 00:00:57.894
+She chooses pick up in Leslieville. The address field goes away,
+
+00:00:57.894 --> 00:01:01.907
+shipping is free, and the estimate follows at once.
+
+00:01:02.610 --> 00:01:06.633
+New in this run, the dialog is proved by keyboard alone.
+
+00:01:06.633 --> 00:01:11.590
+The arrow keys move between the ways to get it, and Escape closes the
+
+00:01:11.590 --> 00:01:13.386
+dialog and sends nothing.
+
+00:01:14.088 --> 00:01:17.211
+She adds a note and sends the request.
+
+00:01:17.211 --> 00:01:23.047
+Request sent to Luzandre.com: Naomi confirms stock and tells her how to
+
+00:01:23.047 --> 00:01:26.334
+pay. The keyboard test found a gap here.
+
+00:01:26.334 --> 00:01:31.512
+The focus was lost with the form; now it moves to View request.
+
+00:01:32.215 --> 00:01:37.081
+Where does it go? The owner finds each order request in Incoming
+
+00:01:37.081 --> 00:01:41.263
+requests, under New, and confirms or declines it there.
+
+00:01:42.298 --> 00:01:46.596
+Behind the screen, four API tests now prove who is told.
+
+00:01:46.596 --> 00:01:51.891
+The owner gets an in-app notification, new order request from Joanna,
+
+00:01:51.891 --> 00:01:57.263
+that links to Incoming requests. It reaches the owner's open page as a
+
+00:01:57.263 --> 00:02:02.482
+real-time event. The member is told nothing until the owner answers.
+
+00:02:03.336 --> 00:02:07.864
+When the shop confirms, the customer is told in the app, and only then
+
+00:02:07.864 --> 00:02:11.874
+does the stock go down. And the order appears as a card in the
+
+00:02:11.874 --> 00:02:14.784
+conversation between the member and the shop.
+
+00:02:15.642 --> 00:02:20.312
+The order request has an eighth acceptance criterion for this, the
+
+00:02:20.312 --> 00:02:24.628
+design names the code as built, and journey nine is complete.
+
+00:02:24.628 --> 00:02:29.439
+Left for the owner: the visual, responsive and accessibility sweeps.
+
+00:02:29.439 --> 00:02:34.180
+Tax is shown as plus tax and never calculated, and Jubilee takes no
+
+00:02:34.180 --> 00:02:34.746
+payment.
