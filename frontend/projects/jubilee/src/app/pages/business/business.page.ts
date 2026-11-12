@@ -178,6 +178,8 @@ export class BusinessPage {
   /** Which dialog the address asks for: /b/:slug/message, /book, /request (a space) and so on. */
   private readonly composing = signal<Composing | null>(null);
   private composeRef?: { close: () => void };
+  /** The page has gone: a dialog that closes after it must not change the address. */
+  private left = false;
 
   protected readonly state = signal<LoadState<ListingPage>>({ status: 'loading' });
   private readonly slugValue = signal('');
@@ -300,6 +302,7 @@ export class BusinessPage {
       });
     });
     inject(DestroyRef).onDestroy(() => {
+      this.left = true;
       params.unsubscribe();
       urls.unsubscribe();
       this.request?.unsubscribe();
@@ -342,7 +345,7 @@ export class BusinessPage {
       this.composeRef = undefined;
       // A "Sign in" or "Join" link navigates on its own; do not undo that.
       setTimeout(() => {
-        if (!this.router.getCurrentNavigation() && this.composing()) {
+        if (!this.left && !this.router.getCurrentNavigation() && this.composing()) {
           void this.router.navigate(['/b', this.slug], { replaceUrl: true });
         }
       });
@@ -393,7 +396,7 @@ export class BusinessPage {
     const leave = (): void => {
       this.composeRef = undefined;
       setTimeout(() => {
-        if (!this.router.getCurrentNavigation() && this.composing()) {
+        if (!this.left && !this.router.getCurrentNavigation() && this.composing()) {
           void this.router.navigate(['/b', this.slug], { replaceUrl: true });
         }
       });
@@ -518,7 +521,7 @@ export class BusinessPage {
   private leaveDialog(): void {
     this.composeRef = undefined;
     setTimeout(() => {
-      if (!this.router.getCurrentNavigation() && this.composing()) {
+      if (!this.left && !this.router.getCurrentNavigation() && this.composing()) {
         void this.router.navigate(['/b', this.slug], { replaceUrl: true });
       }
     });

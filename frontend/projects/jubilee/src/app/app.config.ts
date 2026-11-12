@@ -59,6 +59,7 @@ import { environment } from '../environments/environment';
 import { connectionInterceptor } from './services/offline/connection.interceptor';
 import { errorInterceptor } from './services/error.interceptor';
 import { NavigationTrail } from './services/navigation-trail';
+import { DraftRegistry } from './drafts/draft-registry';
 import { sessionExpiredInterceptor } from './interceptors/session-expired.interceptor';
 import { SessionService } from './services/session.service';
 
@@ -100,5 +101,9 @@ export const appConfig: ApplicationConfig = {
     { provide: NOTIFICATIONS_API, useClass: HttpNotificationsApi },
     { provide: EVENTS_API, useClass: SseEventsApi },
     provideAppInitializer(() => inject(SessionService).resolve()),
+    // Watches who is signed in from the start: another member's drafts leave the device (L2-116 AC4).
+    provideAppInitializer(() => {
+      inject(DraftRegistry);
+    }),
   ],
 };

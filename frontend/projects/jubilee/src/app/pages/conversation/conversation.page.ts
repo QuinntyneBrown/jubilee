@@ -55,6 +55,7 @@ import {
 } from '../../dialogs/report-conversation/report-conversation.dialog';
 import { ToastService } from 'components';
 import { InboxList } from '../messages/inbox-list';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 const REPLIES: Record<RepliesBand, string> = {
   'few-hours': 'usually replies within a few hours',
@@ -101,6 +102,7 @@ type Entry =
 @Component({
   selector: 'jb-conversation-page',
   imports: [
+    FormDraftDirective,
     RouterLink,
     CdkMenuTrigger,
     EmptyState,

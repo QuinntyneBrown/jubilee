@@ -86,6 +86,8 @@ export class ProductPage {
   private readonly savedStore = inject(SavedStore);
   private request?: Subscription;
   private composeRef?: { close: () => void };
+  /** The page has gone: a dialog that closes after it must not change the address. */
+  private left = false;
   private readonly requesting = signal(false);
 
   protected readonly slug = signal('');
@@ -185,6 +187,7 @@ export class ProductPage {
       });
     });
     inject(DestroyRef).onDestroy(() => {
+      this.left = true;
       urls.unsubscribe();
       params.unsubscribe();
       this.request?.unsubscribe();
@@ -286,7 +289,7 @@ export class ProductPage {
     const leave = (): void => {
       this.composeRef = undefined;
       setTimeout(() => {
-        if (!this.router.getCurrentNavigation() && this.requesting()) {
+        if (!this.left && !this.router.getCurrentNavigation() && this.requesting()) {
           void this.router.navigate(['/b', this.slug(), 'p', this.productSlug()], {
             replaceUrl: true,
           });
