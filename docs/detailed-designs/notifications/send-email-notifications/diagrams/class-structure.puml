@@ -13,86 +13,151 @@ skinparam class {
 ' --------------------------
 title Class structure — Send e-mail notifications
 
-class EmailPolicy <<domain service>> {
-  +Decide(event: EmailEvent, preferences: NotificationPreferences, isReading: bool): EmailDecision
+class EmailPolicy <<static>> {
+  +{static} Queue(db, member, category, subject, body, now, notBefore, correlationId): bool
 }
-enum EmailDecision {
-  SendNow
-  AddToDailySummary
-  Skip
+class EmailCategories <<static>> {
+  +Messages = "messages"
+  +Requests = "requests"
+  +Reminders = "reminders"
+  +NewBusinesses = "new-businesses"
+  +Tips = "tips"
+  +Summary = "summary"
+  +{static} IsHeldForSummary(category): bool
+  +{static} IsPromotional(category): bool
 }
-enum EmailCategory {
-  NewMessages
-  RequestUpdates
-  MeetingReminders
-  NewBusinesses
-  OwnerTips
-  Security
-  Transactional
+class Member {
+  +bool EmailMessages
+  +bool EmailRequests
+  +bool EmailReminders
+  +bool EmailNewBusinesses
+  +bool EmailTips
+  +bool EmailDailySummary
+  +bool EmailBounced
+  +int TipsSent
+  +WantsEmail(category): bool
+  +SetEmailPreference(category, on): bool
+  +MarkTipSent(): void
 }
-enum EmailFrequency {
-  AsItHappens
-  DailySummary
-}
-class NotificationPreferences {
-  +Guid MemberId
-  +bool NewMessages
-  +bool RequestUpdates
-  +bool MeetingReminders
-  +bool NewBusinesses
-  +bool OwnerTips
-  +EmailFrequency Frequency
-  +IsOn(category: EmailCategory): bool
-  +TurnOff(category: EmailCategory): void
-}
-class PendingEmail {
+class OutboxMessage {
   +Guid Id
-  +Guid RecipientMemberId
-  +EmailCategory Category
-  +string BatchKey
-  +DateTimeOffset DueAt
+  +string ToAddress
+  +string Subject
+  +string TextBody
+  +Guid? MemberId
+  +string? Category
+  +Guid? CorrelationId
+  +bool HeldForSummary
+  +DateTimeOffset NextAttemptAt
+  +int Attempts
   +DateTimeOffset? SentAt
-  +Append(item: EmailItem): void
+  +DateTimeOffset? FailedAt
+  +{static} Email(...): OutboxMessage
+  +IsDue(now): bool
+  +MarkSent(now): void
+  +MarkAttemptFailed(now): void
 }
-class EmailItem {
-  +Guid NotificationId
-  +string Title
-  +string Detail
+class MessageMail <<static>> {
+  +{static} TimeSpan Wait = 2 minutes
+  +{static} TimeSpan Combine = 10 minutes
+  +{static} TimeSpan Reading = 2 minutes
+  +{static} QueueAsync(db, settings, conversation, toOwner, recipientSubject, senderName, now): Task
 }
-class EmailMessage {
+class OutboxDispatcher {
+  +DispatchDueAsync(): Task<int>
+}
+class EmailLayout <<static>> {
+  +{static} Render(to, subject, textBody, unsubscribeUrl): EmailMessage
+}
+class EmailMessage <<record>> {
   +string To
   +string Subject
+  +string TextBody
   +string HtmlBody
-  +string ListUnsubscribe
-  +string ListUnsubscribePost
+  +string? UnsubscribeUrl
 }
 interface IEmailSender {
   +SendAsync(message: EmailMessage): Task
 }
-class MeetingReminder {
-  +Guid RequestId
-  +DateTimeOffset DueAt
-  +DateTimeOffset? SentAt
-  +{static} For(start: DateTimeOffset, now: DateTimeOffset): MeetingReminder
+class AzureCommunicationEmailSender
+class LoggingEmailSender
+interface IUnsubscribeLinks {
+  +For(memberId: Guid, category: string): string
+  +TryRead(token, out memberId, out category): bool
 }
-class MeetingReminderJob {
-  +ExecuteAsync(token: CancellationToken): Task
+class HmacUnsubscribeLinks
+class UnsubscribeCommandHandler {
+  +Handle(command: UnsubscribeCommand): Task<string>
 }
-class LinkToken {
-  +string TokenHash
-  +LinkTokenPurpose Purpose
-  +Guid MemberId
-  +EmailCategory Category
+class MeetingReminders {
+  +{static} TimeSpan Lead = 1 hour
+  +SendDueAsync(): Task<int>
+  +RemindIfSoonAsync(request: Request): Task
+}
+class Request {
+  +DateTimeOffset? StartsAt
+  +DateTimeOffset? RemindedAt
+  +Remind(now): void
+}
+class ScheduledJobs {
+  +RunOnceAsync(job, every, work): Task<bool>
+  +RunOnceAtAsync(job, occurrence, work): Task<bool>
+  +LastSuccessAsync(job): Task<DateTimeOffset?>
+}
+class JobRun {
+  +string Job
+  +DateTimeOffset Occurrence
+  +DateTimeOffset ClaimedAt
+  +DateTimeOffset? SucceededAt
+}
+class TorontoClock <<static>> {
+  +{static} At(day: DateOnly, time: TimeOnly): DateTimeOffset
+  +{static} Today(now): DateOnly
+  +{static} Local(instant): DateTime
+}
+class SendDailySummariesCommandHandler {
+  Job = "daily-summary"
+  At = 7:00
+  +Handle(command): Task<int?>
+}
+class SendNewBusinessNotesCommandHandler {
+  Job = "new-business-note"
+}
+class SendOwnerTipsCommandHandler {
+  Job = "owner-tips"
+}
+class OwnerTips <<static>> {
+  +{static} Series
+}
+class EmailSettings <<record>> {
+  +string? MailingAddress
+  +bool CanSendPromotional
 }
 
-EmailPolicy ..> NotificationPreferences : reads
-EmailPolicy ..> EmailDecision : returns
-NotificationPreferences --> EmailFrequency : has
-NotificationPreferences ..> EmailCategory : switches
-PendingEmail --> EmailCategory : has
-PendingEmail "1" *-- "1..*" EmailItem : combines
-IEmailSender ..> EmailMessage : sends
-EmailMessage ..> LinkToken : carries unsubscribe
-MeetingReminderJob "1" --> "*" MeetingReminder : processes due
-LinkToken --> EmailCategory : turns off
+EmailPolicy ..> Member : reads WantsEmail and EmailDailySummary
+EmailPolicy ..> EmailCategories : IsHeldForSummary
+EmailPolicy "1" --> "*" OutboxMessage : adds
+MessageMail ..> EmailPolicy : Queue
+MeetingReminders ..> EmailPolicy : Queue
+MeetingReminders ..> Request : Remind
+OutboxDispatcher "1" --> "*" OutboxMessage : sends due rows
+OutboxDispatcher ..> EmailLayout : Render
+OutboxDispatcher ..> IUnsubscribeLinks : For
+OutboxDispatcher ..> IEmailSender : SendAsync
+EmailLayout ..> EmailMessage : returns
+AzureCommunicationEmailSender ..|> IEmailSender
+LoggingEmailSender ..|> IEmailSender
+HmacUnsubscribeLinks ..|> IUnsubscribeLinks
+UnsubscribeCommandHandler ..> IUnsubscribeLinks : TryRead
+UnsubscribeCommandHandler ..> Member : turns the category off
+SendDailySummariesCommandHandler ..> ScheduledJobs : RunOnceAtAsync
+SendDailySummariesCommandHandler ..> TorontoClock : At
+SendDailySummariesCommandHandler "1" --> "*" OutboxMessage : replaces held rows
+SendNewBusinessNotesCommandHandler ..> ScheduledJobs : RunOnceAtAsync
+SendNewBusinessNotesCommandHandler ..> EmailSettings : needs MailingAddress
+SendOwnerTipsCommandHandler ..> ScheduledJobs : RunOnceAtAsync
+SendOwnerTipsCommandHandler ..> EmailSettings : needs MailingAddress
+SendOwnerTipsCommandHandler ..> OwnerTips : next tip
+SendOwnerTipsCommandHandler ..> Member : MarkTipSent
+ScheduledJobs "1" --> "*" JobRun : claims
 @enduml

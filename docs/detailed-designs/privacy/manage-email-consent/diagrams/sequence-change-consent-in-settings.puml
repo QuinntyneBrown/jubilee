@@ -14,46 +14,41 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Member" as actor
+actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
   participant "NotificationSettingsPage" as page
-  participant "AccountApi" as client
+  participant "HttpProfileApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "NotificationPreferencesController" as controller
+  participant "AccountController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "SetEmailConsentCommandHandler" as handler
-  participant "NotificationPreferences" as prefs
+  participant "UpdateNotificationPreferenceCommandHandler" as handler
+  participant "Consent" as consent
+  participant "Member" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> page : Turn the New businesses switch on or off
-page -> page : Show Saving… on that row
-page -> client : Save the category
-client -> controller : PUT /api/account/notification-preferences/{category}
-controller -> controller : Authenticate the session and check the CSRF token
-controller -> handler : Send SetEmailConsentCommand with method SettingsSwitch
-handler -> db : Load the member's NotificationPreferences
-db --> handler : Current preferences
-handler -> prefs : Set(category, enabled)
-prefs --> handler : Changed
-opt the value changed
-  handler -> handler : Create ConsentRecord with action, method and time (L2-149)
+member -> page : Turn "New businesses" on
+page --> member : Row shows "Saving…"
+page -> client : setSwitch("new-businesses", true)
+client -> controller : PATCH /api/account/notification-preferences
+controller -> handler : Send UpdateNotificationPreferenceCommand
+handler -> db : Load the member of the session
+db --> handler : Member
+handler -> consent : TrySet(member, "new-businesses", true, SettingsSwitch, now)
+consent -> entity : SetEmailPreference("new-businesses", true)
+opt the value changed and the category is promotional
+  consent -> db : Add ConsentRecord (Given, SettingsSwitch, OccurredAt) (L2-149 AC3)
 end
-handler -> db : Save preference and ConsentRecord in one unit of work
-alt save succeeds
-  db --> handler : Committed
-  handler --> controller : Saved at time
-  controller --> client : 200 with savedAt
-  client --> page : Saved result
-  page --> actor : Show Saved at {time} on the row
-else save fails
-  db --> handler : Failure
-  handler --> controller : Error
-  controller --> client : 503 ProblemDetails JB-PREF-503
-  client --> page : Error result
-  page --> actor : Return the switch and show an error toast with Try again
+handler -> db : Save the switch and the record in one unit of work
+alt saved
+  db --> handler : Commit result
+  controller --> client : 200 OK with the settings
+  page --> member : "Saved at {time}"
+else the save fails
+  controller --> client : 503 with JB-PREF-503
+  page --> member : Switch back in its previous position and an error toast with "Try again"
 end
 @enduml

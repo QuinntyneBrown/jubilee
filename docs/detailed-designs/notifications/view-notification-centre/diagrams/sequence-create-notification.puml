@@ -14,42 +14,41 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
+actor "Verifier" as verifier
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RealtimeService" as rt
+  participant "NotificationsPage" as page
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "EventsController" as events
+end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "Command handler" as handler
+  participant "ApproveListingCommandHandler" as handler
+  participant "NewBusinessNotifier" as notifier
+  participant "NotificationRules" as rules
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
-  database "Cache" as cache
 end box
-box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcherJob" as job
-  participant "NotificationProjector" as proj
-end box
-box "Backend — Jubilee API" #D1FADF
-  participant "EventsHub" as hub
-end box
-box "Frontend — Jubilee Web" #E0F2FE
-  participant "RealtimeClient" as rt
-  participant "NotificationsStore" as store
-  participant "ToastService" as toast
-end box
-actor "Member" as member
-handler -> db : Save state change and OutboxMessage in one transaction
+verifier -> handler : ApproveListingCommand
+handler -> rules : Tell(owner, "listing", ...) for the owner (L2-064)
+opt first approval of the listing
+  handler -> notifier : TellAsync(listing)
+  notifier -> db : BrowsedCategories.MembersAsync, then members with EmailNewBusinesses on, except the owner (L2-222)
+  db --> notifier : Members
+  loop each member
+    notifier -> rules : Tell(member, "business", "New in {category}: {business}", tagline, business page)
+  end
+end
+rules -> db : Add Notification rows
+handler -> db : Save the state change and the notifications in one save
 db --> handler : Commit result
-job -> db : Read undispatched outbox rows
-db --> job : Outbox rows
-job -> proj : Handle(message)
-proj -> proj : Resolve recipients for the event type (L2-064)
-proj -> db : Insert one Notification per recipient
-db --> proj : Commit result
-proj -> cache : Publish notification.created and badge.changed for each recipient
-cache --> proj : Accepted
-proj --> job : Done
-job -> db : Mark outbox row dispatched
-db --> job : Commit result
-cache -> hub : Deliver to the recipient's group
-hub -> rt : notification.created (L2-070)
-rt -> store : applyEvent(event)
-store -> toast : Show event toast
-toast --> member : Toast and updated unread count
+events -> db : Read the member's notifications newer than the cursor
+db --> events : New notification
+events --> rt : event: notification with its id (L2-070)
+rt -> rt : Count the arrival and raise a toast
+rt --> page : arrivals grows
+page -> page : Read the list again through GET /api/notifications
+page --> member : Show the new item at the top, marked "Unread."
 @enduml

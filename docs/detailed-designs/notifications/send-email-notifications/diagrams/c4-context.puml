@@ -4,9 +4,9 @@ LAYOUT_WITH_LEGEND()
 title System Context — Send e-mail notifications
 
 Person(member, "Member", "Receives e-mail about events and unsubscribes with one click")
-Person(owner, "Owner", "Receives e-mail about requests and messages and meetings")
+Person(owner, "Owner", "Receives e-mail about requests and messages and meetings and tips")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
-System_Ext(email, "E-mail provider", "Delivers e-mail from the authenticated Jubilee domain")
+System_Ext(email, "E-mail provider", "Azure Communication Services Email, sending from notify.jubilee.to")
 
 Rel(jubilee, email, "Submits e-mail with List-Unsubscribe headers to")
 Rel(email, member, "Delivers e-mail to")

@@ -14,53 +14,54 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcherJob" as job
-  participant "EmailNotificationHandler" as planner
-  participant "EmailDispatchJob" as dispatch
-end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
+actor "Sender" as actor
+actor "Recipient" as recipient
+box "Backend — Jubilee API" #D1FADF
+  participant "Message handler" as handler
+  participant "MessageMail" as mail
   participant "EmailPolicy" as policy
 end box
-box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
-  database "Jubilee database" as db
+box "Backend — Jubilee Worker" #ECFDF3
+  participant "OutboxDispatcherJob" as job
+  participant "OutboxDispatcher" as dispatcher
+  participant "EmailLayout" as layout
   participant "IEmailSender" as sender
 end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
 participant "E-mail provider" as provider
-actor "Member" as member
-job -> planner : Handle(event)
-planner -> db : Load recipient NotificationPreferences
-db --> planner : Preferences
-opt event is a new message
-  planner -> cache : Check whether the recipient has the conversation open
-  cache --> planner : Presence
-  planner -> db : Read mute flag of the recipient's participant row
-  db --> planner : MutedAt
+actor -> handler : Send a message
+handler -> mail : QueueAsync(conversation, recipient)
+alt muted, or read within 2 minutes, or a row is waiting (L2-061, L2-068)
+  mail --> handler : Queue nothing
+else
+  mail -> db : Read when the last e-mail of the conversation was sent
+  mail -> mail : Due in 2 minutes, or 10 minutes after the last e-mail
+  mail -> policy : Queue(member, "messages", subject, body, notBefore)
+  alt switch off or address bounced
+    policy --> mail : false, no row (L2-068 AC2)
+  else "One daily summary"
+    policy -> db : Add OutboxMessage with HeldForSummary (L2-016 AC6)
+  else "As it happens"
+    policy -> db : Add OutboxMessage
+  end
 end
-planner -> policy : Decide(event, preferences, isReading)
-alt transactional or security e-mail
-  policy --> planner : SendNow regardless of preferences (L2-068)
-else category off or conversation muted or being read now
-  policy --> planner : Skip and keep the in-app notification (L2-068)
-else frequency is One daily summary
-  policy --> planner : AddToDailySummary (L2-016)
-else category on and As it happens
-  policy --> planner : SendNow
+handler -> db : Save the message and the notification and the row in one save
+loop every 10 seconds
+  job -> dispatcher : DispatchDueAsync()
+  dispatcher -> db : Select at most 50 due rows, held rows are not due
+  db --> dispatcher : Rows
+  dispatcher -> dispatcher : Sign the unsubscribe token for member and category
+  dispatcher -> layout : Render(to, subject, text, unsubscribe link)
+  layout --> dispatcher : EmailMessage with the footer link /unsubscribe/{token}
+  dispatcher -> sender : SendAsync(message)
+  sender -> provider : Send with List-Unsubscribe and List-Unsubscribe-Post (L2-068 AC3)
+  provider --> recipient : E-mail
+  alt accepted
+    dispatcher -> db : MarkSent and clear the body
+  else failed
+    dispatcher -> db : MarkAttemptFailed, try again with back-off for 24 hours
+  end
 end
-opt decision is SendNow
-  planner -> db : Append to the open PendingEmail for the batch key or create one (L2-068)
-  db --> planner : Commit result
-end
-planner --> job : Done
-dispatch -> db : Read PendingEmail rows that are due
-db --> dispatch : Due rows with combined items
-dispatch -> sender : SendAsync(message) within 2 minutes of the event (L2-068)
-sender -> sender : Add RFC 8058 List-Unsubscribe headers to non-security e-mail
-sender -> provider : Submit from the authenticated domain
-provider --> sender : Accepted
-sender --> dispatch : Sent
-dispatch -> db : Set SentAt
-db --> dispatch : Commit result
-provider --> member : E-mail
 @enduml

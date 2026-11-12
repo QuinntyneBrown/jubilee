@@ -16,42 +16,45 @@ skinparam package {
 }
 actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "Page or RealtimeClient" as caller
-  participant "ToastService" as svc
-  participant "ToastTimer" as timer
-  participant "ToastHost" as host
+  participant "Caller (page or RealtimeService)" as caller
+  participant "ToastService" as service
+  participant "ToastRegion" as region
+  participant "Toast" as toast
 end box
-caller -> svc : show(toast)
-opt three toasts are already visible
-  svc -> svc : Remove the oldest non-error toast (L2-066)
+caller -> service : show(spec)
+service -> service : Append the toast and remove the oldest non-danger toast above three (L2-066)
+alt tone is danger
+  service -> service : Duration 0 and no timer
+  region -> toast : Render with role="alert"
+  toast --> member : Announced assertively and stays until dismissed
+else info or success or warning
+  service -> service : Start a timer of 8000 ms
+  region -> toast : Render in the polite live region
+  toast --> member : Announced politely
 end
-svc -> host : Publish list with the newest toast last
-alt tone is Danger
-  host --> member : Render in the role="alert" region and announce assertively (L2-066)
-else tone is Info or Success or Warning
-  host --> member : Render in the polite live region
-  svc -> timer : start() with 8 seconds (L2-066)
-  opt pointer hovers the toast or focus enters it
-    member -> host : Hover or focus
-    host -> svc : pause(id)
-    svc -> timer : pause()
-    timer --> svc : Remaining time kept
-    member -> host : Leave or blur
-    host -> svc : resume(id)
-    svc -> timer : resume()
-  end
-  timer --> svc : Elapsed
-  svc -> host : Remove toast
+opt pointer hovers or focus enters the toast
+  member -> toast : Hover or focus
+  toast -> region : hold
+  region -> service : pause(id)
+  service -> service : Stop the timer and keep the remaining time
+  member -> toast : Leave
+  toast -> region : release
+  region -> service : resume(id)
+  service -> service : Start the timer with the remaining time
 end
-opt member presses the action such as "Undo"
-  member -> host : Press action
-  host -> svc : Run ToastAction then dismiss(id)
-  svc --> host : Updated list
+alt member presses the action
+  member -> toast : Press "Undo" or "Open conversation"
+  toast -> region : action
+  region -> service : act(id)
+  service -> service : Remove the toast
+  service -> caller : Run the action
+else member presses "Dismiss"
+  member -> toast : Press the dismiss button
+  toast -> region : dismiss
+  region -> service : dismiss(id)
+else the timer ends
+  service -> service : dismiss(id)
 end
-opt member presses the dismiss button
-  member -> host : Press dismiss
-  host -> svc : dismiss(id)
-  svc --> host : Updated list
-end
-host --> member : Remaining toasts in visual and Tab order
+service --> region : Toast list without the toast
+region --> member : Toast removed
 @enduml

@@ -13,93 +13,81 @@ skinparam class {
 ' --------------------------
 title Class structure — Manage e-mail consent
 
-enum EmailCategory {
-  NewMessages
-  RequestUpdates
-  MeetingReminders
-  NewBusinesses
-  TipsForBusinessOwners
+class Consent <<static>> {
+  +{static} TrySet(db, member, category, on, method, now): bool
 }
-
-enum ConsentAction {
-  Given
-  Withdrawn
+class Member {
+  +bool EmailNewBusinesses = false
+  +bool EmailTips = false
+  +bool EmailBounced
+  +EmailPreference(category): bool?
+  +SetEmailPreference(category, on): bool
+  +WantsEmail(category): bool
 }
-
+class ConsentRecord {
+  +Guid Id
+  +Guid MemberId
+  +string Category
+  +bool Given
+  +ConsentMethod Method
+  +DateTimeOffset OccurredAt
+  +{static} Of(memberId, category, given, method, now): ConsentRecord
+}
 enum ConsentMethod {
   SettingsSwitch
   UnsubscribeLink
   OneClickUnsubscribe
+  MarketingSiteForm
 }
-
-class NotificationPreferences {
-  +Guid MemberId
-  +bool NewMessages
-  +bool RequestUpdates
-  +bool MeetingReminders
-  +bool NewBusinesses
-  +bool TipsForBusinessOwners
-  +Set(category: EmailCategory, enabled: bool): bool
-  +Allows(category: EmailCategory): bool
+class EmailCategories <<static>> {
+  +NewBusinesses = "new-businesses"
+  +Tips = "tips"
+  +Summary = "summary"
+  +{static} IsPromotional(category): bool
 }
-
-class ConsentRecord {
-  +Guid Id
-  +Guid MemberId
-  +EmailCategory Category
-  +ConsentAction Action
-  +ConsentMethod Method
-  +DateTimeOffset OccurredAt
+class UpdateNotificationPreferenceCommandHandler {
+  +Handle(command): Task
 }
-
-class SetEmailConsentCommand {
-  +Guid MemberId
-  +EmailCategory Category
-  +bool Enabled
-  +ConsentMethod Method
+class UnsubscribeCommand <<record>> {
+  +string Token
 }
-
-class SetEmailConsentCommandHandler {
-  +Handle(command: SetEmailConsentCommand, ct: CancellationToken): Task<Result>
+class UnsubscribeCommandHandler {
+  +Handle(command: UnsubscribeCommand): Task<string>
 }
-
-class LinkToken {
-  +Guid Id
-  +byte[] TokenHash
-  +LinkTokenPurpose Purpose
-  +Guid MemberId
-  +EmailCategory? Category
+interface IUnsubscribeLinks {
+  +For(memberId: Guid, category: string): string
+  +TryRead(token, out memberId, out category): bool
 }
-
-class PromotionalAudienceQuery {
-  +ListAsync(category: EmailCategory, ct: CancellationToken): Task<IReadOnlyList<Guid>>
+class HmacUnsubscribeLinks {
+  -byte[] key
 }
-
-class PromotionalEmailComposer {
-  +Compose(memberId: Guid, category: EmailCategory): EmailMessage
-  -AddListUnsubscribeHeaders(message: EmailMessage, token: string): void
-  -AssertCompliant(message: EmailMessage): void
+class UnsubscribeController {
+  +Unsubscribe(token: string): Task<IActionResult>
 }
-
-class EmailMessage {
-  +string To
-  +string Subject
-  +string HtmlBody
-  +string TextBody
-  +IDictionary<string, string> Headers
+class EmailSettings <<record>> {
+  +string? MailingAddress
+  +bool CanSendPromotional
 }
+class EmailPolicy <<static>> {
+  +{static} Queue(db, member, category, subject, body, now, ...): bool
+}
+class SendNewBusinessNotesCommandHandler
+class SendOwnerTipsCommandHandler
 
-SetEmailConsentCommandHandler ..> SetEmailConsentCommand : handles
-SetEmailConsentCommandHandler --> NotificationPreferences : loads / mutates
-SetEmailConsentCommandHandler ..> ConsentRecord : appends
-SetEmailConsentCommand --> EmailCategory : names
-SetEmailConsentCommand --> ConsentMethod : carries
-ConsentRecord --> ConsentAction : has
+UpdateNotificationPreferenceCommandHandler ..> Consent : TrySet with SettingsSwitch
+UnsubscribeCommandHandler ..> Consent : TrySet with OneClickUnsubscribe
+UnsubscribeCommandHandler ..> UnsubscribeCommand : handles
+UnsubscribeCommandHandler ..> IUnsubscribeLinks : TryRead
+UnsubscribeController ..> UnsubscribeCommand : sends
+HmacUnsubscribeLinks ..|> IUnsubscribeLinks
+Consent ..> Member : SetEmailPreference
+Consent ..> EmailCategories : IsPromotional
+Consent "1" --> "*" ConsentRecord : appends
 ConsentRecord --> ConsentMethod : has
-ConsentRecord --> EmailCategory : for
-NotificationPreferences "1" <-- "*" ConsentRecord : history of
-LinkToken --> EmailCategory : scoped to
-PromotionalAudienceQuery ..> NotificationPreferences : filters on
-PromotionalEmailComposer ..> EmailMessage : builds
-PromotionalEmailComposer ..> LinkToken : issues
+Member "1" o-- "*" ConsentRecord : history
+SendNewBusinessNotesCommandHandler ..> EmailSettings : needs MailingAddress
+SendOwnerTipsCommandHandler ..> EmailSettings : needs MailingAddress
+SendNewBusinessNotesCommandHandler ..> EmailPolicy : Queue
+SendOwnerTipsCommandHandler ..> EmailPolicy : Queue
+EmailPolicy ..> Member : WantsEmail
 @enduml

@@ -13,101 +13,87 @@ skinparam class {
 ' --------------------------
 title Class structure — Choose notification settings
 
-
-enum EmailCategory {
-  NewMessages
-  RequestUpdates
-  MeetingReminders
-  NewBusinesses
-  TipsForOwners
-  Security
+class NotificationSettingsPage <<Angular page>> {
+  #state: Signal<LoadState<NotificationPreferences>>
+  #waiting: Signal<ReadonlySet<string>>
+  #status: Signal<idle | saving | saved>
+  #load(): void
+  #toggle(row, enabled: boolean): void
+  #setFrequency(frequency: PreferenceFrequency): void
 }
-
-enum EmailFrequency {
-  AsItHappens
-  DailySummary
+interface ProfileApi {
+  +getPreferences(): Observable<NotificationPreferences>
+  +setSwitch(setting, enabled): Observable<NotificationPreferences>
+  +setFrequency(frequency): Observable<NotificationPreferences>
 }
-
-enum EmailDelivery {
-  Immediate
-  Summary
-  Suppressed
+class AccountController {
+  +GetPreferences(): Task<NotificationPreferencesDto>
+  +SetPreference(body: PreferenceBody): Task<NotificationPreferencesDto>
 }
-
-class NotificationPreferences {
-  +Guid MemberId
-  +bool NewMessages
-  +bool RequestUpdates
-  +bool MeetingReminders
-  +bool NewBusinesses
-  +bool TipsForOwners
-  +EmailFrequency Frequency
-  +DateTime UpdatedAt
-  +{static} CreateDefault(memberId: Guid): NotificationPreferences
-  +Set(category: EmailCategory, enabled: bool, now: DateTime): void
-  +SetFrequency(frequency: EmailFrequency, now: DateTime): void
-  +IsEnabled(category: EmailCategory): bool
-}
-
-class ConsentRecord {
-  +Guid MemberId
-  +EmailCategory Category
-  +bool Granted
-  +string Method
-  +DateTime RecordedAt
-}
-
-class EmailDeliveryPolicy {
-  +Decide(preferences: NotificationPreferences, category: EmailCategory): EmailDelivery
-}
-
-class SummaryItem {
-  +Guid Id
-  +Guid MemberId
-  +EmailCategory Category
-  +string Payload
-  +DateTime OccurredAt
-}
-
-class UpdateNotificationPreferenceCommand {
-  +EmailCategory? Category
+class PreferenceBody <<record>> {
+  +string? Setting
   +bool? Enabled
-  +EmailFrequency? Frequency
+  +string? Frequency
 }
-
-class UpdateNotificationPreferenceCommandHandler {
-  +Handle(command: UpdateNotificationPreferenceCommand): Task<NotificationPreferencesDto>
-}
-
-class NotificationPreferencesDto {
-  +bool NewMessages
-  +bool RequestUpdates
-  +bool MeetingReminders
+class NotificationPreferencesDto <<record>> {
+  +bool Messages
+  +bool Requests
+  +bool Reminders
   +bool NewBusinesses
-  +bool TipsForOwners
-  +EmailFrequency Frequency
-  +DateTime UpdatedAt
+  +bool Tips
+  +string Frequency
 }
-
-class DailySummaryJob {
-  +RunAsync(scheduledFor: DateTimeOffset): Task
+class UpdateNotificationPreferenceCommand <<record>> {
+  +Guid MemberId
+  +string? Setting
+  +bool? Enabled
+  +string? Frequency
 }
-
+class UpdateNotificationPreferenceCommandHandler {
+  +Handle(command): Task
+}
+class NotificationFrequencies <<static>> {
+  +AsItHappens = "as-it-happens"
+  +DailySummary = "daily-summary"
+}
+class Consent <<static>> {
+  +{static} TrySet(db, member, category, on, method, now): bool
+}
 class Member {
-  +Guid Id
-  +string Email
+  +bool EmailMessages = true
+  +bool EmailRequests = true
+  +bool EmailReminders = true
+  +bool EmailNewBusinesses = false
+  +bool EmailTips = false
+  +bool EmailDailySummary = false
+  +EmailPreference(category): bool?
+  +SetEmailPreference(category, on): bool
+  +SetEmailFrequency(dailySummary: bool): void
+  +WantsEmail(category): bool
+}
+class EmailPolicy <<static>> {
+  +{static} Queue(db, member, category, subject, body, now, notBefore, correlationId): bool
+}
+class OutboxMessage {
+  +string? Category
+  +bool HeldForSummary
+  +IsDue(now): bool
+}
+class SendDailySummariesCommandHandler {
+  +Handle(command): Task<int?>
 }
 
+NotificationSettingsPage ..> ProfileApi : loads and saves through
+ProfileApi ..> AccountController : calls over HTTPS
+AccountController ..> PreferenceBody : receives
+AccountController ..> NotificationPreferencesDto : returns
+AccountController ..> UpdateNotificationPreferenceCommand : sends
 UpdateNotificationPreferenceCommandHandler ..> UpdateNotificationPreferenceCommand : handles
-UpdateNotificationPreferenceCommandHandler --> NotificationPreferences : loads / mutates
-UpdateNotificationPreferenceCommandHandler ..> NotificationPreferencesDto : returns
-Member "1" *-- "1" NotificationPreferences
-NotificationPreferences --> EmailFrequency : has
-NotificationPreferences "1" --> "*" ConsentRecord : records
-EmailDeliveryPolicy ..> NotificationPreferences : reads
-EmailDeliveryPolicy ..> EmailCategory : takes
-EmailDeliveryPolicy ..> EmailDelivery : returns
-SummaryItem --> EmailCategory : has
-Member "1" --> "*" SummaryItem : awaits
-DailySummaryJob ..> SummaryItem : gathers / deletes
+UpdateNotificationPreferenceCommandHandler ..> Consent : TrySet for a switch
+UpdateNotificationPreferenceCommandHandler ..> Member : SetEmailFrequency
+UpdateNotificationPreferenceCommandHandler ..> NotificationFrequencies : validates
+Consent ..> Member : SetEmailPreference
+EmailPolicy ..> Member : WantsEmail and EmailDailySummary
+EmailPolicy "1" --> "*" OutboxMessage : adds
+SendDailySummariesCommandHandler "1" --> "*" OutboxMessage : replaces held rows
 @enduml

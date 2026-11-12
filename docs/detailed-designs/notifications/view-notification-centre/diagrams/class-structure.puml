@@ -13,84 +13,104 @@ skinparam class {
 ' --------------------------
 title Class structure — View the notification centre
 
-class NotificationsStore <<signal store>> {
-  +items: Signal<NotificationDto[]>
-  +unread: Signal<number>
-  +load(): void
-  +open(id: string): void
-  +markAllRead(): void
-  +applyEvent(event: RealtimeEvent): void
+class NotificationsPage <<Angular page>> {
+  #state: Signal<LoadState<NotificationList>>
+  #subtitle: Signal<string>
+  #load(): void
+  #open(event: Event, item: NotificationItem): void
+  #markAll(): void
 }
-class BadgeStore <<signal store>> {
-  +unreadConversations: Signal<number>
-  +newRequests: Signal<number>
-  +refresh(): void
-  +label(count: number): string
+interface NotificationsApi {
+  +list(): Observable<NotificationList>
+  +markRead(id: string): Observable<UnreadCount>
+  +markAllRead(): Observable<UnreadCount>
+}
+class NavigationStore <<signal store>> {
+  +summary: Signal<NavigationSummary>
+  +load(): void
+  +apply(summary: NavigationSummary): void
+}
+class NavigationSummary <<record>> {
+  +int UnreadConversationCount
+  +int UnreadNotificationCount
+  +int NewRequestCount
+  +bool OwnsListing
 }
 class NotificationsController {
-  +List(): Task<IActionResult>
-  +MarkRead(id: Guid): Task<IActionResult>
-  +MarkAllRead(): Task<IActionResult>
-  +Badges(): Task<IActionResult>
+  +List(): Task<NotificationListDto>
+  +Read(id: Guid): Task<UnreadDto>
+  +ReadAll(): Task<UnreadDto>
+}
+class NotificationRules <<static>> {
+  +{static} TimeSpan Window = 90 days
+  +{static} int PageSize = 100
+  +{static} Tell(db, memberSubject, kind, title, detail, target, now, correlationId): void
+  +{static} Visible(db, subject, now): IQueryable<Notification>
+  +{static} UnreadCount(db, subject, now): Task<int>
+  +{static} Row(n: Notification): NotificationDto
 }
 class ListNotificationsQueryHandler {
-  +const int WindowDays = 90
   +Handle(query: ListNotificationsQuery): Task<NotificationListDto>
 }
-class MarkNotificationsReadCommand {
-  +Guid MemberId
-  +Guid? NotificationId
+class MarkNotificationReadCommandHandler {
+  +Handle(command: MarkNotificationReadCommand): Task<UnreadDto>
 }
-class BadgeCounts {
-  +int UnreadConversations
-  +int NewRequests
-  +int UnreadNotifications
+class MarkAllNotificationsReadCommandHandler {
+  +Handle(command: MarkAllNotificationsReadCommand): Task<UnreadDto>
+}
+class NotificationListDto <<record>> {
+  +int Unread
+  +IReadOnlyList<NotificationDto> Items
+}
+class NotificationDto <<record>> {
+  +Guid Id
+  +string Kind
+  +string Title
+  +string Detail
+  +string Target
+  +DateTimeOffset At
+  +bool Read
+}
+class UnreadDto <<record>> {
+  +int Unread
 }
 class Notification {
   +Guid Id
-  +Guid RecipientMemberId
-  +NotificationType Type
+  +string MemberSubject
+  +string Kind
   +string Title
   +string Detail
-  +NotificationTarget Target
+  +string Target
   +DateTimeOffset CreatedAt
   +DateTimeOffset? ReadAt
+  +Guid? CorrelationId
+  +{static} Create(...): Notification
   +MarkRead(now: DateTimeOffset): void
 }
-class NotificationTarget <<value object>> {
-  +TargetKind Kind
-  +Guid TargetId
+class NewBusinessNotifier <<static>> {
+  +{static} Kind = "business"
+  +{static} TellAsync(db, listing: Listing, now): Task<int>
 }
-enum TargetKind {
-  Request
-  Conversation
-  Listing
-}
-enum NotificationType {
-  RequestCreated
-  RequestConfirmed
-  RequestDeclined
-  RequestCancelled
-  NewMessage
-  ListingVerified
-  ChangesRequested
-  EmailConfirmed
-  ProductBackInStock
-  NewBusinessInCategory
-  MeetingReminder
-}
-class NotificationProjector {
-  +Handle(message: OutboxMessage): Task
+class BrowsedCategories <<static>> {
+  +{static} TimeSpan Within = 90 days
+  +{static} OfAsync(db, memberId, now): Task<List<string>>
+  +{static} MembersAsync(db, categorySlug, now): Task<List<Guid>>
 }
 
-NotificationsStore ..> NotificationsController : calls through NotificationsApi
-BadgeStore ..> NotificationsController : GET /api/badges
+NotificationsPage ..> NotificationsApi : loads and marks through
+NotificationsPage ..> NavigationStore : sets the unread count
+NavigationStore --> NavigationSummary : holds
+NotificationsApi ..> NotificationsController : calls over HTTPS
 NotificationsController ..> ListNotificationsQueryHandler : sends query
-NotificationsController ..> MarkNotificationsReadCommand : sends
-NotificationsController ..> BadgeCounts : returns
-ListNotificationsQueryHandler "1" --> "*" Notification : reads
-NotificationProjector "1" --> "*" Notification : creates
-Notification --> NotificationType : has
-Notification "1" *-- "1" NotificationTarget : opens
-NotificationTarget --> TargetKind : has
+NotificationsController ..> MarkNotificationReadCommandHandler : sends command
+NotificationsController ..> MarkAllNotificationsReadCommandHandler : sends command
+ListNotificationsQueryHandler ..> NotificationRules : Visible
+ListNotificationsQueryHandler ..> NotificationListDto : returns
+NotificationListDto "1" *-- "*" NotificationDto : lists
+MarkNotificationReadCommandHandler ..> UnreadDto : returns
+MarkAllNotificationsReadCommandHandler ..> UnreadDto : returns
+MarkNotificationReadCommandHandler ..> Notification : MarkRead
+NotificationRules "1" --> "*" Notification : creates and selects
+NewBusinessNotifier ..> NotificationRules : Tell with kind business
+NewBusinessNotifier ..> BrowsedCategories : MembersAsync
 @enduml

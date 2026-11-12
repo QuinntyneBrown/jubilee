@@ -16,35 +16,47 @@ skinparam package {
 }
 actor "Member" as member
 participant "Mail client" as client
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "UnsubscribePage" as page
+end box
 box "Backend — Jubilee API" #D1FADF
   participant "UnsubscribeController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "UnsubscribeCommandHandler" as handler
-  participant "NotificationPreferences" as prefs
+  participant "IUnsubscribeLinks" as links
+  participant "Consent" as consent
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-member -> client : Press unsubscribe in the mail client
-client -> controller : POST /api/email/unsubscribe/{token} with List-Unsubscribe=One-Click
-controller -> controller : Accept without a session (L2-068)
+alt one click in the mail client (RFC 8058)
+  member -> client : Press "Unsubscribe"
+  client -> controller : POST /api/email/unsubscribe/{token} without a session
+else footer link
+  member -> page : Open /unsubscribe/{token}
+  page -> controller : POST /api/email/unsubscribe/{token}
+  page -> page : Take the token out of the address bar (L2-224)
+end
 controller -> handler : Send UnsubscribeCommand
-handler -> db : Find LinkToken by hash with purpose Unsubscribe
-alt token unknown
-  db --> handler : No row
-  handler --> controller : Not found
-  controller --> client : 404 ProblemDetails
-else token valid
-  db --> handler : Token with member and category
-  handler -> db : Load NotificationPreferences
-  db --> handler : Preferences
-  handler -> prefs : TurnOff(category) (L2-068)
-  prefs --> handler : Category off
-  handler -> db : Save changes in one unit of work
-  db --> handler : Commit result
-  handler --> controller : Done
-  controller --> client : 200 OK
-  client --> member : Unsubscribed
+handler -> links : TryRead(token)
+alt the signature does not verify
+  links --> handler : false
+  handler --> controller : NotFoundException UNSUBSCRIBE_LINK_INVALID
+  controller --> page : 404 Not Found
+  page --> member : "This link doesn't work" with the way to the notification settings
+else verified
+  links --> handler : Member ID and category
+  handler -> db : Load the member
+  alt category is summary
+    handler -> consent : TrySet(messages, off) and TrySet(requests, off) (L2-016 AC8)
+  else
+    handler -> consent : TrySet(category, off, OneClickUnsubscribe)
+  end
+  consent -> db : Add a ConsentRecord when a promotional category changed (L2-149)
+  handler -> db : Save changes
+  handler --> controller : Category
+  controller --> page : 200 OK { unsubscribed: true, category }
+  page --> member : "You're unsubscribed" and what stops (L2-224)
 end
 @enduml

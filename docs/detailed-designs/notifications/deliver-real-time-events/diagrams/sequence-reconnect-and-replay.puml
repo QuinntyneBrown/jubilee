@@ -16,45 +16,39 @@ skinparam package {
 }
 actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "RealtimeClient" as rt
-  participant "Feature store" as store
+  participant "RealtimeService" as rt
+  participant "SseEventsApi" as sse
+  participant "EventSource" as source
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "SessionAuthenticationMiddleware" as auth
-  participant "EventsHub" as hub
-end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "IEventLog" as log
+  participant "EventsController" as events
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
+  database "Jubilee database" as db
 end box
-member -> rt : Open a signed-in page
-rt -> auth : Connect to /api/events with the session cookie
-alt no valid session
-  auth --> rt : 401 Unauthorized
-else valid session
-  auth -> hub : Authenticated connection
-  hub -> hub : Add connection to group member:{memberId} (L2-070)
-  hub --> rt : Connected over WebSocket or server-sent events
+source -> source : The connection drops
+alt the browser reconnects by itself
+  source -> events : GET /api/events with Last-Event-ID after 3000 ms
+else the browser gave up (readyState CLOSED)
+  source --> sse : error without having opened
+  sse --> rt : connection, connected false
+  rt -> rt : connected is false, pages read on a timer
+  sse -> sse : Wait 5 seconds, doubling to at most 60 seconds, or until the online event (L2-070 AC4)
+  sse -> source : Open a new EventSource
+  source -> events : GET /api/events?lastEventId={id}
 end
-... the persistent connection drops ...
-rt -> rt : Set state Reconnecting and wait with back-off
-rt -> auth : Reconnect with the session cookie
-auth -> hub : Authenticated connection
-hub --> rt : Connected
-rt -> hub : Resume(lastEventId)
-hub -> log : ReadAfterAsync(memberId, lastEventId)
-log -> cache : Read the member's event log after the ID
-cache --> log : Missed events in order
-log --> hub : ResumeResult
-alt log still covers the last event ID
-  hub --> rt : Missed events (L2-070)
-  rt -> rt : Drop event IDs already seen so nothing is shown twice (L2-070)
-  rt -> store : Dispatch each missed event in order
-else log no longer covers the last event ID
-  hub --> rt : ResumeResult with Complete false
-  rt -> store : Request a reload of state through the HTTP API
+events -> events : Set the cursor from Last-Event-ID or lastEventId
+events -> db : Select the member's notifications created after the cursor
+db --> events : Missed notifications
+events --> source : One notification event per row, oldest first (L2-070 AC2)
+source --> sse : open and notification events
+sse --> rt : connection, connected true
+loop each notification event
+  sse --> rt : notification with id and item
+  alt the id is in the seen set
+    rt -> rt : Drop the event, nothing is shown twice
+  else new id
+    rt --> member : Toast and updated lists
+  end
 end
-store --> member : Page reflects every missed event once
 @enduml

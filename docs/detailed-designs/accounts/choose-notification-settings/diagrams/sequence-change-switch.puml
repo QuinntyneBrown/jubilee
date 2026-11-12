@@ -14,53 +14,52 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-
-
-actor "Member" as actor
+actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "PreferenceSwitchRow" as row
-  participant "PreferencesStore" as store
-  participant "AccountApi" as client
-  participant "ToastService" as toast
+  participant "NotificationSettingsPage" as page
+  participant "HttpProfileApi" as client
+  participant "ToastService" as toasts
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "NotificationPreferencesController" as controller
+  participant "AccountController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "UpdateNotificationPreferenceCommandHandler" as handler
-  participant "NotificationPreferences" as entity
+  participant "Consent" as consent
+  participant "Member" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> row : Turn "New businesses" off
-row -> store : set(NewBusinesses, false)
-store --> row : Optimistic value and saving state
-row --> actor : Show "Saving…" on this row only (L2-016)
-store -> client : setNotificationPreference(NewBusinesses, false)
-client -> controller : PATCH /api/account/notification-preferences
-controller -> controller : Authenticate session and check CSRF token (L2-133)
+member -> page : Turn "New messages" off
+page -> page : Apply the change and add the row to waiting
+page --> member : Row shows "Saving…", the other rows stay usable (L2-016 AC2)
+page -> client : setSwitch("messages", false)
+client -> controller : PATCH /api/account/notification-preferences { setting, enabled }
+controller -> controller : Take the member from the session (L2-133)
 controller -> handler : Send UpdateNotificationPreferenceCommand
-handler -> db : Load NotificationPreferences of the session member
-db --> handler : NotificationPreferences
-handler -> entity : Set(NewBusinesses, false)
-entity --> handler : Value changed and consent withdrawal recorded (L2-149)
-handler -> db : Save changes in one unit of work
-alt Save succeeds
+handler -> db : Load the member
+db --> handler : Member
+alt setting is frequency
+  handler -> entity : SetEmailFrequency(dailySummary)
+else setting is a switch
+  handler -> consent : TrySet(member, category, enabled, SettingsSwitch)
+  consent -> entity : SetEmailPreference(category, enabled)
+  opt a promotional category changed
+    consent -> db : Add ConsentRecord with time and method (L2-149)
+  end
+end
+handler -> db : Save changes
+alt saved
   db --> handler : Commit result
-  handler --> controller : NotificationPreferencesDto
-  controller --> client : 200 NotificationPreferencesDto
-  client --> store : Saved settings
-  store --> row : Saved state with time
-  row --> actor : Show "Saved at {time}"
-else Save fails or the connection drops
-  db --> handler : Failure
-  handler --> controller : Error
-  controller --> client : ProblemDetails with error reference
-  client --> store : Failure
-  store --> row : Previous value
-  row --> actor : Return the switch to its previous position
-  store -> toast : Error toast with "Try again"
-  toast --> actor : Show the toast
+  controller --> client : 200 OK with the settings as they now are
+  client --> page : NotificationPreferences
+  page --> member : "Saved at {time}"
+else the save fails
+  controller --> client : 503 with JB-PREF-503
+  client --> page : Error
+  page -> page : Return the switch to its previous position (L2-016 AC3)
+  page -> toasts : show(danger toast with "Try again")
+  toasts --> member : "We couldn't save "New messages"" with "Try again"
 end
 @enduml

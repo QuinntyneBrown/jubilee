@@ -6,7 +6,7 @@ title System Context — Choose notification settings
 
 Person(member, "Member", "Chooses which e-mails Jubilee sends and how often")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
-System_Ext(email, "E-mail provider", "Delivers immediate e-mails and daily summaries. Vendor <TO SUPPLY>")
+System_Ext(email, "E-mail provider", "Azure Communication Services Email; delivers immediate e-mails and daily summaries")
 
 Rel(member, jubilee, "Sets switches and frequency at /account/notifications")
 Rel(jubilee, email, "Sends e-mail according to the settings via")
