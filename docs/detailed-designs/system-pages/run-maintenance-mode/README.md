@@ -21,8 +21,8 @@ the interval between the switch turning on and turning off.
 
 ## Description
 
-The slice is operational: one middleware, one configuration object, one page and
-one background job.
+The slice is operational: one middleware, one configuration object, the app's
+host, one page with its static copy and one background job.
 
 - **`MaintenanceOptions`** — configuration object with `Enabled` and `BackBy`.
   It is bound to the `Configuration store` with reload on change, so a new value
@@ -32,30 +32,37 @@ one background job.
 - **`MaintenanceState`** — application service behind `IMaintenanceState`. It
   exposes the current options and notifies listeners when they change.
 - **`MaintenanceMiddleware`** — placed in `Jubilee API` ahead of routing. While
-  `Enabled` is true it answers every page request with HTTP 503 and a
-  `Retry-After` header computed from `BackBy`. A document request receives the
-  static maintenance page; an API request receives `ProblemDetails` with the
-  code `MAINTENANCE` and the `backBy` value. The only path exempt from the switch is
+  `Enabled` is true it answers every request with HTTP 503, a `Retry-After`
+  header computed from `BackBy` and `ProblemDetails` with the code
+  `MAINTENANCE` and the `backBy` value. The only path exempt from the switch is
   the health probe `/api/health` (ADR 0031).
-- **Static maintenance page** — self-contained HTML document with the copy from
-  the mock. It formats `BackBy` in Eastern time as "{time} Eastern on {day}"
-  (for example "6:00 a.m. Eastern on Wednesday 11 November") and depends on no
-  API call, database or script bundle.
-- **`MaintenanceInterceptor`** — Angular HTTP interceptor. When an open
-  application receives a 503 with the code `MAINTENANCE`, it navigates to
-  `MaintenancePage` and passes the back-by time. Unsent form input stays in
-  place because the route state is kept.
+- **App host (`eng/azure/server.js`)** — answers a page load. It asks the API
+  `GET /api/documents/status`, which the middleware answers 503 `MAINTENANCE`
+  while the switch is on; the host then answers 503 with the API's
+  `Retry-After` and the static maintenance page, with the back-by time written
+  in (ADR 0056).
+- **Static maintenance page** — `frontend/projects/jubilee/public/static/maintenance.html`,
+  built from the mock by `tools/static-pages/build.mjs`: no script, the tokens
+  and components inlined, Archivo from `/static/Archivo.woff2`. The host writes
+  `BackBy` in Toronto time as "We’re back by {time} Eastern on {day}." (for
+  example "6:00 a.m. Eastern on Wednesday 11 November") between the markers
+  `<!--back-by-->` and `<!--/back-by-->`; without a back-by time the page keeps
+  "We’ll be back shortly." "Check again" is `href=""`, the same address again.
+- **`errorInterceptor`** — Angular HTTP interceptor. When an open application's
+  `GET` receives a 503 with the code `MAINTENANCE`, it navigates to
+  `MaintenancePage` with the back-by time and the address the member left. A
+  failed save is not redirected: the dialog keeps what was typed (ADR 0031).
 - **`MaintenancePage`** — Angular page with the same copy as the static page.
   "Check again" reloads the page the member left; the server answers 503 again
   or serves the page once the switch is off.
 - **`MaintenanceWatcherJob`** — hosted job in `Jubilee Worker`. It observes
   `IMaintenanceState`. When the switch turns on it inserts a
   `MaintenanceWindow` with `StartedAt` and `BackBy`; when the switch turns off
-  it closes the window and calls `LinkTokenExtensionService`.
+  it closes the window; both through `MaintenanceWindowService`, every 15 seconds.
 - **`MaintenanceWindow`** — entity that records one period of maintenance.
   `Close(now)` sets `EndedAt` and returns the window length.
-- **`LinkTokenExtensionService`** — selects each unused `LinkToken` with the
-  purpose `EmailConfirmation` that was valid at
+- **`MaintenanceWindowService`** — selects each unused, not superseded
+  `LinkToken` with the purpose `EmailConfirmation` or `ChangeEmail` that was valid at
   `StartedAt`, and adds the window length to its `ExpiresAt`. Tokens and the
   closed window are saved in one unit of work, so a window is applied once.
 - **`LinkToken.Extend`** — domain method that moves `ExpiresAt` forward. Other
@@ -93,32 +100,33 @@ tokens.
 
 ### Components
 
-`MaintenanceMiddleware` reads `MaintenanceState` and serves the static page or
-a 503 that `MaintenanceInterceptor` turns into `MaintenancePage`.
-`MaintenanceWatcherJob` calls `LinkTokenExtensionService` when a window closes.
+`MaintenanceMiddleware` reads `MaintenanceState` and answers 503. The app's host
+turns it into the static page for a page load; `errorInterceptor` turns it into
+`MaintenancePage` for an open application. `MaintenanceWatcherJob` calls
+`MaintenanceWindowService`, which extends the links when a window closes.
 
 ![C4 component view for running maintenance mode](diagrams/c4-component.png)
 
 ### Class structure
 
 `MaintenanceMiddleware` and `MaintenanceWatcherJob` both depend on
-`IMaintenanceState`. The job opens and closes `MaintenanceWindow`, and
-`LinkTokenExtensionService` extends `LinkToken` records by the window length.
+`IMaintenanceState`. Through `MaintenanceWindowService` the job opens and
+closes `MaintenanceWindow` and extends `LinkToken` records by the window length.
 
 ![Class diagram for running maintenance mode](diagrams/class-structure.png)
 
 ### Behaviour — answer requests during maintenance
 
-The middleware answers 503 with `Retry-After` while the switch is on. An
-application that is already open reaches `MaintenancePage` through the
-interceptor.
+The middleware answers 503 with `Retry-After` while the switch is on; the app's
+host serves a page load the static page. An application that is already open
+reaches `MaintenancePage` through the interceptor.
 
 ![Sequence diagram for answering requests during maintenance](diagrams/sequence-serve-maintenance-response.png)
 
 ### Behaviour — switch maintenance mode and extend links
 
 The switch takes effect without a deployment. When it turns off, the job closes
-the window and the service extends e-mail confirmation links by the window
+the window and the service extends e-mail confirmation and change-of-e-mail links by the window
 length.
 
 ![Sequence diagram for switching maintenance mode and extending links](diagrams/sequence-switch-and-extend-links.png)

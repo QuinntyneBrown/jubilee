@@ -17,7 +17,7 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "RequestsPage" as page
-  participant "ErrorInterceptor" as interceptor
+  participant "errorInterceptor" as interceptor
   participant "LoadErrorState" as state
   participant "ServerErrorPage" as serverpage
 end box

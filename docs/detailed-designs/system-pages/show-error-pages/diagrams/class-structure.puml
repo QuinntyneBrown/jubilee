@@ -15,13 +15,6 @@ enum FailureKind {
   ServiceUnavailable
   Unhandled
 }
-enum ShellOutcome {
-  Ok
-  NotFound
-  Forbidden
-  RedirectToSignIn
-  MovedPermanently
-}
 class ErrorReference {
   +string Value
   +string Area
@@ -47,31 +40,42 @@ class ProblemDetailsMiddleware {
   +InvokeAsync(context: HttpContext): Task
   -Write(context: HttpContext, problem: JubileeProblemDetails): Task
 }
-class PageShellEndpoint {
-  +Handle(context: HttpContext): Task<IResult>
-  -Resolve(path: string, session: Session): ShellOutcome
+class GetDocumentStatusQueryHandler {
+  +Handle(query: GetDocumentStatusQuery): Task<DocumentStatusDto>
 }
-class ListingSlugResolver {
-  +Resolve(slug: string): Task<SlugResolution>
+class DocumentStatusDto {
+  +int Status
+  +string? Location
 }
-class SlugResolution {
-  +bool Found
-  +string CurrentSlug
-  +bool Renamed
+class ListingSlugs {
+  +UniqueAsync(db, name: string, listingId: Guid?): Task<string>
 }
-class ListingSlugHistory {
+class KeptSlugRedirectAttribute {
+  +OnExceptionAsync(context: ExceptionContext): Task
+}
+class ListingSlug {
+  +string Slug
   +Guid ListingId
-  +string OldSlug
-  +DateTimeOffset ReplacedAt
+  +DateTimeOffset RetiredAt
+}
+class Listing {
+  +string Slug
+  +Rename(name: string, slug: string, now: DateTimeOffset): string?
+}
+class SaveListingCommandHandler {
+  +Handle(command: SaveListingCommand): Task<EditorDto>
 }
 class AccessRequest {
   +Guid Id
-  +Guid MemberId
+  +string MemberSubject
   +string Url
   +DateTimeOffset CreatedAt
 }
 class CreateAccessRequestCommandHandler {
-  +Handle(command: CreateAccessRequestCommand): Task<Result>
+  +Handle(command: CreateAccessRequestCommand): Task<AccessRequestedDto>
+}
+class VerificationTeam {
+  +Tell(db, settings, subject, textBody, now)
 }
 
 ProblemDetailsMiddleware ..> ErrorReferenceFactory : uses
@@ -80,9 +84,12 @@ ProblemDetailsMiddleware ..> ErrorAreaAttribute : reads
 ErrorReferenceFactory --> ErrorReference : creates
 ErrorReferenceFactory ..> FailureKind
 JubileeProblemDetails --> "0..1" ErrorReference
-PageShellEndpoint ..> ListingSlugResolver : uses
-PageShellEndpoint ..> ShellOutcome
-ListingSlugResolver --> SlugResolution : returns
-ListingSlugResolver ..> ListingSlugHistory : reads
+GetDocumentStatusQueryHandler --> DocumentStatusDto : returns
+GetDocumentStatusQueryHandler ..> ListingSlug : reads
+KeptSlugRedirectAttribute ..> ListingSlug : reads
+SaveListingCommandHandler ..> ListingSlugs : uses
+SaveListingCommandHandler --> ListingSlug : keeps the old slug
+ListingSlug --> Listing
 CreateAccessRequestCommandHandler --> AccessRequest : creates
+CreateAccessRequestCommandHandler ..> VerificationTeam : tells
 @enduml

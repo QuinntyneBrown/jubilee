@@ -1,6 +1,6 @@
 # ADR 0031: Recover from errors
 
-Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed, so a maintenance window extends no reference links; e-mail confirmation and change-of-e-mail links are extended as before.
+Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed, so a maintenance window extends no reference links; e-mail confirmation and change-of-e-mail links are extended as before. Amended by ADR 0056: the slug redirect, the statuses of page loads, the static pages and the team's e-mail of an access request, deferred below, are built.
 
 ## Context
 
