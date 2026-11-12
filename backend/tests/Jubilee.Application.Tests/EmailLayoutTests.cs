@@ -60,6 +60,33 @@ public class EmailLayoutTests
         Assert.DoesNotContain("Unsubscribe", Html("Hi Joanna,\n\nYour password was changed.\n\n" + Signature));
     }
 
+    // L2-224, L2-068 AC3: the footer link opens the page; the header keeps the one-click address.
+    [Fact]
+    public void L2_224_the_footer_link_opens_the_unsubscribe_page_and_the_header_keeps_the_one_click_address()
+    {
+        var message = EmailLayout.Render(
+            "joanna.adeyemi@example.com", "Subject", "Hi Joanna,\n\nLegacy Financial sent you a message on Jubilee.\n\n" + Signature,
+            "https://jubilee.test/api/email/unsubscribe/abc", "https://jubilee.test/unsubscribe/abc");
+
+        Assert.Equal("https://jubilee.test/api/email/unsubscribe/abc", message.UnsubscribeUrl);
+        Assert.Contains("href=\"https://jubilee.test/unsubscribe/abc\"", message.HtmlBody);
+        Assert.DoesNotContain("/api/email/unsubscribe/", message.HtmlBody);
+        Assert.DoesNotContain("Unsubscribe:", message.TextBody);
+    }
+
+    // L2-149 AC1
+    [Fact]
+    public void L2_149_AC1_a_promotional_e_mail_names_the_mailing_address_and_the_unsubscribe_in_both_parts()
+    {
+        var message = EmailLayout.Render(
+            "joanna.adeyemi@example.com", "New on Jubilee this week", "Hi Joanna,\n\nThese businesses were verified this week.\n\n" + Signature + "\n",
+            "https://jubilee.test/api/email/unsubscribe/abc", "https://jubilee.test/unsubscribe/abc", "1 Example Street, Toronto, ON M5H 0A1");
+
+        Assert.Contains(">Jubilee, 1 Example Street, Toronto, ON M5H 0A1</p>", message.HtmlBody);
+        Assert.EndsWith(
+            "marketplace\nUnsubscribe: https://jubilee.test/unsubscribe/abc\nJubilee, 1 Example Street, Toronto, ON M5H 0A1\n", message.TextBody);
+    }
+
     [Fact]
     public void L2_179_AC6_what_a_person_wrote_cannot_add_markup()
     {

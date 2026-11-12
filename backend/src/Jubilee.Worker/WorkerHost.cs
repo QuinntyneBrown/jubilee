@@ -26,6 +26,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<BookingCompletionJob>();
         builder.Services.AddHostedService<MeetingReminderJob>();
         builder.Services.AddHostedService<DailySummaryJob>();
+        builder.Services.AddHostedService<NewBusinessNoteJob>();
         builder.Services.AddHostedService<UnansweredRequestJob>();
         builder.Services.AddHostedService<MaintenanceWatcherJob>();
         builder.Services.AddHostedService<DataExportJob>();
@@ -464,6 +465,44 @@ public sealed class DailySummaryJob(IServiceScopeFactory scopes, ILogger<DailySu
         catch (OperationCanceledException)
         {
             logger.LogInformation("The daily summary job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every ten minutes: once it is Monday 7:00 a.m. in Toronto, sends each member who turned on "New
+/// businesses" one note of the businesses verified that week in the categories they browsed (L2-222).
+/// One instance sends a week's notes and records its success (L2-182 AC1 and AC3).
+/// </summary>
+public sealed class NewBusinessNoteJob(IServiceScopeFactory scopes, ILogger<NewBusinessNoteJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(10));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sent = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Notifications.SendNewBusinessNotesCommand(), stoppingToken);
+                    if (sent is { } count)
+                    {
+                        logger.LogInformation("Queued {Count} weekly notes of new businesses.", count);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The weekly notes of new businesses could not be sent. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The new business note job is stopping.");
         }
     }
 }

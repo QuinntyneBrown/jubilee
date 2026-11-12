@@ -379,6 +379,7 @@ public sealed class ApproveListingCommandHandler(IAppDbContext db, TimeProvider 
         }
 
         var before = StageWire.Of(listing.Stage);
+        var first = listing.ApprovedAt is null;
         listing.Approve(request.Reviewer.Subject, now);
         db.ListingDecisions.Add(ListingDecision.Make(
             listing.Id, DecisionKind.Approved, request.Reviewer.Subject, request.Reviewer.Name, note, [], ticked, listing, now));
@@ -387,6 +388,11 @@ public sealed class ApproveListingCommandHandler(IAppDbContext db, TimeProvider 
             Reviews.Json(new { stage = "live", ticked, unticked = ChecklistItems.All.Select(i => i.Key).Except(ticked) }), note, now);
         Notifications.NotificationRules.Tell(
             db, listing.OwnerId, "listing", $"{listing.Name} is verified and live", "Members can find your business now.", "/my-business", now);
+        if (first)
+        {
+            await Notifications.NewBusinessNotifier.TellAsync(db, listing, now, cancellationToken);
+        }
+
         var owner = await Reviews.OwnerOf(db, listing, cancellationToken);
         if (owner is not null)
         {

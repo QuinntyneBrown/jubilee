@@ -39,7 +39,7 @@ public sealed partial class RecordListingViewCommandHandler(IAppDbContext db, Ti
         }
 
         var now = clock.GetUtcNow();
-        var visitor = request.Viewer.Subject is { } subject ? $"member:{subject}" : Hash(request.ClientAddress, request.UserAgent);
+        var visitor = request.Viewer.Subject is { } subject ? ListingView.MemberKey(subject) : Hash(request.ClientAddress, request.UserAgent);
         var since = now - ListingView.RepeatWindow;
         var seen = await db.ListingViews.AnyAsync(
             v => v.ListingId == listing.Id && v.VisitorKey == visitor && v.ViewedAt > since,

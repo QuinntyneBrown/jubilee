@@ -68,6 +68,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("RateLimits:LaunchPreRegistrationsPerHour", "100000");
         builder.UseSetting("Email:WebhookSecret", "test-webhook-secret");
         builder.UseSetting("App:PublicBaseUrl", "https://jubilee.test");
+        builder.UseSetting("Email:MailingAddress", "1 Example Street, Toronto, ON M5H 0A1");
         builder.UseSetting("StaffSignIn:PublicBaseUrl", "https://admin.jubilee.test");
         builder.UseSetting("StaffAccess:AllowedNetworks", "127.0.0.1, ::1, 10.0.0.0/8, 2001:db8::/32");
         builder.UseSetting("StaffAccess:ProxyKey", StaffProxyKey);

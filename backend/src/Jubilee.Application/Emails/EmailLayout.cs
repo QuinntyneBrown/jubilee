@@ -41,8 +41,13 @@ public static partial class EmailLayout
         ("/sign-in", "Sign in to Jubilee"),
     ];
 
-    public static EmailMessage Render(string to, string subject, string textBody, string? unsubscribeUrl = null)
+    /// <param name="unsubscribeUrl">The address a mail client posts to for a one-click unsubscribe; it is the e-mail's <c>List-Unsubscribe</c>.</param>
+    /// <param name="unsubscribePage">The page the link in the footer opens (L2-224); the one-click address when there is none.</param>
+    /// <param name="mailingAddress">Set for a promotional e-mail: Jubilee's mailing address, printed in both parts with the unsubscribe link (L2-149 AC1).</param>
+    public static EmailMessage Render(
+        string to, string subject, string textBody, string? unsubscribeUrl = null, string? unsubscribePage = null, string? mailingAddress = null)
     {
+        unsubscribePage ??= unsubscribeUrl;
         // The layout has the signature in its footer, so the one the text ends with is left out of the HTML.
         var paragraphs = textBody.ReplaceLineEndings("\n").Split("\n\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(p => p.Replace(Signature, string.Empty, StringComparison.Ordinal).Trim())
@@ -76,9 +81,15 @@ public static partial class EmailLayout
 
         var preheader = paragraphs.FirstOrDefault(p =>
             !IsLink(p) && !p.StartsWith("Hi ", StringComparison.Ordinal) && !p.StartsWith("Hello", StringComparison.Ordinal)) ?? subject;
-        var footer = unsubscribeUrl is null
+        var footer = unsubscribePage is null
             ? string.Empty
-            : $"            <p class=\"jb-mail__muted\" style=\"margin:8px 0 0;font-size:13px;line-height:20px;color:#4a505c;\">You get this e-mail because of your notification settings. <a class=\"jb-mail__link\" href=\"{Encode(unsubscribeUrl)}\" style=\"color:#006644;\">Unsubscribe from e-mails like this</a>.</p>\n";
+            : $"            <p class=\"jb-mail__muted\" style=\"margin:8px 0 0;font-size:13px;line-height:20px;color:#4a505c;\">You get this e-mail because of your notification settings. <a class=\"jb-mail__link\" href=\"{Encode(unsubscribePage)}\" style=\"color:#006644;\">Unsubscribe from e-mails like this</a>.</p>\n";
+        if (mailingAddress is not null)
+        {
+            footer += $"            <p class=\"jb-mail__muted\" style=\"margin:8px 0 0;font-size:13px;line-height:20px;color:#4a505c;\">Jubilee, {Encode(mailingAddress)}</p>\n";
+            textBody = $"{textBody.TrimEnd()}\n{(unsubscribePage is null ? string.Empty : $"Unsubscribe: {unsubscribePage}\n")}Jubilee, {mailingAddress}\n";
+        }
+
         var html = Layout.Value
             .Replace("{{subject}}", Encode(subject), StringComparison.Ordinal)
             .Replace("{{preheader}}", Encode(preheader.ReplaceLineEndings(" ")), StringComparison.Ordinal)

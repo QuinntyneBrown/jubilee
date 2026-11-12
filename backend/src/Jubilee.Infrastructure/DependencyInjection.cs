@@ -74,6 +74,7 @@ public static class DependencyInjection
 
         services.AddScoped<Application.Search.ISearchIndex, Search.DatabaseSearchIndex>();
         services.AddSingleton(new Application.Accounts.AccountSettings(configuration["App:PublicBaseUrl"] ?? "http://localhost:4200"));
+        services.AddSingleton(new Application.Accounts.EmailSettings(configuration["Email:MailingAddress"]));
         services.AddSingleton(new Application.Launch.LaunchSettings(configuration["Launch:TeamEmail"]));
         services.AddSingleton(new Application.Verification.VerificationSettings(
             configuration["Verification:TeamEmail"] is { Length: > 0 } team ? team : configuration["Launch:TeamEmail"],

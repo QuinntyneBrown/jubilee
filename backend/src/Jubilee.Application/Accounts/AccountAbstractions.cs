@@ -32,6 +32,15 @@ public interface IEmailSender
 /// <summary>Where the app is served, for the links in e-mails (<c>App:PublicBaseUrl</c>).</summary>
 public sealed record AccountSettings(string PublicBaseUrl);
 
+/// <summary>
+/// Jubilee's mailing address (<c>Email:MailingAddress</c>), which Canada's Anti-Spam Legislation asks every
+/// promotional e-mail to carry (L2-149 AC1). While it is empty no promotional e-mail is sent.
+/// </summary>
+public sealed record EmailSettings(string? MailingAddress)
+{
+    public bool CanSendPromotional => !string.IsNullOrWhiteSpace(MailingAddress);
+}
+
 /// <summary>Link tokens: at least 128 bits of randomness, stored only as a SHA-256 hash (L2-140).</summary>
 public static class LinkTokens
 {
