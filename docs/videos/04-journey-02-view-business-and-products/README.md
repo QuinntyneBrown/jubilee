@@ -1,8 +1,8 @@
-# 03 · Journey 2: view a business and its products
+# 04 · Journey 2: view a business and its products
 
 > **Runtime:** 1:20 (80.00 s) · **Format:** 1920×1080, 30 fps, no captions · **Audience:** the team, and anyone reviewing journey 2
 
-**Video:** [03-journey-02-view-business-and-products.mp4](03-journey-02-view-business-and-products.mp4) · [Live deck](slides.html) · **Audio:** [03-journey-02-view-business-and-products.mp3](03-journey-02-view-business-and-products.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [04-journey-02-view-business-and-products.mp4](04-journey-02-view-business-and-products.mp4) · [Live deck](slides.html) · **Audio:** [04-journey-02-view-business-and-products.mp3](04-journey-02-view-business-and-products.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## Why this video exists
 
@@ -63,7 +63,7 @@ From the repository root, with the app's dependencies installed (`npm ci --prefi
 [`../README.md`](../README.md).
 
 ```sh
-V=docs/videos/03-journey-02-view-business-and-products
+V=docs/videos/04-journey-02-view-business-and-products
 dotnet build backend/src/Jubilee.Application -c Release
 dotnet fsi tools/video-record/render-email.fsx "Gold cross stoneware mug is back in stock" $V/email.txt $V/shots/email.html "https://app.jubilee.to/api/email/unsubscribe/demo"
 JB_VIDEO_DIR=$V NODE_PATH=e2e/node_modules e2e/node_modules/.bin/playwright test -c tools/video-record/playwright.config.ts

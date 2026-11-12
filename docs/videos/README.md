@@ -8,7 +8,7 @@ One folder per video. The text files are the source; the media is generated from
 | 02 | [The Jubilee plan](02-business-plan/README.md) | 1:20 | The business plan, short: launch dates, how businesses pay, homes and stays, revenue, the raise and the roadmap. Ten picture-led scenes, narrated, no captions. |
 | 03 | [Journey 1: Discover businesses](03-journey-01-discover-businesses/README.md) | 2:39 | The demo of journey 1: a visitor goes from the welcome page to the browse home and a filtered, sorted category, and three cards say how the directory read cache is cleared and proved (ADR 0003). Twelve narrated scenes recorded from the app. |
 | 04 | [Journey 3: Search the directory](04-journey-03-search-directory/README.md) | 2:51 | The demo of journey 3: a member searches from the top bar, reads the grouped results, the no-results state and the empty search page, and sees a paused listing leave the next search; three cards say why search has no indexing job and how that is proved (ADR 0011). Twelve narrated scenes recorded from the app. |
-| 03 | [Journey 2: view a business and its products](03-journey-02-view-business-and-products/README.md) | 1:20 | A demo of the implementation: the sold-out card, the owner's sold-out toast, the back-in-stock notice in the app and by e-mail, and the preview status. Eight scenes of screenshots of the running app, narrated, no captions. |
+| 04 | [Journey 2: view a business and its products](04-journey-02-view-business-and-products/README.md) | 1:20 | A demo of the implementation: the sold-out card, the owner's sold-out toast, the back-in-stock notice in the app and by e-mail, and the preview status. Eight scenes of screenshots of the running app, narrated, no captions. |
 
 ## How a pitch film is built
 
@@ -100,9 +100,9 @@ node tools/video-demo/build.mjs docs/videos/NN-topic --keep-recording    # encod
   leaves it out.
 - **Captions** are burned in (`--no-captions` leaves them out); `captions.vtt` is written either way.
 
-### A demo built from screenshots (video 03)
+### A demo built from screenshots (video 04)
 
-Video 03 was made before `tools/video-demo` existed, and is a film of the other kind: a deck
+Video 04 was made without `tools/video-demo`, and is a film of the other kind: a deck
 (`film.js`) that shows **screenshots of the running app** in drawn frames, with close-ups, built by
 `tools/video-build`. New demos use the recorder above. This way still works, and suits a demo that
 must show something no screen recording reaches, such as an e-mail or the same state on a phone
@@ -142,13 +142,13 @@ NODE_PATH=e2e/node_modules node tools/video-build/build.mjs $V --no-captions --f
   stub, as in the behaviour specs (ADR 0009). It starts `npm start` in `frontend/` unless the app is
   already on `http://localhost:4200`.
 - **The film** shows each picture in a frame drawn by `film.js` (`browser`, `phone`, `closeUp` in
-  video 03) with a headline and the requirement it shows. A close-up is a `detail` shot enlarged:
+  video 04) with a headline and the requirement it shows. A close-up is a `detail` shot enlarged:
   that is what makes small text readable at 1080p. Keep scenes at three bars; 72 BPM gives 10 s a
   scene, room for two sentences.
 - **Say only what the branch does.** The narration uses the words of `docs/specs/` and follows
   `docs/scripture.md`; if it quotes the mission, it quotes it word for word. Name in the film's
   README what the pictures prove and what only the tests prove.
-- **Size.** PNG screenshots are small (about 1.6 MB for video 03), and frames that hold still
+- **Size.** PNG screenshots are small (about 1.6 MB for video 04), and frames that hold still
   compress well: `--fps 30 --crf 23` gives about 6 MB for 80 s. Do not let a frame drift for a
   whole scene; it doubles the file. A demo's folder has a `.gitignore` for `narration.wav` and
   `music.mp3`, which `narrated_audio.py` writes again. Keep what is committed under about 15 MB.
