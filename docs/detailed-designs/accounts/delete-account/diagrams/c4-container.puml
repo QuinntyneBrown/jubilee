@@ -11,7 +11,7 @@ System_Boundary(jubilee, "Jubilee") {
   Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and the daily erasure job")
   ContainerDb(db, "Jubilee database", "SQL Server", "Members and requests and listings and audit log")
   ContainerDb(cache, "Cache", "Redis", "Server-side sessions")
-  ContainerDb(search, "Search index", "<TO SUPPLY>", "Public listings and products")
+  ContainerDb(search, "Search index", "Query-time analysis over SQL Server", "Public listings and products")
 }
 System_Ext(email, "E-mail provider", "Transactional e-mail. Vendor <TO SUPPLY>")
 

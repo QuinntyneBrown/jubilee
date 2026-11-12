@@ -23,7 +23,8 @@ box "Backend — Jubilee API" #D1FADF
   participant "SearchController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "RecentSearchService" as recent
+  participant "SearchStartBuilder" as start
+  participant "RemoveRecentSearchCommandHandler" as recent
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
@@ -33,12 +34,14 @@ page -> page : Detect the empty query and skip the search call
 page -> client : getStart()
 client -> controller : GET /api/search/start
 controller -> controller : Read the session if one exists
+controller -> start : Send GetSearchStartQuery
 opt Signed-in member
-  controller -> recent : ListAsync(memberId)
-  recent -> db : Load the 5 newest RecentSearch rows of the member
-  db --> recent : Rows newest first
-  recent --> controller : Recent searches
+  start -> db : Load the 5 newest RecentSearch rows of the member
+  db --> start : Rows newest first
 end
+start -> db : Count the public listings of each category
+db --> start : Counts
+start --> controller : SearchStartDto
 controller --> client : 200 with recent searches and popular categories
 client --> page : Typed result
 alt Member with history
@@ -50,7 +53,7 @@ actor -> page : Remove one recent search
 page -> client : removeRecent(id)
 client -> controller : DELETE /api/search/recent/{id}
 controller -> controller : Authenticate the session and check the CSRF token
-controller -> recent : RemoveAsync(memberId, id)
+controller -> recent : Send RemoveRecentSearchCommand(id, member subject)
 recent -> db : Delete the row where the member owns it (L2-133)
 db --> recent : Rows deleted
 alt Row belongs to the member

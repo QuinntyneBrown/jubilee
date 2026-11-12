@@ -19,10 +19,10 @@ the names the designs introduce.
 | `Jubilee Admin Web` | Angular single-page application | The admin application: staff sign-in and the verification and moderation screens (ADR 0040) |
 | `Jubilee service worker` | Angular service worker | Offline cache and outgoing message queue |
 | `Jubilee API` | ASP.NET Core | JSON API under `/api`, real-time hub, authentication, authorization |
-| `Jubilee Worker` | .NET worker service | Background jobs, outbox dispatch, e-mail sending, search indexing |
+| `Jubilee Worker` | .NET worker service | Background jobs, outbox dispatch, e-mail sending |
 | `Jubilee database` | SQL Server | System of record |
 | `Cache` | Redis | Sessions, rate-limit counters, idempotency keys, short-lived read caches |
-| `Search index` | `<TO SUPPLY>` | Full-text search over businesses, services and products |
+| `Search index` | Query-time analysis of `Jubilee database` (ADR 0011) | Full-text search over businesses, services and products; part of `Jubilee API`, with no store of its own and no indexing job |
 | `Media storage` | Object storage and CDN | Uploaded photos on a separate cookieless domain |
 
 The Angular frontend is stated by the mocks. The backend technologies

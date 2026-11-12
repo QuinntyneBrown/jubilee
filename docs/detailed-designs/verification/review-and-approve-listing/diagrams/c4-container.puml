@@ -8,7 +8,7 @@ System_Boundary(jubilee, "Jubilee") {
   Container(api, "Jubilee API", "ASP.NET Core", "Review and checklist and approve endpoints plus the real-time hub")
   Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox: e-mail and notification and search indexing")
   ContainerDb(db, "Jubilee database", "SQL Server", "Listings and reviews and audit entries and outbox")
-  ContainerDb(search, "Search index", "<TO SUPPLY>", "Public search over live listings")
+  ContainerDb(search, "Search index", "Query-time analysis over SQL Server", "Public search over live listings")
   ContainerDb(cache, "Cache", "Redis", "Short-lived read caches of public lists")
 }
 System_Ext(email, "E-mail provider", "Delivers the approval e-mail")

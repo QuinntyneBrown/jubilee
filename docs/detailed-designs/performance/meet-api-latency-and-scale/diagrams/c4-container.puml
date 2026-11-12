@@ -12,7 +12,7 @@ System_Boundary(jubilee, "Jubilee") {
   Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox: e-mail, search indexing, edge purge, real-time events")
   ContainerDb(db, "Jubilee database", "SQL Server", "System of record and outbox")
   ContainerDb(cache, "Cache", "Redis", "Sessions, short-lived read caches, real-time backplane")
-  ContainerDb(search, "Search index", "<TO SUPPLY>", "Full-text search over businesses, services and products")
+  ContainerDb(search, "Search index", "Query-time analysis over SQL Server", "Full-text search over businesses, services and products")
 }
 System_Ext(obs, "Observability platform", "Latency percentiles and alerts. Vendor <TO SUPPLY>")
 

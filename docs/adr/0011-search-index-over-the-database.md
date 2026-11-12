@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted, 10 November 2026.
+Accepted, 10 November 2026. Amended 12 November 2026: the index over the database is the designed
+search index, not a stand-in for a search engine. `SearchIndexingJob` is not deferred; it is not
+part of the design.
 
 ## Context
 
@@ -20,8 +22,17 @@ when the index fails.
   and their products at query time with `SearchAnalyzer`: it folds case and accents and strips a
   few common endings, so "plumber", "plumbing" and "Plumbers" meet and "café" meets "cafe".
 - Because it reads the database, the index is current the moment a listing, service or product
-  changes, and only public listings are searchable (`L2-028`). `SearchIndexingJob` in
-  `Jubilee.Worker` is therefore not built; it returns with a real search engine.
+  changes, and only public listings are searchable (`L2-028`, `L2-029` AC7). There is nothing to
+  bring up to date, so there is no `SearchIndexingJob` in `Jubilee.Worker`, no index document and
+  no outbox message for search, and the job guarantees of `L2-182` (once across instances,
+  retries, last success) have nothing to apply to here.
+- This is the final design (amendment of 12 November 2026). The search design named an index
+  product `<TO SUPPLY>`; the product is the Jubilee database itself. A hosted search engine would
+  add a service to run, a second copy of every listing that can fall behind the first, and a job
+  whose failure hides or shows the wrong listings; no acceptance criterion of `L2-029` to
+  `L2-032`, `L2-181` or `L2-204` needs one. `SearchCurrencyTests` proves that an approval, an
+  edit, a pause, a resume, a deletion, a moderation hold and a change to a service or a product
+  each reach the next search.
 - `DatabaseNameSearch` (in `Jubilee.Application`, over `IAppDbContext`) is the fallback of
   `L2-181`. The handler uses it when `ISearchIndex` throws; its results carry no match
   explanation and `hasMatchExplanations` is `false`.
@@ -39,9 +50,11 @@ when the index fails.
 ## Consequences
 
 - A search reads every public listing, service and product. That holds for the sizes in
-  `meet-api-latency-and-scale` only while the directory is small; the move to a search engine
-  replaces `DatabaseSearchIndex` and brings back the worker job, with no change to the handler,
-  the endpoints or the page.
+  `meet-api-latency-and-scale` while the directory is one city's; search latency under load is
+  measured there, not here. `ISearchIndex` stays the seam: if those measurements ever call for
+  another index, a new ADR supersedes this one and replaces `DatabaseSearchIndex`, with no change
+  to the handler, the endpoints or the page.
+- `ISearchIndex` can still fail (the database call throws); the fallback of `L2-181` AC3 stays.
 - Search answers are never cached (`Cache-Control: private, no-store`), because they record a
   member's recent searches.
 - The rate limit is held per API instance until the shared `Cache` counter is built.
