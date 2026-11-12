@@ -1,4 +1,4 @@
-// Block: mkt-btn. The host is the link.
+// Block: mkt-btn. The host is the link, or the button of a form.
 :host {
   display: inline-flex;
   align-items: center;
@@ -26,6 +26,28 @@
 
 :host(:active) {
   transform: scale(0.97);
+}
+
+// A button that is sending keeps its label and gains a spinner (L2-127).
+:host([aria-busy='true']) {
+  cursor: progress;
+}
+
+.mkt-btn__spinner {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  border-radius: var(--radius-full);
+  border: var(--border-width-thick) solid color-mix(in srgb, currentColor 35%, transparent);
+  border-top-color: currentColor;
+  // It keeps turning under reduced motion: it is a status, not decoration (--duration-spin).
+  animation: mkt-spin var(--duration-spin) linear infinite;
+}
+
+@keyframes mkt-spin {
+  to {
+    rotate: 360deg;
+  }
 }
 
 :host(.mkt-btn--pill) {

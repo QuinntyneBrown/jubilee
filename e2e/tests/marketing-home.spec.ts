@@ -331,12 +331,16 @@ test.describe('in-page links (L2-185 AC3; AC1, AC2 and AC4 are suspended until l
 });
 
 test.describe('marketing site delivery (L2-186)', () => {
-  test('AC1: rendering the page calls nothing of the Jubilee API', async ({ page, jb }) => {
+  test('AC1: rendering the page calls nothing of the Jubilee API but its forms’ settings', async ({
+    page,
+    jb,
+  }) => {
     const home = new MarketingHomePage(page);
     home.watchRequests();
     await jb.open('marketing-home');
     await home.ready();
-    expect(home.apiRequests()).toEqual([]);
+    // Both forms read the settings; the page asks for them once (L2-218 AC5)
+    expect(home.apiRequests()).toEqual(['http://localhost:4201/api/launch']);
   });
 
   for (const width of [360, 576, 768, 992]) {

@@ -7,7 +7,10 @@ const TOKEN = 'e2e-reset-token-0123456789abcdefghijklmnopq';
 const RESET = `/reset-password/${TOKEN}`;
 
 test.describe('forgot password (L2-008)', () => {
-  test('AC1: a well-formed address gets the same answer whether or not an account exists', async ({ page, jb }) => {
+  test('AC1: a well-formed address gets the same answer whether or not an account exists', async ({
+    page,
+    jb,
+  }) => {
     const forgot = new ForgotPasswordPage(page);
     const fake = await stubPasswordReset(page);
     await jb.goto('/forgot-password');
@@ -24,7 +27,10 @@ test.describe('forgot password (L2-008)', () => {
     await expect(forgot.backToSignIn).toHaveAttribute('href', '/sign-in');
   });
 
-  test('AC3: an empty or malformed address shows the summary and the field error', async ({ page, jb }) => {
+  test('AC3: an empty or malformed address shows the summary and the field error', async ({
+    page,
+    jb,
+  }) => {
     const forgot = new ForgotPasswordPage(page);
     const fake = await stubPasswordReset(page);
     await jb.goto('/forgot-password');
@@ -42,7 +48,10 @@ test.describe('forgot password (L2-008)', () => {
     expect(fake.requestedFor).toEqual([]);
   });
 
-  test('the button is busy and the field locked while the request is on its way', async ({ page, jb }) => {
+  test('the button is busy and the field locked while the request is on its way', async ({
+    page,
+    jb,
+  }) => {
     const forgot = new ForgotPasswordPage(page);
     await stubPasswordReset(page, { request: 'slow' });
     await jb.goto('/forgot-password');
@@ -55,7 +64,10 @@ test.describe('forgot password (L2-008)', () => {
     await expect(forgot.sentHeading).toBeVisible();
   });
 
-  test('when the request fails the page says so, quotes the reference and can try again', async ({ page, jb }) => {
+  test('when the request fails the page says so, quotes the reference and can try again', async ({
+    page,
+    jb,
+  }) => {
     const forgot = new ForgotPasswordPage(page);
     const fake = await stubPasswordReset(page, { request: 'fails' });
     await jb.goto('/forgot-password');
@@ -72,7 +84,10 @@ test.describe('forgot password (L2-008)', () => {
 });
 
 test.describe('reset password (L2-009, L2-140)', () => {
-  test('AC1: a valid link shows the account and the two fields; the token leaves the address bar', async ({ page, jb }) => {
+  test('AC1: a valid link shows the account and the two fields; the token leaves the address bar', async ({
+    page,
+    jb,
+  }) => {
     const reset = new ResetPasswordPage(page);
     const fake = await stubPasswordReset(page);
     await jb.goto(RESET);
@@ -87,7 +102,10 @@ test.describe('reset password (L2-009, L2-140)', () => {
     expect(fake.urls.every((url) => !url.includes(TOKEN))).toBe(true);
   });
 
-  test('AC2 and AC3: a short password and two that differ are refused with the field errors', async ({ page, jb }) => {
+  test('AC2 and AC3: a short password and two that differ are refused with the field errors', async ({
+    page,
+    jb,
+  }) => {
     const reset = new ResetPasswordPage(page);
     const fake = await stubPasswordReset(page);
     await jb.goto(RESET);
@@ -117,7 +135,11 @@ test.describe('reset password (L2-009, L2-140)', () => {
     );
     await expect(reset.signIn).toHaveAttribute('href', '/sign-in');
     expect(fake.changes).toEqual([
-      { token: TOKEN, newPassword: 'a brand new password 7', repeatPassword: 'a brand new password 7' },
+      {
+        token: TOKEN,
+        newPassword: 'a brand new password 7',
+        repeatPassword: 'a brand new password 7',
+      },
     ]);
     expect(fake.urls.every((url) => !url.includes(TOKEN))).toBe(true);
   });
@@ -132,7 +154,10 @@ test.describe('reset password (L2-009, L2-140)', () => {
     await expect(reset.sendNewLink).toHaveAttribute('href', '/forgot-password');
   });
 
-  test('AC5: a link that expires while the form is open shows the same state', async ({ page, jb }) => {
+  test('AC5: a link that expires while the form is open shows the same state', async ({
+    page,
+    jb,
+  }) => {
     const reset = new ResetPasswordPage(page);
     await stubPasswordReset(page, { reset: 'expires' });
     await jb.goto(RESET);
@@ -143,7 +168,10 @@ test.describe('reset password (L2-009, L2-140)', () => {
     await expect(reset.heading).toHaveText('This link has expired');
   });
 
-  test('AC6: a password from a known breach is refused and the form stays', async ({ page, jb }) => {
+  test('AC6: a password from a known breach is refused and the form stays', async ({
+    page,
+    jb,
+  }) => {
     const reset = new ResetPasswordPage(page);
     await stubPasswordReset(page);
     await jb.goto(RESET);
@@ -151,12 +179,17 @@ test.describe('reset password (L2-009, L2-140)', () => {
     await reset.fill(BREACHED);
     await reset.change.click();
 
-    await expect(reset.passwordError).toHaveText('This password has appeared in a data breach. Choose another.');
+    await expect(reset.passwordError).toHaveText(
+      'This password has appeared in a data breach. Choose another.',
+    );
     await expect(reset.password).toHaveAttribute('aria-invalid', 'true');
     await expect(reset.heading).toHaveText('Choose a new password');
   });
 
-  test('when the link cannot be checked the page says so and can try again', async ({ page, jb }) => {
+  test('when the link cannot be checked the page says so and can try again', async ({
+    page,
+    jb,
+  }) => {
     const reset = new ResetPasswordPage(page);
     const fake = await stubPasswordReset(page, { link: 'fails' });
     await jb.goto(RESET);

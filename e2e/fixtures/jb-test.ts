@@ -39,6 +39,7 @@ export class Jb {
         (url) => url.hostname !== 'localhost',
         (r) => r.abort(),
       );
+      if (route.stub) await applyStub(this.page, route.stub);
       await this.goto(`${MARKETING_URL}${route.app}`, options.theme, options.now);
       return;
     }

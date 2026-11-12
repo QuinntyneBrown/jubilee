@@ -89,7 +89,9 @@ test.describe('save and unsave (L2-041)', () => {
 
     await business.saveButton.click();
 
-    await expect(toasts.withTitle('You can save up to 500 items. Remove some to add more.')).toBeVisible();
+    await expect(
+      toasts.withTitle('You can save up to 500 items. Remove some to add more.'),
+    ).toBeVisible();
     await expect(business.saveButton).toHaveAttribute('aria-pressed', 'false');
   });
 
@@ -132,7 +134,10 @@ test.describe('save and unsave (L2-041)', () => {
 });
 
 test.describe('saved page (L2-042)', () => {
-  test('AC1: the counts and the cards, newest first, each with a remove button', async ({ page, jb }) => {
+  test('AC1: the counts and the cards, newest first, each with a remove button', async ({
+    page,
+    jb,
+  }) => {
     const saved = new SavedPage(page);
     await saved.setWidth(1280);
     await jb.signInAs('member');
@@ -144,7 +149,10 @@ test.describe('saved page (L2-042)', () => {
     await expect(saved.cards).toHaveCount(4);
     await expect(saved.cards.first()).toContainText('Leather journaling Bible, ESV');
     await expect(saved.cards.last()).toContainText('Legacy Financial');
-    await expect(saved.card('Legacy Financial').getByRole('link')).toHaveAttribute('href', '/b/legacy-financial');
+    await expect(saved.card('Legacy Financial').getByRole('link')).toHaveAttribute(
+      'href',
+      '/b/legacy-financial',
+    );
     await expect(saved.remove('Legacy Financial')).toBeVisible();
   });
 
@@ -170,7 +178,9 @@ test.describe('saved page (L2-042)', () => {
     await jb.goto('/saved');
 
     await expect(saved.empty).toContainText('Save businesses to find them again');
-    await expect(saved.empty).toContainText('Tap the heart on any listing or product. Your saved list is private.');
+    await expect(saved.empty).toContainText(
+      'Tap the heart on any listing or product. Your saved list is private.',
+    );
     await expect(saved.browse).toHaveAttribute('href', '/');
   });
 
@@ -193,7 +203,10 @@ test.describe('saved page (L2-042)', () => {
     expect(fake.calls).toEqual(['DELETE items/a1000000-0000-4000-8000-000000000009']);
   });
 
-  test('AC5: when the list cannot load the page says so and quotes JB-SAV-503', async ({ page, jb }) => {
+  test('AC5: when the list cannot load the page says so and quotes JB-SAV-503', async ({
+    page,
+    jb,
+  }) => {
     const saved = new SavedPage(page);
     await saved.setWidth(1280);
     await jb.signInAs('member');

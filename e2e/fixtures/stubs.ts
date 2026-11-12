@@ -514,6 +514,22 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubSent(page, '**/api/session', failed);
     case 'sign-in-pending':
       return stubSent(page, '**/api/session', pending);
+    case 'launch-notify-pending':
+      return stubSent(page, '**/api/launch/notifications', pending);
+    case 'launch-notify-failing':
+      return stubSent(page, '**/api/launch/notifications', failed);
+    case 'launch-notify-limited':
+      return stubSent(page, '**/api/launch/notifications', limited);
+    case 'launch-notify-challenge':
+      return stubSent(page, '**/api/launch/notifications', challengeFailed);
+    case 'launch-business-pending':
+      return stubSent(page, '**/api/launch/businesses', pending);
+    case 'launch-business-failing':
+      return stubSent(page, '**/api/launch/businesses', failed);
+    case 'launch-business-limited':
+      return stubSent(page, '**/api/launch/businesses', limited);
+    case 'launch-business-challenge':
+      return stubSent(page, '**/api/launch/businesses', challengeFailed);
     case 'join-created':
       return stubSent(page, '**/api/account/join', (route) =>
         route.fulfill({ status: 201, json: { email: 'joanna.adeyemi@example.com' } }),
@@ -596,6 +612,30 @@ function failed(route: Route): Promise<void> {
     status: 500,
     contentType: 'application/problem+json',
     body: JSON.stringify({ title: 'Something went wrong', status: 500, reference: 'JB-AUTH-503' }),
+  });
+}
+
+/** Too many from one address: 42 minutes to wait, as the mocks show (L2-137 AC1). */
+function limited(route: Route): Promise<void> {
+  return route.fulfill({
+    status: 429,
+    headers: { 'Retry-After': '2520' },
+    contentType: 'application/problem+json',
+    body: JSON.stringify({ title: 'You’re doing that a lot.', status: 429, code: 'rate_limited' }),
+  });
+}
+
+/** The bot challenge was not passed (L2-137 AC2). */
+function challengeFailed(route: Route): Promise<void> {
+  return route.fulfill({
+    status: 422,
+    contentType: 'application/problem+json',
+    body: JSON.stringify({
+      title: 'Fix the highlighted fields.',
+      status: 422,
+      code: 'validation_failed',
+      errors: { challenge: 'CHALLENGE_FAILED' },
+    }),
   });
 }
 

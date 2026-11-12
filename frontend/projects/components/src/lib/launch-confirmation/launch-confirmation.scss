@@ -1,0 +1,53 @@
+// Block: mkt-confirmation, what takes the place of a sent launch form. The host is the div.
+@use '../marketing-section/marketing-type' as type;
+
+:host {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--space-3);
+  min-width: 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  padding: var(--space-5);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg-default) 10%, transparent);
+}
+
+:host(.mkt-confirmation--paper) {
+  background: var(--jb-mkt-paper);
+}
+
+@media (min-width: 40rem) {
+  :host {
+    padding: var(--space-8);
+  }
+}
+
+.mkt-confirmation__icon {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--jb-mkt-accent);
+  color: var(--jb-mkt-paper);
+}
+
+.mkt-confirmation__check {
+  --jb-icon-size: 1.25rem;
+}
+
+.mkt-confirmation__title {
+  @include type.display-face;
+
+  font-size: var(--font-size-2xl);
+  line-height: 1.25;
+}
+
+.mkt-confirmation__text {
+  font-size: 1.0625rem;
+  line-height: 1.625;
+  color: color-mix(in srgb, var(--color-fg-default) 70%, transparent);
+  overflow-wrap: anywhere;
+}

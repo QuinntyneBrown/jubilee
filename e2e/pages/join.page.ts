@@ -102,8 +102,7 @@ export class JoinPage extends ShellPage implements Screen {
     if (values.email !== undefined) await this.email.fill(values.email);
     if (values.password !== undefined) await this.password.fill(values.password);
     if (values.church !== undefined) await this.homeChurch.fill(values.church);
-    if (values.churchAddress !== undefined)
-      await this.homeChurchAddress.fill(values.churchAddress);
+    if (values.churchAddress !== undefined) await this.homeChurchAddress.fill(values.churchAddress);
     if (values.agree !== undefined) await this.agreement.setChecked(values.agree);
   }
 

@@ -59,8 +59,10 @@ if ($StaffEmail) {
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
 }
-# The whole suite calls from one address; the per-address limit is covered by the API tests.
+# The whole suite calls from one address; the per-address limits are covered by the API tests.
 $env:RateLimits__DirectoryReadsPerMinute = '100000'
+$env:RateLimits__LaunchSignUpsPerHour = '100000'
+$env:RateLimits__LaunchPreRegistrationsPerHour = '100000'
 
 dotnet run --project $project -c Release --no-launch-profile
 exit $LASTEXITCODE

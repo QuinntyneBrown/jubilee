@@ -1,5 +1,120 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator, Page, Request } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
+
+/** What an owner types into the business pre-registration form (L2-216). */
+export interface BusinessDetails {
+  businessName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  category: string;
+  area: string;
+  website: string;
+  description: string;
+}
+
+/** Naomi Laurent's details for Luzandre.com, as the mocks show them. */
+export const naomiDetails: BusinessDetails = {
+  businessName: 'Luzandre.com',
+  contactName: 'Naomi Laurent',
+  email: 'naomi@luzandre.com',
+  phone: '416-555-0142',
+  category: 'Shops',
+  area: 'Leslieville',
+  website: 'luzandre.com',
+  description: 'Custom Christian apparel, artworks and gifts, made in Toronto.',
+};
+
+/**
+ * One of the two forms of the launching-soon page (L2-216, L2-217) and what takes its place: the
+ * fields by their labels, the button, the notices and the confirmation.
+ */
+export class LaunchFormPart {
+  readonly form: Locator;
+  readonly send: Locator;
+  readonly summary: Locator;
+  readonly summaryLinks: Locator;
+  /** An alert above the fields: the failure, the limit or the bot challenge. */
+  readonly alert: Locator;
+  readonly confirmation: Locator;
+  readonly confirmationHeading: Locator;
+  readonly consent: Locator;
+  /** The messages under the fields. */
+  readonly fieldErrors: Locator;
+  readonly note: Locator;
+  /** The labels of the fields, with their "(required)" or "(optional)". */
+  readonly labels: Locator;
+
+  constructor(
+    private readonly page: Page,
+    readonly section: Locator,
+    name: string,
+    button: string,
+    private readonly path: string,
+  ) {
+    this.form = section.getByRole('form', { name });
+    this.send = this.form.getByRole('button', { name: button });
+    this.summary = this.form.locator('.form-summary');
+    this.summaryLinks = this.summary.getByRole('link');
+    this.alert = this.form.locator('.alert:not(.form-summary)');
+    this.confirmation = section.locator('.mkt-confirmation');
+    this.confirmationHeading = this.confirmation.getByRole('heading', { level: 3 });
+    this.consent = this.form.getByRole('checkbox');
+    this.fieldErrors = this.form.locator('.field__error');
+    this.note = this.form.locator('.mkt-form__note');
+    this.labels = this.form.locator('.field__label');
+  }
+
+  field(label: string): Locator {
+    // The label ends with its marker, "(required)" or "(optional)".
+    return this.form.getByLabel(label);
+  }
+
+  /** The message under the field labelled `label`. */
+  errorOf(label: string): Locator {
+    return this.form
+      .locator('.field', { has: this.page.getByLabel(label) })
+      .locator('.field__error');
+  }
+
+  /** The message under the consent box. */
+  readonly consentError = (): Locator =>
+    this.form.locator(':is(.choice, jb-checkbox) + .field__error');
+
+  /** Sends the form and resolves with what was sent to the API. */
+  async sendAndCapture(): Promise<Request> {
+    const sent = this.page.waitForRequest(
+      (request) => request.method() === 'POST' && new URL(request.url()).pathname === this.path,
+    );
+    await this.send.click();
+    return sent;
+  }
+
+  /** The number of times the form was sent to the API since `watch` was called. */
+  watch(): () => number {
+    let count = 0;
+    this.page.on('request', (request) => {
+      if (request.method() === 'POST' && new URL(request.url()).pathname === this.path) count++;
+    });
+    return () => count;
+  }
+
+  /** Whether the form shows a state other than its first one: sent, busy, refused or failed. */
+  async inAState(): Promise<boolean> {
+    return (
+      (await this.confirmation.count()) +
+        (await this.summary.count()) +
+        (await this.alert.count()) +
+        (await this.form.locator('[aria-busy="true"]').count()) >
+      0
+    );
+  }
+
+  /** Whether the element with focus is `locator`. */
+  hasFocus(locator: Locator): Promise<boolean> {
+    return locator.evaluate((element) => element === document.activeElement);
+  }
+}
 
 /** The marketing site's one page, in its launching-soon state (L2-183 to L2-186, L2-215 to L2-217). */
 export class MarketingHomePage implements Screen {
@@ -63,6 +178,10 @@ export class MarketingHomePage implements Screen {
   /** "Jubilee is launching soon.": the launch notification (L2-217). */
   readonly notify: Locator;
   readonly notifyHeading: Locator;
+  /** The launch notification form (L2-217). */
+  readonly notifyForm: LaunchFormPart;
+  /** The business pre-registration form (L2-216). */
+  readonly businessForm: LaunchFormPart;
   readonly footer: Locator;
   /** The lockup that signs the footer. */
   readonly footerLockup: Locator;
@@ -80,7 +199,7 @@ export class MarketingHomePage implements Screen {
 
   private readonly requests: string[] = [];
 
-  constructor(private readonly page: Page) {
+  constructor(protected readonly page: Page) {
     this.main = page.locator('main#main');
     this.topBar = page.locator('header.mkt-nav');
     this.lockup = this.topBar.getByRole('link', { name: 'Jubilee home' });
@@ -140,6 +259,20 @@ export class MarketingHomePage implements Screen {
     this.preRegisterHeading = this.preRegister.getByRole('heading', { level: 2 });
     this.notify = this.main.locator('section#notify');
     this.notifyHeading = this.notify.getByRole('heading', { level: 2 });
+    this.notifyForm = new LaunchFormPart(
+      page,
+      this.notify,
+      'Launch notification',
+      'Tell me when it launches',
+      '/api/launch/notifications',
+    );
+    this.businessForm = new LaunchFormPart(
+      page,
+      this.preRegister,
+      'Business pre-registration',
+      'Send my details',
+      '/api/launch/businesses',
+    );
     this.footer = page.locator('footer.mkt-footer');
     this.footerLockup = this.footer.getByRole('img', { name: 'Jubilee' });
     this.headings = this.main.getByRole('heading', { level: 2 });
@@ -276,6 +409,27 @@ export class MarketingHomePage implements Screen {
     await this.footer.waitFor();
   }
 
+  /** Fills the launch notification form as Joanna would. */
+  async fillNotify(email = 'joanna.adeyemi@example.com', firstName = 'Joanna'): Promise<void> {
+    await this.notifyForm.field('Email').fill(email);
+    await this.notifyForm.field('First name').fill(firstName);
+    await this.notifyForm.consent.check();
+  }
+
+  /** Fills the business pre-registration form. */
+  async fillBusiness(details: BusinessDetails = naomiDetails): Promise<void> {
+    const form = this.businessForm;
+    await form.field('Business name').fill(details.businessName);
+    await form.field('Your name').fill(details.contactName);
+    await form.field('Email').fill(details.email);
+    await form.field('Phone').fill(details.phone);
+    await form.field('Category').selectOption({ label: details.category });
+    await form.field('Area of Toronto').fill(details.area);
+    await form.field('Website or social link').fill(details.website);
+    await form.field('About your business').fill(details.description);
+    await form.consent.check();
+  }
+
   regions(): Region[] {
     return [
       { name: 'marketing-top-bar', locator: this.topBar },
@@ -290,5 +444,40 @@ export class MarketingHomePage implements Screen {
       { name: 'marketing-notify', locator: this.notify },
       { name: 'marketing-footer', locator: this.footer },
     ];
+  }
+}
+
+/**
+ * The launching-soon page with one of its forms in a state: in the app the form is filled (or
+ * left empty) and sent, against the stub of its route; the mock is already in the state.
+ */
+export class LaunchFormScreen extends MarketingHomePage {
+  constructor(
+    page: Page,
+    private readonly which: 'notify' | 'business',
+    private readonly filled: boolean,
+  ) {
+    super(page);
+  }
+
+  get part(): LaunchFormPart {
+    return this.which === 'notify' ? this.notifyForm : this.businessForm;
+  }
+
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.part.inAState()) return;
+    if (this.filled) {
+      if (this.which === 'notify') await this.fillNotify();
+      else await this.fillBusiness();
+    }
+    await this.part.send.click();
+    await this.page.waitForFunction(() =>
+      document.querySelector('.mkt-form [aria-busy], .alert, .mkt-confirmation'),
+    );
+  }
+
+  override regions(): Region[] {
+    return [{ name: `marketing-${this.which}-form`, locator: this.part.section }];
   }
 }
