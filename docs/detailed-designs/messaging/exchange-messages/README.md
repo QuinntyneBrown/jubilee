@@ -39,7 +39,7 @@ with a photo is not queued.
 
 The feature is a vertical slice from the conversation page to the database and
 the media store. The decisions behind it are recorded in ADR 0014, ADR 0039 and
-ADR 0050.
+ADR 0051.
 
 - **`ConversationPage`** — Angular page at `/messages/:id`
   (`frontend/projects/jubilee/src/app/pages/conversation/`), guarded by
@@ -56,7 +56,7 @@ ADR 0050.
   button is used, not scrolling alone, so that it works with the keyboard and a
   screen reader. After the older messages are added, the message that was at the
   top is brought back to the top of the log, so the member reads upwards from
-  where they were (ADR 0050).
+  where they were (ADR 0051).
 - **`jb-message-bubble`** — component of the `components` library for one
   message. It shows the text and at most one photo, the sender, and the time or
   the delivery status. Message text is bound as text, never as HTML. The photo
@@ -127,7 +127,7 @@ ADR 0050.
   each message with its own key (L2-120, ADR 0032). A message with a photo is
   not put in the queue, because a photo is not kept on the device: its bubble
   keeps the photo and the text, says "Not sent. Check your connection." and
-  "Try again" sends it once when the connection is back (L2-120, ADR 0050).
+  "Try again" sends it once when the connection is back (L2-120, ADR 0051).
 - **`RealtimeService`** — Angular service of the app and the only reader of the
   event stream. No event type is added for messaging: the service publishes each
   `notification` event it receives. The open conversation reads
@@ -146,7 +146,7 @@ ADR 0050.
   handler loads the conversation for a participant; any other caller receives
   HTTP `404` with code `conversation_not_found` (L2-133), which
   `ExceptionHandlingMiddleware` logs at `Warning` with the caller's subject and
-  the path, as it logs a `403` (ADR 0050). The two sends and the upload carry
+  the path, as it logs a `403` (ADR 0051). The two sends and the upload carry
   `[RequiresConfirmedEmail]`: a member whose e-mail is unconfirmed receives
   `403` with code `EMAIL_UNCONFIRMED` (L2-005).
 - **`GetConversationQueryHandler`** — returns the header, `muted`, `canBlock`,
@@ -171,7 +171,7 @@ ADR 0050.
   `429` and `Retry-After` (L2-137); the bubble says "Not sent. You’re doing that
   a lot. Try again in {n} minutes.".
 - **`UploadAttachmentCommandHandler`** — runs three steps in order and stops at
-  the first failure (ADR 0050). First `ImageSanitizer.Sanitize` decides the type
+  the first failure (ADR 0051). First `ImageSanitizer.Sanitize` decides the type
   from the bytes, accepts JPEG and PNG up to `5 MB` and `8,000` pixels wide, and
   removes everything that is not picture data (EXIF, XMP, ICC and comment
   segments of a JPEG; text and time chunks of a PNG); a refused file answers
@@ -210,15 +210,15 @@ ADR 0050.
   (`AttachmentLinks`) with `Attachments:SigningKey`. Without that setting the
   Development environment signs with a key that is in the source code, and every
   other environment makes a random key when it starts, so a link is never signed
-  with a key anyone can read (ADR 0050). The link is valid for
+  with a key anyone can read (ADR 0051). The link is valid for
   `5 minutes` and is served with `X-Content-Type-Options: nosniff` and
   `Cache-Control: private, no-store` (ADR 0014). Each message read carries a new
   link. `GetAttachmentQueryHandler` checks the signature and the expiry, then
   reads the bytes with `IMediaStore.Read(key, 0, format)`. A row stored before
-  ADR 0050 has no key and is read from its `Content` column, which is nullable
+  ADR 0051 has no key and is read from its `Content` column, which is nullable
   and which no new row writes. The photo is delivered by the API on the
   application's own origin; the separate cookieless media domain of L2-138 is an
-  owner step and is open (ADR 0050).
+  owner step and is open (ADR 0051).
 - **`RenewAttachmentLinkQueryHandler`** —
   `GET /api/conversations/{id}/attachments/{attachmentId}` answers `{ url }`, a
   new signed link, to a participant. Any other caller receives `404`, as does a
@@ -234,7 +234,7 @@ ADR 0050.
   When the member opens the conversation, `ConversationPage` shows the info
   toast "{Owner first name} is away until {day}" with "They’ll see your message
   when they’re back." It is shown once for a return day while the conversation
-  stays open: a toast at every send would sit over "Send" (ADR 0050). When the
+  stays open: a toast at every send would sit over "Send" (ADR 0051). When the
   away period becomes known while the conversation is open, the next send the
   server confirms shows it. Above the
   messages a line says "{Owner} is away until {day} and will reply when they’re
@@ -244,7 +244,7 @@ ADR 0050.
   short date ("Mon 23 Nov") after that, in Toronto time. The page compares the
   date with the clock each time, so nothing is shown once the day has come.
   Jubilee does not know whether the owner is a man or a woman, so it says
-  "they" (ADR 0050).
+  "they" (ADR 0051).
 - **`AwayPeriodDialog`** — CDK dialog of the app (`dialogs/away-period`), opened
   by "Set away period" in "Your listing" on My business. It is titled "Set an
   away period", asks for one date, "Back on", and says "Members who message you
@@ -288,7 +288,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 A member and an owner exchange messages and photos through Jubilee. The owner
 also sets the away period. Jubilee gives each message photo to the malware
-scanner, a `clamd` daemon on its own network (ADR 0050).
+scanner, a `clamd` daemon on its own network (ADR 0051).
 
 ![C4 system context for exchanging messages](diagrams/c4-context.png)
 

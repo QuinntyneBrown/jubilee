@@ -9,7 +9,7 @@ namespace Jubilee.Api.Controllers;
 /// can fetch the photo; the link is only handed to participants of the conversation.
 /// The key is <c>Attachments:SigningKey</c>. Without one, a developer's machine uses a key that is
 /// in the source code, and every other environment makes a random key when it starts, so a link is
-/// never signed with a key anyone can read (ADR 0050). A random key is this instance's alone: set
+/// never signed with a key anyone can read (ADR 0051). A random key is this instance's alone: set
 /// the setting where more than one instance answers.
 /// </summary>
 public sealed class AttachmentLinks(IConfiguration configuration, TimeProvider clock, IHostEnvironment environment) : IAttachmentLinks

@@ -13,7 +13,7 @@ import {
 } from "../../../e2e/pages/messages.page";
 import { Toasts } from "../../../e2e/pages/toasts";
 
-// Video 10: journey 6, message a business. A member writes to a business whose owner is away,
+// Video 11: journey 6, message a business. A member writes to a business whose owner is away,
 // pages a long inbox and sends a photo that could not be scanned at first, against the recorded
 // API and the messaging stand-in of the behaviour spec (ADR 0009); two cards say what the run did
 // behind the screen. Built by `node tools/video-demo/build.mjs` (docs/videos/README.md).

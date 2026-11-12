@@ -45,7 +45,7 @@ something else: a new record supersedes it and both say so.
 | [0048](0048-finish-book-a-meeting.md) | Finish book a meeting: meeting hours the owner sets (days, one window a day in Toronto time, a slot length) stored on the listing; the default times stand until an owner saves; saving never changes a request already sent | Accepted |
 | [0049](0049-finish-join-jubilee.md) | Finish joining: the unconfirmed address changed in a dialog of its own, an address in use said from the session, the resend limit said in the banner, and tokens kept out of the logs by `LoggedPath` | Accepted |
 | [0050](0050-finish-respond-to-customer-requests.md) | Finish responding to customer requests: the page listens to the event stream and polls only while it cannot connect, "Replies fast" is a `jb-badge` on the listing page and the business card, the response-time job runs once per hour across instances through `JobRun`, and a confirmation that answers after its dialog closed is still reported | Accepted |
-| [0050](0050-finish-message-a-business.md) | Finish messaging: the away notice as a toast with its day, the inbox paged by 50 with a button, message photos scanned by ClamAV before they are stored and kept by `IMediaStore` (no scanner, no photo), photos still not queued offline, conversation reports limited to 10 a day | Accepted |
+| [0051](0051-finish-message-a-business.md) | Finish messaging: the away notice as a toast with its day, the inbox paged by 50 with a button, message photos scanned by ClamAV before they are stored and kept by `IMediaStore` (no scanner, no photo), photos still not queued offline, conversation reports limited to 10 a day | Accepted |
 
 ## Format
 

@@ -167,7 +167,7 @@ public sealed class MessageAttachment
     public string Key { get; private set; } = string.Empty;
 
     /// <summary>
-    /// The bytes of a photo stored before the media store kept message photos (ADR 0050): read only
+    /// The bytes of a photo stored before the media store kept message photos (ADR 0051): read only
     /// when a row has no <see cref="Key"/>, and never written again.
     /// </summary>
     public byte[]? Content { get; private set; }

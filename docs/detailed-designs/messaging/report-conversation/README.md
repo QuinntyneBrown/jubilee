@@ -32,7 +32,7 @@ reason. Review and resolution of reports belong to the administration subsystem
 ## Description
 
 The feature is a vertical slice from the conversation page to the database. The
-decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
+decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0051.
 
 - **`jb-menu`** — component of the `components` library built on CDK Menu
   (`@angular/cdk/menu`). "More" in the conversation header opens it with the
@@ -86,7 +86,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
   conversation reports in 24 hours, counted from the stored reports as the
   message limits are. One more is answered with `429` and `Retry-After`. A
   repeat while a report is open files nothing and is not refused, so a block can
-  still be applied (L2-137, ADR 0050).
+  still be applied (L2-137, ADR 0051).
 - **`ConversationReport`** — domain entity. It holds the conversation, the
   reporter, the reason and a `ReportStatus` of `Open`, `InReview` or `Resolved`.
   The verification team sees it in the same list as listing reports (ADR 0033).
@@ -124,7 +124,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
   message text as plain text and returns it unchanged.
 - **Open** — the bot challenge on the report form (L2-137 AC2) and the
   suspension of new conversations after three spam reports (L2-137 AC3) are not
-  built; they belong to the `security/limit-abuse` design (ADR 0050).
+  built; they belong to the `security/limit-abuse` design (ADR 0051).
 - **Tests** — `MessagingTests` (`L2_063_…`, `L2_061_…`) and `ModerationTests`
   (`L2_063_AC3_…`) in the backend, and "mute a conversation (L2-061)" and
   "report a conversation (L2-063)" in `e2e/tests/messages.spec.ts`.

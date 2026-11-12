@@ -1,4 +1,4 @@
-# 10 · Journey 6: Message a business
+# 11 · Journey 6: Message a business
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 

@@ -14,7 +14,7 @@
 
 ## secure-uploads
 
-Built for message photos by journey 6 (ADR 0050): the checks by content, both sides limited to
+Built for message photos by journey 6 (ADR 0051): the checks by content, both sides limited to
 8,000 pixels, the malware scan before anything is stored (`IMalwareScanner`, ClamAV over `INSTREAM`,
 no scanner means no photo), the bytes kept by `IMediaStore` under a random name, and signed links
 that are never signed with a published key outside Development. Listing photos were already

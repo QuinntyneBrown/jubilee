@@ -668,7 +668,7 @@ public sealed class GetAttachmentQueryHandler(IAppDbContext db, IAttachmentLinks
 
         var attachment = await db.MessageAttachments.AsNoTracking().SingleOrDefaultAsync(a => a.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException("attachment_not_found", "There is no such photo.");
-        // A row stored before the media store kept message photos has its bytes in the row (ADR 0050).
+        // A row stored before the media store kept message photos has its bytes in the row (ADR 0051).
         var content = attachment.Key.Length > 0
             ? await store.Read(attachment.Key, AttachmentFiles.Width, AttachmentFiles.Format(attachment.ContentType), cancellationToken)
             : attachment.Content;

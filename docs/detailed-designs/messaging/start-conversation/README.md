@@ -29,7 +29,7 @@ subsystem; this slice starts once a signed-in member opens the dialog.
 ## Description
 
 The feature is a vertical slice from the listing page to the database. The
-decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
+decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0051.
 
 - **`BusinessPage`** — Angular page at `/b/:slug`
   (`frontend/projects/jubilee/src/app/pages/business/`). "Message" goes to
@@ -94,7 +94,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
 - **After success** — there is no toast for the message: the dialog closes and
   `/messages/:id` opens with the sent message in it (ADR 0014). When the owner
   is away, the conversation that opens shows the away toast described in
-  `exchange-messages` (L2-062, ADR 0050).
+  `exchange-messages` (L2-062, ADR 0051).
 - **Failed state** — when the request fails, the dialog stays open, keeps the
   typed text, and shows "We couldn't send that. Your connection dropped before it
   reached us. Nothing was sent and what you typed is still here. Try again." A

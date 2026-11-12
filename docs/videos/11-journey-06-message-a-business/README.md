@@ -1,13 +1,13 @@
-# 10 · Journey 6: Message a business
+# 11 · Journey 6: Message a business
 
 > **Runtime:** 1:33 (92.9 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 6
 
-**Video:** [10-journey-06-message-a-business.mp4](10-journey-06-message-a-business.mp4) · **Audio:** [10-journey-06-message-a-business.mp3](10-journey-06-message-a-business.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [11-journey-06-message-a-business.mp4](11-journey-06-message-a-business.mp4) · **Audio:** [11-journey-06-message-a-business.mp3](11-journey-06-message-a-business.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## What it shows
 
 The run of `docs/prompts/06-message-a-business.md`, which took journey 6 from 94% to 98%
-(ADR 0050). Joanna writes to Legacy Financial from its listing: the dialog's hint names the owner
+(ADR 0051). Joanna writes to Legacy Financial from its listing: the dialog's hint names the owner
 and counts down the last 200 of 4,000 characters. Sending opens the conversation, where a toast
 and a line say that Trevor is away until Thursday. Her inbox of 64 conversations lists 50 and
 "Show more conversations" adds the rest. A photo she sends cannot be checked at first, so the
@@ -60,8 +60,8 @@ uses the keyboard for the button.
 
 ```sh
 pip install edge-tts
-node tools/video-demo/build.mjs docs/videos/10-journey-06-message-a-business --check   # speak the lines, print their lengths
-node tools/video-demo/build.mjs docs/videos/10-journey-06-message-a-business           # record and encode
+node tools/video-demo/build.mjs docs/videos/11-journey-06-message-a-business --check   # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/11-journey-06-message-a-business           # record and encode
 ```
 
 `narration.json` holds the lines and `demo.spec.ts` drives the app, one `demo.scene` per line. The

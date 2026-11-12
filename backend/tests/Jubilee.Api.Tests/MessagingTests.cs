@@ -1076,7 +1076,7 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync(url)).StatusCode);
     }
 
-    // A row stored before the media store held message photos keeps its bytes in the database (ADR 0050).
+    // A row stored before the media store held message photos keeps its bytes in the database (ADR 0051).
     [Fact]
     public async Task L2_060_AC4_a_photo_stored_before_the_media_store_is_still_delivered()
     {

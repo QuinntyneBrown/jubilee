@@ -18,7 +18,7 @@ if (string.Equals(builder.Configuration["StaffSignIn:Provider"], "Development", 
 }
 
 // On a developer's machine, and in the e2e API, no malware scanner runs: say so rather than refuse
-// every photo. Everywhere else a missing scanner means no photo is accepted (L2-138 AC4, ADR 0050).
+// every photo. Everywhere else a missing scanner means no photo is accepted (L2-138 AC4, ADR 0051).
 if (builder.Environment.IsDevelopment() && string.IsNullOrWhiteSpace(builder.Configuration["Malware:Scanner"]))
 {
     builder.Configuration["Malware:Scanner"] = "none";

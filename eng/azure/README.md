@@ -62,7 +62,7 @@ site key the form sends a token nobody checks, and with only the secret every jo
 ## Message photos and the malware scanner
 
 Not configured yet, so this feature is off: **photos in messages**. A photo a member attaches to a
-message is scanned for malware before it is stored (L2-060 AC9, L2-138 AC4, ADR 0050), and the API
+message is scanned for malware before it is stored (L2-060 AC9, L2-138 AC4, ADR 0051), and the API
 accepts no photo it could not scan. Until a scanner is set, an upload is answered
 `503 SCAN_UNAVAILABLE`, nothing is stored, and the member's message says "Not sent. We couldn’t
 check this photo just now." Text messages are not affected.

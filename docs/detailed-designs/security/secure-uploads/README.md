@@ -25,7 +25,7 @@ and PNG only, up to `5 MB` and 8,000 pixels.
 
 Two paths are built, and they share the media store. A message photo is
 checked, scanned for malware and then stored, and is reached only through a
-signed link (ADR 0014, ADR 0039, ADR 0050). A listing photo is checked,
+signed link (ADR 0014, ADR 0039, ADR 0051). A listing photo is checked,
 re-encoded into renditions and stored, and is served publicly under its random
 name (journey 15). Listing photos are not scanned yet. Product photos have no
 upload yet. The cookieless media domain is not registered yet. These three are
@@ -58,7 +58,7 @@ The slice runs from the Angular upload control to the media store.
   the first failure. Scanning before storing, in the request, makes the rule
   true in the simplest way: nothing is stored unscanned, so there is no
   quarantine area, no status on the stored photo and no background job
-  (ADR 0050). It then stores a `MessageAttachment` row with the `Key` and the
+  (ADR 0051). It then stores a `MessageAttachment` row with the `Key` and the
   `ContentType`. Uploads are limited to 30 in 10 minutes per member (`429`).
 - **`ImageSanitizer`** — the check of a message photo
   (`Jubilee.Application/Messaging/ImageSanitizer.cs`). `Sanitize` refuses more
@@ -122,7 +122,7 @@ The slice runs from the Angular upload control to the media store.
   `Cache-Control: private, no-store`. The link is given to the participants of
   the conversation only and is renewed through
   `GET /api/conversations/{id}/attachments/{attachmentId}`. A row stored before
-  ADR 0050 has no key and is read from its nullable `Content` column; no new row
+  ADR 0051 has no key and is read from its nullable `Content` column; no new row
   writes it.
 - **Serving a listing photo** — `MediaController` answers
   `/media/{key}/{width}.{jpg|webp}` to anyone. It accepts a key of 32
@@ -133,13 +133,13 @@ The slice runs from the Angular upload control to the media store.
   random and never reused.
 - **Open: listing photos are not scanned** — `AddPhotoCommandHandler` does not
   give a listing photo to `IMalwareScanner`. The seam is there; the change
-  belongs to journeys 15 and 16 (ADR 0050). Until then the scan of L2-138 holds
+  belongs to journeys 15 and 16 (ADR 0051). Until then the scan of L2-138 holds
   for message photos only.
 - **Open: media domain and object storage** — L2-138 asks for object storage
   and a separate cookieless domain. Today the store is the API's persistent
   folder, and both kinds of photo are delivered by the API on the application's
   own origin. Moving to Azure Blob Storage and registering the media domain are
-  owner steps (ADR 0050, `eng/azure/README.md`).
+  owner steps (ADR 0051, `eng/azure/README.md`).
 - **Open: orphans** — a message photo that is uploaded and never put in a
   message stays in the media store. Removing it is retention work (L2-148) and
   is not built.

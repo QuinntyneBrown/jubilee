@@ -32,7 +32,7 @@ The member mutes from the menu of an open conversation, described in
 ## Description
 
 The feature is a vertical slice from the Messages page to the database. The
-decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
+decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0051.
 
 - **`MessagesPage`** — Angular page at `/messages`
   (`frontend/projects/jubilee/src/app/pages/messages/`), guarded by
@@ -80,7 +80,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
   shown." When every conversation is listed the button is gone and focus moves to the
   first row that was added. If the page
   cannot be loaded, the rows shown stay and an error toast says "We couldn’t
-  load more conversations. Try again." (L2-056, ADR 0050).
+  load more conversations. Try again." (L2-056, ADR 0051).
 - **Unread count** — the navigation badge follows the `counts` event of the same
   stream, which `RealtimeService` applies to `NavigationStore`. Reading an open
   conversation marks it read on the server, and the next `counts` event corrects
@@ -100,7 +100,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
   `InboxRowDto` per row. It answers `ConversationRules.InboxPageSize`, `50`,
   rows. `Skip` is the number of rows the page already lists: the answer is the 50
   after them in the same order. A count is used, not a cursor, because it reads
-  the same on every database provider (ADR 0050). With a search term it keeps
+  the same on every database provider (ADR 0051). With a search term it keeps
   only conversations whose business name, participant name or message text
   matches, and it applies the participant filter before the match so search
   never reaches another member's conversations. The match is a case-insensitive
@@ -131,7 +131,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
   `[ErrorReference]`, and "Try again" (L2-118).
 - **Known limit** — a row loaded by "Show more conversations" is not refreshed
   by a new message until the member loads the inbox again; the conversation that
-  received the message moves to the first page, which is refreshed (ADR 0050).
+  received the message moves to the first page, which is refreshed (ADR 0051).
 - **Tests** — `MessagingTests` (backend, `L2_056_…`, `L2_059_…`, `L2_061_…`)
   and "the inbox (L2-056)", "search messages (L2-059)" and "mute a conversation
   (L2-061)" in `e2e/tests/messages.spec.ts`.

@@ -104,7 +104,7 @@ public static class DependencyInjection
         services.AddSingleton<IImageProcessor, Media.SkiaImageProcessor>();
         services.AddSingleton<IMediaStore>(new Media.FileMediaStore(
             configuration["Media:Root"] ?? Path.Combine(AppContext.BaseDirectory, "media")));
-        // The malware scanner (L2-138 AC4, ADR 0050). With none configured no upload passes.
+        // The malware scanner (L2-138 AC4, ADR 0051). With none configured no upload passes.
         var scanner = configuration["Malware:Scanner"];
         var clamHost = configuration["Malware:ClamAv:Host"];
         if (string.Equals(scanner, "clamav", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(clamHost))
