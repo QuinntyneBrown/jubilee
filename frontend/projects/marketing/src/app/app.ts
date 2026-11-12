@@ -17,7 +17,7 @@ import {
 import { APP_URL } from './app-url';
 import { Benefits } from './benefits/benefits';
 import { ForBusinesses } from './for-businesses/for-businesses';
-import { FILM, GLIMPSE } from './content';
+import { FILM, GLIMPSE, MISSION } from './content';
 import { HowItWorks } from './how-it-works/how-it-works';
 import { InsideTheApp } from './inside-the-app/inside-the-app';
 
@@ -56,4 +56,6 @@ export class App {
   ];
   protected readonly glimpse = GLIMPSE;
   protected readonly film = FILM;
+  /** Jubilee's mission (L0-001), stated after the film (L2-183 AC8). */
+  protected readonly mission = MISSION;
 }
