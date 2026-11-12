@@ -13,10 +13,11 @@ skinparam class {
 ' --------------------------
 title Class structure — Book a meeting
 
-enum RequestType {
+enum RequestKind {
   Booking
   Quote
   Order
+  Space
 }
 
 enum RequestStatus {
@@ -27,89 +28,115 @@ enum RequestStatus {
   Completed
 }
 
-class Request {
-  +Guid Id
-  +RequestType Type
-  +RequestStatus Status
-  +Guid MemberId
-  +Guid ListingId
-  +Guid ConversationId
-  +DeclineReason? DeclineReason
-  +string? DeclineMessage
-  +DateTimeOffset CreatedAt
-  +DateTimeOffset? NudgedAt
-  +Confirm(actorId: Guid, now: DateTimeOffset): void
-  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
-  +Cancel(actorId: Guid, now: DateTimeOffset): void
-  +Complete(actorId: Guid?, now: DateTimeOffset): void
-  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
-  +MarkNudged(now: DateTimeOffset): void
-}
-
-class RequestTransition {
-  +Guid Id
-  +RequestStatus? From
-  +RequestStatus To
-  +Guid? ActorId
-  +DateTimeOffset OccurredAt
-  +DateTimeOffset? UndoableUntil
-}
-
-Request "1" *-- "1..*" RequestTransition : records
-Request --> RequestType : has
-Request --> RequestStatus : has
-
 enum MeetingMode {
   Video
   InPerson
 }
 
-class BookingDetails {
-  +Guid ServiceId
-  +DateTimeOffset StartsAt
-  +DateTimeOffset EndsAt
-  +MeetingMode Mode
+class Request {
+  +Guid Id
+  +RequestKind Kind
+  +RequestStatus Status
+  +string MemberSubject
+  +string MemberName
+  +Guid ListingId
+  +string IdempotencyKey
+  +Guid? ServiceId
+  +string? ServiceName
+  +DateTimeOffset? StartsAt
+  +DateTimeOffset? EndsAt
+  +MeetingMode? Mode
   +string? Location
   +string? Note
+  +DateTimeOffset CreatedAt
+  +{static} Book(...): Request
+  +Confirm(actor: string, now: DateTimeOffset): void
+  +UndoConfirm(actor: string, now: DateTimeOffset): void
+  +Decline(actor: string, now: DateTimeOffset): void
+  +Cancel(actor: string, now: DateTimeOffset): void
+  +UndoCancel(actor: string, now: DateTimeOffset): void
+  +Complete(actor: string, now: DateTimeOffset): void
+}
+
+class RequestTransition {
+  +Guid Id
+  +RequestStatus From
+  +RequestStatus To
+  +string Actor
+  +DateTimeOffset At
+  +DateTimeOffset? UndoableUntil
+}
+
+class Listing {
+  +int MeetingDays
+  +TimeOnly? MeetingOpensAt
+  +TimeOnly? MeetingClosesAt
+  +int? MeetingSlotMinutes
+  +string? MeetingArea
+  +MeetsOn(day: DayOfWeek): bool
+  +SetMeetingHours(days: int, opensAt: TimeOnly, closesAt: TimeOnly, slotMinutes: int): void
 }
 
 class BookMeetingCommand {
-  +Guid ListingId
+  +string Subject
+  +string Name
+  +string ListingSlug
   +Guid ServiceId
-  +DateOnly Day
-  +TimeOnly StartTime
-  +MeetingMode Mode
+  +string? Day
+  +string? Time
+  +string? Mode
   +string? Note
-}
-
-class BookMeetingCommandValidator {
-  +Validate(command: BookMeetingCommand): ValidationResult
+  +string? IdempotencyKey
 }
 
 class BookMeetingCommandHandler {
-  +Handle(command: BookMeetingCommand): Task<RequestCreatedResult>
+  +Handle(command: BookMeetingCommand): Task<BookedRequestDto>
 }
 
-interface IAvailabilityService {
-  +GetSlots(listingId: Guid, serviceId: Guid, day: DateOnly): Task<IReadOnlyList<TimeSlot>>
-  +IsOffered(listingId: Guid, serviceId: Guid, startsAt: DateTimeOffset): Task<bool>
+class BookingAvailability <<static>> {
+  +MaxDaysAhead: int
+  +DefaultSlots: string[]
+  +IsOffered(listing: Listing, day: DateOnly, now: DateTimeOffset): bool
+  +SlotsFor(listing: Listing, length: TimeSpan, day: DateOnly, now: DateTimeOffset): IReadOnlyList<string>
+  +LengthOf(service: Service): TimeSpan
+  +MeetsOn(listing: Listing): string
 }
 
-class TimeSlot {
-  +TimeOnly Start
-  +TimeOnly End
+class SetMeetingHoursCommand {
+  +string Subject
+  +IReadOnlyList<int>? Days
+  +string? OpensAt
+  +string? ClosesAt
+  +int? SlotMinutes
 }
 
-class CalendarFileBuilder {
-  +Build(request: Request, businessName: string, requestUrl: Uri): string
+class SetMeetingHoursCommandHandler {
+  +Handle(command: SetMeetingHoursCommand): Task<MeetingHoursDto>
 }
 
-Request "1" *-- "0..1" BookingDetails : owns
-BookingDetails --> MeetingMode : has
+class MeetingHoursDto {
+  +IReadOnlyList<int> Days
+  +string OpensAt
+  +string ClosesAt
+  +int SlotMinutes
+  +string MeetsOn
+  +bool OwnerSet
+}
+
+class CalendarFileBuilder <<static>> {
+  +Build(request: Request, business: string, publicBaseUrl: string, now: DateTimeOffset): string
+}
+
+Request "1" *-- "0..*" RequestTransition : records
+Request --> RequestKind : has
+Request --> RequestStatus : has
+Request --> MeetingMode : has
 BookMeetingCommandHandler ..> BookMeetingCommand : handles
-BookMeetingCommandValidator ..> BookMeetingCommand : validates
-BookMeetingCommandHandler ..> IAvailabilityService : checks slot
+BookMeetingCommandHandler ..> BookingAvailability : checks slot
 BookMeetingCommandHandler --> Request : creates
-IAvailabilityService ..> TimeSlot : returns
+BookingAvailability ..> Listing : reads meeting hours
+SetMeetingHoursCommandHandler ..> SetMeetingHoursCommand : handles
+SetMeetingHoursCommandHandler --> Listing : sets meeting hours
+SetMeetingHoursCommandHandler ..> MeetingHoursDto : returns
 CalendarFileBuilder ..> Request : reads
 @enduml

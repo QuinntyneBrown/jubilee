@@ -1073,6 +1073,19 @@
       ]
     },
     {
+      "id": "meeting-hours",
+      "kind": "dialog",
+      "title": "Meeting hours",
+      "opens_from": "my-services",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed",
+        "success"
+      ]
+    },
+    {
       "id": "approve-listing",
       "kind": "dialog",
       "title": "Approve listing",
