@@ -78,6 +78,15 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
         // Feedback is the member's own and leaves with them, screenshots first (L2-214 AC12).
         db.FeedbackScreenshots.RemoveRange(await db.FeedbackScreenshots.Where(s => s.UploaderSubject == subject).ToListAsync(cancellationToken));
         db.Feedback.RemoveRange(await db.Feedback.Where(f => f.MemberSubject == subject).ToListAsync(cancellationToken));
+        // Reviews leave with their author, with their replies and reports, and the stars are counted again (ADR 0058).
+        db.ReviewReports.RemoveRange(await db.ReviewReports.Where(r => r.ReporterSubject == subject).ToListAsync(cancellationToken));
+        foreach (var review in await db.Reviews.Where(r => r.AuthorSubject == subject).ToListAsync(cancellationToken))
+        {
+            db.ReviewReports.RemoveRange(await db.ReviewReports.Where(r => r.ReviewId == review.Id && r.ReporterSubject != subject).ToListAsync(cancellationToken));
+            db.Reviews.Remove(review);
+            await Reviews.ReviewRules.RecountAsync(db, review, gone: true, productBefore: null, cancellationToken);
+        }
+
         db.SavedItems.RemoveRange(await db.SavedItems.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
         db.RecentSearches.RemoveRange(await db.RecentSearches.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
         db.Notifications.RemoveRange(await db.Notifications.Where(n => n.MemberSubject == subject).ToListAsync(cancellationToken));
