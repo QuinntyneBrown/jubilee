@@ -2,7 +2,10 @@
 
 ## Status
 
-Accepted, 11 November 2026.
+Accepted, 11 November 2026. Amended by ADR 0044, 12 November 2026: while Jubilee is launching
+soon the site sends two forms to the API on its own origin, so it has an HTTP client; `APP_URL`
+and every link to the app are removed until launch; and with a bot challenge configured the page
+loads Cloudflare Turnstile.
 
 ## Context
 
