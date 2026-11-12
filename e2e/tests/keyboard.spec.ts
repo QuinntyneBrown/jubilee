@@ -20,7 +20,7 @@ test('a visitor completes the journey with the keyboard only', async ({ page, jb
   await expect(browse.directoryHeading).toHaveText('All 47 businesses');
 
   // From a category chip to the category page
-  await browse.categoryChips.nth(4).focus();
+  await browse.categoryChip('Home & property').focus();
   await browse.pressEnter();
   await expect(category.heading).toHaveText('Home & property');
   await expect(category.cards).toHaveCount(10);

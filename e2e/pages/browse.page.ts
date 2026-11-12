@@ -131,6 +131,11 @@ export class BrowsePage extends ShellPage implements Screen {
     this.tryAgain = this.errorState.getByRole('button', { name: 'Try again' });
   }
 
+  /** The category chip of the hero, by its name. */
+  categoryChip(name: string): Locator {
+    return this.categoryChips.filter({ hasText: new RegExp(`^${name}$`) });
+  }
+
   featuredCard(index: number): BusinessCard {
     return new BusinessCard(this.featuredCards.nth(index));
   }

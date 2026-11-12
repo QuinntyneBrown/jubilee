@@ -38,9 +38,7 @@
       },
       "filters": {
         "offers": [],
-        "areas": [
-          "scarborough"
-        ]
+        "areas": ["scarborough"]
       },
       "sort": "recommended",
       "page": 1,
@@ -84,7 +82,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls&sort=name&page=1": {
@@ -101,9 +101,7 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "emergency-calls"
-        ],
+        "offers": ["emergency-calls"],
         "areas": []
       },
       "sort": "name",
@@ -139,7 +137,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls&sort=newest&page=1": {
@@ -156,9 +156,7 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "emergency-calls"
-        ],
+        "offers": ["emergency-calls"],
         "areas": []
       },
       "sort": "newest",
@@ -194,7 +192,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls&sort=recommended&page=1": {
@@ -211,9 +211,7 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "emergency-calls"
-        ],
+        "offers": ["emergency-calls"],
         "areas": []
       },
       "sort": "recommended",
@@ -249,7 +247,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls,open-saturdays&areas=etobicoke&sort=recommended&page=1": {
@@ -266,13 +266,8 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "emergency-calls",
-          "open-saturdays"
-        ],
-        "areas": [
-          "etobicoke"
-        ]
+        "offers": ["emergency-calls", "open-saturdays"],
+        "areas": ["etobicoke"]
       },
       "sort": "recommended",
       "page": 1,
@@ -298,7 +293,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls,open-saturdays&areas=scarborough&sort=recommended&page=1": {
@@ -315,13 +312,8 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "emergency-calls",
-          "open-saturdays"
-        ],
-        "areas": [
-          "scarborough"
-        ]
+        "offers": ["emergency-calls", "open-saturdays"],
+        "areas": ["scarborough"]
       },
       "sort": "recommended",
       "page": 1,
@@ -350,7 +342,9 @@
           },
           "count": 3
         }
-      ]
+      ],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls,open-saturdays&sort=recommended&page=1": {
@@ -367,10 +361,7 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "emergency-calls",
-          "open-saturdays"
-        ],
+        "offers": ["emergency-calls", "open-saturdays"],
         "areas": []
       },
       "sort": "recommended",
@@ -406,7 +397,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=free-quote&areas=east-york&sort=name&page=1": {
@@ -423,12 +416,8 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "free-quote"
-        ],
-        "areas": [
-          "east-york"
-        ]
+        "offers": ["free-quote"],
+        "areas": ["east-york"]
       },
       "sort": "name",
       "page": 1,
@@ -472,7 +461,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=free-quote&areas=east-york&sort=recommended&page=1": {
@@ -489,12 +480,8 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "free-quote"
-        ],
-        "areas": [
-          "east-york"
-        ]
+        "offers": ["free-quote"],
+        "areas": ["east-york"]
       },
       "sort": "recommended",
       "page": 1,
@@ -538,7 +525,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=free-quote&sort=newest&page=1": {
@@ -555,9 +544,7 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "free-quote"
-        ],
+        "offers": ["free-quote"],
         "areas": []
       },
       "sort": "newest",
@@ -638,7 +625,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=open-saturdays&areas=scarborough&sort=recommended&page=1": {
@@ -655,12 +644,8 @@
         "count": 3
       },
       "filters": {
-        "offers": [
-          "open-saturdays"
-        ],
-        "areas": [
-          "scarborough"
-        ]
+        "offers": ["open-saturdays"],
+        "areas": ["scarborough"]
       },
       "sort": "recommended",
       "page": 1,
@@ -682,7 +667,9 @@
           },
           "count": 2
         }
-      ]
+      ],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?sort=name&page=1": {
@@ -798,7 +785,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?sort=newest&page=1": {
@@ -914,7 +903,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?sort=recommended&page=1": {
@@ -1191,7 +1182,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/learning/listings?sort=recommended&page=1": {
@@ -1237,13 +1230,92 @@
       "spaces": []
     }
   },
+  "GET /api/categories/legal-immigration/listings?sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "legal-immigration",
+        "name": "Legal & immigration"
+      },
+      "totalCount": 6,
+      "matchCount": 6,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "recommended",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [
+        {
+          "slug": "kevin-marshall-barrister-solicitor",
+          "name": "Kevin Marshall, Barrister & Solicitor",
+          "tagline": "Caring for you, so you can take care of what matters",
+          "highlight": "Free first call",
+          "categorySlug": "legal-immigration",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "desloges-law-group",
+          "name": "Desloges Law Group",
+          "tagline": "Helping thousands of people from all over the world obtain legal status and make Canada their home.",
+          "highlight": "Immigration specialists",
+          "categorySlug": "legal-immigration",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "kyl-law-firm",
+          "name": "KYL Law Firm",
+          "tagline": "Immigration and family matters, handled ethically and efficiently.",
+          "highlight": "Evening appointments",
+          "categorySlug": "legal-immigration",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "law-office-of-denise-badley-castello",
+          "name": "Law Office of Denise Badley-Castello",
+          "tagline": "Legal Representation You Can Trust",
+          "highlight": "Free first call",
+          "categorySlug": "legal-immigration",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "covenant-immigration-services",
+          "name": "Covenant Immigration Services",
+          "tagline": "Study permits, sponsorships and citizenship, one careful step at a time.",
+          "highlight": "Open Saturdays",
+          "categorySlug": "legal-immigration",
+          "verified": true,
+          "coverPhoto": null
+        },
+        {
+          "slug": "beacon-family-law",
+          "name": "Beacon Family Law",
+          "tagline": "Steady counsel for families in hard seasons.",
+          "highlight": "Free first call",
+          "categorySlug": "legal-immigration",
+          "verified": true,
+          "coverPhoto": null
+        }
+      ],
+      "suggestions": [],
+      "term": null,
+      "spaces": []
+    }
+  },
   "GET /api/categories/plumbers/listings?sort=recommended&page=1": {
     "status": 404,
     "body": {
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "43fee01a1fd4427c98d87f713d453c05",
+      "correlationId": "74219df8acb8422ea8687b041555b609",
       "code": "category_not_found"
     }
   },
@@ -1275,10 +1347,7 @@
           "term": "short-stay",
           "rent": 120,
           "per": "night",
-          "facts": [
-            "Queen bed",
-            "Private bath"
-          ],
+          "facts": ["Queen bed", "Private bath"],
           "neighbourhood": "Roncesvalles",
           "available": "Most weekends",
           "coverPhoto": null
@@ -1289,10 +1358,7 @@
           "term": "room",
           "rent": 950,
           "per": "month",
-          "facts": [
-            "Double bed",
-            "Shared bath"
-          ],
+          "facts": ["Double bed", "Shared bath"],
           "neighbourhood": "Leslieville",
           "available": "Now",
           "coverPhoto": null
@@ -1303,10 +1369,7 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": [
-            "1 bedroom",
-            "1 bath"
-          ],
+          "facts": ["1 bedroom", "1 bath"],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
           "coverPhoto": null
@@ -1317,10 +1380,7 @@
           "term": "roommate",
           "rent": 1100,
           "per": "month",
-          "facts": [
-            "Unfurnished room",
-            "Shared bath (2)"
-          ],
+          "facts": ["Unfurnished room", "Shared bath (2)"],
           "neighbourhood": "East York",
           "available": "Jan 1",
           "coverPhoto": null
@@ -1331,10 +1391,7 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": [
-            "2 bedrooms",
-            "2 baths"
-          ],
+          "facts": ["2 bedrooms", "2 baths"],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
           "coverPhoto": null
@@ -1370,10 +1427,7 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": [
-            "1 bedroom",
-            "1 bath"
-          ],
+          "facts": ["1 bedroom", "1 bath"],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
           "coverPhoto": null
@@ -1384,10 +1438,7 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": [
-            "2 bedrooms",
-            "2 baths"
-          ],
+          "facts": ["2 bedrooms", "2 baths"],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
           "coverPhoto": null
@@ -1442,7 +1493,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/content/help": {
@@ -2033,10 +2086,7 @@
             "term": "short-stay",
             "rent": 120,
             "per": "night",
-            "facts": [
-              "Queen bed",
-              "Private bath"
-            ],
+            "facts": ["Queen bed", "Private bath"],
             "neighbourhood": "Roncesvalles",
             "available": "Most weekends",
             "coverPhoto": null
@@ -2047,10 +2097,7 @@
             "term": "room",
             "rent": 950,
             "per": "month",
-            "facts": [
-              "Double bed",
-              "Shared bath"
-            ],
+            "facts": ["Double bed", "Shared bath"],
             "neighbourhood": "Leslieville",
             "available": "Now",
             "coverPhoto": null
@@ -2061,10 +2108,7 @@
             "term": "long-term",
             "rent": 1850,
             "per": "month",
-            "facts": [
-              "1 bedroom",
-              "1 bath"
-            ],
+            "facts": ["1 bedroom", "1 bath"],
             "neighbourhood": "The Annex",
             "available": "Dec 1",
             "coverPhoto": null
@@ -2075,10 +2119,7 @@
             "term": "roommate",
             "rent": 1100,
             "per": "month",
-            "facts": [
-              "Unfurnished room",
-              "Shared bath (2)"
-            ],
+            "facts": ["Unfurnished room", "Shared bath (2)"],
             "neighbourhood": "East York",
             "available": "Jan 1",
             "coverPhoto": null
@@ -2089,10 +2130,7 @@
             "term": "long-term",
             "rent": 2400,
             "per": "month",
-            "facts": [
-              "2 bedrooms",
-              "2 baths"
-            ],
+            "facts": ["2 bedrooms", "2 baths"],
             "neighbourhood": "Scarborough",
             "available": "Feb 1",
             "coverPhoto": null
@@ -2109,6 +2147,10 @@
         {
           "slug": "shops",
           "name": "Shops"
+        },
+        {
+          "slug": "rooms-rentals",
+          "name": "Rooms & rentals"
         },
         {
           "slug": "financial-insurance",
@@ -2192,7 +2234,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "25d34b7ff65b4998aab28d8c5393e337",
+      "correlationId": "c7a4c2b4db9c40e3a0020b7763d5abf4",
       "code": "sign_in_required"
     }
   },
@@ -2225,7 +2267,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-28T21:41:42.7966644+00:00",
+        "onJubileeSince": "2026-10-28T22:48:05.3717988+00:00",
         "replies": null
       },
       "services": [],
@@ -2241,24 +2283,10 @@
         "minimumStayLabel": "12-month lease",
         "neighbourhood": "The Annex",
         "place": "Basement apartment",
-        "facts": [
-          "1 bedroom",
-          "1 bath",
-          "650 sq ft",
-          "Separate entrance"
-        ],
-        "included": [
-          "Utilities",
-          "Wi-Fi",
-          "Laundry",
-          "Private bath"
-        ],
+        "facts": ["1 bedroom", "1 bath", "650 sq ft", "Separate entrance"],
+        "included": ["Utilities", "Wi-Fi", "Laundry", "Private bath"],
         "household": null,
-        "rules": [
-          "No smoking",
-          "Quiet after 10 pm",
-          "One small pet considered"
-        ],
+        "rules": ["No smoking", "Quiet after 10 pm", "One small pet considered"],
         "callToAction": "Request a viewing"
       },
       "relatedSpaces": [
@@ -2268,10 +2296,7 @@
           "term": "short-stay",
           "rent": 120,
           "per": "night",
-          "facts": [
-            "Queen bed",
-            "Private bath"
-          ],
+          "facts": ["Queen bed", "Private bath"],
           "neighbourhood": "Roncesvalles",
           "available": "Most weekends",
           "coverPhoto": null
@@ -2282,10 +2307,7 @@
           "term": "room",
           "rent": 950,
           "per": "month",
-          "facts": [
-            "Double bed",
-            "Shared bath"
-          ],
+          "facts": ["Double bed", "Shared bath"],
           "neighbourhood": "Leslieville",
           "available": "Now",
           "coverPhoto": null
@@ -2296,10 +2318,7 @@
           "term": "roommate",
           "rent": 1100,
           "per": "month",
-          "facts": [
-            "Unfurnished room",
-            "Shared bath (2)"
-          ],
+          "facts": ["Unfurnished room", "Shared bath (2)"],
           "neighbourhood": "East York",
           "available": "Jan 1",
           "coverPhoto": null
@@ -2310,10 +2329,7 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": [
-            "2 bedrooms",
-            "2 baths"
-          ],
+          "facts": ["2 bedrooms", "2 baths"],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
           "coverPhoto": null
@@ -2328,7 +2344,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "1aeb02afa3ae416193d1fc7ee5fd5296",
+      "correlationId": "2315fc02abb349e18665dc5c201478ed",
       "code": "listing_not_found"
     }
   },
@@ -2357,7 +2373,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-22T23:03:33.4949943+00:00",
+        "onJubileeSince": "2026-10-24T01:48:05.3717988+00:00",
         "replies": null
       },
       "services": [],
@@ -2382,7 +2398,10 @@
           "verified": true,
           "coverPhoto": null
         }
-      ]
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null
     }
   },
   "GET /api/listings/east-york-roommate": {
@@ -2410,7 +2429,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-28T20:41:42.7966644+00:00",
+        "onJubileeSince": "2026-10-28T21:48:05.3717988+00:00",
         "replies": null
       },
       "services": [],
@@ -2426,24 +2445,10 @@
         "minimumStayLabel": "6 months",
         "neighbourhood": "East York",
         "place": "Private room",
-        "facts": [
-          "Unfurnished room",
-          "Shared bath (2)",
-          "Backyard",
-          "Parking spot"
-        ],
-        "included": [
-          "Wi-Fi",
-          "Laundry",
-          "Parking",
-          "Kitchen use"
-        ],
+        "facts": ["Unfurnished room", "Shared bath (2)", "Backyard", "Parking spot"],
+        "included": ["Wi-Fi", "Laundry", "Parking", "Kitchen use"],
         "household": "Two women in our late 20s, a nurse and a grad student. Looking for a third who’s tidy, friendly and up for a weekly house dinner.",
-        "rules": [
-          "Weekly house dinner",
-          "Clean as you go",
-          "No smoking"
-        ],
+        "rules": ["Weekly house dinner", "Clean as you go", "No smoking"],
         "callToAction": "Meet the household"
       },
       "relatedSpaces": [
@@ -2453,10 +2458,7 @@
           "term": "short-stay",
           "rent": 120,
           "per": "night",
-          "facts": [
-            "Queen bed",
-            "Private bath"
-          ],
+          "facts": ["Queen bed", "Private bath"],
           "neighbourhood": "Roncesvalles",
           "available": "Most weekends",
           "coverPhoto": null
@@ -2467,10 +2469,7 @@
           "term": "room",
           "rent": 950,
           "per": "month",
-          "facts": [
-            "Double bed",
-            "Shared bath"
-          ],
+          "facts": ["Double bed", "Shared bath"],
           "neighbourhood": "Leslieville",
           "available": "Now",
           "coverPhoto": null
@@ -2481,10 +2480,7 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": [
-            "1 bedroom",
-            "1 bath"
-          ],
+          "facts": ["1 bedroom", "1 bath"],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
           "coverPhoto": null
@@ -2495,10 +2491,7 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": [
-            "2 bedrooms",
-            "2 baths"
-          ],
+          "facts": ["2 bedrooms", "2 baths"],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
           "coverPhoto": null
@@ -2522,9 +2515,7 @@
       "viewerRelation": "visitor",
       "ownerName": "Trevor Chew, CKA®, CFP®, CLU®",
       "tagline": "Build a Legacy. Protect a Legacy. Leave a Legacy.",
-      "credentials": [
-        "CKA® · CFP® · CLU®"
-      ],
+      "credentials": ["CKA® · CFP® · CLU®"],
       "highlight": "Free first meeting",
       "about": "Financial planning grounded in biblical stewardship: budgeting and debt, retirement, insurance and estate planning, and a generosity plan your family can keep for generations.",
       "coverPhoto": null,
@@ -2539,7 +2530,7 @@
       },
       "services": [
         {
-          "id": "0c7b0628-0273-4c65-8da2-42fd0c6b6a12",
+          "id": "3d723e6a-5f34-47b5-87fc-ff9dff78ebd8",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -2547,7 +2538,7 @@
           "action": "book"
         },
         {
-          "id": "b7383188-bfd2-40d3-b1d8-f4b9e7fd49e6",
+          "id": "89fe5e25-65e7-4dcb-9447-1fa45141c4d9",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -2555,7 +2546,7 @@
           "action": "book"
         },
         {
-          "id": "623670a4-3e1b-41b6-9f17-d99db76ddb09",
+          "id": "f995ead7-a42f-4b6b-8251-a2b74f07c35c",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -2563,7 +2554,7 @@
           "action": "book"
         },
         {
-          "id": "5a52d861-455d-43ed-95d9-6031e45797cb",
+          "id": "5babec5d-becb-4447-b1e6-39d24f52be2e",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -2592,7 +2583,10 @@
           "verified": true,
           "coverPhoto": null
         }
-      ]
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null
     }
   },
   "GET /api/listings/leslieville-family-room": {
@@ -2620,7 +2614,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-28T22:41:42.7966644+00:00",
+        "onJubileeSince": "2026-10-28T23:48:05.3717988+00:00",
         "replies": null
       },
       "services": [],
@@ -2636,25 +2630,10 @@
         "minimumStayLabel": "4 months",
         "neighbourhood": "Leslieville",
         "place": "Private room",
-        "facts": [
-          "Double bed",
-          "Shared bath",
-          "Furnished",
-          "Desk"
-        ],
-        "included": [
-          "Utilities",
-          "Wi-Fi",
-          "Laundry",
-          "Furnished",
-          "Kitchen use"
-        ],
+        "facts": ["Double bed", "Shared bath", "Furnished", "Desk"],
+        "included": ["Utilities", "Wi-Fi", "Laundry", "Furnished", "Kitchen use"],
         "household": "Ruth and Kwame with our daughter Abena (14) and a very calm cat. We eat together on Sundays and you’re always welcome.",
-        "rules": [
-          "No overnight guests",
-          "No smoking or alcohol",
-          "Share the chore rota"
-        ],
+        "rules": ["No overnight guests", "No smoking or alcohol", "Share the chore rota"],
         "callToAction": "Request a viewing"
       },
       "relatedSpaces": [
@@ -2664,10 +2643,7 @@
           "term": "short-stay",
           "rent": 120,
           "per": "night",
-          "facts": [
-            "Queen bed",
-            "Private bath"
-          ],
+          "facts": ["Queen bed", "Private bath"],
           "neighbourhood": "Roncesvalles",
           "available": "Most weekends",
           "coverPhoto": null
@@ -2678,10 +2654,7 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": [
-            "1 bedroom",
-            "1 bath"
-          ],
+          "facts": ["1 bedroom", "1 bath"],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
           "coverPhoto": null
@@ -2692,10 +2665,7 @@
           "term": "roommate",
           "rent": 1100,
           "per": "month",
-          "facts": [
-            "Unfurnished room",
-            "Shared bath (2)"
-          ],
+          "facts": ["Unfurnished room", "Shared bath (2)"],
           "neighbourhood": "East York",
           "available": "Jan 1",
           "coverPhoto": null
@@ -2706,10 +2676,7 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": [
-            "2 bedrooms",
-            "2 baths"
-          ],
+          "facts": ["2 bedrooms", "2 baths"],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
           "coverPhoto": null
@@ -2748,7 +2715,7 @@
       },
       "services": [
         {
-          "id": "cb61bd0b-3a15-4824-a80d-ce8ff4bada6d",
+          "id": "17bdcf14-1b0d-4284-9b32-2057e3142a9c",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -2756,7 +2723,7 @@
           "action": "ask"
         },
         {
-          "id": "19d75649-5168-4c2c-8bb0-b7a94c509d2c",
+          "id": "8fceb12f-4d7b-4c9f-a2d8-164f50932e9e",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -2834,13 +2801,16 @@
           "verified": true,
           "coverPhoto": null
         }
-      ]
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null
     }
   },
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "62001c75-4b3d-4e5d-848e-8d5e1d48be44",
+      "id": "5d92af94-5dc0-4562-ba37-5bfb83bc1e66",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -2912,7 +2882,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "a82b0ff9-76cc-47df-869f-94df0b624e7c",
+      "id": "c9cdbe2f-aba6-45bd-a4ad-98ff823d2292",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -3017,7 +2987,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "8429c588-e6e0-4150-93ec-94d3427c7c89",
+      "id": "a8d3cb0f-bd54-43a9-a3bc-ac25024e860e",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -3096,7 +3066,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "4ee5ca9ae31c45799d1a06a875825289",
+      "correlationId": "26c980c1b05a42e0a02f36c0f49047cd",
       "code": "product_not_found"
     }
   },
@@ -3125,7 +3095,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-28T23:41:42.7966644+00:00",
+        "onJubileeSince": "2026-10-29T00:48:05.3717988+00:00",
         "replies": null
       },
       "services": [],
@@ -3141,24 +3111,10 @@
         "minimumStayLabel": "2 nights",
         "neighbourhood": "Roncesvalles",
         "place": "Guest suite",
-        "facts": [
-          "Queen bed",
-          "Private bath",
-          "Sleeps 2",
-          "Self check-in"
-        ],
-        "included": [
-          "Wi-Fi",
-          "Furnished",
-          "Parking",
-          "Private bath"
-        ],
+        "facts": ["Queen bed", "Private bath", "Sleeps 2", "Self check-in"],
+        "included": ["Wi-Fi", "Furnished", "Parking", "Private bath"],
         "household": null,
-        "rules": [
-          "Check-in after 3 pm",
-          "No parties",
-          "No smoking"
-        ],
+        "rules": ["Check-in after 3 pm", "No parties", "No smoking"],
         "callToAction": "Request to book"
       },
       "relatedSpaces": [
@@ -3168,10 +3124,7 @@
           "term": "room",
           "rent": 950,
           "per": "month",
-          "facts": [
-            "Double bed",
-            "Shared bath"
-          ],
+          "facts": ["Double bed", "Shared bath"],
           "neighbourhood": "Leslieville",
           "available": "Now",
           "coverPhoto": null
@@ -3182,10 +3135,7 @@
           "term": "long-term",
           "rent": 1850,
           "per": "month",
-          "facts": [
-            "1 bedroom",
-            "1 bath"
-          ],
+          "facts": ["1 bedroom", "1 bath"],
           "neighbourhood": "The Annex",
           "available": "Dec 1",
           "coverPhoto": null
@@ -3196,10 +3146,7 @@
           "term": "roommate",
           "rent": 1100,
           "per": "month",
-          "facts": [
-            "Unfurnished room",
-            "Shared bath (2)"
-          ],
+          "facts": ["Unfurnished room", "Shared bath (2)"],
           "neighbourhood": "East York",
           "available": "Jan 1",
           "coverPhoto": null
@@ -3210,10 +3157,7 @@
           "term": "long-term",
           "rent": 2400,
           "per": "month",
-          "facts": [
-            "2 bedrooms",
-            "2 baths"
-          ],
+          "facts": ["2 bedrooms", "2 baths"],
           "neighbourhood": "Scarborough",
           "available": "Feb 1",
           "coverPhoto": null
@@ -3227,7 +3171,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "1ac58668acce4bbb89ece5972bbc96c9",
+      "correlationId": "5c0fac2b650140bba40fe0194cab5baa",
       "code": "sign_in_required"
     }
   },
@@ -3252,14 +3196,14 @@
           "count": 6
         },
         {
-          "slug": "business-tech",
-          "name": "Business & tech",
+          "slug": "rooms-rentals",
+          "name": "Rooms & rentals",
           "count": 5
         },
         {
-          "slug": "real-estate-living",
-          "name": "Real estate & living",
-          "count": 4
+          "slug": "business-tech",
+          "name": "Business & tech",
+          "count": 5
         }
       ]
     }
@@ -3349,7 +3293,8 @@
                 "length": 8
               }
             ]
-          }
+          },
+          "space": null
         },
         {
           "kind": "business",
@@ -3366,7 +3311,8 @@
                 "length": 5
               }
             ]
-          }
+          },
+          "space": null
         }
       ],
       "suggestion": null

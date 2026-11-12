@@ -209,7 +209,14 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     case 'browse-empty':
       return page.route(home, (route) =>
         route.fulfill({
-          json: { liveBusinessCount: 0, categories, featured: [], products: [], groups: [] },
+          json: {
+            liveBusinessCount: 0,
+            categories,
+            featured: [],
+            products: [],
+            groups: [],
+            rooms: { count: 0, spaces: [] },
+          },
         }),
       );
     case 'browse-error':
@@ -260,6 +267,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
             pageSize: 16,
             pageCount: 1,
             businesses: [],
+            spaces: [],
             suggestions: [],
           },
         }),
@@ -276,7 +284,10 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return page.route(roncesvalles, (route) => route.fulfill(unavailable('JB-BIZ-503')));
     case 'space-requested':
       // The member has an open request for the suite (L2-205 AC9).
-      return patchListing(page, roncesvalles, (listing) => ({ ...listing, openRequestId: 'r-space' }));
+      return patchListing(page, roncesvalles, (listing) => ({
+        ...listing,
+        openRequestId: 'r-space',
+      }));
     case 'business-loading':
       return page.route(legacyFinancial, pending);
     case 'business-error':

@@ -95,7 +95,7 @@ export class SearchPage extends ShellPage implements Screen {
 
   async ready(): Promise<void> {
     await this.main
-      .locator('li.row, .empty, .skeleton, .chip-row')
+      .locator('li.row, a.space-card, .empty, .skeleton, .chip-row')
       .first()
       .waitFor({ state: 'attached' });
   }
