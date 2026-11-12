@@ -5,7 +5,8 @@ grouped by subsystem. Each feature folder contains a `README.md` with four
 sections (Overview, Description, Requirements, Diagrams) and a `diagrams/`
 folder with the PlantUML sources and their rendered images. Every feature traces
 to level-2 requirements in [`docs/specs/L2.md`](../specs/L2.md), each of which
-refines a level-1 requirement in [`docs/specs/L1.md`](../specs/L1.md).
+refines a level-1 requirement in [`docs/specs/L1.md`](../specs/L1.md), each of which
+traces to the mission, the single level-0 requirement in [`docs/specs/L0.md`](../specs/L0.md).
 
 ## Architecture baseline
 

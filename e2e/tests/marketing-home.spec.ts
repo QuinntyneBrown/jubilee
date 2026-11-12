@@ -31,6 +31,7 @@ test.describe('marketing home page (L2-183)', () => {
     // And every section heading, in order (AC7: each reads as one sentence)
     await expect(home.headings).toHaveText([
       'See Jubilee in action.',
+      'Our mission.',
       'Trust, built in.',
       'From need to handshake.',
       'Shops and services, side by side.',
@@ -97,6 +98,18 @@ test.describe('marketing home page (L2-183)', () => {
       'Free to joinNo listing fees and no cut of your sales. Just honest business, done well.',
     ]);
     await expect(home.listYourBusiness).toBeVisible();
+  });
+
+  test('AC8: the page states the mission word for word', async ({ page, jb }) => {
+    const home = new MarketingHomePage(page);
+    // Given anyone, when they open the marketing site
+    await jb.open('marketing-home');
+    // Then "Our mission." follows the film and comes before "Trust, built in."
+    await expect(home.missionHeading).toHaveText('Our mission.');
+    // And under it stands the mission (L0-001), word for word
+    await expect(home.missionStatement).toHaveText(
+      'Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.',
+    );
   });
 
   test('AC5: five business cards, Legacy Financial first and featured', async ({ page, jb }) => {

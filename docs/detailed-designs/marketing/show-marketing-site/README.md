@@ -19,8 +19,13 @@ and no API client (ADR 0013).
 ## Description
 
 - **`App`** (`jb-root`) — the page. It renders the top bar, the opening, the film section, the
-  four content sections, the closing and the footer, and holds the in-page anchors `#top`,
-  `#film`, `#why`, `#how`, `#inside` and `#businesses`.
+  mission, the four content sections, the closing and the footer, and holds the in-page anchors
+  `#top`, `#film`, `#mission`, `#why`, `#how`, `#inside` and `#businesses`.
+- **The mission** — an ink section straight after the film, composed in `App` from
+  `jb-marketing-section` and `jb-marketing-heading`: the heading "Our mission." and, as its lead,
+  the mission statement of L0-001 (`docs/specs/L0.md`) word for word, from `MISSION` in
+  `content.ts`. It is the one section the Magic Patterns reference does not have; the mission is
+  the motive of the whole page, so the page states it. It has no top bar link.
 - **`Lockup`** (`jb-lockup`) — the mark and wordmark at a given size, on cream or on ink. The
   wordmark is Archivo 700 at 110% width with −0.03em tracking, as everywhere in Jubilee.
 - **`HeroVisual`** (`jb-hero-visual`) — the glimpse of the app in the opening: a search field,
@@ -54,7 +59,7 @@ level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-183` | `L1-026` | The marketing home page shall show the top bar, the opening with a glimpse of the app, the film section, the benefits, the steps, five business cards, the section for businesses, the closing and the footer, with the copy of the design reference. |
+| `L2-183` | `L1-026` | The marketing home page shall show the top bar, the opening with a glimpse of the app, the film section, the mission statement of L0-001, the benefits, the steps, five business cards, the section for businesses, the closing and the footer, with the copy of the design reference. |
 | `L2-184` | `L1-026` | The film section shall show a still with a play button and the film's length until the visitor presses play, shall play the film with the browser's controls, and shall let the visitor jump to one of three chapters. |
 | `L2-185` | `L1-026` | Every action that leaves the marketing site shall open the app at one configured address: the browse home, or joining with a return to listing a business. Top bar links shall move within the page. |
 | `L2-186` | `L1-026`, `L1-022`, `L1-023` | The marketing site shall be its own application without sign-in or API calls, in the light theme, usable from 360 px to 1280 px and by keyboard, and shall respect reduced motion. |

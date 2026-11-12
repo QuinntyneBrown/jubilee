@@ -33,6 +33,11 @@ export class MarketingHomePage implements Screen {
   readonly chapters: Locator;
   readonly currentChapter: Locator;
 
+  readonly mission: Locator;
+  readonly missionHeading: Locator;
+  /** Jubilee's mission (L0-001), under the heading. */
+  readonly missionStatement: Locator;
+
   readonly why: Locator;
   readonly benefits: Locator;
   readonly how: Locator;
@@ -98,6 +103,10 @@ export class MarketingHomePage implements Screen {
     this.filmLength = this.film.locator('.mkt-player__length');
     this.chapters = this.film.getByRole('list', { name: 'Chapters' }).getByRole('button');
     this.currentChapter = this.film.locator('.mkt-chapter[aria-current="true"]');
+
+    this.mission = this.main.locator('section#mission');
+    this.missionHeading = this.mission.getByRole('heading', { level: 2 });
+    this.missionStatement = this.mission.locator('h2 + p');
 
     this.why = this.main.locator('section#why');
     this.benefits = this.why.locator('.mkt-rules > li');
@@ -254,6 +263,7 @@ export class MarketingHomePage implements Screen {
       { name: 'marketing-top-bar', locator: this.topBar },
       { name: 'marketing-opening', locator: this.opening },
       { name: 'marketing-film', locator: this.film },
+      { name: 'marketing-mission', locator: this.mission },
       { name: 'marketing-why', locator: this.why },
       { name: 'marketing-how', locator: this.how },
       { name: 'marketing-inside', locator: this.inside },
