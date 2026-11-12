@@ -1,0 +1,115 @@
+WEBVTT
+
+00:00:00.482 --> 00:00:05.524
+Journey seven: book a meeting. A member requests a meeting time for a
+
+00:00:05.524 --> 00:00:10.493
+service with a business. This run takes the journey from ninety-five
+
+00:00:10.493 --> 00:00:11.954
+percent to complete.
+
+00:00:12.809 --> 00:00:18.059
+Until now, every business met at the same five fixed times.
+
+00:00:18.059 --> 00:00:24.199
+Now the owner decides. Naomi owns Luzandre.com, and My services has a
+
+00:00:24.199 --> 00:00:26.513
+new button: Meeting hours.
+
+00:00:27.216 --> 00:00:32.138
+The dialog shows the hours in force: the days of the week, from and
+
+00:00:32.138 --> 00:00:36.251
+until as Toronto times, and how often a time is offered.
+
+00:00:36.251 --> 00:00:39.336
+Requests she already has keep their times.
+
+00:00:40.038 --> 00:00:45.365
+Naomi meets on Tuesday, Thursday and Saturday, so she unticks the other
+
+00:00:45.365 --> 00:00:47.166
+days and ticks Saturday.
+
+00:00:47.869 --> 00:00:51.966
+She sets from to ten, and by mistake until to nine.
+
+00:00:51.966 --> 00:00:57.508
+Save hours saves nothing, and the field says: choose a time after ten
+
+00:00:57.508 --> 00:00:57.829
+a.m.
+
+00:00:58.531 --> 00:01:04.493
+She corrects it to noon and saves. The dialog closes, and My services
+
+00:01:04.493 --> 00:01:06.739
+says: meeting hours saved.
+
+00:01:07.449 --> 00:01:12.736
+Now a member. Joanna books a meeting with Legacy Financial, a business
+
+00:01:12.736 --> 00:01:17.948
+that saved those same hours. She picks a Thursday and is offered four
+
+00:01:17.948 --> 00:01:22.329
+times: every thirty minutes from ten, each ending by noon.
+
+00:01:23.031 --> 00:01:28.308
+A sixty-minute review must end by noon as well, so eleven thirty is no
+
+00:01:28.308 --> 00:01:29.439
+longer offered.
+
+00:01:30.141 --> 00:01:35.640
+A Friday is not one of the days. The dialog says Trevor can't meet on
+
+00:01:35.640 --> 00:01:38.589
+that day, and names the days he does.
+
+00:01:39.293 --> 00:01:45.536
+Joanna goes back to Thursday, chooses ten thirty and sends the request.
+
+00:01:45.536 --> 00:01:50.021
+Nothing is charged. Trevor confirms it or declines.
+
+00:01:51.100 --> 00:01:56.434
+Behind the screen, the API decides, and checks again whatever the dialog
+
+00:01:56.434 --> 00:02:01.545
+checked. The hours are Toronto times of day on either side of a clock
+
+00:02:01.545 --> 00:02:06.730
+change, only the owner sets them, and requests already sent keep their
+
+00:02:06.730 --> 00:02:10.804
+day, time and status. Nineteen API test cases prove it.
+
+00:02:11.660 --> 00:02:14.718
+Two criteria that had no test now have one.
+
+00:02:14.718 --> 00:02:19.768
+In the browser, the note of a booking stops at one thousand characters.
+
+00:02:19.768 --> 00:02:24.676
+In the API, the owner gets an in-app notification of the booking, and
+
+00:02:24.676 --> 00:02:27.236
+the member one when it is confirmed.
+
+00:02:28.093 --> 00:02:32.993
+Requirement two hundred and twenty and decision record forty-seven hold
+
+00:02:32.993 --> 00:02:35.822
+this work, and journey seven is complete.
+
+00:02:35.822 --> 00:02:40.515
+Left for the owner: the visual, responsive and accessibility sweeps.
+
+00:02:40.515 --> 00:02:45.415
+Different hours on different days, calendars and double booking are not
+
+00:02:45.415 --> 00:02:45.829
+built.
