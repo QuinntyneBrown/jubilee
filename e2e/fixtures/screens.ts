@@ -21,7 +21,12 @@ import {
 } from '../pages/product.page';
 import { EditListingPage } from '../pages/edit-listing.page';
 import { IncomingRequestsPage } from '../pages/incoming-requests.page';
-import { AccountPage } from '../pages/account.page';
+import { AccountOthersSignedOutScreen, AccountPage } from '../pages/account.page';
+import {
+  SignOutOthersBusyScreen,
+  SignOutOthersFailedScreen,
+  SignOutOthersScreen,
+} from '../pages/sign-out-others.dialog';
 import { DataDownloadPage } from '../pages/data-download.page';
 import { ConfirmEmailChangePage } from '../pages/confirm-email-change.page';
 import { NotificationSettingsPage } from '../pages/notification-settings.page';
@@ -145,6 +150,11 @@ export const screens: {
   { key: 'account', screen: (page) => new AccountPage(page) },
   { key: 'account.error', screen: (page) => new AccountPage(page) },
   { key: 'account.data-requested', screen: (page) => new AccountPage(page) },
+  { key: 'account.this-device-only', screen: (page) => new AccountPage(page) },
+  { key: 'account.others-signed-out', screen: (page) => new AccountOthersSignedOutScreen(page) },
+  { key: 'sign-out-others', screen: (page) => new SignOutOthersScreen(page) },
+  { key: 'sign-out-others.busy', screen: (page) => new SignOutOthersBusyScreen(page) },
+  { key: 'sign-out-others.failed', screen: (page) => new SignOutOthersFailedScreen(page) },
   { key: 'data-download.done', screen: (page) => new DataDownloadPage(page) },
   { key: 'data-download.unavailable', screen: (page) => new DataDownloadPage(page) },
   { key: 'preferences', screen: (page) => new NotificationSettingsPage(page) },

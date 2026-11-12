@@ -22,6 +22,7 @@ import {
 } from 'components';
 import { timeout } from 'rxjs';
 import { failureText, guardClose } from '../guard-close';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface ProductEditorData {
   /** The product to change; null adds one. */
@@ -44,6 +45,7 @@ const SAVE_TIMEOUT_MS = 10_000;
 @Component({
   selector: 'jb-product-editor-dialog',
   imports: [
+    FormDraftDirective,
     FormsModule,
     Button,
     Alert,

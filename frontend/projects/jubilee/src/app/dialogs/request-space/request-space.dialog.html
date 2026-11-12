@@ -21,7 +21,14 @@
       >
     </div>
   } @else {
-    <form jb-dialog-body class="stack" id="space-form" novalidate (ngSubmit)="send()">
+    <form
+      jb-dialog-body
+      class="stack"
+      id="space-form"
+      jbDraft="space"
+      novalidate
+      (ngSubmit)="send()"
+    >
       @if (view() === 'failed') {
         <div jb-alert tone="danger" [heading]="failure().title" role="alert">
           <div>{{ failure().text }}</div>

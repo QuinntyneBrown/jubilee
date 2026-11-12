@@ -12,6 +12,8 @@ export const joanna = {
     firstName: 'Joanna',
     displayName: 'Joanna Adeyemi',
     initials: 'JA',
+    // The mocks' story: Joanna is also signed in on one other device (L2-011 AC4).
+    otherSessionCount: 1,
   },
   navigation: {
     unreadConversationCount: 2,

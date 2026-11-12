@@ -16,45 +16,41 @@ title Class structure — Sign in
 enum SignInOutcome {
   SignedIn
   InvalidCredentials
-  Locked
+  AccountLocked
+  AddressBlocked
 }
 
-enum PendingActionKind {
-  Message
-  Book
-  Ask
-  Order
-  Save
+class SignInRequest {
+  +string? Email
+  +string? Password
+  +bool KeepSignedIn
 }
 
 class SignInCommand {
-  +string Email
-  +string Password
-  +bool KeepSignedIn
-  +string IpAddress
+  +string? Email
+  +string? Password
+  +string Address
 }
 
 class SignInCommandHandler {
-  +Handle(command: SignInCommand): Task<SignInResult>
+  +Handle(request: SignInCommand): Task<SignInResult>
 }
 
 class SignInResult {
   +SignInOutcome Outcome
-  +string SessionId
-  +string FirstName
+  +Member? Member
   +TimeSpan? RetryAfter
 }
 
-interface ISignInAttemptTracker {
-  +IsLocked(emailKey: string): Task<bool>
-  +RecordFailure(emailKey: string, ipAddress: string): Task<AttemptState>
-  +Reset(emailKey: string): Task
-}
-
-class AttemptState {
-  +int AccountFailures
-  +int IpFailures
-  +bool LockStarted
+class SignInFailure {
+  +{static} TimeSpan Window = 15 minutes
+  +{static} int AccountLimit = 5
+  +{static} int AddressLimit = 20
+  +Guid Id
+  +string AccountKey
+  +string Address
+  +DateTimeOffset At
+  +{static} Record(accountKey: string, address: string, at: DateTimeOffset): SignInFailure
 }
 
 interface IPasswordHasher {
@@ -62,41 +58,62 @@ interface IPasswordHasher {
   +Verify(hash: string, password: string): bool
 }
 
-interface ISessionStore {
-  +Create(memberId: Guid, persistent: bool): Task<Session>
-}
-
 class Member {
   +Guid Id
   +string FirstName
-  +EmailAddress Email
-  +string PasswordHash
+  +string Email
+  +string EmailKey
+  +string? PasswordHash
+}
+
+class SessionController {
+  +SignIn(request: SignInRequest): Task<IActionResult>
+}
+
+class SessionSignIn <<static>> {
+  +SignInMemberAsync(context: HttpContext, member: Member, keepSignedIn: bool): Task
+}
+
+class SignInRequiredData <<TypeScript>> {
+  +title: string
+  +returnUrl: string
+}
+
+class SignInRequiredDialog <<TypeScript>> {
+  #data: SignInRequiredData
+  #close(): void
+}
+
+class "sanitiseReturnUrl" as sanitise <<TypeScript function>> {
+  +sanitiseReturnUrl(value: string | null): string
+}
+
+class SignInPage <<TypeScript>> {
+  #returnUrl: string
+  #submit(): void
 }
 
 class PendingAction <<TypeScript>> {
-  +kind: PendingActionKind
-  +targetId: string
+  +kind: 'stock-alert'
   +returnPath: string
 }
 
 class PendingActionService <<TypeScript>> {
   +remember(action: PendingAction): void
-  +resume(): void
+  +take(kind: string, path: string): boolean
 }
 
-class ReturnUrlService <<TypeScript>> {
-  +sanitise(raw: string): string
-}
-
+SessionController ..> SignInRequest : receives
+SessionController ..> SignInCommand : sends
+SessionController ..> SessionSignIn : starts the session with
 SignInCommandHandler ..> SignInCommand : handles
 SignInCommandHandler ..> SignInResult : returns
 SignInResult --> SignInOutcome : has
-SignInCommandHandler ..> ISignInAttemptTracker : uses
-ISignInAttemptTracker ..> AttemptState : returns
+SignInResult --> Member : carries
+SignInCommandHandler ..> SignInFailure : counts and records
 SignInCommandHandler ..> IPasswordHasher : uses
-SignInCommandHandler ..> ISessionStore : uses
 SignInCommandHandler --> Member : loads
+SignInRequiredDialog --> SignInRequiredData : has
+SignInPage ..> sanitise : uses
 PendingActionService "1" o-- "0..1" PendingAction : holds
-PendingAction --> PendingActionKind : has
-PendingActionService ..> ReturnUrlService : uses
 @enduml

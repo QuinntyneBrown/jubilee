@@ -22,6 +22,7 @@ import {
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from 'api';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface ReportListingData {
   slug: string;
@@ -57,6 +58,7 @@ const MESSAGES: Record<string, string> = {
 @Component({
   selector: 'jb-report-listing-dialog',
   imports: [
+    FormDraftDirective,
     FormsModule,
     Button,
     Alert,

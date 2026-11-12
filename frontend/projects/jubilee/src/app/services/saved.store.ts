@@ -22,6 +22,9 @@ export class SavedStore {
 
   private readonly keys = signal<ReadonlySet<string>>(new Set());
   private loaded = false;
+  /** Hearts pressed while the list was being read: the list read is older than they are. */
+  private readonly sinceLoad = new Map<string, boolean>();
+  private loading = false;
   private readonly full = signal<SavedList | null>(null);
 
   /** The list as last loaded, for the saved page. */
@@ -32,9 +35,19 @@ export class SavedStore {
   load(): void {
     if (this.loaded) return;
     this.loaded = true;
+    this.loading = true;
+    this.sinceLoad.clear();
     this.api.list().subscribe({
-      next: (list) => this.adopt(list),
-      error: () => (this.loaded = false),
+      next: (list) => {
+        this.loading = false;
+        this.adopt(list);
+        // A save made while the list was on its way stays saved (L2-012 AC4).
+        for (const [key, saved] of this.sinceLoad) this.set(key, saved);
+      },
+      error: () => {
+        this.loading = false;
+        this.loaded = false;
+      },
     });
   }
 
@@ -143,6 +156,7 @@ export class SavedStore {
   }
 
   private set(key: string, saved: boolean): void {
+    if (this.loading) this.sinceLoad.set(key, saved);
     this.keys.update((keys) => {
       const next = new Set(keys);
       if (saved) next.add(key);

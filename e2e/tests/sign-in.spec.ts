@@ -1,6 +1,8 @@
 import type { Page } from '@playwright/test';
 import { joanna } from '../fixtures/cast';
 import { expect, test } from '../fixtures/jb-test';
+import { AccountMenuDialog } from '../pages/account-menu.dialog';
+import { refuseAsExpired } from '../fixtures/session';
 import { SearchPage } from '../pages/search.page';
 import { ProductPage } from '../pages/product.page';
 import {
@@ -610,6 +612,38 @@ test.describe('session expiry (L2-010 AC3, L2-116)', () => {
       '/sign-in?returnUrl=%2Fsearch%3Fq%3Dplumber',
     );
     await expect(expired.avatar).toHaveCount(0);
+  });
+});
+
+test.describe('several calls refused for one ended session (L2-116 AC2)', () => {
+  test('AC2: the session-expired page opens once and returns to the page the member was on', async ({
+    page,
+    jb,
+  }) => {
+    const expired = new SessionExpiredPage(page);
+    await expired.setWidth(1280);
+    await jb.signInAs('member');
+    await jb.goto('/');
+    await expect.poll(() => expired.dataPage()).toBe('browse');
+    // The account page reads the profile and the data download together; both are refused, the
+    // second a moment after the page has already opened.
+    const refused = await refuseAsExpired(page, /\/api\/account(\/.*)?$/, 400);
+    const opened: string[] = [];
+    page.on('framenavigated', (frame) => {
+      const url = new URL(frame.url());
+      if (url.pathname === '/session-expired') opened.push(url.search);
+    });
+
+    await expired.avatar.click();
+    await new AccountMenuDialog(page).item('Your account').click();
+
+    await expect.poll(() => expired.dataPage()).toBe('session-expired');
+    await expect.poll(() => refused.answered).toBe(2);
+    await expect(expired.signIn).toHaveAttribute('href', '/sign-in?returnUrl=%2Faccount');
+    expect(opened).toEqual(['?returnUrl=%2Faccount']);
+    // Going back leaves the page in one step: it was put in the history once.
+    await page.goBack();
+    await expect.poll(() => new URL(page.url()).pathname).not.toBe('/session-expired');
   });
 });
 

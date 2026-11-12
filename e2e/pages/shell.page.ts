@@ -214,6 +214,11 @@ export class ShellPage {
     return box;
   }
 
+  /** The drafts this device keeps (L2-116 AC4): what the app wrote to the browser's storage. */
+  keptDrafts(): Promise<{ owner: string; address: string; key: string; values: unknown }[]> {
+    return this.page.evaluate(() => JSON.parse(localStorage.getItem('jubilee-drafts') ?? '[]'));
+  }
+
   dataPage(): Promise<string | null> {
     return this.page.locator('body').getAttribute('data-page');
   }

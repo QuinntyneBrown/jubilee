@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MESSAGES_API } from 'api';
 import { Button, Alert, Field, Textarea, DialogFrame, DialogBody, DialogFooter } from 'components';
 import { newKey } from 'api';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface NewMessageData {
   slug: string;
@@ -26,7 +27,17 @@ const MAX = 4000;
  */
 @Component({
   selector: 'jb-new-message-dialog',
-  imports: [FormsModule, Button, Alert, Field, Textarea, DialogFrame, DialogBody, DialogFooter],
+  imports: [
+    FormsModule,
+    Button,
+    Alert,
+    Field,
+    Textarea,
+    DialogFrame,
+    DialogBody,
+    DialogFooter,
+    FormDraftDirective,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './new-message.dialog.html',
 })

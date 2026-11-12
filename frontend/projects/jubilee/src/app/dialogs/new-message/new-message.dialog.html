@@ -6,7 +6,7 @@
   (closed)="close()"
   (outsideClick)="close()"
 >
-  <form jb-dialog-body class="stack" (ngSubmit)="send()" id="new-message-form">
+  <form jb-dialog-body class="stack" jbDraft="message" (ngSubmit)="send()" id="new-message-form">
     @if (view() === 'failed') {
       <div jb-alert tone="danger" [heading]="failure().title" role="alert">
         <div>{{ failure().text }}</div>

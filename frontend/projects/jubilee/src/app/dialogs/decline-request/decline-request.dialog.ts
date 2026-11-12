@@ -20,6 +20,7 @@ import {
   DialogFooter,
 } from 'components';
 import { requestNoun } from '../confirm-request/confirm-request.dialog';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface DeclineRequestData {
   request: IncomingRequestRow;
@@ -34,6 +35,7 @@ const MAX_MESSAGE = 1000;
 @Component({
   selector: 'jb-decline-request-dialog',
   imports: [
+    FormDraftDirective,
     FormsModule,
     Button,
     Alert,

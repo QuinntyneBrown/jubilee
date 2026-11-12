@@ -65,6 +65,7 @@ import {
 } from '../../dialogs/feedback/feedback-words';
 import { MAX_PHOTO_BYTES, PhotoAttachmentService } from '../../services/photo-attachment.service';
 import { SessionService } from '../../services/session.service';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 type Tab = 'rate' | 'bug' | 'kudos';
 type View = 'form' | 'busy' | 'failed' | 'sent';
@@ -151,6 +152,7 @@ const TOO_MANY_FILES = 'You can add up to three screenshots.';
 @Component({
   selector: 'jb-feedback-page',
   imports: [
+    FormDraftDirective,
     FormsModule,
     RouterLink,
     Alert,

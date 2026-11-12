@@ -27,6 +27,7 @@ import { TimeoutError, timeout } from 'rxjs';
 import { ClockService } from 'api';
 import { isoDay, newKey } from 'api';
 import { momentCheckIn } from '../../services/moment-check-in';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface RequestQuoteData {
   slug: string;
@@ -48,6 +49,7 @@ const SUBMIT_TIMEOUT_MS = 10_000;
 @Component({
   selector: 'jb-request-quote-dialog',
   imports: [
+    FormDraftDirective,
     FormsModule,
     RouterLink,
     Button,

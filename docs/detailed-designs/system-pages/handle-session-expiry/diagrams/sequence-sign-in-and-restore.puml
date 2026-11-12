@@ -18,42 +18,46 @@ actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "SessionExpiredPage" as page
   participant "SignInPage" as signin
-  participant "ReturnUrlService" as ret
   participant "FormDraftDirective" as form
+  participant "DraftRegistry" as registry
   participant "DraftStore" as store
+  participant "ToastService" as toasts
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "AuthController" as controller
+  participant "SessionController" as controller
+  participant "DatabaseTicketStore" as sessions
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "SignInCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  participant "SessionStore" as sessions
-  database "Cache" as cache
+  database "Jubilee database" as db
 end box
 actor -> page : Press "Sign in"
-page -> signin : Navigate to /sign-in
+page -> page : sanitiseReturnUrl - accept same-origin paths only
+page -> signin : Navigate to /sign-in?returnUrl={return URL}
 actor -> signin : Enter credentials
-signin -> controller : POST /api/auth/sign-in
+signin -> controller : POST /api/session
 controller -> handler : Send SignInCommand
-handler -> sessions : Create(memberId, keepSignedIn)
-sessions -> cache : Store a session with a new identifier (L2-010)
-cache --> sessions : Stored
-sessions --> handler : Session
-handler --> controller : Typed result
+handler -> db : Load the member and verify the password
+db --> handler : Member
+handler --> controller : Outcome SignedIn
+controller -> sessions : SignInMemberAsync - StoreAsync(ticket)
+sessions -> db : Add a MemberSession row with a new identifier (L2-010)
+db --> sessions : Commit result
+sessions --> controller : New key
 controller --> signin : 200 with a new session cookie
-signin -> ret : take()
-ret -> ret : Accept same-origin paths only
-ret --> signin : The page the member left
-signin -> form : Navigate to the return URL; the form initialises
-form -> store : take(memberId, route, key)
-alt draft belongs to this member
-  store --> form : Draft
-  form -> form : restore(payload) (L2-116)
+signin -> form : Navigate to the return URL - the form appears
+form -> registry : register(source)
+registry -> store : take(owner, address, key)
+alt draft belongs to this member and is under 30 days old
+  store --> registry : Values - removed from localStorage
+  registry -> form : restore(values) (L2-116)
+  form -> form : Write the values and dispatch input and change
+  registry -> toasts : Show "We kept what you typed"
   form --> actor : Show the same page with the draft restored
 else no draft or another member signed in
-  store --> form : Nothing
+  store --> registry : Nothing
   form --> actor : Show the page with an empty form
 end
 @enduml

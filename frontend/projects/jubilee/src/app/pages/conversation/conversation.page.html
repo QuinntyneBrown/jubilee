@@ -176,6 +176,7 @@
       <p class="visually-hidden" role="status">{{ announcement() }}</p>
       <form
         jb-composer
+        jbDraft="composer"
         #composer
         [label]="'Message ' + conversation.business.name"
         [(value)]="text"

@@ -13,6 +13,7 @@ import { AwayPeriod, MY_BUSINESS_API } from 'api';
 import { Alert, Button, DialogBody, DialogFooter, DialogFrame, Field, Input } from 'components';
 import { ClockService } from 'api';
 import { isoDay } from 'api';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface AwayPeriodData {
   /** The instant the owner is back, when an away period is set. */
@@ -35,7 +36,17 @@ const MESSAGES: Record<string, string> = {
  */
 @Component({
   selector: 'jb-away-period-dialog',
-  imports: [FormsModule, Button, Alert, Field, Input, DialogFrame, DialogBody, DialogFooter],
+  imports: [
+    FormDraftDirective,
+    FormsModule,
+    Button,
+    Alert,
+    Field,
+    Input,
+    DialogFrame,
+    DialogBody,
+    DialogFooter,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './away-period.dialog.html',
 })

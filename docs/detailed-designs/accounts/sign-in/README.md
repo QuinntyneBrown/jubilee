@@ -32,8 +32,9 @@ the started action continues.
 
 ## Description
 
-The feature is a vertical slice from the sign-in page and prompt to the `Cache`
-that holds sessions and counters.
+The feature is a vertical slice from the sign-in page and prompt to the
+`Jubilee database`, which holds members, sessions and failed sign-ins (ADR
+0013).
 
 - **`SignInPage`** — Angular page at `/sign-in`, the Log in screen. It composes
   `jb-auth-layout` with `split` and passes the `heading` "Welcome back" and the
@@ -49,11 +50,14 @@ that holds sessions and counters.
   the button nor the divider is shown (`L2-003`). The page builds the form
   from `jb-field`, `jb-input`, `jb-password-input`, `jb-checkbox`, `jb-button`,
   `jb-alert` and `jb-form-summary` of the `components` library, and the link
-  under the form is a `jb-auth-link`. A malformed e-mail shows "Enter the
+  under the form is a `jb-auth-link`. The form is a `<form>` of native controls
+  bound to signals with `ngModel`. A malformed e-mail shows "Enter the
   e-mail address you joined with, like name@example.com". While the request is
   in flight the fields are read-only, the button shows a busy state, and a
-  second press sends nothing. A `GuestGuard` redirects a signed-in member to
-  `/`. A load failure shows error reference `JB-AUTH-503`.
+  second press sends nothing. The route guard `guestGuard` redirects a
+  signed-in member to `/`. A load failure shows error reference `JB-AUTH-503`.
+  After a sign-in the page shows the toast "Welcome back, {first name}" and
+  navigates to the sanitised `returnUrl` of its address, or `/` if none.
 - **`jb-auth-layout`** — frame component of the `components` library, used
   with `split` by the Log in and Sign up screens (`L2-187`). It takes the
   `heading` and the `lead` of the page as inputs and projects the form. Under
@@ -71,51 +75,77 @@ that holds sessions and counters.
   is not submitted. The button follows the password in the tab order and works
   with Enter and with Space. It changes only the `type` of the control in the
   browser; nothing is sent to `Jubilee API`.
-- **`AccountApi`** — typed HTTP client. `signIn(email, password, keepSignedIn)`
-  sends `POST /api/session`.
-- **`RateLimitMiddleware`** — ASP.NET Core middleware. It reads the failed
-  sign-in counter of the caller's IP address and answers `429` with
-  `Retry-After` once 20 failures across any accounts fall within 15 minutes.
-- **`SessionController`** — ASP.NET Core controller exposing `/api/session`. It
-  sends `SignInCommand` and, on success, sets the session cookie and returns the
-  member summary.
-- **`SignInCommandHandler`** — MediatR handler. It checks the lock, loads the
-  `Member` by normalised e-mail, and verifies the password with
-  `IPasswordHasher`. When no member exists it verifies against a fixed dummy
+- **`SessionService`** — Angular service that holds the signed-in member as a
+  signal. `signIn(request)` calls the session API and sets the member from the
+  answer.
+- **`SESSION_API`** — injection token of the `SessionApi` contract, implemented
+  by `HttpSessionApi`. `signIn({ email, password, keepSignedIn })` sends
+  `POST /api/session`.
+- **`SessionController`** — ASP.NET Core controller exposing `/api/session`.
+  `SignIn` sends `SignInCommand` with the e-mail, the password and the caller's
+  IP address. On `SignedIn` it calls `SignInMemberAsync`, which starts the
+  session and issues the anti-CSRF cookie `XSRF-TOKEN`, and returns the
+  `SessionDto` of the member.
+- **`SignInCommandHandler`** — MediatR handler. It counts the `SignInFailure`
+  rows of the last 15 minutes, first for the caller's address and then for the
+  account key, and refuses when a limit is reached. Otherwise it loads the
+  `Member` by normalised e-mail and verifies the password with
+  `IPasswordHasher`. When no member exists it verifies against a dummy
   Argon2id hash so that both paths take the same time. It returns a
-  `SignInOutcome`.
-- **`ISignInAttemptTracker`** — application service backed by the `Cache`. It
-  keeps a 15-minute failure counter per account key and per IP address. The
-  account key is a hash of the normalised e-mail, so an unknown e-mail is
-  counted and locked exactly as an existing one. `RecordFailure` starts a
-  15-minute lock at the fifth failure; `Reset` clears the account counter after
-  a successful sign-in.
+  `SignInResult` with a `SignInOutcome`. No rate-limiting middleware takes part
+  in sign-in: both limits are applied by the handler.
+- **`SignInFailure`** — row of the `SignInFailures` table: `AccountKey`,
+  `Address` and `At`. The account key is the SHA-256 of the normalised e-mail,
+  so an unknown e-mail is counted and locked exactly as an existing one.
+  `Window` is 15 minutes, `AccountLimit` is 5 and `AddressLimit` is 20. The
+  handler adds a row for each failed sign-in. The fifth row for one account
+  starts a lock that lasts 15 minutes from that failure. A successful sign-in
+  removes the rows of the account and every row older than the window.
 - **`SignInOutcome`** — `SignedIn` returns `200`; `InvalidCredentials` returns
   `401` with code `INVALID_CREDENTIALS` and the page shows "That password
   doesn't match this e-mail. Try again or reset it." with the typed e-mail
-  kept; `Locked` returns `429` with code `SIGN_IN_LOCKED` and `Retry-After`, and
-  the page shows "Too many tries. Wait 15 minutes or reset your password." A
-  locked account is refused even when the password is right.
-- **`SignInBlockedEmailRequested`** — outbox message written when a lock starts
-  for an existing account. `Jubilee Worker` e-mails the account holder that
-  sign-in was blocked after repeated failures, with a link to reset the
-  password.
-- **`ISessionStore`** — application service. `Create(memberId, persistent)`
-  issues a new session identifier at every sign-in, so a pre-existing cookie
-  value is never reused.
+  kept; `AccountLocked` returns `429` with code `SIGN_IN_LOCKED` and
+  `Retry-After`, and the page shows "Too many tries. Wait 15 minutes or reset
+  your password."; `AddressBlocked` returns `429` with code `rate_limited` and
+  `Retry-After`, and the page shows "You're doing that a lot. Try again in {n}
+  minutes." A locked account is refused even when the password is right.
+- **Lock-out e-mail** — `OutboxMessage` created by `OutboxMessage.Email` with
+  the subject "Sign-in to Jubilee was blocked", written in the same unit of
+  work as the fifth failure of an existing account. `Jubilee Worker` e-mails
+  the account holder that sign-in was blocked after repeated failures, with a
+  link to `/forgot-password`.
+- **`DatabaseTicketStore`** — ASP.NET Core `ITicketStore` behind the cookie
+  scheme. At every sign-in `StoreAsync` adds a `MemberSession` row with a new
+  identifier and a new random 256-bit key, so a pre-existing cookie value is
+  never reused (`L2-010`). The lifetime of the row is the subject of the manage
+  session feature.
 - **`SignInRequiredDialog`** — Angular dialog opened by an action button when
-  `SessionService` reports no member. For "Message" on Legacy Financial its
-  title is "Join to message Legacy Financial"; it offers "Sign in" and "Join
-  free".
-- **`PendingActionService`** — Angular service. `remember` stores a
-  `PendingAction` (`kind`, `targetId`, `returnPath`) in `sessionStorage` for
-  the tab. `resume`, called after sign-in or join, navigates to the return path
-  and reopens the dialog of the started action; for `Save` it saves the item
-  through `SavedApi` without a further press.
-- **`ReturnUrlService`** — Angular service. `sanitise` accepts only a
-  same-origin relative path that starts with a single `/`; any other value
-  becomes `/`. After a plain sign-in the member sees the toast "Welcome back,
-  {first name}" and lands on the sanitised return path, or `/` if none.
+  `SessionService` reports no member. It takes a `title` and a `returnUrl`. For
+  "Message" on Legacy Financial its title is "Join to message Legacy
+  Financial"; it offers "Sign in" and "Join free", which link to `/sign-in` and
+  `/join` with the `returnUrl`.
+- **Return path** — address that carries the started action (ADR 0046). Each
+  action that opens a dialog has an address: `/b/{slug}/message`,
+  `/b/{slug}/book`, `/b/{slug}/quote`, `/b/{slug}/request` and
+  `/b/{slug}/p/{product}/request`; the service, option and quantity chosen
+  travel in its query. "Save" is `?save=1` on the listing or product.
+  `BusinessPage` and `ProductPage` pass that address to `SignInRequiredDialog`
+  as `returnUrl`. After sign-in or join the page at that address opens the
+  dialog of the action, or saves the item once through `SavedStore` and removes
+  `save` from the address.
+- **`sanitiseReturnUrl`** — function. It accepts only a same-origin relative
+  path that starts with a single `/`, holds no backslash and no control
+  character and is at most 2,000 characters long; any other value becomes `/`.
+  `SignInPage`, `SessionExpiredPage` and `ReturnAfterJoinService` read a return
+  path through it.
+- **`PendingActionService`** — Angular service for the one action that has no
+  address, "Tell me when it’s back". `remember` stores a `PendingAction`
+  (`kind`, `returnPath`) in `sessionStorage` for the tab. `take`, called by
+  `ProductPage` after the return, removes it, and the page carries the action
+  out without a second press.
+- **`ReturnAfterJoinService`** — Angular service. It keeps the return path of
+  a visitor who joins from the dialog in `localStorage` for 24 hours, so that
+  "E-mail confirmed" offers "Continue where you left off" (`L2-012`).
 
 ## Requirements
 
@@ -143,44 +173,47 @@ that Jubilee sends when an account is temporarily locked.
 
 ### Containers
 
-`Jubilee Web` posts credentials to `Jubilee API`, which reads the member from
-the `Jubilee database` and keeps counters and sessions in the `Cache`.
-`Jubilee Worker` sends the lockout notice.
+`Jubilee Web` posts credentials to `Jubilee API`, which reads the member and
+keeps failed sign-ins and sessions in the `Jubilee database`. `Jubilee Worker`
+sends the lockout notice.
 
 ![C4 container view for signing in](diagrams/c4-container.png)
 
 ### Components
 
-`SignInRequiredDialog` records the started action and opens `SignInPage`. In
-the API the request passes `RateLimitMiddleware` and `SessionController` to
-`SignInCommandHandler`, which uses `ISignInAttemptTracker`, `IPasswordHasher`
-and `ISessionStore`. The `jb-*` components that `SignInPage` composes are
-presentation and are not drawn.
+`BusinessPage` opens `SignInRequiredDialog` with the return path of the started
+action, and the dialog links to `SignInPage`. `SignInPage` signs in through
+`SessionService` and `HttpSessionApi`. In the API `SessionController` sends
+`SignInCommand` to `SignInCommandHandler`, which counts `SignInFailure` rows
+and uses `IPasswordHasher`; `DatabaseTicketStore` then stores the session. The
+`jb-*` components that `SignInPage` composes are presentation and are not
+drawn.
 
 ![C4 component view for signing in](diagrams/c4-component.png)
 
 ### Class structure
 
 `SignInCommandHandler` handles `SignInCommand` and returns a `SignInResult`
-with a `SignInOutcome`. On the frontend, `PendingActionService` holds at most
-one `PendingAction` and uses `ReturnUrlService`.
+with a `SignInOutcome`. It reads and records `SignInFailure` rows. On the
+frontend, `SignInRequiredDialog` carries `SignInRequiredData`, and
+`PendingActionService` holds at most one `PendingAction`.
 
 ![Class diagram for signing in](diagrams/class-structure.png)
 
 ### Behaviour — sign in with e-mail and password
 
-The IP limit is checked first, then the account lock (`L2-007`). A wrong
+The address limit is checked first, then the account lock (`L2-007`). A wrong
 password and an unknown e-mail take the same path and receive the same answer
-(`L2-141`). A success resets the counter and issues a new session identifier.
-Showing or hiding the password changes only the control in the browser and
-adds no message to the sequence (`L2-187`).
+(`L2-141`). A success removes the failures of the account and issues a new
+session identifier. Showing or hiding the password changes only the control in
+the browser and adds no message to the sequence (`L2-187`).
 
 ![Sequence diagram for signing in with e-mail and password](diagrams/sequence-sign-in.png)
 
 ### Behaviour — sign-in prompt and return to origin
 
-The dialog stores the started action, the visitor signs in, and
-`PendingActionService` returns to the sanitised path and either reopens the
-action's dialog or saves the item (`L2-012`).
+The dialog passes the address of the started action as `returnUrl`. The visitor
+signs in, `SignInPage` navigates to the sanitised path, and the page at that
+address either opens the action's dialog or saves the item (`L2-012`).
 
 ![Sequence diagram for the sign-in prompt and return to origin](diagrams/sequence-return-to-origin.png)

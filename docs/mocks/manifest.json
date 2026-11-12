@@ -494,7 +494,9 @@
         "submitting",
         "success",
         "data-requested",
-        "data-failed"
+        "data-failed",
+        "this-device-only",
+        "others-signed-out"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
@@ -840,7 +842,8 @@
         "default",
         "busy",
         "invalid",
-        "failed"
+        "failed",
+        "restored"
       ]
     },
     {
@@ -1116,6 +1119,20 @@
       "states": [
         "default",
         "busy"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
+    },
+    {
+      "id": "sign-out-others",
+      "kind": "dialog",
+      "title": "Sign out of other devices",
+      "opens_from": "account",
+      "states": [
+        "default",
+        "busy",
+        "failed"
       ],
       "not_applicable": {
         "invalid": "This dialog has no inputs to validate."

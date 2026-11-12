@@ -1,0 +1,22 @@
+<jb-dialog
+  heading="Sign out of your other devices?"
+  [description]="description"
+  icon="sign-out"
+  [busy]="busy()"
+  (closed)="close()"
+  (outsideClick)="close()"
+>
+  @if (failed()) {
+    <p jb-field-error slot="status" role="alert">
+      We couldn’t sign out your other devices. Try again.
+    </p>
+  }
+  <div jb-dialog-footer>
+    <button jb-button type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
+      Keep them signed in
+    </button>
+    <button jb-button variant="primary" type="button" [busy]="busy()" (click)="confirm()">
+      Sign out of other devices
+    </button>
+  </div>
+</jb-dialog>

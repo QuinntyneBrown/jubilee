@@ -19,6 +19,7 @@ import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
 import type { StubName } from './routes';
+import { joannaSession, keepDraft, stubSession as stubSignedInSession } from './session';
 
 const home = '**/api/directory/home';
 const categoryListings = '**/api/categories/*/listings?*';
@@ -464,6 +465,33 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     case 'editor-error':
       return stubMyBusiness(page, { editor: 'fails' });
     case 'profile':
+      return void (await stubProfile(page));
+    case 'message-draft-restored':
+      await stubSignedInSession(page, { signedIn: true });
+      await keepDraft(page, {
+        email: joannaSession.email,
+        address: '/b/legacy-financial/message',
+        key: 'message',
+        values: {
+          message: 'Hello Trevor, do you help newcomers set up RESPs for their children?',
+        },
+      });
+      return stubMessaging(page);
+    case 'profile-this-device-only':
+      await stubSignedInSession(page, { signedIn: true, otherSessionCount: 0 });
+      return void (await stubProfile(page));
+    case 'profile-other-devices':
+      await stubSignedInSession(page, { signedIn: true, otherSessionCount: 1 });
+      return void (await stubProfile(page));
+    case 'profile-other-devices-pending':
+      await stubSignedInSession(page, {
+        signedIn: true,
+        otherSessionCount: 1,
+        endOthers: 'pending',
+      });
+      return void (await stubProfile(page));
+    case 'profile-other-devices-failing':
+      await stubSignedInSession(page, { signedIn: true, otherSessionCount: 1, endOthers: 'fails' });
       return void (await stubProfile(page));
     case 'profile-error':
       return void (await stubProfile(page, { load: 'fails' }));

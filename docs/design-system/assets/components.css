@@ -639,7 +639,7 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .row__price { font-weight: var(--font-weight-semibold); white-space: nowrap; }
 .row__price--free { color: var(--color-success-fg); }
 .row__actions { display: flex; gap: var(--space-2); flex: none; }
-@media (max-width: 39.99rem) { .row--stack { flex-wrap: wrap; } .row--stack .row__actions { flex-basis: 100%; } .row--stack .row__actions .btn { flex: 1; } .dl { grid-template-columns: minmax(0, 1fr); gap: 0; } .dl dd { margin-bottom: var(--space-3); } }
+@media (max-width: 39.99rem) { .row--stack { flex-wrap: wrap; } .row--stack .row__actions { flex-basis: 100%; flex-wrap: wrap; } .row--stack .row__actions .btn { flex: 1; } .dl { grid-template-columns: minmax(0, 1fr); gap: 0; } .dl dd { margin-bottom: var(--space-3); } }
 .prose { max-width: var(--layout-measure); }
 .prose h2 { margin-top: var(--space-8); }
 .prose p, .prose ul, .prose ol { margin-top: var(--space-3); }

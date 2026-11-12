@@ -34,7 +34,12 @@
         [id]="'feedback-panel-' + tab()"
         [attr.aria-labelledby]="'tab-' + tab()"
       >
-        <form class="form measure-narrow" novalidate (submit)="$event.preventDefault(); submit()">
+        <form
+          jbDraft="feedback"
+          class="form measure-narrow"
+          novalidate
+          (submit)="$event.preventDefault(); submit()"
+        >
           @if (view() === 'failed') {
             <div jb-alert tone="danger" [heading]="failure().title" role="alert">
               <div>{{ failure().text }}</div>

@@ -10,76 +10,93 @@ skinparam class {
   BackgroundColor #F9FAFB
 }
 title Class structure — Handle session expiry
-enum SessionEndReason {
-  MaxAgeReached
-  IdleTimeout
-  PasswordChanged
-  SignedOut
-}
-class Session {
-  +string Id
-  +Guid MemberId
+class MemberSession {
+  +Guid Id
+  +string KeyHash
+  +Guid? MemberId
+  +bool Persistent
   +DateTimeOffset CreatedAt
   +DateTimeOffset LastActivityAt
-  +bool KeepSignedIn
-  +{static} TimeSpan MaxAge = 30 days
-  +{static} TimeSpan IdleTimeout = 12 hours
-  +IsExpired(now: DateTimeOffset): bool
+  +DateTimeOffset? EndedAt
   +Touch(now: DateTimeOffset): void
+  +End(now: DateTimeOffset): void
 }
-class SessionStore {
-  +Find(id: string): Task<Session?>
-  +Create(memberId: Guid, keepSignedIn: bool): Task<Session>
-  +EndAllFor(memberId: Guid, reason: SessionEndReason): Task
+class SessionPolicy <<static>> {
+  +TimeSpan AbsoluteLifetime = 30 days
+  +TimeSpan IdleTimeout = 12 hours
+  +IsExpired(session: MemberSession, now: DateTimeOffset): bool
 }
-class SessionAuthenticationMiddleware {
-  +InvokeAsync(context: HttpContext): Task
+class DatabaseTicketStore {
+  +StoreAsync(ticket: AuthenticationTicket): Task<string>
+  +RetrieveAsync(key: string): Task<AuthenticationTicket?>
+  +RemoveAsync(key: string): Task
 }
-class SessionExpiryInterceptor {
-  +intercept(req: HttpRequest, next: HttpHandlerFn): Observable<HttpEvent>
-  -onSessionExpired(): void
+class "sessionExpiredInterceptor" as interceptor <<function>> {
+  +(request: HttpRequest, next: HttpHandlerFn): Observable<HttpEvent>
+}
+class SessionService {
+  +member: Signal<Member | null>
+  +expire(): void
+  +signOut(): Observable<void>
+}
+class "DraftValues" as values <<type>> {
+  Record<string, string | boolean>
 }
 interface DraftSource {
   +key: string
-  +snapshot(): DraftPayload
-  +restore(payload: DraftPayload): void
+  +snapshot(): DraftValues | null
+  +restore(values: DraftValues): void
 }
 class FormDraftDirective {
-  +draftKey: string
-  +snapshot(): DraftPayload
-  +restore(payload: DraftPayload): void
+  selector form[jbDraft]
+  +key: string
+  +snapshot(): DraftValues | null
+  +restore(values: DraftValues): void
 }
 class DraftRegistry {
-  +register(source: DraftSource): void
-  +unregister(source: DraftSource): void
-  +snapshotAll(): Draft[]
+  +register(source: DraftSource): () => void
+  +saveAll(): void
 }
 class Draft {
-  +memberId: string
-  +route: string
+  +owner: string
+  +address: string
   +key: string
-  +payload: DraftPayload
-  +savedAt: string
+  +values: DraftValues
+  +savedAt: number
 }
 class DraftStore {
-  +save(drafts: Draft[]): void
-  +take(memberId: string, route: string, key: string): Draft | null
-  +clearFor(otherMemberId: string): void
+  localStorage key "jubilee-drafts"
+  +save(owner: string, address: string, key: string, values: DraftValues): void
+  +take(owner: string, address: string, key: string): DraftValues | null
+  +keepOnly(owner: string): void
 }
-class ReturnUrlService {
-  +remember(url: string): void
-  +take(): string
-  -isSafe(url: string): boolean
+class "draftOwner" as owner <<function>> {
+  +draftOwner(member: Member): string
+}
+class SignOutDialog {
+  #confirm(): void
+}
+class "sanitiseReturnUrl" as sanitise <<function>> {
+  +sanitiseReturnUrl(value: string | null): string
+}
+class SessionExpiredPage {
+  #signInQuery: { returnUrl: string }
 }
 
-SessionAuthenticationMiddleware ..> SessionStore : uses
-SessionStore --> Session : stores
-SessionStore ..> SessionEndReason
+DatabaseTicketStore --> MemberSession : stores
+DatabaseTicketStore ..> SessionPolicy : uses
+SessionPolicy ..> MemberSession : evaluates
 FormDraftDirective ..|> DraftSource
+DraftSource ..> values
 DraftRegistry "1" o-- "*" DraftSource
-DraftRegistry ..> Draft : creates
+DraftRegistry ..> DraftStore : saves and takes
+DraftRegistry ..> owner : names the member
+DraftRegistry ..> SessionService : reads the member
 DraftStore "1" o-- "*" Draft
-SessionExpiryInterceptor ..> DraftRegistry : snapshots
-SessionExpiryInterceptor ..> DraftStore : saves
-SessionExpiryInterceptor ..> ReturnUrlService : remembers
+Draft --> values
+interceptor ..> DraftRegistry : saveAll
+interceptor ..> SessionService : expire
+SignOutDialog ..> DraftRegistry : saveAll
+SignOutDialog ..> SessionService : signOut
+SessionExpiredPage ..> sanitise : uses
 @enduml

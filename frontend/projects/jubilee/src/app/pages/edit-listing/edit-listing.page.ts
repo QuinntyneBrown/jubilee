@@ -53,6 +53,7 @@ import {
   TERM_CHOICES,
   spaceMessage,
 } from '../../services/space-form';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export const MAX_NAME = 80;
 export const MAX_TAGLINE = 90;
@@ -76,6 +77,7 @@ type Saving = 'idle' | 'saving';
 @Component({
   selector: 'jb-edit-listing-page',
   imports: [
+    FormDraftDirective,
     BusinessCard,
     EmptyState,
     FormsModule,

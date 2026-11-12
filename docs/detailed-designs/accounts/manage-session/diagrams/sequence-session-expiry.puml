@@ -17,44 +17,51 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "Page with a draft" as page
-  participant "SessionExpiredInterceptor" as interceptor
-  participant "DraftStore" as drafts
+  participant "sessionExpiredInterceptor" as interceptor
+  participant "DraftRegistry" as drafts
+  participant "SessionService" as session
   participant "SessionExpiredPage" as expired
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "SessionAuthenticationMiddleware" as auth
+  participant "Cookie authentication" as auth
+  participant "DatabaseTicketStore" as store
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "SessionPolicy" as policy
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
+  database "Jubilee database" as db
 end box
 
 actor -> page : Submit a form or message
 page -> interceptor : HTTP request with the session cookie
 interceptor -> auth : Request to /api
-auth -> cache : Find Session by cookie value
-cache --> auth : Session or nothing
-auth -> policy : IsExpired(session, now)
-policy --> auth : Older than 30 days or idle for 12 hours (L2-010)
+auth -> store : RetrieveAsync(key)
+store -> db : Find the MemberSession by the hash of the key
+db --> store : Row or nothing
+store -> policy : IsExpired(session, now)
+policy --> store : Ended - older than 30 days - or idle for 12 hours (L2-010)
 alt session valid
-  auth -> cache : Touch last activity
-  cache --> auth : Renewed
+  store -> db : Touch last activity - at most once a minute
+  db --> store : Commit result
+  store --> auth : Ticket
   auth --> interceptor : Response from the endpoint
   interceptor --> page : Response
 else session ended or missing
-  auth -> cache : Delete the session
-  cache --> auth : Deleted
-  auth --> interceptor : 401 with code SESSION_EXPIRED and cleared cookie
-  interceptor -> drafts : save(memberId, route, draft) (L2-116)
-  drafts --> interceptor : Stored on the device
-  interceptor -> expired : Navigate to /session-expired with the return path
+  store -> db : End the session
+  db --> store : Commit result
+  store --> auth : Nothing
+  auth --> interceptor : 401 with code SESSION_EXPIRED and removed cookie
+  interceptor -> drafts : saveAll() (L2-116)
+  drafts --> interceptor : Drafts stored on the device
+  interceptor -> session : expire()
+  session --> interceptor : Member cleared
+  interceptor -> expired : Navigate to /session-expired?returnUrl={Router.url}
   expired --> actor : Show "You've been signed out" and "Sign in"
   actor -> expired : Press "Sign in" and sign in
   expired -> page : Navigate to the return path (L2-116)
-  page -> drafts : restore(memberId, route)
-  drafts --> page : Draft of the same member (L2-010)
-  page --> actor : Show the page with the draft restored
+  page -> drafts : register(source)
+  drafts --> page : restore(values) for the same member (L2-010)
+  page --> actor : Show the page with the draft restored and the toast "We kept what you typed"
 end
 @enduml
