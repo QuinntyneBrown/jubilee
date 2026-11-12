@@ -25,6 +25,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<ResponseTimeBadgeJob>();
         builder.Services.AddHostedService<BookingCompletionJob>();
         builder.Services.AddHostedService<MeetingReminderJob>();
+        builder.Services.AddHostedService<DailySummaryJob>();
         builder.Services.AddHostedService<UnansweredRequestJob>();
         builder.Services.AddHostedService<MaintenanceWatcherJob>();
         builder.Services.AddHostedService<DataExportJob>();
@@ -425,6 +426,44 @@ public sealed class LaunchRetentionJob(IServiceScopeFactory scopes, ILogger<Laun
         }
         catch (OperationCanceledException)
         {
+        }
+    }
+}
+
+/// <summary>
+/// Every five minutes: once it is 7:00 a.m. in Toronto, sends each member who chose "One daily summary"
+/// one e-mail of what was held for them (L2-016 AC6). <see cref="Jubilee.Application.Jobs.ScheduledJobs"/>
+/// lets one instance send a day's summaries and records its success (L2-182 AC1 and AC3).
+/// </summary>
+public sealed class DailySummaryJob(IServiceScopeFactory scopes, ILogger<DailySummaryJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sent = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Notifications.SendDailySummariesCommand(), stoppingToken);
+                    if (sent is { } count)
+                    {
+                        logger.LogInformation("Queued {Count} daily summaries.", count);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The daily summaries could not be sent. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The daily summary job is stopping.");
         }
     }
 }

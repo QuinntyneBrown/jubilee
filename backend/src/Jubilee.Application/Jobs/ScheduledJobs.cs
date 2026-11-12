@@ -18,9 +18,16 @@ public sealed class ScheduledJobs(IAppDbContext db, TimeProvider clock)
     /// True when the work ran and its success was recorded. Work that throws leaves the run without a
     /// success, and the job runs again at its next occurrence.
     /// </summary>
-    public async Task<bool> RunOnceAsync(string job, TimeSpan every, Func<CancellationToken, Task> work, CancellationToken cancellationToken)
+    public Task<bool> RunOnceAsync(string job, TimeSpan every, Func<CancellationToken, Task> work, CancellationToken cancellationToken) =>
+        RunOnceAtAsync(job, JobRun.OccurrenceOf(clock.GetUtcNow(), every), work, cancellationToken);
+
+    /// <summary>
+    /// The same for a job whose occurrences are not a fixed length apart in UTC, such as one that runs at
+    /// 7:00 a.m. in Toronto (L2-182 AC3): the caller names the occurrence, the instant the run is for.
+    /// </summary>
+    public async Task<bool> RunOnceAtAsync(string job, DateTimeOffset occurrence, Func<CancellationToken, Task> work, CancellationToken cancellationToken)
     {
-        var occurrence = JobRun.OccurrenceOf(clock.GetUtcNow(), every);
+        occurrence = occurrence.ToUniversalTime();
         if (await db.JobRuns.AsNoTracking().AnyAsync(r => r.Job == job && r.Occurrence == occurrence, cancellationToken))
         {
             return false;

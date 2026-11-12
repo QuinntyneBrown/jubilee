@@ -12,7 +12,7 @@ namespace Jubilee.Api.Tests;
 
 // E-mail notifications and meeting reminders: L2-068, L2-069, L2-061 AC1 and L2-179 AC2.
 // Naomi owns Luzandre.com and Joanna writes to it; both are real members so they have addresses.
-public sealed class EmailNotificationTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
+public sealed partial class EmailNotificationTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private readonly JubileeApiFactory _factory;
     private Listing _listing = null!;

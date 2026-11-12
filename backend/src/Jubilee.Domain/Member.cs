@@ -105,6 +105,11 @@ public sealed class Member
 
     public void SetEmailFrequency(bool dailySummary) => EmailDailySummary = dailySummary;
 
+    /// <summary>How many of the tips for business owners the member has been sent (L2-223): each is sent once, in order.</summary>
+    public int TipsSent { get; private set; }
+
+    public void MarkTipSent() => TipsSent++;
+
     /// <summary>What the member chose for a category, ignoring bounces; null for an unknown category.</summary>
     public bool? EmailPreference(string category) => category switch
     {
@@ -332,6 +337,15 @@ public static class EmailCategories
 
     public const string Tips = "tips";
 
+    /// <summary>
+    /// The daily summary (L2-016 AC6). Not a switch of its own: it collects "New messages" and
+    /// "Request updates", and unsubscribing from it turns both off (AC8).
+    /// </summary>
+    public const string Summary = "summary";
+
+    /// <summary>Whether e-mail of the category waits for the daily summary of a member who chose one.</summary>
+    public static bool IsHeldForSummary(string category) => category is Messages or Requests;
+
     /// <summary>The commercial categories, under CASL (L2-149): consent to them is recorded.</summary>
     public static bool IsPromotional(string category) => category is NewBusinesses or Tips;
 }
@@ -476,12 +490,19 @@ public sealed class OutboxMessage
     /// <summary>Null for a transactional e-mail; otherwise the category a member can unsubscribe from (L2-068 AC3).</summary>
     public string? Category { get; private set; }
 
+    /// <summary>
+    /// Kept back for the member's daily summary (L2-016 AC6): the dispatcher does not send it; the
+    /// summary job turns the member's held rows into one e-mail and deletes them.
+    /// </summary>
+    public bool HeldForSummary { get; private set; }
+
     public static OutboxMessage Email(
         Guid? memberId, string to, string subject, string textBody, DateTimeOffset now, DateTimeOffset? notBefore = null, Guid? correlationId = null,
-        string? category = null) => new()
+        string? category = null, bool heldForSummary = false) => new()
     {
         CorrelationId = correlationId,
         Category = category,
+        HeldForSummary = heldForSummary,
         Id = Guid.NewGuid(),
         MemberId = memberId,
         ToAddress = to,
@@ -491,7 +512,7 @@ public sealed class OutboxMessage
         NextAttemptAt = notBefore ?? now,
     };
 
-    public bool IsDue(DateTimeOffset now) => SentAt is null && FailedAt is null && NextAttemptAt <= now;
+    public bool IsDue(DateTimeOffset now) => !HeldForSummary && SentAt is null && FailedAt is null && NextAttemptAt <= now;
 
     public void MarkSent(DateTimeOffset now)
     {
