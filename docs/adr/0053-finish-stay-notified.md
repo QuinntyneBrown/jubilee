@@ -40,7 +40,8 @@ Redis backplane), and nothing measured the 2 seconds of `L2-070` AC1.
 - **A new business is told in the app at once and by e-mail once a week.** `ApproveListingCommand`
   calls `NewBusinessNotifier` the first time a listing is approved: each member with "New
   businesses" on who browsed the category, except the owner, gets a notification of kind
-  `business`, "New on Jubilee: {business}". `SendNewBusinessNotesCommand` sends the weekly note
+  `business`, "New in {category}: {business}" with the business's tagline, as the mock of the
+  notification centre words it. `SendNewBusinessNotesCommand` sends the weekly note
   the switch promises ("A weekly note about new listings in categories you’ve browsed"): the
   listings first approved in the last 7 days in the member's browsed categories.
 - **Tips are a fixed series, one a month, each once.** `OwnerTips.Series` holds the tips in code;
