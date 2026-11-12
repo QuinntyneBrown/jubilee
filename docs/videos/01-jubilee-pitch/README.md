@@ -6,9 +6,11 @@
 
 ## Why this video exists
 
-To make people want to join and to list: it sets up the trust people already have at church, shows
-the Monday problem, then shows what Jubilee is, why to join, what a member can do, and why and how
-an owner lists, in just over a minute.
+To make people want to join and to list, framed from the mission: "Abiding in Jesus and for love of
+Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His
+Kingdom." It opens on the calling (on Sunday we're sent out to bear fruit that will last, John 15:16),
+shows the Monday problem (can believers find you?), then shows what Jubilee is, why to join, what a
+member can do, and why and how an owner lists, in just over a minute.
 
 ## Source of truth
 
@@ -25,15 +27,15 @@ cut lands on a downbeat.
 
 | # | Scene | Act | In | Out | What happens |
 |---|---|---|---|---|---|
-| 01 | Sunday | Hook | 0:00.00 | 0:07.20 | Warm church photo, slow pull-back. A gold line underlines "trust." Colour drains in the last bar. |
-| 02 | Monday | Hook | 0:07.20 | 0:14.40 | Cold kitchen photo. A feed of stranger search results scrolls faster, then freezes. Gold wipe. |
-| 03 | Meet Jubilee | Hook | 0:14.40 | 0:21.60 | The drop: the gold slab collapses into the logo's crossbar, the J draws, the aurora pulses on the kick. Six borough pins. |
-| 04 | Why join | Why join | 0:21.60 | 0:28.80 | The seal stamps on "verified"; three reasons land with the narration. |
-| 05 | Shop | What you can do | 0:28.80 | 0:36.00 | Four catalogue products land on the words that name them; the bag fills on every beat. |
-| 06 | Hire & book | What you can do | 0:36.00 | 0:43.20 | A Legacy Financial booking card: the slot hops, is tapped, and "Booked." confirms on the downbeat. |
-| 07 | Why list | Why list | 0:43.20 | 0:50.40 | Key lift, gold aurora. An owner's portrait with three notifications stacking on the beat. |
-| 08 | How to list | Why list | 0:50.40 | 0:57.60 | A gold line runs through three steps; the seal stamps; "List your business free". |
-| 09 | Close | Close | 0:57.60 | 1:04.80 | Confetti on the final hit, the logo builds, "Your community is open for business.", jubilee.to, fade to ink. |
+| 01 | Sunday | Hook | 0:00.00 | 0:07.20 | Warm church photo, slow pull-back: "On Sunday, we're sent out to bear fruit that will last." A gold line underlines "last." Colour drains in the last bar. |
+| 02 | Monday | Hook | 0:07.20 | 0:14.40 | Cold kitchen photo: "you open for business. Can believers find you?" A feed of stranger search results scrolls faster, then freezes. Gold wipe. |
+| 03 | Meet Jubilee | Hook | 0:14.40 | 0:21.60 | The drop: the gold slab collapses into the logo's crossbar, the J draws, the aurora pulses on the kick. "Toronto's Christian businesses, prospering with purpose." Six borough pins. |
+| 04 | Why join | Why join | 0:21.60 | 0:28.80 | "Purpose, built in." The seal stamps on "God"; three reasons land with the narration: your work is a calling (Deuteronomy 8:18), business resources the Kingdom, together we strengthen our city. |
+| 05 | Shop | What you can do | 0:28.80 | 0:36.00 | "Buy from believers. Shop with purpose." Four catalogue products land on the words that name them; the bag fills on every beat. |
+| 06 | Hire & book | What you can do | 0:36.00 | 0:43.20 | "Hire believers who work as for the Lord." A Legacy Financial booking card: the slot hops, is tapped, and "Booked." confirms on the downbeat. |
+| 07 | Why list | Why list | 0:43.20 | 0:50.40 | Key lift, gold aurora. "Own a business? Bear fruit." An owner's portrait with three notifications stacking on the beat. |
+| 08 | How to list | Why list | 0:50.40 | 0:57.60 | "Three steps to a legacy." A gold line runs through create your page, welcome believers, resource the Kingdom; the seal stamps; "List your business free". |
+| 09 | Close | Close | 0:57.60 | 1:04.80 | Confetti on the final hit, the logo builds, "Your business was meant to outlast you.", jubilee.to, "Resource the Kingdom. In Jesus' name.", fade to ink. |
 
 Transitions: a gold crossbar wipe marks each change of act (02→03, 04→05, 06→07); a coloured panel
 marks a change of colour inside an act (03→04, 05→06, 08→09); hard cuts are kept for 01→02 and 07→08.
@@ -55,8 +57,8 @@ Other things to know:
 
 - **Narration pace.** The spec asks for about 150 words a minute, but several of its windows need
   more than 200. The windows win, so those lines are spoken fast.
-- **Hard syncs are approximate.** "Bibles" and "gifts" start on 30.60 and 31.20 exactly (they are
-  separate phrases). "verified" (22.80), "flowers" (32.40) and "tap" (40.20) are placed by estimate,
+- **Hard syncs are approximate.** "God" (22.80), "Bibles" (30.60) and "gifts" (31.20) start their
+  phrases, so they land exactly. "flowers" (32.40) and "tap" (40.20) are placed by estimate,
   because the voice model gives no word timings; expect them within about a tenth of a second.
 - **Stamp sounds follow the picture.** The spec's hit table puts the stamp at 22.80 and 52.20; in
   the prototype's code the seal starts to fall then and lands at 23.00 and 52.70, so the thud is
@@ -64,9 +66,24 @@ Other things to know:
 - **Photos and Inter are in the repository.** The five scene photos and the catalogue images are
   in `docs/assets/photos/` and Inter in `docs/design-system/assets/fonts/`, so the deck and the
   builder work offline. The photos are AI-generated placeholders for a shoot.
-- **Three small departures from the prototype's code**, each for a layout fault it has when run:
-  in scene 02 the two headlines are held on one line and the search bar stays above the scrolling
-  results; in scene 08 the call to action sits 32 px lower so it no longer covers step three.
+- **Departures from the prototype's code**, each for a fault it has when run or for the house rules
+  on Scripture (`docs/scripture.md`):
+  - Scene 02: "On Monday," is held on one line and the search bar stays above the scrolling
+    results. "Can believers find you?" wraps as the design has it; held on one line it ran under
+    the search feed.
+  - The seal is built in `film.js`, not taken from the shared runtime, which still carries the old
+    ring text. The design's ring text at its 2.1 letter-spacing runs past the circle and cuts
+    "NAME" short, so the text is fitted to the ring (`textLength`).
+  - Scene 04 quotes Deuteronomy 8:18 in the words of `docs/scripture.md`: "It is he who gives you
+    power to get wealth." (the design has "the ability to produce wealth"). The narration says
+    "God gives us the power to get wealth." to match.
+  - Scene 06 says "who work as for the Lord", the wording of Colossians 3:23 in
+    `docs/scripture.md` (the design has "as unto the Lord"), on screen and in the narration.
+  - Narration windows: scene 04's first phrase starts at 22.80 rather than 22.00, so "God" lands on
+    the stamp; scene 07 carries more words than before and runs to about 47.4 rather than 46.80,
+    still well before the cut at 50.40.
+  - The departure that set scene 08's call to action 32 px lower is gone: the design now leaves
+    24 px under the steps, and the call to action no longer covers step three.
 - **Captions are burned in**, one caption per sentence or phrase rather than one per line, so each
   fits on one row.
 
@@ -74,7 +91,23 @@ Other things to know:
 
 The designer flagged these as made up: "Pastor Ruth", "Grace Church" and "12 people" in scene 07,
 and the "Thursday, March 14" date in scene 06. Product names and prices come from the app's sample
-catalogue. The narration wording is a first draft.
+catalogue. The narration wording is a first draft, and the two Scripture departures above want the
+designer's agreement.
+
+## Not changed here
+
+This update brought the film in line with the design and touched nothing outside this folder. Still
+to do elsewhere:
+
+- The marketing site's chapters (`frontend/projects/marketing/src/app/content.ts`, the
+  `marketing-home` mocks, L2-184 AC3 and `e2e/tests/marketing-home.spec.ts`) still call 0:21
+  "Finding someone you can trust", which no longer fits scene 04. Renaming it is a change to the
+  site's behaviour: requirement, mock and test first.
+- The film still (`docs/assets/photos/film-still.jpg`) may want a frame from the new opening.
+- The shared seal (`S.seal` in `../assets/pitch.js`) and its description in `../README.md` still say
+  "verified by the Jubilee team".
+- The marketing build copies this MP4 to `media/jubilee-pitch.mp4` and picks up the new film at its
+  next build.
 
 ## Rebuild
 

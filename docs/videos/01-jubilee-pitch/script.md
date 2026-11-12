@@ -6,36 +6,36 @@ draft and has not been signed off.
 
 ## 01 Sunday
 
-On Sunday, you know exactly who to trust.
+On Sunday, we're sent out to bear fruit that will last.
 
 ## 02 Monday
 
-On Monday, the pipe bursts, and you're scrolling through strangers.
+On Monday, you open for business. Can believers find you?
 
 ## 03 Meet Jubilee
 
-Meet Jubilee. Toronto's Christian businesses, all in one place.
+Meet Jubilee. Toronto's Christian businesses, prospering with purpose.
 
 ## 04 Why join
 
-Every business is verified by the Jubilee team. Your money stays in the community. And it's free to join.
+God gives us the power to get wealth. Business has always resourced the Kingdom. And together, we strengthen our city.
 
 ## 05 Shop
 
-Shop Christian makers: Bibles, gifts, apparel and fresh flowers.
+Shop with purpose: Bibles, gifts, apparel and fresh flowers.
 
 ## 06 Hire and book
 
-Hire the advisors and trades your church already recommends, and book in a tap.
+Hire believers who work as for the Lord, and book in a tap.
 
 ## 07 Why list
 
-Own a business? Your church family is looking for you.
+Own a business? Bear fruit. Prosper with purpose and resource His Kingdom.
 
 ## 08 How to list
 
-Create your page, get verified by our team, and welcome customers who already trust you.
+Create your page, welcome believers who want to buy from you, and resource the Kingdom.
 
 ## 09 Close
 
-Jubilee. Your community is open for business.
+Jubilee. Your business was meant to outlast you.

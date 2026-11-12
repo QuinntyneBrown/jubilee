@@ -20,8 +20,25 @@
     advisor: PHOTOS + 'advisor.jpg',
   };
 
+  /**
+   * The Jubilee seal: the J mark in a ring of set text (John 15:16 and the mission), turning at `spin`
+   * degrees a second. It carries the design's ring text; the shared runtime's seal still has the old one.
+   */
+  let seals = 0;
+  const seal = (S, size, spin) => {
+    const id = `seal-ring-${seals++}`;
+    const text = 'FRUIT THAT WILL LAST · RESOURCE THE KINGDOM · IN JESUS’ NAME · ';
+    return `<svg width="${size}" height="${size}" viewBox="0 0 200 200" aria-hidden="true">` +
+      `<circle cx="100" cy="100" r="98" fill="${COLOR.ink}"/><circle cx="100" cy="100" r="64" fill="${COLOR.cream}"/>` +
+      `<defs><path id="${id}" d="M100 100 m-81 0 a81 81 0 1 1 162 0 a81 81 0 1 1 -162 0"/></defs>` +
+      `<g ${S.ref((el, t) => el.setAttribute('transform', `rotate(${t * spin} 100 100)`))}>` +
+      `<text font-family="Inter, sans-serif" font-weight="600" font-size="12.4" fill="${COLOR.cream}"><textPath href="#${id}" textLength="506" lengthAdjust="spacing">${text}</textPath></text></g>` +
+      `<g transform="translate(62 62) scale(0.76)"><path d="M60 8 V60 A20 20 0 0 1 20 60 V38" stroke="${COLOR.ink}" stroke-width="14.5" fill="none"/>` +
+      `<path d="M36 27 H84" stroke="${COLOR.gold}" stroke-width="14.5"/></g></svg>`;
+  };
+
   // ── S01 · Sunday · 0:00.00–0:07.20 · bars 1–3 ─────────────────────────────────────────────────────
-  // Warm photo, slow pull-out. The promise: trust you already have.
+  // Warm photo, slow pull-out. The calling: go and bear fruit that will last (John 15:16).
   const sunday = (S) => {
     const out = (t) => exit(t, b(11), 0.24);
     return `<div class="fill" style="overflow:hidden;background:var(--ink);color:var(--cream)">
@@ -35,7 +52,7 @@
 <div class="fill" style="background:rgb(11 14 20 / 0.45)"></div>
 <div class="a" style="left:140px;top:176px;max-width:1180px" ${S.ref((el, t) => { el.style.opacity = 1 - out(t); el.style.transform = `translateY(${-out(t) * 30}px)`; })}>
 <h1 class="d" style="font-size:156px;font-weight:700;line-height:0.94;letter-spacing:-0.035em">${S.words(b(1), 'On Sunday,')}</h1>
-<p class="d" style="margin-top:24px;font-size:84px;font-weight:600;line-height:1.02;letter-spacing:-0.025em">${S.words(b(2.5), 'you know exactly who to')}<span style="position:relative;display:inline-block">${S.words(b(2.5) + 0.25, '', { accent: 'trust.' })}<span class="a" style="bottom:-8px;left:0;height:14px;width:88%;background:var(--gold);transform-origin:left" ${S.ref((el, t) => { el.style.transform = `scaleX(${enter(t, b(4), 0.3)})`; })}></span></span></p>
+<p class="d" style="margin-top:24px;font-size:84px;font-weight:600;line-height:1.02;letter-spacing:-0.025em">${S.words(b(2.5), 'we’re sent out to bear fruit that will')}<span style="position:relative;display:inline-block">${S.words(b(2.5) + 0.25, '', { accent: 'last.' })}<span class="a" style="bottom:-8px;left:0;height:14px;width:88%;background:var(--gold);transform-origin:left" ${S.ref((el, t) => { el.style.transform = `scaleX(${enter(t, b(4), 0.3)})`; })}></span></span></p>
 </div>
 <div class="a" style="bottom:120px;left:140px;display:flex;align-items:center;gap:16px" ${S.rise(b(6))}>
 <span style="width:12px;height:12px;border-radius:999px;background:var(--gold)"></span>
@@ -45,7 +62,8 @@
   };
 
   // ── S02 · Monday · 0:07.20–0:14.40 · bars 4–6 ─────────────────────────────────────────────────────
-  // Cold grade, a search feed full of strangers that scrolls faster on the hi-hats, then a stop.
+  // Cold grade. You open for business, but believers scroll past you through ads and strangers, faster
+  // on the hi-hats, then a stop.
   const STRANGERS = [
     { name: 'Plumber Near Me 24/7', stars: 3.1, reviews: 14, ad: true, quote: 'Quoted $90, charged $400' },
     { name: 'AAA Drain Pros', stars: 2.8, reviews: 31, ad: false, quote: 'Never showed up' },
@@ -63,10 +81,10 @@
       el.style.filter = `saturate(0.35) brightness(${0.8 - freeze(t) * 0.2}) contrast(1.05) hue-rotate(-8deg)`;
     })}>
 <div class="fill" style="background:rgb(11 14 20 / 0.55)"></div>
-<div class="a" style="left:140px;top:176px;width:960px"><!-- the two headlines are held on one line: the last word's trailing gap would otherwise wrap them -->
+<div class="a" style="left:140px;top:176px;width:960px"><!-- "On Monday," is held on one line: the last word's trailing gap would otherwise wrap it -->
 <h1 class="d" style="font-size:156px;font-weight:700;line-height:0.94;letter-spacing:-0.035em;white-space:nowrap">${S.words(b(0.5), 'On Monday,')}</h1>
-<p class="d" style="margin-top:24px;font-size:72px;font-weight:600;line-height:1.04;letter-spacing:-0.025em;color:rgb(244 242 236 / 0.85)">${S.words(b(2), 'the pipe bursts.')}</p>
-<p class="d" style="margin-top:80px;font-size:112px;font-weight:700;line-height:0.96;letter-spacing:-0.035em;white-space:nowrap">${S.words(b(7), 'Who do you', { accent: 'call?', stagger: 0.06 })}</p>
+<p class="d" style="margin-top:24px;font-size:72px;font-weight:600;line-height:1.04;letter-spacing:-0.025em;color:rgb(244 242 236 / 0.85)">${S.words(b(2), 'you open for business.')}</p>
+<p class="d" style="margin-top:80px;font-size:112px;font-weight:700;line-height:0.96;letter-spacing:-0.035em">${S.words(b(7), 'Can believers', { accent: 'find you?', stagger: 0.06 })}</p>
 </div>
 <div class="a" style="bottom:120px;left:140px;display:flex;align-items:center;gap:16px" ${S.rise(b(1))}>
 <span style="width:12px;height:12px;border-radius:999px;background:rgb(244 242 236 / 0.6)"></span>
@@ -122,7 +140,7 @@ ${S.drawnMark(MARK, { draw: (t) => enter(t, 0.3, 0.3), bar: (t) => (collapse(t) 
       el.style.width = `${lerp(1920, BAR_RECT.w, c)}px`;
       el.style.height = `${lerp(1080, BAR_RECT.h, c)}px`;
     })}></div>
-<h2 class="a d" style="left:0;right:0;top:560px;text-align:center;font-size:92px;font-weight:700;line-height:1;letter-spacing:-0.03em">${S.words(b(3.5), 'Toronto’s Christian businesses,')}<br>${S.words(b(5), '', { accent: 'all in one place.', stagger: 0.06 })}</h2>
+<h2 class="a d" style="left:0;right:0;top:560px;text-align:center;font-size:92px;font-weight:700;line-height:1;letter-spacing:-0.03em">${S.words(b(3.5), 'Toronto’s Christian businesses,')}<br>${S.words(b(5), '', { accent: 'prospering with purpose.', stagger: 0.06 })}</h2>
 ${BOROUGHS.map(([name, x], i) => `<div class="a" style="left:${x}px;top:840px;display:flex;flex-direction:column;align-items:center" ${S.ref((el, t) => {
       // Pins pop on the 8ths of bar 3
       const s = outBack(prog(t, b(8) + i * 0.3, 0.26));
@@ -134,22 +152,23 @@ ${BOROUGHS.map(([name, x], i) => `<div class="a" style="left:${x}px;top:840px;di
   };
 
   // ── S04 · Why join · 0:21.60–0:28.80 · bars 10–12 ─────────────────────────────────────────────────
-  // Cream paper. The seal stamps on "verified"; three reasons arrive on the narration, each drawing its rule.
+  // Cream paper. Purpose, mission, together: the seal stamps on "God"; three reasons arrive on the narration,
+  // each drawing its rule. The verse is quoted as docs/scripture.md gives it (the design has another wording).
   const REASONS = [
-    { at: b(2.5), title: 'Verified by the Jubilee team.', body: 'Every business is verified by the Jubilee team before it appears. No guessing from star ratings.' },
-    { at: b(4.5), title: 'Your money stays in the community.', body: 'Every purchase supports a family that shares your faith and your city.' },
-    { at: b(7.5), title: 'Free for members.', body: 'Browse, save and share as much as you like. Find it in seconds, not Sundays.' },
+    { at: b(2.5), title: 'Your work is a calling.', body: '“It is he who gives you power to get wealth.” Deuteronomy 8:18' },
+    { at: b(4.5), title: 'Business resources the Kingdom.', body: 'From the women who funded Jesus’ ministry to Lydia the merchant, it always has.' },
+    { at: b(7.5), title: 'Together, we strengthen our city.', body: 'Believers find you, book you and buy from you, building up families and churches.' },
   ];
   const whyJoin = (S) => `<div class="fill" style="overflow:hidden;background:var(--cream);color:var(--ink)">
 <div class="a" style="left:140px;top:150px;width:720px">
-<h1 class="d" style="font-size:150px;font-weight:700;line-height:0.92;letter-spacing:-0.04em">${S.words(b(0.5), 'Trust,')}<br>${S.words(b(1), '', { accent: 'built in.', accentClass: 'clay' })}</h1>
+<h1 class="d" style="font-size:150px;font-weight:700;line-height:0.92;letter-spacing:-0.04em">${S.words(b(0.5), 'Purpose,')}<br>${S.words(b(1), '', { accent: 'built in.', accentClass: 'clay' })}</h1>
 <div style="margin-top:64px;width:320px;transform-origin:50% 50%" ${S.ref((el, t) => {
     // Drops from 118% and −16°, lands with an overshoot, then thumps
     const stampP = prog(t, b(2), 0.22), stamp = outBack(stampP);
     const thump = pulse(t, [b(2) + 0.2, b(8)], 9);
     el.style.opacity = Math.min(1, stampP * 4);
     el.style.transform = `translate(${thump * 3}px, ${thump * 2}px) scale(${lerp(1.18, 1, stamp) + thump * 0.025}) rotate(${lerp(-16, -6, stamp)}deg)`;
-  })}>${S.seal(320, 12)}</div>
+  })}>${seal(S, 320, 12)}</div>
 </div>
 <ul class="a" style="right:140px;top:150px;width:880px">${REASONS.map((r) => `<li style="position:relative;padding:36px 0">
 <span class="a" style="left:0;top:0;height:2px;width:100%;background:rgb(11 14 20 / 0.2);transform-origin:left" ${S.ref((el, t) => { el.style.transform = `scaleX(${enter(t, r.at, 0.3)})`; })}></span>
@@ -177,7 +196,7 @@ ${S.wipe((t) => lerp(0, 0.5, prog(t, b(11.5), 0.3)))}
     const shops = (t) => new Set(PRODUCTS.slice(0, count(t)).map((p) => p.shop)).size;
     return `<div class="fill" style="overflow:hidden;background:var(--emerald-deep);color:var(--cream)">
 <div class="a" style="left:140px;top:170px;width:760px">
-<h1 class="d" style="font-size:118px;font-weight:700;line-height:0.95;letter-spacing:-0.035em">${S.words(b(0.3), 'Shop makers who share your', { accent: 'faith.' })}</h1>
+<h1 class="d" style="font-size:118px;font-weight:700;line-height:0.95;letter-spacing:-0.035em">${S.words(b(0.3), 'Buy from believers. Shop with', { accent: 'purpose.' })}</h1>
 <p class="d" style="margin-top:48px;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:44px;line-height:1.5;font-weight:600;letter-spacing:-0.02em">${PRODUCTS.map((p, i) => `<span ${S.ref((el, t) => {
       const on = enter(t, p.at - 0.05, 0.2);
       el.style.opacity = 0.25 + 0.75 * on;
@@ -219,6 +238,7 @@ ${S.wipe((t) => lerp(0.5, 1, prog(t, 0, 0.3)))}
 
   // ── S06 · Hire & book · 0:36.00–0:43.20 · bars 16–18 ──────────────────────────────────────────────
   // Cream. Services stream past; a booking card picks a slot on the 8ths, taps, and confirms on the bar-3 downbeat.
+  // The headline follows Colossians 3:23 in the wording of docs/scripture.md (the design says "as unto").
   const SERVICES = [
     ['Plumbing & drains', 'Wills & estates', 'Counselling', 'Roofing', 'Financial planning', 'Music lessons'],
     ['Immigration law', 'Real estate', 'IT services', 'Cleaning', 'Insurance', 'Renovation'],
@@ -232,7 +252,7 @@ ${S.wipe((t) => lerp(0.5, 1, prog(t, 0, 0.3)))}
     const check = (t) => prog(t, BOOKED + 0.12, 0.26);
     return `<div class="fill" style="overflow:hidden;background:var(--cream);color:var(--ink)">
 <div class="a" style="left:140px;top:170px;width:860px">
-<h1 class="d" style="font-size:104px;font-weight:700;line-height:0.96;letter-spacing:-0.035em">${S.words(b(0.3), 'Hire people your church already', { accent: 'recommends.', accentClass: 'clay', stagger: 0.045 })}</h1>
+<h1 class="d" style="font-size:104px;font-weight:700;line-height:0.96;letter-spacing:-0.035em">${S.words(b(0.3), 'Hire believers who work as for the', { accent: 'Lord.', accentClass: 'clay', stagger: 0.045 })}</h1>
 </div>
 <div class="a" style="left:0;top:700px;width:1040px;overflow:hidden" ${S.ref((el, t) => { el.style.opacity = enter(t, b(2), 0.3); })}>
 ${SERVICES.map((row, r) => `<div style="display:flex;gap:16px;white-space:nowrap;${r ? 'margin-top:20px' : ''}" ${S.ref((el, t) => { el.style.transform = `translateX(${r === 0 ? 140 - t * 70 : -420 + t * 70}px)`; })}>${[...row, ...row].map((s) => `<span class="s" style="border-radius:999px;border:2px solid rgb(11 14 20 / 0.15);padding:14px 28px;font-size:28px;line-height:1.5;font-weight:500;color:rgb(11 14 20 / 0.8)">${esc(s)}</span>`).join('')}</div>`).join('')}
@@ -247,7 +267,7 @@ ${SERVICES.map((row, r) => `<div style="display:flex;gap:16px;white-space:nowrap
 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px">
 <div><p class="d" style="font-size:40px;font-weight:700;line-height:1.25;letter-spacing:-0.02em">Legacy Financial</p>
 <p style="margin-top:4px;font-size:22px;line-height:1.5;color:rgb(11 14 20 / 0.6)">Trevor Chew, CKA®, CFP®, CLU®</p></div>
-${S.seal(84, 20)}
+${seal(S, 84, 20)}
 </div>
 <div style="margin-top:24px;display:flex;align-items:baseline;justify-content:space-between;border-top:1px solid rgb(11 14 20 / 0.1);padding-top:24px">
 <p style="font-size:26px;line-height:1.5;font-weight:600">Discovery meeting</p><p style="font-size:22px;line-height:1.5;color:rgb(11 14 20 / 0.6)">Free · 30 min</p>
@@ -281,18 +301,18 @@ ${S.wipe((t) => lerp(0, 0.5, prog(t, b(11.5), 0.3)))}
   };
 
   // ── S07 · Why list · 0:43.20–0:50.40 · bars 19–21 · KEY LIFT ──────────────────────────────────────
-  // Ink and a low gold aurora. An owner opens up; her phone lights up on the beats.
+  // Ink and a low gold aurora. An owner opens up; her phone lights up on the beats. Bear fruit.
   const PINGS = [
     { at: b(4.5), kind: 'Message', text: '“Pastor Ruth said you make custom tees for youth camp?”' },
     { at: b(6), kind: 'New order', text: 'Morning mug, set of two · $42' },
     { at: b(7.5), kind: 'Saved', text: '12 people from Grace Church saved your shop' },
   ];
-  const POINTS = [[b(8), 'Customers who already trust you'], [b(9), 'A page that sells for you'], [b(10), 'Free to join. No fees, no cut.']];
+  const POINTS = [[b(8), 'Believers looking to buy from you'], [b(9), 'A page that sells for you'], [b(10), 'Free to join. No fees, no cut.']];
   const whyList = (S) => `<div class="fill" style="overflow:hidden;background:var(--ink);color:var(--cream)">
 ${S.aurora((t) => 0.55 + pulse(t, beatsBetween(0, 12), 7) * 0.25, { horizon: 0.95, colors: [COLOR.ink, COLOR.emeraldDeep, '#3a2a05', COLOR.gold] })}
 <div class="a" style="left:140px;top:150px;width:860px">
-<h1 class="d" style="font-size:136px;font-weight:700;line-height:0.94;letter-spacing:-0.04em">${S.words(b(0.5), 'Own a business?')}<br>${S.words(b(1.8), '', { accent: 'Be found.', stagger: 0.07 })}</h1>
-<p class="s" style="margin-top:32px;font-size:38px;line-height:1.3;color:rgb(244 242 236 / 0.8)">${S.words(b(3), 'Your church family is already looking for you.', { stagger: 0.03 })}</p>
+<h1 class="d" style="font-size:136px;font-weight:700;line-height:0.94;letter-spacing:-0.04em">${S.words(b(0.5), 'Own a business?')}<br>${S.words(b(1.8), '', { accent: 'Bear fruit.', stagger: 0.07 })}</h1>
+<p class="s" style="margin-top:32px;font-size:38px;line-height:1.3;color:rgb(244 242 236 / 0.8)">${S.words(b(3), 'Prosper with purpose and resource His Kingdom.', { stagger: 0.03 })}</p>
 <ul style="margin-top:56px">${POINTS.map(([at, text], i) => `<li style="display:flex;align-items:center;gap:20px;${i ? 'margin-top:20px' : ''}" ${S.ref((el, t) => {
     const on = enter(t, at, 0.3);
     el.style.opacity = on;
@@ -316,11 +336,12 @@ ${S.wipe((t) => lerp(0.5, 1, prog(t, 0, 0.3)))}
 </div>`;
 
   // ── S08 · How to list · 0:50.40–0:57.60 · bars 22–24 ──────────────────────────────────────────────
-  // Cream, hard cut in on the downbeat. A crossbar draws down through three steps; the seal stamps on step 2.
+  // Cream, hard cut in on the downbeat. A crossbar draws down through three steps to a legacy; the seal
+  // stamps on step 2.
   const STEPS = [
     { at: b(1), title: 'Create your page', body: 'Your products or services, prices and story.' },
-    { at: b(3), title: 'Get verified', body: 'The Jubilee team verifies you before you go live.' },
-    { at: b(5.5), title: 'Welcome customers', body: 'Members message, book and buy from you directly.' },
+    { at: b(3), title: 'Welcome believers', body: 'They message you, book you and buy from you directly.' },
+    { at: b(5.5), title: 'Resource the Kingdom', body: 'Strengthen families, churches and our city.' },
   ];
   const NODE_Y = [0, 190, 380];
   const howList = (S) => `<div class="fill" style="overflow:hidden;background:var(--cream);color:var(--ink)">
@@ -331,10 +352,10 @@ ${S.wipe((t) => lerp(0.5, 1, prog(t, 0, 0.3)))}
     const thump = pulse(t, [STEPS[1].at + 0.5], 9);
     el.style.opacity = Math.min(1, stamp * 3);
     el.style.transform = `translate(${thump * 3}px, ${thump * 2}px) scale(${lerp(1.2, 1, stamp)}) rotate(${lerp(-18, -8, stamp)}deg)`;
-  })}>${S.seal(220, 14)}</div>
+  })}>${seal(S, 220, 14)}</div>
 </div>
 <div class="a" style="left:860px;top:120px;width:920px">
-<h1 class="d" style="font-size:96px;font-weight:700;line-height:0.98;letter-spacing:-0.035em">${S.words(b(0), 'Three steps to', { accent: 'be found.', accentClass: 'clay' })}</h1>
+<h1 class="d" style="font-size:96px;font-weight:700;line-height:0.98;letter-spacing:-0.035em">${S.words(b(0), 'Three steps to a', { accent: 'legacy.', accentClass: 'clay' })}</h1>
 <div style="position:relative;margin-top:64px;height:510px">
 <span class="a" style="left:15px;top:16px;width:10px;height:${NODE_Y[2]}px;background:rgb(11 14 20 / 0.1)"></span>
 <span class="a" style="left:15px;top:16px;width:10px;background:var(--gold)" ${S.ref((el, t) => {
@@ -355,13 +376,13 @@ ${STEPS.map((s, i) => `<div class="a" style="left:0;top:${NODE_Y[i]}px;display:f
   })}><p class="d" style="font-size:56px;font-weight:700;line-height:1.02;letter-spacing:-0.025em">${s.title}</p><p class="s" style="margin-top:12px;font-size:30px;line-height:1.35;color:rgb(11 14 20 / 0.7)">${s.body}</p></div>
 </div>`).join('')}
 </div>
-<div style="margin-top:8px;display:flex;align-items:center;gap:32px;transform-origin:left center" ${S.ref((el, t) => {
+<div style="margin-top:24px;display:flex;align-items:center;gap:32px;transform-origin:left center" ${S.ref((el, t) => {
     const cta = outBack(prog(t, b(8), 0.26));
     el.style.opacity = Math.min(1, cta * 2);
     el.style.transform = `translateY(${(1 - Math.min(1, cta)) * 30}px) scale(${0.96 + 0.04 * Math.min(1, cta)})`;
   })}>
 <span class="s" style="border-radius:16px;background:var(--ink);padding:24px 40px;font-size:32px;line-height:1.5;font-weight:600;color:var(--cream)">List your business free</span>
-<span class="d" style="font-size:34px;line-height:1.5;font-weight:600;letter-spacing:-0.01em;color:rgb(11 14 20 / 0.7)">jubilee.to/list</span>
+<span class="d" style="font-size:34px;line-height:1.5;font-weight:600;letter-spacing:-0.01em;color:rgb(11 14 20 / 0.7)">jubilee.to</span>
 </div>
 </div>
 <div class="a" style="left:0;right:0;top:0;background:var(--ink)" ${S.ref((el, t) => { el.style.height = `${1080 * enter(t, b(11.5), 0.3, inOutCubic)}px`; })}></div>
@@ -378,14 +399,14 @@ ${S.confetti([HIT, b(8)], 150)}
 ${S.drawnMark(210, { draw: (t) => enter(t, 0.12, 0.3), bar: (t) => enter(t, HIT, 0.24) })}
 <div style="margin-top:18px">${S.wordmark(196, (t) => prog(t, 0.3, 0.45))}</div>
 </div>
-<h1 class="d" style="margin-top:64px;text-align:center;font-size:104px;font-weight:700;line-height:1;letter-spacing:-0.035em">${S.words(b(2), 'Your community is')}<br>${S.words(b(3), '', { accent: 'open for business.', stagger: 0.06 })}</h1>
+<h1 class="d" style="margin-top:64px;text-align:center;font-size:104px;font-weight:700;line-height:1;letter-spacing:-0.035em">${S.words(b(2), 'Your business was meant')}<br>${S.words(b(3), '', { accent: 'to outlast you.', stagger: 0.06 })}</h1>
 <div style="margin-top:64px;display:flex;align-items:center;gap:40px" ${S.ref((el, t) => {
     const url = enter(t, b(4), 0.3);
     el.style.opacity = url;
     el.style.transform = `translateY(${(1 - url) * 24}px)`;
   })}>
 <span class="d" style="border-radius:999px;background:var(--gold);padding:20px 48px;font-size:52px;line-height:1.5;font-weight:700;letter-spacing:-0.02em;color:var(--ink)">jubilee.to</span>
-<span class="s" style="font-size:30px;font-weight:500;line-height:1.375;color:rgb(244 242 236 / 0.8)">Free for members.<br>List your business free.</span>
+<span class="s" style="font-size:30px;font-weight:500;line-height:1.375;color:rgb(244 242 236 / 0.8)">List your business free.<br>Resource the Kingdom. In Jesus’ name.</span>
 </div>
 </div>
 <div class="fill" style="background:var(--ink)" ${S.ref((el, t) => { el.style.opacity = exit(t, b(11.5), 0.3); })}></div>
