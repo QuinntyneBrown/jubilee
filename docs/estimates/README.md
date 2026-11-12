@@ -11,7 +11,7 @@
 | [design-system](design-system.md) | 6 days | 30% |
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 86% |
-| [listings](listings.md) | 20 days | 95% |
+| [listings](listings.md) | 20 days | 100% |
 | [accounts](accounts.md) | 50 days | 93% |
 | [security](security.md) | 34 days | 32% |
 | [messaging](messaging.md) | 17 days | 98% |
@@ -32,8 +32,7 @@
 ## Roadmap
 
 1. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
-2. listings: crawler routing for shared links, the `og-image.png` asset and the team notification e-mail of a report
-3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
-4. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)
-5. Polish the remaining 60–90% designs: offline details, and set `Email__MailingAddress` so that promotional e-mail can go out (ADR 0053)
-6. Deferred: the launch-day e-mail, pre-registrations as listing drafts and a staff screen for them (ADR 0044); hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0042)
+2. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
+3. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)
+4. Polish the remaining 60–90% designs: offline details, and set `Email__MailingAddress` so that promotional e-mail can go out (ADR 0053)
+5. Deferred: the launch-day e-mail, pre-registrations as listing drafts and a staff screen for them (ADR 0044); hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0042)
