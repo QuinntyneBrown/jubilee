@@ -1,8 +1,8 @@
-# 15 · Journey 10: List a business
+# 16 · Journey 10: List a business
 
 > **Runtime:** 1:38 (98.3 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 10
 
-**Video:** [15-journey-10-list-a-business.mp4](15-journey-10-list-a-business.mp4) · **Audio:** [15-journey-10-list-a-business.mp3](15-journey-10-list-a-business.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [16-journey-10-list-a-business.mp4](16-journey-10-list-a-business.mp4) · **Audio:** [16-journey-10-list-a-business.mp3](16-journey-10-list-a-business.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## What it shows
 
@@ -71,8 +71,8 @@ directly.
 
 ```sh
 pip install edge-tts
-node tools/video-demo/build.mjs docs/videos/15-journey-10-list-a-business --check   # speak the lines, print their lengths
-node tools/video-demo/build.mjs docs/videos/15-journey-10-list-a-business           # record and encode
+node tools/video-demo/build.mjs docs/videos/16-journey-10-list-a-business --check   # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/16-journey-10-list-a-business           # record and encode
 ```
 
 `narration.json` holds the lines and `demo.spec.ts` drives the app, one `demo.scene` per line. The

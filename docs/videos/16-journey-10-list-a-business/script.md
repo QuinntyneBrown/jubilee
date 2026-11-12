@@ -1,4 +1,4 @@
-# 15 · Journey 10: List a business
+# 16 · Journey 10: List a business
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 

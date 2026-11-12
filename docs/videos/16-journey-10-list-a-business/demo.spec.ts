@@ -14,7 +14,7 @@ import { ServiceEditorDialog } from '../../../e2e/pages/service-editor.dialog';
 import { StatementAgreementDialog } from '../../../e2e/pages/statement-agreement.dialog';
 import { Toasts } from '../../../e2e/pages/toasts';
 
-// Video 15: journey 10, list a business. A member fills in /list with a highlight and a service
+// Video 16: journey 10, list a business. A member fills in /list with a highlight and a service
 // added through the full service editor; the verification team's review of a listing with nothing
 // to offer; and an owner asked to agree to the updated statement of faith, who agrees, then the
 // same owner 30 days on, whose listing the daily job paused. The app is answered by the recorded
