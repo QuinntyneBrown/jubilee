@@ -4,14 +4,19 @@ window.TIMING = {
  "duration": 64.8,
  "captions": [
   {
-   "text": "On Sunday, you know exactly who to trust.",
+   "text": "On Sunday, we’re sent out to bear fruit that will last.",
    "start": 0.6,
-   "end": 3.277
+   "end": 3.671
   },
   {
-   "text": "On Monday, the pipe bursts, and you’re scrolling through strangers.",
+   "text": "On Monday, you open for business.",
    "start": 7.5,
-   "end": 11.228
+   "end": 9.6
+  },
+  {
+   "text": "Can believers find you?",
+   "start": 9.6,
+   "end": 11.169
   },
   {
    "text": "Meet Jubilee.",
@@ -19,29 +24,34 @@ window.TIMING = {
    "end": 15.856
   },
   {
-   "text": "Toronto’s Christian businesses, all in one place.",
+   "text": "Toronto’s Christian businesses, prospering with purpose.",
    "start": 16.5,
-   "end": 18.783
+   "end": 18.816
   },
   {
-   "text": "Every business is verified by the Jubilee team.",
-   "start": 22.146,
-   "end": 24.257
+   "text": "God gives us the power to get wealth.",
+   "start": 22.8,
+   "end": 24.5
   },
   {
-   "text": "Your money stays in the community. And it’s free to join.",
-   "start": 24.3,
-   "end": 27.422
+   "text": "Business has always resourced the Kingdom.",
+   "start": 24.5,
+   "end": 26.05
   },
   {
-   "text": "Shop Christian makers: Bibles, gifts, apparel and fresh flowers.",
+   "text": "And together, we strengthen our city.",
+   "start": 26.05,
+   "end": 27.682
+  },
+  {
+   "text": "Shop with purpose: Bibles, gifts, apparel and fresh flowers.",
    "start": 29.0,
    "end": 33.029
   },
   {
-   "text": "Hire the advisors and trades your church already recommends,",
+   "text": "Hire believers who work as for the Lord,",
    "start": 36.2,
-   "end": 39.578
+   "end": 38.577
   },
   {
    "text": "and book in a tap.",
@@ -49,73 +59,84 @@ window.TIMING = {
    "end": 40.884
   },
   {
-   "text": "Own a business? Your church family is looking for you.",
+   "text": "Own a business? Bear fruit.",
    "start": 43.5,
-   "end": 47.089
+   "end": 45.2
   },
   {
-   "text": "Create your page, get verified by our team,",
+   "text": "Prosper with purpose and resource His Kingdom.",
+   "start": 45.2,
+   "end": 47.728
+  },
+  {
+   "text": "Create your page, welcome believers who want to buy from you,",
    "start": 50.85,
-   "end": 53.7
+   "end": 54.0
   },
   {
-   "text": "and welcome customers who already trust you.",
-   "start": 53.7,
-   "end": 55.433
+   "text": "and resource the Kingdom.",
+   "start": 54.0,
+   "end": 55.4
   },
   {
-   "text": "Jubilee. Your community is open for business.",
+   "text": "Jubilee. Your business was meant to outlast you.",
    "start": 58.0,
-   "end": 61.223
+   "end": 61.06
   }
  ],
  "segments": [
   {
-   "text": "On Sunday, you know exactly who to trust.",
+   "text": "On Sunday, we're sent out to bear fruit that will last.",
    "start": 0.6,
-   "end": 2.977,
+   "end": 3.371,
+   "speed": 1.1
+  },
+  {
+   "text": "On Monday, you open for business.",
+   "start": 7.5,
+   "end": 9.407,
    "speed": 1.0
   },
   {
-   "text": "On Monday, the pipe bursts, and you're scrolling through strangers.",
-   "start": 7.5,
-   "end": 10.928,
+   "text": "Can believers find you?",
+   "start": 9.6,
+   "end": 10.869,
    "speed": 1.0
   },
   {
    "text": "Meet Jubilee.",
    "start": 14.7,
    "end": 15.556,
-   "speed": 1.15
+   "speed": 1.2
   },
   {
-   "text": "Toronto's Christian businesses, all in one place.",
+   "text": "Toronto's Christian businesses, prospering with purpose.",
    "start": 16.5,
-   "end": 18.483,
+   "end": 18.516,
+   "speed": 1.4
+  },
+  {
+   "text": "God gives us the power to get wealth.",
+   "start": 22.8,
+   "end": 24.396,
+   "speed": 1.2
+  },
+  {
+   "text": "Business has always resourced the Kingdom.",
+   "start": 24.5,
+   "end": 25.865,
    "speed": 1.35
   },
   {
-   "text": "Every business is verified by the Jubilee team.",
-   "start": 22.146,
-   "end": 23.957,
+   "text": "And together, we strengthen our city.",
+   "start": 26.05,
+   "end": 27.382,
    "speed": 1.35
   },
   {
-   "text": "Your money stays in the community.",
-   "start": 24.3,
-   "end": 25.834,
-   "speed": 1.15
-  },
-  {
-   "text": "And it's free to join.",
-   "start": 26.1,
-   "end": 27.122,
-   "speed": 1.15
-  },
-  {
-   "text": "Shop Christian makers:",
+   "text": "Shop with purpose:",
    "start": 29.0,
-   "end": 30.187,
+   "end": 29.936,
    "speed": 1.15
   },
   {
@@ -137,10 +158,10 @@ window.TIMING = {
    "speed": 1.35
   },
   {
-   "text": "Hire the advisors and trades your church already recommends,",
+   "text": "Hire believers who work as for the Lord,",
    "start": 36.2,
-   "end": 39.278,
-   "speed": 1.15
+   "end": 38.277,
+   "speed": 1.0
   },
   {
    "text": "and book in a tap.",
@@ -149,34 +170,34 @@ window.TIMING = {
    "speed": 1.2
   },
   {
-   "text": "Own a business?",
+   "text": "Own a business? Bear fruit.",
    "start": 43.5,
-   "end": 44.357,
+   "end": 45.071,
    "speed": 1.0
   },
   {
-   "text": "Your church family is looking for you.",
-   "start": 44.95,
-   "end": 46.789,
-   "speed": 1.0
+   "text": "Prosper with purpose and resource His Kingdom.",
+   "start": 45.2,
+   "end": 47.428,
+   "speed": 1.15
   },
   {
    "text": "Create your page,",
    "start": 50.85,
-   "end": 51.667,
-   "speed": 1.3
+   "end": 51.724,
+   "speed": 1.15
   },
   {
-   "text": "get verified by our team,",
+   "text": "welcome believers who want to buy from you,",
    "start": 52.2,
-   "end": 53.461,
-   "speed": 1.3
+   "end": 53.714,
+   "speed": 1.35
   },
   {
-   "text": "and welcome customers who already trust you.",
-   "start": 53.7,
-   "end": 55.133,
-   "speed": 1.5
+   "text": "and resource the Kingdom.",
+   "start": 54.0,
+   "end": 55.1,
+   "speed": 1.15
   },
   {
    "text": "Jubilee.",
@@ -185,9 +206,9 @@ window.TIMING = {
    "speed": 1.0
   },
   {
-   "text": "Your community is open for business.",
+   "text": "Your business was meant to outlast you.",
    "start": 58.8,
-   "end": 60.923,
+   "end": 60.76,
    "speed": 1.0
   }
  ]
