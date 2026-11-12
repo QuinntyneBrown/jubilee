@@ -1,4 +1,4 @@
-# 12 · Journey 8: Request a quote
+# 13 · Journey 8: Request a quote
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 

@@ -1,8 +1,8 @@
-# 12 · Journey 8: Request a quote
+# 13 · Journey 8: Request a quote
 
 > **Runtime:** 1:23 (83.1 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 8
 
-**Video:** [12-journey-08-request-a-quote.mp4](12-journey-08-request-a-quote.mp4) · **Audio:** [12-journey-08-request-a-quote.mp3](12-journey-08-request-a-quote.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [13-journey-08-request-a-quote.mp4](13-journey-08-request-a-quote.mp4) · **Audio:** [13-journey-08-request-a-quote.mp3](13-journey-08-request-a-quote.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## What it shows
 
@@ -58,8 +58,8 @@ answered in messages and the member pays the business directly.
 
 ```sh
 pip install edge-tts
-node tools/video-demo/build.mjs docs/videos/12-journey-08-request-a-quote --check   # speak the lines, print their lengths
-node tools/video-demo/build.mjs docs/videos/12-journey-08-request-a-quote           # record and encode
+node tools/video-demo/build.mjs docs/videos/13-journey-08-request-a-quote --check   # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/13-journey-08-request-a-quote           # record and encode
 ```
 
 `narration.json` holds the lines and `demo.spec.ts` drives the app, one `demo.scene` per line. The

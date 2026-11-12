@@ -5,7 +5,7 @@ import { AccountPage } from '../../../e2e/pages/account.page';
 import { BusinessPage } from '../../../e2e/pages/business.page';
 import { RequestQuoteDialog } from '../../../e2e/pages/messages.page';
 
-// Video 12: journey 8, request a quote. A member whose profile has a phone number asks
+// Video 13: journey 8, request a quote. A member whose profile has a phone number asks
 // Luzandre.com for a quote: the dialog starts with that number, she gives another for this job and
 // sends it, and her account still shows her own. The app is answered by the recorded API and the
 // profile and quote stand-ins of the behaviour specs (ADR 0009); two cards say what the run did
