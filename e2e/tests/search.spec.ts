@@ -1,5 +1,12 @@
 import { expect, test } from '../fixtures/jb-test';
-import { memberSearchStart, noResults, stubSearch, stubSearchStart } from '../fixtures/stubs';
+import {
+  memberSearchStart,
+  noResults,
+  searchHit,
+  searchResultsOf,
+  stubSearch,
+  stubSearchStart,
+} from '../fixtures/stubs';
 import { SearchPage } from '../pages/search.page';
 
 // Search the directory: L2-029 to L2-032, L2-118 and L2-181.
@@ -74,6 +81,87 @@ test.describe('search results (L2-029)', () => {
     await expect(search.errorState).toContainText('We couldn’t load your results');
     await expect(search.errorReference).toHaveText('JB-SRCH-503');
     await expect(search.heading).toHaveText('Results for “plumber”');
+  });
+
+  test('AC1: each tab lists the results of its kind, as many as its count says', async ({
+    page,
+    jb,
+  }) => {
+    const search = new SearchPage(page);
+    await stubSearch(
+      page,
+      searchResultsOf('plumbing', [
+        searchHit('business', 'Plumbing by Waterworks', 'waterworks'),
+        searchHit('business', 'Plumbing and Heating Co.', 'plumbing-heating'),
+        searchHit('service', 'Plumbing inspection', 'waterworks', 'Plumbing by Waterworks'),
+        searchHit('product', 'Plumbing starter kit', 'pipes-and-more', 'Pipes and More'),
+      ]),
+    );
+    await jb.goto('/search?q=plumbing');
+
+    await expect(search.subtitle).toHaveText('2 businesses · 1 service · 1 product');
+    await expect(search.tab('Businesses')).toContainText('2');
+    await expect(search.rowTitles).toHaveText([
+      'Plumbing by Waterworks',
+      'Plumbing and Heating Co.',
+    ]);
+
+    await search.tab('Services').click();
+    await expect(search.tab('Services')).toContainText('1');
+    await expect(search.rowTitles).toHaveText(['Plumbing inspection']);
+    await expect(search.rowMeta(0)).toContainText('Plumbing by Waterworks');
+
+    await search.tab('Products').click();
+    await expect(search.tab('Products')).toContainText('1');
+    await expect(search.rowTitles).toHaveText(['Plumbing starter kit']);
+    await expect(search.rowMeta(0)).toContainText('Pipes and More');
+  });
+
+  test('AC7: a search made again asks again and shows the listings as they are now', async ({
+    page,
+    jb,
+  }) => {
+    const search = new SearchPage(page);
+    await search.setWidth(1280);
+    const waterworks = searchHit('business', 'Plumbing by Waterworks', 'waterworks');
+    const heating = searchHit('business', 'Plumbing and Heating Co.', 'plumbing-heating');
+    await stubSearch(page, searchResultsOf('plumbing', [waterworks, heating]));
+    await jb.goto('/search?q=plumbing');
+    await expect(search.rowTitles).toHaveText([
+      'Plumbing by Waterworks',
+      'Plumbing and Heating Co.',
+    ]);
+
+    // Its owner pauses Plumbing and Heating Co.; the member searches for something else, then again.
+    await stubSearch(page, noResults('roofing', null));
+    await search.searchFromTopBar('roofing');
+    await expect(search.emptyTitle).toHaveText('Nothing matches “roofing”');
+    await stubSearch(page, searchResultsOf('plumbing', [waterworks]));
+    await search.searchFromTopBar('plumbing');
+
+    await expect(search.subtitle).toHaveText('1 business · 0 services · 0 products');
+    await expect(search.rowTitles).toHaveText(['Plumbing by Waterworks']);
+  });
+
+  test('AC6 (L2-118 AC1): the error says nothing is lost; Try again loads the results', async ({
+    page,
+    jb,
+  }) => {
+    const search = new SearchPage(page);
+    await jb.open('search.error');
+    await expect(search.errorState).toContainText(
+      'Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote JB-SRCH-503.',
+    );
+    await expect(search.backToBrowse).toHaveAttribute('href', '/');
+
+    await stubSearch(
+      page,
+      searchResultsOf('plumber', [searchHit('business', 'Plumber on Call', 'plumber-on-call')]),
+    );
+    await search.tryAgain.click();
+
+    await expect(search.errorState).toHaveCount(0);
+    await expect(search.rowTitles).toHaveText(['Plumber on Call']);
   });
 
   test('a search that is rate limited shows the same error', async ({ page, jb }) => {

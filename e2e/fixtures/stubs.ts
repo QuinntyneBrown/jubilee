@@ -65,6 +65,43 @@ export function noResults(
   };
 }
 
+/** One result of a search: a business, or a service or a product of `businessName`. */
+export function searchHit(
+  kind: 'business' | 'service' | 'product',
+  name: string,
+  slug: string,
+  businessName = name,
+  where = 'name',
+) {
+  const term = name.split(' ')[0].toLowerCase();
+  return {
+    kind,
+    name,
+    slug,
+    productSlug: kind === 'product' ? name.toLowerCase().replace(/[^a-z0-9]+/g, '-') : null,
+    businessName,
+    categorySlug: 'home-property',
+    explanation: {
+      text: `Matches ${term} in ${where}`,
+      highlights: [{ start: 'Matches '.length, length: term.length }],
+    },
+  };
+}
+
+/** A search answer with these hits, counted by kind as the API counts them. */
+export function searchResultsOf(query: string, hits: ReturnType<typeof searchHit>[]) {
+  const count = (kind: string) => hits.filter((hit) => hit.kind === kind).length;
+  return {
+    query,
+    businessCount: count('business'),
+    serviceCount: count('service'),
+    productCount: count('product'),
+    hasMatchExplanations: true,
+    hits,
+    suggestion: null,
+  };
+}
+
 /** A space as search returns it (L2-204): its card, never its address. */
 function spaceHit(space: {
   slug: string;
