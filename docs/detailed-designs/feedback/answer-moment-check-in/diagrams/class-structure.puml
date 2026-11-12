@@ -1,0 +1,79 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Answer a moment check-in
+
+class MomentCheck <<jb-moment-check>> {
+  +question: InputSignal<string>
+  +scored: OutputEmitterRef<number>
+  +noted: OutputEmitterRef<string>
+}
+
+class ScoreScale <<jb-score-scale>> {
+  +label: InputSignal<string>
+  +value: ModelSignal<number | null>
+}
+
+interface FeedbackApi {
+  +saveCheckIn(id: string, request: CheckInRequest): Observable<void>
+}
+
+class CheckInRequest {
+  +moment: "request-sent" | "listing-submitted"
+  +score: number
+  +note: string | null
+}
+
+class SaveCheckInCommand {
+  +string Subject
+  +string MemberName
+  +Guid Id
+  +string? Moment
+  +int? Score
+  +string? Note
+}
+
+class SaveCheckInCommandHandler {
+  +{static} int CheckInsPerHour = 30
+  +Handle(command: SaveCheckInCommand): Task
+}
+
+enum CheckInMoment {
+  RequestSent
+  ListingSubmitted
+}
+
+enum FeedbackKind {
+  Rating
+  BugReport
+  Kudos
+  CheckIn
+}
+
+class Feedback {
+  +Guid Id
+  +FeedbackKind Kind
+  +string MemberSubject
+  +CheckInMoment? Moment
+  +int? Rating
+  +string? Note
+  +DateTimeOffset CreatedAt
+}
+
+MomentCheck *-- "1" ScoreScale
+FeedbackApi ..> CheckInRequest
+SaveCheckInCommandHandler ..> SaveCheckInCommand : handles
+SaveCheckInCommandHandler --> Feedback : creates or replaces
+Feedback --> "1" FeedbackKind
+Feedback --> "0..1" CheckInMoment
+@enduml

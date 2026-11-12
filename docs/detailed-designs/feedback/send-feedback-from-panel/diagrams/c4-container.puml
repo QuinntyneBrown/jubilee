@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Send feedback from the panel
+
+Person(member, "Member", "Sends feedback from any screen")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Launcher in the app shell and the panel Tell us how it's going")
+  Container(api, "Jubilee API", "ASP.NET Core", "Validates and stores feedback for the member of the session")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Feedback")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Posts a rating or a bug report or kudos to", "JSON/HTTPS")
+Rel(api, db, "Writes feedback in", "EF Core")
+@enduml

@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Delete and download
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Backend — Jubilee API" #D1FADF
+  participant "Account endpoints" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeleteAccountCommandHandler" as delete
+  participant "AccountErasure" as erasure
+  participant "DataExportBuilder" as export
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+alt Member deletes their account (L2-017)
+  actor -> controller : Confirm the deletion with DELETE
+  controller -> delete : Send DeleteAccountCommand
+  delete -> erasure : Erase the member's data
+  erasure -> db : Delete the Feedback rows of the member's subject
+  erasure -> db : Delete the FeedbackScreenshots rows of the member's subject
+  db --> erasure : Commit result
+  erasure --> delete : Erased
+  delete --> controller : Done
+  controller --> actor : Account deleted with its feedback and screenshots (L2-214)
+else Member downloads their data (L2-018)
+  actor -> controller : Request the data download
+  controller -> export : Have the archive of the request built
+  export -> db : Load the member's Feedback of all four kinds
+  db --> export : Feedback rows
+  export -> export : Add the feedback to the archive
+  export --> controller : Archive ready
+  controller --> actor : Archive that includes the feedback (L2-214)
+end
+@enduml

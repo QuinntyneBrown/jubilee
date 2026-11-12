@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Answer a moment check-in
+
+Person(member, "Member", "Answers one question on a confirmation")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Question on the confirmation of a request and of a submitted listing")
+  Container(api, "Jubilee API", "ASP.NET Core", "Creates or replaces the check-in of the member of the session")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Feedback of kind CheckIn")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Puts the check-in to", "JSON/HTTPS")
+Rel(api, db, "Writes the check-in in", "EF Core")
+@enduml

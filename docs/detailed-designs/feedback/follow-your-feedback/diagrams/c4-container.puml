@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Follow your feedback
+
+Person(member, "Member", "Reads Your feedback")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Your feedback on the feedback page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Answers the feedback of the member of the session")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Feedback")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Gets the member's feedback from", "JSON/HTTPS")
+Rel(api, db, "Reads feedback from", "EF Core")
+@enduml

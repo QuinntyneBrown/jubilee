@@ -1,0 +1,70 @@
+@startuml
+title UML sequence behaviour — Send from the page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "memberGuard" as guard
+  participant "FeedbackPage" as page
+  participant "FeedbackApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "FeedbackController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Send command handler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> guard : Open /feedback/rate or /feedback/bug or /feedback/kudos
+alt Visitor
+  guard --> actor : Send to sign in and return to the page (L2-012)
+else Member
+  guard -> page : Activate
+  page --> actor : "Help us make Jubilee better" with the tab of the address and its form and "Your feedback"
+  opt Choose another tab
+    actor -> page : Press a tab
+    page --> actor : Change the address to /feedback/{tab}
+  end
+  actor -> page : Fill the form and press "Send feedback" or "Send bug report" or "Send kudos"
+  page -> page : Check the form of the tab
+  alt Form invalid
+    page --> actor : Message under each field and focus on the first invalid one and nothing sent (L2-126)
+  else Form valid
+    page --> actor : Button "Sending…" busy and fields cannot be changed (L2-127)
+    page -> client : sendRating or sendBugReport or sendKudos(request, key of the tab)
+    client -> controller : POST /api/feedback/ratings or bug-reports or kudos with Idempotency-Key
+    controller -> handler : Send the command with the member of the session
+    handler -> db : Look up the key then validate and limit and save (L2-214)
+    db --> handler : Commit result
+    handler --> controller : FeedbackItemDto
+    controller --> client : 201 Created with the item
+    client --> page : FeedbackItem
+    page --> actor : Confirmation for the kind with "Back to Jubilee"
+    page -> page : Put the item at the top of "Your feedback"
+  end
+end
+opt Submission fails or takes longer than 10 seconds
+  client --> page : Error or timeout
+  alt 422 with field codes
+    page --> actor : Server-side errors under their fields
+  else Any other failure
+    page --> actor : Alert "We couldn't send that" with the reason and everything kept (L2-128)
+  end
+  actor -> page : Submit again
+  page -> client : Same call with the same key (L2-132)
+end
+@enduml

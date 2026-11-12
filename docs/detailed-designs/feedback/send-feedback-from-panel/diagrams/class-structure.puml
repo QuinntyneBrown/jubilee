@@ -1,0 +1,99 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Send feedback from the panel
+
+interface FeedbackApi {
+  +sendRating(request: RatingRequest, idempotencyKey: string): Observable<FeedbackItem>
+  +sendBugReport(request: BugReportRequest, idempotencyKey: string): Observable<FeedbackItem>
+  +sendKudos(request: KudosRequest, idempotencyKey: string): Observable<FeedbackItem>
+}
+
+class HttpFeedbackApi {
+  -http: HttpClient
+}
+
+class FeedbackDialog {
+  #tab: Signal<FeedbackTab>
+  #view: Signal<View>
+  #rating: Signal<number | null>
+  #note: Signal<string>
+  #happened: Signal<string>
+  #chips: Signal<KudosChip[]>
+  -keys: Record<FeedbackTab, string>
+  #canSend(): boolean
+  #send(): void
+  #openFullForm(): void
+  #done(): void
+}
+
+class FeedbackDialogData {
+  +page: string
+}
+
+enum FeedbackTab {
+  rate
+  bug
+  kudos
+}
+
+enum View {
+  form
+  busy
+  failed
+  sent
+}
+
+class RatingRequest {
+  +rating: number
+  +note: string | null
+  +mayContact: boolean
+}
+
+class BugReportRequest {
+  +happened: string
+  +screen: string
+  +version: string
+  +mayContact: boolean
+}
+
+class KudosRequest {
+  +chips: KudosChip[]
+  +note: string | null
+  +mayContact: boolean
+}
+
+class FeedbackItem {
+  +id: string
+  +kind: string
+  +status: string
+  +reference: string | null
+  +createdAt: string
+}
+
+class App {
+  #showLauncher(): boolean
+  #openFeedback(): void
+}
+
+HttpFeedbackApi ..|> FeedbackApi
+App ..> FeedbackDialog : opens
+FeedbackDialog --> FeedbackDialogData : receives
+FeedbackDialog --> FeedbackApi : sends through
+FeedbackDialog --> "1" FeedbackTab
+FeedbackDialog --> "1" View
+FeedbackApi ..> RatingRequest
+FeedbackApi ..> BugReportRequest
+FeedbackApi ..> KudosRequest
+FeedbackApi ..> FeedbackItem : answers
+@enduml

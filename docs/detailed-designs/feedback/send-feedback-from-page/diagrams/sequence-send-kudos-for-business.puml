@@ -1,0 +1,71 @@
+@startuml
+title UML sequence behaviour — Send kudos for a business
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "FeedbackPage" as page
+  participant "FeedbackApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "FeedbackController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetKudosBusinessesQueryHandler" as list
+  participant "SendKudosCommandHandler" as send
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open the "Kudos" tab
+page -> client : kudosBusinesses()
+client -> controller : GET /api/feedback/businesses
+controller -> list : Send GetKudosBusinessesQuery with the member of the session
+list -> db : Load the public listings the member has a Request or a Conversation with
+db --> list : Listings
+list --> controller : Slug and name of each, by name
+controller --> client : 200 OK
+client --> page : Contacted businesses
+alt No contacted business
+  page --> actor : "A business" disabled with "Send a request or a message to a business first."
+else At least one
+  actor -> page : Choose "A business"
+  page --> actor : "Which one?" and the unticked checkbox "Jubilee may show this on their page with my first name"
+  actor -> page : Choose the business and chips or a note and press "Send kudos"
+  page -> page : Check a chip or a note and the business
+  alt Nothing stood out or no business chosen
+    page --> actor : "Choose what stood out or write a note." or "Choose the business." under its field
+  else Form valid
+    page -> client : sendKudos({ chips, note, business, mayShow, mayContact }, key)
+    client -> controller : POST /api/feedback/kudos with Idempotency-Key
+    controller -> send : Send SendKudosCommand
+    send -> db : Load the public listing by slug and the member's Request or Conversation with it
+    db --> send : Listing and contact or none
+    alt Business not public or not contacted
+      send --> controller : ValidationFailedException business: BUSINESS_NOT_CONTACTED
+      controller --> client : 422 and nothing stored (L2-214)
+      client --> page : Field error
+      page --> actor : Error under "Which one?"
+    else Contacted business
+      send -> db : Save kudos with the listing and the consent to show
+      db --> send : Commit result
+      send --> controller : FeedbackItemDto
+      controller --> client : 201 Created
+      client --> page : FeedbackItem
+      page --> actor : "Thank you for saying it." and "{First name}, we've kept your note for {business}."
+    end
+  end
+end
+@enduml

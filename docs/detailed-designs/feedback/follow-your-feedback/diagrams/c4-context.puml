@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Follow your feedback
+
+Person(member, "Member", "Reads what they sent and what became of it")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(member, jubilee, "Reads their own feedback with its status and reply in", "HTTPS")
+@enduml

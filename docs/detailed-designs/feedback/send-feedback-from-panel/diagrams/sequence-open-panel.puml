@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Open the panel
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "App" as app
+  participant "SessionService" as session
+  participant "jb-feedback-launcher" as launcher
+  participant "CDK Dialog" as cdk
+  participant "FeedbackDialog" as dialog
+end box
+actor -> app : Open a screen of the app
+app -> app : Read shell and page from the route data
+app -> session : member()
+session --> app : Member or none
+alt Visitor or shell is bare or page is feedback
+  app --> actor : Screen without the launcher (L2-210)
+else Member on an app-shell route
+  app -> launcher : Render
+  launcher --> actor : Pill "Feedback" from 768 px or round button "Give feedback" above the tab bar
+  actor -> launcher : Press by touch or click or Enter or Space
+  launcher -> app : Pressed
+  app -> cdk : open(FeedbackDialog, { page })
+  cdk -> dialog : Create in the corner placement with the scrim
+  dialog --> actor : "Tell us how it's going" with "Rate" selected and focus inside (L2-130)
+  opt Arrow keys on the tabs
+    actor -> dialog : Press Right or Left
+    dialog --> actor : Select and focus the next tab (L2-158)
+  end
+  alt "Full form"
+    actor -> dialog : Press "Full form"
+    dialog -> cdk : Close
+    dialog --> actor : Navigate to /feedback/{tab} (L2-212)
+  else Close button or Escape or scrim
+    actor -> dialog : Close
+    dialog -> cdk : Close and drop what was typed
+    cdk --> launcher : Return focus (L2-130)
+  end
+end
+@enduml

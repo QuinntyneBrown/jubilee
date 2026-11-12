@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Load your feedback
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "FeedbackPage" as page
+  participant "jb-feedback-history" as history
+  participant "FeedbackApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "FeedbackController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetMyFeedbackQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open the feedback page
+page -> history : state loading
+history --> actor : Skeleton rows and "Loading your feedback…" announced (L2-123)
+page -> client : mine()
+client -> controller : GET /api/feedback
+controller -> controller : Take the member from the session (L2-133)
+controller -> handler : Send GetMyFeedbackQuery(Subject)
+handler -> db : Load the caller's Feedback of kind Rating or BugReport or Kudos, newest first
+db --> handler : Feedback rows
+handler -> handler : Map to FeedbackItemDto without the note or the browser or the screenshots
+handler --> controller : Items
+controller --> client : 200 OK
+client --> page : FeedbackItem list
+alt No items
+  page -> history : state loaded with no items
+  history --> actor : "Nothing yet. What you send shows up here, with our reply."
+else Items
+  page -> history : state loaded with the items
+  history --> actor : Each item with its kind icon and title and date and status in words (L2-213)
+  opt Bug report
+    history --> actor : Reference beside the date
+  end
+  opt Item with a reply
+    history --> actor : Reply under the item
+  end
+end
+opt The list fails to load
+  client --> page : Error
+  page -> history : state failed
+  history --> actor : "We couldn't load your feedback." with "Try again" while the form still works (L2-125)
+  actor -> history : Press "Try again"
+  history -> page : retry
+  page -> client : mine()
+  client --> page : FeedbackItem list
+  page --> actor : List shown and focus on the heading "Your feedback"
+end
+@enduml

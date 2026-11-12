@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Follow your feedback
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "FeedbackPage", "Angular page", "Loads the list once and holds the items and the load state")
+  Component(history, "jb-feedback-history", "Library component", "Rows with kind icon and title and date and status in words and reply")
+  Component(client, "FeedbackApi", "Service contract", "mine() calls GET /api/feedback")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "FeedbackController", "ASP.NET Core controller", "GET /api/feedback")
+  Component(handler, "GetMyFeedbackQueryHandler", "MediatR handler", "Reads the caller's ratings and bug reports and kudos, newest first")
+  Component(entity, "Feedback", "Domain entity", "Holds the status and the reply")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Feedback rows")
+
+Rel(page, client, "Loads through")
+Rel(page, history, "Passes items and load state to")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetMyFeedbackQuery")
+Rel(handler, entity, "Maps to FeedbackItemDto")
+Rel(handler, db, "Reads", "EF Core")
+@enduml
