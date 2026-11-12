@@ -13,10 +13,11 @@ skinparam class {
 ' --------------------------
 title Class structure — Request an item
 
-enum RequestType {
+enum RequestKind {
   Booking
   Quote
   Order
+  Space
 }
 
 enum RequestStatus {
@@ -29,34 +30,43 @@ enum RequestStatus {
 
 class Request {
   +Guid Id
-  +RequestType Type
+  +RequestKind Kind
   +RequestStatus Status
-  +Guid MemberId
+  +string MemberSubject
+  +string MemberName
   +Guid ListingId
-  +Guid ConversationId
-  +DeclineReason? DeclineReason
-  +string? DeclineMessage
+  +string IdempotencyKey
+  +string? ServiceName
+  +string? OptionLabel
+  +int? Quantity
+  +int? UnitPriceCents
+  +int? ItemCents
+  +int? ShippingCents
+  +int? TotalCents
+  +string? DeliveryLabel
+  +string? ShippingAddress
+  +string? Note
   +DateTimeOffset CreatedAt
-  +DateTimeOffset? NudgedAt
-  +Confirm(actorId: Guid, now: DateTimeOffset): void
-  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
-  +Cancel(actorId: Guid, now: DateTimeOffset): void
-  +Complete(actorId: Guid?, now: DateTimeOffset): void
-  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
-  +MarkNudged(now: DateTimeOffset): void
+  +{static} AskForOrder(...): Request
+  +Confirm(actor: string, now: DateTimeOffset): void
+  +UndoConfirm(actor: string, now: DateTimeOffset): void
+  +Decline(actor: string, now: DateTimeOffset, reason: string, message: string): void
+  +Cancel(actor: string, now: DateTimeOffset): void
+  +UndoCancel(actor: string, now: DateTimeOffset): void
+  +Complete(actor: string, now: DateTimeOffset): void
 }
 
 class RequestTransition {
   +Guid Id
-  +RequestStatus? From
+  +RequestStatus From
   +RequestStatus To
-  +Guid? ActorId
-  +DateTimeOffset OccurredAt
+  +string Actor
+  +DateTimeOffset At
   +DateTimeOffset? UndoableUntil
 }
 
 Request "1" *-- "1..*" RequestTransition : records
-Request --> RequestType : has
+Request --> RequestKind : has
 Request --> RequestStatus : has
 
 enum DeliveryKind {
@@ -64,64 +74,82 @@ enum DeliveryKind {
   Pickup
 }
 
-class OrderDetails {
-  +Guid ProductId
-  +Guid? ProductOptionId
-  +int Quantity
-  +decimal UnitPrice
-  +decimal ItemAmount
-  +decimal ShippingAmount
-  +decimal EstimatedTotal
-  +Guid DeliveryMethodId
-  +string? ShippingAddress
-}
-
 class DeliveryMethod {
   +Guid Id
+  +Guid ListingId
+  +int Position
   +DeliveryKind Kind
   +string Label
-  +decimal Fee
+  +int FeeCents
   +string Estimate
 }
 
 class Product {
   +Guid Id
-  +decimal Price
-  +int Stock
-  +HasStock(optionId: Guid?, quantity: int): bool
-  +StockLeft(optionId: Guid?): int
+  +string Slug
+  +string Name
+  +int PriceCents
+  +int? Stock
+  +int MinimumQuantity
+  +int MaxQuantity
+}
+
+class ProductOption {
+  +string Label
+  +int? Stock
+  +int MaxQuantity
 }
 
 class RequestItemCommand {
-  +Guid ProductId
-  +Guid? ProductOptionId
+  +string Subject
+  +string Name
+  +string ShopSlug
+  +string? ProductSlug
+  +string? Option
   +int Quantity
-  +Guid DeliveryMethodId
+  +Guid? DeliveryMethodId
   +string? ShippingAddress
+  +string? Note
+  +string? IdempotencyKey
 }
 
 class RequestItemCommandHandler {
-  +Handle(command: RequestItemCommand): Task<RequestCreatedResult>
+  +Handle(command: RequestItemCommand): Task<BookedRequestDto>
 }
 
-class OrderPricingService {
-  +Price(product: Product, optionId: Guid?, quantity: int, method: DeliveryMethod, freeShippingThreshold: decimal?): OrderAmounts
+class BookedRequestDto {
+  +Guid Id
+  +string Status
+  +string MemberStatus
+}
+
+class OrderPricing <<static>> {
+  +{static} For(product: Product, quantity: int, method: DeliveryMethod, freeShippingOverCents: int?): OrderAmounts
 }
 
 class OrderAmounts {
-  +decimal UnitPrice
-  +decimal ItemAmount
-  +decimal ShippingAmount
-  +decimal EstimatedTotal
+  +int UnitCents
+  +int ItemCents
+  +int ShippingCents
+  +int TotalCents
 }
 
-Request "1" *-- "0..1" OrderDetails : owns
-OrderDetails "*" --> "1" Product : refers to
-OrderDetails "*" --> "1" DeliveryMethod : uses
+class Notification {
+  +string MemberSubject
+  +string Kind
+  +string Title
+  +string Detail
+  +string Target
+}
+
+Product "1" *-- "*" ProductOption : offers
 DeliveryMethod --> DeliveryKind : has
 RequestItemCommandHandler ..> RequestItemCommand : handles
-RequestItemCommandHandler ..> OrderPricingService : prices with
+RequestItemCommandHandler ..> OrderPricing : prices with
+RequestItemCommandHandler ..> BookedRequestDto : returns
 RequestItemCommandHandler --> Request : creates
-OrderPricingService ..> OrderAmounts : returns
-OrderPricingService ..> Product : reads
+RequestItemCommandHandler --> Notification : tells the owner with
+OrderPricing ..> OrderAmounts : returns
+OrderPricing ..> Product : reads
+OrderPricing ..> DeliveryMethod : reads
 @enduml

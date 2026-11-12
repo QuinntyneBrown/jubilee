@@ -16,15 +16,16 @@ skinparam package {
 }
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "OrderRequestDialog" as dialog
+  participant "RequestItemDialog" as dialog
   participant "RequestsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "RequestsController" as controller
+  participant "EventsController" as events
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "RequestItemCommandHandler" as handler
-  participant "OrderPricingService" as pricing
+  participant "OrderPricing" as pricing
   participant "Request" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
@@ -35,36 +36,43 @@ box "Backend — Jubilee Worker" #D1FADF
 end box
 actor "Owner" as owner
 actor -> dialog : Press "Send request"
-dialog -> dialog : Require an address for "Ship to me" (L2-046)
-dialog -> client : requestItem(command without prices, idempotency key)
+dialog -> dialog : Require an address with postal code for "Ship to me" (L2-046)
+dialog -> client : requestItem(body without prices, idempotencyKey)
 client -> controller : POST /api/requests/orders
-controller -> controller : Authenticate, apply L2-005 confirmed-member policy, check L2-132 idempotency key
-alt body carries a price field
+controller -> controller : Authenticate, apply RequiresConfirmedEmail (L2-005)
+alt body carries a field it may not set, such as a price
   controller --> client : 400 ProblemDetails (L2-133)
   client --> dialog : Failure
 else body accepted
   controller -> handler : Send RequestItemCommand
-  handler -> db : Load product, option, delivery method and stock
-  db --> handler : Stored product data
-  alt quantity exceeds stock
-    handler --> controller : Validation failure on quantity with n left
-    controller --> client : 422 with per-field code
-    client --> dialog : Remaining count n
-    dialog --> actor : Show "Only {n} left. Lower the quantity to continue."
-  else stock is sufficient
-    handler -> pricing : Recompute prices and totals from stored data (L2-046)
-    pricing --> handler : OrderAmounts
-    handler -> entity : Create order request with status New (L2-043)
-    entity --> handler : Request and first RequestTransition
-    handler -> db : Save request, conversation card and outbox messages in one unit of work
-    db --> handler : Commit result
-    handler --> controller : RequestCreatedResult
+  handler -> db : Look for the member's request with this idempotency key (L2-132)
+  alt key seen before
+    handler --> controller : The first request, unchanged
     controller --> client : 201 Created
-    client --> dialog : Request ID, reply time and lead time
-    dialog --> actor : Show "Request sent to {shop}" with "Keep shopping" and "View request"
-    outbox -> db : Read pending outbox messages
-    db --> outbox : Messages
-    outbox --> owner : In-app notification, real-time event and e-mail
+  else new key
+    handler -> db : Load shop, product, options and delivery method
+    db --> handler : Stored product data
+    alt quantity exceeds stock
+      handler --> controller : ValidationFailedException, quantity ONLY_LEFT:{n}
+      controller --> client : 422 with per-field code
+      client --> dialog : Remaining count n
+      dialog --> actor : Show "Only {n} left. Lower the quantity to continue."
+    else stock is sufficient
+      handler -> pricing : For(product, quantity, method, threshold) (L2-046)
+      pricing --> handler : OrderAmounts
+      handler -> entity : AskForOrder with status New (L2-043)
+      entity --> handler : Request and first RequestTransition
+      handler -> db : Save request, owner's Notification and OutboxMessage in one SaveChangesAsync
+      db --> handler : Commit result
+      handler --> controller : BookedRequestDto
+      controller --> client : 201 Created
+      client --> dialog : Request id and status
+      dialog --> actor : Show "Request sent to {shop}" with "Keep shopping" and "View request"
+      events -> db : Read the owner's new notifications
+      events --> owner : notification event on the open page (L2-070)
+      outbox -> db : Read due outbox messages
+      outbox --> owner : E-mail "New order request from {member}"
+    end
   end
 end
 @enduml

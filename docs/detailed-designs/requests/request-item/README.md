@@ -21,57 +21,72 @@ recomputes prices and totals from stored product data, and it refuses a quantity
 
 ## Description
 
-The feature is a vertical slice from the order dialog in `Jubilee Web` to `Jubilee database`, with side effects
-dispatched by `Jubilee Worker`.
+The feature is a vertical slice from the order dialog in `Jubilee Web` to `Jubilee database`. The names below are
+the names in the code.
 
-- **`OrderRequestDialog`** — Angular dialog built on `DialogShell`. It summarises the product, option, quantity
-  and unit price and offers the shop's delivery methods. "Ship to me" requires "Shipping address", prefilled
-  from the last address used; an empty address shows "Enter the address to ship to, with postal code." "Pick up"
-  hides the address field and omits it from the request. After success it shows "Request sent to {shop}" with
-  the shop's typical reply time and lead time, "Keep shopping" and "View request".
-- **`OrderEstimate`** — signal-based view model of the dialog. It recomputes "Item", "Shipping" and "Estimated
-  total {amount} + tax" immediately when the option, quantity or delivery method changes, and applies free
-  shipping over the shop's threshold. The estimate is display only.
-- **`RequestsApi`** — typed Angular HTTP client. `getOrderDefaults` calls `GET
-  /api/listings/{shop}/products/{product}/order` and returns the delivery methods, the free-shipping threshold, the
-  last shipping address, and the shop's typical reply time and lead time. `requestItem` calls `POST
-  /api/requests/orders` with an `Idempotency-Key` header from `IdempotencyKeyFactory`.
-- **`RequestsController`** — ASP.NET Core controller in `Jubilee.Api`. It authenticates the session cookie,
-  applies the `ConfirmedMember` policy (HTTP 403 with code `EMAIL_UNCONFIRMED`) and sends the command through
-  MediatR. `IdempotencyMiddleware` returns the original result for a repeated key within 24 hours (`L2-132`).
-- **`RequestItemCommand`** — request object carrying `ProductId`, `ProductOptionId`, `Quantity`,
-  `DeliveryMethodId` and `ShippingAddress`. It has no price, shipping or total field. The model binder rejects a
-  body that includes one with HTTP 400 (`L2-133`).
-- **`RequestItemCommandValidator`** — FluentValidation validator. It requires a quantity of at least 1 and a
-  delivery method of the shop, requires `ShippingAddress` with a postal code for a shipping method, and discards
-  the address for a pickup method. A failure returns HTTP 422 with a per-field code.
-- **`RequestItemCommandHandler`** — MediatR handler. It loads the `Product`, its `ProductOption` and the shop's
-  `DeliveryMethod`, checks stock, asks `OrderPricingService` for the amounts, creates the `Request` with its
-  `OrderDetails`, appends an order card to the member–business `Conversation`, and writes the outbox messages in
-  one unit of work. A quantity above stock returns HTTP 422 on `quantity` with the remaining count `n`, which
-  the dialog shows as "Only {n} left. Lower the quantity to continue." Sending a request does not reduce stock;
-  confirming it does (`L2-052`).
-- **`OrderPricingService`** — domain service. It computes the unit price, item amount, shipping amount and
-  estimated total from stored `Product`, `ProductOption` and `DeliveryMethod` data, and sets shipping to zero at
-  or above the free-shipping threshold. The dialog's `OrderEstimate` mirrors the same rules. Tax is never calculated: the estimate
-  reads "{amount} + tax" and the shop adds tax when it confirms (ADR 0017).
-- **`Request`** — domain entity in `Jubilee.Domain` that owns the request lifecycle (`L2-043`). `RequestStatus`
-  holds `New`, `Confirmed`, `Declined`, `Cancelled` and `Completed`. The allowed transitions are `New` →
-  `Confirmed` (the owner confirms), `New` → `Declined` (the owner declines), `New` or `Confirmed` → `Cancelled`
-  (the member cancels) and `Confirmed` → `Completed` (a booking's meeting end time passes, or the owner marks an
-  order fulfilled). `UndoLastTransition` returns a request to its previous status within 8 seconds of a cancel
-  or a confirm. Each other transition throws `InvalidTransitionException`; the API maps it to HTTP 409 with code
-  `INVALID_TRANSITION` and leaves the request unchanged.
-- **`RequestTransition`** — child entity of `Request` that records each transition with actor, time and previous
-  status. The progress timeline reads these records.
-- **`OrderDetails`** — value object owned by a `Request` of type `Order`. It holds the product and option,
-  `Quantity`, the `UnitPrice`, `ItemAmount`, `ShippingAmount` and `EstimatedTotal` computed by the server, the
-  delivery method and the optional `ShippingAddress`.
-- **`DeliveryMethod`** — entity of a `Listing` of kind `Shop`. It holds `Kind` (`DeliveryKind`: `Ship`,
-  `Pickup`), `Label`, `Fee` and `Estimate`.
-- **`OutboxDispatcherJob`** — hosted job in `Jubilee Worker`. It reads the `OutboxMessage` rows written in the
-  same transaction, stores the in-app `Notification`, sends the e-mail through `IEmailSender` and pushes the
-  real-time event through `EventsHub`.
+- **`RequestItemDialog`** — Angular CDK dialog (`frontend/projects/jubilee/src/app/dialogs/request-item`) composed
+  of `jb-*` components in a `jb-dialog` frame. It opens at `/b/{shop}/p/{product}/request?option=&quantity=`, the
+  route of the product page, with the option and quantity chosen there. It summarises the product, option,
+  quantity and price and offers the shop's delivery methods. A method of kind `ship` requires "Shipping
+  address", prefilled from the last address used; an address without a Canadian postal code shows "Enter the
+  address to ship to, with postal code." A method of kind `pickup` hides the address field and sends
+  `shippingAddress: null`. After success it shows "Request sent to {shop}" with the shop's typical reply time and
+  lead time, "Keep shopping" and "View request". Its form carries the `jbDraft` directive (ADR 0046).
+- **`estimate`** — computed signal of `RequestItemDialog`. It recomputes "Item", "Shipping" and "Estimated total
+  {amount} + tax" at once when the delivery method changes, and applies free shipping at or above the shop's
+  threshold. The estimate is display only.
+- **`RequestsApi`** — service contract behind the `REQUESTS_API` injection token. `orderOptions(shopSlug,
+  productSlug)` calls `GET /api/listings/{shop}/products/{product}/order` and returns `OrderOptions`: the shop,
+  the owner's first name, the typical reply time, the lead time, the product with its options, the delivery
+  methods, the free-shipping threshold and the last shipping address. `requestItem` calls `POST
+  /api/requests/orders`; the body carries an `idempotencyKey` made once per dialog by `newKey()`.
+- **`ListingBookingController`** — ASP.NET Core controller in `Jubilee.Api`. `OrderOptions` sends
+  `GetOrderOptionsQuery` to `GetOrderOptionsQueryHandler`, which returns `OrderOptionsDto`. An option's
+  `maxQuantity` is the most a member may ask for (the stock, capped at 99); the stock itself is never sent.
+- **`RequestsController`** — ASP.NET Core controller in `Jubilee.Api`. `Order` authenticates the session cookie,
+  applies `[RequiresConfirmedEmail]` (HTTP 403 with code `EMAIL_UNCONFIRMED`, `L2-005`) and sends
+  `RequestItemCommand` through MediatR. It answers 201 with `BookedRequestDto` (`id`, `status`, `memberStatus`).
+- **`RequestItemRequest`** — body of `POST /api/requests/orders`: `listingSlug`, `productSlug`, `option`,
+  `quantity`, `deliveryMethodId`, `shippingAddress`, `note` and `idempotencyKey`. It has no price, shipping or
+  total field and is marked `JsonUnmappedMemberHandling.Disallow`: a body with any other field (`priceCents`,
+  `totalCents`, `status`) is refused with HTTP 400 and nothing is created (`L2-133` AC4).
+- **`RequestItemCommandHandler`** — MediatR handler in `Jubilee.Application` (`Requests/Order.cs`). It first
+  looks for a request of this member with the same idempotency key and returns it unchanged (`L2-132`). It then
+  loads the public shop, the `Product` with its `ProductOption`s and the shop's `DeliveryMethod`, refuses an
+  owner asking their own shop (HTTP 409, code `OWN_LISTING`), and checks the option, the delivery method, the
+  quantity, the address of a shipped request and the note. A failure throws `ValidationFailedException`: HTTP 422
+  with one code per field (`REQUIRED`, `INVALID`, `BELOW_MINIMUM`, `TOO_MANY`, `TOO_LONG`). A quantity above
+  the stock is `ONLY_LEFT:{n}` on `quantity`, which the dialog shows as "Only {n} left. Lower the quantity to
+  continue." It asks `OrderPricing` for the amounts, creates the `Request` with `Request.AskForOrder`, tells the
+  owner with `NotificationRules.Tell`, queues the owner's e-mail with `EmailPolicy.Queue` and saves all of it in
+  one `SaveChangesAsync`. Sending a request does not reduce stock; confirming it does (`L2-052`).
+- **`OrderPricing`** — static domain service in `Jubilee.Domain`. `For(product, quantity, method,
+  freeShippingOverCents)` returns `OrderAmounts` (`UnitCents`, `ItemCents`, `ShippingCents`, `TotalCents`) from
+  stored data only, with shipping zero for a `Ship` method at or above the threshold. The dialog's `estimate`
+  mirrors the same rule. Tax is never calculated: the estimate reads "{amount} + tax" and the shop adds tax when
+  it confirms (ADR 0017).
+- **`Request`** — domain entity in `Jubilee.Domain` that owns the request lifecycle (`L2-043`). `RequestKind`
+  holds `Booking`, `Quote`, `Order` and `Space`; `RequestStatus` holds `New`, `Confirmed`, `Declined`,
+  `Cancelled` and `Completed`. An order keeps its own facts on the request: `ServiceName` (the product's name),
+  `OptionLabel`, `Quantity`, `UnitPriceCents`, `ItemCents`, `ShippingCents`, `TotalCents`, `DeliveryLabel`,
+  `ShippingAddress` and `Note`. `Confirm`, `Decline`, `Cancel` and `Complete` make the allowed transitions and
+  `UndoConfirm` and `UndoCancel` reverse one within 8 seconds; any other transition throws
+  `InvalidTransitionException`, which the API maps to HTTP 409 with code `INVALID_TRANSITION`.
+- **`RequestTransition`** — child entity of `Request` that records each transition with `From`, `To`, `Actor`,
+  `At` and `UndoableUntil`. The progress timeline reads these records.
+- **`DeliveryMethod`** — entity of a shop's `Listing`. It holds `Position`, `Kind` (`DeliveryKind`: `Ship`,
+  `Pickup`), `Label`, `FeeCents` and `Estimate`. The free-shipping threshold is `Listing.FreeShippingOverCents`.
+- **`Notification`** — the owner's in-app notification "New order request from {member}", with the product and
+  quantity and a link to `/my-business/requests`. It is stored in the same save as the request. The member gets
+  none until the owner answers.
+- **`EventsController`** — `GET /api/events`, the server-sent event stream of a signed-in member (`L2-070`). It
+  sends each new `Notification` of its own user as a `notification` event, so the owner's open page learns of
+  the order without a reload.
+- **Order card** — the conversation of the member and the shop shows the order as a card ("Order request", the
+  product and quantity, the delivery method with the total, and the status). The card is not stored: the
+  conversation query reads the member's requests to that business (`L2-057` AC8).
+- **`OutboxDispatcherJob`** — hosted job in `Jubilee Worker`. It sends the `OutboxMessage` e-mail to the owner
+  that the handler queued, through `IEmailSender`.
 
 ## Requirements
 
@@ -85,6 +100,9 @@ requirement, cited by identifier.
 | `L2-005` | `L1-001` | Until the e-mail is confirmed, a member may browse, search and save but shall not message, book, request or list a business. |
 | `L2-132` | `L1-018` | Each create request shall carry a client-generated idempotency key, and the server shall return the original result for a repeated key within 24 hours without creating a duplicate. |
 | `L2-133` | `L1-019` | The server shall reject with HTTP 400 an update or create body that includes a field the caller is not allowed to set, such as `price` on a request, and shall change nothing. |
+| `L2-052` | `L1-008` | Confirming an order request shall tell the customer in the application and by e-mail and reduce the product's stock by the quantity. |
+| `L2-057` | `L1-009` | A conversation shall show each request between the member and the business as a card. |
+| `L2-070` | `L1-010` | A signed-in member's open page shall receive their own events over a persistent connection. |
 
 ## Diagrams
 
@@ -98,35 +116,37 @@ through the external e-mail provider. No payment provider takes part.
 ### Containers
 
 The order request travels from `Jubilee Web` to `Jubilee API`, which reads product data from and stores the
-request in `Jubilee database`. `Jubilee Worker` dispatches the outbox.
+request, the owner's notification and the owner's e-mail in `Jubilee database`. `Jubilee Worker` sends the e-mail.
+The owner's open page reads the notification from the event stream of `Jubilee API`.
 
 ![C4 container view for requesting an item](diagrams/c4-container.png)
 
 ### Components
 
-`OrderRequestDialog` shows the `OrderEstimate` and calls `RequestsController` through `RequestsApi`.
-`RequestItemCommandHandler` uses `OrderPricingService` and the `Product` to price and check the request before
-it creates the `Request`.
+`RequestItemDialog` shows its `estimate` and calls `ListingBookingController` and `RequestsController` through
+`RequestsApi`. `RequestItemCommandHandler` uses `OrderPricing` and the `Product` to price and check the request
+before it creates the `Request` and the owner's `Notification`.
 
 ![C4 component view for requesting an item](diagrams/c4-component.png)
 
 ### Class structure
 
-`RequestItemCommandHandler` handles `RequestItemCommand`, which carries no price. `OrderPricingService` returns
-the amounts that `OrderDetails` stores on the `Request`.
+`RequestItemCommandHandler` handles `RequestItemCommand`, which carries no price. `OrderPricing` returns the
+`OrderAmounts` that `Request.AskForOrder` stores on the `Request`.
 
 ![Class diagram for requesting an item](diagrams/class-structure.png)
 
 ### Behaviour — open the dialog and estimate the total
 
-The dialog loads the delivery methods and the last address, then recomputes the estimate in the browser as
-options change (`L2-046`).
+The dialog loads the delivery methods and the last address, then recomputes the estimate in the browser when
+the delivery method changes (`L2-046`).
 
 ![Sequence diagram for opening the order dialog](diagrams/sequence-open-order-dialog.png)
 
 ### Behaviour — send an order request
 
-The API enforces `L2-005` and `L2-132`. The handler refuses a quantity above stock, recomputes prices from
-stored data (`L2-046`) and creates the request with status `New` (`L2-043`).
+The API enforces `L2-005` and `L2-133`. The handler returns the first request for a repeated key (`L2-132`),
+refuses a quantity above stock, recomputes prices from stored data (`L2-046`), creates the request with status
+`New` (`L2-043`) and tells the owner in the application, on the event stream and by e-mail (`L2-046` AC8).
 
 ![Sequence diagram for sending an order request](diagrams/sequence-send-order-request.png)

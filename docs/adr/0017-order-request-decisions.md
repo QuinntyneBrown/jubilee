@@ -15,7 +15,16 @@ An order request is the third kind of request. It needs delivery methods, amount
 - A shipped request needs an address with a Canadian postal code; a pickup request drops the address. The last shipped address of the member is offered again.
 - The dialog opens at `/b/{shop}/p/{product}/request?option=&quantity=`, the same route as the product page, so opening it does not reload the product.
 - The order options endpoint is `GET /api/listings/{shop}/products/{product}/order`, by slugs like the other listing endpoints, instead of the design's `orders/defaults?productId=`.
-- Deferred: the order card in the conversation, the in-app notification, and the shop's lead time as structured data (it is read from the product's "Ready in" detail).
+- Deferred: the shop's lead time as structured data (it is read from the product's "Ready in" detail).
+
+## Amendment, 12 November 2026: the deferrals that have landed
+
+The order card in the conversation and the in-app notification, deferred above, are built and are now part of the requirement (L2-046 AC8).
+
+- The owner's notification "New order request from {member}" is stored in the same save as the request, and the owner's open page receives it from the event stream `GET /api/events` (L2-070). The member is told nothing until the owner answers.
+- The order card is not stored. The conversation query reads the requests between the member and the business, so a card needs no write when a request is sent and cannot disagree with the request.
+- Idempotency is kept by the handler: a request of the same member with the same key is returned unchanged, with no time limit, which satisfies the 24 hours L2-132 asks for. No middleware or cache takes part.
+- The option and the quantity are chosen on the product page and are fixed in the dialog; the estimate there follows the delivery method.
 
 ## Consequences
 
