@@ -62,12 +62,6 @@ public sealed class MaintenanceWindowService(IAppDbContext db, IMaintenanceState
             token.Extend(length);
         }
 
-        var links = await db.ReferenceLinks.Where(l => l.ClosedAt == null && l.ExpiresAt > started).ToListAsync(cancellationToken);
-        foreach (var link in links)
-        {
-            link.Extend(length);
-        }
-
         await db.SaveChangesAsync(cancellationToken);
     }
 }

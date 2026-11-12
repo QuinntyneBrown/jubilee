@@ -8,9 +8,8 @@ public static class StatementOfFaith
 }
 
 /// <summary>
-/// An owner's submission of a listing for verification: the church reference they named, their
-/// agreement to the statement of faith, and what the verification team should look at (L2-074,
-/// L2-075, L2-146). The reference's e-mail is used only for that listing's reference request.
+/// An owner's submission of a listing for verification: their agreement to the statement of faith
+/// and what the verification team should look at (L2-072, L2-075).
 /// </summary>
 public sealed class ListingSubmission
 {
@@ -24,13 +23,6 @@ public sealed class ListingSubmission
 
     public string OwnerSubject { get; private set; } = string.Empty;
 
-    public string Church { get; private set; } = string.Empty;
-
-    public string PastorEmail { get; private set; } = string.Empty;
-
-    /// <summary>The pastor's e-mail in lower case, for counting how often it is named.</summary>
-    public string PastorEmailKey { get; private set; } = string.Empty;
-
     public string StatementVersion { get; private set; } = string.Empty;
 
     public DateTimeOffset AgreedAt { get; private set; }
@@ -40,20 +32,13 @@ public sealed class ListingSubmission
     /// <summary>Makes a repeat of the same submit the same submission (L2-132).</summary>
     public string IdempotencyKey { get; private set; } = string.Empty;
 
-    /// <summary>What the review screen flags: <c>CONTACT_IN_TEXT</c>, <c>REFERENCE_REUSED</c>.</summary>
+    /// <summary>What the review screen flags: <c>CONTACT_IN_TEXT</c>.</summary>
     public List<string> Flags { get; private set; } = [];
 
     /// <summary>When the listing last became ready for the verification team; "overdue" counts from here (L2-099 AC5).</summary>
     public DateTimeOffset? ReadyAt { get; private set; }
 
     public void MarkReady(DateTimeOffset now) => ReadyAt = now;
-
-    /// <summary>Deletes the reference's e-mail address, 90 days after a decision (L2-146).</summary>
-    public void ScrubReference()
-    {
-        PastorEmail = string.Empty;
-        PastorEmailKey = string.Empty;
-    }
 
     public void AddFlag(string flag)
     {
@@ -63,24 +48,13 @@ public sealed class ListingSubmission
         }
     }
 
-    /// <summary>The owner named another church reference (L2-084 AC3).</summary>
-    public void ChangeReference(string church, string pastorEmail)
-    {
-        Church = church;
-        PastorEmail = pastorEmail;
-        PastorEmailKey = pastorEmail.ToLowerInvariant();
-    }
-
     public static ListingSubmission Record(
-        Guid listingId, string ownerSubject, string church, string pastorEmail,
+        Guid listingId, string ownerSubject,
         string idempotencyKey, IEnumerable<string> flags, DateTimeOffset now) => new()
         {
             Id = Guid.NewGuid(),
             ListingId = listingId,
             OwnerSubject = ownerSubject,
-            Church = church,
-            PastorEmail = pastorEmail,
-            PastorEmailKey = pastorEmail.ToLowerInvariant(),
             StatementVersion = StatementOfFaith.Version,
             AgreedAt = now,
             SubmittedAt = now,

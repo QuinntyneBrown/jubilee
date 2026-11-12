@@ -75,10 +75,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ListingSubmission> ListingSubmissions => Set<ListingSubmission>();
 
-    public DbSet<ReferenceLink> ReferenceLinks => Set<ReferenceLink>();
-
-    public DbSet<ReferenceAnswer> ReferenceAnswers => Set<ReferenceAnswer>();
-
     public DbSet<ReviewTick> ReviewTicks => Set<ReviewTick>();
 
     public DbSet<ListingDecision> ListingDecisions => Set<ListingDecision>();

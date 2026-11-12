@@ -2,7 +2,6 @@ using System.Globalization;
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Errors;
-using Jubilee.Application.Reference;
 using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
@@ -17,7 +16,7 @@ public sealed record MyBusinessStatsDto(StatDto Views, int OpenRequests, int New
 
 public sealed record NeedsReplyDto(Guid Id, string Kind, string KindLabel, string CustomerName, string Title, DateTimeOffset SentAt);
 
-public sealed record MyBusinessSummaryDto(int Products, int SoldOut, int Services, string Reference);
+public sealed record MyBusinessSummaryDto(int Products, int SoldOut, int Services, string Verification);
 
 /// <summary>What the owner sees on My business (L2-085, L2-086).</summary>
 public sealed record MyBusinessDto(
@@ -35,7 +34,6 @@ public sealed record MyBusinessDto(
     MyBusinessStatsDto? Stats,
     IReadOnlyList<NeedsReplyDto> NeedsReply,
     MyBusinessSummaryDto? Summary,
-    ReferenceStatusDto? Reference,
     OwnerVerificationDto? Verification,
     DateTimeOffset? AwayUntil = null);
 
@@ -95,14 +93,14 @@ internal static class Workspace
     {
         ListingStage.Live => listing.IsPaused ? "paused" : "live",
         ListingStage.Draft => "draft",
-        ListingStage.PendingReference => "pending-reference",
         ListingStage.ReadyToReview => "ready-to-review",
-        ListingStage.NeedsDecision => "needs-a-decision",
         ListingStage.ChangesRequested => "changes-requested",
         _ => "declined",
     };
 
     public static string Month(DateTimeOffset at) => at.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+
+    public static string ShortMonth(DateTimeOffset at) => at.ToString("MMM yyyy", CultureInfo.InvariantCulture);
 
     public static string SubmittedWords(DateTimeOffset? at, DateTimeOffset now)
     {
@@ -205,13 +203,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
                 products.Count,
                 products.Count(p => p.IsSoldOut),
                 services,
-                $"Confirmed {Workspace.Month(listing.ApprovedAt ?? now)} · Verified");
-        }
-
-        ReferenceStatusDto? reference = null;
-        if (listing.Stage == ListingStage.PendingReference && submission is not null)
-        {
-            reference = await mediator.Send(new GetReferenceStatusQuery(request.Subject, listing.Id), cancellationToken);
+                $"Verified {Workspace.ShortMonth(listing.ApprovedAt ?? now)}");
         }
 
         OwnerVerificationDto? verification = null;
@@ -240,7 +232,6 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             stats,
             needs,
             summary,
-            reference,
             verification,
             listing.AwayUntil is { } back && back > now ? back : null);
     }

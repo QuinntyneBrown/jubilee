@@ -32,8 +32,9 @@ public partial class AccountTests : IClassFixture<JubileeApiFactory>, IAsyncLife
         bool agree = true,
         string first = "Joanna",
         string last = "Adeyemi",
-        string? church = "Grace Toronto Church") =>
-        new { firstName = first, lastName = last, email, password, homeChurch = church, agreementAccepted = agree };
+        string? church = "Grace Toronto Church",
+        string? churchAddress = "383 Jarvis Street, Toronto") =>
+        new { firstName = first, lastName = last, email, password, homeChurch = church, homeChurchAddress = churchAddress, agreementAccepted = agree };
 
     private static async Task<JsonElement> Json(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
@@ -75,6 +76,34 @@ public partial class AccountTests : IClassFixture<JubileeApiFactory>, IAsyncLife
         return (_factory.CreateMemberClient(member.DisplayName, member.Id.ToString()), member);
     }
 
+    // L2-196 AC2, AC3, AC6: the home church and its address are optional, and independent of each other
+    [Theory]
+    [InlineData(null, null, null, null)]
+    [InlineData("Grace Toronto Church", null, "Grace Toronto Church", null)]
+    [InlineData(null, " 383 Jarvis Street, Toronto ", null, "383 Jarvis Street, Toronto")]
+    [InlineData("   ", "   ", null, null)]
+    public async Task L2_188_a_member_joins_with_the_name_the_address_both_or_neither(string? church, string? address, string? storedChurch, string? storedAddress)
+    {
+        var response = await _factory.CreateClient().PostAsJsonAsync("/api/account/join", Form(church: church, churchAddress: address));
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var member = await MemberByEmail("joanna.adeyemi@example.com");
+        Assert.Equal(storedChurch, member.HomeChurch);
+        Assert.Equal(storedAddress, member.HomeChurchAddress);
+    }
+
+    // L2-196 AC4
+    [Fact]
+    public async Task L2_188_AC4_a_home_church_address_over_200_characters_is_refused_and_200_is_kept()
+    {
+        var refused = await _factory.CreateClient().PostAsJsonAsync("/api/account/join", Form(churchAddress: new string('a', 201)));
+        var kept = await _factory.CreateClient().PostAsJsonAsync("/api/account/join", Form(churchAddress: new string('a', 200)));
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, refused.StatusCode);
+        Assert.Equal("TOO_LONG", (await Errors(refused))["homeChurchAddress"]);
+        Assert.Equal(HttpStatusCode.Created, kept.StatusCode);
+    }
+
     // L2-001 AC1, AC5
     [Fact]
     public async Task L2_001_AC1_joining_creates_an_unconfirmed_account_and_queues_the_confirmation_e_mail()
@@ -87,6 +116,7 @@ public partial class AccountTests : IClassFixture<JubileeApiFactory>, IAsyncLife
         Assert.Equal(EmailStatus.Unconfirmed, member.EmailStatus);
         Assert.Equal("Joanna.Adeyemi@example.com", member.Email); // L2-001 AC5: domain lower-cased, trimmed
         Assert.Equal("Grace Toronto Church", member.HomeChurch);
+        Assert.Equal("383 Jarvis Street, Toronto", member.HomeChurchAddress);
 
         await Dispatch();
         var mail = Assert.Single(_factory.Emails.Sent);

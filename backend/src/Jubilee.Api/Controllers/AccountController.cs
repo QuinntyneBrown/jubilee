@@ -22,6 +22,7 @@ public sealed record JoinRequest(
     string? Email,
     string? Password,
     string? HomeChurch,
+    string? HomeChurchAddress,
     bool AgreementAccepted,
     string? ChallengeToken);
 
@@ -46,7 +47,7 @@ public sealed record SignInBody(string? Email, string? Password);
 public sealed record ResetLinkResponse(string State, string? Email);
 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
-public sealed record ProfileBody(string? FirstName, string? LastName, string? Phone, string? PostalCode, string? HomeChurch, string? Pronouns);
+public sealed record ProfileBody(string? FirstName, string? LastName, string? Phone, string? PostalCode, string? HomeChurch, string? HomeChurchAddress, string? Pronouns);
 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record PreferenceBody(string? Setting, bool? Enabled, string? Frequency);
@@ -85,7 +86,7 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
 
         var member = await sender.Send(
             new JoinWithEmailCommand(
-                request.FirstName, request.LastName, request.Email, request.Password, request.HomeChurch, request.AgreementAccepted),
+                request.FirstName, request.LastName, request.Email, request.Password, request.HomeChurch, request.HomeChurchAddress, request.AgreementAccepted),
             cancellationToken);
         await HttpContext.SignInMemberAsync(member);
         return StatusCode(StatusCodes.Status201Created, new JoinResponse(member.Email));
@@ -227,7 +228,7 @@ public sealed class AccountController(ISender sender, IBotChallengeVerifier bot)
     public async Task<ActionResult<AccountDto>> SaveProfile(ProfileBody request, CancellationToken cancellationToken)
     {
         await sender.Send(
-            new UpdateProfileCommand(MemberId(), request.FirstName, request.LastName, request.Phone, request.PostalCode, request.HomeChurch, request.Pronouns),
+            new UpdateProfileCommand(MemberId(), request.FirstName, request.LastName, request.Phone, request.PostalCode, request.HomeChurch, request.HomeChurchAddress, request.Pronouns),
             cancellationToken);
         return Ok(await sender.Send(new GetAccountQuery(MemberId()), cancellationToken));
     }

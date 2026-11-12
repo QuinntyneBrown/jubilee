@@ -8,13 +8,11 @@ public enum DecisionKind
     Declined = 3,
 }
 
-/// <summary>The five checks of the review screen (L2-100 AC3).</summary>
+/// <summary>The three checks of the review screen (L2-100 AC3).</summary>
 public static class ChecklistItems
 {
     public static readonly IReadOnlyList<(string Key, string Label)> All =
     [
-        ("owner-name", "Owner’s name matches the reference"),
-        ("reference", "Reference confirmed and can vouch"),
         ("tagline", "Tagline and description are honest and clear"),
         ("photos", "At least one photo of the products or work"),
         ("category", "Category fits what they offer"),
@@ -33,7 +31,6 @@ public static class ChangeAreas
         ("tagline", "Tagline or description"),
         ("photos", "Photos"),
         ("category", "Category"),
-        ("reference", "Church reference"),
     ];
 
     public static bool IsKnown(string key) => All.Any(a => a.Key == key);
@@ -71,7 +68,6 @@ public sealed class ReviewTick
 
 /// <summary>
 /// A decision of the verification team about a listing. Approved and declined decisions start the
-/// 90-day clock after which the reference's answer is deleted (L2-146).
 /// </summary>
 public sealed class ListingDecision
 {
@@ -112,9 +108,6 @@ public sealed class ListingDecision
     /// <summary>Set when the owner resubmitted after this request for changes.</summary>
     public DateTimeOffset? ResolvedAt { get; private set; }
 
-    /// <summary>Set when the reference's data was deleted, 90 days after an approval or a decline.</summary>
-    public DateTimeOffset? ReferenceDeletedAt { get; private set; }
-
     public static ListingDecision Make(
         Guid listingId, DecisionKind kind, string by, string byName, string? note,
         IEnumerable<string> areas, IEnumerable<string> ticked, Listing listing, DateTimeOffset now) => new()
@@ -136,7 +129,6 @@ public sealed class ListingDecision
 
     public void Resolve(DateTimeOffset now) => ResolvedAt = now;
 
-    public void ReferenceDeleted(DateTimeOffset now) => ReferenceDeletedAt = now;
 }
 
 /// <summary>

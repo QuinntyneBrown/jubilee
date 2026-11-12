@@ -36,12 +36,10 @@ public static class WireValues
 
     public static string Of(TileIcon value) => value.ToString().ToLowerInvariant();
 
-    /// <summary>"draft", "pending-reference", "ready-to-review", "needs-decision", "changes-requested" or "live".</summary>
+    /// <summary>"draft", "ready-to-review", "changes-requested" or "live".</summary>
     public static string Of(ListingStage value) => value switch
     {
-        ListingStage.PendingReference => "pending-reference",
         ListingStage.ReadyToReview => "ready-to-review",
-        ListingStage.NeedsDecision => "needs-decision",
         ListingStage.ChangesRequested => "changes-requested",
         _ => value.ToString().ToLowerInvariant(),
     };

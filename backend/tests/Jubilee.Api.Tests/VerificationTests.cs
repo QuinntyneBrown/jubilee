@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Jubilee.Api.Tests.Support;
 using Jubilee.Application.Verification;
 using Jubilee.Domain;
@@ -11,9 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Jubilee.Api.Tests;
 
-// Verify a listing: L2-098 to L2-104, L2-143, L2-146, L2-150 and L2-180. Naomi lists Luzandre.com, her
-// pastor vouches, and Esther of the verification team reviews it. "Today" is Tuesday 10 November 2026.
-public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
+// Verify a listing: L2-098 to L2-104, L2-143 and L2-180. Naomi lists Luzandre.com and Esther of the
+// verification team reviews it; nobody else is asked about her. "Today" is Tuesday 10 November 2026.
+public sealed class VerificationTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private readonly JubileeApiFactory _factory;
 
@@ -23,22 +22,18 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
 
     public Task DisposeAsync() => Task.CompletedTask;
 
-    [GeneratedRegex(@"/reference/([0-9a-f]+)")]
-    private static partial Regex TokenInMail();
-
     // A fresh staff session each time: a staff session ends after 30 minutes without a request (L2-190),
     // and these tests move the clock by days.
     private HttpClient Esther => _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
 
     private HttpClient Admin => _factory.CreateStaffClient("Ada Admin", "member|ada", "admin");
 
-    private sealed record Submitted(Guid Id, HttpClient Owner, string Token, string OwnerEmail);
+    private sealed record Submitted(Guid Id, HttpClient Owner, string OwnerEmail);
 
     private async Task<Submitted> Submit(
         string business = "Luzandre.com", string first = "Naomi", string tagline = "Christian apparel and gifts", string category = "shops")
     {
         var email = $"{first.ToLowerInvariant()}.{business.ToLowerInvariant().Replace(".", string.Empty).Replace(" ", string.Empty)}@example.com";
-        var pastor = $"pastor.{business.ToLowerInvariant().Replace(".", string.Empty).Replace(" ", string.Empty)}@church.example";
         var owner = Member.Join(EmailAddress.TryParse(email)!, first, "Laurent", null, "hash", ListingMother.Now);
         owner.ConfirmEmail();
         await _factory.WithDb(async db =>
@@ -55,8 +50,6 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
             ["categorySlug"] = category,
             ["highlight"] = null,
             ["place"] = "Toronto",
-            ["church"] = "Grace Toronto Church",
-            ["pastorEmail"] = pastor,
             ["agreed"] = true,
             ["items"] = Array.Empty<object>(),
             ["idempotencyKey"] = Guid.NewGuid().ToString(),
@@ -66,29 +59,12 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         var submitted = await client.PostAsJsonAsync($"/api/listing-drafts/{draftId}/submit", body);
         Assert.Equal(HttpStatusCode.Created, submitted.StatusCode);
         var id = (await Json(submitted)).GetProperty("listingId").GetGuid();
-        string token = string.Empty;
-        await _factory.WithDb(async db =>
-        {
-            var mail = await db.OutboxMessages.AsNoTracking().SingleAsync(m => m.ToAddress == pastor);
-            token = TokenInMail().Match(mail.TextBody).Groups[1].Value;
-        });
-        return new Submitted(id, client, token, email);
+        return new Submitted(id, client, email);
     }
 
-    private async Task Answer(Submitted listing, string answer = "vouches", string note = "Naomi has served on our hospitality team for six years.")
-    {
-        var response = await _factory.CreateClient().PostAsJsonAsync(
-            "/api/reference-requests/answer",
-            new { token = listing.Token, answer, name = "Daniel Okoro", role = "Lead pastor", note });
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-    }
-
-    private async Task<Submitted> Ready(string business = "Luzandre.com", string first = "Naomi", string tagline = "Christian apparel and gifts")
-    {
-        var listing = await Submit(business, first, tagline);
-        await Answer(listing);
-        return listing;
-    }
+    // A submitted listing is ready to review at once (L2-078 AC1).
+    private Task<Submitted> Ready(string business = "Luzandre.com", string first = "Naomi", string tagline = "Christian apparel and gifts") =>
+        Submit(business, first, tagline);
 
     private static async Task<JsonElement> Json(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
@@ -120,7 +96,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
             await Post(member, listing.Id, "approve"),
             await Post(member, listing.Id, "request-changes", new { areas = new[] { "tagline" }, message = "x" }),
             await Post(member, listing.Id, "decline", new { reason = "x" }),
-            await member.PutAsJsonAsync($"/api/admin/verifications/{listing.Id}/checklist", new { ticked = new[] { "reference" } }),
+            await member.PutAsJsonAsync($"/api/admin/verifications/{listing.Id}/checklist", new { ticked = new[] { "tagline" } }),
         };
 
         Assert.All(responses, r => Assert.Equal(HttpStatusCode.Forbidden, r.StatusCode));
@@ -152,7 +128,8 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
     {
         await Ready();
         await Ready("Second Shop", "Ruth");
-        await Submit("Waiting Shop", "Mary");
+        var asked = await Ready("Asked Shop", "Mary");
+        await Post(Esther, asked.Id, "request-changes", new { areas = new[] { "photos" }, message = "Photos." });
 
         var session = await _factory.GetJson("/api/staff/session", Esther);
 
@@ -179,17 +156,11 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         var body = new Dictionary<string, object?>
         {
             ["kind"] = "products", ["name"] = "Esther Co", ["tagline"] = "Gifts", ["categorySlug"] = "shops", ["highlight"] = null, ["place"] = null,
-            ["church"] = "Grace", ["pastorEmail"] = "p@church.example", ["agreed"] = true, ["items"] = Array.Empty<object>(), ["idempotencyKey"] = "k1",
+            ["agreed"] = true, ["items"] = Array.Empty<object>(), ["idempotencyKey"] = "k1",
         };
         var draft = await esther.PostAsJsonAsync("/api/listing-drafts", body);
         var submitted = await esther.PostAsJsonAsync($"/api/listing-drafts/{(await Json(draft)).GetProperty("id").GetGuid()}/submit", body);
         var id = (await Json(submitted)).GetProperty("listingId").GetGuid();
-        await _factory.WithDb(async db =>
-        {
-            var listing = await db.Listings.SingleAsync(l => l.Id == id);
-            listing.MoveTo(ListingStage.ReadyToReview);
-            await db.SaveChangesAsync();
-        });
 
         var approve = await Post(staff, id, "approve");
         var changes = await Post(staff, id, "request-changes", new { areas = new[] { "tagline" }, message = "x" });
@@ -209,9 +180,11 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         await Ready("Oldest Shop", "Ruth");
         _factory.Clock.Advance(TimeSpan.FromDays(4));
         await Ready("Luzandre.com", "Naomi");
-        await Submit("Waiting Shop", "Mary");
-        var unknown = await Submit("Unknown Shop", "Lydia");
-        await Answer(unknown, "doesnt-know");
+        foreach (var (business, first) in new[] { ("Asked Shop", "Mary"), ("Other Shop", "Lydia") })
+        {
+            var asked = await Ready(business, first);
+            await Post(Esther, asked.Id, "request-changes", new { areas = new[] { "photos" }, message = "Photos." });
+        }
 
         var queue = await _factory.GetJson("/api/admin/verifications", Esther);
 
@@ -219,33 +192,40 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         Assert.Equal(2, queue.GetProperty("readyToReview").GetInt32());
         Assert.Equal(4, queue.GetProperty("oldestWaitingDays").GetInt32());
         var tabs = queue.GetProperty("tabs").EnumerateArray().ToDictionary(t => t.GetProperty("stage").GetString()!, t => t.GetProperty("count").GetInt32());
+        Assert.Equal(["changes-requested", "ready-to-review"], tabs.Keys.OrderBy(k => k));
         Assert.Equal(2, tabs["ready-to-review"]);
-        Assert.Equal(1, tabs["waiting-on-reference"]);
-        Assert.Equal(1, tabs["needs-a-decision"]);
-        Assert.Equal(0, tabs["changes-requested"]);
+        Assert.Equal(2, tabs["changes-requested"]);
     }
 
     [Fact]
-    public async Task L2_099_AC2_the_rows_show_the_reference_and_are_ordered_oldest_submitted_first()
+    public async Task L2_099_AC2_the_rows_name_no_church_and_are_ordered_oldest_submitted_first()
     {
         await Ready("Oldest Shop", "Ruth");
         _factory.Clock.Advance(TimeSpan.FromDays(1));
-        await Submit("Waiting Shop", "Mary");
+        await Ready("Middle Shop", "Mary");
         _factory.Clock.Advance(TimeSpan.FromDays(1));
-        var unknown = await Submit("Unknown Shop", "Lydia");
-        await Answer(unknown, "doesnt-know");
-        var cant = await Submit("Cant Shop", "Anna");
-        await Answer(cant, "cant-vouch");
+        await Ready("Newest Shop", "Lydia");
 
         var queue = await _factory.GetJson("/api/admin/verifications", Esther);
 
         var rows = queue.GetProperty("rows").EnumerateArray().ToList();
-        Assert.Equal(["Oldest Shop", "Waiting Shop", "Unknown Shop", "Cant Shop"], rows.Select(r => r.GetProperty("name").GetString()));
-        Assert.Equal(["confirmed", "waiting", "doesnt-know", "cant-vouch"], rows.Select(r => r.GetProperty("reference").GetString()));
+        Assert.Equal(["Oldest Shop", "Middle Shop", "Newest Shop"], rows.Select(r => r.GetProperty("name").GetString()));
         Assert.Equal("Ruth Laurent", rows[0].GetProperty("ownerName").GetString());
         Assert.Equal("Shops", rows[0].GetProperty("categoryName").GetString());
-        Assert.Equal("Grace Toronto Church", rows[0].GetProperty("church").GetString());
         Assert.Equal("Ready to review", rows[0].GetProperty("stageLabel").GetString());
+        Assert.False(rows[0].TryGetProperty("church", out _));
+        Assert.False(rows[0].TryGetProperty("reference", out _));
+    }
+
+    [Fact]
+    public async Task L2_099_a_filter_for_a_stage_that_no_longer_exists_shows_every_listing()
+    {
+        await Ready();
+
+        var queue = await _factory.GetJson("/api/admin/verifications?stage=waiting-on-reference", Esther);
+
+        Assert.Equal("all", queue.GetProperty("filter").GetString());
+        Assert.Single(queue.GetProperty("rows").EnumerateArray());
     }
 
     [Fact]
@@ -261,7 +241,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
     }
 
     [Fact]
-    public async Task L2_099_search_finds_a_business_by_name_owner_or_church()
+    public async Task L2_099_search_finds_a_business_by_name_or_owner()
     {
         await Ready("Luzandre.com", "Naomi");
         await Ready("Other Shop", "Ruth");
@@ -326,9 +306,9 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         Assert.Equal("JB-ADM-503", (await Json(response)).GetProperty("reference").GetString());
     }
 
-    // L2-100 AC1, L2-146
+    // L2-100 AC1, AC2
     [Fact]
-    public async Task L2_100_AC1_the_review_shows_the_listing_the_owner_and_the_reference_answer()
+    public async Task L2_100_AC1_the_review_shows_the_listing_and_the_owner_and_names_no_third_party()
     {
         var listing = await Ready();
 
@@ -342,32 +322,9 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         Assert.Equal(listing.OwnerEmail, owner.GetProperty("email").GetString());
         Assert.True(owner.GetProperty("emailConfirmed").GetBoolean());
         Assert.Equal(0, owner.GetProperty("otherListings").GetInt32());
-        var reference = review.GetProperty("reference");
-        Assert.Equal("Grace Toronto Church", reference.GetProperty("church").GetString());
-        Assert.Equal("confirmed", reference.GetProperty("state").GetString());
-        Assert.Equal("Daniel Okoro", reference.GetProperty("answeredByName").GetString());
-        Assert.Equal("Lead pastor", reference.GetProperty("answeredByRole").GetString());
-        Assert.Equal("vouches", reference.GetProperty("answer").GetString());
-        Assert.Equal("Naomi has served on our hospitality team for six years.", reference.GetProperty("note").GetString());
-        Assert.Equal(5, review.GetProperty("checklist").GetArrayLength());
-    }
-
-    // L2-150 AC1
-    [Fact]
-    public async Task L2_150_AC1_reading_the_reference_answer_is_recorded_with_the_listing_as_the_reason()
-    {
-        var waiting = await Submit("Waiting Shop", "Mary");
-        var answered = await Ready();
-
-        await Esther.GetAsync($"/api/admin/verifications/{waiting.Id}");
-        Assert.Empty(await Audit("reference.viewed"));
-        await Esther.GetAsync($"/api/admin/verifications/{answered.Id}");
-
-        var record = Assert.Single(await Audit("reference.viewed"));
-        Assert.Equal("member|esther", record.Actor);
-        Assert.Equal(answered.Id.ToString(), record.TargetId);
-        Assert.Equal($"Review of listing {answered.Id}", record.Reason);
-        Assert.Equal(ListingMother.Now, record.At);
+        Assert.False(review.TryGetProperty("reference", out _));
+        Assert.Equal(["tagline", "photos", "category"], review.GetProperty("checklist").EnumerateArray().Select(c => c.GetProperty("key").GetString()));
+        Assert.Equal(JsonValueKind.Null, review.GetProperty("cannotDecideBecause").ValueKind);
     }
 
     private async Task<List<AuditRecord>> Audit(string? action = null)
@@ -384,18 +341,18 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
     {
         var listing = await Ready();
 
-        var response = await Esther.PutAsJsonAsync($"/api/admin/verifications/{listing.Id}/checklist", new { ticked = new[] { "owner-name", "reference" } });
+        var response = await Esther.PutAsJsonAsync($"/api/admin/verifications/{listing.Id}/checklist", new { ticked = new[] { "tagline", "photos" } });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var review = await _factory.GetJson($"/api/admin/verifications/{listing.Id}", Esther);
         var checks = review.GetProperty("checklist").EnumerateArray().ToList();
-        Assert.Equal(["owner-name", "reference"], checks.Where(c => c.GetProperty("ticked").GetBoolean()).Select(c => c.GetProperty("key").GetString()));
+        Assert.Equal(["tagline", "photos"], checks.Where(c => c.GetProperty("ticked").GetBoolean()).Select(c => c.GetProperty("key").GetString()));
         Assert.Equal("Esther Mensah", checks[0].GetProperty("tickedBy").GetString());
         Assert.Equal(ListingMother.Now, checks[0].GetProperty("tickedAt").GetDateTimeOffset());
 
-        await Esther.PutAsJsonAsync($"/api/admin/verifications/{listing.Id}/checklist", new { ticked = new[] { "reference" } });
+        await Esther.PutAsJsonAsync($"/api/admin/verifications/{listing.Id}/checklist", new { ticked = new[] { "photos" } });
         var after = await _factory.GetJson($"/api/admin/verifications/{listing.Id}", Esther);
-        Assert.Equal(["reference"], after.GetProperty("checklist").EnumerateArray().Where(c => c.GetProperty("ticked").GetBoolean()).Select(c => c.GetProperty("key").GetString()));
+        Assert.Equal(["photos"], after.GetProperty("checklist").EnumerateArray().Where(c => c.GetProperty("ticked").GetBoolean()).Select(c => c.GetProperty("key").GetString()));
     }
 
     // L2-100 AC4
@@ -411,16 +368,17 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
 
     // L2-100 AC5
     [Fact]
-    public async Task L2_100_AC5_a_listing_waiting_on_its_reference_cannot_be_approved()
+    public async Task L2_100_AC5_a_listing_waiting_on_the_owner_cannot_be_approved()
     {
-        var listing = await Submit();
+        var listing = await Ready();
+        await Post(Esther, listing.Id, "request-changes", new { areas = new[] { "photos" }, message = "Photos." });
 
         var review = await _factory.GetJson($"/api/admin/verifications/{listing.Id}", Esther);
         var approve = await Post(Esther, listing.Id, "approve", new { note = "ok" });
 
-        Assert.Equal("Waiting for the church reference.", review.GetProperty("cannotDecideBecause").GetString());
+        Assert.Equal("Waiting on the owner.", review.GetProperty("cannotDecideBecause").GetString());
         Assert.Equal(HttpStatusCode.Conflict, approve.StatusCode);
-        Assert.Equal("WAITING_ON_REFERENCE", (await Json(approve)).GetProperty("code").GetString());
+        Assert.Equal(ListingStage.ChangesRequested, await StageOf(listing.Id));
     }
 
     // L2-100 AC6
@@ -487,7 +445,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
             Assert.Contains("Luzandre.com is verified and live", mail.TextBody);
             Assert.Contains("Shops", mail.TextBody);
             var saved = await db.Listings.AsNoTracking().SingleAsync(l => l.Id == listing.Id);
-            Assert.Equal(ListingMother.Now, saved.ReferenceConfirmedOn);
+            Assert.Equal(ListingMother.Now, saved.ApprovedAt);
             Assert.Equal("member|esther", saved.ApprovedBy);
         });
     }
@@ -497,7 +455,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
     public async Task L2_101_AC3_approving_with_unticked_items_needs_a_note()
     {
         var listing = await Ready();
-        await Esther.PutAsJsonAsync($"/api/admin/verifications/{listing.Id}/checklist", new { ticked = new[] { "reference" } });
+        await Esther.PutAsJsonAsync($"/api/admin/verifications/{listing.Id}/checklist", new { ticked = new[] { "tagline" } });
 
         var refused = await Post(Esther, listing.Id, "approve", new { note = " " });
         var allowed = await Post(Esther, listing.Id, "approve", new { note = "Photos to follow; the owner is well known to us." });
@@ -507,7 +465,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         Assert.Equal(HttpStatusCode.OK, allowed.StatusCode);
         var record = Assert.Single(await Audit("listing.approved"));
         Assert.Equal("Photos to follow; the owner is well known to us.", record.Reason);
-        Assert.Contains("owner-name", record.After!);
+        Assert.Contains("tagline", record.After!);
     }
 
     // L2-101 AC5, L2-180 AC1
@@ -528,7 +486,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         Assert.Equal("ready-to-review", record.Before);
         var after = JsonDocument.Parse(record.After!).RootElement;
         Assert.Equal("live", after.GetProperty("stage").GetString());
-        Assert.Equal(5, after.GetProperty("ticked").GetArrayLength());
+        Assert.Equal(3, after.GetProperty("ticked").GetArrayLength());
     }
 
     [Fact]
@@ -627,115 +585,73 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         Assert.Equal(ListingStage.ChangesRequested, await StageOf(listing.Id));
     }
 
-    // L2-102 AC5
+    // L2-102 AC1: the church reference is no longer an area a verifier can name
     [Fact]
-    public async Task L2_102_AC5_a_request_about_the_church_reference_sends_a_new_request_before_the_listing_returns()
+    public async Task L2_102_AC1_a_request_cannot_name_the_church_reference()
     {
         var listing = await Ready();
-        await Post(Esther, listing.Id, "request-changes", new { areas = new[] { "reference" }, message = "Please name an elder as well." });
 
-        await listing.Owner.PostAsJsonAsync($"/api/listings/{listing.Id}/verification/resubmit", new { });
+        var response = await Post(Esther, listing.Id, "request-changes", new { areas = new[] { "reference" }, message = "Please name an elder as well." });
 
-        Assert.Equal(ListingStage.PendingReference, await StageOf(listing.Id));
-        await _factory.WithDb(async db =>
-            Assert.Equal(2, await db.OutboxMessages.CountAsync(m => m.ToAddress.StartsWith("pastor.luzandrecom"))));
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        Assert.Equal(ListingStage.ReadyToReview, await StageOf(listing.Id));
     }
 
     // L2-104 AC1
     [Fact]
-    public async Task L2_104_AC1_declining_a_listing_that_needs_a_decision_closes_it_and_e_mails_the_reason()
+    public async Task L2_104_AC1_declining_a_listing_that_is_ready_to_review_closes_it_and_e_mails_the_reason()
     {
-        var listing = await Submit();
-        await Answer(listing, "doesnt-know");
+        var listing = await Ready();
 
-        var response = await Post(Esther, listing.Id, "decline", new { reason = "Your reference does not know you. Name another pastor." });
+        var response = await Post(Esther, listing.Id, "decline", new { reason = "We could not confirm that this business exists." });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(ListingStage.Declined, await StageOf(listing.Id));
         await _factory.WithDb(async db =>
         {
             var mail = await db.OutboxMessages.AsNoTracking().SingleAsync(m => m.ToAddress == listing.OwnerEmail && m.Subject.Contains("couldn’t verify"));
-            Assert.Contains("Your reference does not know you. Name another pastor.", mail.TextBody);
+            Assert.Contains("We could not confirm that this business exists.", mail.TextBody);
+            Assert.DoesNotContain("reference", mail.TextBody, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("pastor", mail.TextBody, StringComparison.OrdinalIgnoreCase);
         });
         var owner = await _factory.GetJson($"/api/listings/{listing.Id}/verification", listing.Owner);
-        Assert.Equal("Your reference does not know you. Name another pastor.", owner.GetProperty("declined").GetProperty("reason").GetString());
+        Assert.Equal("We could not confirm that this business exists.", owner.GetProperty("declined").GetProperty("reason").GetString());
         Assert.Single(await Audit("listing.declined"));
     }
 
     [Fact]
-    public async Task L2_104_AC1_a_reason_is_required_and_only_a_listing_that_needs_a_decision_can_be_declined()
+    public async Task L2_104_AC1_a_reason_is_required_and_only_a_listing_that_is_ready_to_review_can_be_declined()
     {
-        var needs = await Submit("Needs Shop", "Mary");
-        await Answer(needs, "cant-vouch");
-        var ready = await Ready();
+        var ready = await Ready("Ready Shop", "Mary");
+        var asked = await Ready();
+        await Post(Esther, asked.Id, "request-changes", new { areas = new[] { "photos" }, message = "Photos." });
 
-        var noReason = await Post(Esther, needs.Id, "decline", new { reason = " " });
-        var wrongStage = await Post(Esther, ready.Id, "decline", new { reason = "no" });
+        var noReason = await Post(Esther, ready.Id, "decline", new { reason = " " });
+        var wrongStage = await Post(Esther, asked.Id, "decline", new { reason = "no" });
 
         Assert.Equal(HttpStatusCode.UnprocessableEntity, noReason.StatusCode);
         Assert.Equal("REASON_REQUIRED", (await Json(noReason)).GetProperty("errors").GetProperty("reason").GetString());
         Assert.Equal(HttpStatusCode.Conflict, wrongStage.StatusCode);
-        Assert.Equal("NOT_NEEDS_DECISION", (await Json(wrongStage)).GetProperty("code").GetString());
+        Assert.Equal("NOT_READY_TO_REVIEW", (await Json(wrongStage)).GetProperty("code").GetString());
     }
 
-    // L2-104 AC2, L2-101 AC5, L2-146
+    // L2-104 AC1: the owner may submit again
     [Fact]
-    public async Task L2_104_AC2_ninety_days_after_a_decline_the_reference_answer_is_deleted()
+    public async Task L2_104_AC1_after_a_decline_the_owner_may_submit_again()
     {
-        var listing = await Submit();
-        await Answer(listing, "doesnt-know");
+        var listing = await Ready();
         await Post(Esther, listing.Id, "decline", new { reason = "no" });
-
-        _factory.Clock.Advance(TimeSpan.FromDays(89));
-        Assert.Equal(0, await Retention());
-        await _factory.WithDb(async db => Assert.Equal(1, await db.ReferenceAnswers.CountAsync()));
-
-        _factory.Clock.Advance(TimeSpan.FromDays(1));
-        Assert.Equal(1, await Retention());
-        Assert.Equal(0, await Retention());
-        await _factory.WithDb(async db =>
+        var body = new Dictionary<string, object?>
         {
-            Assert.Equal(0, await db.ReferenceAnswers.CountAsync());
-            Assert.All(await db.ReferenceLinks.AsNoTracking().ToListAsync(), l => Assert.Equal(string.Empty, l.ReferenceEmail));
-            Assert.Equal(string.Empty, (await db.ListingSubmissions.AsNoTracking().SingleAsync()).PastorEmail);
-        });
-    }
+            ["kind"] = "products", ["name"] = "Luzandre Gifts", ["tagline"] = "Gifts", ["categorySlug"] = "shops", ["highlight"] = null, ["place"] = null,
+            ["agreed"] = true, ["items"] = Array.Empty<object>(), ["idempotencyKey"] = Guid.NewGuid().ToString(),
+        };
 
-    [Fact]
-    public async Task L2_101_AC5_ninety_days_after_an_approval_only_the_month_of_confirmation_remains()
-    {
-        var listing = await Ready();
-        await TickAll(listing.Id);
-        await Post(Esther, listing.Id, "approve");
+        var draft = await listing.Owner.PostAsJsonAsync("/api/listing-drafts", body);
+        var again = await listing.Owner.PostAsJsonAsync($"/api/listing-drafts/{(await Json(draft)).GetProperty("id").GetGuid()}/submit", body);
 
-        _factory.Clock.Advance(TimeSpan.FromDays(90));
-        await Retention();
-
-        await _factory.WithDb(async db =>
-        {
-            Assert.Equal(0, await db.ReferenceAnswers.CountAsync());
-            var saved = await db.Listings.AsNoTracking().SingleAsync(l => l.Id == listing.Id);
-            Assert.Equal(ListingMother.Now, saved.ReferenceConfirmedOn);
-            Assert.Equal(ListingStage.Live, saved.Stage);
-        });
-    }
-
-    [Fact]
-    public async Task L2_146_the_answer_of_a_listing_that_was_only_sent_back_for_changes_is_kept()
-    {
-        var listing = await Ready();
-        await Post(Esther, listing.Id, "request-changes", new { areas = new[] { "photos" }, message = "Photos." });
-
-        _factory.Clock.Advance(TimeSpan.FromDays(120));
-
-        Assert.Equal(0, await Retention());
-        await _factory.WithDb(async db => Assert.Equal(1, await db.ReferenceAnswers.CountAsync()));
-    }
-
-    private async Task<int> Retention()
-    {
-        await using var scope = _factory.Services.CreateAsyncScope();
-        return await scope.ServiceProvider.GetRequiredService<MediatR.ISender>().Send(new DeleteDecidedReferenceDataCommand());
+        Assert.Equal(HttpStatusCode.Created, again.StatusCode);
+        Assert.Equal("ready-to-review", (await Json(again)).GetProperty("stage").GetString());
     }
 
     // L2-180 AC1, AC3
@@ -785,22 +701,22 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         Assert.Single(await Audit("listing.approved"));
     }
 
-    // L2-146: the owner's endpoints never carry the reference's answer
+    // L2-102 AC3: the owner reads what was asked, never the reviewer's checklist
     [Fact]
-    public async Task L2_146_the_owners_view_of_the_verification_never_carries_the_answer()
+    public async Task L2_102_AC3_the_owners_view_of_the_verification_carries_the_request_and_no_reference()
     {
         var listing = await Ready();
         await Post(Esther, listing.Id, "request-changes", new { areas = new[] { "photos" }, message = "More photos please." });
 
         var raw = await (await listing.Owner.GetAsync($"/api/listings/{listing.Id}/verification")).Content.ReadAsStringAsync();
 
-        Assert.DoesNotContain("Daniel Okoro", raw);
-        Assert.DoesNotContain("Lead pastor", raw);
-        Assert.DoesNotContain("hospitality team", raw);
+        Assert.Contains("More photos please.", raw);
+        Assert.DoesNotContain("reference", raw, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("church", raw, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public async Task L2_146_another_member_cannot_read_the_verification_of_a_listing()
+    public async Task L2_145_another_member_cannot_read_the_verification_of_a_listing()
     {
         var listing = await Ready();
         var stranger = _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna");

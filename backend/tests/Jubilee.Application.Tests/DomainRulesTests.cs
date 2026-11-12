@@ -227,9 +227,7 @@ public class VerifiedMarkTests
     // L2-111 AC1: only an approved listing that is currently live carries the mark.
     [Theory]
     [InlineData(ListingStage.Draft)]
-    [InlineData(ListingStage.PendingReference)]
     [InlineData(ListingStage.ReadyToReview)]
-    [InlineData(ListingStage.NeedsDecision)]
     [InlineData(ListingStage.ChangesRequested)]
     public void L2_111_AC1_a_listing_that_is_not_live_is_never_verified(ListingStage stage)
     {

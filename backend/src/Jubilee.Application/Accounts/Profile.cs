@@ -16,6 +16,7 @@ public sealed record AccountDto(
     string? Phone,
     string? PostalCode,
     string? HomeChurch,
+    string? HomeChurchAddress,
     string? Pronouns,
     DateTimeOffset MemberSince,
     DateTimeOffset? ProfileSavedAt,
@@ -39,7 +40,7 @@ internal static partial class Profiles
     public static AccountDto ToDto(Member m) => new(
         m.FirstName, m.LastName, m.Email, m.EmailStatus == EmailStatus.Confirmed ? "confirmed" : "unconfirmed",
         m.Phone is { Length: 10 } p ? $"{p[..3]}-{p[3..6]}-{p[6..]}" : null,
-        m.PostalCode, m.HomeChurch, m.Pronouns, m.CreatedAt, m.ProfileSavedAt, m.PasswordHash is not null, m.PasswordChangedAt);
+        m.PostalCode, m.HomeChurch, m.HomeChurchAddress, m.Pronouns, m.CreatedAt, m.ProfileSavedAt, m.PasswordHash is not null, m.PasswordChangedAt);
 
     [GeneratedRegex("[^0-9]")]
     private static partial Regex NotDigit();
@@ -100,7 +101,7 @@ internal static partial class Profiles
 
 /// <summary>Saves the six profile fields (L2-013).</summary>
 public sealed record UpdateProfileCommand(
-    Guid MemberId, string? FirstName, string? LastName, string? Phone, string? PostalCode, string? HomeChurch, string? Pronouns) : IRequest;
+    Guid MemberId, string? FirstName, string? LastName, string? Phone, string? PostalCode, string? HomeChurch, string? HomeChurchAddress, string? Pronouns) : IRequest;
 
 public sealed class UpdateProfileCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<UpdateProfileCommand>
 {
@@ -124,6 +125,11 @@ public sealed class UpdateProfileCommandHandler(IAppDbContext db, TimeProvider c
             errors["homeChurch"] = "TOO_LONG";
         }
 
+        if ((request.HomeChurchAddress?.Trim().Length ?? 0) > Member.MaxHomeChurchAddressLength)
+        {
+            errors["homeChurchAddress"] = "TOO_LONG";
+        }
+
         if ((request.Pronouns?.Trim().Length ?? 0) > 40)
         {
             errors["pronouns"] = "TOO_LONG";
@@ -136,7 +142,7 @@ public sealed class UpdateProfileCommandHandler(IAppDbContext db, TimeProvider c
 
         var member = await db.Members.SingleOrDefaultAsync(m => m.Id == request.MemberId, cancellationToken)
             ?? throw new NotFoundException("MEMBER_NOT_FOUND", "There is no such account.");
-        member.UpdateProfile(request.FirstName!, request.LastName!, phone, postal, request.HomeChurch, request.Pronouns, clock.GetUtcNow());
+        member.UpdateProfile(request.FirstName!, request.LastName!, phone, postal, request.HomeChurch, request.HomeChurchAddress, request.Pronouns, clock.GetUtcNow());
         await db.SaveChangesAsync(cancellationToken);
     }
 

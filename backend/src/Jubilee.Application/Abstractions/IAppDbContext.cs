@@ -67,10 +67,6 @@ public interface IAppDbContext
 
     DbSet<ListingSubmission> ListingSubmissions { get; }
 
-    DbSet<ReferenceLink> ReferenceLinks { get; }
-
-    DbSet<ReferenceAnswer> ReferenceAnswers { get; }
-
     DbSet<ReviewTick> ReviewTicks { get; }
 
     DbSet<ListingDecision> ListingDecisions { get; }
