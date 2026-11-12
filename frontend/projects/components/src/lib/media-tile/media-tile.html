@@ -1,7 +1,22 @@
 @if (tag()) {
   <span class="media__tag">{{ tag() }}</span>
 }
-@if (photo(); as src) {
+@if (photoKey(); as key) {
+  <picture class="media__picture">
+    <source type="image/webp" [attr.srcset]="webp()" [attr.sizes]="sizes()" />
+    <img
+      class="media__photo"
+      [src]="'/media/' + key + '/640.jpg'"
+      [attr.srcset]="jpeg()"
+      [attr.sizes]="sizes()"
+      [alt]="photoAlt()"
+      [attr.width]="photoWidth()"
+      [attr.height]="photoHeight()"
+      [attr.fetchpriority]="priority() ? 'high' : null"
+      [attr.loading]="priority() ? null : 'lazy'"
+    />
+  </picture>
+} @else if (photo(); as src) {
   <img
     class="media__photo"
     [src]="src"

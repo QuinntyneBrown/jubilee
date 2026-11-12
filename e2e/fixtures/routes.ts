@@ -26,6 +26,7 @@ export type StubName =
   | 'business-empty'
   | 'business-edge'
   | 'business-owner'
+  | 'business-photos'
   | 'business-preview'
   | 'business-replies-fast'
   | 'shop-loading'
@@ -105,6 +106,7 @@ export type StubName =
   | 'business-retrying'
   | 'business-paused'
   | 'editor'
+  | 'editor-photos'
   | 'order'
   | 'listing-draft'
   | 'editor-error'
@@ -612,6 +614,12 @@ export const routes = {
     who: 'member',
     stub: 'business-owner',
   },
+  'business.photos': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/photos.html',
+    who: 'member',
+    stub: 'business-photos',
+  },
   'business.preview': {
     app: '/b/legacy-financial',
     mock: 'pages/business/preview.html',
@@ -883,6 +891,12 @@ export const routes = {
     mock: 'pages/edit-listing/default.html',
     who: 'member',
     stub: 'editor',
+  },
+  'edit-listing.photos': {
+    app: '/my-business/listing',
+    mock: 'pages/edit-listing/photos.html',
+    who: 'member',
+    stub: 'editor-photos',
   },
   'edit-listing.space': {
     app: '/my-business/listing',

@@ -15,3 +15,9 @@
   background-size: 5px 5px;
   background-repeat: no-repeat;
 }
+
+// Beside a button, outside a field: as wide as its longest option, never wider than the row.
+:host(.select--fit) {
+  width: auto;
+  max-width: 100%;
+}

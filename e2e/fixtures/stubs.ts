@@ -14,6 +14,7 @@ import { stubSaved } from './saved';
 import { stubFeedback } from './feedback';
 import { stubPasswordReset } from './password-reset';
 import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from './notifications';
+import { LISTING_PHOTOS, stubListingMedia } from './photos';
 import { OTHER_BUSINESSES, SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
@@ -360,6 +361,13 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ...listing,
         viewerRelation: 'owner',
       }));
+    case 'business-photos':
+      // The seeded businesses have no photos: uploads are files, and the recording holds none (L2-221).
+      await stubListingMedia(page);
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        photos: LISTING_PHOTOS.map(({ file: _file, ...photo }) => photo),
+      }));
     case 'business-replies-fast':
       // The seeded businesses have answered nobody yet; the badge comes from a month of quick answers (L2-054).
       return patchListing(page, legacyFinancial, (listing) => ({
@@ -479,6 +487,29 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubOrder(page);
     case 'editor':
       return stubMyBusiness(page);
+    case 'editor-photos':
+      return stubMyBusiness(page, {
+        photos: [
+          {
+            id: '9e1d0000-0000-4000-8000-000000000001',
+            key: '1'.repeat(32),
+            position: 1,
+            alt: '',
+            customAlt: null,
+            width: 800,
+            height: 600,
+          },
+          {
+            id: '9e1d0000-0000-4000-8000-000000000002',
+            key: '2'.repeat(32),
+            position: 2,
+            alt: '',
+            customAlt: 'Gold cross mug on a shelf',
+            width: 800,
+            height: 600,
+          },
+        ],
+      });
     case 'editor-space':
       return stubMyBusiness(page, { listing: SUITE });
     case 'editor-error':

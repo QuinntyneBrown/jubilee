@@ -108,6 +108,10 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             : [];
 
         var fast = await Requests.ResponseTimes.FastListings(db, cancellationToken);
+        var photos = (await db.ListingPhotos.AsNoTracking().Where(p => p.ListingId == listing.Id).ToListAsync(cancellationToken))
+            .OrderBy(p => p.Position)
+            .Select((p, i) => new ListingPagePhotoDto(p.Key, p.Alt ?? $"{listing.Name} photo {i + 1}", p.Width, p.Height))
+            .ToList();
         return new ListingPageDto(
             listing.Slug,
             WireValues.Of(listing.Kind),
@@ -122,7 +126,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             listing.Credentials,
             listing.Highlight,
             listing.About,
-            CoverPhoto: null, // Photo upload arrives with the listing form; the page shows the category tile (L2-088 AC6).
+            CoverPhoto: null, // Not read: the page shows Photos, or the category tile when there are none (L2-088 AC6, L2-221).
             new ListingDetailsDto(
                 listing.Where,
                 listing.Hours,
@@ -137,7 +141,10 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             [.. related.Select(l => BusinessCardDto.From(l, fast))],
             SpacePageDto.From(listing),
             [.. relatedSpaces.Where(l => l.Space is not null).Select(SpaceCardDto.From)],
-            RepliesFast: !isSpace && fast.Contains(listing.Id));
+            RepliesFast: !isSpace && fast.Contains(listing.Id))
+        {
+            Photos = photos,
+        };
     }
 
     private static string Wire(ViewerRelation relation) => relation.ToString().ToLowerInvariant();

@@ -97,6 +97,12 @@ public sealed record SpacePageDto(
             SpaceTerms.CallToAction(space.Term));
 }
 
+/// <summary>
+/// One photo of a listing as its public page shows it (L2-221): the key of its renditions under <c>/media</c>, its
+/// alt text, and the size of the original, which says how wide each rendition really is.
+/// </summary>
+public sealed record ListingPagePhotoDto(string Key, string Alt, int Width, int Height);
+
 /// <summary>The listing page of one business (L2-033, L2-034) or space (L2-205).</summary>
 public sealed record ListingPageDto(
     string Slug,
@@ -121,4 +127,8 @@ public sealed record ListingPageDto(
     SpacePageDto? Space,
     IReadOnlyList<SpaceCardDto> RelatedSpaces,
     Guid? OpenRequestId = null,
-    bool RepliesFast = false);
+    bool RepliesFast = false)
+{
+    /// <summary>The owner's photos in their order, the cover first; empty when there are none (L2-221).</summary>
+    public IReadOnlyList<ListingPagePhotoDto> Photos { get; init; } = [];
+}

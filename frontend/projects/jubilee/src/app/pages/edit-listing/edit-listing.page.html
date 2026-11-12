@@ -104,9 +104,11 @@
                     jb-media-tile
                     shape="square"
                     [tag]="photo.position === 1 ? 'Cover' : ''"
-                    [photo]="'/media/' + photo.key + '/320.jpg'"
+                    [photoKey]="photo.key"
                     [photoAlt]="photo.alt"
-                    [photoSize]="144"
+                    [photoWidth]="photo.width"
+                    [photoHeight]="photo.height"
+                    sizes="9rem"
                   ></div>
                   <label class="visually-hidden" [for]="'alt-' + photo.id"
                     >Describe photo {{ photo.position }}</label

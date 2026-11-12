@@ -92,6 +92,7 @@
             #switcher
             id="business-switcher"
             controlSize="sm"
+            fit
             (change)="choose(b, switcher.element)"
           >
             @for (option of b.businesses; track option.id) {

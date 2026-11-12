@@ -62,6 +62,15 @@ export interface SpaceDetails {
 export type ListingStatus =
   'live' | 'draft' | 'ready-to-review' | 'changes-requested' | 'declined' | 'paused' | 'on-hold';
 
+/** One photo of a listing on its public page (L2-221): the key of its renditions under `/media`. */
+export interface ListingPagePhoto {
+  key: string;
+  alt: string;
+  /** The size of the uploaded original; no rendition is wider. */
+  width: number;
+  height: number;
+}
+
 /** `GET /api/listings/{slug}`: the listing page of one business (L2-033, L2-034). */
 export interface ListingPage {
   slug: string;
@@ -78,6 +87,8 @@ export interface ListingPage {
   highlight: string | null;
   about: string | null;
   coverPhoto: null;
+  /** The owner's photos in their order, the cover first; empty when there are none (L2-221). */
+  photos: ListingPagePhoto[];
   details: ListingDetails;
   services: ServiceRow[];
   /** Every product of the shop; at most 50 are listed. */

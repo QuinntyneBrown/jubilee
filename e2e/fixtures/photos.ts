@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { crc32, deflateSync } from 'node:zlib';
@@ -6,6 +7,48 @@ import { crc32, deflateSync } from 'node:zlib';
 
 /** The photo the mocks show in a conversation (docs/assets/photos/monday.jpg). */
 export const MOCK_PHOTO = join(__dirname, '..', '..', 'docs', 'assets', 'photos', 'monday.jpg');
+
+/**
+ * The photos of a listing as its public page gets them (L2-221), with the file of the design reference
+ * that stands in for every rendition of each. The second is narrower than the largest rendition.
+ */
+export const LISTING_PHOTOS = [
+  {
+    key: 'a1'.repeat(16),
+    alt: 'Trevor Chew at his desk with a client',
+    width: 1200,
+    height: 896,
+    file: 'advisor.jpg',
+  },
+  {
+    key: 'b2'.repeat(16),
+    alt: 'A planning meeting on a Monday morning',
+    width: 500,
+    height: 279,
+    file: 'monday.jpg',
+  },
+  {
+    key: 'c3'.repeat(16),
+    alt: 'Legacy Financial photo 3',
+    width: 928,
+    height: 1152,
+    file: 'owner.jpg',
+  },
+] as const;
+
+/** Answers `/media/{key}/{width}.{jpg|webp}` for the photos above; the app's bundled font still loads. */
+export async function stubListingMedia(page: Page): Promise<void> {
+  await page.route('**/media/**', (route) => {
+    const url = route.request().url();
+    if (/\.woff2?(\?|$)/.test(url)) return route.fallback();
+    const photo = LISTING_PHOTOS.find((item) => url.includes(`/media/${item.key}/`));
+    if (!photo) return route.fulfill({ status: 404 });
+    return route.fulfill({
+      body: readFileSync(join(__dirname, '..', '..', 'docs', 'assets', 'photos', photo.file)),
+      contentType: 'image/jpeg',
+    });
+  });
+}
 
 export interface PhotoFile {
   name: string;

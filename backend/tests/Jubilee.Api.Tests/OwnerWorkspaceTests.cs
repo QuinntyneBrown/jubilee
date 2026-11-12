@@ -372,6 +372,55 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync("/media/not-a-key/640.jpg")).StatusCode);
     }
 
+    // L2-221 AC1 and AC2: the public page gives the photos in the owner's order, with what a srcset needs
+    [Fact]
+    public async Task L2_221_the_public_page_gives_the_photos_in_the_owners_order_with_their_size_and_alt_text()
+    {
+        var naomi = Naomi();
+        var visitor = _factory.CreateClient();
+        // The page is read, and so cached, before any photo exists (L2-221 AC4).
+        Assert.Equal(0, (await _factory.GetJson("/api/listings/luzandre-com")).GetProperty("photos").GetArrayLength());
+
+        await AddPhoto(naomi, Photo(width: 800, height: 600));
+        var editor = await Json(await AddPhoto(naomi, Photo(width: 2000, height: 1000)));
+        var wide = editor.GetProperty("photos")[1];
+        await naomi.PutAsJsonAsync($"/api/my-business/photos/{wide.GetProperty("id").GetGuid()}/alt", new { alt = "The studio in Leslieville" });
+
+        // Each change of the photos reaches the cached page on the next request (ADR 0003).
+        var photos = (await Json(await visitor.GetAsync("/api/listings/luzandre-com"))).GetProperty("photos");
+        Assert.Equal(2, photos.GetArrayLength());
+        Assert.Equal("Luzandre.com photo 1", photos[0].GetProperty("alt").GetString());
+        Assert.Equal(800, photos[0].GetProperty("width").GetInt32());
+        Assert.Equal(600, photos[0].GetProperty("height").GetInt32());
+        Assert.Equal("The studio in Leslieville", photos[1].GetProperty("alt").GetString());
+        Assert.Equal(2000, photos[1].GetProperty("width").GetInt32());
+        Assert.Equal(wide.GetProperty("key").GetString(), photos[1].GetProperty("key").GetString());
+        Assert.False(photos[0].TryGetProperty("id", out _));
+
+        await naomi.PutAsJsonAsync($"/api/my-business/photos/{wide.GetProperty("id").GetGuid()}/position", new { position = 1 });
+        var moved = (await Json(await visitor.GetAsync("/api/listings/luzandre-com"))).GetProperty("photos");
+        Assert.Equal("The studio in Leslieville", moved[0].GetProperty("alt").GetString());
+        Assert.Equal("Luzandre.com photo 2", moved[1].GetProperty("alt").GetString());
+
+        await naomi.DeleteAsync($"/api/my-business/photos/{wide.GetProperty("id").GetGuid()}");
+        var left = (await Json(await visitor.GetAsync("/api/listings/luzandre-com"))).GetProperty("photos");
+        Assert.Equal(1, left.GetArrayLength());
+        Assert.Equal("Luzandre.com photo 1", left[0].GetProperty("alt").GetString());
+    }
+
+    // L2-221 AC5: the photos of a listing that is not public are its owner's preview only
+    [Fact]
+    public async Task L2_221_AC5_the_photos_of_a_paused_listing_are_given_to_its_owner_only()
+    {
+        var naomi = Naomi();
+        await AddPhoto(naomi, Photo());
+        await naomi.PostAsync("/api/my-business/pause", null);
+
+        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await Joanna().GetAsync("/api/listings/luzandre-com")).StatusCode);
+        Assert.Equal(1, (await Json(await naomi.GetAsync("/api/listings/luzandre-com"))).GetProperty("photos").GetArrayLength());
+    }
+
     [Fact]
     public async Task L2_138_a_file_that_is_not_an_image_is_refused_whatever_it_is_called()
     {
