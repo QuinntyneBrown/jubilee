@@ -19,7 +19,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 7 | Book a meeting | Request a meeting time for a service with a business. | 6 | 90% |
 | 8 | Request a quote | Describe a job and ask a business for a quote. | 3 | 90% |
 | 9 | Request a product | Send a shop an order request for a product, without payment. | 3 | 90% |
-| 10 | List a business | Describe a business and submit it for verification. | 12 | 84% |
+| 10 | List a business | Describe a business and submit it for verification. | 12 | 87% |
 | 11 | Removed: answer a church reference | Jubilee no longer asks for a church reference (ADR 0041). The number is not reused. | 0 | n/a |
 | 12 | Verify a listing | Staff review submitted listings, then approve or request changes. | 10 | 80% |
 | 13 | Respond to customer requests | See incoming requests and confirm or decline each one. | 6 | 85% |

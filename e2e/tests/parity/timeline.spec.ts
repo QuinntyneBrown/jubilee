@@ -10,13 +10,13 @@ parity('timeline', {
       name: 'current',
       route: 'my-business.changes-requested',
       screen: (page) => new MyBusinessPage(page),
-      region: (screen: MyBusinessPage) => screen.timeline.nth(2),
+      region: (screen: MyBusinessPage) => screen.timeline.nth(1),
     },
     {
       name: 'upcoming-last',
       route: 'my-business.pending',
       screen: (page) => new MyBusinessPage(page),
-      region: (screen: MyBusinessPage) => screen.timeline.nth(3),
+      region: (screen: MyBusinessPage) => screen.timeline.nth(2),
     },
   ],
   reference: {
