@@ -7,6 +7,7 @@ One folder per video. The text files are the source; the media is generated from
 | 01 | [Meet Jubilee](01-jubilee-pitch/README.md) | 1:04 | The pitch film for Toronto's Christian community: why join, what you can do, why list. Nine scenes cut to a 100 BPM grid, built from the Magic Patterns design. |
 | 02 | [The Jubilee plan](02-business-plan/README.md) | 1:20 | The business plan, short: launch dates, how businesses pay, homes and stays, revenue, the raise and the roadmap. Ten picture-led scenes, narrated, no captions. |
 | 03 | [Journey 1: Discover businesses](03-journey-01-discover-businesses/README.md) | 2:39 | The demo of journey 1: a visitor goes from the welcome page to the browse home and a filtered, sorted category, and three cards say how the directory read cache is cleared and proved (ADR 0003). Twelve narrated scenes recorded from the app. |
+| 04 | [Journey 3: Search the directory](04-journey-03-search-directory/README.md) | 2:51 | The demo of journey 3: a member searches from the top bar, reads the grouped results, the no-results state and the empty search page, and sees a paused listing leave the next search; three cards say why search has no indexing job and how that is proved (ADR 0011). Twelve narrated scenes recorded from the app. |
 
 ## How a pitch film is built
 

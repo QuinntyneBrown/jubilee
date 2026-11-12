@@ -184,6 +184,11 @@ export function stubSearch(page: Page, body: unknown, status = 200): Promise<unk
   );
 }
 
+/** Removes the answers of `stubSearch`, so a search is answered from the recording again. */
+export function unstubSearch(page: Page): Promise<void> {
+  return page.unroute(searchResults);
+}
+
 /** Answers the empty search page and the removal of recent searches. */
 export async function stubSearchStart(page: Page, start: unknown): Promise<unknown> {
   await page.route('**/api/search/recent**', (route) => route.fulfill({ status: 204 }));
