@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { SAVED_API, SavedItem, SavedList } from 'api';
-import { ToastService } from '../toasts/toast.service';
+import { ToastService } from 'components';
 
 /** What a heart stands for: a business, or a product of a shop. */
 export type SaveTarget =

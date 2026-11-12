@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Toast } from 'components';
+import { Toast } from '../toast/toast';
 import { ToastService } from './toast.service';
 
 /** The live region the toasts rise in; it sits above the tab bar on a phone. */

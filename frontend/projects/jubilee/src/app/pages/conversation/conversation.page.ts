@@ -37,10 +37,10 @@ import {
   Composer,
   InboxLayout,
 } from 'components';
-import { ClockService } from '../../services/clock.service';
-import { LoadState, errorReference } from '../../services/load-state';
+import { ClockService } from 'api';
+import { LoadState, errorReference } from 'api';
 import { MessagesStore } from '../../services/messages.store';
-import { clockTime, dayHeading, dayKey, newKey } from '../../services/message-time';
+import { clockTime, dayHeading, dayKey, newKey } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
 import { RealtimeService } from '../../services/realtime.service';
 import { ConnectionService } from '../../services/offline/connection.service';
@@ -53,7 +53,7 @@ import {
   ReportConversationData,
   ReportConversationDialog,
 } from '../../dialogs/report-conversation/report-conversation.dialog';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 import { InboxList } from '../messages/inbox-list';
 
 const REPLIES: Record<RepliesBand, string> = {

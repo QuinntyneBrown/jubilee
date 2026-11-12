@@ -43,11 +43,11 @@ import {
   DeclineRequestData,
   DeclineRequestDialog,
 } from '../../dialogs/decline-request/decline-request.dialog';
-import { ClockService } from '../../services/clock.service';
-import { LoadState, errorReference } from '../../services/load-state';
-import { threadTime } from '../../services/message-time';
+import { ClockService } from 'api';
+import { LoadState, errorReference } from 'api';
+import { threadTime } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 
 /** How often the page asks for new requests (L2-051 AC3: a new request shows within five seconds). */
 const POLL_MS = 5000;

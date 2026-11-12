@@ -24,9 +24,9 @@ import {
   TableScroll,
   TableHeadCell,
 } from 'components';
-import { ClockService } from '../../services/clock.service';
-import { LoadState, errorReference } from '../../services/load-state';
-import { threadTime } from '../../services/message-time';
+import { ClockService } from 'api';
+import { LoadState, errorReference } from 'api';
+import { threadTime } from 'api';
 import { TEAM_TABS } from '../admin-team-nav/team-tabs';
 
 /** How the church reference is named and coloured in the queue; the word always says it too. */

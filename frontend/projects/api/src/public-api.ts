@@ -45,3 +45,6 @@ export * from './lib/api/notifications-api';
 export * from './lib/models/notifications';
 export * from './lib/api/profile-api';
 export * from './lib/models/profile';
+export * from './lib/helpers/clock.service';
+export * from './lib/helpers/load-state';
+export * from './lib/helpers/message-time';

@@ -11,9 +11,9 @@ import {
   ThreadRowSkeleton,
   SearchField,
 } from 'components';
-import { ClockService } from '../../services/clock.service';
+import { ClockService } from 'api';
 import { MessagesStore } from '../../services/messages.store';
-import { threadTime } from '../../services/message-time';
+import { threadTime } from 'api';
 import { RealtimeService } from '../../services/realtime.service';
 
 const SEARCH_DELAY_MS = 250;

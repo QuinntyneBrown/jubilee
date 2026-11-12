@@ -151,3 +151,5 @@ export * from './lib/verified-mark/verified-mark';
 export * from './lib/verify-email-banner/verify-email-banner';
 export * from './lib/video-player/video-player';
 export * from './lib/workspace-header/workspace-header';
+export * from './lib/toast-region/toast-region';
+export * from './lib/toast-region/toast.service';

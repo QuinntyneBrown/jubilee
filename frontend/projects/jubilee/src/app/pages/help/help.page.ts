@@ -13,7 +13,7 @@ import {
   Accordion,
   AccordionItem,
 } from 'components';
-import { LoadState, errorReference } from '../../services/load-state';
+import { LoadState, errorReference } from 'api';
 
 /** Where a person who is still stuck writes (L2-110 AC1). */
 export const HELP_ADDRESS = 'help@jubilee.example';

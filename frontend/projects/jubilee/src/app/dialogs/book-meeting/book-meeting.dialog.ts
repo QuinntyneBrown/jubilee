@@ -25,8 +25,8 @@ import {
   DialogFooter,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
-import { ClockService } from '../../services/clock.service';
-import { isoDay, newKey, slotLabel } from '../../services/message-time';
+import { ClockService } from 'api';
+import { isoDay, newKey, slotLabel } from 'api';
 
 export interface BookMeetingData {
   slug: string;

@@ -34,9 +34,9 @@ import {
   ReportActionData,
   ReportActionDialog,
 } from '../../dialogs/report-action/report-action.dialog';
-import { ClockService } from '../../services/clock.service';
-import { LoadState, errorReference } from '../../services/load-state';
-import { clockTime, dayHeading, dayKey, threadTime } from '../../services/message-time';
+import { ClockService } from 'api';
+import { LoadState, errorReference } from 'api';
+import { clockTime, dayHeading, dayKey, threadTime } from 'api';
 import { TEAM_TABS } from '../admin-team-nav/team-tabs';
 
 const REASON_STATE: Record<string, string> = {

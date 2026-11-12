@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-
-export type ToastTone = 'info' | 'success' | 'warning' | 'danger';
+import { ToastTone } from '../toast/toast';
 
 export interface ToastAction {
   label: string;
@@ -16,7 +15,7 @@ export interface ToastSpec {
   durationMs?: number;
 }
 
-export interface Toast extends ToastSpec {
+export interface ShownToast extends ToastSpec {
   id: number;
   durationMs: number;
   paused: boolean;
@@ -38,7 +37,7 @@ const MAX_SHOWN = 3;
 export class ToastService {
   private nextId = 1;
   private readonly timers = new Map<number, Timer>();
-  private readonly list = signal<Toast[]>([]);
+  private readonly list = signal<ShownToast[]>([]);
   readonly toasts = this.list.asReadonly();
 
   show(spec: ToastSpec): number {
@@ -51,7 +50,7 @@ export class ToastService {
   }
 
   /** When there are too many, the oldest toast that is not an error goes; an error is never pushed out. */
-  private within(all: Toast[]): Toast[] {
+  private within(all: ShownToast[]): ShownToast[] {
     const result = [...all];
     while (result.length > MAX_SHOWN) {
       const index = result.findIndex((toast) => toast.tone !== 'danger');

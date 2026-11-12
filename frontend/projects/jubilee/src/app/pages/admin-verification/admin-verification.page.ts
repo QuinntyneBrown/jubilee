@@ -39,9 +39,9 @@ import {
   RequestChangesDialog,
   RequestChangesData,
 } from '../../dialogs/request-changes/request-changes.dialog';
-import { ClockService } from '../../services/clock.service';
-import { LoadState, errorReference } from '../../services/load-state';
-import { dayHeading, clockTime } from '../../services/message-time';
+import { ClockService } from 'api';
+import { LoadState, errorReference } from 'api';
+import { dayHeading, clockTime } from 'api';
 
 const ANSWERS: Record<string, { label: string; tone: BadgeTone }> = {
   vouches: { label: 'Knows them and can vouch', tone: 'success' },
