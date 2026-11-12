@@ -90,9 +90,16 @@
 
           <fieldset>
             <legend>Photos</legend>
-            <ul class="cluster" style="list-style: none; padding: 0; margin: 0">
+            <ul
+              class="cluster"
+              style="list-style: none; padding: 0; margin: 0"
+              cdkDropList
+              cdkDropListOrientation="mixed"
+              [cdkDropListDisabled]="photoBusy()"
+              (cdkDropListDropped)="drop($event)"
+            >
               @for (photo of photos(); track photo.id) {
-                <li class="stack" style="width: 9rem">
+                <li class="stack" style="width: 9rem" cdkDrag [cdkDragData]="photo">
                   <div
                     jb-media-tile
                     shape="square"
@@ -114,6 +121,18 @@
                     (change)="describe(photo, $any($event.target).value)"
                   />
                   <div class="cluster">
+                    <button
+                      jb-button
+                      size="sm"
+                      iconOnly
+                      type="button"
+                      cdkDragHandle
+                      tabindex="-1"
+                      aria-hidden="true"
+                      title="Drag to reorder"
+                    >
+                      ⋮⋮
+                    </button>
                     <button
                       jb-button
                       size="sm"
@@ -176,7 +195,8 @@
               <span jb-field-error role="alert">{{ problem }}</span>
             }
             <p jb-field-help style="margin-top: var(--space-2)">
-              Up to 6 photos, JPG or PNG, 5 MB each. The first is your cover.
+              Up to 6 photos, JPG or PNG, 5 MB each. The first is your cover. Drag a photo by its
+              handle, or use the arrows, to change the order.
             </p>
           </fieldset>
 

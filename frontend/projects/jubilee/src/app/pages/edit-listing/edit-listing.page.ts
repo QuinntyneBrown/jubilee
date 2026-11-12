@@ -1,3 +1,10 @@
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragHandle,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
@@ -77,6 +84,9 @@ type Saving = 'idle' | 'saving';
 @Component({
   selector: 'jb-edit-listing-page',
   imports: [
+    CdkDrag,
+    CdkDragHandle,
+    CdkDropList,
     FormDraftDirective,
     BusinessCard,
     EmptyState,
@@ -454,11 +464,32 @@ export class EditListingPage implements OnInit {
   }
 
   protected move(photo: ListingPhoto, by: number): void {
+    this.moveTo(photo, photo.position + by);
+  }
+
+  /**
+   * A photo dragged by its handle and dropped (L2-088 AC3). The list shows the new order at once and
+   * the API confirms it; a drop in the same place sends nothing.
+   */
+  protected drop(event: CdkDragDrop<unknown, unknown, ListingPhoto>): void {
+    if (event.previousIndex === event.currentIndex) return;
+    const before = this.photos();
+    const order = [...before];
+    moveItemInArray(order, event.previousIndex, event.currentIndex);
+    this.photos.set(order.map((photo, index) => ({ ...photo, position: index + 1 })));
+    this.moveTo(event.item.data, event.currentIndex + 1, before);
+  }
+
+  private moveTo(photo: ListingPhoto, position: number, before?: ListingPhoto[]): void {
     this.photoBusy.set(true);
     this.photoError.set(null);
-    this.api.movePhoto(photo.id, photo.position + by).subscribe({
+    this.api.movePhoto(photo.id, position).subscribe({
       next: (editor) => this.photosChanged(editor),
-      error: (error: unknown) => this.photoFailed(error),
+      error: (error: unknown) => {
+        // A dragged photo goes back where it was when the move is refused.
+        if (before) this.photos.set(before);
+        this.photoFailed(error);
+      },
     });
   }
 

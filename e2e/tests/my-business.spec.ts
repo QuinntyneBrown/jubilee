@@ -741,6 +741,88 @@ test.describe('run a business listing: photos (L2-088)', () => {
     expect(fake.photos.find((item) => item.id === second)?.position).toBe(1);
   });
 
+  test('L2-088 AC3: dragging a photo by its handle to the front makes it the cover', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    const fake = await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+    await editor.picker.setInputFiles(photo());
+    await editor.picker.setInputFiles(photo('back.png'));
+    await editor.picker.setInputFiles(photo('studio.png'));
+    await expect(editor.photoTiles).toHaveCount(3);
+    await editor.photoAlt(3).fill('The studio in Leslieville');
+    await editor.photoAlt(3).blur();
+    const third = fake.photos[2].id;
+
+    await editor.dragPhoto(3, 1);
+
+    await expect(editor.photoAlt(1)).toHaveValue('The studio in Leslieville');
+    await expect(editor.photoTiles.first()).toContainText('Cover');
+    expect(fake.moves).toEqual([{ id: third, position: 1 }]);
+  });
+
+  test('L2-088 AC3: a dragged photo goes back when the move fails, and the page says so', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    const fake = await stubMyBusiness(page, { move: 'fails' });
+    await jb.goto(EDITOR);
+    await editor.picker.setInputFiles(photo());
+    await editor.picker.setInputFiles(photo('back.png'));
+    await expect(editor.photoTiles).toHaveCount(2);
+    await editor.photoAlt(2).fill('The back of the tee');
+    await editor.photoAlt(2).blur();
+
+    await editor.dragPhoto(2, 1);
+
+    await expect(editor.photoError).toHaveText('We couldn’t change your photos. Try again.');
+    await expect(editor.photoAlt(2)).toHaveValue('The back of the tee');
+    expect(fake.moves).toHaveLength(1);
+  });
+
+  test('L2-088 AC3: a photo dropped where it was sends nothing', async ({ page, jb }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    const fake = await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+    await editor.picker.setInputFiles(photo());
+    await editor.picker.setInputFiles(photo('back.png'));
+    await expect(editor.photoTiles).toHaveCount(2);
+
+    await editor.dragPhoto(2, 2);
+
+    await expect(editor.photoTiles).toHaveCount(2);
+    expect(fake.moves).toEqual([]);
+  });
+
+  test('L2-088 AC3: the drag handle is for a pointer; the keyboard has the move buttons', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+    await editor.picker.setInputFiles(photo());
+    await editor.picker.setInputFiles(photo('back.png'));
+    await expect(editor.photoTiles).toHaveCount(2);
+
+    await expect(editor.dragHandle(1)).toHaveAttribute('aria-hidden', 'true');
+    await expect(editor.dragHandle(1)).toHaveAttribute('tabindex', '-1');
+    await editor.photoAlt(1).focus();
+    await page.keyboard.press('Tab');
+    // Photo 1 cannot move earlier, so the first stop after its description is "later".
+    await expect(editor.moveLater(1)).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(editor.moveEarlier(2)).toBeEnabled();
+    await expect(editor.photoHelp).toContainText('Drag a photo by its handle, or use the arrows');
+  });
+
   test('L2-088 AC5: the owner describes a photo and can remove it', async ({ page, jb }) => {
     const editor = new EditListingPage(page);
     await editor.setWidth(1280);

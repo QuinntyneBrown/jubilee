@@ -57,6 +57,8 @@ export interface FakeBusiness {
   /** `conflict` answers the save as if another tab had saved first (409). */
   save: Outcome | 'conflict';
   pause: Outcome;
+  /** How a change of a photo's place is answered. */
+  move: Outcome;
   resume: Outcome | 'review';
   /** How saving the away period is answered; `in-past` refuses the date (422). */
   away: Outcome | 'in-past';
@@ -156,6 +158,7 @@ export async function stubMyBusiness(
     editor: 'ok',
     save: 'ok',
     pause: 'ok',
+    move: 'ok',
     away: 'ok',
     awayUntil: null,
     aways: [],
@@ -451,6 +454,7 @@ export async function stubMyBusiness(
     const body = request.postDataJSON() as { position?: number; alt?: string };
     if (what === 'position') {
       fake.moves.push({ id, position: body.position! });
+      if (fake.move === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
       const ordered = photos();
       const moving = ordered.find((photo) => photo.id === id)!;
       ordered.splice(ordered.indexOf(moving), 1);
