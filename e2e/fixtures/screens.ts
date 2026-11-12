@@ -52,6 +52,13 @@ import { ResetPasswordPage } from '../pages/reset-password.page';
 import { NotificationsPage } from '../pages/notifications.page';
 import { MyProductsPage } from '../pages/my-products.page';
 import { MyServicesPage } from '../pages/my-services.page';
+import {
+  MeetingHoursBusyScreen,
+  MeetingHoursFailedScreen,
+  MeetingHoursInvalidScreen,
+  MeetingHoursSavedScreen,
+  MeetingHoursScreen,
+} from '../pages/meeting-hours.dialog';
 import { MyBusinessPage } from '../pages/my-business.page';
 import { RequestDetailPage } from '../pages/request-detail.page';
 import { RequestsPage } from '../pages/requests.page';
@@ -206,6 +213,11 @@ export const screens: {
   { key: 'my-services', screen: (page) => new MyServicesPage(page) },
   { key: 'my-services.empty', screen: (page) => new MyServicesPage(page) },
   { key: 'my-services.error', screen: (page) => new MyServicesPage(page) },
+  { key: 'meeting-hours', screen: (page) => new MeetingHoursScreen(page) },
+  { key: 'meeting-hours.invalid', screen: (page) => new MeetingHoursInvalidScreen(page) },
+  { key: 'meeting-hours.busy', screen: (page) => new MeetingHoursBusyScreen(page) },
+  { key: 'meeting-hours.failed', screen: (page) => new MeetingHoursFailedScreen(page) },
+  { key: 'meeting-hours.success', screen: (page) => new MeetingHoursSavedScreen(page) },
   { key: 'edit-listing', screen: (page) => new EditListingPage(page) },
   { key: 'edit-listing.space', screen: (page) => new EditListingPage(page) },
   { key: 'edit-listing.error', screen: (page) => new EditListingPage(page) },

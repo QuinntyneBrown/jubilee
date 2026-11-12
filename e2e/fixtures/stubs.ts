@@ -554,6 +554,10 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubCatalogue(page, { serviceRows: [] });
     case 'services-error':
       return stubCatalogue(page, { services: 'fails' });
+    case 'services-hours-pending':
+      return stubCatalogue(page, { hours: 'hangs' });
+    case 'services-hours-failing':
+      return stubCatalogue(page, { hours: 'fails' });
     case 'admin-queue':
       return stubAdmin(page);
     case 'admin-queue-empty':

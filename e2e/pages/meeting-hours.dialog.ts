@@ -1,4 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
+import type { Region, Screen } from '../fixtures/visual';
+import { MyServicesPage } from './my-services.page';
+import { Toasts } from './toasts';
 
 /** The dialog in which an owner says when meetings can be booked (L2-220). */
 export class MeetingHoursDialog {
@@ -50,5 +53,72 @@ export class MeetingHoursDialog {
         names.push(((await box.locator('xpath=..').textContent()) ?? '').trim());
     }
     return names;
+  }
+}
+
+/** The dialog as a screen of the sweeps: it has no address, so the screen opens it from My services. */
+export class MeetingHoursScreen extends MeetingHoursDialog implements Screen {
+  constructor(protected readonly page: Page) {
+    super(page);
+  }
+
+  async ready(): Promise<void> {
+    // The mock is drawn with the dialog open.
+    if (await this.root.isVisible()) return;
+    await new MyServicesPage(this.page).meetingHours.click();
+    await this.save.waitFor();
+  }
+
+  regions(): Region[] {
+    return [{ name: 'dialog', locator: this.root }];
+  }
+}
+
+/** The dialog with no day ticked and a closing time that is not after the opening time. */
+export class MeetingHoursInvalidScreen extends MeetingHoursScreen {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.daysError.isVisible()) return;
+    for (const day of await this.ticked()) await this.day(day).uncheck();
+    await this.until.fill('09:00');
+    await this.save.click();
+    await this.daysError.waitFor();
+  }
+}
+
+/** The dialog while the hours are being saved. */
+export class MeetingHoursBusyScreen extends MeetingHoursScreen {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if ((await this.save.getAttribute('aria-busy')) === 'true') return;
+    await this.save.click();
+    await this.root.locator('.btn[aria-busy="true"]').waitFor();
+  }
+}
+
+/** The dialog after the save failed. */
+export class MeetingHoursFailedScreen extends MeetingHoursScreen {
+  override async ready(): Promise<void> {
+    await super.ready();
+    if (await this.alert.isVisible()) return;
+    await this.save.click();
+    await this.alert.waitFor();
+  }
+}
+
+/** My services after the hours were saved: the dialog has closed and a toast says so. */
+export class MeetingHoursSavedScreen extends MyServicesPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    const saved = new Toasts(this.page).withTitle('Meeting hours saved');
+    if (await saved.isVisible()) return;
+    const dialog = new MeetingHoursDialog(this.page);
+    await this.meetingHours.click();
+    await dialog.save.click();
+    await saved.waitFor();
+  }
+
+  override regions(): Region[] {
+    return [...super.regions(), { name: 'toasts', locator: new Toasts(this.page).region }];
   }
 }

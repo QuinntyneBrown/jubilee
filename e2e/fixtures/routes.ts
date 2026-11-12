@@ -134,6 +134,8 @@ export type StubName =
   | 'services'
   | 'services-empty'
   | 'services-error'
+  | 'services-hours-pending'
+  | 'services-hours-failing'
   | 'admin-queue'
   | 'admin-queue-empty'
   | 'admin-queue-error'
@@ -1155,6 +1157,36 @@ export const routes = {
     mock: 'pages/my-services/error.html',
     who: 'member',
     stub: 'services-error',
+  },
+  'meeting-hours': {
+    app: '/my-business/services',
+    mock: 'dialogs/meeting-hours/default.html',
+    who: 'member',
+    stub: 'services',
+  },
+  'meeting-hours.invalid': {
+    app: '/my-business/services',
+    mock: 'dialogs/meeting-hours/invalid.html',
+    who: 'member',
+    stub: 'services',
+  },
+  'meeting-hours.busy': {
+    app: '/my-business/services',
+    mock: 'dialogs/meeting-hours/busy.html',
+    who: 'member',
+    stub: 'services-hours-pending',
+  },
+  'meeting-hours.failed': {
+    app: '/my-business/services',
+    mock: 'dialogs/meeting-hours/failed.html',
+    who: 'member',
+    stub: 'services-hours-failing',
+  },
+  'meeting-hours.success': {
+    app: '/my-business/services',
+    mock: 'dialogs/meeting-hours/success.html',
+    who: 'member',
+    stub: 'services',
   },
   'admin-verifications': {
     app: '/verifications',
