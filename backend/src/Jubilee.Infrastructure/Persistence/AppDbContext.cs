@@ -91,6 +91,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ResponseTimeStat> ResponseTimeStats => Set<ResponseTimeStat>();
 
+    public DbSet<JobRun> JobRuns => Set<JobRun>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 

@@ -142,14 +142,16 @@ public sealed class ListingDraftExpiryJob(IServiceScopeFactory scopes, ILogger<L
 }
 
 /// <summary>
-/// Every hour: recomputes each live listing's median first response and its "Replies fast" badge
-/// (L2-054, L2-182). Safe to repeat.
+/// Recomputes each live listing's median first response and its "Replies fast" badge once an hour
+/// (L2-054, L2-182 AC1). The tick is every ten minutes so an instance that starts late in an hour
+/// still serves the next one on time; <see cref="Jubilee.Application.Jobs.ScheduledJobs"/> lets
+/// only one instance run each hour and records its success.
 /// </summary>
 public sealed class ResponseTimeBadgeJob(IServiceScopeFactory scopes, ILogger<ResponseTimeBadgeJob> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(10));
         try
         {
             do
@@ -158,8 +160,11 @@ public sealed class ResponseTimeBadgeJob(IServiceScopeFactory scopes, ILogger<Re
                 {
                     await using var scope = scopes.CreateAsyncScope();
                     var updated = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
-                        .Send(new Jubilee.Application.Requests.RecomputeResponseTimesCommand(), stoppingToken);
-                    logger.LogInformation("Recomputed the response time of {Count} listings.", updated);
+                        .Send(new Jubilee.Application.Jobs.RunResponseTimeBadgeJobCommand(), stoppingToken);
+                    if (updated is { } count)
+                    {
+                        logger.LogInformation("Recomputed the response time of {Count} listings.", count);
+                    }
                 }
                 catch (Exception exception) when (exception is not OperationCanceledException)
                 {

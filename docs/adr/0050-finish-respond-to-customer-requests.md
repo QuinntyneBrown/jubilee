@@ -44,9 +44,12 @@ closes the dialog and reloads the row; the dialog showed its general failure ins
   it ran for, in UTC. `ScheduledJobs.RunOnceAsync` inserts the row before the work, so of two
   instances that reach the same hour one inserts and the other finds the row, or is refused by the
   key, and does nothing. When the work ends the row's `SucceededAt` is set: the job's last success
-  is its newest `SucceededAt`. When the work throws, the row is removed, so the next tick of any
-  instance may run the hour again. `RunResponseTimeBadgeJobCommand` is what `ResponseTimeBadgeJob`
-  sends; the recompute itself (`RecomputeResponseTimesCommand`) was already idempotent. The primary
+  is its newest `SucceededAt` (`ScheduledJobs.LastSuccessAsync`). When the work throws, the row
+  stays without a success, which is the record of the failure, and the job runs again at the next
+  hour; the row is not removed, because removing it would save whatever the failed work left
+  half-changed in the same unit of work. `RunResponseTimeBadgeJobCommand` is what `ResponseTimeBadgeJob`
+  sends, every ten minutes, so an instance that started late in an hour still serves the next hour
+  on time; the recompute itself (`RecomputeResponseTimesCommand`) was already idempotent. The primary
   key, not a unique index, is the guard, because the EF Core InMemory provider the tests use
   (ADR 0009) enforces keys only. The other jobs keep their own guards (each is idempotent per row);
   moving them onto `ScheduledJobs`, and the retries and dead-letter queue of `L2-182` AC2, belong
