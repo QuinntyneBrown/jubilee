@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Browse spaces
+
+Person(member, "Visitor or member", "Finds spaces")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "BrowsePage, CategoryPage and SearchPage with space cards")
+  Container(api, "Jubilee API", "ASP.NET Core", "/api/directory/home, /api/categories/{slug}/listings?term=, /api/search")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings with the Space JSON column")
+  ContainerDb(cache, "Cache", "Redis or in memory", "Directory read cache for 60 seconds")
+  Container(media, "Media storage", "Object storage and CDN", "Cover photos")
+}
+Rel(member, web, "Browses and searches", "HTTPS")
+Rel(web, api, "Loads the shelf, category and search", "JSON/HTTPS")
+Rel(web, media, "Loads cover photos", "HTTPS")
+Rel(api, cache, "Reads and fills the directory cache")
+Rel(api, db, "Reads public spaces", "EF Core")
+@enduml

@@ -114,6 +114,19 @@ when `AppDbContext` saves a change to a `Listing`, `Product` or `FeaturedSlot`.
 connection string is configured, and the API also marks the responses
 `Cache-Control: public, max-age=60` (`docs/adr/0003-directory-read-cache.md`).
 
+### Spaces
+
+After "Featured this week" the page shows the rooms shelf "Rooms & places to
+stay" when at least one space is live. `BrowseHomeDto` gains `Rooms`
+(`RoomsShelfDto`: `Count`, the live space count, and `Spaces`, the union of the
+four newest spaces overall and the four newest of each term), so the term filter
+works in the browser and the response stays cacheable. With no live space
+`Count` is 0 and the shelf is not shown. `DirectoryGrouping` leaves spaces out
+of "All {n} businesses", the chips list eleven categories with "Rooms &
+rentals" second, and the search placeholder reads "Plumber, lawyer, room to
+rent…". The shelf, the space card and the term filter are the feature
+[Browse spaces](../browse-spaces/README.md) (ADR 0040).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -129,6 +142,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-106` | `L1-014` | The listings a verifier chooses as "Featured this week" shall show on the welcome and browse pages from the start date for 7 days, and a featured listing that is paused or removed shall be skipped. |
 | `L2-118` | `L1-016` | Each load-error state shall show a reference that the user can quote to support. |
 | `L2-156` | `L1-021` | Responses for the public directory and category pages shall be cached for up to 60 seconds and invalidated when a listing changes state. |
+| `L2-192` | `L1-027` | The browse home shall show "Rooms & places to stay" with "All {n}", a term filter and up to four space cards when a space is live, filter it by term without reloading, leave spaces out of "All {n} businesses", and use the placeholder "Plumber, lawyer, room to rent…". |
 
 ## Diagrams
 

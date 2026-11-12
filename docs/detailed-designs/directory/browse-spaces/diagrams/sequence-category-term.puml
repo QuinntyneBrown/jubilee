@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Filter the Rooms & rentals category page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "CategoryPage" as page
+  participant "DirectoryApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "CategoriesController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetCategoryListingsQueryHandler" as handler
+  participant "WireValues" as terms
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /c/rooms-rentals?term=short-stay
+page --> actor : Card skeletons (L2-193)
+page -> client : getCategory(rooms-rentals, term short-stay, page 1)
+client -> controller : GET /api/categories/rooms-rentals/listings?term=short-stay
+controller -> terms : ParseTerm("short-stay") in GetCategoryListingsQuery.FromUntrusted
+terms --> controller : ShortStay, or null for an unknown value (L2-193)
+controller -> handler : Send GetCategoryListingsQuery with Term
+handler -> db : Public spaces of rooms-rentals (L2-028)
+db --> handler : Listings with the Space JSON column
+handler -> handler : Narrow by term in memory, newest first, 16 a page (L2-026)
+handler --> controller : CategoryPageResult with Spaces and Term
+controller --> client : 200 OK
+alt Load fails
+  client --> page : Error
+  page --> actor : "We couldn't load this category" with JB-CAT-503 (L2-118)
+else No match
+  page --> actor : "Nothing listed for this yet. New rooms and rentals are added every week."
+else Matches
+  page --> actor : "Rooms & rentals", "{n} spaces", "Short stays" pressed, space cards, "List a space"
+end
+actor -> page : Press "Any length"
+page -> page : Remove term from the URL and reload the list
+@enduml

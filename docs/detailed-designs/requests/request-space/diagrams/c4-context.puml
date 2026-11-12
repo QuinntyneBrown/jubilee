@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Request a space
+
+Person(member, "Member", "Renter who asks to rent a space")
+Person(owner, "Owner", "Host who confirms or declines")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
+System_Ext(email, "E-mail provider", "Sends request e-mails without the address")
+
+Rel(member, jubilee, "Sends a space request and reads the address once accepted")
+Rel(owner, jubilee, "Confirms or declines the space request")
+Rel(jubilee, email, "Tells the owner and the member", "HTTPS")
+@enduml

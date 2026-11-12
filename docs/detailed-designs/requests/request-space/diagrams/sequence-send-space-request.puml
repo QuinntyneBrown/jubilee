@@ -1,0 +1,74 @@
+@startuml
+title UML sequence behaviour — Send a space request
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "RequestSpaceDialog" as dialog
+  participant "RequestsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "RequestsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "RequestSpaceCommandHandler" as handler
+  participant "Request" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> dialog : Press "Request to book"
+dialog --> actor : "Check in", "Check out", note (or "Move in" and "Staying")
+actor -> dialog : Choose dates
+dialog --> actor : "$120 × 2 nights", "Total $240" (Short stay only)
+actor -> dialog : Send
+dialog -> client : requestSpace({listingSlug, dates, note, idempotencyKey})
+client -> controller : POST /api/requests/spaces
+controller -> controller : Authenticate, RequiresConfirmedEmail (L2-005)
+controller -> handler : Send RequestSpaceCommand
+handler -> db : Earlier request with the same idempotency key? (L2-132)
+alt Repeated key
+  handler --> controller : The earlier BookedRequestDto, nothing created
+else New key
+  handler -> db : Load the public listing by slug
+  alt Not a public space
+    handler --> controller : Not found
+    controller --> client : 404
+  else Caller owns the space
+    handler --> controller : OWN_LISTING
+    controller --> client : 409 ProblemDetails (L2-197)
+  else Caller has an open New or Confirmed request for it
+    handler --> controller : ALREADY_REQUESTED
+    controller --> client : 409 ProblemDetails (L2-197)
+  else Another member
+    handler -> handler : Validate in Toronto dates: IN_THE_PAST, TOO_FAR,\nNOT_AFTER_CHECK_IN, BELOW_MINIMUM_STAY, stayMonths REQUIRED (L2-197)
+    alt Invalid
+      handler --> controller : errors {field: code}
+      controller --> client : 422 ProblemDetails
+      client --> dialog : Errors
+      dialog --> actor : "Choose a date from today on." or "This space needs at least {minimum stay}."
+    else Valid
+      handler -> handler : Nights or months and the total from the stored rent (L2-197)
+      handler -> entity : AskForSpace(...) with status New (L2-043)
+      handler -> db : Save the request, the owner's notification and the queued e-mail (EmailPolicy.Queue)
+      db --> handler : Commit result
+      handler --> controller : BookedRequestDto(Id, Status, StatusLabel)
+      controller --> client : 201 Created
+      client --> dialog : Sent
+      dialog --> actor : "Sent to {host first name}" (from the page's ownerName) with "Close" and "View request"
+    end
+  end
+end
+@enduml

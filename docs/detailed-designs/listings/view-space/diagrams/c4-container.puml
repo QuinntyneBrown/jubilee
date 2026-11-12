@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — View a space
+
+Person(member, "Visitor or member", "Opens /b/:slug for a space")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "BusinessPage with the space layout")
+  Container(api, "Jubilee API", "ASP.NET Core", "GET /api/listings/{slug}")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings with the Space JSON column, and Requests")
+  ContainerDb(cache, "Cache", "Redis or in memory", "Public part of the listing page")
+  Container(media, "Media storage", "Object storage and CDN", "Cover photo")
+}
+Rel(member, web, "Opens the space page", "HTTPS")
+Rel(web, api, "Loads the listing page", "JSON/HTTPS")
+Rel(web, media, "Loads the cover", "HTTPS")
+Rel(api, cache, "Reads the public part")
+Rel(api, db, "Reads the space and the viewer's open request", "EF Core")
+@enduml

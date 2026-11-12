@@ -1,0 +1,95 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — View a space
+
+class ListingPageDto <<record>> {
+  +string Slug
+  +string Kind
+  +string Name
+  +string Tagline
+  +string ViewerRelation
+  +string? OwnerName
+  +string? About
+  +string? CoverPhoto
+  +IReadOnlyList<BusinessCardDto> Related
+  +SpacePageDto? Space
+  +IReadOnlyList<SpaceCardDto> RelatedSpaces
+  +Guid? OpenRequestId
+}
+
+class SpacePageDto <<record>> {
+  +string Term
+  +int Rent
+  +string Per
+  +string Available
+  +int MinimumStay
+  +string MinimumStayLabel
+  +string Neighbourhood
+  +string Place
+  +IReadOnlyList<string> Facts
+  +IReadOnlyList<string> Included
+  +string? Household
+  +IReadOnlyList<string> Rules
+  +string CallToAction
+  +{static} From(listing: Listing): SpacePageDto?
+}
+
+class SpaceCardDto <<record>> {
+  +string Slug
+  +string Name
+  +string Term
+  +int Rent
+  +string Per
+}
+
+class SpaceDetails <<owned type, JSON column Space>> {
+  +SpaceTerm Term
+  +int Rent
+  +string Available
+  +int MinimumStay
+  +string Neighbourhood
+  +string Place
+  +List<string> Facts
+  +List<string> Included
+  +string? Household
+  +List<string> Rules
+  +string Address
+}
+
+class SpaceTerms <<static>> {
+  +Per(term): string
+  +MinimumStayLabel(term, count): string
+  +AsksForHousehold(term): bool
+  +CallToAction(term): string
+}
+
+class Request {
+  +Guid Id
+  +RequestKind Kind
+  +RequestStatus Status
+  +string MemberSubject
+  +Guid ListingId
+}
+
+class GetListingPageQueryHandler {
+  +Handle(query: GetListingPageQuery): ListingPageDto
+}
+
+ListingPageDto *-- "0..1" SpacePageDto
+ListingPageDto *-- "0..4" SpaceCardDto
+SpacePageDto ..> SpaceDetails : projects, never Address
+SpacePageDto ..> SpaceTerms : reads
+GetListingPageQueryHandler ..> ListingPageDto : builds from the cache, then adds OpenRequestId
+GetListingPageQueryHandler ..> Request : finds the member's open space request
+@enduml

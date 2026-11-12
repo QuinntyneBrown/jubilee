@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Submit a space
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "ListingDraftsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingDraftsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SubmitListingCommandHandler" as handler
+  participant "Drafts" as validator
+  participant "Listing" as listing
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Tick the space agreement and press "Submit for verification"
+page -> page : Run the same rules in the browser (L2-126)
+alt Browser finds errors
+  page --> actor : "Fix {n} thing(s) to continue" and the field messages
+else Valid
+  page -> client : submit(id, input)
+  client -> controller : POST /api/listing-drafts/{id}/submit
+  controller -> controller : Authenticate, confirmed member, owns the draft (L2-133)
+  controller -> handler : Send SubmitListingCommand
+  handler -> validator : ValidateSpace(input.Space) and check agreed (L2-190, L2-191)
+  alt Invalid
+    validator --> handler : space.rent REQUIRED or TOO_HIGH, space.available, space.neighbourhood,
+space.address, space.household REQUIRED, agreed REQUIRED
+    handler --> controller : Validation failure
+    controller --> client : 422 ProblemDetails with errors {field: code}
+    client --> page : Errors
+    page --> actor : Same messages as the browser
+  else Valid
+    handler -> validator : SpaceFrom(input.Space)
+validator --> handler : SpaceDetails with facts and rules trimmed
+    handler -> listing : Create with Kind Space, category forced to rooms-rentals (L2-188)
+    handler -> db : Save listing waiting on its reference, queue the reference e-mail (L2-078)
+    db --> handler : Commit result
+    handler --> controller : SubmittedListingDto
+    controller --> client : 201 Created
+    client --> page : Submitted
+    page --> actor : "{Listing title} is in for verification." with "Go to My business"
+  end
+end
+@enduml

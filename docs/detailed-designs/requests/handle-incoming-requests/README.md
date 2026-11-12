@@ -71,6 +71,20 @@ badge computed in `Jubilee Worker`.
 - **`ResponseTimeStat`** — entity per listing with `MedianFirstResponse`, `ResponseCount`, `RepliesFast` and
   `ComputedAt`. Listing pages and `BusinessCard` read `RepliesFast` to show or remove the "Replies fast" badge.
 
+### Space requests
+
+`RequestKind` gains `Space`. `IncomingRules` holds its words (`KindLabel`
+"Space", `Title`, `SpaceWhen`, `SpaceTotal`). A space request is listed with the
+title "{call to action} · {the space}", the line "Space · {customer} · {time}" and the
+detail of its dates ("Fri 13 Mar – Sun 15 Mar · 2 nights · $240") or move-in
+("Move in Sun 1 Mar · 12 months"), with "Decline" and "Confirm". Its
+confirm dialog warns that the customer gets the exact address on confirm.
+Confirm and decline use the existing endpoints. A new space request reaches the
+owner as a notification and a queued e-mail; its handler pushes no real-time
+event. The
+wording, the confirm dialog and the address release are the feature
+[Request a space](../request-space/README.md) (ADR 0040).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2 requirement refines a level-1 (L1)
@@ -84,6 +98,7 @@ requirement, cited by identifier.
 | `L2-133` | `L1-019` | The server shall return HTTP 403 when an owner API is called for a listing the caller does not own. |
 | `L2-070` | `L1-010` | A notification, message or request event shall reach an open signed-in page within 2 seconds at the 95th percentile over a persistent connection. |
 | `L2-182` | `L1-025` | Each scheduled job shall be idempotent, shall run at most once per schedule across instances, and shall record its last success. |
+| `L2-198` | `L1-027` | A space request shall be listed in Incoming requests with the call to action and the space, "Space · {customer} · {time}" and its dates or move-in, confirmed through a dialog that warns the address is shared, declined as any request, and shown to the member with the type "Space". |
 
 ## Diagrams
 

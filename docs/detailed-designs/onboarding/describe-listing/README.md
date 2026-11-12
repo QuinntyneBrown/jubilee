@@ -84,6 +84,19 @@ The feature is a vertical slice from the `/list` page to the `Jubilee database`.
 A listing with zero products or services may be submitted; the review checklist
 then shows "No products or services yet".
 
+### Spaces
+
+"What do you offer?" has a third card, "A space" ("A room, suite, apartment
+or hall to rent."), and `/list?kind=space` opens with it chosen. `ListingKind`
+gains `Space`, derived from the category "Rooms & rentals" (`rooms-rentals`),
+which becomes the second of eleven categories. For a space the form hides
+"Category", the items and the store address and shows the space fields;
+`ListingDraft` and `Listing` own an optional `SpaceDetails` in a JSON column
+`Space`, and the body of the existing draft endpoints gains a nested `space`
+object. The space form,
+preview and agreement line are the feature
+[Describe a space](../describe-space/README.md) (ADR 0040).
+
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
@@ -98,6 +111,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-005` | `L1-001` | Until the e-mail is confirmed, a member shall be able to browse, search and save but shall not message, book, request or list a business. |
 | `L2-126` | `L1-018` | A page form submitted with errors shall show the summary "Fix {n} thing(s) to continue", mark each invalid field, keep typed values, and apply the same rules and message codes on the server. |
 | `L2-133` | `L1-019` | Each API endpoint shall check the caller's role and ownership of the specific object before doing anything. |
+| `L2-189` | `L1-027` | `/list` shall offer "A space" beside "Products" and "Services", relabel the form for a space, preview the space card under "How renters see it", and restore a space saved as a draft. |
 
 ## Diagrams
 
