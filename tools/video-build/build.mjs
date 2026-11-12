@@ -4,6 +4,7 @@
 //   node tools/video-build/build.mjs docs/videos/NN-topic --check                 print the schedule and the captions
 //   node tools/video-build/build.mjs docs/videos/NN-topic --frame 12.5 out.png    render one frame (film seconds)
 //   node tools/video-build/build.mjs docs/videos/NN-topic [--no-captions]         captions.vtt + NN-topic.mp4
+//   ... [--fps 30] [--crf 20]                                                       frame rate and quality (default 60 and 16)
 //
 // The full build seeks the deck frame by frame (1920x1080, 60 fps) and muxes the frames with NN-topic.mp3,
 // which tools/video-audio/film_audio.py writes first. Captions are burned in, as the build spec asks,
@@ -19,14 +20,16 @@ import { pathToFileURL } from 'node:url';
 
 const { chromium } = createRequire(import.meta.url)('playwright');
 const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
-const FPS = 60;
 
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
+const option = (name, fallback) => (flag(name) ? +args[args.indexOf(name) + 1] : fallback);
+const FPS = option('--fps', 60);
+const CRF = option('--crf', 16);
 const folder = path.resolve(args[0] ?? '');
 const name = path.basename(folder);
 if (!fs.existsSync(path.join(folder, 'slides.html'))) {
-  console.error('usage: build.mjs docs/videos/NN-topic [--check | --frame <seconds> <png>] [--no-captions]');
+  console.error('usage: build.mjs docs/videos/NN-topic [--check | --frame <seconds> <png>] [--no-captions] [--fps <n>] [--crf <n>]');
   process.exit(2);
 }
 
@@ -72,7 +75,7 @@ try {
     const partial = path.join(folder, `${name}.partial.mp4`);
     const ffmpeg = spawn(FFMPEG, ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-c:v', 'mjpeg', '-framerate', String(FPS), '-i', 'pipe:0',
       '-i', mp3, '-map', '0:v', '-map', '1:a',
-      '-c:v', 'libx264', '-preset', 'slow', '-crf', '16', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '256k',
+      '-c:v', 'libx264', '-preset', 'slow', '-crf', String(CRF), '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '256k',
       '-movflags', '+faststart', '-t', String(pitch.duration), partial],
       { stdio: ['pipe', 'inherit', 'inherit'] });
     const frames = Math.round(pitch.duration * FPS);

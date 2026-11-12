@@ -299,7 +299,8 @@ void main(){
     };
     addEventListener('resize', fit);
     fit();
-    captionBox.hidden = query.get('captions') === '0'; // captions are part of the film; ?captions=0 hides them
+    // Captions are part of the film unless <body data-captions="off">; ?captions=0 hides them, ?captions=1 shows them.
+    captionBox.hidden = query.get('captions') === '0' || (body.dataset.captions === 'off' && query.get('captions') !== '1');
     guides.hidden = query.get('guides') !== '1';
     guides.innerHTML = `<div class="action"></div><div class="title"></div><div class="tc"></div><div class="beats">${'<i></i>'.repeat(12)}</div>`;
     if (RENDER) { body.classList.add('render'); return; }
