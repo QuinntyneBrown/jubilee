@@ -100,6 +100,38 @@ test.describe('request a quote (L2-045)', () => {
     expect(fake.sends).toHaveLength(0);
   });
 
+  test('L2-126 AC2, AC6: each field says whether it is required and a message is tied to its field', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new RequestQuoteDialog(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    await stubQuote(page);
+    await jb.goto('/b/luzandre/quote');
+
+    await expect(dialog.labels).toHaveText([
+      'What do you need? (required)',
+      'Needed by (optional)',
+      'Budget (optional)',
+      'Phone (optional)',
+    ]);
+
+    await dialog.phone.fill('416-555-01');
+    await dialog.send.click();
+
+    await expect(dialog.fieldError).toHaveCount(2);
+    await expect(dialog.what).toHaveAccessibleDescription(
+      'Describe what you need in a sentence or two so Naomi can price it.',
+    );
+    await expect(dialog.phone).toHaveAttribute('aria-invalid', 'true');
+    await expect(dialog.phone).toHaveAccessibleDescription(
+      /Enter a 10-digit phone number, like 416-555-0142, or leave it empty\./,
+    );
+    await expect(dialog.phone).toHaveValue('416-555-01');
+    await expect(dialog.what).toBeFocused();
+  });
+
   test('AC4: a date in the past is refused', async ({ page, jb }) => {
     const dialog = new RequestQuoteDialog(page);
     await new BusinessPage(page).setWidth(1280);

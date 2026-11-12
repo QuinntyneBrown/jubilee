@@ -436,6 +436,8 @@ export class RequestQuoteDialog {
   readonly budget: Locator;
   readonly phone: Locator;
   readonly phoneHelp: Locator;
+  /** The label of each field, with its "(required)" or "(optional)" mark, in order. */
+  readonly labels: Locator;
   readonly fieldError: Locator;
   readonly alert: Locator;
   readonly send: Locator;
@@ -446,6 +448,7 @@ export class RequestQuoteDialog {
     this.root = page.getByRole('dialog');
     this.title = this.root.locator('.dialog__title');
     this.description = this.root.locator('#dlg-desc');
+    this.labels = this.root.locator('.field__label');
     this.what = this.root.getByLabel('What do you need?');
     this.neededBy = this.root.getByLabel('Needed by');
     this.budget = this.root.getByLabel('Budget');
