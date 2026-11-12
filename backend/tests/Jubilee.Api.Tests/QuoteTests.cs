@@ -257,6 +257,106 @@ public sealed class QuoteTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
         Assert.Contains("416-555-0142", mail.TextBody);
     }
 
+    private HttpClient Naomi() => _factory.CreateMemberClient("Naomi Luzandre", NaomiId);
+
+    private async Task<List<JsonElement>> NotificationsOf(HttpClient client) =>
+        [.. (await _factory.GetJson("/api/notifications", client)).GetProperty("items").EnumerateArray()];
+
+    // L2-045 AC8, L2-043 AC1, L2-064 AC6: the owner is told in the app and finds the request under New; the member is not told yet
+    [Fact]
+    public async Task L2_045_AC8_the_owner_gets_an_in_app_notification_and_the_request_is_new_in_incoming_requests()
+    {
+        var sent = await Json(await Ask(Joanna(), neededBy: "2027-02-14", service: _customWork));
+
+        var told = Assert.Single(await NotificationsOf(Naomi()));
+        Assert.Equal("New quote request from Joanna Adeyemi", told.GetProperty("title").GetString());
+        Assert.Equal("Custom work", told.GetProperty("detail").GetString());
+        Assert.Equal("request", told.GetProperty("kind").GetString());
+        Assert.Equal("/my-business/requests", told.GetProperty("target").GetString());
+        Assert.False(told.GetProperty("read").GetBoolean());
+        Assert.Equal(1, (await _factory.GetJson("/api/me/navigation", Naomi())).GetProperty("unreadNotificationCount").GetInt32());
+        Assert.Empty(await NotificationsOf(Joanna()));
+        Assert.Empty(await NotificationsOf(_factory.CreateMemberClient("Sam Stranger", "member|sam")));
+        var row = Assert.Single((await _factory.GetJson("/api/my-business/requests?tab=new", Naomi())).GetProperty("rows").EnumerateArray());
+        Assert.Equal(sent.GetProperty("id").GetGuid(), row.GetProperty("id").GetGuid());
+        Assert.Equal("quote", row.GetProperty("kind").GetString());
+        Assert.Equal("New", row.GetProperty("statusLabel").GetString());
+        Assert.Equal("Joanna Adeyemi", row.GetProperty("customerName").GetString());
+    }
+
+    // L2-045 AC8: without a service the notification says what was asked for
+    [Fact]
+    public async Task L2_045_AC8_without_a_service_the_owners_notification_carries_the_description()
+    {
+        await Ask(Joanna(), description: "A banner for our harvest supper.");
+
+        var told = Assert.Single(await NotificationsOf(Naomi()));
+        Assert.Equal("A banner for our harvest supper.", told.GetProperty("detail").GetString());
+    }
+
+    // L2-045 AC8, L2-132: a repeated send tells the owner once
+    [Fact]
+    public async Task L2_045_AC8_a_repeated_key_tells_the_owner_once()
+    {
+        await Ask(Joanna(), key: "same-key-12345");
+        await Ask(Joanna(), key: "same-key-12345");
+
+        Assert.Single(await NotificationsOf(Naomi()));
+    }
+
+    // L2-045 AC8: a request that is refused tells nobody
+    [Fact]
+    public async Task L2_045_AC8_a_refused_request_tells_nobody()
+    {
+        await Ask(Joanna(), description: " ");
+        await Ask(Joanna(), phone: "416-555-01");
+
+        Assert.Empty(await NotificationsOf(Naomi()));
+    }
+
+    // L2-045 AC8, L2-064 AC6: the member is told in the app when the owner confirms or declines
+    [Theory]
+    [InlineData("confirm", "Luzandre.com confirmed your quote request")]
+    [InlineData("decline", "Luzandre.com declined your quote request")]
+    public async Task L2_045_AC8_the_member_is_told_in_the_app_when_the_owner_answers(string answer, string title)
+    {
+        var id = (await Json(await Ask(Joanna(), service: _customWork))).GetProperty("id").GetGuid();
+        Assert.Empty(await NotificationsOf(Joanna()));
+
+        var answered = answer == "confirm"
+            ? await Naomi().PostAsync($"/api/my-business/requests/{id}/confirm", null)
+            : await Naomi().PostAsJsonAsync($"/api/my-business/requests/{id}/decline", new { reason = "something-else", message = "Not something we print." });
+
+        Assert.Equal(HttpStatusCode.OK, answered.StatusCode);
+        var told = Assert.Single(await NotificationsOf(Joanna()));
+        Assert.Equal(title, told.GetProperty("title").GetString());
+        Assert.Equal("Custom work", told.GetProperty("detail").GetString());
+        Assert.Equal("request", told.GetProperty("kind").GetString());
+        Assert.Equal($"/requests/{id}", told.GetProperty("target").GetString());
+        Assert.False(told.GetProperty("read").GetBoolean());
+        Assert.Single(await NotificationsOf(Naomi()));
+    }
+
+    // L2-045 AC8, L2-057 AC8: the quote request is a card in the conversation of the member and the business
+    [Fact]
+    public async Task L2_045_AC8_a_quote_card_appears_in_the_conversation_with_the_business()
+    {
+        var started = await Json(await Joanna().PostAsJsonAsync(
+            "/api/conversations", new { listingSlug = "luzandre-com", body = "Do you print banners?", idempotencyKey = Guid.NewGuid().ToString() }));
+        var conversation = started.GetProperty("conversationId").GetString();
+        _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+
+        await Ask(Joanna(), neededBy: "2027-02-14", service: _customWork);
+
+        var card = Assert.Single((await _factory.GetJson($"/api/conversations/{conversation}", Joanna())).GetProperty("requests").EnumerateArray());
+        Assert.Equal("Quote request", card.GetProperty("kindLabel").GetString());
+        Assert.Equal("Custom work", card.GetProperty("title").GetString());
+        Assert.Equal("Needed by Sun 14 Feb", card.GetProperty("detail").GetString());
+        Assert.Equal("Awaiting reply", card.GetProperty("statusLabel").GetString());
+        var owners = Assert.Single((await _factory.GetJson($"/api/conversations/{conversation}", Naomi())).GetProperty("requests").EnumerateArray());
+        Assert.Equal("Quote request", owners.GetProperty("kindLabel").GetString());
+    }
+
     // L2-045: a business that is not listed, or a service of another business
     [Fact]
     public async Task L2_045_a_business_that_is_not_listed_is_not_found_and_nothing_is_created()
