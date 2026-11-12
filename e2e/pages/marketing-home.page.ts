@@ -34,7 +34,7 @@ export class LaunchFormPart {
   readonly send: Locator;
   readonly summary: Locator;
   readonly summaryLinks: Locator;
-  /** An alert above the fields: the failure, the limit or the bot challenge. */
+  /** A notice above the fields: still sending, the limit or the bot challenge. */
   readonly alert: Locator;
   readonly confirmation: Locator;
   readonly confirmationHeading: Locator;
@@ -99,7 +99,18 @@ export class LaunchFormPart {
     return () => count;
   }
 
-  /** Whether the form shows a state other than its first one: sent, busy, refused or failed. */
+  /** What the form sent to the API, each time, since `capture` was called. */
+  capture(): () => unknown[] {
+    const bodies: unknown[] = [];
+    this.page.on('request', (request) => {
+      if (request.method() === 'POST' && new URL(request.url()).pathname === this.path) {
+        bodies.push(request.postDataJSON());
+      }
+    });
+    return () => bodies;
+  }
+
+  /** Whether the form shows a state other than its first one: sent, busy, refused or still sending. */
   async inAState(): Promise<boolean> {
     return (
       (await this.confirmation.count()) +
@@ -456,6 +467,8 @@ export class LaunchFormScreen extends MarketingHomePage {
     page: Page,
     private readonly which: 'notify' | 'business',
     private readonly filled: boolean,
+    /** The state shows a notice above the fields, which a busy form gets a moment after it is sent. */
+    private readonly noticed = false,
   ) {
     super(page);
   }
@@ -472,6 +485,10 @@ export class LaunchFormScreen extends MarketingHomePage {
       else await this.fillBusiness();
     }
     await this.part.send.click();
+    if (this.noticed) {
+      await this.part.alert.waitFor();
+      return;
+    }
     await this.page.waitForFunction(() =>
       document.querySelector('.mkt-form [aria-busy], .alert, .mkt-confirmation'),
     );

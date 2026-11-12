@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Jubilee.Api.Errors;
+using Jubilee.Api.Middleware;
 using Jubilee.Api.RateLimiting;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Launch;
@@ -45,7 +46,7 @@ public sealed class LaunchController(ISender sender, IBotChallengeVerifier bot, 
     public async Task<IActionResult> Notify(LaunchNotificationBody request, CancellationToken cancellationToken)
     {
         await PassChallengeAsync(request.ChallengeToken, cancellationToken);
-        await sender.Send(new SignUpForLaunchCommand(request.Email, request.FirstName, request.Consent), cancellationToken);
+        await sender.Send(new SignUpForLaunchCommand(request.Email, request.FirstName, request.Consent, Proxied?.ReceivedAt), cancellationToken);
         return Accepted();
     }
 
@@ -59,14 +60,25 @@ public sealed class LaunchController(ISender sender, IBotChallengeVerifier bot, 
         await sender.Send(
             new PreRegisterBusinessCommand(
                 request.BusinessName, request.ContactName, request.Email, request.Phone, request.Category, request.Area, request.Website,
-                request.Description, request.Consent),
+                request.Description, request.Consent, Proxied?.ReceivedAt),
             cancellationToken);
         return Accepted();
     }
 
-    /// <summary>The challenge comes first: a bot learns nothing about the fields (L2-218 AC3).</summary>
+    /// <summary>What the marketing host's proxy stated of this submission, if it proved itself (L2-218 AC9).</summary>
+    private ProxiedSubmission? Proxied => HttpContext.Features.Get<ProxiedSubmission>();
+
+    /// <summary>
+    /// The challenge comes first: a bot learns nothing about the fields (L2-218 AC3). A submission the
+    /// marketing host kept is not asked again: its token expired while the API could not be reached (AC9).
+    /// </summary>
     private async Task PassChallengeAsync(string? token, CancellationToken cancellationToken)
     {
+        if (Proxied is { Kept: true })
+        {
+            return;
+        }
+
         if (!await bot.VerifyAsync(token, HttpContext.Connection.RemoteIpAddress?.ToString(), cancellationToken))
         {
             throw new ValidationFailedException(new Dictionary<string, string> { ["challenge"] = "CHALLENGE_FAILED" });

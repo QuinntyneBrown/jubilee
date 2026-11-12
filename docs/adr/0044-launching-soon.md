@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted, 12 November 2026. Amends ADR 0013 (marketing site): the site is no longer static, it has
+Accepted, 12 November 2026. Amended by ADR 0047: the marketing host's settings are applied by
+`eng/azure/deploy.sh`, a form that cannot be sent keeps sending and shows no error, and a new
+sign-up e-mails the team. Amends ADR 0013 (marketing site): the site is no longer static, it has
 an HTTP client, and it has no `APP_URL`. Applies ADR 0009 (tests without a database), ADR 0035
 (presentation in the components library), ADR 0036 (component parity), ADR 0038 (e-mail through the
 outbox) and ADR 0040 (a host's `server.js` forwards `/api`).

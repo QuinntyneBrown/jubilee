@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -56,11 +57,22 @@ public sealed class StaffNetworks
 /// The admin host's proxy states the staff member's address in <c>X-Jubilee-Client-Address</c> and
 /// proves itself with <c>X-Jubilee-Proxy-Key</c> (ADR 0040). Only then is the address believed; both
 /// headers are removed from every request, so nothing after this sees a caller's own copy (L2-192 AC4).
+/// The marketing host's proxy also states when it received a launch submission
+/// (<c>X-Jubilee-Received-At</c>) and that it kept one and sends it again (<c>X-Jubilee-Kept</c>);
+/// they are believed and removed the same way (L2-218 AC9, ADR 0047).
 /// </summary>
+/// <summary>
+/// What the marketing host's proxy said of a launch submission, present only when it proved itself:
+/// when it received it, and whether it kept it and is sending it again (ADR 0047).
+/// </summary>
+public sealed record ProxiedSubmission(DateTimeOffset? ReceivedAt, bool Kept);
+
 public sealed class StaffProxyMiddleware(RequestDelegate next, IConfiguration configuration)
 {
     public const string ProxyKeyHeader = "X-Jubilee-Proxy-Key";
     public const string ClientAddressHeader = "X-Jubilee-Client-Address";
+    public const string ReceivedAtHeader = "X-Jubilee-Received-At";
+    public const string KeptHeader = "X-Jubilee-Kept";
 
     private readonly byte[] _key = Encoding.UTF8.GetBytes(configuration["StaffAccess:ProxyKey"] ?? string.Empty);
 
@@ -69,14 +81,28 @@ public sealed class StaffProxyMiddleware(RequestDelegate next, IConfiguration co
         var headers = context.Request.Headers;
         if (_key.Length > 0
             && headers.TryGetValue(ProxyKeyHeader, out var presented)
-            && CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(presented.ToString()), _key)
-            && IPAddress.TryParse(headers[ClientAddressHeader].ToString(), out var address))
+            && CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(presented.ToString()), _key))
         {
-            context.Connection.RemoteIpAddress = address;
+            if (IPAddress.TryParse(headers[ClientAddressHeader].ToString(), out var address))
+            {
+                context.Connection.RemoteIpAddress = address;
+            }
+
+            DateTimeOffset? receivedAt = DateTimeOffset.TryParse(
+                headers[ReceivedAtHeader].ToString(), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var at)
+                ? at.ToUniversalTime()
+                : null;
+            var kept = string.Equals(headers[KeptHeader].ToString(), "true", StringComparison.OrdinalIgnoreCase);
+            if (receivedAt is not null || kept)
+            {
+                context.Features.Set(new ProxiedSubmission(receivedAt, kept));
+            }
         }
 
         headers.Remove(ProxyKeyHeader);
         headers.Remove(ClientAddressHeader);
+        headers.Remove(ReceivedAtHeader);
+        headers.Remove(KeptHeader);
         return next(context);
     }
 }

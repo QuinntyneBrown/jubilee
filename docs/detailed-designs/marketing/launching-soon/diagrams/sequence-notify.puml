@@ -84,5 +84,5 @@ else Valid in the page
     end
   end
 end
-note over form, client : No answer within 10 seconds, an unreachable API or any other error: "We couldn’t add you to the list." with every value kept (L2-217 AC6).
+note over form, client : No answer within 10 seconds, a request that cannot be sent or any other answer: "Still sending.", the form stays busy and sends again every 5 seconds (L2-217 AC6).\nA new sign-up is saved with one e-mail to Launch:TeamEmail in the same save (L2-217 AC9). What the API cannot take is kept by server.js (sequence-kept-submission).
 @enduml

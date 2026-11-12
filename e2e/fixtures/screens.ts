@@ -94,8 +94,8 @@ export const screens: {
     screen: (page) => new LaunchFormScreen(page, 'business', true),
   },
   {
-    key: 'marketing-home.business-error',
-    screen: (page) => new LaunchFormScreen(page, 'business', true),
+    key: 'marketing-home.business-retrying',
+    screen: (page) => new LaunchFormScreen(page, 'business', true, true),
   },
   {
     key: 'marketing-home.business-rate-limited',
@@ -118,8 +118,8 @@ export const screens: {
     screen: (page) => new LaunchFormScreen(page, 'notify', true),
   },
   {
-    key: 'marketing-home.notify-error',
-    screen: (page) => new LaunchFormScreen(page, 'notify', true),
+    key: 'marketing-home.notify-retrying',
+    screen: (page) => new LaunchFormScreen(page, 'notify', true, true),
   },
   {
     key: 'marketing-home.notify-rate-limited',

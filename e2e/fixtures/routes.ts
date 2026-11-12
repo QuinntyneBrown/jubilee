@@ -22,7 +22,7 @@ export type StubName =
   | 'space-requested'
   | 'rooms-empty'
   | 'business-loading'
-  | 'business-error'
+  | 'business-retrying'
   | 'business-empty'
   | 'business-edge'
   | 'business-owner'
@@ -50,10 +50,12 @@ export type StubName =
   | 'sign-in-pending'
   | 'launch-notify-pending'
   | 'launch-notify-failing'
+  | 'launch-notify-recovering'
   | 'launch-notify-limited'
   | 'launch-notify-challenge'
   | 'launch-business-pending'
   | 'launch-business-failing'
+  | 'launch-business-recovering'
   | 'launch-business-limited'
   | 'launch-business-challenge'
   | 'join-created'
@@ -95,7 +97,7 @@ export type StubName =
   | 'business-away'
   | 'business-changes'
   | 'business-empty'
-  | 'business-error'
+  | 'business-retrying'
   | 'business-paused'
   | 'editor'
   | 'order'
@@ -565,7 +567,7 @@ export const routes = {
     app: '/b/legacy-financial',
     mock: 'pages/business/error.html',
     who: 'member',
-    stub: 'business-error',
+    stub: 'business-retrying',
   },
   'business.empty': {
     app: '/b/legacy-financial',
@@ -831,7 +833,7 @@ export const routes = {
     app: '/my-business',
     mock: 'pages/my-business/error.html',
     who: 'member',
-    stub: 'business-error',
+    stub: 'business-retrying',
   },
   'my-business.paused': {
     app: '/my-business',
@@ -1371,12 +1373,19 @@ export const routes = {
     who: 'visitor',
     site: 'marketing',
   },
-  'marketing-home.business-error': {
+  'marketing-home.business-retrying': {
     app: '/',
-    mock: 'pages/marketing-home/business-error.html',
+    mock: 'pages/marketing-home/business-retrying.html',
     who: 'visitor',
     site: 'marketing',
     stub: 'launch-business-failing',
+  },
+  'marketing-home.business-recovered': {
+    app: '/',
+    mock: 'pages/marketing-home/business-success.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-business-recovering',
   },
   'marketing-home.business-rate-limited': {
     app: '/',
@@ -1411,12 +1420,19 @@ export const routes = {
     who: 'visitor',
     site: 'marketing',
   },
-  'marketing-home.notify-error': {
+  'marketing-home.notify-retrying': {
     app: '/',
-    mock: 'pages/marketing-home/notify-error.html',
+    mock: 'pages/marketing-home/notify-retrying.html',
     who: 'visitor',
     site: 'marketing',
     stub: 'launch-notify-failing',
+  },
+  'marketing-home.notify-recovered': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-success.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-notify-recovering',
   },
   'marketing-home.notify-rate-limited': {
     app: '/',

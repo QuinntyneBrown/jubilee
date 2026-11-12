@@ -6,12 +6,19 @@
 #
 # Add --migrate to apply the EF Core migrations first (the API never applies them itself), and
 # --seed to add the demo directory as well.
+#
+# Every deployment also applies the app settings the launching-soon forms need (ADR 0047) and
+# fails unless the marketing host forwards /api/launch and nothing else. No setting is made by hand.
 set -euo pipefail
 
 GROUP=${GROUP:-rg-jubilee-prod}
 WWW_APP=${WWW_APP:-jubilee-to-www}   # www.jubilee.to and jubilee.to: frontend/projects/marketing
 APP_APP=${APP_APP:-jubilee-to-app}   # app.jubilee.to: frontend/projects/jubilee, the API and the worker
 ADMIN_APP=${ADMIN_APP:-jubilee-to-admin} # admin.jubilee.to: frontend/projects/admin (ADR 0040)
+API_URL=${API_URL:-https://app.jubilee.to}  # where the marketing host sends /api/launch
+WWW_URL=${WWW_URL:-https://www.jubilee.to}
+# Where each business pre-registration and each new launch sign-up is e-mailed (L2-216 AC10, L2-217 AC9).
+LAUNCH_TEAM_EMAIL=${LAUNCH_TEAM_EMAIL:-quinntynebrown@gmail.com}
 
 root=$(cd "$(dirname "$0")/../.." && pwd)
 work=$(mktemp -d)
@@ -25,6 +32,33 @@ cleanup() {
   fi
 }
 trap cleanup EXIT
+
+# The value of the app setting $2 of the App Service $1; empty when it is not set. For reading
+# into a variable only: a value is never printed.
+setting() {
+  az webapp config appsettings list -g "$GROUP" -n "$1" --query "[?name=='$2'].value | [0]" -o tsv
+}
+
+# Sets the app settings NAME=value ... of the App Service $1, but only those whose value differs:
+# a changed setting restarts the site, so an unchanged deployment restarts nothing for them. It
+# says which settings it set, by name; values are never printed.
+ensure_settings() {
+  local app=$1 pair
+  local changed=() names=()
+  shift
+  for pair in "$@"; do
+    if [[ "$(setting "$app" "${pair%%=*}")" != "${pair#*=}" ]]; then
+      changed+=("$pair")
+      names+=("${pair%%=*}")
+    fi
+  done
+  if ((${#changed[@]} == 0)); then
+    echo "   $app: nothing to change"
+    return
+  fi
+  echo "   $app: setting ${names[*]}"
+  az webapp config appsettings set -g "$GROUP" -n "$app" --settings "${changed[@]}" -o none
+}
 
 # The .NET SDK that backend/global.json asks for; Cloud Shell ships an older one.
 dotnet=dotnet
@@ -95,18 +129,54 @@ az webapp deploy -g "$GROUP" -n "$ADMIN_APP" --src-path "$work/admin.zip" --type
 # package is still being copied does not find start.sh and stops. Without a restart there is no
 # start-up to track, and az would wait ten minutes for one and fail: --track-status false.
 az webapp deploy -g "$GROUP" -n "$APP_APP" --src-path "$work/app.zip" --type zip --restart false   --track-status false -o none
+
+echo "== The settings of the launching-soon forms"
+# After the packages are in place, so a restart that a changed setting causes starts the new code
+# (ADR 0047). The marketing host proves itself to the API with the key the admin host uses; when
+# there is none yet, one is made and set on the three App Services together.
+key=$(setting "$APP_APP" StaffAccess__ProxyKey)
+if [[ -z "$key" ]]; then
+  key=$(openssl rand -base64 32)
+  ensure_settings "$APP_APP" "StaffAccess__ProxyKey=$key"
+  ensure_settings "$ADMIN_APP" "PROXY_KEY=$key"
+fi
+ensure_settings "$WWW_APP" "API_ORIGIN=$API_URL" "API_PATHS=/api/launch" "KEEP_DIR=/home/data/launch-kept" "PROXY_KEY=$key"
+unset key
+ensure_settings "$APP_APP" "Launch__TeamEmail=$LAUNCH_TEAM_EMAIL"
+
 az webapp restart -g "$GROUP" -n "$APP_APP"
 
 echo "== Waiting for the app"
 health=${HEALTH_URL:-https://app.jubilee.to/api/health}
 # Give the restart time to stop the previous container, so the answer comes from the new one.
 sleep 30
+healthy=
 for attempt in $(seq 1 40); do
   if curl -fsS --max-time 10 "$health" >/dev/null 2>&1; then
-    echo "Deployed. https://www.jubilee.to  https://admin.jubilee.to  $health"
+    healthy=1
+    break
+  fi
+  sleep 15
+done
+if [[ -z "$healthy" ]]; then
+  echo "The app did not answer $health within 10 minutes." >&2
+  exit 1
+fi
+
+echo "== Checking the marketing host"
+# The forms of the launching-soon page reach the API, and no other /api path does (ADR 0044,
+# ADR 0047). The marketing host may still be restarting with its settings, so it is asked again.
+forms=
+other=
+for attempt in $(seq 1 40); do
+  forms=$(curl -s -o /dev/null --max-time 10 -w '%{http_code}' "$WWW_URL/api/launch" || true)
+  other=$(curl -s -o /dev/null --max-time 10 -w '%{http_code}' "$WWW_URL/api/session" || true)
+  if [[ "$forms" == "200" && "$other" == "404" ]]; then
+    echo "Deployed. $WWW_URL  https://admin.jubilee.to  $health"
     exit 0
   fi
   sleep 15
 done
-echo "The app did not answer $health within 10 minutes." >&2
+echo "The marketing host is not forwarding as it must: $WWW_URL/api/launch answered $forms (200" >&2
+echo "expected) and $WWW_URL/api/session answered $other (404 expected)." >&2
 exit 1

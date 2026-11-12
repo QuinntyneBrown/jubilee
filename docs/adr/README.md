@@ -38,9 +38,10 @@ something else: a new record supersedes it and both say so.
 | [0042](0042-rooms-and-rentals.md) | Rooms and rentals: a space is a listing kind with owned rental details, a space request is a request kind, the exact address released only to the accepted renter | Accepted |
 | [0041](0041-remove-church-reference-and-add-home-church-address.md) | The church reference is removed: submit goes straight to Ready to review, two stages and the reference data go; an optional home church address is added | Accepted |
 | [0043](0043-member-feedback.md) | Member feedback: one feedback record of four kinds, a corner dialog for the panel, check-ins addressed by id, statuses and replies shown while writing them is deferred | Accepted |
-| [0044](0044-launching-soon.md) | Launching soon: the marketing site sends two forms to `/api/launch` on its own origin, links nowhere outside itself, `APP_URL` removed, submissions read with the CLI, the way back is a revert | Accepted |
+| [0044](0044-launching-soon.md) | Launching soon: the marketing site sends two forms to `/api/launch` on its own origin, links nowhere outside itself, `APP_URL` removed, submissions read with the CLI, the way back is a revert | Accepted, amended by 0047 |
 | [0045](0045-finish-view-business-and-products.md) | Finish viewing a business and its products: back-in-stock notices written with the stock change, once per alert, under "Request updates"; `stockChange` for the owner's toast; `status` for the preview of a listing that is not public | Accepted |
 | [0046](0046-finish-sign-in-and-out.md) | Finish sign in and out: drafts kept on the device by member, address and form; the started action carried in the return path; `__Host-jubilee.session` outside Development; no CORS allowlist because every caller is same-origin | Accepted |
+| [0047](0047-launch-forms-never-lose-a-submission.md) | The launch forms never lose a submission: `deploy.sh` sets the marketing host on every deployment and checks it, a forwarded request names the API's host, the marketing host keeps what the API cannot take and sends it again, the page keeps sending instead of showing a fault, and each new sign-up e-mails the team | Accepted |
 
 ## Format
 

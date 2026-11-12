@@ -5,10 +5,16 @@ import { LaunchFormScreen, MarketingHomePage } from '../../pages/marketing-home.
 
 // jb-launch-form: the panel of a form of the launching-soon page, at rest and in each state the
 // mocks draw. In the app a state is reached by sending the form against its route's stub.
-const on = (name: string, route: RouteKey, which: 'notify' | 'business', filled: boolean) => ({
+const on = (
+  name: string,
+  route: RouteKey,
+  which: 'notify' | 'business',
+  filled: boolean,
+  noticed = false,
+) => ({
   name,
   route,
-  screen: (page: Page) => new LaunchFormScreen(page, which, filled),
+  screen: (page: Page) => new LaunchFormScreen(page, which, filled, noticed),
   region: (screen: LaunchFormScreen) => screen.part.form,
 });
 const atRest = (name: string, which: 'notify' | 'business') => ({
@@ -24,7 +30,7 @@ parity('launch-form', {
     atRest('notify-default', 'notify'),
     on('notify-invalid', 'marketing-home.notify-invalid', 'notify', false),
     on('notify-busy', 'marketing-home.notify-busy', 'notify', true),
-    on('notify-error', 'marketing-home.notify-error', 'notify', true),
+    on('notify-retrying', 'marketing-home.notify-retrying', 'notify', true, true),
     on('notify-rate-limited', 'marketing-home.notify-rate-limited', 'notify', true),
     atRest('business-default', 'business'),
     // Taller than a phone's viewport with its seven messages: at 360 px the sticky top bar would be
@@ -34,7 +40,7 @@ parity('launch-form', {
       widths: [1280] as const,
     },
     on('business-busy', 'marketing-home.business-busy', 'business', true),
-    on('business-error', 'marketing-home.business-error', 'business', true),
+    on('business-retrying', 'marketing-home.business-retrying', 'business', true, true),
     on('business-challenge-failed', 'marketing-home.business-challenge-failed', 'business', true),
   ],
   reference: {

@@ -1,0 +1,73 @@
+@startuml
+title UML sequence behaviour — Keep a submission the API cannot take
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Marketing" #E0F2FE
+  participant "LaunchNotification or\nBusinessPreRegistration" as form
+end box
+box "Hosting — jubilee-to-www" #F4EBFF
+  participant "server.js" as proxy
+  database "KEEP_DIR\n/home/data/launch-kept" as kept
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "StaffProxyMiddleware" as middleware
+  participant "LaunchController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Command handler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> form : Send a valid form
+form -> proxy : POST /api/launch/notifications or /api/launch/businesses
+proxy -> proxy : Read the body (at most 16 KB) and note the received time
+proxy -> middleware : Forward with X-Jubilee-Received-At, Host of the API, the caller's address and the proxy key
+alt The API answers 2xx, 400, 422 or 429
+  middleware --> proxy : The answer
+  proxy --> form : The same answer; nothing is kept
+else No answer in 8 seconds, unreachable, 5xx, 401, 403, 404 or 408 (L2-218 AC8)
+  alt Consent given, an e-mail address named and fewer than 1,000 kept
+    proxy -> kept : Write one file: path, body, received time, caller's address
+    proxy --> form : 202 Accepted with no body
+    form --> actor : The confirmation, with focus
+  else Otherwise
+    proxy --> form : The API's answer, or 503
+    form --> actor : "Still sending."; the page sends again every 5 seconds (L2-216 AC6, L2-217 AC6)
+  end
+end
+== At start and every minute ==
+proxy -> kept : List the kept submissions, oldest first
+loop Each kept submission
+  alt 12 months old
+    proxy -> kept : Delete it unsent (L2-218 AC9)
+  else
+    proxy -> middleware : POST again with X-Jubilee-Received-At and X-Jubilee-Kept: true
+    middleware -> middleware : Believe both only with the proxy key; remove them from the request
+    middleware -> controller : Run the action; no bot challenge for a kept submission
+    controller -> handler : Send the command with ReceivedAt
+    handler -> db : Find the same sign-up (e-mail key) or pre-registration (e-mail key, name, received time)
+    alt Already stored
+      handler -> handler : Change nothing
+    else New
+      handler -> db : Save the row with ConsentedAt = received time, and the team's e-mail in the outbox
+    end
+    controller --> proxy : 202 Accepted
+    proxy -> kept : Delete the file
+  end
+end
+note over proxy, kept : A refusal as invalid removes the file and logs the count. 429 or a fault ends the round until the next minute. No log line holds personal data.
+@enduml

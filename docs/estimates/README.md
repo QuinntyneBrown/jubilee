@@ -1,6 +1,6 @@
 # Estimates
 
-- Overall effort: 405 days
+- Overall effort: 407 days
 - Complete: 69%
 
 | Subsystem | Effort | Complete |
@@ -26,7 +26,7 @@
 | [performance](performance.md) | 9 days | 6% |
 | [operations](operations.md) | 30 days | 30% |
 | [offline](offline.md) | 12 days | 83% |
-| [marketing](marketing.md) | 11 days | 95% |
+| [marketing](marketing.md) | 13 days | 98% |
 | [feedback](feedback.md) | 9 days | 97% |
 
 ## Roadmap
@@ -34,6 +34,6 @@
 1. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
 2. listings: crawler routing for shared links, the `og-image.png` asset and the team notification e-mail of a report
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
-4. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application and the launching-soon forms in production (`eng/azure/README.md`)
+4. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)
 5. Polish the remaining 60–90% designs: the daily e-mail summary, offline and notification details
 6. Deferred: the launch-day e-mail, pre-registrations as listing drafts and a staff screen for them (ADR 0044); hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0042)

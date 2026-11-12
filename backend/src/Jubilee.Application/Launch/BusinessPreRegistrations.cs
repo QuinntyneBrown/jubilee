@@ -3,16 +3,17 @@ using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Domain;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Launch;
 
-/// <summary>Where the team hears of a pre-registration (<c>Launch:TeamEmail</c>); null when nobody is told by e-mail (ADR 0044).</summary>
+/// <summary>Where the team hears of a pre-registration and of a new sign-up (<c>Launch:TeamEmail</c>); null when nobody is told by e-mail (ADR 0044, ADR 0047).</summary>
 public sealed record LaunchSettings(string? TeamEmail);
 
 /// <summary>"Send my details" (L2-216): an owner's business, before launch. It lists and verifies nothing.</summary>
 public sealed record PreRegisterBusinessCommand(
     string? BusinessName, string? ContactName, string? Email, string? Phone, string? Category, string? Area, string? Website,
-    string? Description, bool Consent) : IRequest;
+    string? Description, bool Consent, DateTimeOffset? ReceivedAt = null) : IRequest;
 
 public sealed partial class PreRegisterBusinessCommandHandler(IAppDbContext db, LaunchSettings settings, TimeProvider clock)
     : IRequestHandler<PreRegisterBusinessCommand>
@@ -44,8 +45,17 @@ public sealed partial class PreRegisterBusinessCommandHandler(IAppDbContext db, 
         }
 
         var now = clock.GetUtcNow();
+        var at = LaunchValidation.ConsentTime(request.ReceivedAt, now);
         var sent = BusinessPreRegistration.Send(
-            request.BusinessName!, request.ContactName!, email!, phone, category!, request.Area!, website, request.Description!, now);
+            request.BusinessName!, request.ContactName!, email!, phone, category!, request.Area!, website, request.Description!, at);
+        // The marketing host sends a submission again until it is accepted: the same one is stored once (AC10).
+        if (request.ReceivedAt is not null
+            && await db.BusinessPreRegistrations.AnyAsync(
+                r => r.EmailKey == sent.EmailKey && r.BusinessName == sent.BusinessName && r.CreatedAt == at, cancellationToken))
+        {
+            return;
+        }
+
         db.BusinessPreRegistrations.Add(sent);
         if (!string.IsNullOrWhiteSpace(settings.TeamEmail))
         {

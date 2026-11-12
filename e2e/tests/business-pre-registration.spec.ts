@@ -165,16 +165,29 @@ test.describe('business pre-registration (L2-216)', () => {
     await expect.poll(() => form.hasFocus(form.confirmation)).toBe(true);
   });
 
-  test('AC6: a failed send says so and keeps every value typed', async ({ page, jb }) => {
+  test('AC6: a send that cannot reach Jubilee shows no error: the form says it is still sending and sends again', async ({
+    page,
+    jb,
+  }) => {
     const home = new MarketingHomePage(page);
-    await jb.open('marketing-home.business-error');
+    // Given every send fails on the way
+    await jb.open('marketing-home.business-retrying');
     const form = home.businessForm;
+    const sent = form.watch();
     await home.fillBusiness();
+    // When the owner sends the form
     await form.send.click();
-    await expect(form.alert).toContainText('We couldn’t send your details.');
+    // Then a notice, not an error, says it is still being sent, and the form stays busy
+    await expect(form.alert).toContainText('Still sending.');
     await expect(form.alert).toContainText(
-      'Nothing is lost: what you typed is still here. Try again in a moment.',
+      'We couldn’t reach Jubilee just now. Keep this page open: we’ll keep trying, and what you typed is still here.',
     );
+    await expect(form.alert).toHaveAttribute('role', 'status');
+    await expect(form.alert).not.toContainText('We couldn’t send your details.');
+    await expect(form.send).toHaveAttribute('aria-busy', 'true');
+    // And the same details are sent again without the owner pressing anything
+    await expect.poll(sent, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
+    // And every value typed is kept
     await expect(form.field('Business name')).toHaveValue('Luzandre.com');
     await expect(form.field('Your name')).toHaveValue('Naomi Laurent');
     await expect(form.field('Email')).toHaveValue('naomi@luzandre.com');
@@ -184,6 +197,29 @@ test.describe('business pre-registration (L2-216)', () => {
     await expect(form.field('Website or social link')).toHaveValue('luzandre.com');
     await expect(form.field('About your business')).toHaveValue(naomiDetails.description);
     await expect(form.consent).toBeChecked();
+  });
+
+  test('AC6: once Jubilee answers, the details that were still sending are confirmed', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    // Given the first send fails on the way and the next is accepted
+    await jb.open('marketing-home.business-recovered');
+    const form = home.businessForm;
+    const bodies = form.capture();
+    await home.fillBusiness();
+    // When the owner sends the form once
+    await form.send.click();
+    await expect(form.alert).toContainText('Still sending.');
+    // Then the confirmation takes the place of the form by itself
+    await expect(form.confirmationHeading).toHaveText('Thank you. We have your details.', {
+      timeout: 15_000,
+    });
+    await expect(form.form).toHaveCount(0);
+    // And the same details were sent both times
+    expect(bodies()).toHaveLength(2);
+    expect(bodies()[1]).toEqual(bodies()[0]);
   });
 
   test('AC7: too many pre-registrations says when to try again and keeps every value', async ({

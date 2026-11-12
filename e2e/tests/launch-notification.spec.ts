@@ -2,7 +2,7 @@ import { expect, test } from '../fixtures/jb-test';
 import { MarketingHomePage } from '../pages/marketing-home.page';
 
 // The launch notification sign-up of the launching-soon marketing page (L2-217, ADR 0044). The
-// answers come from the recording; the busy, failed, limited and refused states from stubs.
+// answers come from the recording; the busy, still-sending, limited and refused states from stubs.
 
 test.describe('launch notification sign-up (L2-217)', () => {
   test('AC1: the form asks for an address, an optional first name and consent', async ({
@@ -109,21 +109,58 @@ test.describe('launch notification sign-up (L2-217)', () => {
     await expect.poll(() => form.hasFocus(form.confirmation)).toBe(true);
   });
 
-  test('AC6: a failed send says so and keeps everything typed', async ({ page, jb }) => {
+  test('AC6: a send that cannot reach Jubilee shows no error: the form says it is still sending and sends again', async ({
+    page,
+    jb,
+  }) => {
     const home = new MarketingHomePage(page);
-    await jb.open('marketing-home.notify-error');
+    // Given every send fails on the way
+    await jb.open('marketing-home.notify-retrying');
     const form = home.notifyForm;
+    const sent = form.watch();
     await home.fillNotify();
+    // When the visitor sends the form
     await form.send.click();
-    await expect(form.alert).toContainText('We couldn’t add you to the list.');
+    // Then a notice, not an error, says it is still being sent
+    await expect(form.alert).toContainText('Still sending.');
     await expect(form.alert).toContainText(
-      'Nothing is lost: what you typed is still here. Try again in a moment.',
+      'We couldn’t reach Jubilee just now. Keep this page open: we’ll keep trying, and what you typed is still here.',
     );
-    await expect(form.alert).toHaveAttribute('role', 'alert');
+    await expect(form.alert).toHaveAttribute('role', 'status');
+    await expect(form.alert).not.toContainText('We couldn’t add you to the list.');
+    // And the form stays busy with everything typed
+    await expect(form.send).toHaveAttribute('aria-busy', 'true');
     await expect(form.field('Email')).toHaveValue('joanna.adeyemi@example.com');
+    await expect(form.field('Email')).toHaveAttribute('readonly', '');
     await expect(form.field('First name')).toHaveValue('Joanna');
     await expect(form.consent).toBeChecked();
-    await expect(form.send).not.toHaveAttribute('aria-busy', 'true');
+    // And the same sign-up is sent again without the visitor pressing anything
+    await expect.poll(sent, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
+    await expect(form.alert).toContainText('Still sending.');
+  });
+
+  test('AC6: once Jubilee answers, the sign-up that was still sending is confirmed', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    // Given the first send fails on the way and the next is accepted
+    await jb.open('marketing-home.notify-recovered');
+    const form = home.notifyForm;
+    const bodies = form.capture();
+    await home.fillNotify();
+    // When the visitor sends the form once
+    await form.send.click();
+    await expect(form.alert).toContainText('Still sending.');
+    // Then the confirmation takes the place of the form by itself
+    await expect(form.confirmationHeading).toHaveText('You’re on the list.', { timeout: 15_000 });
+    await expect(form.confirmation).toContainText(
+      'We’ll e-mail joanna.adeyemi@example.com the day Jubilee launches, and not before.',
+    );
+    await expect(form.form).toHaveCount(0);
+    // And the same sign-up was sent both times
+    expect(bodies()).toHaveLength(2);
+    expect(bodies()[1]).toEqual(bodies()[0]);
   });
 
   test('AC7: too many sign-ups says when to try again and keeps everything typed', async ({
