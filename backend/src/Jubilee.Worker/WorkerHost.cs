@@ -109,13 +109,15 @@ public sealed class PasswordResetJob(IServiceScopeFactory scopes, ILogger<Passwo
 
 /// <summary>
 /// Once a day: e-mails the owner of a draft untouched for 180 days and deletes it 14 days later
-/// (L2-077 AC5). The sweep is idempotent, so a repeat or a second instance changes nothing.
+/// (L2-077 AC5). The tick is hourly so an instance that starts late in a day still serves the next
+/// one; <see cref="Jubilee.Application.Jobs.ScheduledJobs"/> lets only one instance run each day and
+/// records its success (L2-182 AC1).
 /// </summary>
 public sealed class ListingDraftExpiryJob(IServiceScopeFactory scopes, ILogger<ListingDraftExpiryJob> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromHours(24));
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
         try
         {
             do
@@ -124,7 +126,7 @@ public sealed class ListingDraftExpiryJob(IServiceScopeFactory scopes, ILogger<L
                 {
                     await using var scope = scopes.CreateAsyncScope();
                     var changed = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
-                        .Send(new Jubilee.Application.Onboarding.ExpireListingDraftsCommand(), stoppingToken);
+                        .Send(new Jubilee.Application.Onboarding.RunListingDraftExpiryJobCommand(), stoppingToken);
                     if (changed > 0)
                     {
                         logger.LogInformation("Handled {Count} idle listing drafts.", changed);

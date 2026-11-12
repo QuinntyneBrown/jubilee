@@ -644,6 +644,46 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         await _factory.WithDb(async db => Assert.Equal(1, await db.ListingDrafts.CountAsync()));
     }
 
+    // L2-077 AC5, L2-182 AC1: the expiry runs at most once a day across instances and records its last success
+    [Fact]
+    public async Task L2_077_AC5_the_draft_expiry_job_runs_once_a_day_across_instances_and_records_its_last_success()
+    {
+        var owner = Member.Join(EmailAddress.TryParse("joanna@example.com")!, "Joanna", "Adeyemi", null, "hash", ListingMother.Now);
+        owner.ConfirmEmail();
+        await _factory.WithDb(async db =>
+        {
+            db.Members.Add(owner);
+            await db.SaveChangesAsync();
+        });
+        await SaveNew(_factory.CreateMemberClient("Joanna Adeyemi", owner.Id.ToString()));
+        _factory.Clock.Advance(TimeSpan.FromDays(181));
+        var now = _factory.Clock.GetUtcNow();
+
+        var first = await Tick();
+        _factory.Clock.Advance(TimeSpan.FromMinutes(5));
+        var second = await Tick();
+
+        Assert.Equal(1, first);
+        Assert.Null(second);
+        Assert.Equal(1, await Mails("joanna@example.com"));
+        List<JobRun> runs = [];
+        await _factory.WithDb(async db => runs = await db.JobRuns.AsNoTracking().ToListAsync());
+        var run = Assert.Single(runs);
+        Assert.Equal(RunListingDraftExpiryJobCommand.Job, run.Job);
+        Assert.Equal("listing-draft-expiry", run.Job);
+        Assert.Equal(now, run.SucceededAt);
+
+        _factory.Clock.Advance(TimeSpan.FromDays(14));
+        Assert.Equal(1, await Tick());
+        await _factory.WithDb(async db => Assert.Equal(0, await db.ListingDrafts.CountAsync()));
+    }
+
+    private async Task<int?> Tick()
+    {
+        await using var scope = _factory.Services.CreateAsyncScope();
+        return await scope.ServiceProvider.GetRequiredService<ISender>().Send(new RunListingDraftExpiryJobCommand());
+    }
+
     private async Task Sweep()
     {
         using var scope = _factory.Services.CreateScope();

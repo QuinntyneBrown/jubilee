@@ -521,6 +521,33 @@ internal static class Slugs
 }
 
 /// <summary>Drafts untouched for 180 days: e-mail the owner, then delete 14 days later (L2-077 AC5, L2-182).</summary>
+/// <summary>
+/// The daily draft expiry (L2-077 AC5, L2-182 AC1): runs <see cref="ExpireListingDraftsCommand"/> once
+/// a day however many instances of the worker run, and records its last success. The answer is the
+/// number of drafts handled, or null when another instance already ran today.
+/// </summary>
+public sealed record RunListingDraftExpiryJobCommand : IRequest<int?>
+{
+    public const string Job = "listing-draft-expiry";
+
+    public static readonly TimeSpan Every = TimeSpan.FromHours(24);
+}
+
+public sealed class RunListingDraftExpiryJobCommandHandler(Jobs.ScheduledJobs jobs, ISender sender)
+    : IRequestHandler<RunListingDraftExpiryJobCommand, int?>
+{
+    public async Task<int?> Handle(RunListingDraftExpiryJobCommand command, CancellationToken cancellationToken)
+    {
+        int? handled = null;
+        await jobs.RunOnceAsync(
+            RunListingDraftExpiryJobCommand.Job,
+            RunListingDraftExpiryJobCommand.Every,
+            async token => handled = await sender.Send(new ExpireListingDraftsCommand(), token),
+            cancellationToken);
+        return handled;
+    }
+}
+
 public sealed record ExpireListingDraftsCommand : IRequest<int>;
 
 public sealed class ExpireListingDraftsCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings)
