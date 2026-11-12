@@ -13,7 +13,7 @@ import { stubProfile } from './profile';
 import { stubSaved } from './saved';
 import { stubFeedback } from './feedback';
 import { stubPasswordReset } from './password-reset';
-import { NOTIFICATIONS, stubNotifications } from './notifications';
+import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from './notifications';
 import { SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
@@ -351,6 +351,15 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ...listing,
         viewerRelation: 'owner',
       }));
+    case 'business-preview':
+      // The owner's preview of a listing the verification team sent back (L2-219).
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        viewerRelation: 'owner',
+        verified: false,
+        stage: 'changes-requested',
+        status: 'changes-requested',
+      }));
     case 'shop-loading':
       return page.route(luzandre, pending);
     case 'shop-error':
@@ -360,6 +369,14 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ...listing,
         products: [],
         productCount: 0,
+      }));
+    case 'shop-sold-out':
+      // The seeded mug is in stock; the sold-out card comes from its owner's later edits.
+      return patchListing(page, luzandre, (listing) => ({
+        ...listing,
+        products: (listing['products'] as { slug: string }[]).map((product) =>
+          product.slug === 'gold-cross-stoneware-mug' ? { ...product, soldOut: true } : product,
+        ),
       }));
     case 'product-loading':
       return page.route(tee, pending);
@@ -495,6 +512,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return void (await stubNotifications(page, { items: [] }));
     case 'notifications-error':
       return void (await stubNotifications(page, { list: 'fails' }));
+    case 'notifications-back-in-stock':
+      return void (await stubNotifications(page, { items: [BACK_IN_STOCK, ...NOTIFICATIONS] }));
     case 'products':
       return stubCatalogue(page);
     case 'products-empty':

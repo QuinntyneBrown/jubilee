@@ -16,6 +16,7 @@ title Class structure — View a business page
 enum ListingKind {
   Services
   Shop
+  Space
 }
 
 enum ViewerRelation {
@@ -34,53 +35,69 @@ enum ReplyTimeBand {
 
 class Listing {
   +Guid Id
-  +Guid OwnerId
-  +Guid CategoryId
+  +string? OwnerId
+  +string CategorySlug
   +string Slug
   +string Name
   +string Tagline
   +string? Highlight
   +ListingKind Kind
   +ListingStage Stage
+  +bool IsPaused
+  +bool IsUnderModerationHold
+  +DateTimeOffset? DeletedAt
   +ReplyTimeBand ReplyTimeBand
   +IsPublic(): bool
-  +SetReplyTimeBand(medianFirstReply: TimeSpan?, replyCount: int): void
 }
 
 class Service {
   +Guid Id
   +string Name
   +string Detail
-  +ServicePrice Price
-  +int DisplayOrder
+  +ServicePriceKind PriceKind
+  +int? PriceCents
+  +int Position
 }
 
 class Product {
   +Guid Id
   +string Slug
   +string Name
-  +decimal Price
+  +int PriceCents
   +bool IsSoldOut
 }
 
-class ListingVisibilityPolicy {
-  +Evaluate(listing: Listing, viewer: ViewerContext): ListingVisibility
+class PublicListingFilter <<static>> {
+  +Criteria: Expression<Func<Listing, bool>>
+  +IsSatisfiedBy(listing: Listing): bool
+}
+
+class ListingStatus <<static>> {
+  +Of(listing: Listing): string
+}
+
+class ProductCardDto {
+  +string Slug
+  +string Name
+  +int PriceCents
+  +bool SoldOut
 }
 
 class GetListingPageQuery {
   +string Slug
-  +ViewerContext Viewer
+  +Viewer Viewer
 }
 
 class GetListingPageQueryHandler {
-  +Handle(query: GetListingPageQuery): Task<Result<ListingPageDto>>
+  +Handle(query: GetListingPageQuery): Task<ListingPageDto>
 }
 
 class ListingPageDto {
-  +ListingKind Kind
-  +ViewerRelation Viewer
-  +string StageLabel
-  +string? RepliesText
+  +string Kind
+  +string ViewerRelation
+  +string Stage
+  +string Status
+  +ListingDetailsDto Details
   +IReadOnlyList<ServiceRowDto> Services
   +IReadOnlyList<ProductCardDto> Products
   +IReadOnlyList<BusinessCardDto> Related
@@ -88,7 +105,7 @@ class ListingPageDto {
 
 class RecordListingViewCommand {
   +string Slug
-  +ViewerContext Viewer
+  +Viewer Viewer
 }
 
 class ListingView {
@@ -108,10 +125,12 @@ Listing --> "1" ListingKind
 Listing --> "1" ReplyTimeBand
 Listing "1" o-- "0..*" ListingView
 GetListingPageQueryHandler ..> GetListingPageQuery : handles
-GetListingPageQueryHandler ..> ListingVisibilityPolicy : checks with
+GetListingPageQueryHandler ..> PublicListingFilter : checks with
+GetListingPageQueryHandler ..> ListingStatus : names the status with
+ListingPageDto --> "0..50" ProductCardDto
 GetListingPageQueryHandler ..> ListingPageDto : returns
 GetListingPageQueryHandler --> Listing : loads
-ListingPageDto --> "1" ViewerRelation
+ListingPageDto ..> ViewerRelation : carries
 RecordListingViewCommand ..> ListingView : creates
 ResponseTimeBadgeJob ..> Listing : updates band of
 @enduml

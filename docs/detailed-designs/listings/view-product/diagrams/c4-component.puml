@@ -5,35 +5,37 @@ title Components — View a product
 
 Container_Boundary(web, "Jubilee Web") {
   Component(page, "ProductPage", "Angular page", "Route /b/:slug/p/:product")
-  Component(form, "ProductRequestForm", "Angular component", "Option picker and quantity with validation")
-  Component(alert, "BackInStockButton", "Angular component", "Tell me when it's back")
-  Component(client, "ProductsApi", "Typed HTTP client", "Calls the product endpoints")
+  Component(form, "ProductRequestForm", "Angular component", "Options and quantity with validation, and Tell me when it's back")
+  Component(card, "ProductCard", "Angular component", "A product in a list, with Sold out on its tile")
+  Component(client, "ListingsApi", "Typed HTTP client", "Calls the product endpoints")
+  Component(products, "MyProductsPage", "Angular page", "The owner's products and the sold-out toast")
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "ProductsController", "ASP.NET Core controller", "Product page and stock alert endpoints")
   Component(query, "GetProductPageQueryHandler", "MediatR handler", "Builds the ProductPageDto")
   Component(sub, "RequestStockAlertCommandHandler", "MediatR handler", "Stores one StockAlert per member and product")
+  Component(save, "SaveProductCommandHandler", "MediatR handler", "The owner's edit of a product and its stock")
   Component(product, "Product", "Domain entity", "Owns stock and options and quantity rules")
+  Component(notify, "StockAlertNotifier", "Application service", "Tells each waiting member once")
 }
 Container_Boundary(worker, "Jubilee Worker") {
-  Component(dispatch, "OutboxDispatcherJob", "Hosted job", "Delivers ProductBackInStock messages")
-  Component(notify, "StockAlertNotifier", "Application service", "Notifies each waiting member once")
+  Component(dispatch, "OutboxDispatcherJob", "Hosted job", "Sends the queued e-mails")
 }
-ContainerDb(db, "Jubilee database", "SQL Server", "Product and StockAlert and OutboxMessage rows")
-System_Ext(email, "E-mail provider", "Vendor <TO SUPPLY>")
+ContainerDb(db, "Jubilee database", "SQL Server", "Product and StockAlert and Notification and OutboxMessage rows")
+System_Ext(email, "E-mail provider", "Azure Communication Services Email")
 
 Rel(page, form, "Renders")
-Rel(page, alert, "Renders when sold out")
+Rel(page, card, "Renders in More from the shop")
 Rel(page, client, "Loads through")
-Rel(alert, client, "Subscribes through")
 Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(products, save, "Saves a product through the owner API", "JSON/HTTPS")
 Rel(ctrl, query, "Sends GetProductPageQuery")
 Rel(ctrl, sub, "Sends RequestStockAlertCommand")
 Rel(query, db, "Queries", "EF Core")
 Rel(sub, db, "Inserts StockAlert", "EF Core")
-Rel(product, db, "Writes ProductBackInStock to the outbox", "EF Core")
+Rel(save, product, "Sets stock on")
+Rel(save, notify, "Calls when the product is back in stock")
+Rel(notify, db, "Marks StockAlert notified, adds Notification and e-mail", "EF Core")
 Rel(dispatch, db, "Reads OutboxMessage", "EF Core")
-Rel(dispatch, notify, "Hands ProductBackInStock to")
-Rel(notify, db, "Marks StockAlert notified", "EF Core")
-Rel(notify, email, "Sends e-mail", "HTTPS")
+Rel(dispatch, email, "Sends e-mail", "HTTPS")
 @enduml

@@ -13,6 +13,7 @@ const OPEN: Record<NotificationKind, string> = {
   listing: 'Open My business',
   account: 'View account',
   business: 'View business',
+  product: 'View in shop',
 };
 
 /**

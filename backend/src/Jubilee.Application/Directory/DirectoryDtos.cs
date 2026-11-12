@@ -76,7 +76,8 @@ public sealed record ProductCardDto(
     string ShopName,
     int PriceCents,
     bool PerUnit,
-    ProductTileDto Tile)
+    ProductTileDto Tile,
+    bool SoldOut)
 {
     public static ProductCardDto From(Product product, Listing shop) => new(
         product.Slug,
@@ -85,7 +86,8 @@ public sealed record ProductCardDto(
         shop.Name,
         product.PriceCents,
         product.IsPerUnit,
-        new ProductTileDto(WireValues.Of(product.TileTint), WireValues.Of(product.TileIcon)));
+        new ProductTileDto(WireValues.Of(product.TileTint), WireValues.Of(product.TileIcon)),
+        product.IsSoldOut);
 }
 
 /// <summary>The compact one-line entry inside a category group (L2-027 AC3).</summary>

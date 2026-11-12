@@ -127,6 +127,47 @@ public sealed class CatalogueTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         Assert.Contains("Walnut prayer bench", await PublicProducts());
     }
 
+    // L2-036 AC3: the answer of a save says what the save did to the stock, for the owner's toast.
+    [Theory]
+    [InlineData(5, 0, "became-sold-out")]
+    [InlineData(0, 5, "back-in-stock")]
+    [InlineData(5, 2, "none")]
+    [InlineData(0, 0, "none")]
+    [InlineData(null, 0, "became-sold-out")]
+    [InlineData(0, null, "back-in-stock")]
+    public async Task L2_036_AC3_saving_a_product_says_whether_it_became_sold_out(int? before, int? after, string change)
+    {
+        var mug = Item("gold-mug", 2400, stock: before, position: 1);
+        await _factory.Arrange(mug);
+
+        var response = await Naomi().PutAsJsonAsync($"/api/my-business/products/{mug.Id}", Product_("Gold mug", "24.00", stock: after));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var json = await Json(response);
+        Assert.Equal(change, json.GetProperty("stockChange").GetString());
+        Assert.Equal(after == 0, json.GetProperty("soldOut").GetBoolean());
+    }
+
+    [Fact]
+    public async Task L2_036_AC3_a_product_added_with_no_stock_is_sold_out_from_the_start()
+    {
+        var added = await Json(await Naomi().PostAsJsonAsync("/api/my-business/products", Product_(stock: 0)));
+        var inStock = await Json(await Naomi().PostAsJsonAsync("/api/my-business/products", Product_("Olive wood cross", stock: 4)));
+
+        Assert.Equal("became-sold-out", added.GetProperty("stockChange").GetString());
+        Assert.Equal("none", inStock.GetProperty("stockChange").GetString());
+    }
+
+    [Fact]
+    public async Task L2_036_AC3_the_list_of_products_reports_no_stock_change()
+    {
+        await _factory.Arrange(Item("faith-tee", 3400, stock: 0, position: 1));
+
+        var json = await Json(await Naomi().GetAsync("/api/my-business/products"));
+
+        Assert.Equal("none", json.GetProperty("rows")[0].GetProperty("stockChange").GetString());
+    }
+
     [Fact]
     public async Task L2_091_an_empty_name_and_a_price_of_abc_are_named()
     {

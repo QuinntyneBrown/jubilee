@@ -6,7 +6,7 @@ import { naomi } from './incoming-requests';
 
 export interface FakeNotification {
   id: string;
-  kind: 'request' | 'message' | 'listing' | 'account' | 'reminder' | 'business';
+  kind: 'request' | 'message' | 'listing' | 'account' | 'reminder' | 'business' | 'product';
   title: string;
   detail: string;
   target: string;
@@ -85,6 +85,17 @@ export const NOTIFICATIONS: FakeNotification[] = [
     read: true,
   },
 ];
+
+/** A product Joanna asked about is back in stock (L2-036 AC4). */
+export const BACK_IN_STOCK: FakeNotification = {
+  id: 'c3000000-0000-4000-8000-000000000006',
+  kind: 'product',
+  title: 'Faith heavyweight tee, charcoal is back in stock',
+  detail: 'Luzandre.com has it again. You asked to be told.',
+  target: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
+  at: at('2026-11-10T13:40:00Z'),
+  read: false,
+};
 
 export async function stubNotifications(
   page: Page,

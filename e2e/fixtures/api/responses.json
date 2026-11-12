@@ -1236,7 +1236,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "2d1d6fb2c1bd4a698e5453b2f6c5f41f",
+      "correlationId": "73e354315f0c49748dca00f0c756f9e6",
       "code": "category_not_found"
     }
   },
@@ -1650,7 +1650,8 @@
           "tile": {
             "tint": "ink",
             "icon": "shirt"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "gold-cross-stoneware-mug",
@@ -1662,7 +1663,8 @@
           "tile": {
             "tint": "gold",
             "icon": "mug"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "custom-church-team-tee",
@@ -1674,7 +1676,8 @@
           "tile": {
             "tint": "blue",
             "icon": "shirt"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -1686,7 +1689,8 @@
           "tile": {
             "tint": "green",
             "icon": "mug"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "leather-journaling-bible-esv",
@@ -1698,7 +1702,8 @@
           "tile": {
             "tint": "gold",
             "icon": "book"
-          }
+          },
+          "soldOut": false
         }
       ],
       "groups": [
@@ -2150,7 +2155,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "7d66552f8f1646db972728fa72250e0b",
+      "correlationId": "17933b07058e4857b27c8193a3d81005",
       "code": "sign_in_required"
     }
   },
@@ -2174,6 +2179,7 @@
       },
       "verified": true,
       "stage": "live",
+      "status": "live",
       "viewerRelation": "visitor",
       "ownerName": "Grace & Daniel Okafor",
       "tagline": "Separate entrance, garden walkout, five minutes to Bathurst station",
@@ -2187,7 +2193,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-28T23:23:08.5992339+00:00",
+        "onJubileeSince": "2026-10-29T08:54:14.8653189+00:00",
         "replies": null
       },
       "services": [],
@@ -2264,7 +2270,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "84a83ade4e424ba5a1a21bdf51715cf1",
+      "correlationId": "ec6ccef0347e4d03a4f6653d970f5aca",
       "code": "listing_not_found"
     }
   },
@@ -2280,6 +2286,7 @@
       },
       "verified": true,
       "stage": "live",
+      "status": "live",
       "viewerRelation": "visitor",
       "ownerName": null,
       "tagline": "We put our heart – and faith – into everything we do as a business.",
@@ -2293,7 +2300,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-24T02:23:08.5992339+00:00",
+        "onJubileeSince": "2026-10-24T11:54:14.8653189+00:00",
         "replies": null
       },
       "services": [],
@@ -2336,6 +2343,7 @@
       },
       "verified": true,
       "stage": "live",
+      "status": "live",
       "viewerRelation": "visitor",
       "ownerName": "Hannah Lee",
       "tagline": "Two housemates looking for a third: big kitchen, backyard, near Pape",
@@ -2349,7 +2357,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-28T22:23:08.5992339+00:00",
+        "onJubileeSince": "2026-10-29T07:54:14.8653189+00:00",
         "replies": null
       },
       "services": [],
@@ -2432,6 +2440,7 @@
       },
       "verified": true,
       "stage": "live",
+      "status": "live",
       "viewerRelation": "visitor",
       "ownerName": "Trevor Chew, CKA®, CFP®, CLU®",
       "tagline": "Build a Legacy. Protect a Legacy. Leave a Legacy.",
@@ -2450,7 +2459,7 @@
       },
       "services": [
         {
-          "id": "8c4b9276-72df-412f-9e21-290e64415a2d",
+          "id": "bca300f7-3dd3-435f-9149-36f4b8d6558a",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -2458,7 +2467,7 @@
           "action": "book"
         },
         {
-          "id": "19be9be5-d7b5-43be-988a-b5bb3fdc43ec",
+          "id": "b90071fb-1c6e-466e-b814-6aa70a2c6b8f",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -2466,7 +2475,7 @@
           "action": "book"
         },
         {
-          "id": "5e54f851-de20-49d5-ba09-a7441b57e80e",
+          "id": "52d20795-2668-4d69-b0fe-2e89015cf21d",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -2474,7 +2483,7 @@
           "action": "book"
         },
         {
-          "id": "561ff23c-d1f2-4c30-99d5-ac48e66d00ac",
+          "id": "7e069846-6921-461f-9a8f-273e8056ed5a",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -2521,6 +2530,7 @@
       },
       "verified": true,
       "stage": "live",
+      "status": "live",
       "viewerRelation": "visitor",
       "ownerName": "Ruth Mensah",
       "tagline": "Quiet room with a desk, shared bath, home-cooked Sunday dinners",
@@ -2534,7 +2544,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T00:23:08.5992339+00:00",
+        "onJubileeSince": "2026-10-29T09:54:14.8653189+00:00",
         "replies": null
       },
       "services": [],
@@ -2617,6 +2627,7 @@
       },
       "verified": true,
       "stage": "live",
+      "status": "live",
       "viewerRelation": "visitor",
       "ownerName": null,
       "tagline": "Unique & custom Christian apparel, artworks & gifts that bring joy",
@@ -2635,7 +2646,7 @@
       },
       "services": [
         {
-          "id": "1a5af464-e782-4df3-8500-1339e7f72577",
+          "id": "51486601-4d55-4f81-b7b8-d9f885704fc4",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -2643,7 +2654,7 @@
           "action": "ask"
         },
         {
-          "id": "4cb1118b-c2ee-4ab6-94e4-1fbc1955de5f",
+          "id": "3770e582-cfbe-421f-b839-06ac0e5721e2",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -2663,7 +2674,8 @@
           "tile": {
             "tint": "ink",
             "icon": "shirt"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "gold-cross-stoneware-mug",
@@ -2675,7 +2687,8 @@
           "tile": {
             "tint": "gold",
             "icon": "mug"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "custom-church-team-tee",
@@ -2687,7 +2700,8 @@
           "tile": {
             "tint": "blue",
             "icon": "shirt"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -2699,7 +2713,8 @@
           "tile": {
             "tint": "green",
             "icon": "mug"
-          }
+          },
+          "soldOut": false
         }
       ],
       "related": [
@@ -2730,7 +2745,7 @@
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "dfac16b4-05d4-42da-90f6-632f10ff0924",
+      "id": "3eed27b4-f63d-42a3-82bf-dd5d6daa940a",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -2769,7 +2784,8 @@
           "tile": {
             "tint": "ink",
             "icon": "shirt"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "gold-cross-stoneware-mug",
@@ -2781,7 +2797,8 @@
           "tile": {
             "tint": "gold",
             "icon": "mug"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -2793,7 +2810,8 @@
           "tile": {
             "tint": "green",
             "icon": "mug"
-          }
+          },
+          "soldOut": false
         }
       ],
       "stockAlertRequested": false
@@ -2802,7 +2820,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "6dcb208f-7b7c-4969-a92f-f56f62031075",
+      "id": "74a30982-51b2-487b-97e0-e6fe69ce9c93",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -2874,7 +2892,8 @@
           "tile": {
             "tint": "gold",
             "icon": "mug"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "custom-church-team-tee",
@@ -2886,7 +2905,8 @@
           "tile": {
             "tint": "blue",
             "icon": "shirt"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -2898,7 +2918,8 @@
           "tile": {
             "tint": "green",
             "icon": "mug"
-          }
+          },
+          "soldOut": false
         }
       ],
       "stockAlertRequested": false
@@ -2907,7 +2928,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "eaa365d0-3e77-4678-bcd0-17f6dd477ff3",
+      "id": "1f5a2433-3273-483a-84fa-05b84174bae1",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -2950,7 +2971,8 @@
           "tile": {
             "tint": "ink",
             "icon": "shirt"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "custom-church-team-tee",
@@ -2962,7 +2984,8 @@
           "tile": {
             "tint": "blue",
             "icon": "shirt"
-          }
+          },
+          "soldOut": false
         },
         {
           "slug": "morning-mug-set-of-two",
@@ -2974,7 +2997,8 @@
           "tile": {
             "tint": "green",
             "icon": "mug"
-          }
+          },
+          "soldOut": false
         }
       ],
       "stockAlertRequested": false
@@ -2986,7 +3010,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "6cb6cad6fc6c446e808cb09c7fc575ce",
+      "correlationId": "7bec23175a7b4ac08f7087a1845b8de0",
       "code": "product_not_found"
     }
   },
@@ -3002,6 +3026,7 @@
       },
       "verified": true,
       "stage": "live",
+      "status": "live",
       "viewerRelation": "visitor",
       "ownerName": "Paul & Marta Kowalski",
       "tagline": "Private suite for visiting family, conferences or a weekend away",
@@ -3015,7 +3040,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T01:23:08.5992339+00:00",
+        "onJubileeSince": "2026-10-29T10:54:14.8653189+00:00",
         "replies": null
       },
       "services": [],
@@ -3091,7 +3116,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "806ad0a09a0746229f5eefc96cd459eb",
+      "correlationId": "fe05a40e66ee4192b071f9330218ecc1",
       "code": "sign_in_required"
     }
   },

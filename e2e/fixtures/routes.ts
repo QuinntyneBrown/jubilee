@@ -26,9 +26,11 @@ export type StubName =
   | 'business-empty'
   | 'business-edge'
   | 'business-owner'
+  | 'business-preview'
   | 'shop-loading'
   | 'shop-error'
   | 'shop-empty'
+  | 'shop-sold-out'
   | 'product-loading'
   | 'product-error'
   | 'product-sold-out'
@@ -99,6 +101,7 @@ export type StubName =
   | 'notifications-read'
   | 'notifications-empty'
   | 'notifications-error'
+  | 'notifications-back-in-stock'
   | 'password-reset'
   | 'reset-password'
   | 'reset-password-expired'
@@ -571,6 +574,12 @@ export const routes = {
     who: 'member',
     stub: 'business-owner',
   },
+  'business.preview': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/preview.html',
+    who: 'member',
+    stub: 'business-preview',
+  },
   'space.short-stay': {
     app: '/b/roncesvalles-guest-suite',
     mock: 'pages/space/short-stay.html',
@@ -637,6 +646,12 @@ export const routes = {
     mock: 'pages/shop/empty.html',
     who: 'member',
     stub: 'shop-empty',
+  },
+  'shop.sold-out': {
+    app: '/b/luzandre',
+    mock: 'pages/shop/sold-out.html',
+    who: 'member',
+    stub: 'shop-sold-out',
   },
   product: {
     app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',
@@ -854,6 +869,12 @@ export const routes = {
     mock: 'pages/notifications/error.html',
     who: 'member',
     stub: 'notifications-error',
+  },
+  'notifications.back-in-stock': {
+    app: '/notifications',
+    mock: 'pages/notifications/back-in-stock.html',
+    who: 'member',
+    stub: 'notifications-back-in-stock',
   },
   'forgot-password': {
     app: '/forgot-password',

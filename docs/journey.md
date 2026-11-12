@@ -17,7 +17,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | # | Journey | Description | Effort (days) | Complete |
 |---|---|---|---|---|
 | 1 | Discover businesses | Explore the welcome page, browse home and filtered category pages. | 10 | 100% |
-| 2 | View a business and its products | Open a business or shop page and its product details. | 7 | 84% |
+| 2 | View a business and its products | Open a business or shop page and its product details. | 7 | 100% |
 | 3 | Search the directory | Search businesses, services and products by keyword with grouped results. | 6 | 100% |
 | 4 | Join Jubilee | Create an account by e-mail or Google and confirm the address. | 8 | 89% |
 | 5 | Sign in and out | Sign in, stay signed in safely, and sign out. | 6 | 76% |

@@ -24,88 +24,108 @@ class Product {
   +Guid ListingId
   +string Slug
   +string Name
-  +decimal Price
-  +bool PricedPerUnit
+  +int PriceCents
+  +bool IsPerUnit
   +int? Stock
-  +int MinimumOrderQuantity
+  +int MinimumQuantity
   +string? RestockNote
   +bool IsSoldOut
-  +MaxQuantity(optionId: Guid?): int
-  +SetStock(optionId: Guid?, stock: int?): StockChange
+  +int MaxQuantity
+  +SetStock(stock: int?): StockChange
+  +SetStock(optionLabel: string, stock: int?): StockChange
+  +ReduceStock(optionLabel: string?, quantity: int): void
+  +RestoreStock(optionLabel: string?, quantity: int): StockChange
 }
 
 class ProductOption {
-  +Guid Id
-  +string GroupName
   +string Label
   +int? Stock
-  +int DisplayOrder
+  +int Position
+  +int MaxQuantity
 }
 
 class ProductAttribute {
-  +string Name
+  +string Label
   +string Value
-}
-
-class ListingPhoto {
-  +Guid Id
-  +string Url
-  +string AltText
-  +int DisplayOrder
+  +int Position
 }
 
 class StockAlert {
   +Guid Id
   +Guid ProductId
-  +Guid MemberId
+  +string MemberSubject
   +DateTimeOffset RequestedAt
   +DateTimeOffset? NotifiedAt
   +MarkNotified(now: DateTimeOffset): void
 }
 
 class GetProductPageQueryHandler {
-  +Handle(query: GetProductPageQuery): Task<Result<ProductPageDto>>
+  +Handle(query: GetProductPageQuery): Task<ProductPageDto>
 }
 
 class ProductPageDto {
+  +Guid Id
   +string Name
-  +string PriceText
-  +string DeliveryLine
-  +string ShopName
-  +bool IsSoldOut
-  +bool ViewerHasStockAlert
+  +int PriceCents
+  +string? DeliveryLine
+  +bool SoldOut
+  +bool StockAlertRequested
   +IReadOnlyList<ProductOptionDto> Options
-  +IReadOnlyList<ProductCardDto> MoreFromShop
+  +IReadOnlyList<ProductCardDto> More
+}
+
+class ProductCardDto {
+  +string Slug
+  +string Name
+  +int PriceCents
+  +bool SoldOut
 }
 
 class RequestStockAlertCommand {
   +Guid ProductId
-  +Guid MemberId
+  +string MemberSubject
 }
 
 class RequestStockAlertCommandHandler {
-  +Handle(command: RequestStockAlertCommand): Task<Result>
+  +Handle(command: RequestStockAlertCommand): Task
 }
 
-class ProductBackInStock {
-  +Guid ProductId
-  +DateTimeOffset OccurredAt
+class SaveProductCommandHandler {
+  +Handle(command: SaveProductCommand): Task<ProductRowDto>
 }
 
-class StockAlertNotifier {
-  +HandleAsync(message: ProductBackInStock): Task
+class ProductRowDto {
+  +Guid Id
+  +string Name
+  +int? Stock
+  +bool SoldOut
+  +string StockChange
+}
+
+class StockAlertNotifier <<static>> {
+  +TellAsync(db: IAppDbContext, settings: AccountSettings, product: Product, now: DateTimeOffset): Task<int>
+}
+
+class Notification {
+  +string MemberSubject
+  +string Kind
+  +string Title
+  +string Detail
+  +string Target
 }
 
 Product "1" *-- "0..*" ProductOption
 Product "1" *-- "0..*" ProductAttribute
-Product "1" *-- "0..*" ListingPhoto
 Product "1" o-- "0..*" StockAlert
 Product ..> StockChange : returns
-Product ..> ProductBackInStock : raises
 GetProductPageQueryHandler ..> ProductPageDto : returns
 GetProductPageQueryHandler --> Product : loads
+ProductPageDto --> "0..3" ProductCardDto
 RequestStockAlertCommandHandler ..> RequestStockAlertCommand : handles
 RequestStockAlertCommandHandler ..> StockAlert : creates
-StockAlertNotifier ..> ProductBackInStock : consumes
+SaveProductCommandHandler --> Product : sets stock on
+SaveProductCommandHandler ..> ProductRowDto : returns
+SaveProductCommandHandler ..> StockAlertNotifier : calls when BackInStock
 StockAlertNotifier --> "0..*" StockAlert : marks notified
+StockAlertNotifier ..> Notification : creates
 @enduml

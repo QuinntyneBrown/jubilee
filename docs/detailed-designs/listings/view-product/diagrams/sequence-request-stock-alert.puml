@@ -17,8 +17,8 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ProductPage" as page
-  participant "BackInStockButton" as button
-  participant "ProductsApi" as client
+  participant "ProductRequestForm" as button
+  participant "ListingsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "ProductsController" as controller

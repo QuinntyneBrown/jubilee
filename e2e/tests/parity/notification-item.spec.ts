@@ -11,6 +11,12 @@ parity('notification-item', {
       region: (screen: NotificationsPage) => screen.unread().first(),
     },
     {
+      name: 'back-in-stock',
+      route: 'notifications.back-in-stock',
+      screen: (page) => new NotificationsPage(page),
+      region: (screen: NotificationsPage) => screen.unread().first(),
+    },
+    {
       name: 'read',
       route: 'notifications.read',
       screen: (page) => new NotificationsPage(page),

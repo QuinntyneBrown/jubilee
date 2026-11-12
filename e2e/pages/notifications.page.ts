@@ -40,6 +40,13 @@ export class NotificationsPage extends ShellPage implements Screen {
     return this.item(title).getByRole('link');
   }
 
+  /** The bag icon on a notification: the icon of a product, as the mock draws it. */
+  bagIcon(title: string | RegExp): Locator {
+    return this.item(title).locator(
+      '.notif__icon svg path[d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"]',
+    );
+  }
+
   unread(): Locator {
     return this.main.locator('.notif--unread');
   }

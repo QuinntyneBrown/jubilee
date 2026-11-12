@@ -61,6 +61,9 @@ export class BusinessPage extends ShellPage implements Screen {
   readonly about: Locator;
   readonly ownerBanner: Locator;
   readonly goToMyBusiness: Locator;
+  /** The banner of a listing that is not public, with its status (L2-219). */
+  readonly previewBanner: Locator;
+  readonly previewTitle: Locator;
   readonly products: Locator;
   readonly productCount: Locator;
   readonly productCards: Locator;
@@ -106,6 +109,8 @@ export class BusinessPage extends ShellPage implements Screen {
     this.about = this.main.getByRole('region', { name: 'About' });
     this.ownerBanner = this.main.locator('.alert').first();
     this.goToMyBusiness = this.ownerBanner.getByRole('link', { name: 'Go to My business' });
+    this.previewBanner = this.main.locator('.alert.alert--warning').first();
+    this.previewTitle = this.previewBanner.locator('.alert__title');
     this.products = this.main.getByRole('region', { name: 'Products' });
     this.productCount = this.products.locator('.section-head .text-caption');
     this.productCards = this.products.locator('a.product-card');

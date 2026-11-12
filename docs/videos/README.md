@@ -8,6 +8,7 @@ One folder per video. The text files are the source; the media is generated from
 | 02 | [The Jubilee plan](02-business-plan/README.md) | 1:20 | The business plan, short: launch dates, how businesses pay, homes and stays, revenue, the raise and the roadmap. Ten picture-led scenes, narrated, no captions. |
 | 03 | [Journey 1: Discover businesses](03-journey-01-discover-businesses/README.md) | 2:39 | The demo of journey 1: a visitor goes from the welcome page to the browse home and a filtered, sorted category, and three cards say how the directory read cache is cleared and proved (ADR 0003). Twelve narrated scenes recorded from the app. |
 | 04 | [Journey 3: Search the directory](04-journey-03-search-directory/README.md) | 2:51 | The demo of journey 3: a member searches from the top bar, reads the grouped results, the no-results state and the empty search page, and sees a paused listing leave the next search; three cards say why search has no indexing job and how that is proved (ADR 0011). Twelve narrated scenes recorded from the app. |
+| 05 | [Journey 2: view a business and its products](05-journey-02-view-business-and-products/README.md) | 1:20 | A demo of the implementation: the sold-out card, the owner's sold-out toast, the back-in-stock notice in the app and by e-mail, and the preview status. Eight scenes of screenshots of the running app, narrated, no captions. |
 
 ## How a pitch film is built
 
@@ -98,6 +99,61 @@ node tools/video-demo/build.mjs docs/videos/NN-topic --keep-recording    # encod
   under the voice and faded out. `"music"` in `narration.json` names another file; `--no-music`
   leaves it out.
 - **Captions** are burned in (`--no-captions` leaves them out); `captions.vtt` is written either way.
+
+### A demo built from screenshots (video 05)
+
+Video 05 was made without `tools/video-demo`, and is a film of the other kind: a deck
+(`film.js`) that shows **screenshots of the running app** in drawn frames, with close-ups, built by
+`tools/video-build`. New demos use the recorder above. This way still works, and suits a demo that
+must show something no screen recording reaches, such as an e-mail or the same state on a phone
+and a desktop side by side.
+
+```
+docs/videos/NN-journey-NN-topic/
+  shots.ts           which states of the app to open and what to save      (written)
+  shots/             the screenshots, PNG at double density                (generated, committed)
+  email.txt          the body of an e-mail the journey sends, if any       (written)
+  film.js, slides.html, narration.json, script.md, README.md               (written, as for any film)
+```
+
+```sh
+V=docs/videos/NN-journey-NN-topic
+# 1. An e-mail the journey sends, rendered by the backend's own layout (skip when there is none).
+dotnet build backend/src/Jubilee.Application -c Release
+dotnet fsi tools/video-record/render-email.fsx "<subject>" $V/email.txt $V/shots/email.html "<unsubscribe url>"
+# 2. The screenshots: opens the app in Chromium and runs shots.ts.
+JB_VIDEO_DIR=$V NODE_PATH=e2e/node_modules e2e/node_modules/.bin/playwright test -c tools/video-record/playwright.config.ts
+# 3. Voice and the quiet piano bed, then the film.
+python tools/video-audio/narrated_audio.py $V
+NODE_PATH=e2e/node_modules node tools/video-build/build.mjs $V --check
+NODE_PATH=e2e/node_modules node tools/video-build/build.mjs $V --frame 27 f.png
+NODE_PATH=e2e/node_modules node tools/video-build/build.mjs $V --no-captions --fps 30 --crf 23
+```
+
+- **`shots.ts`** is written with the fixtures and page objects of `e2e/`: it imports `test` from
+  `e2e/fixtures/jb-test.ts`, opens states by their key in `e2e/fixtures/routes.ts` (`jb.open`) or
+  with a stub of `e2e/fixtures/`, and saves pictures with `shot`, `detail` and `bringToTop` from
+  `tools/video-record/shots.ts`. `test.use(DESKTOP)` is a 1280×800 window and `test.use(PHONE)` a
+  390×780 one, both at double density. `jb.goto` does not sign anyone in: call
+  `jb.signInAs('member')` first, or use a stub that answers the session.
+- **It is not a test run and not a sweep.** `tools/video-record/playwright.config.ts` only borrows
+  Playwright to drive Chromium: it never sets `JB_SWEEPS`, `JB_BASELINE` or `JB_PARITY`, compares
+  nothing, and is not part of `npm test`. Every `/api` request is answered from the recording or a
+  stub, as in the behaviour specs (ADR 0009). It starts `npm start` in `frontend/` unless the app is
+  already on `http://localhost:4200`.
+- **The film** shows each picture in a frame drawn by `film.js` (`browser`, `phone`, `closeUp` in
+  video 05) with a headline and the requirement it shows. A close-up is a `detail` shot enlarged:
+  that is what makes small text readable at 1080p. Keep scenes at three bars; 72 BPM gives 10 s a
+  scene, room for two sentences.
+- **Say only what the branch does.** The narration uses the words of `docs/specs/` and follows
+  `docs/scripture.md`; if it quotes the mission, it quotes it word for word. Name in the film's
+  README what the pictures prove and what only the tests prove.
+- **Size.** PNG screenshots are small (about 1.6 MB for video 05), and frames that hold still
+  compress well: `--fps 30 --crf 23` gives about 6 MB for 80 s. Do not let a frame drift for a
+  whole scene; it doubles the file. A demo's folder has a `.gitignore` for `narration.wav` and
+  `music.mp3`, which `narrated_audio.py` writes again. Keep what is committed under about 15 MB.
+- **Check before publishing:** `ffprobe` for 1920×1080 H.264 with audio and the expected length,
+  and look at one frame per scene.
 
 ## The deck
 

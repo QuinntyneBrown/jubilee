@@ -18,7 +18,7 @@ actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ProductPage" as page
   participant "ProductRequestForm" as form
-  participant "ProductsApi" as client
+  participant "ListingsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "ProductsController" as controller
@@ -30,7 +30,7 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> page : Open /b/luzandre/p/faith-heavyweight-tee
-page -> client : getProductPage(slug, product)
+page -> client : getProduct(slug, product)
 client -> controller : GET /api/listings/luzandre/products/faith-heavyweight-tee
 controller -> handler : Send GetProductPageQuery
 handler -> db : Load Product with options and photos where the listing is live (L2-028)

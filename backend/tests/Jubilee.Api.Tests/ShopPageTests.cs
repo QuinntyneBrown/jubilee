@@ -53,6 +53,28 @@ public class ShopPageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
+    public async Task L2_034_AC3_a_sold_out_product_says_so_on_its_card_and_a_product_in_stock_does_not()
+    {
+        var shop = Shop();
+        var soldOut = Product(shop, "sold-out", 3);
+        soldOut.SetStock(0);
+        var everySize = Product(shop, "every-size", 2);
+        everySize.SetOptions("Size", [new("S", 0), new("M", 0)]);
+        var oneSizeLeft = Product(shop, "one-size-left", 1);
+        oneSizeLeft.SetOptions("Size", [new("S", 0), new("M", 2)]);
+        await _factory.Arrange(shop, soldOut, everySize, oneSizeLeft, Product(shop, "untracked", 4));
+
+        var json = await _factory.GetJson("/api/listings/luzandre");
+
+        var cards = json.GetProperty("products").EnumerateArray()
+            .ToDictionary(c => c.GetProperty("slug").GetString()!, c => c.GetProperty("soldOut").GetBoolean());
+        Assert.True(cards["sold-out"]);
+        Assert.True(cards["every-size"]);
+        Assert.False(cards["one-size-left"]);
+        Assert.False(cards["untracked"]);
+    }
+
+    [Fact]
     public async Task L2_034_AC2_a_shop_without_products_has_none_and_a_count_of_zero()
     {
         await _factory.Arrange(Shop());

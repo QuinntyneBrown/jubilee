@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { LISTINGS_API, ListingPage, ReplyTimeBand, SpaceDetails } from 'api';
+import { LISTINGS_API, ListingPage, ListingStatus, ReplyTimeBand, SpaceDetails } from 'api';
 import {
   BusinessCard,
   CountPipe,
@@ -106,6 +106,16 @@ interface DetailRow {
   value: string;
 }
 
+const STATUS_WORDS: Record<ListingStatus, string> = {
+  live: 'Verified · live',
+  draft: 'Draft · not submitted yet',
+  'ready-to-review': 'Pending verification',
+  'changes-requested': 'Changes requested · not public yet',
+  declined: 'Declined · not public',
+  paused: 'Verified · paused, not public',
+  'on-hold': 'On hold while we look into a report · not public',
+};
+
 /**
  * The listing page at /b/:slug (L2-033): header with the verified label and the actions, the
  * services, About, Details and "More in {category}". Actions of later journeys are links to
@@ -181,6 +191,11 @@ export class BusinessPage {
       this.savedStore.isSaved({ kind: 'business', slug: state.value.slug, name: state.value.name })
     );
   });
+
+  /** The status of a listing that is not public, in the words of the owner workspace (L2-219 AC2). */
+  protected statusWords(status: ListingStatus): string {
+    return STATUS_WORDS[status];
+  }
 
   /** What the page calls the listing: a shop, a space or a business. Known before it loads when
    * the listing was reached from a list (L2-034 AC4, L2-205 AC5). */
@@ -301,8 +316,9 @@ export class BusinessPage {
         this.hints.rememberCategory(listing.related, listing.category.slug);
         this.state.set({ status: 'loaded', value: listing });
         this.title.setTitle(`${listing.name} · Jubilee`);
-        // A listing view counts for the owner's statistics; their own visits do not (L2-037).
-        if (listing.viewerRelation !== 'owner') {
+        // A listing view counts for the owner's statistics; their own visits do not (L2-037),
+        // and a preview is not a visit by the public (L2-219 AC3).
+        if (listing.viewerRelation !== 'owner' && listing.status === 'live') {
           this.api.recordView(listing.slug).subscribe({ error: () => undefined });
         }
       },

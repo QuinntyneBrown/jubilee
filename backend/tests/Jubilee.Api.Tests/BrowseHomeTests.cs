@@ -87,6 +87,23 @@ public class BrowseHomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
+    public async Task L2_034_AC3_from_the_shops_says_which_product_is_sold_out()
+    {
+        var shop = ListingMother.Public("luzandre", Category.ShopsSlug, "Luzandre.com");
+        var mug = Product.Create(shop.Id, "mug", "Gold cross stoneware mug", 2400, false, TileTint.Gold, TileIcon.Mug, ListingMother.Now);
+        mug.SetStock(0);
+        var tee = Product.Create(shop.Id, "tee", "Faith heavyweight tee", 3400, false, TileTint.Ink, TileIcon.Shirt, ListingMother.Now.AddMinutes(-1));
+        tee.SetOptions("Size", [new("S", 0), new("M", 4)]);
+        await _factory.Arrange(shop, mug, tee);
+
+        var products = (await _factory.GetJson("/api/directory/home")).GetProperty("products");
+
+        Assert.Equal(["mug", "tee"], products.Slugs());
+        Assert.True(products[0].GetProperty("soldOut").GetBoolean());
+        Assert.False(products[1].GetProperty("soldOut").GetBoolean());
+    }
+
+    [Fact]
     public async Task L2_021_AC2_from_the_shops_leaves_out_deleted_products_and_other_categories()
     {
         var shop = ListingMother.Public("shop", "shops");

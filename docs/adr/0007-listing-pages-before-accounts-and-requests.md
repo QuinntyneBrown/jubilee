@@ -39,3 +39,5 @@ those exist yet. ADR 0006 already supplies a member session in tests without a s
 - Later journeys replace a link with their dialog without changing the pages' layout.
 - Back-in-stock alerts are recorded but no one is told yet; L2-036 criteria 2 and 3 stay open
   until journeys 16 and 17.
+  Closed by ADR 0045: the notice is written with the stock change, and there is no
+  `ProductBackInStock` outbox message.

@@ -146,6 +146,15 @@ export class MyProductsPage implements OnInit {
       if (!saved) return;
       const slug = this.products()?.slug;
       this.fetch();
+      // Stock set to 0: the owner is told what members now see, in place of the usual toast (L2-036 AC3).
+      if (saved.product.stockChange === 'became-sold-out') {
+        this.toasts.show({
+          tone: 'warning',
+          title: `“${saved.product.name}” is sold out`,
+          text: 'Members can still ask to be told when it’s back.',
+        });
+        return;
+      }
       this.toasts.show(
         saved.created
           ? {

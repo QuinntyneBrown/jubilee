@@ -334,7 +334,7 @@ public sealed class ConfirmRequestCommandHandler(
 /// <summary>Takes back a confirm within 8 seconds (L2-052 AC3).</summary>
 public sealed record UndoConfirmRequestCommand(string Subject, Guid RequestId) : IRequest<RequestDecisionDto>;
 
-public sealed class UndoConfirmRequestCommandHandler(IAppDbContext db, TimeProvider clock)
+public sealed class UndoConfirmRequestCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings)
     : IRequestHandler<UndoConfirmRequestCommand, RequestDecisionDto>
 {
     public async Task<RequestDecisionDto> Handle(UndoConfirmRequestCommand command, CancellationToken cancellationToken)
@@ -351,7 +351,11 @@ public sealed class UndoConfirmRequestCommandHandler(IAppDbContext db, TimeProvi
 
         if (request.Kind == RequestKind.Order && await db.Products.SingleOrDefaultAsync(p => p.Id == request.ServiceId, cancellationToken) is { } product)
         {
-            product.RestoreStock(request.OptionLabel, request.Quantity ?? 0);
+            // The item that comes back may be the one a member asked to be told about (L2-036 AC4).
+            if (product.RestoreStock(request.OptionLabel, request.Quantity ?? 0) == StockChange.BackInStock)
+            {
+                await Listings.StockAlertNotifier.TellAsync(db, settings, product, clock.GetUtcNow(), cancellationToken);
+            }
         }
 
         var key = ConfirmRequestCommandHandler.ConfirmedKey(request.Id);
