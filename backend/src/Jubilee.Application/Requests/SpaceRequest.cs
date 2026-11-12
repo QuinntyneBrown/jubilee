@@ -46,6 +46,15 @@ public sealed class RequestSpaceCommandHandler(IAppDbContext db, TimeProvider cl
             throw new ConflictException("OWN_LISTING", "You can't ask for your own space.");
         }
 
+        // One open request per member and space, so two tabs cannot send two (L2-197 AC9).
+        if (await db.Requests.AsNoTracking().AnyAsync(
+                r => r.MemberSubject == command.Subject && r.ListingId == listing.Id && r.Kind == RequestKind.Space
+                    && (r.Status == RequestStatus.New || r.Status == RequestStatus.Confirmed),
+                cancellationToken))
+        {
+            throw new ConflictException("ALREADY_REQUESTED", "You already have an open request for this space.");
+        }
+
         var now = clock.GetUtcNow();
         var today = TorontoClock.Today(now);
         var errors = new Dictionary<string, string>();

@@ -157,6 +157,18 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
+    public async Task L2_197_AC9_a_second_open_request_for_the_same_space_is_refused()
+    {
+        await Sent(await Stay(Joanna()));
+
+        var again = await Stay(Joanna(), fromDays: 40);
+
+        Assert.Equal(HttpStatusCode.Conflict, again.StatusCode);
+        Assert.Equal("ALREADY_REQUESTED", (await Json(again)).GetProperty("code").GetString());
+        Assert.Equal(HttpStatusCode.Created, (await Stay(Samuel())).StatusCode);
+    }
+
+    [Fact]
     public async Task L2_197_AC7_the_owner_is_told_and_the_request_is_in_the_members_requests()
     {
         var id = await Sent(await Stay(Joanna()));
