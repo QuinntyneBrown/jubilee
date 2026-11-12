@@ -266,3 +266,18 @@ test.describe('a draft and signing out (L2-011 AC3)', () => {
     await expect(conversation.composer).toHaveValue('');
   });
 });
+
+test.describe('the restored message as the mock shows it (L2-116 AC3)', () => {
+  test('a draft left on the device is in the form when it opens, with the toast', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new NewMessageDialog(page);
+    await new BusinessPage(page).setWidth(1280);
+
+    await jb.open('new-message.restored');
+
+    await expect(dialog.message).toHaveValue(QUESTION);
+    await expect(new Toasts(page).withTitle(KEPT)).toBeVisible();
+  });
+});

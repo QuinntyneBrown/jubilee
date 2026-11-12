@@ -115,3 +115,43 @@ export async function refuseAsExpired(
   });
   return seen;
 }
+
+/** The name the app keeps a member's drafts under: its hash of the e-mail address (ADR 0045). */
+function draftOwner(email: string): string {
+  const text = email.trim().toLowerCase();
+  let h1 = 0xdeadbeef;
+  let h2 = 0x41c6ce57;
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    h1 = Math.imul(h1 ^ code, 2654435761);
+    h2 = Math.imul(h2 ^ code, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+}
+
+/**
+ * Leaves a draft on the device as the app does when a session ends (L2-116): the form `key` at
+ * `address` shows `values` again, once, to the member with this e-mail address.
+ */
+export async function keepDraft(
+  page: Page,
+  draft: { email: string; address: string; key: string; values: Record<string, string | boolean> },
+): Promise<void> {
+  const kept = [
+    {
+      owner: draftOwner(draft.email),
+      address: draft.address,
+      key: draft.key,
+      values: draft.values,
+      savedAt: Date.now(),
+    },
+  ];
+  await page.addInitScript((drafts) => {
+    // Once per browser: a reload must not bring back a draft the app has already given back.
+    if (sessionStorage.getItem('jb-draft-kept')) return;
+    sessionStorage.setItem('jb-draft-kept', '1');
+    localStorage.setItem('jubilee-drafts', JSON.stringify(drafts));
+  }, kept);
+}
