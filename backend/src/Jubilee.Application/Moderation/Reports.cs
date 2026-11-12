@@ -1,7 +1,9 @@
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
+using Jubilee.Application.Directory;
 using Jubilee.Application.Errors;
 using Jubilee.Application.Notifications;
+using Jubilee.Application.Reviews;
 using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
@@ -27,10 +29,15 @@ public sealed record ReportedConversationDto(string MemberName, IReadOnlyList<Re
 
 public sealed record ReportActionDto(string Kind, string ResolutionNote, string? MessageText, string By, DateTimeOffset At);
 
+/// <summary>A reported review as it stands, for the verification team (L2-236 AC2).</summary>
+public sealed record ReportedReviewDto(
+    string Author, string Initials, int Rating, string ItemName, string Text, DateTimeOffset CreatedAt, DateTimeOffset? EditedAt,
+    ReviewReplyDto? Reply, bool TakenDown);
+
 public sealed record ReportDetailDto(
     Guid Id, string Type, string Status, bool Overdue, DateTimeOffset CreatedAt, string ReporterName, ReportedListingDto Listing,
     IReadOnlyList<ReportEntryDto> Entries, ReportedConversationDto? Conversation, IReadOnlyList<ReportActionDto> Actions,
-    string? ResolutionNote);
+    string? ResolutionNote, ReportedReviewDto? Review = null);
 
 /// <summary>The words the API uses for the states and actions of a report.</summary>
 public static class ReportWire
@@ -49,6 +56,7 @@ public static class ReportWire
         ReportActionKind.MessageOwner => "message-owner",
         ReportActionKind.PlaceOnHold => "hold",
         ReportActionKind.RemoveListing => "remove",
+        ReportActionKind.TakeDownReview => "take-down",
         _ => "lift-hold",
     };
 
@@ -60,7 +68,23 @@ public static class ReportWire
         "hold" => ReportActionKind.PlaceOnHold,
         "remove" => ReportActionKind.RemoveListing,
         "lift-hold" => ReportActionKind.LiftHold,
+        "take-down" => ReportActionKind.TakeDownReview,
         _ => null,
+    };
+
+    /// <summary>The actions a report of a review takes; the listing's actions do not apply to it (L2-236 AC2).</summary>
+    public static bool AppliesTo(ReportActionKind kind, bool isReview) => isReview
+        ? kind is ReportActionKind.Dismiss or ReportActionKind.MessageReporter or ReportActionKind.TakeDownReview
+        : kind is not ReportActionKind.TakeDownReview;
+
+    /// <summary>The reason of a review report as the reporter chose it (L2-235 AC1).</summary>
+    public static string ReasonLabel(ReviewReportReason reason) => reason switch
+    {
+        ReviewReportReason.NotARealDealing => "It isn’t about a real dealing with them",
+        ReviewReportReason.Abusive => "It’s abusive or hateful",
+        ReviewReportReason.PrivateDetails => "It shares private details",
+        ReviewReportReason.Advertising => "It’s advertising or off-topic",
+        _ => "Something else",
     };
 
     public static string ReasonLabel(ReportReason reason) => reason switch
@@ -111,22 +135,28 @@ internal sealed class LoadedReport
 
     public ConversationReport? ConversationReport { get; init; }
 
+    public ReviewReport? ReviewReport { get; init; }
+
     public bool IsOverdue(DateTimeOffset now) => Status == ReportStatus.Open && now > BusinessDays.Add(CreatedAt, 1);
 
-    public ReportStatus CurrentStatus => ListingReport is not null ? ListingReport.Status : ConversationReport!.Status;
+    public ReportStatus CurrentStatus => ListingReport?.Status ?? ConversationReport?.Status ?? ReviewReport!.Status;
 
-    public string? CurrentNote => ListingReport is not null ? ListingReport.ResolutionNote : ConversationReport!.ResolutionNote;
+    public string? CurrentNote => ListingReport is not null ? ListingReport.ResolutionNote
+        : ConversationReport is not null ? ConversationReport.ResolutionNote
+        : ReviewReport!.ResolutionNote;
 
     public void StartReview()
     {
         ListingReport?.StartReview();
         ConversationReport?.StartReview();
+        ReviewReport?.StartReview();
     }
 
     public void Resolve(string note, DateTimeOffset now)
     {
         ListingReport?.Resolve(note, now);
         ConversationReport?.Resolve(note, now);
+        ReviewReport?.Resolve(note, now);
     }
 }
 
@@ -148,6 +178,12 @@ internal static class ReportStore
             loaded.Add(From(report, byId[report.ConversationId]));
         }
 
+        var reviewReports = await db.ReviewReports.ToListAsync(cancellationToken);
+        foreach (var report in reviewReports)
+        {
+            loaded.Add(From(report, reviewReports.Where(r => r.ReviewId == report.ReviewId)));
+        }
+
         return loaded;
     }
 
@@ -164,6 +200,12 @@ internal static class ReportStore
         {
             var thread = await db.Conversations.AsNoTracking().SingleAsync(c => c.Id == conversation.ConversationId, cancellationToken);
             return From(conversation, thread);
+        }
+
+        var review = await db.ReviewReports.SingleOrDefaultAsync(r => r.Id == id, cancellationToken);
+        if (review is not null)
+        {
+            return From(review, await db.ReviewReports.AsNoTracking().Where(r => r.ReviewId == review.ReviewId).ToListAsync(cancellationToken));
         }
 
         throw new NotFoundException("report_not_found", "There is no such report.");
@@ -207,6 +249,23 @@ internal static class ReportStore
         ConversationReport = report,
     };
 
+    /// <summary>A report of a review, with every report of that review as its entries (L2-236 AC2).</summary>
+    private static LoadedReport From(ReviewReport report, IEnumerable<ReviewReport> ofTheReview) => new()
+    {
+        Id = report.Id,
+        Type = "review",
+        ListingId = report.ListingId,
+        ReporterSubject = report.ReporterSubject,
+        ReporterName = string.IsNullOrWhiteSpace(report.ReporterName) ? "A member" : report.ReporterName,
+        CreatedAt = report.CreatedAt,
+        Status = report.Status,
+        ResolutionNote = report.ResolutionNote,
+        Reason = ReportWire.ReasonLabel(report.Reason),
+        Description = report.Note ?? string.Empty,
+        Entries = [.. ofTheReview.OrderBy(r => r.CreatedAt).Select(r => new ReportEntryDto(ReportWire.ReasonLabel(r.Reason), r.Note ?? string.Empty, r.CreatedAt))],
+        ReviewReport = report,
+    };
+
     public static async Task<ReportDetailDto> Detail(
         IAppDbContext db, LoadedReport report, Listing listing, bool withConversation, DateTimeOffset now, CancellationToken cancellationToken)
     {
@@ -224,12 +283,21 @@ internal static class ReportStore
             .OrderBy(a => a.At)
             .Select(a => new ReportActionDto(ReportWire.Action(a.Kind), a.ResolutionNote, a.MessageText, a.ActorName, a.At))
             .ToList();
+        ReportedReviewDto? review = null;
+        if (report.ReviewReport is { } reviewReport
+            && await db.Reviews.AsNoTracking().SingleOrDefaultAsync(r => r.Id == reviewReport.ReviewId, cancellationToken) is { } reported)
+        {
+            var shown = ReviewDto.From(reported, null);
+            review = new ReportedReviewDto(
+                shown.Author, shown.Initials, shown.Rating, shown.ItemName, shown.Text, shown.CreatedAt, shown.EditedAt, shown.Reply, !reported.IsShown);
+        }
+
         var status = report.CurrentStatus;
         return new ReportDetailDto(
             report.Id, report.Type, ReportWire.Status(status), status == ReportStatus.Open && now > BusinessDays.Add(report.CreatedAt, 1),
             report.CreatedAt, report.ReporterName,
             new ReportedListingDto(listing.Name, listing.Slug, ReportWire.ListingState(listing)), report.Entries, conversation, actions,
-            report.CurrentNote);
+            report.CurrentNote, review);
     }
 
     /// <summary>A verifier cannot work on a report of their own listing (L2-098 AC5).</summary>
@@ -306,7 +374,7 @@ public sealed class OpenReportCommandHandler(IAppDbContext db, TimeProvider cloc
 public sealed record ApplyReportActionCommand(Reviewer Reviewer, Guid ReportId, string? Kind, string? ResolutionNote, string? MessageText)
     : IRequest<ReportDetailDto>;
 
-public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvider clock)
+public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvider clock, IDirectoryReadCache cache, AccountSettings settings)
     : IRequestHandler<ApplyReportActionCommand, ReportDetailDto>
 {
     public const string HoldTitle = "We’ve paused your listing while we look into a report";
@@ -332,16 +400,24 @@ public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvid
             errors["resolutionNote"] = "TOO_LONG";
         }
 
-        if (kind is ReportActionKind.MessageReporter or ReportActionKind.MessageOwner)
+        if (kind is ReportActionKind.MessageReporter or ReportActionKind.MessageOwner or ReportActionKind.TakeDownReview)
         {
+            var most = kind is ReportActionKind.TakeDownReview ? Review.MaxReasonLength : ReportAction.MaxMessageLength;
             if (string.IsNullOrEmpty(text))
             {
                 errors["messageText"] = "REQUIRED";
             }
-            else if (text.Length > ReportAction.MaxMessageLength)
+            else if (text.Length > most)
             {
                 errors["messageText"] = "TOO_LONG";
             }
+        }
+
+        var now = clock.GetUtcNow();
+        var report = await ReportStore.Load(db, request.ReportId, cancellationToken);
+        if (kind is { } chosen && !ReportWire.AppliesTo(chosen, report.ReviewReport is not null))
+        {
+            errors["kind"] = "INVALID";
         }
 
         if (errors.Count > 0)
@@ -349,8 +425,6 @@ public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvid
             throw new ValidationFailedException(errors);
         }
 
-        var now = clock.GetUtcNow();
-        var report = await ReportStore.Load(db, request.ReportId, cancellationToken);
         var listing = await db.Listings.SingleAsync(l => l.Id == report.ListingId, cancellationToken);
         ReportStore.EnsureNotOwn(request.Reviewer, listing);
         if (report.Status == ReportStatus.Resolved)
@@ -408,10 +482,46 @@ public sealed class ApplyReportActionCommandHandler(IAppDbContext db, TimeProvid
                     "The verification team finished looking into a report and your listing is public again.", "/my-business", now);
                 AuditLog.Record(db, reviewer, "listing.hold-lifted", "listing", listing.Id.ToString(), before, ReportWire.ListingState(listing), note, now);
                 break;
+            case ReportActionKind.TakeDownReview:
+                await TakeDownAsync(report.ReviewReport!, listing, reviewer, note, text!, now, cancellationToken);
+                report.Resolve(note, now);
+                break;
         }
 
         db.ReportActions.Add(ReportAction.Take(report.Id, kind.Value, note, text, reviewer.Subject, reviewer.Name, now));
         await db.SaveChangesAsync(cancellationToken);
+        if (kind is ReportActionKind.TakeDownReview)
+        {
+            cache.Invalidate();
+        }
+
         return await ReportStore.Detail(db, report, listing, false, now, cancellationToken);
+    }
+
+    /// <summary>
+    /// The review leaves the page, the average, the count and the cards; every report of it is resolved; its author
+    /// is told the reason and nobody else is told anything (L2-236 AC3, L2-234 AC3).
+    /// </summary>
+    private async Task TakeDownAsync(
+        ReviewReport reported, Listing listing, Reviewer reviewer, string note, string reason, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var review = await db.Reviews.SingleAsync(r => r.Id == reported.ReviewId, cancellationToken);
+        if (!review.IsShown)
+        {
+            throw new ConflictException("REVIEW_TAKEN_DOWN", "This review has already been taken down.");
+        }
+
+        review.TakeDown(reason, now);
+        await ReviewRules.RecountAsync(db, review, gone: false, productBefore: null, cancellationToken);
+        foreach (var other in await db.ReviewReports.Where(r => r.ReviewId == review.Id && r.Id != reported.Id && r.Status != ReportStatus.Resolved)
+            .ToListAsync(cancellationToken))
+        {
+            other.Resolve(note, now);
+        }
+
+        var title = $"We took down your review of {listing.Name}";
+        NotificationRules.Tell(db, review.AuthorSubject, ReviewNotices.Kind, title, review.TakeDownReason!, $"/b/{listing.Slug}", now, review.Id);
+        await ReviewNotices.EmailAsync(db, settings, review.AuthorSubject, title, review.TakeDownReason!, $"/b/{listing.Slug}", review.Id, now, cancellationToken);
+        AuditLog.Record(db, reviewer, "review.taken-down", "review", review.Id.ToString(), "shown", review.TakeDownReason, note, now);
     }
 }

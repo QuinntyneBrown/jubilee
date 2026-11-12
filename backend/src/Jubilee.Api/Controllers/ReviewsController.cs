@@ -73,3 +73,27 @@ public sealed class ReviewsController(ISender sender) : ControllerBase
     public async Task<ActionResult<ReviewDto>> Reply(Guid id, ReplyBody body, CancellationToken cancellationToken) =>
         Ok(await sender.Send(new ReplyToReviewCommand(id, User.ToViewer().Subject!, body.Text), cancellationToken));
 }
+
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record ReportReviewBody(string? Reason, string? Note);
+
+/// <summary>
+/// A report of a review, private to the verification team (L2-235). The reporter comes from the session;
+/// the author may not report their own (403 OWN_REVIEW). A repeated <c>Idempotency-Key</c> returns the first answer (L2-132).
+/// </summary>
+[ApiController]
+[Route("api/reviews/{id:guid}/reports")]
+[ErrorReference("JB-REV-503")]
+public sealed class ReviewReportsController(ISender sender) : ControllerBase
+{
+    [HttpPost]
+    public async Task<IActionResult> Report(Guid id, ReportReviewBody body, CancellationToken cancellationToken)
+    {
+        var reported = await sender.Send(
+            new ReportReviewCommand(
+                id, User.ToViewer().Subject!, User.FindFirst("name")?.Value ?? string.Empty, body.Reason, body.Note,
+                Request.Headers["Idempotency-Key"].ToString()),
+            cancellationToken);
+        return StatusCode(StatusCodes.Status201Created, reported);
+    }
+}

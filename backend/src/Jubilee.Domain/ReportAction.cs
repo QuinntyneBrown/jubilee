@@ -9,6 +9,9 @@ public enum ReportActionKind
     PlaceOnHold = 3,
     RemoveListing = 4,
     LiftHold = 5,
+
+    /// <summary>Takes a reported review down, with a reason its author reads (L2-236 AC3).</summary>
+    TakeDownReview = 6,
 }
 
 /// <summary>
