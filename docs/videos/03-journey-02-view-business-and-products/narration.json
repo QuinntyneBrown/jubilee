@@ -1,0 +1,138 @@
+{
+  "voice": "af_heart",
+  "bpm": 72,
+  "scenes": 8,
+  "note": "Film seconds; eight scenes of 10 s (three bars at 72 BPM). Each segment is spoken inside [start, end], at the slowest speed that fits. 'caption' starts a new caption (written to captions.vtt only; the film has none burned in).",
+  "lines": [
+    {
+      "scene": 1,
+      "segments": [
+        {
+          "text": "Journey two: view a business and its products.",
+          "start": 0.6,
+          "end": 5.2,
+          "caption": "Journey two: view a business and its products."
+        },
+        {
+          "text": "Here is what the app does now.",
+          "start": 5.3,
+          "end": 9.7,
+          "caption": "Here is what the app does now."
+        }
+      ]
+    },
+    {
+      "scene": 2,
+      "segments": [
+        {
+          "text": "When an owner sets a product's stock to zero, a toast says it is sold out,",
+          "start": 10.6,
+          "end": 15.2,
+          "caption": "When an owner sets a product’s stock to zero, a toast says it is sold out,"
+        },
+        {
+          "text": "and that members can still ask to be told when it's back.",
+          "start": 15.3,
+          "end": 19.7,
+          "caption": "and that members can still ask to be told when it’s back."
+        }
+      ]
+    },
+    {
+      "scene": 3,
+      "segments": [
+        {
+          "text": "On the shop page, the card of that product says: Sold out.",
+          "start": 20.6,
+          "end": 25.2,
+          "caption": "On the shop page, the card of that product says: Sold out."
+        },
+        {
+          "text": "In words, on a desktop and on a phone.",
+          "start": 25.3,
+          "end": 29.7,
+          "caption": "In words, on a desktop and on a phone."
+        }
+      ]
+    },
+    {
+      "scene": 4,
+      "segments": [
+        {
+          "text": "On the product page, a member presses: Tell me when it's back.",
+          "start": 30.6,
+          "end": 35.2,
+          "caption": "On the product page, a member presses: Tell me when it’s back."
+        },
+        {
+          "text": "The page answers: We'll tell you when it's back.",
+          "start": 35.3,
+          "end": 39.7,
+          "caption": "The page answers: We’ll tell you when it’s back."
+        }
+      ]
+    },
+    {
+      "scene": 5,
+      "segments": [
+        {
+          "text": "When the stock returns, each member who asked is notified once:",
+          "start": 40.6,
+          "end": 45.2,
+          "caption": "When the stock returns, each member who asked is notified once:"
+        },
+        {
+          "text": "a toast with View in shop, and a line in their notifications.",
+          "start": 45.3,
+          "end": 49.7,
+          "caption": "a toast with View in shop, and a line in their notifications."
+        }
+      ]
+    },
+    {
+      "scene": 6,
+      "segments": [
+        {
+          "text": "They get one e-mail too, unless they turned Request updates off.",
+          "start": 50.6,
+          "end": 55.2,
+          "caption": "They get one e-mail too, unless they turned Request updates off."
+        },
+        {
+          "text": "Jubilee takes no payment. The shop confirms stock and says how to pay.",
+          "start": 55.3,
+          "end": 59.7,
+          "caption": "Jubilee takes no payment. The shop confirms stock and says how to pay."
+        }
+      ]
+    },
+    {
+      "scene": 7,
+      "segments": [
+        {
+          "text": "An owner who opens a listing that is not public sees a preview, with its status.",
+          "start": 60.6,
+          "end": 65.2,
+          "caption": "An owner who opens a listing that is not public sees a preview, with its status."
+        },
+        {
+          "text": "So does the verification team.",
+          "start": 65.3,
+          "end": 69.7,
+          "caption": "So does the verification team."
+        }
+      ]
+    },
+    {
+      "scene": 8,
+      "segments": [
+        {
+          "text": "Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.",
+          "start": 70.8,
+          "end": 79.6,
+          "caption": "Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom."
+        }
+      ]
+    }
+  ]
+}
