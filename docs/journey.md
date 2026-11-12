@@ -18,7 +18,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 |---|---|---|---|---|
 | 1 | Discover businesses | Explore the welcome page, browse home and filtered category pages. | 10 | 100% |
 | 2 | View a business and its products | Open a business or shop page and its product details. | 7 | 84% |
-| 3 | Search the directory | Search businesses, services and products by keyword with grouped results. | 6 | 85% |
+| 3 | Search the directory | Search businesses, services and products by keyword with grouped results. | 6 | 100% |
 | 4 | Join Jubilee | Create an account by e-mail or Google and confirm the address. | 8 | 89% |
 | 5 | Sign in and out | Sign in, stay signed in safely, and sign out. | 6 | 76% |
 | 6 | Message a business | Hold a private conversation with a business from an inbox. | 12 | 94% |
@@ -48,7 +48,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 95% |
 
-**Total: 217 days** for the 30 journeys, **90% complete** weighted by effort.
+**Total: 217 days** for the 30 journeys, **91% complete** weighted by effort.
 
 ## Notes
 

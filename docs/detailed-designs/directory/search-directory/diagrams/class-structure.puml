@@ -23,29 +23,45 @@ class SearchQueryText {
   +{static} int MaxLength = 100
   +string Value
   +bool IsEmpty
-  +{static} From(raw: string): SearchQueryText
+  +{static} From(raw: string?): SearchQueryText
 }
 
 class SearchDirectoryQuery {
-  +SearchQueryText Text
-  +SearchResultKind Tab
-  +Guid? MemberId
+  +string? Raw
+  +Viewer Viewer
 }
 
 class SearchDirectoryQueryHandler {
-  +Handle(query: SearchDirectoryQuery): Task<Result<SearchResults>>
+  +Handle(request: SearchDirectoryQuery): Task<SearchAnswer>
+}
+
+class SearchAnswer {
+  +SearchResults? Results
+  +SearchStartDto? Start
 }
 
 interface ISearchIndex {
-  +SearchAsync(text: SearchQueryText): Task<SearchResults>
-  +SuggestAsync(text: SearchQueryText): Task<SearchSuggestion?>
+  +SearchAsync(query: string): Task<SearchResults>
+}
+
+class DatabaseSearchIndex {
+  +SearchAsync(query: string): Task<SearchResults>
+}
+
+class SearchAnalyzer <<static>> {
+  +Fold(text: string): string
+  +Stem(foldedWord: string): string
+  +QueryStems(query: string): List<string>
+  +Matches(text: string?, queryStems: IReadOnlyList<string>): bool
+  +Distance(a: string, b: string): int
 }
 
 class DatabaseNameSearch {
-  +SearchByNameAsync(text: SearchQueryText): Task<SearchResults>
+  +SearchAsync(query: string): Task<SearchResults>
 }
 
 class SearchResults {
+  +string Query
   +int BusinessCount
   +int ServiceCount
   +int ProductCount
@@ -55,52 +71,77 @@ class SearchResults {
 }
 
 class SearchHit {
-  +SearchResultKind Kind
-  +string ListingSlug
-  +string Title
-  +string CategoryName
+  +string Kind
+  +string Name
+  +string Slug
+  +string? ProductSlug
+  +string BusinessName
+  +string CategorySlug
   +MatchExplanation? Explanation
+  +SpaceCardDto? Space
 }
 
 class MatchExplanation {
   +string Text
-  +IReadOnlyList<TextRange> Highlights
+  +IReadOnlyList<HighlightRange> Highlights
 }
 
-class TextRange {
+class HighlightRange {
   +int Start
   +int Length
 }
 
 class SearchSuggestion {
-  +string? CloseTerm
+  +string CloseTerm
   +string? CategorySlug
 }
 
 class RecentSearch {
   +Guid Id
-  +Guid MemberId
-  +string Text
+  +string MemberSubject
+  +string Query
   +DateTimeOffset SearchedAt
+  +{static} Record(memberSubject: string, query: string, now: DateTimeOffset): RecentSearch
+  +Touch(now: DateTimeOffset): void
 }
 
-class RecentSearchService {
-  +RecordAsync(memberId: Guid, text: SearchQueryText): Task
-  +ListAsync(memberId: Guid): Task<IReadOnlyList<RecentSearch>>
-  +RemoveAsync(memberId: Guid, id: Guid): Task
-  +ClearAsync(memberId: Guid): Task
+class SearchStartBuilder {
+  +{static} int RecentLimit = 5
+  +{static} int PopularLimit = 5
+  +BuildAsync(viewer: Viewer): Task<SearchStartDto>
+}
+
+class SearchStartDto {
+  +IReadOnlyList<RecentSearchDto> Recent
+  +IReadOnlyList<PopularCategoryDto> PopularCategories
+}
+
+class RemoveRecentSearchCommandHandler {
+  +Handle(request: RemoveRecentSearchCommand): Task
+}
+
+class ClearRecentSearchesCommandHandler {
+  +Handle(request: ClearRecentSearchesCommand): Task
 }
 
 SearchDirectoryQueryHandler ..> SearchDirectoryQuery : handles
+SearchDirectoryQueryHandler ..> SearchQueryText : normalises with
 SearchDirectoryQueryHandler ..> ISearchIndex : searches through
 SearchDirectoryQueryHandler ..> DatabaseNameSearch : falls back to
-SearchDirectoryQueryHandler ..> RecentSearchService : records through
-SearchDirectoryQuery --> "1" SearchQueryText
-SearchDirectoryQuery --> "1" SearchResultKind
+SearchDirectoryQueryHandler ..> SearchStartBuilder : answers an empty query with
+SearchDirectoryQueryHandler ..> RecentSearch : records
+SearchDirectoryQueryHandler ..> SearchAnswer : returns
+ISearchIndex <|.. DatabaseSearchIndex
+DatabaseSearchIndex ..> SearchAnalyzer : analyses with
+DatabaseNameSearch ..> SearchAnalyzer : folds with
+SearchAnswer *-- "0..1" SearchResults
+SearchAnswer *-- "0..1" SearchStartDto
 SearchResults *-- "0..*" SearchHit
 SearchResults *-- "0..1" SearchSuggestion
-SearchHit --> "1" SearchResultKind
 SearchHit *-- "0..1" MatchExplanation
-MatchExplanation *-- "1..*" TextRange
-RecentSearchService --> "0..*" RecentSearch : manages
+MatchExplanation *-- "1..*" HighlightRange
+SearchStartBuilder ..> SearchStartDto : builds
+SearchStartBuilder ..> RecentSearch : lists
+RemoveRecentSearchCommandHandler ..> RecentSearch : deletes one
+ClearRecentSearchesCommandHandler ..> RecentSearch : deletes all of a member
 @enduml

@@ -10,7 +10,7 @@ System_Boundary(jubilee, "Jubilee") {
   Container(worker, "Jubilee Worker", ".NET worker service", "Photo processing and outbox dispatch")
   ContainerDb(db, "Jubilee database", "SQL Server", "Listings, photos and outbox")
   ContainerDb(media, "Media storage", "Object storage + CDN", "Photo originals and renditions")
-  ContainerDb(search, "Search index", "<TO SUPPLY>", "Full-text search over businesses")
+  ContainerDb(search, "Search index", "Query-time analysis over SQL Server", "Full-text search over businesses")
 }
 System_Ext(scanner, "Malware scanner", "Scans uploaded photos")
 

@@ -16,12 +16,12 @@ skinparam package {
 }
 actor "Visitor or Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "SearchBox" as box
+  participant "SearchField" as box
   participant "SearchPage" as page
   participant "SearchApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "RateLimitMiddleware" as limit
+  participant "SearchRateLimit" as limit
   participant "SearchController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
@@ -29,16 +29,14 @@ box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "SearchQueryText" as text
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
-  database "Search index" as index
+  participant "DatabaseSearchIndex" as index
   database "Jubilee database" as db
 end box
 actor -> box : Type "plumber" and submit
 box -> page : Navigate to /search?q=plumber (L2-029)
-page -> client : search(q, tab)
+page -> client : search(q)
 client -> limit : GET /api/search?q=plumber
-limit -> cache : Increment the counter for the IP address
-cache --> limit : Count in the current minute
+limit -> limit : Count the request for the IP address in the current minute
 alt More than 60 searches in the minute
   limit --> client : 429 ProblemDetails (L2-032)
   client --> page : Rate limited
@@ -49,14 +47,16 @@ else Within the limit
   handler -> text : From(raw query)
   text --> handler : Trimmed text of at most 100 characters (L2-032)
   alt Search index available
-    handler -> index : SearchAsync with stemming and case and accent folding (L2-029)
-    index --> handler : Live hits with match ranges and counts
+    handler -> index : SearchAsync(query)
+    index -> db : Read the public listings with their services and products (L2-028)
+    db --> index : Rows as they are now (L2-029 AC7)
+    index -> index : Match with stemming and case and accent folding (L2-029)
     opt No hit
-      handler -> index : SuggestAsync(text)
-      index --> handler : Close term and most relevant category or none (L2-030)
+      index -> index : Find the close term and its category or none (L2-030)
     end
+    index --> handler : Live hits with match ranges and counts
   else Search index unavailable
-    handler -> db : SearchByNameAsync over live listing names (L2-181)
+    handler -> db : DatabaseNameSearch.SearchAsync over public listing names (L2-181)
     db --> handler : Hits without match explanations
   end
   opt Signed-in member

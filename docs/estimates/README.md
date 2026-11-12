@@ -5,7 +5,7 @@
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [directory](directory.md) | 22 days | 97% |
+| [directory](directory.md) | 22 days | 100% |
 | [trust-content](trust-content.md) | 11 days | 74% |
 | [responsive-design](responsive-design.md) | 6 days | 40% |
 | [design-system](design-system.md) | 6 days | 30% |

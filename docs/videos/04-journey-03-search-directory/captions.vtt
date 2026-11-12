@@ -1,0 +1,124 @@
+WEBVTT
+
+00:00:00.434 --> 00:00:05.108
+Journey three: search the directory. Anyone searches businesses,
+
+00:00:05.108 --> 00:00:09.416
+services and products by keyword, and sees grouped results.
+
+00:00:09.416 --> 00:00:14.090
+This run takes the journey from eighty-five percent to complete.
+
+00:00:14.946 --> 00:00:19.424
+A member types plumber in the top bar and lands on the search page.
+
+00:00:19.424 --> 00:00:23.969
+The heading names the query, and one line counts the businesses, the
+
+00:00:23.969 --> 00:00:26.442
+services and the products that match.
+
+00:00:27.145 --> 00:00:32.054
+Each result explains why it matched, with the matched word highlighted.
+
+00:00:32.054 --> 00:00:37.032
+Plumber also finds plumbing, because search folds word endings, case and
+
+00:00:37.032 --> 00:00:37.585
+accents.
+
+00:00:38.288 --> 00:00:42.574
+Results are grouped under three tabs, each with its count.
+
+00:00:42.574 --> 00:00:46.638
+A search for bibles finds one business and one product.
+
+00:00:46.638 --> 00:00:51.958
+A new Playwright spec proves that each tab lists only the results of its
+
+00:00:51.958 --> 00:00:52.328
+kind.
+
+00:00:53.036 --> 00:00:58.348
+A misspelling matches nothing. The page says so, offers the close term,
+
+00:00:58.348 --> 00:01:02.389
+plumber, and links to the category where it is listed.
+
+00:01:02.389 --> 00:01:04.484
+The button runs that search.
+
+00:01:05.186 --> 00:01:10.163
+With no query, the page helps the member start: their recent searches,
+
+00:01:10.163 --> 00:01:13.079
+newest first, and the popular categories.
+
+00:01:13.079 --> 00:01:16.634
+Removing a recent search deletes it on the server.
+
+00:01:17.336 --> 00:01:21.615
+The question this run settled is how search stays current.
+
+00:01:21.615 --> 00:01:25.157
+Here a search for plumbing finds two businesses.
+
+00:01:25.157 --> 00:01:28.256
+In this recording the answers are stubbed.
+
+00:01:28.959 --> 00:01:32.177
+Then the owner of one pauses the listing.
+
+00:01:32.177 --> 00:01:37.513
+The member searches again, and the next search finds only the other.
+
+00:01:37.513 --> 00:01:39.711
+Nothing waits to be indexed.
+
+00:01:40.741 --> 00:01:44.602
+That is the decision, recorded in decision record eleven.
+
+00:01:44.602 --> 00:01:49.344
+Search reads the public listings in the Jubilee database at the moment
+
+00:01:49.344 --> 00:01:54.018
+of the query. That is the final design: there is no separate index to
+
+00:01:54.018 --> 00:01:57.541
+bring up to date, and no indexing job in the worker.
+
+00:01:58.397 --> 00:02:02.706
+Twenty-one new API tests prove it through the real endpoints.
+
+00:02:02.706 --> 00:02:07.439
+An owner's pause and resume, an edit, a service or a product added,
+
+00:02:07.439 --> 00:02:12.243
+changed or deleted, a verifier's approval and a moderation hold each
+
+00:02:12.243 --> 00:02:17.330
+reach the very next search. A listing that is not public is never found,
+
+00:02:17.330 --> 00:02:19.661
+even by the fallback name search.
+
+00:02:20.520 --> 00:02:25.762
+When search fails, the page says nothing is lost and shows a reference
+
+00:02:25.762 --> 00:02:30.480
+to quote. Try again now has its own spec: it loads the results.
+
+00:02:31.509 --> 00:02:36.323
+The requirements, the search design and its diagrams now describe the
+
+00:02:36.323 --> 00:02:39.463
+code as built, and journey three is complete.
+
+00:02:39.463 --> 00:02:44.207
+Left for the owner: the visual, responsive and accessibility sweeps,
+
+00:02:44.207 --> 00:02:48.882
+which only the owner runs. Search latency under load belongs to the
+
+00:02:48.882 --> 00:02:50.277
+performance designs.

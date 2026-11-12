@@ -11,6 +11,8 @@ export class SearchPage extends ShellPage implements Screen {
   readonly tabButtons: Locator;
   readonly panel: Locator;
   readonly rows: Locator;
+  /** The names of the results on show, in order. */
+  readonly rowTitles: Locator;
   /** Spaces among the results, as space cards (L2-204). */
   readonly spaceCards: Locator;
   readonly marks: Locator;
@@ -39,6 +41,7 @@ export class SearchPage extends ShellPage implements Screen {
     this.tabButtons = this.tablist.getByRole('tab');
     this.panel = this.main.getByRole('tabpanel');
     this.rows = this.panel.locator('li.row');
+    this.rowTitles = this.rows.locator('.row__title');
     this.spaceCards = this.panel.locator('ul.card-grid a.space-card');
     this.marks = this.rows.locator('mark');
     this.emptyState = this.main.locator('.empty:not(.empty--error)');

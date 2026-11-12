@@ -20,7 +20,7 @@ Container_Boundary(worker, "Jubilee Worker") {
 }
 ContainerDb(db, "Jubilee database", "SQL Server", "State and outbox")
 ContainerDb(cache, "Cache", "Redis", "Read caches and backplane")
-ContainerDb(search, "Search index", "<TO SUPPLY>", "Search documents")
+ContainerDb(search, "Search index", "Query-time analysis over SQL Server", "Search documents")
 
 Rel(web, edge, "Calls /api through", "JSON/HTTPS")
 Rel(edge, metrics, "Forwards to", "HTTPS")

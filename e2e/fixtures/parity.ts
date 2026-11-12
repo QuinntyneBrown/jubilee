@@ -75,13 +75,28 @@ export interface ParityOptions {
 /**
  * Brings the region to the middle of the viewport, clear of the fixed bars at its edges. The
  * pages scroll smoothly, so the jump is made instant: the shot is never taken mid-scroll.
+ *
+ * A region taller than the viewport, or one at the very end of a page, cannot be brought clear:
+ * a fixed or sticky bar (the top bar, the tab bar, the feedback launcher) stays over part of it,
+ * and where it lands depends on how far each page can scroll, which differs by a pixel or two
+ * between the mock and the app. Such a bar is not part of the component, so every one is hidden
+ * for the shot, in the mock and in the app alike. A bar the region is in, or that is in the
+ * region, is kept, and so is anything as large as the viewport (a dialog's backdrop).
  */
 async function centre(region: Locator): Promise<void> {
   // The bundled face must be drawn before a region is measured or captured.
   await region.page().evaluate(() => document.fonts.ready.then(() => undefined));
-  await region
-    .first()
-    .evaluate((element) => element.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await region.first().evaluate((element) => {
+    for (const other of document.querySelectorAll<HTMLElement>('body *')) {
+      if (other.contains(element) || element.contains(other)) continue;
+      const position = getComputedStyle(other).position;
+      if (position !== 'fixed' && position !== 'sticky') continue;
+      const bar = other.getBoundingClientRect();
+      if (bar.width >= innerWidth && bar.height >= innerHeight) continue;
+      other.style.visibility = 'hidden';
+    }
+    element.scrollIntoView({ block: 'center', behavior: 'instant' });
+  });
 }
 
 function baselineOf(component: string, file: string): string[] {
