@@ -27,7 +27,7 @@ import {
 import { googleNotice } from '../../services/google-notice';
 import { sanitiseReturnUrl } from '../../services/return-url';
 import { SessionService } from '../../services/session.service';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 
 type FieldName = 'email' | 'password';
 type View = 'form' | 'submitting' | 'error';

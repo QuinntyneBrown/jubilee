@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Run the admin application
+
+Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(member, "Member", "Uses the app")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(entra, "Microsoft Entra ID", "Staff directory - OpenID Connect provider with a second factor")
+Rel(staff, jubilee, "Works the queue, reports and featured businesses in the admin application", "HTTPS")
+Rel(member, jubilee, "Uses the app; an old /admin link shows the moved page", "HTTPS")
+Rel(staff, entra, "Signs in with a second factor at", "HTTPS")
+Rel(jubilee, entra, "Redirects to - exchanges the code with", "OpenID Connect")
+@enduml

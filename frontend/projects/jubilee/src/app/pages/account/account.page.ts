@@ -39,10 +39,10 @@ import {
 import { DeleteAccountDialog } from '../../dialogs/delete-account/delete-account.dialog';
 import { LeaveUnsavedDialog } from '../../dialogs/leave-unsaved/leave-unsaved.dialog';
 import { HasUnsavedChanges } from '../../guards/unsaved-changes.guard';
-import { LoadState, errorReference } from '../../services/load-state';
-import { clockTime, dayLabel, fullDate, monthYear } from '../../services/message-time';
+import { LoadState, errorReference } from 'api';
+import { clockTime, dayLabel, fullDate, monthYear } from 'api';
 import { SessionService } from '../../services/session.service';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 import { ACCOUNT_TABS } from './account-tabs';
 
 type FieldName = 'firstName' | 'lastName' | 'phone' | 'postalCode';

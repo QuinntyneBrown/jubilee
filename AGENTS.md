@@ -23,7 +23,7 @@ say so and propose the correction; do not work around it silently.
 ## Repository layout
 
 - `backend/` — .NET solution
-- `frontend/` — Angular workspace (`jubilee`, `marketing`, `api`, `components`)
+- `frontend/` — Angular workspace (`jubilee`, `marketing`, `admin`, `api`, `components`)
 - `e2e/` — Playwright suite
 - `docs/assets/` — the logo (`jubilee-icon.svg`) and other images the docs share
 - `docs/mocks/` — static design reference (the source of truth for the UI)
@@ -80,7 +80,8 @@ jubilee/
 │       │   ├── api/
 │       │   └── models/
 │       ├── components/src/lib/        every `jb-*` presentation component, one folder each, plus `styles/`
-│       └── marketing/src/app/         the marketing site: one page, one folder per section
+│       ├── marketing/src/app/         the marketing site: one page, one folder per section
+│       └── admin/src/app/             the admin application: the verification team's screens (ADR 0040)
 ├── e2e/
 │   ├── playwright.config.ts
 │   ├── fixtures/                      `jb-test.ts`, `routes.ts`, data fixtures
@@ -128,10 +129,11 @@ adding coverage; `pwsh eng/Test-Backend.ps1` runs the suite as CI does.
 
 ## Frontend architecture
 
-Workspace has four projects under `frontend/projects/`: `jubilee` (the app), `marketing` (the
-public marketing site: one static page, no router, session or API; ADR 0013), `api` (service
-contracts, implementations, view models, pure helpers) and `components` (`jb-*` UI atoms, the
-design system).
+Workspace has five projects under `frontend/projects/`: `jubilee` (the app), `marketing` (the
+public marketing site: one static page, no router, session or API; ADR 0013), `admin` (the admin
+application at `admin.jubilee.to`: staff sign-in and the verification team's screens, with a staff
+session of its own; ADR 0040), `api` (service contracts, implementations, view models, pure
+helpers) and `components` (`jb-*` UI atoms, the design system).
 
 ### Conventions enforced across the codebase
 
@@ -140,7 +142,7 @@ design system).
   husky pre-commit hook fixes staged frontend files.
 - Component selectors use `jb-*`; TypeScript class, file, and folder names omit the `Jb` prefix.
 - **Presentation lives in `components` only** (ADR 0035). Every presentation component is built
-  in the `components` library and imported by `jubilee` and `marketing`. An application project
+  in the `components` library and imported by `jubilee`, `marketing` and `admin`. An application project
   declares pages, dialogs and its root as containers that compose `jb-*` components; it declares
   no presentation component, no hand-written button, field, alert or dialog frame, no inline
   `style` and no stylesheet. The only classes an application template writes are the layout and

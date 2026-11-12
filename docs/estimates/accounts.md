@@ -13,6 +13,7 @@
 | manage-session | 5 days | 65% |
 | reset-password | 4 days | 90% |
 | sign-in | 4 days | 90% |
+| sign-in-as-staff | 5 days | 90% |
 
 ## Not yet built (journey 4)
 

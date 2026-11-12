@@ -676,6 +676,24 @@ public sealed class MemberSessionConfiguration : IEntityTypeConfiguration<Member
         builder.Property(s => s.KeyHash).HasMaxLength(64).IsRequired();
         builder.HasIndex(s => s.KeyHash).IsUnique();
         builder.HasIndex(s => s.MemberId);
+        builder.Property(s => s.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.HasIndex(s => s.StaffMemberId);
+    }
+}
+
+public sealed class StaffMemberConfiguration : IEntityTypeConfiguration<StaffMember>
+{
+    public void Configure(EntityTypeBuilder<StaffMember> builder)
+    {
+        builder.ToTable("StaffMembers");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.Email).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.HasIndex(s => s.Email).IsUnique();
+        builder.Property(s => s.TenantId).HasMaxLength(64);
+        builder.Property(s => s.ObjectId).HasMaxLength(64);
+        builder.HasIndex(s => new { s.TenantId, s.ObjectId }).IsUnique().HasFilter("[ObjectId] IS NOT NULL");
+        builder.Ignore(s => s.IsBound);
     }
 }
 

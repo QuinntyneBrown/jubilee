@@ -5,6 +5,7 @@ using Jubilee.Application.Directory;
 using Jubilee.Infrastructure.Persistence;
 using Jubilee.Tests.Shared;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,15 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
 
     public FakeGoogle Google { get; } = new();
 
+    /// <summary>Test-only: the caller's address for one request (TestServer has none of its own).</summary>
+    public const string RemoteAddressHeader = "X-Test-Remote-Address";
+
+    /// <summary>The shared secret of the admin host's proxy in these tests (ADR 0040).</summary>
+    public const string StaffProxyKey = "test-staff-proxy-key";
+
+    /// <summary>The staff directory (Entra ID) staff sign in at (L2-189).</summary>
+    public FakeStaffDirectory StaffDirectory { get; } = new();
+
     /// <summary>The maintenance switch. Off at the start of every test; <see cref="Reset"/> turns it off.</summary>
     public FakeMaintenance Maintenance { get; } = new();
 
@@ -55,9 +65,13 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("RateLimits:ReferenceLinksPerMinute", "100000");
         builder.UseSetting("Email:WebhookSecret", "test-webhook-secret");
         builder.UseSetting("App:PublicBaseUrl", "https://jubilee.test");
+        builder.UseSetting("StaffSignIn:PublicBaseUrl", "https://admin.jubilee.test");
+        builder.UseSetting("StaffAccess:AllowedNetworks", "127.0.0.1, ::1, 10.0.0.0/8, 2001:db8::/32");
+        builder.UseSetting("StaffAccess:ProxyKey", StaffProxyKey);
         ConfigureSettings(builder);
         builder.ConfigureServices(services =>
         {
+            services.AddSingleton<Microsoft.AspNetCore.Hosting.IStartupFilter, RemoteAddressStartupFilter>();
             services.RemoveAll<TimeProvider>();
             services.AddSingleton<TimeProvider>(_clock);
             services
@@ -76,6 +90,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             services.AddSingleton<Jubilee.Application.Maintenance.IMaintenanceState>(Maintenance);
             services.RemoveAll<Jubilee.Application.Abstractions.IMediaStore>();
             services.AddSingleton<Jubilee.Application.Abstractions.IMediaStore>(Media);
+            services.RemoveAll<Jubilee.Application.Staff.IStaffIdentityClient>();
+            services.AddSingleton<Jubilee.Application.Staff.IStaffIdentityClient>(StaffDirectory);
             services.RemoveAll<Jubilee.Application.Accounts.IEmailSender>();
             services.AddSingleton<Jubilee.Application.Accounts.IEmailSender>(Emails);
             services.RemoveAll<Jubilee.Application.Accounts.IBreachedPasswordChecker>();
@@ -100,6 +116,14 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     /// <summary>A client that keeps cookies but does not follow redirects, for the Google round trip.</summary>
     public HttpClient CreateNoRedirectClient() => CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
+    /// <summary>
+    /// A client over <c>https://localhost</c> that keeps cookies, copies the anti-CSRF cookie into its
+    /// header like the admin application, and does not follow redirects: the staff cookie is a
+    /// <c>__Host-</c> cookie, which is only kept over HTTPS.
+    /// </summary>
+    public HttpClient CreateHttpsClient() => CreateDefaultClient(
+        new Uri("https://localhost"), new CsrfCopyingHandler(), new Microsoft.AspNetCore.Mvc.Testing.Handlers.CookieContainerHandler());
+
     public HttpClient CreateMemberClient(string name = "Joanna Adeyemi", string? subject = null, string? role = null)
     {
         var client = CreateClient();
@@ -118,6 +142,13 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     }
 
     /// <summary>Runs <paramref name="work"/> against the database in its own scope.</summary>
+    public async Task<T> Query<T>(Func<AppDbContext, Task<T>> query)
+    {
+        T result = default!;
+        await WithDb(async db => result = await query(db));
+        return result;
+    }
+
     public async Task WithDb(Func<AppDbContext, Task> work)
     {
         using var scope = Services.CreateScope();
@@ -177,6 +208,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.OutboxMessages);
             db.RemoveRange(db.Sessions);
             db.RemoveRange(db.SignInFailures);
+            db.RemoveRange(db.StaffMembers);
             db.RemoveRange(db.LinkTokens);
             db.RemoveRange(db.PasswordResetRequests);
             db.RemoveRange(db.Members);
@@ -223,4 +255,24 @@ public static class JsonElementExtensions
 {
     public static string[] Slugs(this JsonElement array) =>
         [.. array.EnumerateArray().Select(e => e.GetProperty("slug").GetString()!)];
+}
+
+/// <summary>
+/// Test-only: gives each request the connection address a real server would, 127.0.0.1 (the loopback
+/// proxy) unless <see cref="JubileeApiFactory.RemoteAddressHeader"/> names another. Runs before the API's pipeline.
+/// </summary>
+internal sealed class RemoteAddressStartupFilter : Microsoft.AspNetCore.Hosting.IStartupFilter
+{
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+    {
+        app.Use((context, nextMiddleware) =>
+        {
+            context.Connection.RemoteIpAddress = context.Request.Headers.TryGetValue(JubileeApiFactory.RemoteAddressHeader, out var value)
+                ? System.Net.IPAddress.Parse(value.ToString())
+                : System.Net.IPAddress.Loopback;
+            context.Request.Headers.Remove(JubileeApiFactory.RemoteAddressHeader);
+            return nextMiddleware(context);
+        });
+        next(app);
+    };
 }

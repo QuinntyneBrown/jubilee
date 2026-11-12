@@ -50,7 +50,7 @@ does not take payment; members pay the business directly.
 | Part | Technology | Responsibility |
 |---|---|---|
 | `backend/` | .NET 10, ASP.NET Core, EF Core, MediatR | Accounts, listings, requests, messaging, notifications and verification |
-| `frontend/` | Angular 22, Angular CDK | The app (`jubilee`), the marketing site (`marketing`), service contracts (`api`) and `jb-*` UI atoms (`components`) |
+| `frontend/` | Angular 22, Angular CDK | The app (`jubilee`), the marketing site (`marketing`), the admin application (`admin`), service contracts (`api`) and `jb-*` UI atoms (`components`) |
 | `e2e/` | Playwright (Chromium) | Behaviour tests against the app, with every `/api` request answered from a recording |
 | `docs/` | Markdown, HTML, PlantUML | Requirements, mocks, design system, detailed designs and architecture decisions |
 
@@ -138,6 +138,19 @@ pitch film from `docs/videos/` and serves on `http://localhost:4201`:
 npm run start:marketing --prefix frontend
 ```
 
+### Admin application
+
+The verification team's screens are a third application, served on `http://localhost:4202` with
+`/api` sent to the local API (ADR 0040). Locally, staff sign-in uses the development identity,
+which signs in the given address with a second factor; `-StaffEmail` gives it both staff roles:
+
+```shell
+pwsh eng/Start-E2eApi.ps1 -StaffEmail miriam@jubilee.to
+npm run start:admin --prefix frontend
+```
+
+The staff endpoints answer the loopback addresses only, so open it on the same machine.
+
 ### Running against SQL Server
 
 Set the connection string `ConnectionStrings:Jubilee` and run `pwsh eng/Start-FreshStack.ps1`. It
@@ -200,7 +213,7 @@ jubilee/
 │   ├── src/                Jubilee.Domain, .Application, .Infrastructure, .Api, .Worker, .Cli
 │   └── tests/              one test project per source project
 ├── frontend/               Angular workspace
-│   └── projects/           jubilee (the app), marketing, api (service contracts), components (jb-* atoms)
+│   └── projects/           jubilee (the app), marketing, admin, api (service contracts), components (jb-* atoms)
 ├── e2e/                    Playwright suite: fixtures, page objects, specs
 ├── eng/                    local engineering scripts
 ├── tools/                  scripts that build the narrated videos

@@ -49,7 +49,7 @@ import {
 } from 'components';
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
-import { clockTime, newKey } from '../../services/message-time';
+import { clockTime, newKey } from 'api';
 
 type FieldName = 'name' | 'tagline' | 'categorySlug' | 'church' | 'pastorEmail' | 'agreed';
 

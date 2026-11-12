@@ -1,0 +1,63 @@
+import { DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { AdminBar, SkipLink, StaffChromeMember, ToastRegion } from 'components';
+import { filter, map, startWith } from 'rxjs';
+import { AdminRouteData } from './app.routes';
+import { AdminOnlyPage } from './pages/admin-only/admin-only.page';
+import { StaffSessionService } from './services/staff-session.service';
+
+const BARE: AdminRouteData = { shell: 'bare', page: '' };
+
+/**
+ * The root of the admin application (L2-188): the skip link, the admin bar and the routed screen
+ * in `main`. A screen of the verification team shows "Nothing here for your role" in its place to
+ * a staff member without the verifier role, and is never loaded for them (L2-188 AC4).
+ */
+@Component({
+  selector: 'jb-root',
+  imports: [RouterOutlet, SkipLink, AdminBar, ToastRegion, AdminOnlyPage],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './app.html',
+})
+export class App {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly document = inject(DOCUMENT);
+  private readonly session = inject(StaffSessionService);
+
+  /** The data of the deepest activated route, read again after every navigation. */
+  protected readonly routeData = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      startWith(null),
+      map(() => {
+        let route = this.route.snapshot;
+        while (route.firstChild) route = route.firstChild;
+        const value = route.data as Partial<AdminRouteData>;
+        return value.shell ? (value as AdminRouteData) : BARE;
+      }),
+    ),
+    { initialValue: BARE },
+  );
+
+  protected readonly staff = computed<StaffChromeMember | null>(() => this.session.staff());
+
+  /** A screen of the verification team, opened by a staff member without the verifier role. */
+  protected readonly notForRole = computed(
+    () =>
+      this.routeData().verifier === true &&
+      !(this.session.staff()?.roles.includes('verifier') ?? false),
+  );
+
+  constructor() {
+    effect(() => {
+      this.document.body.dataset['page'] = this.notForRole() ? 'admin-only' : this.routeData().page;
+    });
+  }
+
+  protected signOut(): void {
+    this.session.signOut().subscribe(() => void this.router.navigate(['/signed-out']));
+  }
+}

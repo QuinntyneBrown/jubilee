@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { SEARCH_API, SearchResultKind, SearchResults, SearchStart } from 'api';
 import { Subscription } from 'rxjs';
-import { errorReference } from './load-state';
+import { errorReference } from 'api';
 
 export type SearchState =
   | { status: 'loading'; query: string }

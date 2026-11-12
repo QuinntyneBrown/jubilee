@@ -78,6 +78,15 @@ public static class DependencyInjection
         services.AddHttpClient<Application.Accounts.IBreachedPasswordChecker, Accounts.HaveIBeenPwnedChecker>();
         services.AddHttpClient<Application.Accounts.IBotChallengeVerifier, Accounts.TurnstileBotChallengeVerifier>();
         services.AddHttpClient<Application.Accounts.IGoogleIdentityClient, Accounts.GoogleIdentityClient>();
+        // The staff directory (ADR 0040): Entra ID, or the development identity (refused outside Development by the API).
+        if (string.Equals(configuration["StaffSignIn:Provider"], "Development", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddSingleton<Application.Staff.IStaffIdentityClient, Accounts.DevelopmentStaffIdentityClient>();
+        }
+        else
+        {
+            services.AddHttpClient<Application.Staff.IStaffIdentityClient, Accounts.EntraStaffIdentityClient>();
+        }
         // The e-mail provider when it is configured (ADR 0038); otherwise nothing leaves the system (L2-179 AC7).
         if (string.IsNullOrWhiteSpace(configuration["Email:ConnectionString"]))
         {

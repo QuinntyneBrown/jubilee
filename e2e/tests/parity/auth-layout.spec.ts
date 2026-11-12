@@ -1,10 +1,12 @@
 import { parity } from '../../fixtures/parity';
+import { AdminSignInPage } from '../../pages/admin-sign-in.page';
 import { ForgotPasswordPage } from '../../pages/forgot-password.page';
 import { JoinSuccessScreen } from '../../pages/join.page';
 import { SessionExpiredPage, SignInErrorScreen, SignInPage } from '../../pages/sign-in.page';
 
 // jb-auth-layout: the centred card of the bare pages, and the split frame of Log in and Sign up
-// with its brand panel, its card under 1024 px and the link under the form (jb-auth-link).
+// with its brand panel (in the app's words, and in the admin application's), its card under
+// 1024 px and the link under the form (jb-auth-link).
 parity('auth-layout', {
   cases: [
     {
@@ -24,6 +26,13 @@ parity('auth-layout', {
       route: 'sign-in',
       screen: (page) => new SignInPage(page),
       region: (screen: SignInPage) => screen.brandPanel,
+      widths: [1280],
+    },
+    {
+      name: 'admin-split-panel',
+      route: 'admin-sign-in',
+      screen: (page) => new AdminSignInPage(page),
+      region: (screen: AdminSignInPage) => screen.brandPanel,
       widths: [1280],
     },
     {

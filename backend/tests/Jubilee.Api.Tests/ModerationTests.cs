@@ -29,7 +29,7 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
 
     private HttpClient AsTrevor() => _factory.CreateMemberClient("Trevor Chew", Trevor);
 
-    private HttpClient AsMiriam() => _factory.CreateMemberClient("Miriam Castillo", "member|miriam", "verifier");
+    private HttpClient AsMiriam() => _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "verifier");
 
     private static async Task<JsonElement> Json(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
@@ -300,14 +300,14 @@ public sealed class ModerationTests : IClassFixture<JubileeApiFactory>, IAsyncLi
     public async Task L2_105_AC4_a_report_open_for_more_than_one_business_day_is_overdue()
     {
         var id = await ReportedListing();
-        var miriam = AsMiriam();
 
-        // Tuesday 15:00 + 1 business day = Wednesday 15:00.
+        // Tuesday 15:00 + 1 business day = Wednesday 15:00. A fresh staff session each time: an idle one ends after 30 minutes.
         _factory.Clock.Advance(TimeSpan.FromHours(23));
-        Assert.False(Assert.Single((await Json(await miriam.GetAsync("/api/admin/reports"))).GetProperty("items").EnumerateArray())
+        Assert.False(Assert.Single((await Json(await AsMiriam().GetAsync("/api/admin/reports"))).GetProperty("items").EnumerateArray())
             .GetProperty("overdue").GetBoolean());
 
         _factory.Clock.Advance(TimeSpan.FromHours(2));
+        var miriam = AsMiriam();
         Assert.True(Assert.Single((await Json(await miriam.GetAsync("/api/admin/reports"))).GetProperty("items").EnumerateArray())
             .GetProperty("overdue").GetBoolean());
         Assert.Equal(id, Assert.Single((await Json(await miriam.GetAsync("/api/admin/reports"))).GetProperty("items").EnumerateArray())

@@ -1,5 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 import { stubAdmin } from './admin';
+import { miriam, type StaffMember } from './staff';
 
 // A stand-in for the verification team's reports and featured businesses (L2-105, L2-106). The
 // requests the app makes are kept so a test can prove what it sent (ADR 0009).
@@ -57,6 +58,7 @@ const CANDIDATES = [
 export async function stubModeration(
   page: Page,
   initial: Partial<FakeModeration> = {},
+  staff: StaffMember = miriam,
 ): Promise<FakeModeration> {
   const fake: FakeModeration = {
     reports: 'ok',
@@ -70,7 +72,7 @@ export async function stubModeration(
     saved: [],
     ...initial,
   };
-  await stubAdmin(page);
+  await stubAdmin(page, {}, staff);
 
   const detail = (id: string) => {
     const conversation = id === CONVERSATION_REPORT_ID;

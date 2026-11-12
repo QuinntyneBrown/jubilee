@@ -3,8 +3,8 @@ import { RouterLink } from '@angular/router';
 import { HELP_API } from 'api';
 import { Button, StatusPage } from 'components';
 import { NavigationTrail } from '../../services/navigation-trail';
-import { newKey } from '../../services/message-time';
-import { ToastService } from '../../toasts/toast.service';
+import { newKey } from 'api';
+import { ToastService } from 'components';
 
 /**
  * The forbidden page (L2-098 AC1): signed in, but not allowed to see this area. "Ask for access"

@@ -7,7 +7,7 @@ import {
 import { inject } from '@angular/core';
 import { OWN_OFFLINE_FALLBACK, OWN_RETRY } from 'api';
 import { Observable, defer, finalize, retry, tap, throwError, timer } from 'rxjs';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 import { ConnectionService } from './connection.service';
 import { isBackgroundRead, OfflineNavigation } from './offline-navigation';
 import { timings } from './timings';

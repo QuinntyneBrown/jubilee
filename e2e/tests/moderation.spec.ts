@@ -14,16 +14,13 @@ test.describe('handle reports (L2-105)', () => {
     const reports = new AdminReportsPage(page);
     await reports.setWidth(1280);
     const fake = await stubModeration(page);
-    await jb.goto('/admin/reports');
+    await jb.gotoAdmin('/reports');
 
     await expect(reports.subtitle).toHaveText('2 unresolved · 1 overdue');
     await expect(reports.rows).toHaveCount(2);
     await expect(reports.row('Misleading')).toContainText('Overdue');
     await expect(reports.row('Pressure to pay')).toContainText('conversation');
-    await expect(reports.teamNav.getByRole('link', { name: 'Reports' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
+    await expect(reports.navLink('Reports')).toHaveAttribute('aria-current', 'page');
 
     await reports.filter('Resolved').click();
     await expect(reports.filter('Resolved')).toHaveAttribute('aria-selected', 'true');
@@ -34,7 +31,7 @@ test.describe('handle reports (L2-105)', () => {
     const reports = new AdminReportsPage(page);
     await reports.setWidth(1280);
     await stubModeration(page, { reports: 'empty' });
-    await jb.goto('/admin/reports');
+    await jb.gotoAdmin('/reports');
 
     await expect(reports.empty).toContainText('No reports to review');
     await expect(reports.subtitle).toHaveText('Nothing waiting');
@@ -44,7 +41,7 @@ test.describe('handle reports (L2-105)', () => {
     const reports = new AdminReportsPage(page);
     await reports.setWidth(1280);
     await stubModeration(page, { reports: 'fails' });
-    await jb.goto('/admin/reports');
+    await jb.gotoAdmin('/reports');
 
     await expect(reports.empty).toContainText('We couldn’t load the reports');
     await expect(reports.reference).toHaveText('JB-ADM-511');
@@ -57,7 +54,7 @@ test.describe('handle reports (L2-105)', () => {
     const report = new AdminReportPage(page);
     await report.setWidth(1280);
     const fake = await stubModeration(page);
-    await jb.goto(`/admin/reports/${REPORT_ID}`);
+    await jb.gotoAdmin(`/reports/${REPORT_ID}`);
 
     await expect(report.heading).toHaveText('Report about Luzandre.com');
     await expect(report.subtitle).toContainText('In review');
@@ -74,7 +71,7 @@ test.describe('handle reports (L2-105)', () => {
     const report = new AdminReportPage(page);
     await report.setWidth(1280);
     await stubModeration(page);
-    await jb.goto(`/admin/reports/${CONVERSATION_REPORT_ID}`);
+    await jb.gotoAdmin(`/reports/${CONVERSATION_REPORT_ID}`);
 
     await expect(report.conversation).toContainText('Send the money to my cousin first.');
     await expect(report.conversation).toContainText('Your access is recorded');
@@ -88,7 +85,7 @@ test.describe('handle reports (L2-105)', () => {
     const dialog = new ReportActionDialog(page);
     await report.setWidth(1280);
     const fake = await stubModeration(page);
-    await jb.goto(`/admin/reports/${REPORT_ID}`);
+    await jb.gotoAdmin(`/reports/${REPORT_ID}`);
 
     await report.action('Dismiss report').click();
     await dialog.confirm('Dismiss report').click();
@@ -119,7 +116,7 @@ test.describe('handle reports (L2-105)', () => {
     const dialog = new ReportActionDialog(page);
     await report.setWidth(1280);
     const fake = await stubModeration(page);
-    await jb.goto(`/admin/reports/${REPORT_ID}`);
+    await jb.gotoAdmin(`/reports/${REPORT_ID}`);
 
     await report.action('Message owner').click();
     await dialog.note.fill('Asked them to fix the claim.');
@@ -141,7 +138,7 @@ test.describe('handle reports (L2-105)', () => {
     const dialog = new ReportActionDialog(page);
     await report.setWidth(1280);
     const fake = await stubModeration(page);
-    await jb.goto(`/admin/reports/${REPORT_ID}`);
+    await jb.gotoAdmin(`/reports/${REPORT_ID}`);
 
     await report.action('Place on hold').click();
     await dialog.note.fill('Pausing while we ask the owner.');
@@ -162,7 +159,7 @@ test.describe('handle reports (L2-105)', () => {
     const dialog = new ReportActionDialog(page);
     await report.setWidth(1280);
     const fake = await stubModeration(page);
-    await jb.goto(`/admin/reports/${REPORT_ID}`);
+    await jb.gotoAdmin(`/reports/${REPORT_ID}`);
 
     await report.action('Remove listing').click();
     await expect(dialog.title).toHaveText('Remove Luzandre.com?');
@@ -183,7 +180,7 @@ test.describe('feature businesses (L2-106)', () => {
     const toasts = new Toasts(page);
     await featured.setWidth(1280);
     const fake = await stubModeration(page);
-    await jb.goto('/admin/featured');
+    await jb.gotoAdmin('/featured');
 
     await featured.search.fill('financial');
     await featured.add('Legacy Financial').click();
@@ -205,7 +202,7 @@ test.describe('feature businesses (L2-106)', () => {
     const featured = new AdminFeaturedPage(page);
     await featured.setWidth(1280);
     await stubModeration(page);
-    await jb.goto('/admin/featured');
+    await jb.gotoAdmin('/featured');
 
     for (const name of ['Legacy', 'WaterWorks', 'Flower', 'Luzandre', 'Laurent']) {
       await featured.search.fill(name);
@@ -226,7 +223,7 @@ test.describe('feature businesses (L2-106)', () => {
     const featured = new AdminFeaturedPage(page);
     await featured.setWidth(1280);
     await stubModeration(page, { save: 'overlaps' });
-    await jb.goto('/admin/featured');
+    await jb.gotoAdmin('/featured');
 
     await featured.search.fill('Legacy');
     await featured.add('Legacy Financial').click();
@@ -240,7 +237,7 @@ test.describe('feature businesses (L2-106)', () => {
     const featured = new AdminFeaturedPage(page);
     await featured.setWidth(1280);
     await stubModeration(page, { featured: 'fails' });
-    await jb.goto('/admin/featured');
+    await jb.gotoAdmin('/featured');
 
     await expect(featured.reference).toHaveText('JB-ADM-513');
   });

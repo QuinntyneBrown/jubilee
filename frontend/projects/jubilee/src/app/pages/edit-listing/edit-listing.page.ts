@@ -30,7 +30,7 @@ import {
   WorkspaceHeader,
   MediaTile,
 } from 'components';
-import { LoadState, errorReference } from '../../services/load-state';
+import { LoadState, errorReference } from 'api';
 
 export const MAX_NAME = 80;
 export const MAX_TAGLINE = 90;

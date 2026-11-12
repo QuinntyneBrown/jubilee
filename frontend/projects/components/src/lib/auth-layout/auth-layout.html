@@ -1,9 +1,9 @@
 @if (split()) {
-  <aside class="auth-layout__panel" aria-label="About Jubilee">
-    <a jb-lockup size="xl" onInk routerLink="/welcome" aria-label="Jubilee home"></a>
+  <aside class="auth-layout__panel" [attr.aria-label]="panelLabel()">
+    <a jb-lockup size="xl" onInk [routerLink]="homeLink()" [attr.aria-label]="homeLabel()"></a>
     <div class="auth-layout__pitch">
-      <p class="auth-layout__headline">Hire, shop and book with your church family.</p>
-      <p class="auth-layout__lead">Christian-owned businesses across Toronto, all in one place.</p>
+      <p class="auth-layout__headline">{{ panelHeadline() }}</p>
+      <p class="auth-layout__lead">{{ panelLead() }}</p>
     </div>
     <p class="auth-layout__legal">© Jubilee · Toronto</p>
   </aside>
@@ -13,8 +13,8 @@
     jb-lockup
     class="auth-brand"
     [size]="split() ? 'lg' : 'md'"
-    routerLink="/welcome"
-    aria-label="Jubilee home"
+    [routerLink]="homeLink()"
+    [attr.aria-label]="homeLabel()"
   ></a>
   <div class="auth-card">
     @if (heading(); as heading) {

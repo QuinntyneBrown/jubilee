@@ -26,9 +26,11 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
     [GeneratedRegex(@"/reference/([0-9a-f]+)")]
     private static partial Regex TokenInMail();
 
-    private HttpClient Esther => _factory.CreateMemberClient("Esther Mensah", "member|esther", "verifier");
+    // A fresh staff session each time: a staff session ends after 30 minutes without a request (L2-190),
+    // and these tests move the clock by days.
+    private HttpClient Esther => _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
 
-    private HttpClient Admin => _factory.CreateMemberClient("Ada Admin", "member|ada", "admin");
+    private HttpClient Admin => _factory.CreateStaffClient("Ada Admin", "member|ada", "admin");
 
     private sealed record Submitted(Guid Id, HttpClient Owner, string Token, string OwnerEmail);
 
@@ -106,7 +108,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
 
     // L2-098 AC1, L2-143 AC1
     [Fact]
-    public async Task L2_098_AC1_a_member_without_the_verifier_role_gets_403_from_every_admin_endpoint()
+    public async Task L2_098_AC1_a_member_session_gets_403_from_every_admin_endpoint()
     {
         var listing = await Ready();
         var member = _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna");
@@ -122,7 +124,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         };
 
         Assert.All(responses, r => Assert.Equal(HttpStatusCode.Forbidden, r.StatusCode));
-        Assert.Equal("FORBIDDEN", (await Json(responses[0])).GetProperty("code").GetString());
+        Assert.Equal("STAFF_SESSION_REQUIRED", (await Json(responses[0])).GetProperty("code").GetString());
         Assert.Equal(ListingStage.ReadyToReview, await StageOf(listing.Id));
     }
 
@@ -144,31 +146,20 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         Assert.Contains("/api/admin/verifications", entry.Message);
     }
 
-    // L2-098 AC3
+    // L2-098 AC3, L2-190 AC7
     [Fact]
-    public async Task L2_098_AC3_the_top_bar_counts_the_listings_ready_to_review_for_the_team_only()
+    public async Task L2_098_AC3_the_staff_session_counts_the_listings_ready_to_review()
     {
         await Ready();
         await Ready("Second Shop", "Ruth");
         await Submit("Waiting Shop", "Mary");
 
-        var team = await _factory.GetJson("/api/me/navigation", Esther);
-        var member = await _factory.GetJson("/api/me/navigation", _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna"));
+        var session = await _factory.GetJson("/api/staff/session", Esther);
 
-        Assert.True(team.GetProperty("isVerifier").GetBoolean());
-        Assert.Equal(2, team.GetProperty("verificationCount").GetInt32());
-        Assert.False(member.GetProperty("isVerifier").GetBoolean());
-        Assert.Equal(0, member.GetProperty("verificationCount").GetInt32());
-    }
-
-    [Fact]
-    public async Task L2_098_AC3_the_session_says_whether_the_member_is_on_the_team()
-    {
-        var team = await _factory.GetJson("/api/session", Esther);
-        var member = await _factory.GetJson("/api/session", _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna"));
-
-        Assert.True(team.GetProperty("isVerifier").GetBoolean());
-        Assert.False(member.GetProperty("isVerifier").GetBoolean());
+        Assert.Equal("Esther Mensah", session.GetProperty("displayName").GetString());
+        Assert.Equal("EM", session.GetProperty("initials").GetString());
+        Assert.Equal(["verifier"], session.GetProperty("roles").EnumerateArray().Select(r => r.GetString()));
+        Assert.Equal(2, session.GetProperty("verificationCount").GetInt32());
     }
 
     // L2-098 AC5
@@ -182,7 +173,9 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
             db.Members.Add(owner);
             await db.SaveChangesAsync();
         });
-        var esther = _factory.CreateMemberClient("Esther Mensah", owner.Id.ToString(), "verifier");
+        var esther = _factory.CreateMemberClient("Esther Mensah", owner.Id.ToString());
+        // Her staff account's e-mail matches her confirmed member e-mail, so her staff session is her (ADR 0040).
+        var staff = _factory.CreateStaffClient("Esther Mensah", owner.Id.ToString(), "verifier");
         var body = new Dictionary<string, object?>
         {
             ["kind"] = "products", ["name"] = "Esther Co", ["tagline"] = "Gifts", ["categorySlug"] = "shops", ["highlight"] = null, ["place"] = null,
@@ -198,9 +191,9 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
             await db.SaveChangesAsync();
         });
 
-        var approve = await Post(esther, id, "approve");
-        var changes = await Post(esther, id, "request-changes", new { areas = new[] { "tagline" }, message = "x" });
-        var review = await esther.GetAsync($"/api/admin/verifications/{id}");
+        var approve = await Post(staff, id, "approve");
+        var changes = await Post(staff, id, "request-changes", new { areas = new[] { "tagline" }, message = "x" });
+        var review = await staff.GetAsync($"/api/admin/verifications/{id}");
 
         Assert.Equal(HttpStatusCode.Forbidden, approve.StatusCode);
         Assert.Equal("OWN_LISTING", (await Json(approve)).GetProperty("code").GetString());
@@ -324,9 +317,10 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
     [Fact]
     public async Task L2_099_AC6_a_queue_that_cannot_load_carries_the_reference_JB_ADM_503()
     {
+        var esther = Esther;
         _factory.Database.Unavailable = true;
 
-        var response = await Esther.GetAsync("/api/admin/verifications");
+        var response = await esther.GetAsync("/api/admin/verifications");
 
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         Assert.Equal("JB-ADM-503", (await Json(response)).GetProperty("reference").GetString());
@@ -434,9 +428,10 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
     public async Task L2_100_AC6_a_review_that_cannot_load_carries_the_reference_JB_ADM_502()
     {
         var listing = await Ready();
+        var esther = Esther;
         _factory.Database.Unavailable = true;
 
-        var response = await Esther.GetAsync($"/api/admin/verifications/{listing.Id}");
+        var response = await esther.GetAsync($"/api/admin/verifications/{listing.Id}");
 
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         Assert.Equal("JB-ADM-502", (await Json(response)).GetProperty("reference").GetString());
@@ -454,7 +449,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
     {
         var listing = await Ready();
         await TickAll(listing.Id);
-        var other = _factory.CreateMemberClient("Peter Osei", "member|peter", "verifier");
+        var other = _factory.CreateStaffClient("Peter Osei", "member|peter", "verifier");
 
         var first = await Post(Esther, listing.Id, "approve");
         var second = await Post(other, listing.Id, "request-changes", new { areas = new[] { "tagline" }, message = "x" });
@@ -752,7 +747,7 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         await TickAll(one.Id);
         await Post(Esther, one.Id, "approve");
         _factory.Clock.Advance(TimeSpan.FromDays(3));
-        await Post(_factory.CreateMemberClient("Peter Osei", "member|peter", "verifier"), two.Id, "request-changes", new { areas = new[] { "photos" }, message = "Photos." });
+        await Post(_factory.CreateStaffClient("Peter Osei", "member|peter", "verifier"), two.Id, "request-changes", new { areas = new[] { "photos" }, message = "Photos." });
 
         var byActor = await _factory.GetJson("/api/admin/audit?actor=member%7Cesther", Admin);
         var byTarget = await _factory.GetJson($"/api/admin/audit?target={two.Id}", Admin);
@@ -783,7 +778,10 @@ public sealed partial class VerificationTests : IClassFixture<JubileeApiFactory>
         var delete = await Admin.DeleteAsync($"/api/admin/audit/{id}");
         var post = await Admin.PostAsJsonAsync("/api/admin/audit", new { });
 
-        Assert.All([put, delete, post], r => Assert.True(r.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.MethodNotAllowed));
+        // No such operation exists. An unmatched route falls to the members' fallback policy, which a
+        // staff session never satisfies (L2-191 AC4), so it may also be refused as unauthenticated.
+        Assert.All([put, delete, post], r => Assert.True(
+            r.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.MethodNotAllowed or HttpStatusCode.Unauthorized));
         Assert.Single(await Audit("listing.approved"));
     }
 

@@ -4,7 +4,7 @@ import { EVENTS_API, NOTIFICATIONS_API, NotificationItem, NotificationKind } fro
 import { Subject, Subscription } from 'rxjs';
 import { NavigationStore } from './navigation.store';
 import { SessionService } from './session.service';
-import { ToastService } from '../toasts/toast.service';
+import { ToastService } from 'components';
 
 const OPEN: Record<NotificationKind, string> = {
   message: 'Open conversation',

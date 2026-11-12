@@ -4,7 +4,8 @@ import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './moc
 import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
-import { esther, stubAdmin } from './admin';
+import { stubAdmin } from './admin';
+import { daniel, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
@@ -379,8 +380,12 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubAccountData(page);
     case 'data-download-unavailable':
       return stubAccountData(page, { download: 'unavailable' });
-    case 'forbidden':
-      return stubAdmin(page, {}, { ...esther, isVerifier: false });
+    case 'staff-signed-out':
+      return stubStaff(page, 'signed-out');
+    case 'staff-network-refused':
+      return stubStaff(page, 'network-refused');
+    case 'staff-admin-only':
+      return stubAdmin(page, {}, daniel);
     case 'reference':
       return stubReference(page);
     case 'reference-loading':

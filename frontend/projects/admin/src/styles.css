@@ -1,0 +1,11 @@
+/* Global styles are the shared foundations only: the tokens and the component kit
+   (projects/components/src/lib/styles, loaded from angular.json) plus the few rules below
+   that make Angular host elements invisible to the kit's layout. */
+jb-root {
+  display: contents;
+}
+
+/* A routed page is a block inside `main`, where the mocks have the page content directly. */
+.jb-page {
+  display: block;
+}

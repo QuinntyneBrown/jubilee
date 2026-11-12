@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CONTENT_API, ContentPage, ContentSlug, parseBody } from 'api';
 import { EmptyState, Icon, Button, Skeleton, Breadcrumb } from 'components';
-import { LoadState, errorReference } from '../../services/load-state';
+import { LoadState, errorReference } from 'api';
 
 /**
  * PolicyPage (L2-107 to L2-109): the statement of faith, terms of use and privacy notice, read

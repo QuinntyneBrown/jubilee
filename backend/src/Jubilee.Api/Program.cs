@@ -9,7 +9,29 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// The development staff identity signs anyone in with a second factor; it never runs outside Development (ADR 0040).
+if (string.Equals(builder.Configuration["StaffSignIn:Provider"], "Development", StringComparison.OrdinalIgnoreCase)
+    && !builder.Environment.IsDevelopment())
+{
+    throw new InvalidOperationException(
+        $"StaffSignIn:Provider=Development is only allowed in the Development environment, not {builder.Environment.EnvironmentName}.");
+}
+
 builder.Services.AddApplication();
+// The caller's address (ADR 0040): X-Forwarded-For is believed only from server.js on loopback, and
+// only its last entry, the one App Service's front end appended. ASPNETCORE_FORWARDEDHEADERS_ENABLED is
+// not used, because it trusts every proxy.
+builder.Services.Configure<Microsoft.AspNetCore.Builder.ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
+        | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    options.ForwardLimit = 1;
+    options.KnownProxies.Clear();
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Add(System.Net.IPAddress.Loopback);
+    options.KnownProxies.Add(System.Net.IPAddress.IPv6Loopback);
+});
+builder.Services.AddSingleton(StaffNetworks.From(builder.Configuration));
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddSingleton<Jubilee.Application.Messaging.IAttachmentLinks, Jubilee.Api.Controllers.AttachmentLinks>();
@@ -45,6 +67,15 @@ builder.Services
         options.Events.OnRedirectToAccessDenied = context => ProblemWriter.WriteAsync(
             context.HttpContext, StatusCodes.Status403Forbidden, "You can't do that.", code: "forbidden");
     });
+// The staff session of the admin application (ADR 0040): its own cookie, store and lifetime.
+builder.Services.AddSingleton<StaffTicketStore>();
+builder.Services.AddAuthentication().AddCookie(StaffSession.Scheme, StaffSession.Configure);
+builder.Services.AddOptions<CookieAuthenticationOptions>(StaffSession.Scheme)
+    .Configure<StaffTicketStore, TimeProvider>((options, store, time) =>
+    {
+        options.SessionStore = store;
+        options.TimeProvider = time;
+    });
 builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
     .Configure<DatabaseTicketStore, TimeProvider>((options, store, time) =>
     {
@@ -56,10 +87,13 @@ builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDef
 builder.Services.AddAuthorizationBuilder()
     .SetFallbackPolicy(new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
-        .Build());
+        .Build())
+    .AddStaffPolicies();
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+app.UseMiddleware<StaffProxyMiddleware>();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -74,6 +108,8 @@ if (!app.Environment.IsProduction())
 }
 
 app.UseRouting();
+// Staff endpoints answer only an allowed network, before any session is read (L2-192).
+app.UseMiddleware<StaffNetworkMiddleware>();
 app.UseAuthentication();
 app.UseRateLimiter();
 app.UseMiddleware<CsrfMiddleware>();

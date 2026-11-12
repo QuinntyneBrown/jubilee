@@ -23,6 +23,7 @@ something else: a new record supersedes it and both say so.
 | [0017](0017-order-request-decisions.md) | Order requests: delivery methods, server-computed amounts, no tax, stock checked at send | Accepted |
 | [0018](0018-listing-onboarding-decisions.md) | Listing onboarding: drafts, limit, submission flags, expiry | Accepted |
 | [0019](0019-church-reference-decisions.md) | Church reference: hashed links, owner-safe status, resend, remind, change | Accepted |
+| [0020](0020-verification-decisions.md) | Verification: the team, decisions, stages, overdue, checklist, retention and audit | Accepted, partly superseded by 0040 |
 | [0013](0013-server-side-sessions.md) | Server-side sessions in the database, sign-in throttling, drafts and the sign-in prompt | Accepted |
 | [0008](0008-frontend-file-per-type.md) | Frontend: one file per type, no single-file components (`templateUrl`, never `template`) | Accepted |
 | [0013](0013-marketing-site-application.md) | Marketing site: a second, static Angular application with editorial content and one `APP_URL` | Accepted |
@@ -33,6 +34,7 @@ something else: a new record supersedes it and both say so.
 | [0037](0037-google-sign-in-setup.md) | Google sign-in setup: one OAuth client, redirect URI from `App:PublicBaseUrl`, off and hidden without keys | Accepted |
 | [0038](0038-e-mail-delivery.md) | E-mail delivery: Azure Communication Services Email, one HTML layout rendered from the text | Accepted |
 | [0039](0039-finish-messaging-decisions.md) | Finish messaging: the conversation menu, photos shrunk on the device and renewed links, real-time arrival over the event stream, request cards, the away period | Accepted |
+| [0040](0040-separate-admin-application.md) | The admin application: a third Angular application, staff sessions through Entra ID with a proved second factor, a network allow-list at the API and the admin host | Accepted |
 
 ## Format
 

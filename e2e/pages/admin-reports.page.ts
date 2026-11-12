@@ -1,9 +1,9 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { ShellPage } from './shell.page';
+import { AdminShellPage } from './admin-shell.page';
 
-/** `/admin/reports`: the reports waiting for the verification team (L2-105). */
-export class AdminReportsPage extends ShellPage implements Screen {
+/** `/reports` of the admin application: the reports waiting for the verification team (L2-105). */
+export class AdminReportsPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly subtitle: Locator;
   readonly filters: Locator;
@@ -12,7 +12,6 @@ export class AdminReportsPage extends ShellPage implements Screen {
   readonly alert: Locator;
   readonly reference: Locator;
   readonly tryAgain: Locator;
-  readonly teamNav: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -24,7 +23,6 @@ export class AdminReportsPage extends ShellPage implements Screen {
     this.alert = this.main.getByRole('alert');
     this.reference = this.main.locator('code');
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
-    this.teamNav = this.main.getByRole('navigation', { name: 'Verification team' });
   }
 
   filter(name: string | RegExp): Locator {

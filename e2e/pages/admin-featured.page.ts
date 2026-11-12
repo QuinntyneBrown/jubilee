@@ -1,9 +1,9 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { ShellPage } from './shell.page';
+import { AdminShellPage } from './admin-shell.page';
 
-/** `/admin/featured`: choosing the businesses "Featured this week" (L2-106). */
-export class AdminFeaturedPage extends ShellPage implements Screen {
+/** `/featured` of the admin application: choosing the businesses "Featured this week" (L2-106). */
+export class AdminFeaturedPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly startDate: Locator;
   readonly chosen: Locator;

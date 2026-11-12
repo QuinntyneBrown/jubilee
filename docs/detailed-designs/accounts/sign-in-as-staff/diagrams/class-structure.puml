@@ -1,0 +1,84 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Sign in as staff
+
+enum StaffRoles <<flags>> {
+  None
+  Verifier
+  Admin
+}
+enum StaffSignInOutcome {
+  SignedIn
+  NoSecondFactor
+  NotStaff
+}
+enum SessionKind {
+  Member
+  Staff
+}
+class StaffMember {
+  +Guid Id
+  +string Email
+  +StaffRoles Roles
+  +string? TenantId
+  +string? ObjectId
+  +DateTimeOffset CreatedAt
+  +{static} Create(email: string, now: DateTimeOffset): StaffMember
+  +Grant(role: StaffRoles): void
+  +Revoke(role: StaffRoles): void
+  +BindTo(tenant: string, objectId: string): void
+}
+class StaffIdentity <<value object>> {
+  +string TenantId
+  +string ObjectId
+  +string Email
+  +string DisplayName
+  +string[] Methods
+}
+class MemberSession {
+  +Guid Id
+  +string KeyHash
+  +SessionKind Kind
+  +Guid? MemberId
+  +Guid? StaffMemberId
+  +byte[] Ticket
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset LastActivityAt
+  +DateTimeOffset? EndedAt
+}
+class SessionPolicy <<static>> {
+  +StaffAbsoluteLifetime = 8 h
+  +StaffIdleTimeout = 30 min
+  +IsExpired(session, now): bool
+}
+class CompleteStaffSignInCommandHandler {
+  +Handle(command, token): StaffSignInResult
+}
+class StaffSignInResult {
+  +StaffSignInOutcome Outcome
+  +StaffMember? Staff
+  +Guid? MemberId
+}
+interface IStaffIdentityClient {
+  +Uri BuildAuthorizationUrl(redirectUri, state, nonce, codeChallenge)
+  +Task<StaffIdentity> RedeemAsync(redirectUri, code, codeVerifier, nonce, token)
+}
+StaffMember --> StaffRoles
+MemberSession --> SessionKind
+MemberSession --> StaffMember : StaffMemberId
+SessionPolicy ..> MemberSession : judges
+CompleteStaffSignInCommandHandler ..> StaffIdentity : reads
+CompleteStaffSignInCommandHandler --> StaffMember : finds and binds
+CompleteStaffSignInCommandHandler ..> StaffSignInResult : returns
+StaffSignInResult --> StaffSignInOutcome
+IStaffIdentityClient ..> StaffIdentity : returns
+@enduml

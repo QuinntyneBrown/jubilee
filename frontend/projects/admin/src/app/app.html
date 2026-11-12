@@ -1,0 +1,17 @@
+<a jb-skip-link>Skip to content</a>
+@if (routeData().shell === 'admin') {
+  <header
+    jb-admin-bar
+    [staff]="staff()"
+    [current]="notForRole() ? null : (routeData().section ?? null)"
+    (signOut)="signOut()"
+  ></header>
+}
+<main id="main" tabindex="-1">
+  @if (notForRole()) {
+    <jb-admin-only-page (signOut)="signOut()" />
+  } @else {
+    <router-outlet />
+  }
+</main>
+<jb-toast-region />

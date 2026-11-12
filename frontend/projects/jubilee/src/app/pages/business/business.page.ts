@@ -62,7 +62,7 @@ import {
   SignInRequiredDialog,
 } from '../../dialogs/sign-in-required/sign-in-required.dialog';
 import { ListingHints } from '../../services/listing-hints';
-import { LoadState, errorReference } from '../../services/load-state';
+import { LoadState, errorReference } from 'api';
 import { SavedStore } from '../../services/saved.store';
 import { SessionService } from '../../services/session.service';
 

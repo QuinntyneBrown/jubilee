@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { BrowseHome, DIRECTORY_API } from 'api';
 import { ListingHints } from './listing-hints';
-import { LoadState, errorReference } from './load-state';
+import { LoadState, errorReference } from 'api';
 import { ConnectionService } from './offline/connection.service';
 import { OfflineNavigation } from './offline/offline-navigation';
 import { OfflineSnapshotStore } from './offline/offline-snapshot.store';

@@ -23,8 +23,8 @@ import {
   DialogFooter,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
-import { ClockService } from '../../services/clock.service';
-import { isoDay, newKey } from '../../services/message-time';
+import { ClockService } from 'api';
+import { isoDay, newKey } from 'api';
 
 export interface RequestQuoteData {
   slug: string;

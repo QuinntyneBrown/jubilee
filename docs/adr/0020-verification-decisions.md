@@ -1,6 +1,6 @@
 # 0020. Verification decisions
 
-Status: accepted
+Status: accepted; "Who is on the team" and the deferral of L2-098 AC2 superseded by [0040](0040-separate-admin-application.md)
 
 ## Context
 

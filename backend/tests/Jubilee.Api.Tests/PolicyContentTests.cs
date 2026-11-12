@@ -17,7 +17,7 @@ public sealed class PolicyContentTests : IClassFixture<JubileeApiFactory>, IAsyn
 
     public Task DisposeAsync() => Task.CompletedTask;
 
-    private HttpClient AsAdmin() => _factory.CreateMemberClient("Ada Admin", "member|ada", role: "admin");
+    private HttpClient AsAdmin() => _factory.CreateStaffClient("Ada Admin", "member|ada", "admin");
 
     private static async Task<JsonElement> Json(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;

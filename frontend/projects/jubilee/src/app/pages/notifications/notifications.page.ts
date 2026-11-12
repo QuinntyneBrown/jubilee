@@ -25,12 +25,12 @@ import {
   NotificationItemSkeleton,
   NotificationItem,
 } from 'components';
-import { ClockService } from '../../services/clock.service';
-import { LoadState, errorReference } from '../../services/load-state';
-import { threadTime } from '../../services/message-time';
+import { ClockService } from 'api';
+import { LoadState, errorReference } from 'api';
+import { threadTime } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
 import { RealtimeService } from '../../services/realtime.service';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 
 const ICON: Record<NotificationKind, IconName> = {
   request: 'calendar',

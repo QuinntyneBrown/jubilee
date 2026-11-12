@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Sign in as staff
+
+Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+System_Boundary(j, "Jubilee") {
+  Container(admin, "Jubilee Admin Web", "Angular SPA", "Staff sign-in screen")
+  Container(api, "Jubilee API", "ASP.NET Core", "Staff sign-in - staff session")
+  Container(cli, "Jubilee CLI", ".NET console", "jubilee staff grant - revoke - list")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Staff accounts - sessions")
+  ContainerDb(cache, "Cache", "Distributed cache", "Pending sign-ins")
+}
+System_Ext(entra, "Microsoft Entra ID", "Staff directory - OpenID Connect provider with a second factor")
+Rel(staff, admin, "Uses", "HTTPS")
+Rel(admin, api, "Navigates to /api/staff/sign-in/start - reads /api/staff/session", "HTTPS")
+Rel(api, entra, "Exchanges the code", "OpenID Connect")
+Rel(api, cache, "Keeps the OidcTransaction")
+Rel(api, db, "Staff accounts and sessions", "EF Core")
+Rel(cli, db, "Staff accounts - ends sessions", "EF Core")
+@enduml

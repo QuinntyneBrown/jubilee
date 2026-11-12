@@ -7,9 +7,9 @@
 # container.
 cd /home/site/wwwroot || exit 1
 
-# The API trusts X-Forwarded-For and X-Forwarded-Proto from server.js (loopback), so it sees the
-# caller's address (rate limits) and HTTPS (Secure cookies, HSTS).
-export ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+# The API trusts X-Forwarded-For and X-Forwarded-Proto from server.js on loopback only, and only the
+# last X-Forwarded-For entry, which App Service's front end wrote; Program.cs sets this up (ADR 0040),
+# so ASPNETCORE_FORWARDEDHEADERS_ENABLED, which trusts every proxy, is not set.
 
 keep() {
   local dir=$1

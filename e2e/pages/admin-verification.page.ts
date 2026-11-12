@@ -1,9 +1,9 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { ShellPage } from './shell.page';
+import { AdminShellPage } from './admin-shell.page';
 
-/** `/admin/verifications/:id`: the review of one submitted listing (L2-100). */
-export class AdminVerificationPage extends ShellPage implements Screen {
+/** `/verifications/:id`: the review of one submitted listing (L2-100). */
+export class AdminVerificationPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly subtitle: Locator;
   readonly breadcrumb: Locator;

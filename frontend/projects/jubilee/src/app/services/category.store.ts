@@ -14,7 +14,7 @@ import {
 } from 'api';
 import { Subscription } from 'rxjs';
 import { ListingHints } from './listing-hints';
-import { LoadState, errorReference } from './load-state';
+import { LoadState, errorReference } from 'api';
 
 /** One applied filter: its group and its value. */
 export type AppliedFilter =

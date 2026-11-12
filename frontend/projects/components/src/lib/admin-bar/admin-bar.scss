@@ -1,0 +1,76 @@
+// The admin bar (L2-188): the ink top bar with the "admin" tag, the staff navigation and the staff
+// member. Under 768 px the navigation drops below the lockup as one row that scrolls sideways, and
+// the name and role give way to "Sign out".
+:host(.admin-bar) {
+  flex-wrap: wrap;
+  row-gap: 0;
+}
+
+.admin-bar__tag {
+  display: inline-flex;
+  align-items: center;
+  margin-left: var(--space-2);
+  padding: var(--space-0-5) var(--space-2);
+  border: var(--border-width-hairline) solid var(--color-border-on-brand);
+  border-radius: var(--radius-sm);
+  color: var(--color-fg-on-brand-muted);
+  font: var(--text-caption);
+  letter-spacing: normal;
+  text-transform: lowercase;
+}
+
+.admin-bar__nav {
+  order: 3;
+  display: flex;
+  flex: 1 0 100%;
+  gap: var(--space-1);
+  margin-inline: calc(-1 * var(--layout-margin));
+  padding-inline: var(--layout-margin);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-top: var(--border-width-hairline) solid var(--color-border-on-brand);
+
+  .nav-link {
+    flex: none;
+    min-height: var(--target-comfortable);
+  }
+}
+
+.admin-bar__staff {
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: var(--line-height-tight);
+}
+
+.admin-bar__name {
+  font: var(--text-label);
+  color: var(--color-fg-on-brand);
+}
+
+.admin-bar__role {
+  font: var(--text-caption);
+  color: var(--color-fg-on-brand-muted);
+}
+
+@media (min-width: 48rem) {
+  :host(.admin-bar) {
+    flex-wrap: nowrap;
+  }
+
+  .admin-bar__nav {
+    order: 0;
+    flex: 0 1 auto;
+    margin-inline: var(--space-4) 0;
+    padding-inline: 0;
+    border-top: 0;
+
+    .nav-link {
+      min-height: var(--layout-topbar-height);
+    }
+  }
+
+  .admin-bar__staff {
+    display: flex;
+  }
+}

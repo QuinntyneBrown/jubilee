@@ -32,8 +32,8 @@ import {
   ProductEditorDialog,
   ProductSaved,
 } from '../../dialogs/product-editor/product-editor.dialog';
-import { LoadState, errorReference as errorRef } from '../../services/load-state';
-import { ToastService } from '../../toasts/toast.service';
+import { LoadState, errorReference as errorRef } from 'api';
+import { ToastService } from 'components';
 
 /** My products at /my-business/products (L2-089, L2-090): the shop's catalogue, with add, edit, delete and reorder. */
 @Component({

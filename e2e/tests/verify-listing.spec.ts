@@ -1,53 +1,58 @@
-import { LISTING_ID, esther, stubAdmin } from '../fixtures/admin';
+import { LISTING_ID, stubAdmin } from '../fixtures/admin';
+import { daniel } from '../fixtures/staff';
 import { expect, test } from '../fixtures/jb-test';
 import { AdminVerificationPage } from '../pages/admin-verification.page';
 import { AdminVerificationsPage } from '../pages/admin-verifications.page';
 import { ApproveListingDialog } from '../pages/approve-listing.dialog';
 import { DeclineListingDialog } from '../pages/decline-listing.dialog';
-import { ForbiddenPage } from '../pages/forbidden.page';
 import { RequestChangesDialog } from '../pages/request-changes.dialog';
 
-const REVIEW = `/admin/verifications/${LISTING_ID}`;
+const REVIEW = `/verifications/${LISTING_ID}`;
 
 test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
-  test('L2-098 AC1: a member who is not on the team is shown the forbidden page and the queue is never asked for', async ({
-    page,
-    jb,
-  }) => {
-    const forbidden = new ForbiddenPage(page);
-    await forbidden.setWidth(1280);
-    const fake = await stubAdmin(page, {}, { ...esther, isVerifier: false });
-    await jb.goto('/admin/verifications');
-
-    await expect(forbidden.heading).toHaveText('You don’t have access to this page');
-    await expect(forbidden.text).toContainText('the Jubilee verification team');
-    await expect(forbidden.backToBrowse).toBeVisible();
-    await expect(forbidden.askForAccess).toBeVisible();
-    await expect(forbidden.topBarLink(/Verifications/)).toHaveCount(0);
-    expect(fake.queueRequests).toEqual([]);
-  });
-
-  test('L2-098 AC3: the top bar of the team counts the listings ready to review', async ({
+  test('L2-098 AC1, L2-188 AC4: a staff member without the verifier role is told so and the queue is never asked for', async ({
     page,
     jb,
   }) => {
     const queue = new AdminVerificationsPage(page);
     await queue.setWidth(1280);
-    await stubAdmin(page);
-    await jb.goto('/admin/verifications');
+    const fake = await stubAdmin(page, {}, daniel);
+    await jb.gotoAdmin('/verifications');
 
-    const link = queue.topBarLink(/^Verifications/);
-    await expect(link).toHaveAttribute('aria-current', 'page');
-    await expect(queue.badgeIn(link)).toHaveAccessibleName('2 waiting');
+    await expect(queue.statusHeading).toHaveText('Nothing here for your role');
+    await expect(queue.statusText).toHaveText(
+      'These screens are for the verification team. Ask a Jubilee administrator to add the verifier role to your staff account.',
+    );
+    await expect(queue.navLink(/Verifications/)).toHaveCount(0);
+    await expect(queue.staffRole).toHaveText('Administrator');
+    expect(fake.queueRequests).toEqual([]);
   });
 
-  test('L2-098 AC3: on a phone the tab bar has a Verify entry', async ({ page, jb }) => {
+  test('L2-098 AC3: the admin bar counts the listings ready to review', async ({ page, jb }) => {
+    const queue = new AdminVerificationsPage(page);
+    await queue.setWidth(1280);
+    await stubAdmin(page);
+    await jb.gotoAdmin('/verifications');
+
+    const link = queue.navLink(/^Verifications/);
+    await expect(link).toHaveAttribute('aria-current', 'page');
+    await expect(queue.badgeIn(link)).toHaveAccessibleName('2 ready to review');
+  });
+
+  test('L2-098 AC3, L2-188 AC6: on a phone the staff navigation stays, in a row under the lockup', async ({
+    page,
+    jb,
+  }) => {
     const queue = new AdminVerificationsPage(page);
     await queue.setWidth(360);
     await stubAdmin(page);
-    await jb.goto('/admin/verifications');
+    await jb.gotoAdmin('/verifications');
 
-    await expect(queue.tab('Verify')).toHaveAttribute('aria-current', 'page');
+    await expect(queue.navLink(/^Verifications/)).toHaveAttribute('aria-current', 'page');
+    await expect(queue.navLink('Reports')).toBeVisible();
+    await expect(queue.staffName).toBeHidden();
+    await expect(queue.signOut).toBeVisible();
+    expect(await queue.overflowsHorizontally()).toBe(false);
   });
 
   test('L2-099 AC1: the queue says how many listings wait and how long the oldest has', async ({
@@ -57,7 +62,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     const queue = new AdminVerificationsPage(page);
     await queue.setWidth(1280);
     await stubAdmin(page);
-    await jb.goto('/admin/verifications');
+    await jb.gotoAdmin('/verifications');
 
     await expect(queue.heading).toHaveText('Verification queue');
     await expect(queue.subtitle).toHaveText(
@@ -76,7 +81,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     const queue = new AdminVerificationsPage(page);
     await queue.setWidth(1280);
     await stubAdmin(page);
-    await jb.goto('/admin/verifications');
+    await jb.gotoAdmin('/verifications');
 
     await expect(queue.rows).toHaveCount(2);
     await expect(queue.row('Luzandre.com')).toContainText('Shops');
@@ -90,7 +95,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     const queue = new AdminVerificationsPage(page);
     await queue.setWidth(1280);
     const fake = await stubAdmin(page);
-    await jb.goto('/admin/verifications');
+    await jb.gotoAdmin('/verifications');
     await expect(queue.rows).toHaveCount(2);
 
     await queue.filter(/Needs a decision/).click();
@@ -108,7 +113,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     const queue = new AdminVerificationsPage(page);
     await queue.setWidth(1280);
     await stubAdmin(page);
-    await jb.goto('/admin/verifications');
+    await jb.gotoAdmin('/verifications');
 
     await queue.filter(/Changes requested/).click();
 
@@ -121,7 +126,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     const queue = new AdminVerificationsPage(page);
     await queue.setWidth(1280);
     await stubAdmin(page, { queue: 'empty' });
-    await jb.goto('/admin/verifications');
+    await jb.gotoAdmin('/verifications');
 
     await expect(queue.subtitle).toHaveText('Nothing waiting');
     await expect(queue.empty).toContainText('The queue is clear');
@@ -134,7 +139,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     const queue = new AdminVerificationsPage(page);
     await queue.setWidth(1280);
     const fake = await stubAdmin(page, { queue: 'fails' });
-    await jb.goto('/admin/verifications');
+    await jb.gotoAdmin('/verifications');
 
     await expect(queue.alert).toContainText('We couldn’t load the queue');
     await expect(queue.reference).toHaveText('JB-ADM-503');
@@ -147,7 +152,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     const queue = new AdminVerificationsPage(page);
     await queue.setWidth(1280);
     await stubAdmin(page);
-    await jb.goto('/admin/verifications');
+    await jb.gotoAdmin('/verifications');
 
     await queue.businessLink('Luzandre.com').click();
 
@@ -164,7 +169,7 @@ test.describe('verify a listing: the review (L2-100)', () => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
     await stubAdmin(page);
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await expect(review.heading).toHaveText('Luzandre.com');
     await expect(review.subtitle).toContainText('Shops');
@@ -187,7 +192,7 @@ test.describe('verify a listing: the review (L2-100)', () => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
     const fake = await stubAdmin(page);
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await review.check(/Tagline and description/).uncheck();
 
@@ -207,7 +212,7 @@ test.describe('verify a listing: the review (L2-100)', () => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
     await stubAdmin(page, { cannotDecideBecause: 'Waiting for the church reference.' });
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await expect(review.notices).toContainText('Waiting for the church reference.');
     await expect(review.approve).toBeDisabled();
@@ -220,7 +225,7 @@ test.describe('verify a listing: the review (L2-100)', () => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
     const fake = await stubAdmin(page, { review: 'fails' });
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await expect(review.alert).toContainText('We couldn’t load this listing');
     await expect(review.reference).toHaveText('JB-ADM-502');
@@ -233,7 +238,7 @@ test.describe('verify a listing: the review (L2-100)', () => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
     await stubAdmin(page, { isOwnListing: true });
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await expect(review.notices).toContainText('This is your own listing');
     await expect(review.approve).toHaveCount(0);
@@ -250,7 +255,7 @@ test.describe('verify a listing: approve (L2-101)', () => {
     const dialog = new ApproveListingDialog(page);
     await review.setWidth(1280);
     const fake = await stubAdmin(page);
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await review.approve.click();
     await expect(dialog.title).toHaveText('Approve and publish Luzandre.com?');
@@ -272,7 +277,7 @@ test.describe('verify a listing: approve (L2-101)', () => {
     const dialog = new ApproveListingDialog(page);
     await review.setWidth(1280);
     const fake = await stubAdmin(page, { ticked: ['owner-name', 'reference', 'category'] });
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await review.approve.click();
     await expect(dialog.warning).toContainText('2 checklist items are not ticked');
@@ -300,7 +305,7 @@ test.describe('verify a listing: approve (L2-101)', () => {
     const dialog = new ApproveListingDialog(page);
     await review.setWidth(1280);
     const fake = await stubAdmin(page, { decision: 'fails' });
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await review.approve.click();
     await dialog.approve.click();
@@ -318,7 +323,7 @@ test.describe('verify a listing: approve (L2-101)', () => {
     const dialog = new ApproveListingDialog(page);
     await review.setWidth(1280);
     const fake = await stubAdmin(page);
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await review.approve.click();
     await dialog.notYet.click();
@@ -334,7 +339,7 @@ test.describe('verify a listing: request changes (L2-102)', () => {
     const dialog = new RequestChangesDialog(page);
     await review.setWidth(1280);
     const fake = await stubAdmin(page);
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await review.requestChanges.click();
     await expect(dialog.title).toHaveText('Ask Naomi for changes');
@@ -355,7 +360,7 @@ test.describe('verify a listing: request changes (L2-102)', () => {
     const dialog = new RequestChangesDialog(page);
     await review.setWidth(1280);
     const fake = await stubAdmin(page);
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await review.requestChanges.click();
     await dialog.area('Tagline or description').check();
@@ -381,7 +386,7 @@ test.describe('verify a listing: request changes (L2-102)', () => {
     const dialog = new RequestChangesDialog(page);
     await review.setWidth(1280);
     await stubAdmin(page, { decision: 'fails' });
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await review.requestChanges.click();
     await dialog.area('Photos').check();
@@ -403,7 +408,7 @@ test.describe('verify a listing: decline (L2-104)', () => {
     const dialog = new DeclineListingDialog(page);
     await review.setWidth(1280);
     const fake = await stubAdmin(page, { stage: 'needs-a-decision' });
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await review.decline.click();
     await expect(dialog.title).toHaveText('Decline Luzandre.com?');
@@ -426,7 +431,7 @@ test.describe('verify a listing: decline (L2-104)', () => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
     await stubAdmin(page);
-    await jb.goto(REVIEW);
+    await jb.gotoAdmin(REVIEW);
 
     await expect(review.decline).toHaveCount(0);
   });

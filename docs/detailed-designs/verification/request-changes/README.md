@@ -46,7 +46,7 @@ commands and two `Jubilee Worker` jobs.
   requested".
 - **`AdminVerificationsController`** — exposes
   `POST /api/admin/verifications/{id}/change-requests` and
-  `POST /api/admin/verifications/{id}/decline` under `VerifierPolicy`, and
+  `POST /api/admin/verifications/{id}/decline` under `RequiresVerifier`, the staff policy (`security/authorize-staff-requests`), and
   refuses a verifier who owns the listing with HTTP 403.
 - **`ListingsController`** — exposes `POST /api/listings/{id}/resubmit`. A
   caller who does not own the listing receives HTTP 403.

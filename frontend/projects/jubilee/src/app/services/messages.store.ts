@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Inbox, MESSAGES_API } from 'api';
-import { LoadState, errorReference } from './load-state';
+import { LoadState, errorReference } from 'api';
 import { ConnectionService } from './offline/connection.service';
 import { OfflineNavigation } from './offline/offline-navigation';
 
