@@ -321,10 +321,94 @@ public sealed class VerificationTests : IClassFixture<JubileeApiFactory>, IAsync
         Assert.Equal("Naomi Laurent", owner.GetProperty("name").GetString());
         Assert.Equal(listing.OwnerEmail, owner.GetProperty("email").GetString());
         Assert.True(owner.GetProperty("emailConfirmed").GetBoolean());
-        Assert.Equal(0, owner.GetProperty("otherListings").GetInt32());
+        Assert.Empty(owner.GetProperty("otherListings").EnumerateArray());
         Assert.False(review.TryGetProperty("reference", out _));
         Assert.Equal(["tagline", "photos", "category"], review.GetProperty("checklist").EnumerateArray().Select(c => c.GetProperty("key").GetString()));
         Assert.Equal(JsonValueKind.Null, review.GetProperty("cannotDecideBecause").ValueKind);
+    }
+
+    private static Dictionary<string, object?> ListingBody(string name, string kind = "products", string category = "shops", params object[] items) => new()
+    {
+        ["kind"] = kind,
+        ["name"] = name,
+        ["tagline"] = "Christian apparel and gifts",
+        ["categorySlug"] = category,
+        ["highlight"] = null,
+        ["place"] = "Toronto",
+        ["agreed"] = true,
+        ["items"] = items,
+        ["idempotencyKey"] = Guid.NewGuid().ToString(),
+    };
+
+    /// <summary>The owner of a submitted listing lists another business; the answer is the new listing's id.</summary>
+    private async Task<Guid> SubmitAnother(HttpClient owner, Dictionary<string, object?> body)
+    {
+        var draft = await Json(await owner.PostAsJsonAsync("/api/listing-drafts", body));
+        var submitted = await owner.PostAsJsonAsync($"/api/listing-drafts/{draft.GetProperty("id").GetGuid()}/submit", body);
+        Assert.Equal(HttpStatusCode.Created, submitted.StatusCode);
+        return (await Json(submitted)).GetProperty("listingId").GetGuid();
+    }
+
+    // L2-073 AC3: the review says how many products or services the listing has, so the screen can say "No products or services yet"
+    [Fact]
+    public async Task L2_073_AC3_the_review_counts_the_products_or_services_of_the_listing()
+    {
+        var empty = await Ready();
+        var shop = await SubmitAnother(empty.Owner, ListingBody(
+            "Luzandre Home", "products", "shops",
+            new { name = "Tee", detail = (string?)null, priceKind = "amount", priceCents = 3400 },
+            new { name = "Mug", detail = (string?)null, priceKind = "amount", priceCents = 2400 }));
+        var services = await SubmitAnother(empty.Owner, ListingBody(
+            "Laurent Photography", "services", "media",
+            new { name = "Wedding day coverage", detail = "8 hours", priceKind = "ask", priceCents = (int?)null }));
+
+        Assert.Equal(0, (await _factory.GetJson($"/api/admin/verifications/{empty.Id}", Esther)).GetProperty("itemCount").GetInt32());
+        Assert.Equal(2, (await _factory.GetJson($"/api/admin/verifications/{shop}", Esther)).GetProperty("itemCount").GetInt32());
+        Assert.Equal(1, (await _factory.GetJson($"/api/admin/verifications/{services}", Esther)).GetProperty("itemCount").GetInt32());
+    }
+
+    // L2-079 AC3: the owner's other listings with their stages, and each draft not yet submitted
+    [Fact]
+    public async Task L2_079_AC3_the_review_names_the_owners_other_listings_with_their_stages_and_their_drafts()
+    {
+        var first = await Ready();
+        var second = await SubmitAnother(first.Owner, ListingBody("Laurent Photography", "services", "media"));
+        await first.Owner.PostAsJsonAsync("/api/listing-drafts", ListingBody("Laurent Studio"));
+        await first.Owner.PostAsJsonAsync("/api/listing-drafts", ListingBody(" "));
+        await TickAll(second);
+        Assert.Equal(HttpStatusCode.OK, (await Post(Esther, second, "approve")).StatusCode);
+        var someoneElse = await Ready("Grace Bakery", "Grace");
+
+        var review = await _factory.GetJson($"/api/admin/verifications/{first.Id}", Esther);
+        var others = review.GetProperty("owner").GetProperty("otherListings").EnumerateArray()
+            .Select(o => (o.GetProperty("name").GetString(), o.GetProperty("stageLabel").GetString())).ToList();
+
+        // The listing under review is not among them, nor is another owner's listing.
+        Assert.Equal([("Laurent Photography", "Live"), ("Laurent Studio", "Draft"), ("Untitled business", "Draft")], others);
+        var reverse = await _factory.GetJson($"/api/admin/verifications/{second}", Esther);
+        Assert.Contains(
+            ("Luzandre.com", "Pending verification"),
+            reverse.GetProperty("owner").GetProperty("otherListings").EnumerateArray()
+                .Select(o => (o.GetProperty("name").GetString(), o.GetProperty("stageLabel").GetString())));
+        Assert.Empty((await _factory.GetJson($"/api/admin/verifications/{someoneElse.Id}", Esther))
+            .GetProperty("owner").GetProperty("otherListings").EnumerateArray());
+    }
+
+    // L2-079 AC3: a deleted listing is not named
+    [Fact]
+    public async Task L2_079_AC3_a_deleted_listing_is_not_among_the_other_listings()
+    {
+        var first = await Ready();
+        var second = await SubmitAnother(first.Owner, ListingBody("Laurent Photography", "services", "media"));
+        await _factory.WithDb(async db =>
+        {
+            (await db.Listings.SingleAsync(l => l.Id == second)).Delete(ListingMother.Now);
+            await db.SaveChangesAsync();
+        });
+
+        var review = await _factory.GetJson($"/api/admin/verifications/{first.Id}", Esther);
+
+        Assert.Empty(review.GetProperty("owner").GetProperty("otherListings").EnumerateArray());
     }
 
     private async Task<List<AuditRecord>> Audit(string? action = null)

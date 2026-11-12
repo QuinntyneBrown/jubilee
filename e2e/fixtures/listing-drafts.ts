@@ -18,6 +18,21 @@ export interface FakeSpaceDraft {
   rules: string[];
 }
 
+/** A product or a service of a draft, with what its editor asks (L2-073). */
+export interface FakeDraftItem {
+  name: string;
+  detail: string | null;
+  priceKind: 'free' | 'amount' | 'ask';
+  priceCents: number | null;
+  description?: string | null;
+  stock?: number | null;
+  action?: 'book' | 'ask';
+  durationMinutes?: number | null;
+  offersVideo?: boolean;
+  offersInPerson?: boolean;
+  inPersonPlace?: string | null;
+}
+
 export interface FakeDraftBody {
   kind: 'products' | 'services' | 'space';
   name: string;
@@ -26,12 +41,7 @@ export interface FakeDraftBody {
   highlight: string | null;
   place: string | null;
   agreed: boolean;
-  items: {
-    name: string;
-    detail: string | null;
-    priceKind: 'free' | 'amount' | 'ask';
-    priceCents: number | null;
-  }[];
+  items: FakeDraftItem[];
   idempotencyKey: string | null;
   space?: FakeSpaceDraft | null;
 }

@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Observable, switchMap, of } from 'rxjs';
+import { Observable, switchMap, of, timeout } from 'rxjs';
 import {
   CATEGORIES,
   DraftItem,
@@ -55,7 +55,8 @@ import {
   MomentCheck,
   Section,
 } from 'components';
-import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
+import { ProductEditorDialog } from '../../dialogs/product-editor/product-editor.dialog';
+import { ServiceEditorDialog } from '../../dialogs/service-editor/service-editor.dialog';
 import { SessionService } from '../../services/session.service';
 import { clockTime, newKey } from 'api';
 import { momentCheckIn } from '../../services/moment-check-in';
@@ -104,7 +105,11 @@ const FIELD_ORDER: FieldName[] = [
   'agreed',
 ];
 const AUTOSAVE_MS = 10_000;
+/** A submission still unanswered after this long fails rather than spinning forever (L2-127 AC2). */
+const SUBMIT_TIMEOUT_MS = 10_000;
 const TAGLINE_MAX = 90;
+/** The green line of the card, as in the listing editor (L2-072 AC7, L2-087). */
+const HIGHLIGHT_MAX = 30;
 
 /** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
 export function messageFor(field: FieldName, code: string, space = false): string {
@@ -152,7 +157,8 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
 
 /**
  * ListBusinessPage (L2-071 to L2-079): the member writes the listing, sees how it will look, saves a
- * draft and submits it for verification. Items are added through a dialog, never inline.
+ * draft and submits it for verification. Products and services are added through their editors
+ * (L2-073), which keep them with the draft: no listing exists until it is submitted.
  */
 @Component({
   selector: 'jb-list-business-page',
@@ -204,6 +210,7 @@ export class ListBusinessPage {
   protected readonly categories = CATEGORIES;
   protected readonly format = formatPrice;
   protected readonly taglineMax = TAGLINE_MAX;
+  protected readonly highlightMax = HIGHLIGHT_MAX;
 
   protected readonly loading = signal(true);
   protected readonly loadFailed = signal(false);
@@ -212,6 +219,7 @@ export class ListBusinessPage {
   protected readonly name = signal('');
   protected readonly tagline = signal('');
   protected readonly categorySlug = signal('shops');
+  protected readonly highlight = signal('');
   protected readonly place = signal('');
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
@@ -295,6 +303,7 @@ export class ListBusinessPage {
     this.name.set(draft.name);
     this.tagline.set(draft.tagline);
     this.categorySlug.set(draft.categorySlug ?? 'shops');
+    this.highlight.set(draft.highlight ?? '');
     this.place.set(draft.place ?? '');
     this.agreed.set(draft.agreed);
     this.items.set(draft.items);
@@ -338,7 +347,7 @@ export class ListBusinessPage {
       name: this.name().trim(),
       tagline: this.tagline().trim(),
       categorySlug: this.isSpace() ? null : this.categorySlug() || null,
-      highlight: null,
+      highlight: this.isSpace() ? null : this.highlight().trim() || null,
       place: this.isSpace() ? null : this.place().trim() || null,
       agreed: this.agreed(),
       items: this.isSpace() ? [] : this.items(),
@@ -372,19 +381,27 @@ export class ListBusinessPage {
   }
 
   protected addItem(): void {
-    this.dialog
-      .open<DraftItem | undefined>(ListingItemDialog, {
-        data: { kind: this.kind() },
-        ariaLabelledBy: 'dlg-title',
-        ariaDescribedBy: 'dlg-desc',
-        panelClass: 'dialog-overlay',
-        backdropClass: 'dialog-backdrop',
-      })
-      .closed.subscribe((item) => {
-        if (!item) return;
-        this.items.update((list) => [...list, item]);
-        this.touched();
-      });
+    const options = {
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      panelClass: 'dialog-overlay',
+      backdropClass: 'dialog-backdrop',
+      disableClose: true,
+    };
+    const opened = this.isServices()
+      ? this.dialog.open<DraftItem>(ServiceEditorDialog, {
+          ...options,
+          data: { service: null, draft: true },
+        })
+      : this.dialog.open<DraftItem>(ProductEditorDialog, {
+          ...options,
+          data: { product: null, draft: true },
+        });
+    opened.closed.subscribe((item) => {
+      if (!item) return;
+      this.items.update((list) => [...list, item]);
+      this.touched();
+    });
   }
 
   private check(): Partial<Record<FieldName, string>> {
@@ -427,6 +444,8 @@ export class ListBusinessPage {
           this.draftId = draft.id;
           return this.api.submit(draft.id, body);
         }),
+        // The idempotency key makes the retry safe if the first try did arrive (L2-132).
+        timeout(SUBMIT_TIMEOUT_MS),
       )
       .subscribe({
         next: (listing) => {

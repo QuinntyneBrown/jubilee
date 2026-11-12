@@ -576,6 +576,10 @@ public sealed class DraftItemConfiguration : IEntityTypeConfiguration<DraftItem>
         builder.Property(i => i.Name).HasMaxLength(DraftItem.MaxNameLength).IsRequired();
         builder.Property(i => i.Detail).HasMaxLength(DraftItem.MaxDetailLength);
         builder.Property(i => i.PriceKind).HasConversion<string>().HasMaxLength(16);
+        builder.Property(i => i.Description).HasMaxLength(Product.MaxDescriptionLength);
+        builder.Property(i => i.Action).HasConversion<string>().HasMaxLength(16);
+        builder.Property(i => i.InPersonPlace).HasMaxLength(DraftItem.MaxPlaceLength);
+        builder.Ignore(i => i.CanBeBooked);
     }
 }
 
@@ -678,6 +682,21 @@ public sealed class ResponseTimeStatConfiguration : IEntityTypeConfiguration<Res
         builder.HasKey(s => s.ListingId);
         builder.Property(s => s.ListingId).ValueGeneratedNever();
         builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class StatementAgreementConfiguration : IEntityTypeConfiguration<StatementAgreement>
+{
+    public void Configure(EntityTypeBuilder<StatementAgreement> builder)
+    {
+        builder.ToTable("StatementAgreements");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.OwnerSubject).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.Version).HasMaxLength(20).IsRequired();
+
+        // One agreement per owner and version, however often "I agree" is pressed (L2-075 AC4).
+        builder.HasIndex(a => new { a.OwnerSubject, a.Version }).IsUnique();
     }
 }
 

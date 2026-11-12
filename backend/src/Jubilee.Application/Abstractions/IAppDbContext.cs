@@ -71,6 +71,8 @@ public interface IAppDbContext
 
     DbSet<ListingSubmission> ListingSubmissions { get; }
 
+    DbSet<StatementAgreement> StatementAgreements { get; }
+
     DbSet<ReviewTick> ReviewTicks { get; }
 
     DbSet<ListingDecision> ListingDecisions { get; }

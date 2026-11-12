@@ -12,6 +12,8 @@ export class AdminVerificationPage extends AdminShellPage implements Screen {
   readonly panels: Locator;
   readonly checklist: Locator;
   readonly checks: Locator;
+  /** The line above the checklist of a listing that offers nothing yet (L2-073 AC3). */
+  readonly noItems: Locator;
   readonly requestChanges: Locator;
   readonly approve: Locator;
   readonly decline: Locator;
@@ -33,6 +35,7 @@ export class AdminVerificationPage extends AdminShellPage implements Screen {
     this.panels = this.main.getByRole('heading', { level: 2 });
     this.checklist = this.main.locator('section[aria-labelledby="chk"]');
     this.checks = this.checklist.getByRole('checkbox');
+    this.noItems = this.checklist.getByText('No products or services yet');
     this.requestChanges = this.main.getByRole('button', { name: 'Request changes' });
     this.approve = this.main.getByRole('button', { name: 'Approve and publish' });
     this.decline = this.main.getByRole('button', { name: 'Decline listing' });
@@ -44,6 +47,14 @@ export class AdminVerificationPage extends AdminShellPage implements Screen {
     this.space = this.main.locator('section[aria-labelledby="spc"]');
     this.spacePreview = this.main.locator('aside .space-card');
     this.previewHeading = this.main.locator('aside h2');
+  }
+
+  /** The value of one row of the Owner panel, by its term. */
+  ownerRow(term: string): Locator {
+    return this.owner
+      .locator('.dl__item')
+      .filter({ has: this.page.getByText(term, { exact: true }) })
+      .locator('dd');
   }
 
   /** The value of one row of the space card, by its term. */

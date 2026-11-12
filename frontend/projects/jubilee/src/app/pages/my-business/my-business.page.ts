@@ -5,8 +5,10 @@ import {
   Component,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -61,8 +63,10 @@ import {
 } from '../../dialogs/pause-listing/pause-listing.dialog';
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
-import { dayLabel, threadTime } from 'api';
+import { StatementDue, dayLabel, longDay, threadTime } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
+import { SessionService } from '../../services/session.service';
+import { openStatementAgreement } from '../../dialogs/statement-agreement/statement-agreement.dialog';
 import { ToastService } from 'components';
 
 /** How long an owner can take back a confirmation (L2-052 AC4). */
@@ -108,6 +112,14 @@ export class MyBusinessPage implements OnInit {
   private readonly router = inject(Router);
   private readonly clock = inject(ClockService);
   private readonly toasts = inject(ToastService);
+  private readonly session = inject(SessionService);
+  /** The agreement owed to the updated statement of faith, while it is owed (L2-075 AC5, AC6). */
+  protected readonly statementDue = computed(() => this.session.member()?.statementDue ?? null);
+  protected readonly agreeBy = computed(() => {
+    const due = this.statementDue();
+    return due ? longDay(due.agreeBy) : '';
+  });
+  private owedStatement = false;
   private readonly navigation = inject(NavigationStore);
 
   protected readonly skeleton = [1, 2, 3];
@@ -121,8 +133,22 @@ export class MyBusinessPage implements OnInit {
     return state.status === 'loaded' ? state.value : null;
   });
 
+  constructor() {
+    // Agreeing, here or in the dialog the app opened, makes a listing the job paused live again (L2-075 AC6).
+    effect(() => {
+      const owed = this.statementDue() !== null;
+      if (this.owedStatement && !owed) untracked(() => this.fetch());
+      this.owedStatement = owed;
+    });
+  }
+
   ngOnInit(): void {
     this.load();
+  }
+
+  /** "Read and agree" (L2-075 AC5): the dialog of the updated statement of faith. */
+  protected readAndAgree(due: StatementDue, opener: HTMLElement): void {
+    openStatementAgreement(this.dialog, due, opener);
   }
 
   protected load(): void {

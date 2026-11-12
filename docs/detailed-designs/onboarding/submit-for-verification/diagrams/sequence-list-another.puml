@@ -16,48 +16,56 @@ skinparam package {
 }
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "MyBusinessPage" as page
-  participant "ListingSwitcher" as switcher
-  participant "ListingsApi" as client
+  participant "MyBusinessPage" as mybiz
+  participant "ListBusinessPage" as page
+  participant "ListingDraftsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "ListingsController" as controller
+  participant "MyBusinessController" as bizctrl
+  participant "ListingDraftsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "StartListingDraftCommandHandler" as handler
-  participant "Member" as member
+  participant "GetMyBusinessQueryHandler" as overview
+  participant "SaveListingDraftCommandHandler" as handler
+  participant "ListingDraft" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> page : Open /my-business
-page -> switcher : Render
-switcher -> client : getMyListings()
-client -> controller : GET /api/my/listings
-controller --> client : OwnerListingSummary list with stages
-client --> switcher : Listings
-switcher --> actor : Show each listing and "List another business" (L2-079)
-actor -> switcher : Choose "List another business"
-switcher -> client : startDraft(kind)
-client -> controller : POST /api/listings
-controller -> controller : Authenticate session
-controller -> handler : Send StartListingDraftCommand
-handler -> db : Count the owner's listings
+actor -> mybiz : Open /my-business
+mybiz -> bizctrl : GET /api/my-business
+bizctrl -> overview : Send GetMyBusinessQuery
+overview -> db : Read the owner's listings and drafts
+db --> overview : Listings and drafts
+overview --> bizctrl : MyBusinessDto with Businesses
+bizctrl --> mybiz : 200 OK
+mybiz --> actor : Show the select "Business" with each stage and "List another business" (L2-079)
+actor -> mybiz : Choose "List another business"
+mybiz -> page : Navigate to /list?draft=new
+page --> actor : Show a blank form without a request
+actor -> page : Fill in and press "Save draft" or stop typing for 10 seconds
+page -> client : create(body)
+client -> controller : POST /api/listing-drafts
+controller -> handler : Send SaveListingDraftCommand(subject, null, input)
+handler -> db : Count listings not deleted and drafts of the caller
 db --> handler : Count
-handler -> member : CanStartListing(count)
-alt Owner already has 5 listings (L2-079)
-  member --> handler : Refused
-  handler --> controller : LISTING_LIMIT_REACHED
+alt Owner already has 5 (L2-079)
+  handler --> controller : ConflictException LISTING_LIMIT
   controller --> client : 409 ProblemDetails
-  client --> switcher : Limit reached
-  switcher --> actor : Show "You can list up to 5 businesses. Write to help@jubilee.example for more."
-else Fewer than 5 listings
-  member --> handler : Allowed
-  handler -> db : Insert listing in stage Draft
+  client --> page : Error with detail
+  page --> actor : Show "You can list up to 5 businesses. Write to help@jubilee.example for more."
+else Fewer than 5
+  handler -> entity : ListingDraft.Start(subject, now) and Save(values)
+  handler -> db : Insert the draft
   db --> handler : Commit result
   handler --> controller : ListingDraftDto
   controller --> client : 201 Created
-  client --> switcher : New draft
-  switcher --> actor : Open /list with the new draft and show both listings in the switcher
+  client --> page : New draft
+  page --> actor : Show "Draft saved."
 end
+note over mybiz
+  The switcher then names the draft as "{name} · Draft".
+  Choosing a listing sends PUT /api/my-business/current,
+  which stamps Listing.WorkspaceChosenAt (ADR 0052).
+end note
 @enduml

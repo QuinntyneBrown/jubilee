@@ -13,92 +13,128 @@ skinparam class {
 ' --------------------------
 title Class structure — Save a draft
 
-enum ListingStage {
-  Draft
-  ReadyToReview
-  ChangesRequested
-  Live
-  Paused
-  OnHold
-  Removed
-  Declined
-}
-
-class Listing {
+class ListingDraft {
   +Guid Id
-  +Guid OwnerId
-  +ListingStage Stage
-  +DateTimeOffset LastTouchedAt
-  +DateTimeOffset? DraftExpiryNoticeSentAt
-  +byte[] RowVersion
-  +ApplyDraft(values: ListingDraftValues, now: DateTimeOffset): void
-  +MarkExpiryNoticeSent(now: DateTimeOffset): void
-}
-
-class ListingDraftValues <<value object>> {
+  +string OwnerSubject
   +ListingKind Kind
   +string Name
   +string Tagline
-  +Guid? CategoryId
-  +string StoreAddress
-  +string ServiceArea
-  +bool AgreesToStatementOfFaith
+  +string? CategorySlug
+  +string? Highlight
+  +string? Place
+  +bool Agreed
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset UpdatedAt
+  +DateTimeOffset? NoticeSentAt
+  +TimeSpan IdleBeforeNotice = 180 days
+  +TimeSpan GraceAfterNotice = 14 days
+  +{static} Start(ownerSubject: string, now: DateTimeOffset): ListingDraft
+  +Save(kind, name, tagline, categorySlug, highlight, place, agreed, items, now, space): void
+  +NoticeSent(now: DateTimeOffset): void
+}
+
+class DraftItem {
+  +int Position
+  +string Name
 }
 
 enum ListingKind {
   Services
   Shop
+  Space
 }
 
-class SaveListingDraftCommand {
-  +Guid ListingId
-  +ListingDraftValues Values
-  +byte[] RowVersion
-  +bool IsAutosave
+class DraftInput <<record>> {
+  +string? Kind
+  +string? Name
+  +string? Tagline
+  +string? CategorySlug
+  +string? Highlight
+  +string? Place
+  +bool Agreed
+  +IReadOnlyList<DraftItemInput>? Items
+  +SpaceInput? Space
+}
+
+class SaveListingDraftCommand <<record>> {
+  +string Subject
+  +Guid? Id
+  +DraftInput Input
 }
 
 class SaveListingDraftCommandHandler {
   +Handle(command: SaveListingDraftCommand): Task<ListingDraftDto>
 }
 
-class GetListingDraftQuery {
-  +Guid ListingId
+class GetCurrentDraftQuery <<record>> {
+  +string Subject
 }
 
-class GetListingDraftQueryHandler {
-  +Handle(query: GetListingDraftQuery): Task<ListingDraftDto>
+class GetDraftQuery <<record>> {
+  +string Subject
+  +Guid Id
 }
 
-class ListingDraftDto {
-  +Guid ListingId
-  +ListingDraftValues Values
-  +DateTimeOffset SavedAt
-  +byte[] RowVersion
+class ListingDraftDto <<record>> {
+  +Guid Id
+  +string Kind
+  +string Name
+  +string Tagline
+  +bool Agreed
+  +DateTimeOffset UpdatedAt
+  +IReadOnlyList<DraftItemDto> Items
+  +SpaceDraftDto? Space
 }
 
-class DraftRetentionJob {
-  +int UntouchedDays = 180
-  +int DeleteAfterNoticeDays = 14
-  +RunAsync(now: DateTimeOffset): Task
+class Drafts <<static>> {
+  +int MaxListings = 5
+  +{static} Apply(draft: ListingDraft, input: DraftInput, now: DateTimeOffset): void
+  +{static} Owned(db, subject: string, id: Guid): Task<ListingDraft>
+}
+
+class RunListingDraftExpiryJobCommand <<record>> {
+  +string Job = "listing-draft-expiry"
+  +TimeSpan Every = 24 hours
+}
+
+class ExpireListingDraftsCommand <<record>>
+
+class ExpireListingDraftsCommandHandler {
+  +Handle(command: ExpireListingDraftsCommand): Task<int>
+}
+
+class ScheduledJobs {
+  +RunOnceAsync(job: string, every: TimeSpan, work): Task<bool>
+  +LastSuccessAsync(job: string): Task<DateTimeOffset?>
+}
+
+class JobRun {
+  +string Job
+  +DateTimeOffset Occurrence
+  +DateTimeOffset ClaimedAt
+  +DateTimeOffset? SucceededAt
+  +{static} OccurrenceOf(now: DateTimeOffset, every: TimeSpan): DateTimeOffset
+  +Succeed(now: DateTimeOffset): void
 }
 
 class OutboxMessage {
-  +Guid Id
-  +string Type
-  +string Payload
-  +DateTimeOffset CreatedAt
-  +DateTimeOffset? DispatchedAt
+  +{static} Email(memberId, to, subject, text, now): OutboxMessage
 }
 
-Listing --> ListingStage : has
-Listing ..> ListingDraftValues : applies
-ListingDraftValues --> ListingKind : has
+ListingDraft --> ListingKind : has
+ListingDraft "1" *-- "0..50" DraftItem : keeps
 SaveListingDraftCommandHandler ..> SaveListingDraftCommand : handles
-SaveListingDraftCommand *-- ListingDraftValues : carries
-SaveListingDraftCommandHandler --> Listing : loads / mutates
+SaveListingDraftCommand *-- DraftInput : carries
+SaveListingDraftCommandHandler ..> Drafts : loads / applies with
+Drafts ..> ListingDraft : calls Save on
 SaveListingDraftCommandHandler ..> ListingDraftDto : returns
-GetListingDraftQueryHandler ..> GetListingDraftQuery : handles
-GetListingDraftQueryHandler ..> ListingDraftDto : returns
-DraftRetentionJob --> "*" Listing : warns / deletes
-DraftRetentionJob ..> OutboxMessage : writes
+GetCurrentDraftQuery ..> ListingDraftDto : answered with
+GetDraftQuery ..> ListingDraftDto : answered with
+ListingDraftDto ..> ListingDraft : projects
+RunListingDraftExpiryJobCommand ..> ScheduledJobs : runs through
+RunListingDraftExpiryJobCommand ..> ExpireListingDraftsCommand : sends
+ScheduledJobs ..> JobRun : claims / completes
+ExpireListingDraftsCommandHandler ..> ExpireListingDraftsCommand : handles
+ExpireListingDraftsCommandHandler --> "*" ListingDraft : warns / deletes
+ExpireListingDraftsCommandHandler ..> OutboxMessage : writes
 @enduml

@@ -7,10 +7,11 @@ import {
   effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { ACCOUNT_API, isRateLimited, tryAgainIn } from 'api';
+import { ACCOUNT_API, StatementDue, isRateLimited, tryAgainIn } from 'api';
 import {
   ChromeMember,
   ConnectionBanner,
@@ -128,6 +129,9 @@ export class App {
   protected readonly confirmedBanner = signal(false);
   private wasUnconfirmed = false;
 
+  /** Whether this load of the app has asked for the agreement to the updated statement of faith (L2-075 AC3, AC5). */
+  private statementAsked = false;
+
   /** The query of the search page, kept in the top bar's search box (L2-029 AC5). */
   protected readonly searchQuery = toSignal(
     this.router.events.pipe(
@@ -178,6 +182,21 @@ export class App {
         });
       }
     });
+    // An owner who owes an agreement to the updated statement of faith is asked once per load of the
+    // app (L2-075 AC3); "Not now" leaves it until the next one, and My business offers it meanwhile.
+    effect(() => {
+      const due = this.session.member()?.statementDue;
+      if (!due || this.statementAsked) return;
+      this.statementAsked = true;
+      untracked(() => void this.askForStatement(due));
+    });
+  }
+
+  private async askForStatement(due: StatementDue): Promise<void> {
+    // The dialog is loaded when it is first needed, so it adds nothing to the first load.
+    const { openStatementAgreement } =
+      await import('./dialogs/statement-agreement/statement-agreement.dialog');
+    openStatementAgreement(this.dialog, due);
   }
 
   protected dismissConfirmed(): void {

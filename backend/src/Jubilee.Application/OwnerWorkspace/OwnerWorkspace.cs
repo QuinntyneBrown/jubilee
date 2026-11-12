@@ -563,6 +563,14 @@ public sealed class ResumeListingCommandHandler(IAppDbContext db, TimeProvider c
             throw new ConflictException("NOT_PAUSED", "This listing is not paused.");
         }
 
+        // A listing stays paused until its owner agrees to the updated statement of faith (L2-096 AC6).
+        if (StatementOfFaith.IsOverdue(clock.GetUtcNow())
+            && StatementOfFaith.IsDue(await Onboarding.StatementAgreements.LatestAgreedAsync(db, request.Subject, cancellationToken)))
+        {
+            throw new ConflictException(
+                "STATEMENT_AGREEMENT_REQUIRED", "Agree to the updated statement of faith to resume your listing.");
+        }
+
         listing.Resume(clock.GetUtcNow());
         await db.SaveChangesAsync(cancellationToken);
         return new PauseResultDto(false, null, Workspace.State(listing), listing.Stage != ListingStage.Live);

@@ -395,6 +395,23 @@
                   />
                 </div>
               </div>
+              <div
+                jb-field
+                label="Highlight"
+                controlId="perk"
+                optional
+                hint="A short green line on your card, like “Free first meeting”. 30 characters at most."
+              >
+                <input
+                  jb-input
+                  name="highlight"
+                  type="text"
+                  [attr.maxlength]="highlightMax"
+                  [readOnly]="busy()"
+                  [ngModel]="highlight()"
+                  (ngModelChange)="highlight.set($event); touched()"
+                />
+              </div>
               <fieldset [disabled]="busy()">
                 <legend>{{ isServices() ? 'Services' : 'Products' }}</legend>
                 <p jb-field-help>
@@ -515,6 +532,7 @@
             [tint]="tile().tint"
             [icon]="tile().icon"
             [tag]="isServices() ? 'Business' : 'Shop'"
+            [highlight]="highlight().trim()"
           ></div>
         }
       </aside>

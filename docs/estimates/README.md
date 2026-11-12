@@ -1,7 +1,7 @@
 # Estimates
 
 - Overall effort: 407 days
-- Complete: 72%
+- Complete: 73%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -17,7 +17,7 @@
 | [messaging](messaging.md) | 17 days | 98% |
 | [requests](requests.md) | 39 days | 98% |
 | [notifications](notifications.md) | 16 days | 100% |
-| [onboarding](onboarding.md) | 17 days | 91% |
+| [onboarding](onboarding.md) | 17 days | 100% |
 | [admin](admin.md) | 7 days | 90% |
 | [verification](verification.md) | 20 days | 84% |
 | [owner-workspace](owner-workspace.md) | 20 days | 96% |

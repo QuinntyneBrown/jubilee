@@ -21,7 +21,7 @@ something else: a new record supersedes it and both say so.
 | [0015](0015-booking-decisions.md) | Booking: weekday-bitmask hours, fixed slots, one request lifecycle, idempotent bookings | Accepted |
 | [0016](0016-quote-request-decisions.md) | Quote requests: one request row, ten-digit phone, field codes, no pronouns; amended with the phone prefilled from the profile through the dialog's options, the notifications and the quote card | Accepted, amended 12 November 2026 |
 | [0017](0017-order-request-decisions.md) | Order requests: delivery methods, server-computed amounts, no tax, stock checked at send | Accepted |
-| [0018](0018-listing-onboarding-decisions.md) | Listing onboarding: drafts, limit, submission flags, expiry | Accepted, amended by 0041 |
+| [0018](0018-listing-onboarding-decisions.md) | Listing onboarding: drafts, limit, submission flags, expiry; amended with the editors on `/list`, the highlight, agreeing again to an updated statement of faith, and the draft expiry as scheduled work | Accepted, amended by 0041, amended 12 November 2026 |
 | [0019](0019-church-reference-decisions.md) | Church reference: hashed links, owner-safe status, resend, remind, change | Superseded by 0041 |
 | [0020](0020-verification-decisions.md) | Verification: the team, decisions, stages, overdue, checklist, retention and audit | Accepted, partly superseded by 0040, amended by 0041 |
 | [0013](0013-server-side-sessions.md) | Server-side sessions in the database, sign-in throttling, drafts and the sign-in prompt | Accepted, completed by 0046 |

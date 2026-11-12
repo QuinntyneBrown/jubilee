@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CATALOGUE_API, OwnerService, ServicePricing } from 'api';
+import { CATALOGUE_API, DraftItem, OwnerService, ServicePricing } from 'api';
 import {
   Button,
   Alert,
@@ -28,6 +28,11 @@ import { FormDraftDirective } from '../../drafts/form-draft.directive';
 export interface ServiceEditorData {
   /** The service to change; null adds one. */
   service: OwnerService | null;
+  /**
+   * On List your business no listing exists yet (L2-073 AC2): the editor checks its fields, calls
+   * no API and closes with the service as a `DraftItem`, which the page keeps with the draft.
+   */
+  draft?: boolean;
 }
 
 export interface ServiceSaved {
@@ -41,7 +46,10 @@ type FieldName = 'name' | 'detail' | 'price' | 'duration' | 'modes' | 'place';
 
 const SAVE_TIMEOUT_MS = 10_000;
 
-/** ServiceEditorDialog (L2-094): add or change a service, its price and how members can ask for it. */
+/**
+ * ServiceEditorDialog (L2-094): add or change a service, its price and how members can ask for
+ * it. Opened with `draft`, it adds a service to a listing that is still being written.
+ */
 @Component({
   selector: 'jb-service-editor-dialog',
   imports: [
@@ -61,7 +69,7 @@ const SAVE_TIMEOUT_MS = 10_000;
   templateUrl: './service-editor.dialog.html',
 })
 export class ServiceEditorDialog {
-  private readonly ref = inject<DialogRef<ServiceSaved>>(DialogRef);
+  private readonly ref = inject<DialogRef<ServiceSaved | DraftItem>>(DialogRef);
   private readonly api = inject(CATALOGUE_API);
   protected readonly data = inject<ServiceEditorData>(DIALOG_DATA);
 
@@ -69,6 +77,10 @@ export class ServiceEditorDialog {
   private readonly service = this.data.service;
 
   protected readonly editing = this.service !== null;
+  /** When what is saved becomes public. */
+  protected readonly note = this.data.draft
+    ? 'Nothing is public until your listing is verified.'
+    : 'Changes show on your public listing as soon as you save.';
   protected readonly view = signal<View>('form');
   protected readonly busy = computed(() => this.view() === 'busy');
   protected readonly failure = signal('');
@@ -123,8 +135,25 @@ export class ServiceEditorDialog {
       setTimeout(() => document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
       return;
     }
-    this.view.set('busy');
     const books = this.action() === 'book';
+    if (this.data.draft) {
+      const fixed = this.pricing() === 'amount';
+      this.ref.close({
+        name: this.name().trim(),
+        detail: this.detail().trim() || null,
+        priceKind: this.pricing(),
+        priceCents: fixed ? Math.round(Number(this.price().trim()) * 100) : null,
+        description: null,
+        stock: null,
+        action: this.action(),
+        durationMinutes: books ? Number(this.duration()) : null,
+        offersVideo: books ? this.video() : true,
+        offersInPerson: books && this.inPerson(),
+        inPersonPlace: books && this.inPerson() ? this.place().trim() : null,
+      });
+      return;
+    }
+    this.view.set('busy');
     this.api
       .saveService(this.service?.id ?? null, {
         name: this.name().trim(),

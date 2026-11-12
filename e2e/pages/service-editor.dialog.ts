@@ -4,6 +4,8 @@ import type { Locator, Page } from '@playwright/test';
 export class ServiceEditorDialog {
   readonly root: Locator;
   readonly title: Locator;
+  /** The line under the title: when what is saved becomes public. */
+  readonly note: Locator;
   readonly name: Locator;
   readonly detail: Locator;
   readonly pricing: Locator;
@@ -23,6 +25,7 @@ export class ServiceEditorDialog {
   constructor(page: Page) {
     this.root = page.getByRole('dialog');
     this.title = this.root.locator('.dialog__title');
+    this.note = this.root.locator('#dlg-desc');
     this.name = this.root.getByLabel(/^Service name/);
     this.detail = this.root.getByLabel(/^Short detail/);
     this.pricing = this.root.getByLabel('Pricing');

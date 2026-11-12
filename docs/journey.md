@@ -25,7 +25,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 7 | Book a meeting | Request a meeting time for a service with a business. | 6 | 100% |
 | 8 | Request a quote | Describe a job and ask a business for a quote. | 3 | 100% |
 | 9 | Request a product | Send a shop an order request for a product, without payment. | 3 | 100% |
-| 10 | List a business | Describe a business and submit it for verification. | 12 | 87% |
+| 10 | List a business | Describe a business and submit it for verification. | 12 | 100% |
 | 11 | Removed: answer a church reference | Jubilee no longer asks for a church reference (ADR 0041). The number is not reused. | 0 | n/a |
 | 12 | Verify a listing | Staff review submitted listings, then approve or request changes. | 10 | 85% |
 | 13 | Respond to customer requests | See incoming requests and confirm or decline each one. | 6 | 100% |
@@ -48,7 +48,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 95% |
 
-**Total: 217 days** for the 30 journeys, **94% complete** weighted by effort.
+**Total: 217 days** for the 30 journeys, **95% complete** weighted by effort.
 
 ## Notes
 

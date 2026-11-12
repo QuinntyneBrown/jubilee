@@ -4,6 +4,8 @@ import type { Locator, Page } from '@playwright/test';
 export class ProductEditorDialog {
   readonly root: Locator;
   readonly title: Locator;
+  /** The line under the title: when what is saved becomes public. */
+  readonly note: Locator;
   readonly name: Locator;
   readonly price: Locator;
   readonly stock: Locator;
@@ -19,6 +21,7 @@ export class ProductEditorDialog {
   constructor(page: Page) {
     this.root = page.getByRole('dialog');
     this.title = this.root.locator('.dialog__title');
+    this.note = this.root.locator('#dlg-desc');
     this.name = this.root.getByLabel(/^Product name/);
     this.price = this.root.getByLabel(/^Price/);
     this.stock = this.root.getByLabel(/^In stock/);

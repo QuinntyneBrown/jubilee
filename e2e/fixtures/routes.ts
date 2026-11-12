@@ -107,6 +107,10 @@ export type StubName =
   | 'business-empty'
   | 'business-retrying'
   | 'business-paused'
+  | 'business-statement-due'
+  | 'business-statement-pending'
+  | 'business-statement-failing'
+  | 'business-statement-lapsed'
   | 'editor'
   | 'editor-photos'
   | 'order'
@@ -158,6 +162,7 @@ export type StubName =
   | 'admin-review-changes-requested'
   | 'admin-review-error'
   | 'admin-review-space'
+  | 'admin-review-no-items'
   | 'moderation-reports'
   | 'moderation-reports-empty'
   | 'moderation-reports-error'
@@ -472,6 +477,19 @@ export const routes = {
   'list-business.space': {
     app: '/list?kind=space',
     mock: 'pages/list-business/space.html',
+    who: 'member',
+    stub: 'listing-draft',
+  },
+  // The editors opened from "Add a product" and "Add a service" on /list (L2-073).
+  'product-editor.onboarding': {
+    app: '/list',
+    mock: 'dialogs/product-editor/onboarding.html',
+    who: 'member',
+    stub: 'listing-draft',
+  },
+  'service-editor.onboarding': {
+    app: '/list',
+    mock: 'dialogs/service-editor/onboarding.html',
     who: 'member',
     stub: 'listing-draft',
   },
@@ -900,6 +918,42 @@ export const routes = {
     who: 'member',
     stub: 'business-paused',
   },
+  'my-business.statement-due': {
+    app: '/my-business',
+    mock: 'pages/my-business/statement-due.html',
+    who: 'member',
+    stub: 'business-statement-due',
+  },
+  'my-business.statement-lapsed': {
+    app: '/my-business',
+    mock: 'pages/my-business/statement-lapsed.html',
+    who: 'member',
+    stub: 'business-statement-lapsed',
+  },
+  'statement-agreement': {
+    app: '/my-business',
+    mock: 'dialogs/statement-agreement/default.html',
+    who: 'member',
+    stub: 'business-statement-due',
+  },
+  'statement-agreement.busy': {
+    app: '/my-business',
+    mock: 'dialogs/statement-agreement/busy.html',
+    who: 'member',
+    stub: 'business-statement-pending',
+  },
+  'statement-agreement.failed': {
+    app: '/my-business',
+    mock: 'dialogs/statement-agreement/failed.html',
+    who: 'member',
+    stub: 'business-statement-failing',
+  },
+  'statement-agreement.lapsed': {
+    app: '/my-business',
+    mock: 'dialogs/statement-agreement/lapsed.html',
+    who: 'member',
+    stub: 'business-statement-lapsed',
+  },
   'edit-listing': {
     app: '/my-business/listing',
     mock: 'pages/edit-listing/default.html',
@@ -1323,6 +1377,13 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'admin-review-changes-requested',
+  },
+  'admin-verification.no-items': {
+    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-verification/no-items.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-review-no-items',
   },
   'admin-verification.space': {
     app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',

@@ -7,10 +7,11 @@ import { VerifiedMark } from '../verified-mark/verified-mark';
 
 /**
  * How members will see a listing that is not live yet: the business card, with nothing to
- * follow. Until the listing is `verified` it says "Pending verification".
+ * follow. Until the listing is `verified` it says "Pending verification". The `highlight`, when
+ * the owner wrote one, is the green line of the card, before the mark (L2-076 AC1).
  *
  *     <div jb-business-card-preview name="Luzandre.com" tagline="…" tint="gold" icon="bag"
- *          tag="Shop"></div>
+ *          tag="Shop" highlight="Ships across Canada"></div>
  */
 @Component({
   selector: 'div[jb-business-card-preview]',
@@ -26,5 +27,6 @@ export class BusinessCardPreview {
   readonly tint = input.required<TileTint>();
   readonly icon = input.required<IconName>();
   readonly tag = input('');
+  readonly highlight = input<string | null>(null);
   readonly verified = input(false, { transform: booleanAttribute });
 }

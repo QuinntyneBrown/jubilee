@@ -1,0 +1,32 @@
+<jb-dialog
+  heading="The statement of faith has been updated"
+  [description]="description()"
+  icon="info"
+  tone="info"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <div jb-dialog-body class="stack">
+    @if (view() === 'failed') {
+      <div jb-alert tone="danger" role="alert">
+        <div>We couldn’t record that. Try again.</div>
+      </div>
+    }
+    <p>
+      <a href="/statement-of-faith" target="_blank" rel="noopener">Read the statement of faith</a>
+    </p>
+  </div>
+  <div jb-dialog-footer>
+    <button jb-button type="button" [disabled]="busy()" (click)="close()">Not now</button>
+    <button
+      jb-button
+      variant="primary"
+      type="button"
+      cdkFocusInitial
+      [busy]="busy()"
+      (click)="agree()"
+    >
+      I agree
+    </button>
+  </div>
+</jb-dialog>

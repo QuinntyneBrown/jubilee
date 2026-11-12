@@ -165,6 +165,29 @@ public sealed class Listing
         PausedAt ??= now;
     }
 
+    /// <summary>When the daily job paused the listing because its owner had not agreed to the updated statement of faith (L2-075 AC6).</summary>
+    public DateTimeOffset? StatementLapsedAt { get; private set; }
+
+    /// <summary>Pauses a live listing whose owner has not agreed to the updated statement of faith in time (L2-075 AC6).</summary>
+    public void PauseForStatement(DateTimeOffset now)
+    {
+        Pause(now);
+        StatementLapsedAt = now;
+    }
+
+    /// <summary>The owner agreed: a listing the job paused is live again at once, without new verification (L2-075 AC6).</summary>
+    public void ResumeAfterStatement()
+    {
+        if (StatementLapsedAt is null)
+        {
+            return;
+        }
+
+        StatementLapsedAt = null;
+        IsPaused = false;
+        PausedAt = null;
+    }
+
     /// <summary>Takes the listing off pause. After a year it goes back to the verification queue (L2-096 AC4).</summary>
     public void Resume(DateTimeOffset? now = null)
     {

@@ -22,6 +22,7 @@ import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
 import { stubQuote } from './quote';
 import type { StubName } from './routes';
+import { STATEMENT_LAPSED, naomiOwing, stubStatementAgreement } from './statement-of-faith';
 import { joannaSession, keepDraft, stubSession as stubSignedInSession } from './session';
 
 const home = '**/api/directory/home';
@@ -483,6 +484,18 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMyBusiness(page, { overview: 'fails' });
     case 'business-paused':
       return stubMyBusiness(page, { paused: true });
+    case 'business-statement-due':
+      await stubStatementAgreement(page);
+      return stubMyBusiness(page, {}, naomiOwing());
+    case 'business-statement-pending':
+      await stubStatementAgreement(page, 'pending');
+      return stubMyBusiness(page, {}, naomiOwing());
+    case 'business-statement-failing':
+      await stubStatementAgreement(page, 'fails');
+      return stubMyBusiness(page, {}, naomiOwing());
+    case 'business-statement-lapsed':
+      await stubStatementAgreement(page);
+      return stubMyBusiness(page, { paused: true }, naomiOwing(STATEMENT_LAPSED));
     case 'listing-draft':
       return stubListingDrafts(page);
     case 'order':
@@ -640,6 +653,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubAdmin(page, { stage: 'changes-requested' });
     case 'admin-review-space':
       return stubAdmin(page, { listing: SPACE_REVIEW });
+    case 'admin-review-no-items':
+      return stubAdmin(page, { listing: { itemCount: 0 } });
     case 'admin-review-error':
       return stubAdmin(page, { review: 'fails' });
     case 'moderation-reports':

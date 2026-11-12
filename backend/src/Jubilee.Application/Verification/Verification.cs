@@ -162,7 +162,11 @@ public sealed class GetVerificationQueueQueryHandler(IAppDbContext db, TimeProvi
     }
 }
 
-public sealed record ReviewOwner(string Name, string Email, bool EmailConfirmed, DateTimeOffset MemberSince, int OtherListings);
+/// <summary>Another listing of the owner, or a draft not yet submitted, with its stage as the switcher words it (L2-079 AC3).</summary>
+public sealed record ReviewOtherListing(string Name, string StageLabel);
+
+public sealed record ReviewOwner(
+    string Name, string Email, bool EmailConfirmed, DateTimeOffset MemberSince, IReadOnlyList<ReviewOtherListing> OtherListings);
 
 public sealed record ReviewCheck(string Key, string Label, bool Ticked, string? TickedBy, DateTimeOffset? TickedAt);
 
@@ -187,7 +191,8 @@ public sealed record VerificationReviewDto(
     IReadOnlyList<string> ChangedSinceRequest,
     bool IsOwnListing,
     string? CannotDecideBecause,
-    ReviewSpace? Space = null);
+    ReviewSpace? Space = null,
+    int ItemCount = 0);
 
 /// <summary>What the verification team reads of a space: every field but its exact address (L2-200 AC3).</summary>
 public sealed record ReviewSpace(
@@ -259,9 +264,12 @@ public sealed class GetVerificationReviewQueryHandler(IAppDbContext db, TimeProv
         var now = clock.GetUtcNow();
         var (listing, submission) = await Reviews.Load(db, request.ListingId, cancellationToken);
         var member = await Reviews.OwnerOf(db, listing, cancellationToken);
-        var otherListings = member is null
-            ? 0
-            : await db.Listings.CountAsync(l => l.OwnerId == listing.OwnerId && l.Id != listing.Id && l.DeletedAt == null, cancellationToken);
+        var otherListings = await OtherListings(listing, cancellationToken);
+
+        // What the listing offers so far: zero lets the screen say "No products or services yet" (L2-073 AC3).
+        var itemCount = listing.Kind == ListingKind.Shop
+            ? await db.Products.CountAsync(p => p.ListingId == listing.Id && !p.IsDeleted, cancellationToken)
+            : await db.Services.CountAsync(s => s.ListingId == listing.Id, cancellationToken);
         var ticks = await db.ReviewTicks.AsNoTracking().Where(t => t.ListingId == listing.Id).ToListAsync(cancellationToken);
         var decision = await db.ListingDecisions.AsNoTracking()
             .Where(d => d.ListingId == listing.Id)
@@ -312,7 +320,25 @@ public sealed class GetVerificationReviewQueryHandler(IAppDbContext db, TimeProv
                     ListingStage.Live or ListingStage.Declined => "A decision has been made.",
                     _ => null,
                 },
-            listing.Space is null ? null : ReviewSpace.From(listing.Space));
+            listing.Space is null ? null : ReviewSpace.From(listing.Space),
+            itemCount);
+    }
+
+    /// <summary>The owner's other listings, oldest first, then their drafts (L2-079 AC3).</summary>
+    private async Task<List<ReviewOtherListing>> OtherListings(Listing listing, CancellationToken cancellationToken)
+    {
+        if (listing.OwnerId is not { } owner)
+        {
+            return [];
+        }
+
+        var listings = (await OwnerWorkspace.Workspace.OwnedBy(db.Listings.AsNoTracking(), owner, cancellationToken))
+            .Where(l => l.Id != listing.Id)
+            .Select(l => new ReviewOtherListing(l.Name, OwnerWorkspace.Workspace.StageLabel(l)));
+        var drafts = (await db.ListingDrafts.AsNoTracking().Where(d => d.OwnerSubject == owner).ToListAsync(cancellationToken))
+            .OrderBy(d => d.CreatedAt)
+            .Select(d => new ReviewOtherListing(string.IsNullOrWhiteSpace(d.Name) ? "Untitled business" : d.Name, "Draft"));
+        return [.. listings, .. drafts];
     }
 }
 

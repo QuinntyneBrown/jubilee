@@ -1,0 +1,87 @@
+@startuml
+title UML sequence behaviour — Agree again to an updated statement of faith
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "App" as root
+  participant "StatementAgreementDialog" as dialog
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionController" as session
+  participant "StatementOfFaithController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "AgreeToStatementCommandHandler" as agree
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Worker" #D1FADF
+  participant "StatementAgreementJob" as job
+  participant "RunStatementAgreementJobCommandHandler" as run
+  participant "ScheduledJobs" as jobs
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+== The owner opens the app after the statement was updated ==
+actor -> root : Sign in or open the app
+root -> session : GET /api/session
+session -> db : GetStatementDueQuery reads the owner's greatest agreed version
+db --> session : A version earlier than StatementOfFaith.Version
+session --> root : Session with statementDue (L2-075)
+root -> dialog : Open once per load of the app
+dialog --> actor : Show "The statement of faith has been updated" with the agree-by date
+alt "Not now" or close or Esc
+  actor -> dialog : Dismiss
+  dialog --> root : Closed
+  root --> actor : My business shows the banner with "Read and agree"
+else "I agree"
+  actor -> dialog : Press "I agree"
+  dialog -> controller : POST /api/statement-of-faith/agreement with the version
+  controller -> agree : Send AgreeToStatementCommand
+  alt Version is not the current one
+    agree --> controller : ConflictException STATEMENT_VERSION
+    controller --> dialog : 409 ProblemDetails
+    dialog --> actor : Stay open with "We couldn’t record that. Try again."
+  else Current version
+    agree -> db : Add a StatementAgreement unless one exists for this version
+    agree -> entity : ResumeAfterStatement on each listing with StatementLapsedAt
+    agree -> db : Save changes
+    db --> agree : Commit result
+    agree --> controller : Recorded
+    controller --> dialog : Success
+    dialog --> actor : Close and toast "Thank you"
+  end
+end
+== Once a day ==
+job -> run : Send RunStatementAgreementJobCommand
+run -> jobs : RunOnceAsync("statement-agreement", 24 hours, work) (L2-182)
+jobs -> db : Claim the occurrence with a JobRun
+alt Claimed by this instance and AgreeBy has passed
+  run -> db : Select live listings of owners whose agreed version is earlier
+  db --> run : Listings not yet stamped
+  loop Each listing
+    run -> entity : PauseForStatement(now) stamps StatementLapsedAt
+    run -> db : Add OutboxMessage.Email "{Business} is paused until you agree to the statement of faith"
+  end
+  run -> db : Save changes
+  jobs -> db : JobRun.Succeed(now)
+end
+note over entity
+  While the agreement is overdue ResumeListingCommandHandler refuses
+  with 409 STATEMENT_AGREEMENT_REQUIRED (L2-096).
+  OutboxDispatcherJob sends the queued e-mail.
+end note
+@enduml

@@ -13,108 +13,130 @@ skinparam class {
 ' --------------------------
 title Class structure — Describe a listing
 
-enum ListingStage {
-  Draft
-  ReadyToReview
-  ChangesRequested
-  Live
-  Paused
-  OnHold
-  Removed
-  Declined
-}
-
 enum ListingKind {
   Services
   Shop
+  Space
 }
 
-enum ListingFlagKind {
-  ContactDetailsInText
-  DiscountCodeInText
+enum ServicePriceKind {
+  Free
+  Amount
+  Ask
 }
 
-class Listing {
+enum ServiceAction {
+  Book
+  Ask
+}
+
+class ListingDraft {
   +Guid Id
-  +Guid OwnerId
+  +string OwnerSubject
   +ListingKind Kind
-  +ListingStage Stage
   +string Name
   +string Tagline
-  +Guid? CategoryId
-  +string StoreAddress
-  +string ServiceArea
-  +ListingSlug Slug
-  +ChangeKind(kind: ListingKind): void
-  +Describe(details: ListingDetails): void
-  +AssignSlug(slug: ListingSlug): void
-  +AddFlag(flag: ListingFlag): void
+  +string? CategorySlug
+  +string? Highlight
+  +string? Place
+  +bool Agreed
+  +SpaceDetails? Space
+  +DateTimeOffset UpdatedAt
+  +int MaxNameLength = 120
+  +int MaxItems = 50
+  +{static} Start(ownerSubject: string, now: DateTimeOffset): ListingDraft
+  +Save(kind, name, tagline, categorySlug, highlight, place, agreed, items, now, space): void
 }
 
-class ListingDetails <<value object>> {
-  +string Name
-  +string Tagline
-  +Guid? CategoryId
-  +string StoreAddress
-  +string ServiceArea
-}
-
-class ListingSlug <<value object>> {
-  +string Value
-  +{static} From(name: string): ListingSlug
-  +WithSuffix(n: int): ListingSlug
-}
-
-class ListingFlag {
+class DraftItem {
   +Guid Id
-  +ListingFlagKind Kind
-  +string Field
-  +DateTimeOffset RaisedAt
-}
-
-class Category {
-  +Guid Id
+  +int Position
   +string Name
-  +string Slug
-}
-
-class Product {
-  +Guid Id
-  +string Name
-  +int PriceCents
-}
-
-class Service {
-  +Guid Id
-  +string Name
-  +string Detail
+  +string? Detail
+  +ServicePriceKind PriceKind
   +int? PriceCents
+  +string? Description
+  +int? Stock
+  +ServiceAction Action
+  +int? DurationMinutes
+  +bool OffersVideo
+  +bool OffersInPerson
+  +string? InPersonPlace
 }
 
-class ListingDetailsValidator {
-  +int NameMaxLength = 120
-  +int TaglineMaxLength = 90
-  +Validate(details: ListingDetails): ValidationResult
+class DraftInput <<record>> {
+  +string? Kind
+  +string? Name
+  +string? Tagline
+  +string? CategorySlug
+  +string? Highlight
+  +string? Place
+  +bool Agreed
+  +IReadOnlyList<DraftItemInput>? Items
+  +SpaceInput? Space
 }
 
-class ContentFlagScanner {
-  +Scan(name: string, tagline: string): IReadOnlyList<ListingFlag>
+class DraftItemInput <<record>> {
+  +string? Name
+  +string? Detail
+  +string? PriceKind
+  +int? PriceCents
+  +string? Description
+  +int? Stock
+  +string? Action
+  +int? DurationMinutes
+  +bool OffersVideo
+  +bool OffersInPerson
+  +string? InPersonPlace
 }
 
-class SlugGenerator {
-  +NextFree(name: string): Task<ListingSlug>
+class ListingDraftDto <<record>> {
+  +Guid Id
+  +string Kind
+  +string Name
+  +string Tagline
+  +string? CategorySlug
+  +string? Highlight
+  +string? Place
+  +bool Agreed
+  +DateTimeOffset UpdatedAt
+  +IReadOnlyList<DraftItemDto> Items
+  +{static} From(draft: ListingDraft): ListingDraftDto
 }
 
-Listing --> ListingKind : has
-Listing --> ListingStage : has
-Listing *-- "0..1" ListingSlug : owns
-Listing "1" *-- "*" ListingFlag : carries
-Listing "*" --> "0..1" Category : filed under
-Listing "1" *-- "*" Product : offers
-Listing "1" *-- "*" Service : offers
-ListingFlag --> ListingFlagKind : has
-Listing ..> ListingDetails : applies
-ListingDetailsValidator ..> ListingDetails : validates
-ContentFlagScanner ..> ListingFlag : produces
-SlugGenerator ..> ListingSlug : produces
+class DraftItemDto <<record>>
+
+class Drafts <<static>> {
+  +int MaxListings = 5
+  +{static} KindOf(kind: string?): ListingKind
+  +{static} PriceKindOf(kind: string?): ServicePriceKind
+  +{static} ItemsOf(input: DraftInput): IEnumerable<DraftItem>
+  +{static} Apply(draft: ListingDraft, input: DraftInput, now: DateTimeOffset): void
+  +{static} Owned(db, subject: string, id: Guid): Task<ListingDraft>
+}
+
+class ListBusinessPage {
+  #kind: Signal<OfferKind>
+  #name: Signal<string>
+  #tagline: Signal<string>
+  #categorySlug: Signal<string>
+  #highlight: Signal<string>
+  #place: Signal<string>
+  #items: Signal<DraftItem[]>
+  #setKind(kind: OfferKind): void
+  #addItem(): void
+  #removeItem(index: number): void
+}
+
+ListingDraft --> ListingKind : has
+ListingDraft "1" *-- "0..50" DraftItem : keeps
+DraftItem --> ServicePriceKind : priced by
+DraftItem --> ServiceAction : offers
+DraftInput "1" *-- "*" DraftItemInput : carries
+ListingDraftDto "1" *-- "*" DraftItemDto : carries
+ListingDraftDto ..> ListingDraft : projects
+Drafts ..> DraftInput : reads
+Drafts ..> ListingDraft : applies to
+Drafts ..> DraftItem : builds
+ListBusinessPage ..> ListingDraftDto : restores from
 @enduml

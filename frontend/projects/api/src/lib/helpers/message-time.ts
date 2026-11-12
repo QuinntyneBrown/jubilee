@@ -115,6 +115,15 @@ export function fullDate(iso: string): string {
   return `${then.day} ${then.month} ${then.year}`;
 }
 
+const LONG_DAY = new Intl.DateTimeFormat('en-CA', { timeZone: 'UTC', month: 'long' });
+
+/** "2 December 2026": a calendar day given as `yyyy-MM-dd` (L2-075 AC3). */
+export function longDay(day: string): string {
+  const [year, month, date] = day.split('-').map(Number);
+  const at = new Date(Date.UTC(year, month - 1, date));
+  return `${date} ${LONG_DAY.format(at)} ${year}`;
+}
+
 const MONTH_YEAR = new Intl.DateTimeFormat('en-CA', {
   timeZone: ZONE,
   month: 'long',

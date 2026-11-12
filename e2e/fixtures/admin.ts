@@ -26,6 +26,8 @@ export interface FakeAdmin {
   staff: FakeStaff;
   /** Fields that replace the opened listing's, such as a space's `kind` and `space`. */
   listing: Record<string, unknown>;
+  /** The owner's other listings and drafts, each with its stage (L2-079 AC3). */
+  otherListings: { name: string; stageLabel: string }[];
 }
 
 /** A space under review (L2-200 AC3): the fields that replace the business of the default review. */
@@ -40,7 +42,7 @@ export const SPACE_REVIEW = {
     email: 'grace@okafor.example',
     emailConfirmed: true,
     memberSince: '2026-05-01T00:00:00Z',
-    otherListings: 0,
+    otherListings: [{ name: 'Laurent Photography', stageLabel: 'Draft' }],
   },
   space: {
     term: 'long-term',
@@ -154,6 +156,7 @@ export async function stubAdmin(
     declines: [],
     staff: undefined as unknown as FakeStaff,
     listing: {},
+    otherListings: [{ name: 'Laurent Photography', stageLabel: 'Draft' }],
     ...initial,
   };
 
@@ -179,7 +182,7 @@ export async function stubAdmin(
       email: 'naomi@luzandre.example',
       emailConfirmed: true,
       memberSince: '2026-05-01T00:00:00Z',
-      otherListings: 1,
+      otherListings: fake.otherListings,
     },
     flags: [],
     checklist: CHECKS.map(([key, label]) => ({
@@ -210,6 +213,7 @@ export async function stubAdmin(
     changedSinceRequest: [],
     isOwnListing: fake.isOwnListing,
     cannotDecideBecause: fake.cannotDecideBecause,
+    itemCount: 2,
     ...fake.listing,
   });
 

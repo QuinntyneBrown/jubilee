@@ -2,6 +2,7 @@ import { parity } from '../../fixtures/parity';
 import { AdminVerificationPage } from '../../pages/admin-verification.page';
 import { BrowsePage } from '../../pages/browse.page';
 import { BusinessPage } from '../../pages/business.page';
+import { ListBusinessPage } from '../../pages/list-business.page';
 import { SavedPage } from '../../pages/saved.page';
 
 // jb-business-card, jb-product-card and the preview of a listing that is not live yet.
@@ -36,6 +37,14 @@ parity('business-card', {
       route: 'admin-verification',
       screen: (page) => new AdminVerificationPage(page),
       region: (screen: AdminVerificationPage) => screen.preview,
+    },
+    {
+      // The owner's highlight, the green line before "Pending verification" (L2-076 AC1).
+      name: 'preview-highlight',
+      route: 'list-business',
+      screen: (page) => new ListBusinessPage(page),
+      region: (screen: ListBusinessPage) => screen.previewCard,
+      arrange: (screen: ListBusinessPage) => screen.fillExample(),
     },
   ],
   reference: {

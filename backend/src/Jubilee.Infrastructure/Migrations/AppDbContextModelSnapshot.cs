@@ -420,7 +420,23 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<string>("Detail")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InPersonPlace")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -432,6 +448,12 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(120)
                         .HasColumnType("nvarchar(120)");
 
+                    b.Property<bool>("OffersInPerson")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("OffersVideo")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Position")
                         .HasColumnType("int");
 
@@ -442,6 +464,9 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
+
+                    b.Property<int?>("Stock")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -858,6 +883,9 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<int>("Stage")
                         .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("StatementLapsedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Tagline")
                         .IsRequired()
@@ -2127,6 +2155,32 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasFilter("[ObjectId] IS NOT NULL");
 
                     b.ToTable("StaffMembers", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.StatementAgreement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AgreedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("OwnerSubject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerSubject", "Version")
+                        .IsUnique();
+
+                    b.ToTable("StatementAgreements", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.StockAlert", b =>
