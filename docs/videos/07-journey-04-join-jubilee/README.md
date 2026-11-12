@@ -1,15 +1,15 @@
-# 06 · Journey 4: Join Jubilee
+# 07 · Journey 4: Join Jubilee
 
-> **Runtime:** 1:31 (90.8 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 4
+> **Runtime:** 1:32 (91.9 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 4
 
-**Video:** [06-journey-04-join-jubilee.mp4](06-journey-04-join-jubilee.mp4) · **Audio:** [06-journey-04-join-jubilee.mp3](06-journey-04-join-jubilee.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [07-journey-04-join-jubilee.mp4](07-journey-04-join-jubilee.mp4) · **Audio:** [07-journey-04-join-jubilee.mp3](07-journey-04-join-jubilee.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## What it shows
 
 The run of `docs/prompts/04-join-jubilee.md`, which took journey 4 from 89% to 98%. Joanna has
 joined and has not confirmed her address. In the app itself she changes a mistyped address in the
 dialog "Use another e-mail", meets an address another account uses, and reaches the resend limit
-(ADR 0046). Two cards say what the run did behind the screen and what is left for the owner.
+(ADR 0047). Two cards say what the run did behind the screen and what is left for the owner.
 
 ## What the pictures prove, and what only the tests prove
 
@@ -23,12 +23,11 @@ Only the tests prove what the server does:
   answers the same for an address in use (`AccountTests`, L2-004 AC5, L2-141 AC1);
 - that the sixth resend of an hour is refused with 429 and `Retry-After` (`AccountTests`, L2-005 AC5,
   L2-137 AC1); the 42 minutes on screen is the stub's;
-- that a token in a request path is logged as `[redacted]` (`TokenRedactionTests`, L2-140 AC3);
-- that the member cookie is `__Host-jubilee.session` and a `jubilee.session` cookie is removed
-  (`MemberCookieTests`, L2-135 AC1, AC4).
+- that a token in a request path is logged as `[redacted]`, and that joining, confirming and
+  signing in leave no token and no session cookie in the log (`TokenRedactionTests`, L2-140 AC3).
 
 Joining by e-mail or Google and opening the confirmation link were built before this run and are
-not shown.
+not shown. The `__Host-` prefix of the member cookie was built by journey 5 (ADR 0046, video 06).
 
 ## Run sheet
 
@@ -40,15 +39,15 @@ not shown.
 | 04 | `sent` | 0:35 | 0:46 | "Check your new inbox"; after "Done" the banner names the new address |
 | 05 | `taken` | 0:46 | 0:56 | An address in use: "An account already uses this e-mail. Use another address." (L2-004 AC9) |
 | 06 | `limit` | 0:56 | 1:06 | "Send it again" past the limit: "You’re doing that a lot. Try again in 42 minutes." (L2-005 AC5) |
-| 07 | `behind` | 1:06 | 1:20 | Card: `LoggedPath` and the `__Host-jubilee.session` cookie |
-| 08 | `close` | 1:20 | 1:30 | Card: journey 4 at 98%; the bot challenge keys are left for the owner |
+| 07 | `behind` | 1:06 | 1:21 | Card: `LoggedPath` and `TokenRedactionTests` |
+| 08 | `close` | 1:21 | 1:31 | Card: journey 4 at 98%; the bot challenge keys are left for the owner |
 
 ## Rebuild
 
 ```sh
 pip install edge-tts
-node tools/video-demo/build.mjs docs/videos/06-journey-04-join-jubilee --check   # speak the lines, print their lengths
-node tools/video-demo/build.mjs docs/videos/06-journey-04-join-jubilee           # record and encode
+node tools/video-demo/build.mjs docs/videos/07-journey-04-join-jubilee --check   # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/07-journey-04-join-jubilee           # record and encode
 ```
 
 `narration.json` holds the lines and `demo.spec.ts` drives the app, one `demo.scene` per line. The

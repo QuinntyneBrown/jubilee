@@ -44,7 +44,7 @@ dialog to the `Jubilee database`.
   a `button` and raises the output `changeEmail`; "Send it again" raises
   `resend`. The `limited` state has the warning tone, shows "You’re doing that
   a lot. Try again in {n} minutes." and offers no "Send it again"; it is not
-  remembered across a reload (ADR 0046). The bounced state has the danger tone
+  remembered across a reload (ADR 0047). The bounced state has the danger tone
   and shows "We couldn’t deliver e-mail to {address}. Check the address for a
   typo." with "Change e-mail". The confirmed state shows "E-mail confirmed.
   You can now message businesses and book meetings." and can be dismissed.
@@ -57,7 +57,7 @@ dialog to the `Jubilee database`.
 - **`ChangeUnconfirmedEmailDialog`** (`jb-change-unconfirmed-email-dialog`) —
   CDK dialog titled "Use another e-mail", in
   `frontend/projects/jubilee/src/app/dialogs/change-unconfirmed-email/`. It
-  asks for "New e-mail" and no password (ADR 0046). An empty field shows
+  asks for "New e-mail" and no password (ADR 0047). An empty field shows
   "Enter the e-mail you want to use."; a malformed address, found in the
   browser or answered `422` with `EMAIL_INVALID`, shows "Enter a full e-mail
   address, like name@example.com." While the address is being sent the button
@@ -144,12 +144,12 @@ dialog to the `Jubilee database`.
   named `token` is written as `[redacted]`; on an unmatched route any path
   segment of 40 characters or more is. The confirmation token travels in the
   request body, and request bodies, query strings and the session cookie are
-  never logged (`L2-140`, ADR 0046).
+  never logged (`L2-140`, ADR 0047).
 - **Session cookie** — the authenticated endpoints of the slice read the
   member from the cookie `__Host-jubilee.session` (`Secure`, `HttpOnly`,
-  `SameSite=Lax`, `Path=/`, no `Domain`), configured in `Program.cs`.
-  `LegacySessionCookieMiddleware` removes an earlier `jubilee.session` cookie,
-  which is never read as a session (`L2-135`). `CsrfMiddleware` checks the
+  `SameSite=Lax`, `Path=/`), named and configured by `MemberSessionCookie`;
+  only the Development environment issues it as `jubilee.session`, without
+  the prefix (`L2-135`, ADR 0046). `CsrfMiddleware` checks the
   anti-CSRF token of the resend and of the change of address.
 
 ## Requirements
@@ -164,7 +164,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-140` | `L1-019` | An e-mail confirmation token shall have at least 128 bits of randomness, shall be stored only as a SHA-256 hash, shall have a single purpose, shall expire after 24 hours, and shall be single-use. A token page shall set `Referrer-Policy: no-referrer`, and the token shall be removed from the address bar after it is read. The token value shall be redacted from logs: a token in a request path shall be written as `[redacted]` in the request log and in every log line that names the path, and no confirmation, reset, download or session token value shall appear in any log line. |
 | `L2-137` | `L1-019` | The server shall respond `429` with `Retry-After` when e-mail confirmation resends exceed 5 per hour. |
 | `L2-141` | `L1-019` | The e-mail-change endpoints shall answer with the same status, body shape and timing for an existing and a non-existing e-mail. |
-| `L2-135` | `L1-019` | A session shall be an opaque random identifier of at least 128 bits in a cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, no `Domain` and the `__Host-` prefix (`__Host-jubilee.session` for a member). A state-changing request shall carry a valid anti-CSRF token bound to the session. The earlier member cookie `jubilee.session` shall not be accepted as a session, and the response shall remove it. |
+| `L2-135` | `L1-019` | A session shall be an opaque random identifier of at least 128 bits in a cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/` and the `__Host-` prefix, `__Host-jubilee.session`; only the Development environment shall issue it as `jubilee.session` without the prefix. A state-changing request that carries a session cookie shall carry the matching anti-CSRF token or be rejected with `403`. |
 | `L2-118` | `L1-016` | An unexpected failure shall be reported in the standard failure layout with an error reference, here `JB-VERIFY-502`, that leads to the request's correlation ID in the logs. |
 
 ## Diagrams

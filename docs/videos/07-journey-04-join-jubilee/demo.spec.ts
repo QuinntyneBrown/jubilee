@@ -3,7 +3,7 @@ import { stubResendLimited, stubUnconfirmedEmailChange } from '../../../e2e/fixt
 import { ChangeUnconfirmedEmailDialog } from '../../../e2e/pages/change-unconfirmed-email.dialog';
 import { VerifyEmailBannerRegion } from '../../../e2e/pages/verify-email.page';
 
-// Video 06: journey 4, join Jubilee. An unconfirmed member changes a mistyped address in the
+// Video 07: journey 4, join Jubilee. An unconfirmed member changes a mistyped address in the
 // dialog, meets an address in use and the resend limit, against the recorded API and the stubs of
 // the behaviour spec (ADR 0009); two cards say what the run did behind the screen. Built by
 // `node tools/video-demo/build.mjs` (docs/videos/README.md).
@@ -68,14 +68,14 @@ test('journey 4: join Jubilee', async ({ demo }) => {
 
   await demo.card('Behind the screen', [
     'A token in a request path is logged as [redacted] (LoggedPath, L2-140 AC3).',
-    'The member cookie is __Host-jubilee.session: Secure, HttpOnly, SameSite=Lax, Path=/ (L2-135 AC1).',
-    'A jubilee.session cookie is never read; the answer removes it (L2-135 AC4).',
-    'Proved by TokenRedactionTests and MemberCookieTests.',
+    'It was written in full for a data download and for an unsubscribe link.',
+    'Confirmation and reset tokens travel in request bodies, which are never logged.',
+    'Proved by TokenRedactionTests, which reads the captured log.',
   ]);
   await demo.scene('behind');
 
   await demo.card('Journey 4 · 98%', [
-    'Done: the unconfirmed address in a dialog, the resend limit shown, tokens out of the logs, the __Host- cookie.',
+    'Done: the unconfirmed address in a dialog, the resend limit shown, tokens out of the logs.',
     'Left for the owner: BotChallenge__SiteKey and BotChallenge__SecretKey in Azure (eng/azure/README.md).',
   ]);
   await demo.scene('close');

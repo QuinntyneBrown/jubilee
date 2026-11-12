@@ -111,12 +111,11 @@ with the confirmation e-mail sent by `Jubilee Worker`.
   `JoinWithEmailCommand` through MediatR. On success `SignInMemberAsync`
   starts the session and the controller answers `201` with the stored address.
 - **Session cookie** — `DatabaseTicketStore` stores a `MemberSession` in the
-  `Jubilee database`, and the browser receives only its opaque key in the
-  cookie `__Host-jubilee.session`. `Program.cs` configures the cookie as
-  `Secure` in every environment, `HttpOnly`, `SameSite=Lax`, `Path=/`, with no
-  `Domain` (`L2-135`, ADR 0046). `LegacySessionCookieMiddleware` removes an
-  earlier `jubilee.session` cookie from the browser; that cookie is never read
-  as a session. `CsrfMiddleware` refuses a state-changing request that carries
+  `Jubilee database`, and the browser receives only its opaque key in
+  the cookie `__Host-jubilee.session` (`Secure`, `HttpOnly`,
+  `SameSite=Lax`, `Path=/`), named and configured by `MemberSessionCookie`;
+  only the Development environment issues it as `jubilee.session`, without
+  the prefix (`L2-135`, ADR 0046). `CsrfMiddleware` refuses a state-changing request that carries
   a session cookie without the matching anti-CSRF token.
 - **`JoinWithEmailCommand`** — request record carrying `FirstName`,
   `LastName`, `Email`, `Password`, `HomeChurch`, `HomeChurchAddress` and
@@ -197,7 +196,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-137` | `L1-019` | The server shall respond `429` with `Retry-After` above 5 joins per IP per hour and above 5 e-mail confirmation resends per hour, and the join form shall be protected by a privacy-respecting bot challenge. |
 | `L2-140` | `L1-019` | An e-mail confirmation token shall have at least 128 bits of randomness, shall be stored only as a SHA-256 hash, shall have a single purpose, and shall expire after 24 hours. |
 | `L2-141` | `L1-019` | For a join with an e-mail that already has an account, the inline message of `L2-002` shall be shown only after the bot challenge passes and within the join rate limit, and an e-mail shall be sent to the existing account holder. |
-| `L2-135` | `L1-019` | A session shall be an opaque random identifier of at least 128 bits in a cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, no `Domain` and the `__Host-` prefix (`__Host-jubilee.session` for a member). The earlier member cookie `jubilee.session` shall not be accepted as a session, and the response shall remove it. |
+| `L2-135` | `L1-019` | A session shall be an opaque random identifier of at least 128 bits in a cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/` and the `__Host-` prefix, `__Host-jubilee.session`; only the Development environment shall issue it as `jubilee.session` without the prefix. A state-changing request that carries a session cookie shall carry the matching anti-CSRF token or be rejected with `403`. |
 | `L2-187` | `L1-001` | The Sign up screen (`/join`) and the Log in screen (`/sign-in`) shall share one frame: a brand panel beside the form from 1024 px, and a card under the lockup below that width. Both screens shall offer to show the password being typed. |
 
 ## Diagrams

@@ -1,5 +1,5 @@
 {
-  "title": "06 · Journey 4: Join Jubilee",
+  "title": "07 · Journey 4: Join Jubilee",
   "scenes": [
     {
       "id": "intro",
@@ -27,7 +27,7 @@
     },
     {
       "id": "behind",
-      "say": "Behind the screen, a token in a request path is now written to the logs as redacted. And the member session cookie carries the Host prefix; a cookie under the earlier name is removed, and the member signs in again."
+      "say": "Behind the screen, a token in a request path is now written to the logs as redacted. Confirmation and reset tokens travel in request bodies, which are never logged. A test reads the captured log to prove it."
     },
     {
       "id": "close",

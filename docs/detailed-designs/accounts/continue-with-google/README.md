@@ -98,10 +98,10 @@ database`, with `Google Identity` as the external identity provider.
 - **`ReturnUrl`** — static helper of `Jubilee.Domain`. `Parse` accepts only a
   same-origin relative path and returns `/` for any other value (`L2-012`).
 - **Session cookie** — `SignInMemberAsync` stores a new `MemberSession`
-  through `DatabaseTicketStore` and sets the cookie `__Host-jubilee.session`
-  (`Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, no `Domain`), configured in
-  `Program.cs` (`L2-135`, ADR 0046). `LegacySessionCookieMiddleware` removes an
-  earlier `jubilee.session` cookie, which is never read as a session. A
+  through `DatabaseTicketStore` and sets the cookie `__Host-jubilee.session` (`Secure`, `HttpOnly`,
+  `SameSite=Lax`, `Path=/`), named and configured by `MemberSessionCookie`;
+  only the Development environment issues it as `jubilee.session`, without
+  the prefix (`L2-135`, ADR 0046). A
   sign-in that is not completed sets no session cookie.
 - **`JoinAgreementPage`** — Angular page at `/join/agreement`, headed "One
   more step". It shows the agreement checkbox with links to
@@ -150,7 +150,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-003` | `L1-001` | The system shall let visitors join or sign in with Google using OpenID Connect. When Google sign-in is not configured, "Sign up with Google" and "Continue with Google" shall not be shown, nor the "or use email" divider under them, and no request shall leave for Google; a request to start a Google sign-in all the same shall return the visitor to where they started with the sign-in error state. A visitor who cancels at Google shall be back on the page they started from (`/join` or `/sign-in`) with "You didn’t finish with Google. Try again, or use your e-mail and password.", and the place they were going to shall be kept. A Google sign-in started from `/join` that fails or is refused shall show its message on `/join`, not on `/sign-in`. |
 | `L2-010` | `L1-001` | Sessions shall be server-side, and a new session identifier shall be issued when a member signs in. |
 | `L2-012` | `L1-001` | A return URL used after sign-in shall be accepted only when it is a same-origin relative path; any other value shall fall back to `/`. |
-| `L2-135` | `L1-019` | A session shall be an opaque random identifier of at least 128 bits in a cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, no `Domain` and the `__Host-` prefix (`__Host-jubilee.session` for a member), and a state-changing request shall carry a valid anti-CSRF token bound to the session. The earlier member cookie `jubilee.session` shall not be accepted as a session, and the response shall remove it. |
+| `L2-135` | `L1-019` | A session shall be an opaque random identifier of at least 128 bits in a cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/` and the `__Host-` prefix, `__Host-jubilee.session`; only the Development environment shall issue it as `jubilee.session` without the prefix. A state-changing request that carries a session cookie shall carry the matching anti-CSRF token or be rejected with `403`. |
 
 ## Diagrams
 

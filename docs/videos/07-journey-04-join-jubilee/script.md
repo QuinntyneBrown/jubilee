@@ -1,4 +1,4 @@
-# 06 · Journey 4: Join Jubilee
+# 07 · Journey 4: Join Jubilee
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 
@@ -14,6 +14,6 @@ An address that another account already uses is not taken. The dialog says so be
 
 Send it again works five times an hour. After that nothing more is sent, and the banner says how long to wait.
 
-Behind the screen, a token in a request path is now written to the logs as redacted. And the member session cookie carries the Host prefix; a cookie under the earlier name is removed, and the member signs in again.
+Behind the screen, a token in a request path is now written to the logs as redacted. Confirmation and reset tokens travel in request bodies, which are never logged. A test reads the captured log to prove it.
 
 Journey four stands at ninety-eight percent. One step is left for the owner: the keys of the bot challenge in Azure.

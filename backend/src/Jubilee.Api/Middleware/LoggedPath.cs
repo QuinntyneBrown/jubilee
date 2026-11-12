@@ -1,7 +1,7 @@
 namespace Jubilee.Api.Middleware;
 
 /// <summary>
-/// The request path as a log line may write it (L2-140 AC3, ADR 0046). A token in the path is replaced
+/// The request path as a log line may write it (L2-140 AC3, ADR 0047). A token in the path is replaced
 /// by <see cref="Marker"/>: the value of a route parameter named <c>token</c>, and, where the request
 /// matched no route (a 404 or a 405), any segment long enough to be one. Bodies, query strings and
 /// cookies are never logged, so the path is the only place a token could reach a log.
