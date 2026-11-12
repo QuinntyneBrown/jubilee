@@ -494,6 +494,50 @@ test.describe('respond to customer requests: decline (L2-053)', () => {
     expect(fake.declines.map((d) => d.id)).toEqual([DAVID]);
   });
 
+  test('L2-053 AC6: a request the customer cancelled is not declined: the dialog closes, the list reloads and a toast says why', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new DeclineRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { decline: 'cancelled' });
+    await jb.goto(PATH);
+    await expect(requests.rows).toHaveCount(3);
+
+    await requests.declineButton('David Chen').click();
+    await dialog.message.fill('Thank you, David. We cannot take that many this month.');
+    await dialog.decline.click();
+
+    await expect(dialog.root).toHaveCount(0);
+    const told = toasts.danger('Request not declined');
+    await expect(told).toContainText('David Chen cancelled this request.');
+    await expect(requests.row('David Chen')).toHaveCount(0);
+    await expect(requests.statusTab(/^New/)).toContainText('2');
+    await expect(requests.statusTab(/^Declined/)).toContainText('0');
+    expect(fake.declines).toEqual([]);
+  });
+
+  test('L2-129 AC1: the decline dialog opens on "Keep request", and Escape keeps the request', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new DeclineRequestDialog(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page);
+    await jb.goto(PATH);
+
+    await requests.declineButton('Ruth Mensah').click();
+
+    await expect(dialog.keep).toBeFocused();
+    await dialog.escape();
+    await expect(dialog.root).toHaveCount(0);
+    await expect(requests.row('Ruth Mensah')).toBeVisible();
+    expect(fake.declines).toEqual([]);
+  });
+
   test('L2-053 AC5: the note stops at 1,000 characters', async ({ page, jb }) => {
     const requests = new IncomingRequestsPage(page);
     const dialog = new DeclineRequestDialog(page);

@@ -40,12 +40,13 @@ import { EMPTY, filter, interval, switchMap } from 'rxjs';
 import {
   ConfirmRequestData,
   ConfirmRequestDialog,
-  confirmConflict,
+  requestConflict,
   requestNoun,
 } from '../../dialogs/confirm-request/confirm-request.dialog';
 import {
   DeclineRequestData,
   DeclineRequestDialog,
+  DeclineResult,
 } from '../../dialogs/decline-request/decline-request.dialog';
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
@@ -272,18 +273,26 @@ export class IncomingRequestsPage implements OnInit {
   private confirmAgain(row: IncomingRequestRow): void {
     this.api.confirm(row.id).subscribe({
       next: (decision) => this.confirmed(row, decision),
-      error: (error: unknown) => this.notConfirmed(row, confirmConflict(error)),
+      error: (error: unknown) => this.notConfirmed(row, requestConflict(error)),
     });
   }
 
   protected openDecline(row: IncomingRequestRow): void {
-    const ref = this.dialog.open<RequestDecision, DeclineRequestData>(DeclineRequestDialog, {
+    const ref = this.dialog.open<DeclineResult, DeclineRequestData>(DeclineRequestDialog, {
       data: { request: row },
       ...this.dialogOptions(),
     });
     ref.closed.subscribe((decision) => {
       if (!decision) return;
       this.refresh();
+      if ('conflict' in decision) {
+        this.toasts.show({
+          tone: 'danger',
+          title: 'Request not declined',
+          text: decision.conflict,
+        });
+        return;
+      }
       this.toasts.show({
         tone: 'success',
         title: `${row.kindLabel} declined`,

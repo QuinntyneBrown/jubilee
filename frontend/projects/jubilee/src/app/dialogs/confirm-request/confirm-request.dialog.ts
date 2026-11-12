@@ -27,8 +27,8 @@ export interface ConfirmRequestData {
   settled?: (outcome: LateConfirmation) => void;
 }
 
-/** What the server said when a request can no longer be confirmed, such as a cancellation; null for any other failure. */
-export function confirmConflict(error: unknown): string | null {
+/** What the server said when a request can no longer be answered, such as a cancellation; null for any other failure. */
+export function requestConflict(error: unknown): string | null {
   if (!(error instanceof HttpErrorResponse) || error.status !== 409) return null;
   return (error.error as { detail?: string } | null)?.detail ?? 'This request has changed.';
 }
@@ -100,7 +100,7 @@ export class ConfirmRequestDialog {
         else this.data.settled?.({ confirmed: true, decision });
       },
       error: (error: unknown) => {
-        const conflict = confirmConflict(error);
+        const conflict = requestConflict(error);
         if (!this.open) {
           this.data.settled?.({ confirmed: false, conflict });
           return;

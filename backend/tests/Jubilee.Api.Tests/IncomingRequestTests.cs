@@ -248,6 +248,72 @@ public sealed class IncomingRequestTests : IClassFixture<JubileeApiFactory>, IAs
         });
     }
 
+    private HttpClient Samuel() => _factory.CreateMemberClient("Samuel Park", _samuel.Id.ToString());
+
+    private async Task<List<JsonElement>> NotificationsOf(HttpClient client) =>
+        [.. (await _factory.GetJson("/api/notifications", client)).GetProperty("items").EnumerateArray()];
+
+    // L2-052 AC2: the customer is notified in the app
+    [Fact]
+    public async Task L2_052_AC2_confirming_notifies_the_customer_in_the_app_with_a_link_to_the_request_and_nobody_else()
+    {
+        Assert.Equal(HttpStatusCode.OK, (await Confirm(Naomi(), _samuelsOrder)).StatusCode);
+
+        var told = Assert.Single(await NotificationsOf(Samuel()));
+        Assert.Equal("request", told.GetProperty("kind").GetString());
+        Assert.Equal("Luzandre.com confirmed your order", told.GetProperty("title").GetString());
+        Assert.Equal("Custom church team tee × 24", told.GetProperty("detail").GetString());
+        Assert.Equal($"/requests/{_samuelsOrder.Id}", told.GetProperty("target").GetString());
+        Assert.False(told.GetProperty("read").GetBoolean());
+        Assert.Equal(1, (await _factory.GetJson("/api/me/navigation", Samuel())).GetProperty("unreadNotificationCount").GetInt32());
+        Assert.Empty(await NotificationsOf(Naomi()));
+        Assert.Empty(await NotificationsOf(Joanna()));
+    }
+
+    // L2-053 AC3: the customer is notified
+    [Fact]
+    public async Task L2_053_AC3_declining_notifies_the_customer_in_the_app_with_a_link_to_the_request_and_nobody_else()
+    {
+        Assert.Equal(HttpStatusCode.OK, (await Decline(Naomi(), _samuelsOrder)).StatusCode);
+
+        var told = Assert.Single(await NotificationsOf(Samuel()));
+        Assert.Equal("request", told.GetProperty("kind").GetString());
+        Assert.Equal("Luzandre.com declined your order", told.GetProperty("title").GetString());
+        Assert.Equal("Custom church team tee × 24", told.GetProperty("detail").GetString());
+        Assert.Equal($"/requests/{_samuelsOrder.Id}", told.GetProperty("target").GetString());
+        Assert.False(told.GetProperty("read").GetBoolean());
+        Assert.Empty(await NotificationsOf(Naomi()));
+        Assert.Empty(await NotificationsOf(Joanna()));
+    }
+
+    // L2-053 AC6, L2-043 AC6
+    [Fact]
+    public async Task L2_053_AC6_a_request_the_customer_cancelled_is_not_declined_and_nobody_is_told()
+    {
+        await _factory.WithDb(async db =>
+        {
+            (await db.Requests.SingleAsync(r => r.Id == _samuelsOrder.Id)).Cancel(_samuelsOrder.MemberSubject, ListingMother.Now);
+            await db.SaveChangesAsync();
+        });
+
+        var response = await Decline(Naomi(), _samuelsOrder);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        var body = await Json(response);
+        Assert.Equal("INVALID_TRANSITION", body.GetProperty("code").GetString());
+        Assert.Equal("cancelled", body.GetProperty("requestStatus").GetString());
+        Assert.Equal("Samuel Park cancelled this request.", body.GetProperty("detail").GetString());
+        var saved = await Reload(_samuelsOrder);
+        Assert.Equal(RequestStatus.Cancelled, saved.Status);
+        Assert.Null(saved.DeclineMessage);
+        Assert.Empty(await NotificationsOf(Samuel()));
+        await _factory.WithDb(async db =>
+        {
+            Assert.Empty(await db.Messages.AsNoTracking().ToListAsync());
+            Assert.Empty(await db.OutboxMessages.AsNoTracking().ToListAsync());
+        });
+    }
+
     // L2-052 AC4
     [Fact]
     public async Task L2_052_AC4_confirming_an_order_reduces_the_stock_by_the_quantity()
