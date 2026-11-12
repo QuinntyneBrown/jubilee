@@ -2370,7 +2370,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "9a2e22cc15994cb3b2f7c0f7d2745b96",
+      "correlationId": "60d7354379a846a8be1d80148f588000",
       "code": "sign_in_required"
     }
   },
@@ -3035,7 +3035,7 @@
       },
       "services": [
         {
-          "id": "e5c47771-263f-46cf-ad11-61ea196fa994",
+          "id": "98e0631c-4156-4c3b-b07f-de710cad373d",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -3043,7 +3043,7 @@
           "action": "ask"
         },
         {
-          "id": "e6d6a180-fe7c-4c29-af77-d1e3bfe76e43",
+          "id": "83a7c6ca-b1bf-4baf-a14c-fedfbe4da5e1",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -3147,7 +3147,7 @@
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "dc89a4d2-30a9-4fff-8d1c-31cc2ac3b58b",
+      "id": "3ac95f6b-7bb0-41ca-9efd-9147616a12ef",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -3228,7 +3228,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "1268698b-2b0c-4b28-9de0-6506bf28a0a3",
+      "id": "55444617-04d1-450e-b291-4716f6fd9349",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -3342,7 +3342,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "dca33624-94b1-4ebb-a92f-91077c33f484",
+      "id": "41e72486-3b0d-49ca-91a2-9b3d5ce7f721",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -3427,7 +3427,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "21458a58e00d4d5f8fecc594a2fc17e8",
+      "correlationId": "d474751add63479fa2d941ca6e6162e3",
       "code": "product_not_found"
     }
   },
@@ -3443,11 +3443,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "d7758b91-3dab-443a-986a-c9ef8a1129d9",
+          "id": "cf490170-e651-4616-ac05-a12d9758c0b2",
           "author": "Tamara J.",
           "initials": "TJ",
           "rating": 5,
-          "itemId": "dc89a4d2-30a9-4fff-8d1c-31cc2ac3b58b",
+          "itemId": "3ac95f6b-7bb0-41ca-9efd-9147616a12ef",
           "itemName": "Custom church team tee (min. 12)",
           "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
           "createdAt": "2026-11-05T17:00:00+00:00",
@@ -3461,11 +3461,11 @@
           }
         },
         {
-          "id": "5b9b9abe-d64c-4e65-a926-7b718adecb61",
+          "id": "c0e2dbc4-ed7c-4d4c-915d-65721aebfcd7",
           "author": "Ruth M.",
           "initials": "RM",
           "rating": 5,
-          "itemId": "dca33624-94b1-4ebb-a92f-91077c33f484",
+          "itemId": "41e72486-3b0d-49ca-91a2-9b3d5ce7f721",
           "itemName": "Gold cross stoneware mug",
           "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
           "createdAt": "2026-10-12T17:00:00+00:00",
@@ -3474,11 +3474,11 @@
           "reply": null
         },
         {
-          "id": "2e0050c0-f3ce-4273-bc46-30166264ee53",
+          "id": "3be73648-9fab-4251-96bb-6660c088f684",
           "author": "Samuel P.",
           "initials": "SP",
           "rating": 4,
-          "itemId": "dca33624-94b1-4ebb-a92f-91077c33f484",
+          "itemId": "41e72486-3b0d-49ca-91a2-9b3d5ce7f721",
           "itemName": "Gold cross stoneware mug",
           "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
           "createdAt": "2026-09-30T17:00:00+00:00",
@@ -3487,11 +3487,11 @@
           "reply": null
         },
         {
-          "id": "9e026770-d287-4845-a8a4-ccd47bea8d34",
+          "id": "e56923da-e33e-48b3-bdda-17feba07d2c4",
           "author": "Kofi B.",
           "initials": "KB",
           "rating": 3,
-          "itemId": "1268698b-2b0c-4b28-9de0-6506bf28a0a3",
+          "itemId": "55444617-04d1-450e-b291-4716f6fd9349",
           "itemName": "Faith heavyweight tee, charcoal",
           "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
           "createdAt": "2026-08-14T17:00:00+00:00",
@@ -3505,17 +3505,49 @@
           }
         },
         {
-          "id": "a7510045-30ce-4cc8-ac10-096d45dd8e60",
+          "id": "2389f7be-dc45-4615-a5e5-f74469fcf7df",
           "author": "David C.",
           "initials": "DC",
           "rating": 5,
-          "itemId": "dca33624-94b1-4ebb-a92f-91077c33f484",
+          "itemId": "41e72486-3b0d-49ca-91a2-9b3d5ce7f721",
           "itemName": "Gold cross stoneware mug",
           "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
           "createdAt": "2026-07-22T17:00:00+00:00",
           "editedAt": null,
           "mine": false,
           "reply": null
+        }
+      ]
+    }
+  },
+  "GET /api/listings/luzandre/reviews?product=custom-church-team-tee": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 5,
+        "count": 1,
+        "breakdown": [1, 0, 0, 0, 0]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": [
+        {
+          "id": "cf490170-e651-4616-ac05-a12d9758c0b2",
+          "author": "Tamara J.",
+          "initials": "TJ",
+          "rating": 5,
+          "itemId": "3ac95f6b-7bb0-41ca-9efd-9147616a12ef",
+          "itemName": "Custom church team tee (min. 12)",
+          "text": "Ordered 40 tees for our youth retreat. The proof came back the same day, the print is thick and hasn’t cracked after a dozen washes. The kids actually wear them outside church.",
+          "createdAt": "2026-11-05T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": {
+            "from": "Luzandre.com",
+            "text": "Thank you Tamara! Send us a photo from the retreat, we’d love to share it.",
+            "at": "2026-11-06T17:00:00+00:00",
+            "editedAt": null
+          }
         }
       ]
     }
@@ -3532,11 +3564,11 @@
       "writing": "sign-in",
       "items": [
         {
-          "id": "9e026770-d287-4845-a8a4-ccd47bea8d34",
+          "id": "e56923da-e33e-48b3-bdda-17feba07d2c4",
           "author": "Kofi B.",
           "initials": "KB",
           "rating": 3,
-          "itemId": "1268698b-2b0c-4b28-9de0-6506bf28a0a3",
+          "itemId": "55444617-04d1-450e-b291-4716f6fd9349",
           "itemName": "Faith heavyweight tee, charcoal",
           "text": "Love the design. Runs a full size small, so order up. Exchange was easy but took about two weeks by mail.",
           "createdAt": "2026-08-14T17:00:00+00:00",
@@ -3548,6 +3580,59 @@
             "at": "2026-08-15T17:00:00+00:00",
             "editedAt": null
           }
+        }
+      ]
+    }
+  },
+  "GET /api/listings/luzandre/reviews?product=gold-cross-stoneware-mug": {
+    "status": 200,
+    "body": {
+      "summary": {
+        "average": 4.7,
+        "count": 3,
+        "breakdown": [2, 1, 0, 0, 0]
+      },
+      "viewer": "visitor",
+      "writing": "sign-in",
+      "items": [
+        {
+          "id": "c0e2dbc4-ed7c-4d4c-915d-65721aebfcd7",
+          "author": "Ruth M.",
+          "initials": "RM",
+          "rating": 5,
+          "itemId": "41e72486-3b0d-49ca-91a2-9b3d5ce7f721",
+          "itemName": "Gold cross stoneware mug",
+          "text": "Heavier than I expected in a good way. The gold has stayed bright in the dishwasher.",
+          "createdAt": "2026-10-12T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "3be73648-9fab-4251-96bb-6660c088f684",
+          "author": "Samuel P.",
+          "initials": "SP",
+          "rating": 4,
+          "itemId": "41e72486-3b0d-49ca-91a2-9b3d5ce7f721",
+          "itemName": "Gold cross stoneware mug",
+          "text": "Good mug, solid glaze. It took nine days to ship to Scarborough, longer than the five I was told.",
+          "createdAt": "2026-09-30T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
+        },
+        {
+          "id": "2389f7be-dc45-4615-a5e5-f74469fcf7df",
+          "author": "David C.",
+          "initials": "DC",
+          "rating": 5,
+          "itemId": "41e72486-3b0d-49ca-91a2-9b3d5ce7f721",
+          "itemName": "Gold cross stoneware mug",
+          "text": "Bought two as gifts for our small group leaders. Both arrived well packed and they use them every Sunday.",
+          "createdAt": "2026-07-22T17:00:00+00:00",
+          "editedAt": null,
+          "mine": false,
+          "reply": null
         }
       ]
     }
@@ -3705,7 +3790,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "8611bbf5a40f4e07b4980c511ec8b5d7",
+      "correlationId": "b2a22d860c0444458a04ac2a644eea66",
       "code": "sign_in_required"
     }
   },
