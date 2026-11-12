@@ -180,7 +180,13 @@
             </p>
           </fieldset>
 
-          <div jb-field label="Business name" controlId="name" required [error]="errors().name">
+          <div
+            jb-field
+            [label]="isSpace() ? 'Listing title' : 'Business name'"
+            controlId="name"
+            required
+            [error]="errors().name"
+          >
             <input
               jb-input
               name="name"
@@ -193,7 +199,7 @@
           </div>
           <div
             jb-field
-            label="One line on what you do"
+            [label]="isSpace() ? 'One line renters should know' : 'One line on what you do'"
             controlId="tagline"
             required
             [counter]="draft().tagline.trim().length + ' / ' + maxTagline"
@@ -213,7 +219,11 @@
             jb-field
             label="About"
             controlId="about"
-            hint="A few sentences on who you are and who you serve."
+            [hint]="
+              isSpace()
+                ? 'A few sentences on who you are and who you host.'
+                : 'A few sentences on who you are and who you serve.'
+            "
           >
             <textarea
               jb-textarea
@@ -225,70 +235,256 @@
               [readOnly]="busy()"
             ></textarea>
           </div>
-          <div class="form-grid form-grid--2">
-            <div jb-field label="Category" controlId="cat">
-              <select
-                jb-select
-                name="category"
-                [ngModel]="draft().category"
-                (ngModelChange)="set('category', $event)"
-                [disabled]="busy()"
-              >
-                @for (category of e.categories; track category.slug) {
-                  <option [value]="category.slug">{{ category.name }}</option>
+          @if (isSpace()) {
+            <fieldset [disabled]="busy()">
+              <legend>How are you renting it?</legend>
+              <jb-choice-cards>
+                @for (choice of termChoices; track choice.value) {
+                  <jb-choice-card
+                    name="term"
+                    [controlId]="'term-' + choice.value"
+                    [heading]="choice.label"
+                    [checked]="term() === choice.value"
+                    (selected)="setTerm(choice.value)"
+                    >{{ choice.text }}</jb-choice-card
+                  >
                 }
-              </select>
+              </jb-choice-cards>
+            </fieldset>
+            <div class="form-grid form-grid--3">
+              <div
+                jb-field
+                [label]="nightly() ? 'Price per night' : 'Price per month'"
+                controlId="price"
+                required
+                [error]="errors().rent"
+              >
+                <jb-input-group>
+                  <span slot="prefix" jb-input-addon aria-hidden="true">$</span>
+                  <input
+                    jb-input
+                    name="rent"
+                    type="text"
+                    inputmode="numeric"
+                    required
+                    [readOnly]="busy()"
+                    [ngModel]="rent()"
+                    (ngModelChange)="rent.set($event); touched('rent')"
+                  />
+                </jb-input-group>
+              </div>
+              <div
+                jb-field
+                [label]="nightly() ? 'Available' : 'Move-in date'"
+                controlId="avail"
+                required
+                [error]="errors().available"
+              >
+                <input
+                  jb-input
+                  name="available"
+                  type="text"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="available()"
+                  (ngModelChange)="available.set($event); touched('available')"
+                />
+              </div>
+              <div jb-field [label]="nightly() ? 'Minimum nights' : 'Minimum stay'" controlId="min">
+                <select
+                  jb-select
+                  name="minimumStay"
+                  [disabled]="busy()"
+                  [ngModel]="minimumStay()"
+                  (ngModelChange)="minimumStay.set($event); touched()"
+                >
+                  @for (choice of minimumChoices(); track choice.value) {
+                    <option [value]="choice.value">{{ choice.label }}</option>
+                  }
+                </select>
+              </div>
             </div>
-            <div jb-field label="Where" controlId="area">
+            <div class="form-grid form-grid--2">
+              <div
+                jb-field
+                label="Neighbourhood"
+                hint="Your exact address is only shared once you accept a request."
+                controlId="area"
+                required
+                [error]="errors().neighbourhood"
+              >
+                <input
+                  jb-input
+                  name="neighbourhood"
+                  type="text"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="neighbourhood()"
+                  (ngModelChange)="neighbourhood.set($event); touched('neighbourhood')"
+                />
+              </div>
+              <div
+                jb-field
+                label="Exact address"
+                hint="Only the renter whose request you accept sees it."
+                controlId="address"
+                required
+                [error]="errors().address"
+              >
+                <input
+                  jb-input
+                  name="address"
+                  type="text"
+                  autocomplete="street-address"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="address()"
+                  (ngModelChange)="address.set($event); touched('address')"
+                />
+              </div>
+            </div>
+            <div class="form-grid form-grid--2">
+              <div jb-field label="The space" controlId="place">
+                <select
+                  jb-select
+                  name="spacePlace"
+                  [disabled]="busy()"
+                  [ngModel]="spacePlace()"
+                  (ngModelChange)="spacePlace.set($event); touched()"
+                >
+                  @for (choice of places; track choice) {
+                    <option [value]="choice">{{ choice }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+            <div
+              jb-field
+              label="Key facts"
+              hint="One per line, like “1 bedroom” or “Separate entrance”. Up to four."
+              controlId="facts"
+              optional
+            >
+              <textarea
+                jb-textarea
+                name="facts"
+                rows="4"
+                [readOnly]="busy()"
+                [ngModel]="facts()"
+                (ngModelChange)="facts.set($event); touched()"
+              ></textarea>
+            </div>
+            <fieldset [disabled]="busy()">
+              <legend>What’s included</legend>
+              <div class="cluster" style="gap: var(--space-2)">
+                @for (item of inclusions; track item) {
+                  <button
+                    jb-chip
+                    type="button"
+                    [selected]="included().includes(item)"
+                    (click)="toggleIncluded(item)"
+                  >
+                    {{ item }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+            @if (householdLabel(); as label) {
+              <div
+                jb-field
+                [label]="label"
+                hint="Renters choose people as much as rooms. A few honest lines go a long way."
+                controlId="household"
+                required
+                [error]="errors().household"
+              >
+                <textarea
+                  jb-textarea
+                  name="household"
+                  rows="3"
+                  required
+                  [readOnly]="busy()"
+                  [ngModel]="household()"
+                  (ngModelChange)="household.set($event); touched('household')"
+                ></textarea>
+              </div>
+            }
+            <div jb-field label="House rules" hint="One per line." controlId="rules" optional>
+              <textarea
+                jb-textarea
+                name="rules"
+                rows="3"
+                [readOnly]="busy()"
+                [ngModel]="rules()"
+                (ngModelChange)="rules.set($event); touched()"
+              ></textarea>
+            </div>
+          } @else {
+            <div class="form-grid form-grid--2">
+              <div jb-field label="Category" controlId="cat">
+                <select
+                  jb-select
+                  name="category"
+                  [ngModel]="draft().category"
+                  (ngModelChange)="set('category', $event)"
+                  [disabled]="busy()"
+                >
+                  @for (category of e.categories; track category.slug) {
+                    <option [value]="category.slug">{{ category.name }}</option>
+                  }
+                </select>
+              </div>
+              <div jb-field label="Where" controlId="area">
+                <input
+                  jb-input
+                  name="where"
+                  type="text"
+                  [ngModel]="draft().where"
+                  (ngModelChange)="set('where', $event)"
+                  [readOnly]="busy()"
+                />
+              </div>
+            </div>
+            <div class="form-grid form-grid--2">
+              <div jb-field label="Hours" controlId="hours" [error]="errors().hours">
+                <input
+                  jb-input
+                  name="hours"
+                  type="text"
+                  [ngModel]="draft().hours"
+                  (ngModelChange)="set('hours', $event)"
+                  [readOnly]="busy()"
+                />
+              </div>
+              <div jb-field label="Website" controlId="web" optional [error]="errors().website">
+                <input
+                  jb-input
+                  name="website"
+                  type="url"
+                  [ngModel]="draft().website"
+                  (ngModelChange)="set('website', $event)"
+                  [readOnly]="busy()"
+                />
+              </div>
+            </div>
+            <div
+              jb-field
+              label="Highlight"
+              controlId="perk"
+              optional
+              hint="A short green line on your card, like “Free first meeting”. 30 characters at most."
+            >
               <input
                 jb-input
-                name="where"
+                name="highlight"
                 type="text"
-                [ngModel]="draft().where"
-                (ngModelChange)="set('where', $event)"
+                [attr.maxlength]="maxHighlight"
+                [ngModel]="draft().highlight"
+                (ngModelChange)="set('highlight', $event)"
                 [readOnly]="busy()"
               />
             </div>
-          </div>
-          <div class="form-grid form-grid--2">
-            <div jb-field label="Hours" controlId="hours" [error]="errors().hours">
-              <input
-                jb-input
-                name="hours"
-                type="text"
-                [ngModel]="draft().hours"
-                (ngModelChange)="set('hours', $event)"
-                [readOnly]="busy()"
-              />
-            </div>
-            <div jb-field label="Website" controlId="web" optional [error]="errors().website">
-              <input
-                jb-input
-                name="website"
-                type="url"
-                [ngModel]="draft().website"
-                (ngModelChange)="set('website', $event)"
-                [readOnly]="busy()"
-              />
-            </div>
-          </div>
-          <div
-            jb-field
-            label="Highlight"
-            controlId="perk"
-            optional
-            hint="A short green line on your card, like “Free first meeting”. 30 characters at most."
-          >
-            <input
-              jb-input
-              name="highlight"
-              type="text"
-              [attr.maxlength]="maxHighlight"
-              [ngModel]="draft().highlight"
-              (ngModelChange)="set('highlight', $event)"
-              [readOnly]="busy()"
-            />
-          </div>
+          }
           <div class="form-actions">
             <span jb-inline-status>{{
               busy() ? 'Saving…' : 'Changes are published when you save'
@@ -305,9 +501,17 @@
             class="text-caption"
             style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3)"
           >
-            How members see you
+            {{ isSpace() ? 'How renters see it' : 'How members see you' }}
           </h2>
-          <a jb-business-card [business]="preview()" [routerLink]="['/b', e.slug]"></a>
+          @if (isSpace()) {
+            <div
+              jb-space-card-preview
+              [space]="spacePreview()"
+              [verified]="e.stage === 'live'"
+            ></div>
+          } @else {
+            <a jb-business-card [business]="preview()" [routerLink]="['/b', e.slug]"></a>
+          }
         </aside>
       </div>
     </div>

@@ -13,7 +13,7 @@ import { stubProfile } from './profile';
 import { stubSaved } from './saved';
 import { stubPasswordReset } from './password-reset';
 import { NOTIFICATIONS, stubNotifications } from './notifications';
-import { stubMyBusiness } from './my-business';
+import { SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubReference } from './reference';
 import { stubListingDrafts } from './listing-drafts';
@@ -332,6 +332,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubOrder(page);
     case 'editor':
       return stubMyBusiness(page);
+    case 'editor-space':
+      return stubMyBusiness(page, { listing: SUITE });
     case 'editor-error':
       return stubMyBusiness(page, { editor: 'fails' });
     case 'profile':

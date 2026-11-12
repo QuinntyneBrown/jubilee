@@ -1,9 +1,10 @@
 import { parity } from '../../fixtures/parity';
 import { AdminVerificationPage } from '../../pages/admin-verification.page';
+import { EditListingPage } from '../../pages/edit-listing.page';
 import { ListBusinessPage } from '../../pages/list-business.page';
 
 // jb-space-card-preview: how renters will see a space while it waits for verification (L2-189 AC3,
-// L2-191 AC3).
+// L2-191 AC3), and as its owner edits it (L2-200).
 parity('space-card-preview', {
   cases: [
     {
@@ -18,6 +19,12 @@ parity('space-card-preview', {
       route: 'admin-verification.space',
       screen: (page) => new AdminVerificationPage(page),
       region: (screen: AdminVerificationPage) => screen.spacePreview,
+    },
+    {
+      name: 'edit-a-space',
+      route: 'edit-listing.space',
+      screen: (page) => new EditListingPage(page),
+      region: (screen: EditListingPage) => screen.spacePreview,
     },
   ],
   reference: {

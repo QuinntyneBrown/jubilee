@@ -46,6 +46,8 @@ export interface FakeBusiness {
     hours: string;
     website: string;
     highlight: string;
+    /** A space's own fields (L2-200); absent for a business. */
+    space?: Record<string, unknown> | null;
   };
   saves: Record<string, unknown>[];
   pauses: number;
@@ -72,6 +74,32 @@ const PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==',
   'base64',
 );
+
+/** The guest suite of the design reference, as its owner's editor opens it (L2-200). */
+export const SUITE: FakeBusiness['listing'] = {
+  name: 'Guest suite near Roncesvalles',
+  tagline: 'Private suite for visiting family, conferences or a weekend away',
+  categorySlug: 'rooms-rentals',
+  about:
+    'Ten minutes’ walk to High Park and the Queen streetcar. Members of our church get a quiet, clean place to land.',
+  where: 'Roncesvalles',
+  hours: '',
+  website: '',
+  highlight: '',
+  space: {
+    term: 'short-stay',
+    rent: 120,
+    available: 'Most weekends',
+    minimumStay: 2,
+    neighbourhood: 'Roncesvalles',
+    address: '112 Fermanagh Ave, Toronto, ON M6R 1M2',
+    place: 'Guest suite',
+    facts: ['Queen bed', 'Private bath', 'Sleeps 2', 'Self check-in'],
+    included: ['Wi-Fi', 'Furnished', 'Parking', 'Private bath'],
+    household: null,
+    rules: ['Check-in after 3 pm', 'No parties', 'No smoking'],
+  },
+};
 
 export const SAMUEL = '5d0b1c2e-0000-4000-8000-000000000001';
 
@@ -293,6 +321,7 @@ export async function stubMyBusiness(
         hours: String(body['hours']),
         website: String(body['website']),
         highlight: String(body['highlight']),
+        space: (body['space'] as unknown as Record<string, unknown> | undefined) ?? null,
       };
       return route.fulfill({ json: editor() });
     }

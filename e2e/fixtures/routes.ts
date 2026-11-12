@@ -89,6 +89,7 @@ export type StubName =
   | 'order'
   | 'listing-draft'
   | 'editor-error'
+  | 'editor-space'
   | 'notifications'
   | 'notifications-read'
   | 'notifications-empty'
@@ -824,6 +825,12 @@ export const routes = {
     mock: 'pages/edit-listing/default.html',
     who: 'member',
     stub: 'editor',
+  },
+  'edit-listing.space': {
+    app: '/my-business/listing',
+    mock: 'pages/edit-listing/space.html',
+    who: 'member',
+    stub: 'editor-space',
   },
   'edit-listing.error': {
     app: '/my-business/listing',

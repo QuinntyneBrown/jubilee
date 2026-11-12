@@ -106,6 +106,7 @@ export const screens: {
   { key: 'my-services.empty', screen: (page) => new MyServicesPage(page) },
   { key: 'my-services.error', screen: (page) => new MyServicesPage(page) },
   { key: 'edit-listing', screen: (page) => new EditListingPage(page) },
+  { key: 'edit-listing.space', screen: (page) => new EditListingPage(page) },
   { key: 'edit-listing.error', screen: (page) => new EditListingPage(page) },
   { key: 'admin-sign-in', screen: (page) => new AdminSignInPage(page) },
   { key: 'admin-sign-in.second-factor-missing', screen: (page) => new AdminSignInPage(page) },
