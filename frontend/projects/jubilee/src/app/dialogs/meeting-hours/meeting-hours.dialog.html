@@ -1,0 +1,89 @@
+<jb-dialog
+  heading="Meeting hours"
+  description="Members are offered meeting times inside these hours, in Toronto time. Requests you already have keep their times."
+  icon="clock"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <form
+    jb-dialog-body
+    class="stack"
+    id="hours-form"
+    jbDraft="meeting-hours"
+    novalidate
+    (ngSubmit)="save()"
+  >
+    @if (view() === 'failed') {
+      <div jb-alert tone="danger" heading="We couldn’t save that" role="alert">
+        <div>Your meeting hours have not changed. Try again.</div>
+      </div>
+    }
+    <fieldset
+      jb-field
+      label="Days"
+      controlId="d-days"
+      [error]="problems().days"
+      [attr.aria-invalid]="problems().days ? 'true' : null"
+    >
+      <div class="cluster">
+        @for (day of week; track day.value) {
+          <jb-checkbox
+            [name]="'day-' + day.name.toLowerCase()"
+            [controlId]="'d-day-' + day.value"
+            [checked]="days().includes(day.value)"
+            [disabled]="busy()"
+            [invalid]="!!problems().days"
+            [describedBy]="problems().days ? 'd-days-error' : null"
+            (checkedChange)="toggle(day.value, $event)"
+            >{{ day.name }}</jb-checkbox
+          >
+        }
+      </div>
+    </fieldset>
+    <div class="form-grid form-grid--2">
+      <div jb-field label="From" controlId="d-from" required [error]="problems().opensAt">
+        <input
+          jb-input
+          name="opensAt"
+          type="time"
+          step="300"
+          required
+          [readOnly]="busy()"
+          [ngModel]="opensAt()"
+          (ngModelChange)="opensAt.set($event)"
+        />
+      </div>
+      <div jb-field label="Until" controlId="d-until" required [error]="problems().closesAt">
+        <input
+          jb-input
+          name="closesAt"
+          type="time"
+          step="300"
+          required
+          [readOnly]="busy()"
+          [ngModel]="closesAt()"
+          (ngModelChange)="closesAt.set($event)"
+        />
+      </div>
+    </div>
+    <div jb-field label="A time every" controlId="d-every" [error]="problems().slotMinutes">
+      <select
+        jb-select
+        name="slotMinutes"
+        [disabled]="busy()"
+        [ngModel]="slotMinutes()"
+        (ngModelChange)="slotMinutes.set(+$event)"
+      >
+        @for (length of lengths; track length.minutes) {
+          <option [value]="length.minutes">{{ length.label }}</option>
+        }
+      </select>
+    </div>
+  </form>
+  <div jb-dialog-footer>
+    <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+    <button jb-button variant="primary" type="submit" form="hours-form" [busy]="busy()">
+      Save hours
+    </button>
+  </div>
+</jb-dialog>

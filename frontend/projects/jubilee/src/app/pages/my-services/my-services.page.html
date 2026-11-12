@@ -41,9 +41,14 @@
         } @else {
           <div class="cluster cluster--between" style="margin-bottom: var(--space-4)">
             <p class="text-muted">{{ summary() }}</p>
-            <button jb-button variant="primary" type="button" (click)="add(list)">
-              <svg jb-icon name="plus"></svg>Add service
-            </button>
+            <div class="cluster">
+              <button jb-button type="button" (click)="openHours(list)">
+                <svg jb-icon name="clock"></svg>Meeting hours
+              </button>
+              <button jb-button variant="primary" type="button" (click)="add(list)">
+                <svg jb-icon name="plus"></svg>Add service
+              </button>
+            </div>
           </div>
           @if (list.total >= list.max) {
             <p class="text-muted" role="status">You can list up to {{ list.max }} services.</p>
