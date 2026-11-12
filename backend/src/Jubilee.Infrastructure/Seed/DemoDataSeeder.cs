@@ -145,7 +145,61 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
         }
 
         await db.SaveChangesAsync(cancellationToken);
+        await SeedReviewsAsync(cancellationToken);
     }
+
+    /// <summary>
+    /// The sample reviews (ADR 0058), each once by its key; the star counts of their listings and products are
+    /// counted again from what is stored, so a re-run changes nothing.
+    /// </summary>
+    private async Task SeedReviewsAsync(CancellationToken cancellationToken)
+    {
+        var keys = await db.Reviews.Select(r => r.IdempotencyKey).ToListAsync(cancellationToken);
+        var touched = new HashSet<Guid>();
+        for (var i = 0; i < DemoReviews.All.Length; i++)
+        {
+            var demo = DemoReviews.All[i];
+            var key = $"demo-review|{demo.Slug}|{i}";
+            var listing = await db.Listings.SingleOrDefaultAsync(l => l.Slug == demo.Slug, cancellationToken);
+            if (keys.Contains(key) || listing is null)
+            {
+                continue;
+            }
+
+            var service = await db.Services.FirstOrDefaultAsync(s => s.ListingId == listing.Id && s.Name == demo.Item, cancellationToken);
+            var product = await db.Products.FirstOrDefaultAsync(p => p.ListingId == listing.Id && p.Name == demo.Item, cancellationToken);
+            var subject = $"demo|reviewer-{demo.Author.ToLowerInvariant().Replace(' ', '-')}";
+            var review = Review.Write(listing.Id, new ReviewItem(service?.Id, product?.Id, demo.Item), subject, demo.Author, demo.Rating, demo.Text, key, demo.At);
+            if (demo.Reply is { } reply)
+            {
+                review.ReplyWith(ReviewReplyName(listing), reply.Text, reply.At);
+            }
+
+            db.Reviews.Add(review);
+            touched.Add(listing.Id);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        foreach (var listingId in touched)
+        {
+            var shown = await db.Reviews.Where(r => r.ListingId == listingId && r.TakenDownAt == null).ToListAsync(cancellationToken);
+            var listing = await db.Listings.SingleAsync(l => l.Id == listingId, cancellationToken);
+            listing.CountStars(StarCounts.Of(shown.Select(r => r.Rating)));
+            foreach (var group in shown.Where(r => r.ProductId is not null).GroupBy(r => r.ProductId!.Value))
+            {
+                var product = await db.Products.SingleAsync(p => p.Id == group.Key, cancellationToken);
+                product.CountStars(StarCounts.Of(group.Select(r => r.Rating)));
+            }
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>Who an owner's reply is from, as <c>ReviewRules.ReplyFrom</c> names it.</summary>
+    private static string ReviewReplyName(Listing listing) =>
+        string.IsNullOrWhiteSpace(listing.OwnerName) ? listing.Name
+        : listing.Kind == ListingKind.Space ? listing.OwnerName.Trim()
+        : listing.OwnerName.Split(',')[0].Trim();
 
     private static void Detail(Product product)
     {

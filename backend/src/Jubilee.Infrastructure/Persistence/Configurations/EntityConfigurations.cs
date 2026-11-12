@@ -21,6 +21,7 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.ApprovedBy).HasMaxLength(120);
         builder.Ignore(l => l.IsVerified);
         builder.Ignore(l => l.ReplyTimeBand);
+        builder.Ignore(l => l.Stars);
         builder.Property(l => l.Kind).HasConversion<string>().HasMaxLength(16);
         builder.Property(l => l.OwnerName).HasMaxLength(200);
         builder.Property(l => l.MeetingArea).HasMaxLength(100);
@@ -63,6 +64,7 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.IdempotencyKey).HasMaxLength(64);
         builder.Property(p => p.MinimumQuantity).HasDefaultValue(1);
         builder.Ignore(p => p.IsSoldOut);
+        builder.Ignore(p => p.Stars);
         builder.Ignore(p => p.MaxQuantity);
         builder.Ignore(p => p.OrderedOptions);
         builder.Ignore(p => p.OrderedAttributes);
@@ -814,5 +816,51 @@ public sealed class SignInFailureConfiguration : IEntityTypeConfiguration<SignIn
         builder.Property(f => f.Address).HasMaxLength(64).IsRequired();
         builder.HasIndex(f => new { f.AccountKey, f.At });
         builder.HasIndex(f => new { f.Address, f.At });
+    }
+}
+
+/// <summary>Reviews (ADR 0058): the owner's one reply is kept on the row; a review goes with its listing.</summary>
+public sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
+{
+    public void Configure(EntityTypeBuilder<Review> builder)
+    {
+        builder.ToTable("Reviews");
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.ItemName).HasMaxLength(120).IsRequired();
+        builder.Property(r => r.AuthorSubject).HasMaxLength(200).IsRequired();
+        builder.Property(r => r.AuthorName).HasMaxLength(120).IsRequired();
+        builder.Property(r => r.Text).HasMaxLength(Review.MaxTextLength).IsRequired();
+        builder.Property(r => r.IdempotencyKey).HasMaxLength(100).IsRequired();
+        builder.Property(r => r.ReplyText).HasMaxLength(Review.MaxReplyLength);
+        builder.Property(r => r.ReplyFrom).HasMaxLength(200);
+        builder.Property(r => r.TakeDownReason).HasMaxLength(Review.MaxReasonLength);
+        builder.Ignore(r => r.IsShown);
+        builder.Ignore(r => r.Initials);
+        builder.HasIndex(r => new { r.ListingId, r.CreatedAt });
+        builder.HasIndex(r => new { r.AuthorSubject, r.IdempotencyKey }).IsUnique();
+        builder.HasIndex(r => r.ProductId);
+        builder.HasOne<Listing>().WithMany().HasForeignKey(r => r.ListingId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+/// <summary>Reports of reviews (L2-235); they go with their review.</summary>
+public sealed class ReviewReportConfiguration : IEntityTypeConfiguration<ReviewReport>
+{
+    public void Configure(EntityTypeBuilder<ReviewReport> builder)
+    {
+        builder.ToTable("ReviewReports");
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.ReporterSubject).HasMaxLength(200).IsRequired();
+        builder.Property(r => r.ReporterName).HasMaxLength(200).IsRequired();
+        builder.Property(r => r.Reason).HasConversion<string>().HasMaxLength(24);
+        builder.Property(r => r.Note).HasMaxLength(ReviewReport.MaxNoteLength);
+        builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
+        builder.Property(r => r.IdempotencyKey).HasMaxLength(100).IsRequired();
+        builder.Property(r => r.ResolutionNote).HasMaxLength(ReportAction.MaxNoteLength);
+        builder.HasIndex(r => new { r.ReporterSubject, r.IdempotencyKey }).IsUnique();
+        builder.HasIndex(r => r.ReviewId);
+        builder.HasOne<Review>().WithMany().HasForeignKey(r => r.ReviewId).OnDelete(DeleteBehavior.Cascade);
     }
 }

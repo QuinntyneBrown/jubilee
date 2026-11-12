@@ -42,6 +42,30 @@ public sealed class Product
 
     public DateTimeOffset CreatedAt { get; private set; }
 
+    /// <summary>The count of 5-star reviews shown; with the four below it, the stored <see cref="Stars"/> (ADR 0058).</summary>
+    public int Stars5 { get; private set; }
+
+    public int Stars4 { get; private set; }
+
+    public int Stars3 { get; private set; }
+
+    public int Stars2 { get; private set; }
+
+    public int Stars1 { get; private set; }
+
+    /// <summary>The count of each star of the reviews shown (L2-230).</summary>
+    public StarCounts Stars => new(Stars5, Stars4, Stars3, Stars2, Stars1);
+
+    /// <summary>Stores the counts after a review was written, changed, removed or taken down (L2-237 AC9).</summary>
+    public void CountStars(StarCounts stars)
+    {
+        Stars5 = stars.Five;
+        Stars4 = stars.Four;
+        Stars3 = stars.Three;
+        Stars2 = stars.Two;
+        Stars1 = stars.One;
+    }
+
     public TileTint TileTint { get; private set; }
 
     public TileIcon TileIcon { get; private set; }
