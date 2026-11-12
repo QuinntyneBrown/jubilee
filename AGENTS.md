@@ -8,6 +8,10 @@ everything: every requirement, design, mock, line of code and line of copy point
 Quote it word for word, never paraphrased. Before adding or changing anything, ask how it serves
 the mission; if it does not, do not build it, and if a request works against it, say so.
 
+The mission is grounded in Scripture. `docs/scripture.md` holds the passages it rests on, what
+each asks of Jubilee's content, and what Jubilee never says. Frame every line of copy (app,
+marketing site, e-mail, pitch) from it, and quote Scripture word for word with its reference.
+
 ## Project overview
 
 Jubilee is Toronto's Christian marketplace: a directory of verified Christian-owned businesses
@@ -46,6 +50,8 @@ say so and propose the correction; do not work around it silently.
 - `docs/adr/` — architecture decisions; read relevant ADRs before changing the areas they cover
 - `docs/estimates/` — effort and percent complete per design
 - `docs/audits/` — audits of the codebase against its rules, each with the fixes it calls for
+- `docs/scripture.md` — the passages the mission and all of Jubilee's content are framed from
+- `docs/elevator-pitch.md` — the first-contact pitch for Christian business people
 - `docs/journey.md`, `docs/prompts/` — the user journeys and one implementation prompt per journey
 - `eng/` — local engineering scripts (`Test-Backend.ps1`, `Start-E2eApi.ps1`, `Start-FreshStack.ps1`)
 - `eng/azure/` — how Jubilee is hosted on Azure and the script that deploys it (see its `README.md`)
