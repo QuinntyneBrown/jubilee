@@ -81,6 +81,16 @@ a real scanner in a test.
   e2e API only: `Program.cs` sets it by default in the Development environment and logs a warning
   when the API starts with it. A production deployment without `clamd` therefore sends no message
   photos until the owner provides one (see "Owner steps").
+- **The key that signs a photo's link is never the one in the source code outside Development.**
+  ADR 0014 said `Attachments:SigningKey` must be set in production; production had none, so its
+  links were signed with the published development key and anyone could have made one for an
+  attachment id they knew. `AttachmentLinks` now uses the configured key; without one, the
+  Development environment uses the published key and every other environment makes a random key of
+  32 bytes when it starts. That key is the instance's own, so a link fails on another instance or
+  after a restart, and the page asks for a new one as it does for an expired link (L2-060 AC8).
+  The owner sets the key before a second instance is added.
+- **Both sides of a photo are checked: 8,000 pixels wide and 8,000 high.** `ImageSanitizer`
+  checked the width only.
 - **A message with a photo is still not queued offline, and L2-120 now says so (AC4).** The queue
   is an IndexedDB store of text that survives a closed tab; a photo is up to 5 MB, and keeping it
   would mean storing the blob on the device and uploading it, then sending, from the drainer, with
@@ -117,7 +127,17 @@ a real scanner in a test.
   orphans is retention work (L2-148) and is not built here.
 - Listing photos (`AddPhotoCommandHandler`) are not given to the scanner by this change: they
   belong to journeys 15 and 16, whose prompt names the secure-uploads design. The seam is there
-  for them.
+  for them. Feedback screenshots (journey 29) are not scanned either.
+- A message photo is stripped of everything that is not picture data but is not decoded and
+  encoded again, as ADR 0014 decided; listing photos are (`SkiaImageProcessor`). L2-138 AC1 says
+  "re-encodes" of every upload, so that word stays open for message photos. Re-encoding them
+  means choosing what happens to a PNG's transparency and to the full-size view, which is a
+  design decision of its own.
+- Found while checking the paged inbox against the e2e API: on SQLite the inbox query has never
+  run, because the preview of the last message needs `OUTER APPLY`, which SQLite does not have.
+  SQL Server, which production uses, has it, and the e2e suite answers the inbox from its
+  stand-in (ADR 0014). The counts and the page added here do translate on SQLite. A developer's
+  local stack shows "We couldn’t load your messages"; that is not fixed here.
 - An inbox row loaded by "Show more conversations" is not refreshed by a new message until the
   member loads the inbox again; the conversation that received the message moves to the first
   page, which is refreshed.
@@ -130,7 +150,8 @@ has the commands.
 1. Run a `clamd` daemon the API can reach (the `clamav/clamav` container image, port 3310, on the
    private network) and set `Malware__Scanner=clamav` and `Malware__ClamAv__Host` on the API.
    Until then production refuses message photos with `SCAN_UNAVAILABLE`.
-2. Decide whether photos move from the App Service's persistent folder (`Media__Root`) to Azure
+2. Set `Attachments__SigningKey` before a second instance answers the API.
+3. Decide whether photos move from the App Service's persistent folder (`Media__Root`) to Azure
    Blob Storage, and register the separate cookieless media domain of L2-138 AC2. Until then a
    message photo is delivered by the API on the application's own origin, behind its signed link,
    with `nosniff` and `private, no-store`. This part of L2-138 AC2 stays open.

@@ -588,8 +588,15 @@ function mergeCards(shown: RequestCard[], read: RequestCard[]): RequestCard[] {
 }
 
 function problemOf(error: unknown, upload = false): string {
-  if (upload && error instanceof HttpErrorResponse && error.status === 422)
-    return 'Not sent. Use a JPG or PNG under 5 MB.';
+  if (upload && error instanceof HttpErrorResponse) {
+    // The photo was scanned, or could not be, before anything was stored (L2-060 AC9).
+    const code = (error.error as { code?: string } | null)?.code;
+    if (error.status === 422 && code === 'FAILED_SCAN')
+      return 'Not sent. This photo didn’t pass our safety check.';
+    if (error.status === 503 && code === 'SCAN_UNAVAILABLE')
+      return 'Not sent. We couldn’t check this photo just now.';
+    if (error.status === 422) return 'Not sent. Use a JPG or PNG under 5 MB.';
+  }
   if (error instanceof HttpErrorResponse) {
     const code = (error.error as { code?: string } | null)?.code;
     if (error.status === 429) return 'Not sent. You’re sending quickly; wait a few minutes.';

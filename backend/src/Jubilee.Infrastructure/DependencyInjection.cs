@@ -104,6 +104,27 @@ public static class DependencyInjection
         services.AddSingleton<IImageProcessor, Media.SkiaImageProcessor>();
         services.AddSingleton<IMediaStore>(new Media.FileMediaStore(
             configuration["Media:Root"] ?? Path.Combine(AppContext.BaseDirectory, "media")));
+        // The malware scanner (L2-138 AC4, ADR 0050). With none configured no upload passes.
+        var scanner = configuration["Malware:Scanner"];
+        var clamHost = configuration["Malware:ClamAv:Host"];
+        if (string.Equals(scanner, "clamav", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(clamHost))
+        {
+            var clamPort = configuration.GetValue<int?>("Malware:ClamAv:Port") ?? Media.ClamAvMalwareScanner.DefaultPort;
+            var clamTimeout = configuration.GetValue<double?>("Malware:ClamAv:TimeoutSeconds") is { } seconds
+                ? TimeSpan.FromSeconds(seconds)
+                : Media.ClamAvMalwareScanner.DefaultTimeout;
+            services.AddSingleton<IMalwareScanner>(sp => new Media.ClamAvMalwareScanner(
+                clamHost, clamPort, clamTimeout, sp.GetService<Microsoft.Extensions.Logging.ILogger<Media.ClamAvMalwareScanner>>()));
+        }
+        else if (string.Equals(scanner, "none", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddSingleton<IMalwareScanner, Media.NoMalwareScanner>();
+        }
+        else
+        {
+            services.AddSingleton<IMalwareScanner, Media.UnavailableMalwareScanner>();
+        }
+
         services.AddScoped<DemoDataSeeder>();
         services.AddSingleton<IDirectoryReadCache, DistributedDirectoryReadCache>();
         services.AddSingleton<DirectoryCacheInvalidationInterceptor>();

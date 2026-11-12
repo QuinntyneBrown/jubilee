@@ -53,6 +53,7 @@ public sealed class ConversationsController(ISender sender) : ControllerBase
     }
 
     [HttpPost("{id:guid}/attachments")]
+    [RequiresConfirmedEmail]
     [RequestSizeLimit(6 * 1024 * 1024)]
     public async Task<IActionResult> Attach(Guid id, IFormFile? file, CancellationToken cancellationToken)
     {
@@ -74,6 +75,16 @@ public sealed class ConversationsController(ISender sender) : ControllerBase
                 Status = StatusCodes.Status422UnprocessableEntity,
                 Title = "That photo can't be used.",
                 Extensions = { ["code"] = invalid.Code, ["correlationId"] = HttpContext.TraceIdentifier },
+            });
+        }
+        catch (ScanUnavailableException unavailable)
+        {
+            // Nothing was stored: the photo can be uploaded again when the scanner answers (L2-138 AC4).
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new ProblemDetails
+            {
+                Status = StatusCodes.Status503ServiceUnavailable,
+                Title = unavailable.Message,
+                Extensions = { ["code"] = ScanUnavailableException.Code, ["correlationId"] = HttpContext.TraceIdentifier },
             });
         }
     }

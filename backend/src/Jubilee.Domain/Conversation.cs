@@ -145,7 +145,10 @@ public sealed class Message
         };
 }
 
-/// <summary>A photo a participant uploaded: re-encoded without metadata (L2-060, L2-138).</summary>
+/// <summary>
+/// A photo a participant uploaded, without its metadata and scanned (L2-060, L2-138). The row says
+/// whose it is; the bytes are kept by the media store under <see cref="Key"/>.
+/// </summary>
 public sealed class MessageAttachment
 {
     private MessageAttachment()
@@ -160,17 +163,24 @@ public sealed class MessageAttachment
 
     public string ContentType { get; private set; } = string.Empty;
 
-    public byte[] Content { get; private set; } = [];
+    /// <summary>The random name the media store keeps the bytes under: 128 bits, hexadecimal (L2-138 AC5).</summary>
+    public string Key { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// The bytes of a photo stored before the media store kept message photos (ADR 0050): read only
+    /// when a row has no <see cref="Key"/>, and never written again.
+    /// </summary>
+    public byte[]? Content { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
 
-    public static MessageAttachment Store(Guid conversationId, string uploaderSubject, string contentType, byte[] content, DateTimeOffset now) => new()
+    public static MessageAttachment Store(Guid conversationId, string uploaderSubject, string contentType, string key, DateTimeOffset now) => new()
     {
         Id = Guid.NewGuid(),
         ConversationId = conversationId,
         UploaderSubject = uploaderSubject,
         ContentType = contentType,
-        Content = content,
+        Key = key,
         CreatedAt = now,
     };
 }

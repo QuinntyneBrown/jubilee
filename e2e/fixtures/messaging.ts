@@ -237,8 +237,13 @@ export interface FakeMessaging {
   /** How a report is answered. */
   reporting: 'ok' | 'fail';
   reports: { reason: string; block: boolean }[];
-  /** How an upload is answered: stored, cut off, never answered, or refused as not a photo. */
-  uploading: 'ok' | 'fail' | 'hang' | 'refused';
+  /**
+   * How an upload is answered: stored, cut off, never answered, refused as not a photo, refused by
+   * the malware scan (`infected`), or refused because the scan could not be done (`unchecked`).
+   */
+  uploading: 'ok' | 'fail' | 'hang' | 'refused' | 'infected' | 'unchecked';
+  /** Every upload the app tried, stored or not. */
+  uploadAttempts: number;
   uploads: { bytes: number; contentType: string }[];
   /** `expired` answers a photo's first link with 404, as after five minutes. */
   links: 'ok' | 'expired';
@@ -297,6 +302,7 @@ export async function stubMessaging(
     reporting: 'ok',
     reports: [],
     uploading: 'ok',
+    uploadAttempts: 0,
     uploads: [],
     links: 'ok',
     renewing: 'ok',
@@ -478,9 +484,12 @@ export async function stubMessaging(
       if (fake.renewing === 'fail') return route.fulfill(problem(404, 'attachment_not_found'));
       return route.fulfill({ json: { url: signed(id, 'renewed') } });
     }
+    fake.uploadAttempts += 1;
     if (fake.uploading === 'hang') return hang(route);
     if (fake.uploading === 'fail') return route.abort('failed');
     if (fake.uploading === 'refused') return route.fulfill(problem(422, 'INVALID_IMAGE'));
+    if (fake.uploading === 'infected') return route.fulfill(problem(422, 'FAILED_SCAN'));
+    if (fake.uploading === 'unchecked') return route.fulfill(problem(503, 'SCAN_UNAVAILABLE'));
     const body = request.postDataBuffer() ?? Buffer.alloc(0);
     const type = /Content-Type: ([^\r\n]+)/i.exec(body.subarray(0, 400).toString('latin1'));
     fake.uploads.push({ bytes: body.length, contentType: type?.[1] ?? '' });

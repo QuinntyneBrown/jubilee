@@ -985,6 +985,57 @@ test.describe('photo attachments (L2-060)', () => {
     expect(fake.sends).toHaveLength(1);
   });
 
+  test('AC9: a photo that did not pass the safety check is not sent, and the bubble says so', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { uploading: 'infected' });
+    await jb.goto('/messages/c-legacy');
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.composer.fill('The statement');
+    await conversation.send.click();
+
+    const bubble = conversation.bubble('The statement');
+    await expect(bubble.time).toContainText('Not sent. This photo didn’t pass our safety check.');
+    await expect(bubble.photo).toBeVisible();
+    expect(fake.sends).toEqual([]);
+    expect(fake.uploads).toEqual([]);
+
+    await bubble.delete.click();
+    await expect(conversation.bubbles).toHaveCount(3);
+  });
+
+  test('AC9: when the photo cannot be checked the bubble says so, and "Try again" uploads it again and sends once', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { uploading: 'unchecked' });
+    await jb.goto('/messages/c-legacy');
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.composer.fill('The statement');
+    await conversation.send.click();
+
+    const bubble = conversation.bubble('The statement');
+    await expect(bubble.time).toContainText('Not sent. We couldn’t check this photo just now.');
+    expect(fake.sends).toEqual([]);
+
+    fake.uploading = 'ok';
+    await bubble.tryAgain.focus();
+    await page.keyboard.press('Enter');
+
+    await expect(bubble.time).toHaveText('9:00 a.m.');
+    expect(fake.uploadAttempts).toBe(2);
+    expect(fake.uploads).toHaveLength(1);
+    expect(fake.sends).toHaveLength(1);
+    expect(fake.sends[0].attachmentId).toBe('a-1');
+  });
+
   test('AC2: a photo over 5 MB is shrunk on the device, with a warning, before it is sent', async ({
     page,
     jb,

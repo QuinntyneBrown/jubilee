@@ -18,6 +18,22 @@ public interface IImageProcessor
     ProcessedImage Process(Stream upload);
 }
 
+/// <summary>What the malware scanner says of an upload (L2-138 AC4).</summary>
+public enum ScanVerdict
+{
+    Clean,
+    Infected,
+
+    /// <summary>No scanner is configured, or it did not answer: the upload is not accepted.</summary>
+    Unavailable,
+}
+
+/// <summary>Scans an upload for malware before it is stored; it never throws for a scanner that is down.</summary>
+public interface IMalwareScanner
+{
+    Task<ScanVerdict> Scan(byte[] content, CancellationToken cancellationToken);
+}
+
 /// <summary>Where renditions live: outside the web root, under random names (L2-138 AC2).</summary>
 public interface IMediaStore
 {

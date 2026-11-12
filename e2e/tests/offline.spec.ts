@@ -1,5 +1,6 @@
 import { expect, test } from '../fixtures/jb-test';
 import { nextInboxRead, stubMessaging } from '../fixtures/messaging';
+import { smallJpeg } from '../fixtures/photos';
 import { goOffline, goOnline, restoreJubilee, waitForSnapshot } from '../fixtures/offline';
 import { BrowsePage } from '../pages/browse.page';
 import { ConnectionBannerRegion } from '../pages/connection-banner';
@@ -219,6 +220,45 @@ test.describe('messages written offline (L2-120)', () => {
     await expect(bubble.tryAgain).toBeVisible();
     await bubble.delete.click();
     await expect(conversation.bubbles.filter({ hasText: 'Too late' })).toHaveCount(0);
+  });
+
+  test('L2-120 AC4: a message with a photo is not queued offline: it says "Not sent" and "Try again" sends it once', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const banner = new ConnectionBannerRegion(page);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await conversation.ready();
+    await expect(conversation.bubbles).toHaveCount(3);
+
+    await goOffline(page);
+    await conversation.photoInput.setInputFiles(smallJpeg());
+    await conversation.composer.fill('The statement');
+    await conversation.send.click();
+
+    const bubble = conversation.bubble('The statement');
+    await expect(bubble.time).toContainText('Not sent. Check your connection.');
+    await expect(bubble.time).not.toContainText('Waiting to send');
+    await expect(bubble.photo).toBeVisible();
+    await expect(bubble.tryAgain).toBeVisible();
+    await expect(bubble.delete).toBeVisible();
+
+    await goOnline(page);
+
+    // Nothing was waiting on the device, so nothing is sent by itself.
+    await expect(banner.root).toContainText('You’re back online.');
+    await expect(banner.root).not.toContainText('saved message');
+    expect(fake.sends).toEqual([]);
+
+    await bubble.tryAgain.click();
+
+    await expect(bubble.time).toHaveText('9:00 a.m.');
+    expect(fake.uploads).toHaveLength(1);
+    expect(fake.sends).toHaveLength(1);
+    expect(fake.sends[0].body).toBe('The statement');
   });
 
   test('AC4: a conversation already opened can still be read offline', async ({ page, jb }) => {

@@ -59,6 +59,58 @@ Turnstile). It needs a Turnstile widget for `app.jubilee.to` and two settings: `
 `BotChallenge__SecretKey` (the API verifies the token with it). Set both or neither: with only the
 site key the form sends a token nobody checks, and with only the secret every join is refused.
 
+## Message photos and the malware scanner
+
+Not configured yet, so this feature is off: **photos in messages**. A photo a member attaches to a
+message is scanned for malware before it is stored (L2-060 AC9, L2-138 AC4, ADR 0050), and the API
+accepts no photo it could not scan. Until a scanner is set, an upload is answered
+`503 SCAN_UNAVAILABLE`, nothing is stored, and the member's message says "Not sent. We couldn’t
+check this photo just now." Text messages are not affected.
+
+The scanner is ClamAV's daemon, `clamd`, reached over TCP on a private network. Nothing leaves
+Jubilee's own resources. These steps need the repository owner:
+
+1. Run `clamd` where only the API can reach it. The container image `clamav/clamav:stable` listens
+   on port 3310 and keeps its signatures current with `freshclam`. An Azure Container Instance in a
+   virtual network that `jubilee-to-app` is integrated with is enough (the signatures are held in
+   memory, so give it 3 GB). No such network exists yet: `jubilee-vnet` and its two subnets below
+   are names to create first, and these commands have not been run:
+
+   ```bash
+   az container create --resource-group rg-jubilee-prod --name jubilee-clamav \
+     --image clamav/clamav:stable --cpu 1 --memory 3 --ports 3310 \
+     --vnet jubilee-vnet --subnet clamav --restart-policy Always
+   az webapp vnet-integration add --resource-group rg-jubilee-prod --name jubilee-to-app \
+     --vnet jubilee-vnet --subnet app
+   ```
+
+   Do not give the container a public address: `clamd` has no authentication.
+2. Tell the API where it is:
+
+   ```bash
+   az webapp config appsettings set --resource-group rg-jubilee-prod --name jubilee-to-app --settings \
+     Malware__Scanner=clamav Malware__ClamAv__Host=<the container's private address> \
+     Malware__ClamAv__Port=3310 Malware__ClamAv__TimeoutSeconds=10
+   ```
+
+3. Check it: send a message with a photo from a test account. The standard anti-malware test file
+   (EICAR) inside a photo is refused with `422 FAILED_SCAN`; the API's log names what `clamd` found.
+
+`Malware__Scanner=none` passes every photo unscanned. It is for a developer's machine and the e2e
+API, which set it themselves; never set it here.
+
+Two more settings belong to message photos:
+
+| Setting | Value |
+|---|---|
+| `Attachments__SigningKey` | a random key of 32 bytes or more. It signs the five-minute links of message photos. Without it each instance makes its own key when it starts, which is safe on one instance but breaks links when a second instance answers; set it before scaling out. |
+| `Media__Root` | already set (above). Message photos are files under it, each in a folder with a random name, beside the listing photos. |
+
+Still open, and the owner's to decide (L2-138 AC2): moving the media folder to Azure Blob Storage,
+and serving photos from a separate cookieless domain. A message photo is delivered by the API on
+`app.jubilee.to`, behind its signed link, with `X-Content-Type-Options: nosniff` and
+`Cache-Control: private, no-store`.
+
 ## The launching-soon forms
 
 While Jubilee is launching soon the marketing page sends two forms, the launch notification and
