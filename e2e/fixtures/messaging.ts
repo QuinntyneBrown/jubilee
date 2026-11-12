@@ -268,7 +268,7 @@ export interface FakeMessaging {
   /** False for an owner, who cannot block (L2-063 AC5). */
   canBlock: boolean;
   /** How a report is answered. */
-  reporting: 'ok' | 'fail';
+  reporting: 'ok' | 'fail' | 'rate-limited';
   reports: { reason: string; block: boolean }[];
   /**
    * How an upload is answered: stored, cut off, never answered, refused as not a photo, refused by
@@ -548,6 +548,11 @@ export async function stubMessaging(
 
   await page.route('**/api/conversations/c-legacy/report', (route) => {
     if (fake.reporting === 'fail') return route.abort('failed');
+    if (fake.reporting === 'rate-limited')
+      return route.fulfill({
+        ...problem(429, 'rate_limited'),
+        headers: { 'Retry-After': '2520' },
+      });
     fake.reports.push(route.request().postDataJSON() as FakeMessaging['reports'][number]);
     return route.fulfill({ status: 204 });
   });

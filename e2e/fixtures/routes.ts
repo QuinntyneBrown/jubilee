@@ -75,6 +75,7 @@ export type StubName =
   | 'messages-loading'
   | 'messages-error'
   | 'messages-more'
+  | 'messages-owner'
   | 'conversation-away'
   | 'conversation'
   | 'conversation-loading'
@@ -335,6 +336,12 @@ export const routes = {
     mock: 'pages/messages/more.html',
     who: 'member',
     stub: 'messages-more',
+  },
+  'messages.owner': {
+    app: '/messages',
+    mock: 'pages/messages/owner.html',
+    who: 'member',
+    stub: 'messages-owner',
   },
   conversation: {
     app: '/messages/c-legacy',

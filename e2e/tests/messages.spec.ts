@@ -1443,6 +1443,28 @@ test.describe('report a conversation (L2-063)', () => {
     );
     expect(fake.reports).toEqual([{ reason: 'Spam, three times a day.', block: false }]);
   });
+
+  test('L2-137 AC1: a member who has reported ten conversations today is told how long to wait, and keeps what was typed', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const dialog = new ReportConversationDialog(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { reporting: 'rate-limited' });
+    await jb.goto('/messages/c-legacy');
+    await conversation.more.click();
+    await conversation.menuItem('Report conversation').click();
+    await dialog.what.fill('Spam, three times a day.');
+    await dialog.send.click();
+
+    await expect(dialog.alert).toContainText('You’re doing that a lot');
+    await expect(dialog.alert).toContainText('Try again in 42 minutes.');
+    await expect(dialog.alert).not.toContainText('connection');
+    await expect(dialog.what).toHaveValue('Spam, three times a day.');
+    expect(fake.reports).toEqual([]);
+  });
 });
 
 test.describe('send a message (L2-058)', () => {

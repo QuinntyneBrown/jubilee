@@ -521,6 +521,84 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
             (await Joanna().PostAsJsonAsync($"/api/conversations/{id}/report", new { reason = "", block = false })).StatusCode);
     }
 
+    // L2-137 AC1
+    [Fact]
+    public async Task L2_137_AC1_the_11th_report_of_a_conversation_in_a_day_is_refused_with_retry_after()
+    {
+        var conversations = await ManyWriteToLegacy(11, sameInstant: true);
+        var trevor = Trevor();
+        foreach (var conversation in conversations.Take(10))
+        {
+            Assert.Equal(HttpStatusCode.NoContent,
+                (await trevor.PostAsJsonAsync($"/api/conversations/{conversation}/report", new { reason = "Spam", block = false })).StatusCode);
+        }
+
+        var refused = await trevor.PostAsJsonAsync($"/api/conversations/{conversations[10]}/report", new { reason = "Spam", block = false });
+        // A conversation he has already reported files nothing new, so it is not refused (L2-063 AC8).
+        var repeat = await trevor.PostAsJsonAsync($"/api/conversations/{conversations[0]}/report", new { reason = "Still spam", block = false });
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, refused.StatusCode);
+        Assert.NotNull(refused.Headers.RetryAfter);
+        Assert.InRange(refused.Headers.RetryAfter!.Delta!.Value, TimeSpan.FromHours(23), TimeSpan.FromHours(24));
+        Assert.Equal(HttpStatusCode.NoContent, repeat.StatusCode);
+        Assert.Equal(10, await Count(db => db.ConversationReports));
+
+        _factory.Clock.Advance(TimeSpan.FromHours(24) + TimeSpan.FromMinutes(1));
+        Assert.Equal(HttpStatusCode.NoContent,
+            (await trevor.PostAsJsonAsync($"/api/conversations/{conversations[10]}/report", new { reason = "Spam", block = false })).StatusCode);
+        Assert.Equal(11, await Count(db => db.ConversationReports));
+    }
+
+    [Fact]
+    public async Task L2_137_AC1_a_member_at_the_report_limit_can_still_block_a_business_they_already_reported()
+    {
+        var joanna = Joanna();
+        var legacy = await StartedId(joanna);
+        await joanna.PostAsJsonAsync($"/api/conversations/{legacy}/report", new { reason = "Spam", block = false });
+        for (var number = 1; number <= 9; number++)
+        {
+            var listing = ListingMother.Public($"business-{number}", "shops", $"Business {number}");
+            listing.AssignOwner($"member|owner{number}");
+            await _factory.Arrange(listing);
+            var id = await StartedId(joanna, $"business-{number}");
+            await joanna.PostAsJsonAsync($"/api/conversations/{id}/report", new { reason = "Spam", block = false });
+        }
+
+        Assert.Equal(10, await Count(db => db.ConversationReports));
+        var blocked = await joanna.PostAsJsonAsync($"/api/conversations/{legacy}/report", new { reason = "And block them", block = true });
+
+        Assert.Equal(HttpStatusCode.NoContent, blocked.StatusCode);
+        Assert.Equal(10, await Count(db => db.ConversationReports));
+        await Send(Trevor(), legacy, "Are you still there?");
+        var seen = await Json(await joanna.GetAsync($"/api/conversations/{legacy}"));
+        Assert.DoesNotContain(seen.GetProperty("messages").EnumerateArray(), m => m.GetProperty("body").GetString() == "Are you still there?");
+    }
+
+    // L2-133 AC2
+    [Fact]
+    public async Task L2_133_AC2_an_attempt_on_someone_elses_conversation_is_not_found_and_logged()
+    {
+        var id = await StartedId(Joanna());
+        _factory.Logs.Clear();
+
+        var opened = await Naomi().GetAsync($"/api/conversations/{id}");
+        var written = await Send(Naomi(), id, "Let me in");
+
+        Assert.Equal(HttpStatusCode.NotFound, opened.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, written.StatusCode);
+        var attempts = _factory.Logs.Entries
+            .Where(e => e.Level == Microsoft.Extensions.Logging.LogLevel.Warning && e.Message.Contains("conversation_not_found", StringComparison.Ordinal))
+            .ToList();
+        Assert.Equal(2, attempts.Count);
+        Assert.All(attempts, attempt =>
+        {
+            Assert.Contains(NaomiId, attempt.Message, StringComparison.Ordinal);
+            Assert.Contains($"/api/conversations/{id}", attempt.Message, StringComparison.Ordinal);
+        });
+        Assert.Contains("GET", attempts[0].Message, StringComparison.Ordinal);
+        Assert.Contains("POST", attempts[1].Message, StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task L2_063_AC2_a_blocked_business_is_not_told_and_the_member_never_sees_its_messages()
     {

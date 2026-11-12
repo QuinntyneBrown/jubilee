@@ -2,7 +2,13 @@ import type { Page, Route } from '@playwright/test';
 import { categories } from './categories';
 import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
 import { fulfil, recordedAnswer } from './mock-api';
-import { legacyMessages, photoMessages, requestCards, stubMessaging } from './messaging';
+import {
+  legacyMessages,
+  ownerRows,
+  photoMessages,
+  requestCards,
+  stubMessaging,
+} from './messaging';
 import { stubAccountData } from './account-data';
 import { SPACE_REVIEW, stubAdmin } from './admin';
 import { daniel, stubStaff } from './staff';
@@ -230,6 +236,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     case 'messages-more':
       // The mock draws four of the 64 conversations, with "Show more conversations" under them.
       return stubMessaging(page, { inboxTotal: 64 });
+    case 'messages-owner':
+      return stubMessaging(page, { rows: ownerRows() });
     case 'conversation':
       return stubMessaging(page);
     case 'conversation-away':

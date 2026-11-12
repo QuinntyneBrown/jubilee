@@ -85,6 +85,10 @@ internal static class ConversationRules
 
     public const int UploadsPerWindow = 30;
 
+    /// <summary>How many conversations a person may report in 24 hours (L2-137 AC1).</summary>
+    public const int ReportsPerDay = 10;
+    public static readonly TimeSpan ReportWindow = TimeSpan.FromDays(1);
+
     /// <summary>What an inbox row says of a message that is a photo and nothing else (L2-060 AC6).</summary>
     public const string PhotoPreview = "Photo";
 
@@ -521,8 +525,22 @@ public sealed class ReportConversationCommandHandler(IAppDbContext db, TimeProvi
             r => r.ConversationId == row.Conversation.Id && r.ReporterSubject == request.Subject && r.Status != ReportStatus.Resolved, cancellationToken);
         if (!open)
         {
+            // Ten reports in 24 hours, counted from the stored ones, as the message limits are (L2-137 AC1).
+            var now = clock.GetUtcNow();
+            var since = now - ConversationRules.ReportWindow;
+            var filed = await db.ConversationReports.AsNoTracking()
+                .Where(r => r.ReporterSubject == request.Subject && r.CreatedAt > since)
+                .OrderBy(r => r.CreatedAt)
+                .Select(r => r.CreatedAt)
+                .ToListAsync(cancellationToken);
+            if (filed.Count >= ConversationRules.ReportsPerDay)
+            {
+                throw new RateLimitedException(
+                    "rate_limited", filed[filed.Count - ConversationRules.ReportsPerDay] + ConversationRules.ReportWindow - now);
+            }
+
             db.ConversationReports.Add(ConversationReport.File(
-                row.Conversation.Id, request.Subject, reason.Length > 1000 ? reason[..1000] : reason, clock.GetUtcNow()));
+                row.Conversation.Id, request.Subject, reason.Length > 1000 ? reason[..1000] : reason, now));
         }
 
         if (request.Block && !row.AsOwner)

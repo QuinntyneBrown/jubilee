@@ -199,6 +199,27 @@ public sealed class EmailNotificationTests : IClassFixture<JubileeApiFactory>, I
         Assert.Equal(1, (await Json(await Joanna().GetAsync("/api/me/navigation"))).GetProperty("unreadConversationCount").GetInt32());
     }
 
+    // L2-061 AC2
+    [Fact]
+    public async Task L2_061_AC2_after_unmute_the_next_reply_is_e_mailed_again()
+    {
+        var conversation = await Ask();
+        _factory.Clock.Advance(TimeSpan.FromMinutes(3));
+        await Joanna().PutAsJsonAsync($"/api/conversations/{conversation}/mute", new { muted = true });
+        await Reply(conversation, "Yes, across Canada.");
+        _factory.Clock.Advance(TimeSpan.FromMinutes(2));
+        await Dispatch();
+        Assert.Empty(EmailsTo(_joanna));
+
+        Assert.Equal(HttpStatusCode.NoContent, (await Joanna().PutAsJsonAsync($"/api/conversations/{conversation}/mute", new { muted = false })).StatusCode);
+        _factory.Clock.Advance(TimeSpan.FromMinutes(20));
+        await Reply(conversation, "Shipping is free over $50.");
+        _factory.Clock.Advance(TimeSpan.FromMinutes(2));
+        await Dispatch();
+
+        Assert.Contains("New message from Luzandre.com", Assert.Single(EmailsTo(_joanna)).Subject);
+    }
+
     // L2-068 AC4
     [Fact]
     public async Task L2_068_AC4_a_message_to_someone_reading_the_conversation_right_now_sends_no_e_mail()

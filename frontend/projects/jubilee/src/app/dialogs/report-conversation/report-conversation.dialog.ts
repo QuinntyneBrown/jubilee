@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MESSAGES_API } from 'api';
+import { MESSAGES_API, isRateLimited, tryAgainIn } from 'api';
 import {
   Alert,
   Button,
@@ -72,6 +72,7 @@ export class ReportConversationDialog {
   protected readonly busy = computed(() => this.view() === 'busy');
   protected readonly remaining = computed(() => (MAX - this.what().length).toLocaleString('en-CA'));
   protected readonly failure = signal('');
+  protected readonly failureHeading = signal('');
 
   protected send(): void {
     if (this.busy()) return;
@@ -90,6 +91,14 @@ export class ReportConversationDialog {
       .subscribe({
         next: () => this.view.set('success'),
         error: (error: unknown) => {
+          if (isRateLimited(error)) {
+            // Ten reports in a day (L2-137 AC1): the words every limit uses, with the wait the API named.
+            this.failureHeading.set('You’re doing that a lot');
+            this.failure.set(`${tryAgainIn(error)} What you typed is still here.`);
+            this.view.set('failed');
+            return;
+          }
+          this.failureHeading.set('We couldn’t send that');
           this.failure.set(
             error instanceof TimeoutError
               ? 'It took too long, so we stopped. Nothing was sent and what you typed is still here. Try again.'
