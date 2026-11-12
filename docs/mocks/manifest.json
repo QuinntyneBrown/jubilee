@@ -294,7 +294,9 @@
         "error",
         "offline",
         "signed-out",
-        "edge"
+        "edge",
+        "rooms-term",
+        "rooms-empty"
       ]
     },
     {
@@ -308,7 +310,11 @@
         "empty",
         "error",
         "no-results",
-        "long"
+        "long",
+        "rooms-rentals",
+        "rooms-rentals-empty",
+        "rooms-rentals-loading",
+        "rooms-rentals-error"
       ]
     },
     {
@@ -321,7 +327,8 @@
         "loading",
         "empty",
         "error",
-        "no-results"
+        "no-results",
+        "spaces"
       ]
     },
     {
@@ -338,6 +345,34 @@
         "owner",
         "edge"
       ]
+    },
+    {
+      "id": "space",
+      "kind": "page",
+      "title": "Space",
+      "route": "/b/:slug",
+      "requirements": [
+        "L2-188",
+        "L2-194",
+        "L2-196",
+        "L2-197",
+        "L2-199"
+      ],
+      "states": [
+        "short-stay",
+        "long-term",
+        "room",
+        "roommate",
+        "requested",
+        "signed-out",
+        "loading",
+        "not-found",
+        "error"
+      ],
+      "not_applicable": {
+        "default": "A space page is drawn once per term; short-stay (the guest suite near Roncesvalles) is its default.",
+        "empty": "A space page shows one space; parts it lacks (key facts, what’s included, house rules) are left out (L2-196 AC3)."
+      }
     },
     {
       "id": "shop",
@@ -440,7 +475,9 @@
         "error",
         "confirmed",
         "declined",
-        "cancelled"
+        "cancelled",
+        "space-awaiting",
+        "space-confirmed"
       ],
       "not_applicable": {
         "empty": "A request page shows one request; it has no collection that could be empty."
@@ -508,7 +545,15 @@
         "invalid",
         "submitting",
         "success",
-        "draft-saved"
+        "draft-saved",
+        "space",
+        "space-short-stay",
+        "space-room",
+        "space-roommate",
+        "space-invalid",
+        "space-submitting",
+        "space-draft-saved",
+        "space-success"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
@@ -540,7 +585,8 @@
         "error",
         "invalid",
         "submitting",
-        "success"
+        "success",
+        "space"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
@@ -580,7 +626,8 @@
         "loading",
         "empty",
         "error",
-        "no-results"
+        "no-results",
+        "space"
       ]
     },
     {
@@ -701,6 +748,27 @@
         "failed",
         "success"
       ]
+    },
+    {
+      "id": "request-space",
+      "kind": "dialog",
+      "title": "Request a space",
+      "opens_from": "space",
+      "requirements": [
+        "L2-197"
+      ],
+      "states": [
+        "short-stay",
+        "long-term",
+        "roommate",
+        "invalid",
+        "busy",
+        "success",
+        "failed"
+      ],
+      "not_applicable": {
+        "default": "The dialog is drawn once per kind of request; short-stay (\"Request to book\") is its default."
+      }
     },
     {
       "id": "request-quote",
@@ -841,7 +909,8 @@
       "states": [
         "default",
         "busy",
-        "failed"
+        "failed",
+        "space"
       ],
       "not_applicable": {
         "invalid": "This dialog has no inputs to validate."
