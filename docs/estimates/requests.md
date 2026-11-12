@@ -2,7 +2,7 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| book-meeting | 4 days | 95% |
+| book-meeting | 4 days | 100% |
 | cancel-request | 4 days | 95% |
 | confirm-request | 4 days | 90% |
 | decline-request | 4 days | 95% |
@@ -12,7 +12,7 @@
 | request-space | 5 days | 100% |
 | track-requests | 5 days | 85% |
 
-book-meeting: backend (requests, availability, idempotent booking, calendar file) and the booking dialog are done with tests. The calendar link on the request page and the meeting reminders have landed since. Deferred: owner-set hours and slot length UI.
+book-meeting (ADR 0015, ADR 0047): requests, availability, idempotent booking, the calendar file, the booking dialog, the calendar link on the request page and the meeting reminders are done with tests. Meeting hours the owner sets (`L2-220`: days, one window a day in Toronto time and a slot length, from My services) are built with tests, and a member is offered only the times inside them (`BookingTests`, `MeetingHoursTests`, `book-meeting.spec.ts`, `meeting-hours.spec.ts`). Nothing is left. Out of scope (ADR 0047): different hours per day, breaks, calendars and double booking.
 
 request-quote: the quote request (validation, idempotency, owner e-mail, refusal for unconfirmed members) and its dialog are done with tests. The quote card in the conversation, the in-app notification and the shop "Ask" entry point have landed since. Deferred: the phone prefill from the profile (L2-045 AC1).
 
