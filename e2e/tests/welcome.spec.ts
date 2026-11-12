@@ -114,4 +114,44 @@ test.describe('featured business cards', () => {
     await expect(card.verifiedMark).toHaveText('Verified');
     await expect(card.verifiedIcon).toBeVisible();
   });
+
+  test('L2-027 AC2 and L2-106 AC1: a long name wraps whole, its tagline is clamped, and fewer than four are shown as they are', async ({
+    page,
+    jb,
+  }) => {
+    const welcome = new WelcomePage(page);
+    const name =
+      'Adrianne Sequeira, DMin., RP, RMFT, RN — Psychotherapy and Counselling Services of Greater Toronto';
+    // Given this week features one business, with a very long name and tagline
+    await page.route('**/api/directory/welcome', (route) =>
+      route.fulfill({
+        json: {
+          liveBusinessCount: 47,
+          categories,
+          featured: [
+            {
+              slug: 'adrianne-sequeira',
+              name,
+              tagline:
+                'Individual, couple and family psychotherapy for every season of life, in person in Scarborough and online across Ontario, with evening and Saturday appointments for working families.',
+              highlight: null,
+              categorySlug: 'health-family',
+              verified: true,
+              coverPhoto: null,
+            },
+          ],
+        },
+      }),
+    );
+    await welcome.setWidth(360);
+    await jb.open('welcome');
+    // Then the one card is shown, its name whole and its tagline on two lines
+    await expect(welcome.featuredCards).toHaveCount(1);
+    const card = welcome.featuredCard(0);
+    await expect(card.name).toHaveText(name);
+    expect(await card.nameIsTruncated()).toBe(false);
+    expect(await card.taglineLines()).toBe(2);
+    await expect(card.verifiedMark).toHaveText('Verified');
+    expect(await welcome.overflowsHorizontally()).toBe(false);
+  });
 });
