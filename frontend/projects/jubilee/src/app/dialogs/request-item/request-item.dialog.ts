@@ -202,6 +202,10 @@ export class RequestItemDialog implements OnInit {
         next: (booked) => {
           this.booked.set(booked);
           this.view.set('success');
+          // "Send request" is gone with the form, so the focus it held goes to "View request".
+          setTimeout(() =>
+            this.host.nativeElement.querySelector<HTMLElement>('[cdkFocusInitial]')?.focus(),
+          );
         },
         error: (error: unknown) => this.fail(error),
       });

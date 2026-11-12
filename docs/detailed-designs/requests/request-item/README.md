@@ -31,7 +31,8 @@ the names in the code.
   address", prefilled from the last address used; an address without a Canadian postal code shows "Enter the
   address to ship to, with postal code." A method of kind `pickup` hides the address field and sends
   `shippingAddress: null`. After success it shows "Request sent to {shop}" with the shop's typical reply time and
-  lead time, "Keep shopping" and "View request". Its form carries the `jbDraft` directive (ADR 0046).
+  lead time, "Keep shopping" and "View request", and moves focus to "View request" because the button
+  that held it is gone with the form. Its form carries the `jbDraft` directive (ADR 0046).
 - **`estimate`** — computed signal of `RequestItemDialog`. It recomputes "Item", "Shipping" and "Estimated total
   {amount} + tax" at once when the delivery method changes, and applies free shipping at or above the shop's
   threshold. The estimate is display only.
