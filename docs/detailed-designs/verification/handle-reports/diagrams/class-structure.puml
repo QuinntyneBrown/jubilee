@@ -28,9 +28,7 @@ enum ReportActionKind {
 }
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused

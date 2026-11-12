@@ -13,7 +13,7 @@
       { "text": "Toronto's Christian businesses, all in one place.", "start": 16.50, "end": 18.60, "caption": "Toronto’s Christian businesses, all in one place." }
     ] },
     { "scene": 4, "segments": [
-      { "text": "Every business is vouched for by a pastor or elder.", "start": 22.00, "end": 24.20, "lead": "Every business is", "hit": 22.80, "caption": "Every business is vouched for by a pastor or elder." },
+      { "text": "Every business is verified by the Jubilee team.", "start": 22.00, "end": 24.20, "lead": "Every business is", "hit": 22.80, "caption": "Every business is verified by the Jubilee team." },
       { "text": "Your money stays in the community.", "start": 24.30, "end": 26.00, "caption": "Your money stays in the community. And it’s free to join." },
       { "text": "And it's free to join.", "start": 26.10, "end": 27.40 }
     ] },
@@ -32,8 +32,8 @@
       { "text": "Your church family is looking for you.", "start": 44.95, "end": 46.80 }
     ] },
     { "scene": 8, "segments": [
-      { "text": "Create your page,", "start": 50.85, "end": 52.10, "caption": "Create your page, get vouched for by your church," },
-      { "text": "get vouched for by your church,", "start": 52.20, "end": 53.60 },
+      { "text": "Create your page,", "start": 50.85, "end": 52.10, "caption": "Create your page, get verified by our team," },
+      { "text": "get verified by our team,", "start": 52.20, "end": 53.60 },
       { "text": "and welcome customers who already trust you.", "start": 53.70, "end": 55.10, "caption": "and welcome customers who already trust you." }
     ] },
     { "scene": 9, "segments": [

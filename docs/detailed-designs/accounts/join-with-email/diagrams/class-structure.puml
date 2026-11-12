@@ -22,7 +22,6 @@ enum LinkTokenPurpose {
   EmailConfirmation
   PasswordReset
   EmailChange
-  ChurchReference
   DataDownload
 }
 
@@ -39,10 +38,11 @@ class Member {
   +EmailAddress Email
   +EmailStatus EmailStatus
   +string PasswordHash
-  +string HomeChurch
+  +string? HomeChurch
+  +string? HomeChurchAddress
   +DateTimeOffset AgreementAcceptedAt
   +DateTimeOffset CreatedAt
-  +{static} Join(firstName: string, lastName: string, email: EmailAddress, passwordHash: string, homeChurch: string, now: DateTimeOffset): Member
+  +{static} Join(firstName: string, lastName: string, email: EmailAddress, passwordHash: string, homeChurch: string?, homeChurchAddress: string?, now: DateTimeOffset): Member
 }
 
 class LinkToken {
@@ -61,7 +61,8 @@ class JoinWithEmailCommand {
   +string LastName
   +string Email
   +string Password
-  +string HomeChurch
+  +string? HomeChurch
+  +string? HomeChurchAddress
   +bool AgreementAccepted
   +string ChallengeToken
 }

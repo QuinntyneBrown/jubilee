@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Components — Review and approve a listing
 Container_Boundary(web, "Jubilee Web") {
-  Component(page, "VerificationReviewPage", "Angular page", "Shows owner and reference panels and checklist and preview")
+  Component(page, "VerificationReviewPage", "Angular page", "Shows owner panel and flags and checklist and preview")
   Component(check, "ReviewChecklist", "Angular component", "Saves each tick as it changes")
   Component(dialog, "ApproveListingDialog", "Angular dialog", "Confirms approval and collects the note for unticked items")
   Component(client, "AdminApi", "Typed HTTP client", "Calls the /api/admin/verifications endpoints")

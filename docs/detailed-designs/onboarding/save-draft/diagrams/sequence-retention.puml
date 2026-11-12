@@ -38,7 +38,7 @@ end
 job -> db : Select drafts with a notice sent 14 days ago and still untouched
 db --> job : Drafts to delete
 loop Each draft to delete
-  job -> db : Delete the draft with its items and reference fields (L2-077)
+  job -> db : Delete the draft with its items (L2-077)
   db --> job : Commit result
 end
 job -> db : Record last success

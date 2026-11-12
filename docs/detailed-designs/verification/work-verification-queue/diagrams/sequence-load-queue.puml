@@ -43,7 +43,7 @@ alt staff session without the verifier role
 else staff session with the verifier role
   controller -> handler : Send GetVerificationQueueQuery
   handler -> db : Read submitted listings, oldest submitted first (L2-099)
-  db --> handler : Rows with owner and reference outcome
+  db --> handler : Rows with owner and stage
   handler -> calendar : Business days in "Ready to review"
   calendar --> handler : Days waited
   handler -> handler : Mark rows over 2 business days overdue (L2-099)

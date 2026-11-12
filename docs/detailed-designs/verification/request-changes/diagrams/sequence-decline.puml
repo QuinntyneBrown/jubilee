@@ -31,7 +31,6 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
 end box
 box "Backend — Jubilee Worker" #D1FADF
   participant "OutboxDispatcherJob" as job
-  participant "ReferenceAnswerPurgeJob" as purge
 end box
 participant "E-mail provider" as email
 actor -> dialog : Choose "Decline listing" and enter a reason for the owner
@@ -39,12 +38,11 @@ dialog -> client : decline(id, reason)
 client -> controller : POST /api/admin/verifications/{id}/decline
 controller -> controller : Authenticate and apply VerifierPolicy (L2-098)
 controller -> handler : Send DeclineListingCommand
-handler -> db : Load listing and church reference
+handler -> db : Load listing
 db --> handler : Current state
-alt stage is "Needs a decision"
+alt stage is "Ready to review"
   handler -> entity : Decline(reason, verifier, now) (L2-104)
   entity --> handler : Stage Declined
-  handler -> handler : Start the 90-day deletion clock on the reference answer
   handler -> db : Save listing, AuditEntry (L2-180) and OutboxMessage in one unit of work
   db --> handler : Commit result
   handler --> controller : Typed result
@@ -61,6 +59,4 @@ else any other stage
   client --> dialog : Conflict
   dialog --> actor : Show the listing's current stage
 end
-purge -> db : Each run: delete answers whose DeleteAfter has passed (L2-104, L2-146)
-db --> purge : Rows deleted
 @enduml

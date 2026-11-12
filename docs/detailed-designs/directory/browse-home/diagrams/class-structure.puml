@@ -16,9 +16,7 @@ title Class structure — Browse home
 
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused

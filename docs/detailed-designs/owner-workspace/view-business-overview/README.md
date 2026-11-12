@@ -11,10 +11,10 @@ workspace route.
 
 The overview changes with the *listing stage* — position of a listing in the path
 from draft to public. A member with no listing sees an invitation to list a
-business. A listing that waits on its church reference, or on changes the
-verification team requested, shows what the owner can do next. A live listing
-shows four statistics, the new requests that wait for a reply, and a summary of
-products, services and the church reference.
+business. A submitted listing shows that the verification team is reviewing it. A
+listing with changes the verification team requested shows what the owner can
+do next. A live listing shows four statistics, the new requests that wait for a
+reply, and a summary of products, services and the verification status.
 
 A *listing view* is one counted opening of the public listing page. The count
 excludes repeat views by the same visitor within 30 minutes, the owner's own
@@ -36,7 +36,7 @@ read models in the `Jubilee database`.
   `aria-current="page"` and the URL changes on each switch. For a listing that is
   not live, the header shows the listing stage in place of "Verified · live since".
 - **`MyBusinessOverviewPage`** — Angular page at `/my-business`. It renders one
-  of five views chosen from `OwnerWorkspace.Stage`: the invitation, the waiting
+  of five views chosen from `OwnerWorkspace.Stage`: the invitation, the pending
   view, the changes-requested view, the live overview, and the load-error state
   with reference `JB-BIZ-503`.
 - **`OwnerGuard`** — route guard on `/my-business/*`. It lets a member with no
@@ -60,13 +60,14 @@ read models in the `Jubilee database`.
   member who does not own the listing receives HTTP `403`.
 - **`GetOwnerWorkspaceQuery`** and **`GetOwnerWorkspaceQueryHandler`** — return
   the caller's listing (or none), its `ListingStage`, the "live since" month, the
-  count of `new` requests for the tab badge, and the stage detail: the reference
-  name, church and send time for the waiting view; each requested change, the
+  count of `new` requests for the tab badge, and the stage detail: the
+  submission time for the pending view; each requested change, the
   reviewer's first name and the date for the changes-requested view.
 - **`GetBusinessOverviewQuery`** and **`GetBusinessOverviewQueryHandler`** —
   build the `BusinessOverview`: the four statistics, up to 3 `new` requests for
   "Needs your reply", and the "Your listing" summary (for example "4 products ·
-  1 sold out", the service count, and "Confirmed Jun 2026 · Verified").
+  1 sold out", the service count, and the verification status "Verified Jun 2026", read from
+  `Listing.VerifiedOn`).
 - **`OverviewStats`** — value object with `ListingViews7Days` and its change on
   the previous 7 days, `OpenRequests` and `NewSinceYesterday`,
   `UnansweredMessages`, and `SavedByMembers` with its weekly change.
@@ -81,9 +82,13 @@ read models in the `Jubilee database`.
   `Listing.LiveBannerSeenAt` after the success banner is shown, so the banner
   appears once.
 
-The waiting view offers "Send the request again" and "Change reference"; the
-changes-requested view offers "Edit listing". Those actions belong to the
-onboarding and church-reference features. "Decline" and "Confirm" in "Needs your
+The invitation reads "List your business free. Tell members what you offer,
+submit it for verification, and you're live once we approve it. It takes about
+ten minutes." with "List your business" and "How verification works". The
+pending view is an info alert headed "We're reviewing {Business}" with the text
+"You submitted it {when}. We review and publish within two business days." and
+no action. The changes-requested view offers "Edit listing", which belongs to
+the onboarding features. "Decline" and "Confirm" in "Needs your
 reply" open the dialogs of the business request handling features.
 
 ## Requirements
@@ -94,7 +99,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-085` | `L1-013` | The system shall provide `/my-business` as the owner's workspace for a live listing, with a header, five tabs, four statistics, up to 3 new requests under "Needs your reply" and a "Your listing" summary. Listing view counts shall exclude repeat views by the same visitor within 30 minutes, the owner's own views and known bots. |
-| `L2-086` | `L1-013` | Before a listing is live, `/my-business` shall show the invitation to list a business, the waiting-for-reference state or the requested changes, according to the listing's stage. After approval it shall show the success banner "{Business} is verified and live. Members can find you in {category}." |
+| `L2-086` | `L1-013` | Before a listing is live, `/my-business` shall show the invitation to list a business, the pending state "We're reviewing {Business}" with no action, or the requested changes, according to the listing's stage. After approval it shall show the success banner "{Business} is verified and live. Members can find you in {category}." |
 | `L2-097` | `L1-013` | The system shall return HTTP 403 and show the forbidden page for any `/my-business/*` route or owner API requested by a member who does not own the listing. The active workspace tab shall be marked `aria-current="page"`, and a listing that is not live shall show its stage in the header while Products and Services stay manageable. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API endpoint before doing anything, and shall return 403 when an owner API is called for a listing the caller does not own. |
 | `L2-065` | `L1-010` | The "Requests" tab of the owner workspace shall carry the number of `new` requests, shown as "99+" above 99 and updated within 5 seconds while the page is open. |

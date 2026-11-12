@@ -15,9 +15,7 @@ title Class structure — Save a draft
 
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused
@@ -44,8 +42,6 @@ class ListingDraftValues <<value object>> {
   +Guid? CategoryId
   +string StoreAddress
   +string ServiceArea
-  +string ChurchName
-  +string ReferenceEmail
   +bool AgreesToStatementOfFaith
 }
 

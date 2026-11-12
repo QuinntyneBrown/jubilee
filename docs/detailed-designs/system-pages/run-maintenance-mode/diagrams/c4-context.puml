@@ -3,13 +3,12 @@
 LAYOUT_WITH_LEGEND()
 title System Context — Run maintenance mode
 Person(oncall, "On-call engineer", "Turns maintenance mode on and off with a back-by time")
-Person(member, "Member", "Requests a page during maintenance")
-Person_Ext(reference, "Church reference", "Holds a reference link that stays valid for longer")
+Person(member, "Member", "Requests a page during maintenance and holds a confirmation link that stays valid for longer")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 System_Ext(config, "Configuration store", "Holds the maintenance switch; vendor <TO SUPPLY>")
 
 Rel(oncall, config, "Sets the maintenance switch in")
 Rel(jubilee, config, "Reads the switch from without a deployment")
 Rel(member, jubilee, "Receives the maintenance page from", "HTTPS 503")
-Rel(reference, jubilee, "Opens the reference link after maintenance in", "HTTPS")
+Rel(member, jubilee, "Opens the confirmation link after maintenance in", "HTTPS")
 @enduml

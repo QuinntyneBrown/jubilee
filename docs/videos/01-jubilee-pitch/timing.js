@@ -24,7 +24,7 @@ window.TIMING = {
    "end": 18.783
   },
   {
-   "text": "Every business is vouched for by a pastor or elder.",
+   "text": "Every business is verified by the Jubilee team.",
    "start": 22.146,
    "end": 24.257
   },
@@ -54,7 +54,7 @@ window.TIMING = {
    "end": 47.089
   },
   {
-   "text": "Create your page, get vouched for by your church,",
+   "text": "Create your page, get verified by our team,",
    "start": 50.85,
    "end": 53.7
   },
@@ -95,7 +95,7 @@ window.TIMING = {
    "speed": 1.35
   },
   {
-   "text": "Every business is vouched for by a pastor or elder.",
+   "text": "Every business is verified by the Jubilee team.",
    "start": 22.146,
    "end": 23.957,
    "speed": 1.35
@@ -167,7 +167,7 @@ window.TIMING = {
    "speed": 1.3
   },
   {
-   "text": "get vouched for by your church,",
+   "text": "get verified by our team,",
    "start": 52.2,
    "end": 53.461,
    "speed": 1.3

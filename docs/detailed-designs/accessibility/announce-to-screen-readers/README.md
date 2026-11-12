@@ -23,7 +23,7 @@ The design uses four local terms.
 
 `L2-157` requires zero serious or critical axe-core violations on every screen
 and state in the mock manifest, a manual audit of each release with NVDA,
-VoiceOver and TalkBack across the ten primary tasks, and a sound document
+VoiceOver and TalkBack across the nine primary tasks, and a sound document
 structure: a unique title "{Page} · Jubilee", one `h1`, a logical heading
 order, landmark regions, and `lang="en-CA"` on `html`. `L2-159` requires
 status changes to be announced politely and errors assertively, meaningful
@@ -80,8 +80,8 @@ two test suites plus a release checklist that hold the pages to the rules.
   pattern and its uniqueness across screens, exactly one `h1`, an unbroken
   heading order, the four landmark regions, and `lang="en-CA"`.
 - **Screen reader audit checklist** — release gate completed by hand. For
-  each of the ten primary tasks (join, browse, search, message, book, quote,
-  order, list a business, answer a reference, review a listing) it records
+  each of the nine primary tasks (join, browse, search, message, book, quote,
+  order, list a business, review a listing) it records
   completion with NVDA on Windows, VoiceOver on macOS and iOS, and TalkBack on
   Android. Where the completed checklist is stored is `<TO SUPPLY>`.
 

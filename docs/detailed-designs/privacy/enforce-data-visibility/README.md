@@ -12,7 +12,8 @@ reader, and that record each occasion on which staff look at personal data.
 The design uses four local terms.
 
 - **personal data** — field that identifies or describes a member: name,
-  e-mail address, phone, postal code, home church, message content
+  e-mail address, phone, postal code, home church, home church address, message
+  content
 - **audience** — class of reader a response is built for: the member
   themselves, the business that received a request, a verifier, or the public
 - **area label** — neighbourhood plus the first three characters of a postal
@@ -20,8 +21,9 @@ The design uses four local terms.
 - **access reason** — report ID or listing ID that justifies a verifier's view
   of personal data
 
-The visibility rules of `L2-145` are fixed. A member's home church is shown to
-no one and feeds recommendations only. A member's phone reaches one business,
+The visibility rules of `L2-145` are fixed. A member's home church and home
+church address are shown to no one, the verification team included, and feed
+recommendations only. A member's phone reaches one business,
 on the one request that carried it. A member's e-mail address never reaches a
 business. A postal code reaches a business only as an area label. Public pages
 and the public API carry no member personal data other than the business
@@ -41,7 +43,7 @@ behaviour for staff queries, and an allow-list for analytics.
 
 - **`PersonalDataAttribute`** — annotation on a domain or DTO property that
   names the widest `DataAudience` allowed to read it. `Member.HomeChurch`
-  carries `NoOne`; `Member.Email` and `Member.PostalCode` carry `Self`;
+  and `Member.HomeChurchAddress` carry `NoOne`; `Member.Email` and `Member.PostalCode` carry `Self`;
   `Request.ContactPhone` carries `RequestBusiness`.
 - **`DataAudience`** — enumeration of readers: `NoOne`, `Self`,
   `RequestBusiness`, `Verifier`, `Public`.
@@ -55,14 +57,15 @@ behaviour for staff queries, and an allow-list for analytics.
   `Member.Phone` field is never projected into a business-facing response.
 - **`IncomingRequestDto`** — read model returned by
   `GET /api/business/{listingId}/requests/{requestId}`. It carries the member's
-  first name, `ContactPhone` and `AreaLabel`. It has no e-mail, home church or
-  full postal code property.
+  first name, `ContactPhone` and `AreaLabel`. It has no e-mail, home church, home church
+  address or full postal code property.
 - **`PostalArea`** — value object built from a `PostalCode` and the
   `INeighbourhoodDirectory` lookup. `ToLabel()` returns the area label. The
   source of the neighbourhood table is `<TO SUPPLY>`.
 - **`RecommendationService`** — the only application service that reads
-  `Member.HomeChurch`. It uses the value to rank recommendations and returns
-  listing identifiers only.
+  `Member.HomeChurch` and `Member.HomeChurchAddress`. It ranks recommendations
+  and returns listing identifiers only. Using the address for distance is
+  deferred (ADR 0041).
 - **Public read models** — DTOs in the `Jubilee.Application.Public` namespace
   (`PublicListingDto`, `PublicProductDto`) built from `Listing` fields the
   owner publishes. They hold no reference to `Member`.
@@ -98,7 +101,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-145` | `L1-020` | The system shall show a member's home church to no one and use it only for recommendations, shall show a member's phone only to the business that received a request and only on that request, shall never show a member's e-mail address to a business, and shall show businesses at most the neighbourhood and first three characters of a postal code. Public pages and public APIs shall contain no member personal data other than an owner's chosen public business details. |
+| `L2-145` | `L1-020` | The system shall show a member's home church and home church address to no one and use them only for recommendations, shall show a member's phone only to the business that received a request and only on that request, shall never show a member's e-mail address to a business, and shall show businesses at most the neighbourhood and first three characters of a postal code. Public pages and public APIs shall contain no member personal data other than an owner's chosen public business details. |
 | `L2-150` | `L1-020` | The system shall record in the audit log, with the reason (report ID or listing ID), each verifier view of a member's personal data or a reported conversation. Engineer access to production databases shall be just-in-time, time-limited and logged, and analytics shall contain no names, e-mails, phone numbers or message content and shall use no third-party advertising trackers. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API endpoint before doing anything, and no check shall rely on the client hiding a control. |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record of actor, action, target, time, before and after values, and reason for each sensitive action, including staff access to personal data. |

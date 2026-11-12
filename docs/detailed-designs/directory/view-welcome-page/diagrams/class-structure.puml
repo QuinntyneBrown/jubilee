@@ -16,9 +16,7 @@ title Class structure — View welcome page
 
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused

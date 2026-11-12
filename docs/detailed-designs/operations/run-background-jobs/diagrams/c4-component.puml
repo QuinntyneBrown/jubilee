@@ -12,7 +12,7 @@ Container_Boundary(worker, "Jubilee Worker") {
   Component(claimer, "JobRunClaimer", "Infrastructure service", "Inserts the unique JobRun row")
   Component(runner, "JobRunner", "Application service", "Runs a job with retry and dead-lettering")
   Component(reminder, "MeetingReminderJob", "IJob", "Sends reminders 1 hour before a meeting")
-  Component(others, "Other scheduled jobs", "IJob", "Daily summary and reference reminder and retention and statistics and badge jobs")
+  Component(others, "Other scheduled jobs", "IJob", "Daily summary and retention and statistics and badge jobs")
   Component(metrics, "JubileeMetrics", "OpenTelemetry meter", "Queue age and dead-letter count")
 }
 ContainerDb(db, "Jubilee database", "SQL Server", "JobRun and JobState and DeadLetterEntry")

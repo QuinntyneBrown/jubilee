@@ -17,7 +17,6 @@ enum LinkTokenPurpose {
   EmailConfirmation
   PasswordReset
   EmailChange
-  ChurchReference
   DataDownload
 }
 
@@ -49,7 +48,6 @@ class LinkTokenLifetimes <<static>> {
   +EmailConfirmation = 24 hours
   +PasswordReset = 60 minutes
   +EmailChange = 24 hours
-  +ChurchReference = 14 days
   +DataDownload = 7 days
   +For(purpose: LinkTokenPurpose): TimeSpan
 }

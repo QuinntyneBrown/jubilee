@@ -54,8 +54,8 @@ else Form valid
       db --> handler : Listing
       handler -> entity : Apply values and assign the slug (L2-072)
       handler -> entity : SubmitForVerification(now)
-      entity --> handler : Stage WaitingOnReference (L2-078)
-      handler -> db : Save listing and ReferenceRequested outbox message in one transaction
+      entity --> handler : Stage ReadyToReview (L2-078)
+      handler -> db : Save the listing in one transaction
       db --> handler : Commit result
       handler --> controller : SubmissionResult
       controller --> client : 200 OK
@@ -69,7 +69,7 @@ else Form valid
   end
 end
 note over handler, db
-  Jubilee Worker dispatches ReferenceRequested
-  and sends the reference e-mail (L2-080).
+  The listing is now in the verification queue (L2-099).
+  No e-mail is sent on submission.
 end note
 @enduml

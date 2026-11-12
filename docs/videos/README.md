@@ -74,7 +74,7 @@ film time: the page plays live against the MP3, and the builder seeks it frame b
 | `S.rise(at)` | Fade and 24 px rise for supporting text and UI. |
 | `S.drawnMark(size, { draw, bar })`, `S.wordmark(size, p)` | The J mark drawing itself and the "jubilee" wordmark rising letter by letter. |
 | `S.wipe(p)` | The gold crossbar wipe: 0 off left, 0.5 covering, 1 off right. Marks a change of act. |
-| `S.seal(size, spin)` | The "vouched for by a local church" seal. |
+| `S.seal(size, spin)` | The "verified by the Jubilee team" seal. |
 | `S.aurora(intensity, { horizon, colors })` | The WebGL aurora background. |
 | `S.confetti(bursts, count)` | Canvas confetti, solved in closed form so any frame draws alone. |
 

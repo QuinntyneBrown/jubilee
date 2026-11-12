@@ -3,7 +3,7 @@
 ## Overview
 
 Jubilee is Toronto's Christian marketplace. It sends e-mail for account security
-(confirmation and reset links), for church reference requests, for verification decisions and
+(confirmation and reset links), for verification decisions and
 for the notifications a member has turned on. This feature covers the delivery path shared by
 each of those: how an e-mail leaves the system, how a failed send is retried, and how the
 system reacts when an address stops accepting mail.
@@ -67,7 +67,7 @@ template), the list below says what is built instead.
   or `Suppressed` sends `RecordEmailBounceCommand`.
 - **`RecordEmailBounceCommandHandler`** — marks the member whose address it is with
   `Member.MarkEmailBounced`. `EmailPolicy.Queue` then sends that member no e-mail they could
-  turn off; security e-mails are still sent. An address without an account (a church reference)
+  turn off; security e-mails are still sent. An address without an account
   is not recorded.
 - **Verify-e-mail banner** — `GET /api/session` carries `emailBounced`, and the banner shows
   "We couldn't deliver e-mail to {address}. Check the address for a typo." with "Change e-mail"
@@ -91,7 +91,7 @@ level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-Jubilee sends through the e-mail provider, which delivers to members and church references
+Jubilee sends through the e-mail provider, which delivers to members
 and reports bounces and complaints back by webhook. DNS records authorise the provider as a
 sender for the domain.
 

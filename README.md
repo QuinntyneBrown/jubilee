@@ -28,8 +28,8 @@
 
 Jubilee is a directory of verified Christian-owned businesses in Toronto. A member finds a
 business, messages it, books a meeting, asks for a quote or requests a product, and the business
-confirms or declines. Every listing is confirmed by a pastor or elder before it goes live. Jubilee
-does not take payment; members pay the business directly.
+confirms or declines. Every listing is verified by the Jubilee verification team before it goes
+live. Jubilee does not take payment; members pay the business directly.
 
 ## Contents
 
@@ -260,7 +260,7 @@ user:
 
 1. **Find a business:** discover, view and search.
 2. **Join and make contact:** accounts, messaging and requests.
-3. **Fill the directory:** list a business, church reference and verification.
+3. **Fill the directory:** list a business and verification.
 4. **Follow through:** answering and tracking requests, the owner workspace and notifications.
 5. **Convenience and housekeeping:** saved lists, settings, policies, offline use and moderation.
 

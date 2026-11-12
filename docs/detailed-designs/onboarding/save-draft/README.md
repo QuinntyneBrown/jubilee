@@ -3,7 +3,7 @@
 ## Overview
 
 Listing a business on Jubilee takes one form at `/list`: what the business
-offers, its details, a church reference and the statement of faith agreement.
+offers, its details and the statement of faith agreement.
 An owner may not have each answer to hand, so the form can be saved part-filled
 and finished later. This feature covers saving, autosaving, reloading and
 expiring that saved form.
@@ -14,8 +14,8 @@ The slice uses two local terms.
 - **untouched draft** — draft with no save for 180 days
 
 A draft is a `Listing` like any other; the stage sets it apart. `ListingStage`
-has the values `Draft`, `WaitingOnReference`, `ReadyToReview`,
-`NeedsDecision`, `ChangesRequested`, `Live`, `Paused` and `Declined`. Nothing
+has the values `Draft`, `ReadyToReview`, `ChangesRequested`, `Live`,
+`Paused` and `Declined`. Nothing
 in a draft is public, and a draft save does not apply the required-field rules
 that submission applies. An unconfirmed member may save a draft; only
 submission is blocked (L2-005).
@@ -46,13 +46,13 @@ with one scheduled job in `Jubilee Worker`.
   It applies length limits and type checks and skips the required-field rules.
   A save against an older `RowVersion` returns HTTP 409.
 - **`GetListingDraftQueryHandler`** — MediatR handler that returns the stored
-  values, the items added during onboarding, and the reference fields, so that
-  the form restores each value.
+  values and the items added during onboarding, so that the form restores each
+  value.
 - **`Listing`** — domain entity. `ApplyDraft` stores the values and sets
   `LastTouchedAt` from `IClock`. A save clears `DraftExpiryNoticeSentAt`, which
   cancels a pending deletion.
 - **`ListingDraftValues`** — value object with the form values of a draft,
-  including the church name, the reference e-mail and the agreement tick.
+  including the agreement tick.
 - **`DraftRetentionJob`** — hosted job in `Jubilee Worker`. It selects each
   draft with `LastTouchedAt` older than `180 days`, marks the notice as sent and
   writes a `DraftExpiryNotice` message to the outbox. It deletes each draft

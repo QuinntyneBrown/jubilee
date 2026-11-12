@@ -5,7 +5,8 @@
 Jubilee is Toronto's Christian marketplace: a directory of verified
 Christian-owned businesses that members message, book and order from. A *member*
 is a signed-in account holder. Each member has a *profile* — first name, last
-name, phone, postal code, home church and optional pronouns kept on the account.
+name, phone, postal code, home church, home church address and optional pronouns
+kept on the account.
 This feature covers two things a member does with that profile: opening the
 *account menu* from the top bar, and editing the profile at `/account`.
 
@@ -19,8 +20,14 @@ queue".
 The account page shows the profile fields with their current values and saves
 them as one form. A saved phone number is shared with a business only when the
 member sends a request, and each request keeps the phone it was sent with.
-Pronouns word the copy that other people read about the member, such as church
-reference requests and verification messages; they have no other use.
+Pronouns word the messages Jubilee writes about the member, such as a change
+request from the verification team; they have no other use. The hint on the
+field reads "Used in messages we write about you, such as a change request from
+the verification team."
+
+The home church and the home church address are both optional and independent:
+a member may give the name, the address, both or neither (`L2-196`). Both are
+shown to no one and are used only for recommendations (`L2-145`).
 
 The e-mail address, password, notification settings, data download and account
 deletion that also appear on the account page belong to the features
@@ -50,8 +57,12 @@ design introduces.
   saved {date}", and the actions "Discard changes" and "Save profile". After a
   save it shows "Profile saved. Saved today at {time}."
 - **`ProfileForm`** — reactive form inside `AccountPage` with the fields first
-  name, last name, phone, postal code, home church and pronouns. Optional fields
-  carry "(optional)". The phone hint reads "Shared with a business only when you
+  name, last name, phone, postal code, home church, home church address and
+  pronouns. Optional fields carry "(optional)". "Home church address" follows
+  "Home church" directly; it is one free-text field with the placeholder "e.g.
+  2700 Bristol Circle, Oakville" and the hint "Shown to no one.", and input
+  stops at 200 characters. There is no address lookup and no format check.
+  Clearing either field and saving removes the value. The phone hint reads "Shared with a business only when you
   send a request." The form applies the same rules as the server and renders
   failures through `ErrorSummary` and per-field messages (L2-126).
 - **`UnsavedChangesGuard`** — Angular `CanDeactivate` guard on `/account`. When
@@ -59,7 +70,8 @@ design introduces.
   handler covers a browser tab close. "Discard changes" resets the form to the
   last saved values and clears the dirty state.
 - **`AccountApi`** — typed Angular HTTP client. `getAccount()` calls
-  `GET /api/account`; `saveProfile(profile)` calls `PUT /api/account/profile`.
+  `GET /api/account`; `saveProfile(profile)` calls `PUT /api/account/profile`. Both carry `homeChurchAddress` (string or null)
+  beside `homeChurch`.
 - **`AccountController`** — ASP.NET Core controller in `Jubilee.Api`. Both
   endpoints act on the member of the current session only; no route takes a
   member identifier, so one member cannot address another member's profile
@@ -69,14 +81,21 @@ design introduces.
   `AccountDto` with the profile, the e-mail and its confirmation state, the
   join date and `ProfileSavedAt`.
 - **`UpdateProfileCommand`** and **`UpdateProfileCommandHandler`** — carry the
-  six editable fields. The handler loads the `Member`, calls
+  seven editable fields. The handler loads the `Member`, calls
   `Member.UpdateProfile(...)` and saves in one unit of work. The command has no
   `Role`, `Email` or `Status` property; a body that carries any other field is
   rejected with HTTP `400` and nothing changes.
 - **`UpdateProfileCommandValidator`** — FluentValidation validator. A failure
   returns HTTP `422` with one code per field: `PHONE_INVALID` maps to "Enter a
   10-digit phone number, like 416-555-0142." and `POSTAL_CODE_INVALID` maps to
-  "Enter a full postal code, like M4C 1A1."
+  "Enter a full postal code, like M4C 1A1." A home church over 100 characters
+  or a home church address over 200 characters is refused with the code
+  `TOO_LONG` for `homeChurch` or `homeChurchAddress`, in the same error shape.
+- **`Member.HomeChurch`** and **`Member.HomeChurchAddress`** — optional text,
+  100 and 200 characters at most. `Member.UpdateProfile` trims each value and
+  stores a blank one as null. Neither is part of any read model that a
+  business, another member or the verification team receives (`L2-145`); both
+  are in the member's data download and are removed when the account is erased.
 - **`PhoneNumber`** — value object that accepts a 10-digit North American
   number, ignores punctuation and spaces, and stores the ten digits.
 - **`PostalCode`** — value object that accepts a full Canadian postal code in
@@ -90,7 +109,7 @@ design introduces.
   request already sent keeps the phone it was sent with, and a request sent
   after the save carries the new phone.
 
-The maximum length of the name and home church fields is `<TO SUPPLY>`.
+First and last name are 50 characters at most (ADR 0028).
 
 ## Requirements
 
@@ -99,7 +118,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-013` | `L1-002` | The system shall let a member edit first name, last name, phone, postal code and home church at `/account`. |
+| `L2-013` | `L1-002` | The system shall let a member edit first name, last name, phone, postal code, home church and home church address at `/account`. |
+| `L2-196` | `L1-002` | A member may give a home church by name, by address, by both or by neither. "Home church address" shall be one optional free-text field of at most 200 characters with the hint "Shown to no one."; a longer value sent to the API shall be refused with the code `TOO_LONG`, and clearing the field and saving shall remove the value. |
+| `L2-145` | `L1-020` | The system shall show a member's home church and home church address to no one and use them only for recommendations. |
 | `L2-019` | `L1-002` | The avatar in the top bar shall open the account menu. |
 | `L2-126` | `L1-018` | A page form submitted with errors shall show a summary that links to each invalid field, shall keep the typed values, and the server shall enforce each rule the browser enforces with the same message code. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on each API endpoint, and shall reject an update that carries a field the caller is not allowed to set. |

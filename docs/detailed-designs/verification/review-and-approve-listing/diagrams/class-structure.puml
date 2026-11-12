@@ -12,9 +12,7 @@ skinparam class {
 title Class structure — Review and approve a listing
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused
@@ -23,8 +21,6 @@ enum ListingStage {
   Declined
 }
 enum ChecklistItem {
-  OwnerNameMatchesReference
-  ReferenceConfirmedAndCanVouch
   TaglineAndDescriptionHonest
   AtLeastOnePhoto
   CategoryFits
@@ -40,6 +36,7 @@ class Listing {
   +string Name
   +ListingStage Stage
   +bool Verified
+  +DateOnly? VerifiedOn
   +DateTimeOffset SubmittedAt
   +byte[] RowVersion
   +Approve(verifier: Member, note: string, now: DateTimeOffset): VerificationDecision
@@ -67,14 +64,6 @@ class VerificationDecision {
   +string Note
   +string ChecklistSnapshot
 }
-class ChurchReference {
-  +string Church
-  +string AnsweredByName
-  +string AnsweredByRole
-  +DateTimeOffset? AnsweredAt
-  +DateTimeOffset? DeleteAfter
-  +StartDeletionClock(decidedAt: DateTimeOffset): void
-}
 class ApproveListingCommand {
   +Guid ListingId
   +string Note
@@ -92,10 +81,9 @@ ApproveListingCommandValidator ..> ApproveListingCommand : validates
 ApproveListingCommandHandler --> Listing : loads / mutates
 ApproveListingCommandHandler ..> VerificationReview : reads ticks
 Listing "1" *-- "0..1" VerificationReview
-Listing "1" *-- "0..1" ChurchReference
 Listing "1" *-- "*" ListingFlag
 Listing "1" *-- "*" VerificationDecision
-VerificationReview "1" *-- "0..5" ChecklistTick
+VerificationReview "1" *-- "0..3" ChecklistTick
 ChecklistTick --> ChecklistItem
 VerificationDecision --> DecisionKind
 Listing --> ListingStage

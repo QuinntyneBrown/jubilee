@@ -1,6 +1,6 @@
 # Estimates
 
-- Overall effort: 387 days
+- Overall effort: 370 days
 - Complete: 61%
 
 | Subsystem | Effort | Complete |
@@ -17,12 +17,11 @@
 | [messaging](messaging.md) | 17 days | 94% |
 | [requests](requests.md) | 34 days | 85% |
 | [notifications](notifications.md) | 16 days | 86% |
-| [onboarding](onboarding.md) | 15 days | 84% |
-| [church-reference](church-reference.md) | 10 days | 78% |
+| [onboarding](onboarding.md) | 12 days | 87% |
 | [admin](admin.md) | 7 days | 90% |
 | [verification](verification.md) | 20 days | 81% |
 | [owner-workspace](owner-workspace.md) | 20 days | 90% |
-| [privacy](privacy.md) | 16 days | 9% |
+| [privacy](privacy.md) | 12 days | 13% |
 | [accessibility](accessibility.md) | 10 days | 0% |
 | [performance](performance.md) | 9 days | 6% |
 | [operations](operations.md) | 30 days | 30% |
@@ -35,4 +34,4 @@
 2. listings: the business and product page states
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
 4. operations, performance, admin: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)
-5. Polish the remaining 70–90% designs: browse home sign-in prompt, church-reference outcome, offline and notification details
+5. Polish the remaining 70–90% designs: browse home sign-in prompt, offline and notification details
