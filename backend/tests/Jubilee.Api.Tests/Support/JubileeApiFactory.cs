@@ -211,6 +211,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.SignInFailures);
             db.RemoveRange(db.StaffMembers);
             db.RemoveRange(db.LaunchSubscribers);
+            db.RemoveRange(db.BusinessPreRegistrations);
             db.RemoveRange(db.LinkTokens);
             db.RemoveRange(db.PasswordResetRequests);
             db.RemoveRange(db.Members);

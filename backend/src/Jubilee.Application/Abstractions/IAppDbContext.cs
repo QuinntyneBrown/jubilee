@@ -86,5 +86,7 @@ public interface IAppDbContext
 
     DbSet<LaunchSubscriber> LaunchSubscribers { get; }
 
+    DbSet<BusinessPreRegistration> BusinessPreRegistrations { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

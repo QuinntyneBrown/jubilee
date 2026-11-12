@@ -14,6 +14,12 @@ namespace Jubilee.Api.Controllers;
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record LaunchNotificationBody(string? Email, string? FirstName, bool Consent, string? ChallengeToken);
 
+/// <summary>The body of <c>POST /api/launch/businesses</c>. Unknown fields are refused (L2-136 AC1).</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record BusinessPreRegistrationBody(
+    string? BusinessName, string? ContactName, string? Email, string? Phone, string? Category, string? Area, string? Website,
+    string? Description, bool Consent, string? ChallengeToken);
+
 /// <summary>What the launching-soon page needs before it shows its forms (L2-218 AC5).</summary>
 public sealed record LaunchFormDto(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? BotChallengeSiteKey);
@@ -40,6 +46,21 @@ public sealed class LaunchController(ISender sender, IBotChallengeVerifier bot, 
     {
         await PassChallengeAsync(request.ChallengeToken, cancellationToken);
         await sender.Send(new SignUpForLaunchCommand(request.Email, request.FirstName, request.Consent), cancellationToken);
+        return Accepted();
+    }
+
+    /// <summary>202 with no body. Nothing is listed, drafted or verified by it (L2-216 AC9).</summary>
+    [HttpPost("businesses")]
+    [EnableRateLimiting(LaunchRateLimit.PreRegistrations)]
+    [ErrorReference("JB-LAUNCH-503")]
+    public async Task<IActionResult> PreRegister(BusinessPreRegistrationBody request, CancellationToken cancellationToken)
+    {
+        await PassChallengeAsync(request.ChallengeToken, cancellationToken);
+        await sender.Send(
+            new PreRegisterBusinessCommand(
+                request.BusinessName, request.ContactName, request.Email, request.Phone, request.Category, request.Area, request.Website,
+                request.Description, request.Consent),
+            cancellationToken);
         return Accepted();
     }
 

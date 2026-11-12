@@ -212,6 +212,15 @@ public sealed class LaunchRateLimitTests(FiveLaunchSubmissionsFactory factory) :
         var json = JsonDocument.Parse(await refused.Content.ReadAsStringAsync()).RootElement;
         Assert.Equal("rate_limited", json.GetProperty("code").GetString());
         Assert.Equal(5, await factory.Query(db => db.LaunchSubscribers.CountAsync()));
+        // Pre-registrations have a budget of their own.
+        var details = new { businessName = "B", contactName = "C", email = "o@example.com", category = "shops", area = "A", description = "D", consent = true };
+        for (var i = 0; i < 5; i++)
+        {
+            Assert.Equal(HttpStatusCode.Accepted, (await client.PostAsJsonAsync("/api/launch/businesses", details)).StatusCode);
+        }
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, (await client.PostAsJsonAsync("/api/launch/businesses", details)).StatusCode);
+        Assert.Equal(5, await factory.Query(db => db.BusinessPreRegistrations.CountAsync()));
         // The limit is of the sign-ups only.
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/launch")).StatusCode);
     }

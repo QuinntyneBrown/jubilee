@@ -29,6 +29,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<MaintenanceWatcherJob>();
         builder.Services.AddHostedService<DataExportJob>();
         builder.Services.AddHostedService<AccountErasureJob>();
+        builder.Services.AddHostedService<LaunchRetentionJob>();
         return builder;
     }
 }
@@ -377,6 +378,42 @@ public sealed class AccountErasureJob(IServiceScopeFactory scopes, ILogger<Accou
                 catch (Exception exception) when (exception is not OperationCanceledException)
                 {
                     logger.LogError(exception, "Deleted accounts could not be erased. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+}
+
+/// <summary>
+/// Once a day: deletes the launch notification sign-ups and the business pre-registrations that are
+/// 12 months old and logs how many, counts only (L2-148 AC5, AC6; L2-218 AC6).
+/// </summary>
+public sealed class LaunchRetentionJob(IServiceScopeFactory scopes, ILogger<LaunchRetentionJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(24));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var purged = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Launch.PurgeLaunchDataCommand(), stoppingToken);
+                    logger.LogInformation(
+                        "Retention: deleted {Subscribers} launch notification sign-ups and {PreRegistrations} business pre-registrations.",
+                        purged.Subscribers,
+                        purged.PreRegistrations);
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The launch sign-ups could not be checked for retention. They will be tried again.");
                 }
             }
             while (await timer.WaitForNextTickAsync(stoppingToken));

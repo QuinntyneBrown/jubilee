@@ -42,3 +42,73 @@ public sealed class LaunchSubscriber
         CreatedAt = now,
     };
 }
+
+/// <summary>
+/// The details an owner sent before launch, so that the Jubilee team can arrange for the listing to
+/// be on Jubilee on launch day (L2-216). It is not a listing and not a draft, and it verifies
+/// nothing: verification still applies to every listing. Every one sent is kept, because one owner
+/// may have two businesses.
+/// </summary>
+public sealed class BusinessPreRegistration
+{
+    public const int MaxBusinessNameLength = 80;
+
+    public const int MaxContactNameLength = 100;
+
+    public const int MaxAreaLength = 80;
+
+    public const int MaxWebsiteLength = 200;
+
+    public const int MaxDescriptionLength = 500;
+
+    private BusinessPreRegistration()
+    {
+    }
+
+    public Guid Id { get; private set; }
+
+    public string BusinessName { get; private set; } = string.Empty;
+
+    public string ContactName { get; private set; } = string.Empty;
+
+    public string Email { get; private set; } = string.Empty;
+
+    public string EmailKey { get; private set; } = string.Empty;
+
+    /// <summary>Ten digits, when the owner gave a number.</summary>
+    public string? Phone { get; private set; }
+
+    public string CategorySlug { get; private set; } = string.Empty;
+
+    public string Area { get; private set; } = string.Empty;
+
+    /// <summary>An <c>http</c> or <c>https</c> address, when the owner gave one (L2-136 AC5).</summary>
+    public string? Website { get; private set; }
+
+    public string Description { get; private set; } = string.Empty;
+
+    public DateTimeOffset ConsentedAt { get; private set; }
+
+    public ConsentMethod ConsentMethod { get; private set; }
+
+    public DateTimeOffset CreatedAt { get; private set; }
+
+    public static BusinessPreRegistration Send(
+        string businessName, string contactName, EmailAddress email, string? phone, Category category, string area, string? website,
+        string description, DateTimeOffset now) => new()
+        {
+            Id = Guid.NewGuid(),
+            BusinessName = businessName.Trim(),
+            ContactName = contactName.Trim(),
+            Email = email.Value,
+            EmailKey = email.Key,
+            Phone = phone,
+            CategorySlug = category.Slug,
+            Area = area.Trim(),
+            Website = website,
+            Description = description.Trim(),
+            ConsentedAt = now,
+            ConsentMethod = ConsentMethod.MarketingSiteForm,
+            CreatedAt = now,
+        };
+}

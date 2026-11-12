@@ -74,6 +74,7 @@ public static class DependencyInjection
 
         services.AddScoped<Application.Search.ISearchIndex, Search.DatabaseSearchIndex>();
         services.AddSingleton(new Application.Accounts.AccountSettings(configuration["App:PublicBaseUrl"] ?? "http://localhost:4200"));
+        services.AddSingleton(new Application.Launch.LaunchSettings(configuration["Launch:TeamEmail"]));
         services.AddSingleton<Application.Accounts.IPasswordHasher, Accounts.Argon2idPasswordHasher>();
         services.AddHttpClient<Application.Accounts.IBreachedPasswordChecker, Accounts.HaveIBeenPwnedChecker>();
         services.AddHttpClient<Application.Accounts.IBotChallengeVerifier, Accounts.TurnstileBotChallengeVerifier>();
