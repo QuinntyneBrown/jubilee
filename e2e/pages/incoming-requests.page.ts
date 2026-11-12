@@ -49,6 +49,11 @@ export class IncomingRequestsPage extends ShellPage implements Screen {
     return this.main.getByRole('button', { name: `Decline request from ${customer}` });
   }
 
+  /** Lets time pass with the page open and nothing done. */
+  async idle(ms: number): Promise<void> {
+    await this.page.waitForTimeout(ms);
+  }
+
   async ready(): Promise<void> {
     await this.heading.waitFor();
   }

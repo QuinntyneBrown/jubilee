@@ -83,7 +83,7 @@ test.describe('respond to customer requests: the list (L2-051)', () => {
     await expect(requests.rows).toHaveCount(3);
   });
 
-  test('L2-051 AC5: a request that arrives while the page is open appears at the top with a toast', async ({
+  test('L2-051 AC5, L2-070 AC1: a request that arrives over the event stream appears at the top at once, with one toast', async ({
     page,
     jb,
   }) => {
@@ -96,11 +96,71 @@ test.describe('respond to customer requests: the list (L2-051)', () => {
 
     fake.arrive();
 
-    await expect(requests.rows).toHaveCount(4, { timeout: 10_000 });
+    // Well inside the five seconds a timer would take: the stream told the page.
+    await expect(requests.rows).toHaveCount(4, { timeout: 2_500 });
     await expect(requests.rows.first()).toContainText('Grace Adeyemi');
     await expect(requests.statusTab(/^New/)).toContainText('4');
     const toast = toasts.withTitle('New booking request');
+    await expect(toast).toHaveCount(1);
     await expect(toast).toContainText('Grace Adeyemi asked for Consultation.');
+    await expect(toasts.all).toHaveCount(1);
+  });
+
+  test('L2-051 AC5: a request the customer cancels leaves the open page without the owner asking', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page);
+    await jb.goto(PATH);
+    await expect(requests.rows).toHaveCount(3);
+
+    fake.cancel(RUTH);
+
+    await expect(requests.row('Ruth Mensah')).toHaveCount(0, { timeout: 2_500 });
+    await expect(requests.statusTab(/^New/)).toContainText('2');
+  });
+
+  test('L2-051 AC7: while the event stream is connected the page does not ask on a timer', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page);
+    await jb.goto(PATH);
+    await expect(requests.rows).toHaveCount(3);
+    const asked = fake.listRequests.length;
+
+    // Longer than the five seconds between two questions of the fallback.
+    await requests.idle(6_500);
+
+    expect(fake.listRequests.length).toBe(asked);
+  });
+
+  test('L2-051 AC7: when the event stream cannot connect the page asks every five seconds, so a new request still appears', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { stream: 'down' });
+    await jb.goto(PATH);
+    await expect(requests.rows).toHaveCount(3);
+    // The page has read its counts; from here only the timer can tell it of a new request.
+    await requests.idle(1_000);
+    const asked = fake.listRequests.length;
+
+    fake.arrive();
+    await requests.idle(1_000);
+    expect(fake.listRequests.length).toBe(asked);
+
+    await expect(requests.rows).toHaveCount(4, { timeout: 10_000 });
+    await expect(toasts.withTitle('New booking request')).toContainText(
+      'Grace Adeyemi asked for Consultation.',
+    );
   });
 
   test('L2-051 AC6: an answer of 403 shows the forbidden page', async ({ page, jb }) => {

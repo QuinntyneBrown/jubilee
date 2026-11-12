@@ -6,10 +6,12 @@ import {
   DestroyRef,
   OnInit,
   computed,
+  effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import {
   INCOMING_REQUESTS_API,
@@ -34,7 +36,7 @@ import {
   TabList,
   WorkspaceHeader,
 } from 'components';
-import { interval } from 'rxjs';
+import { EMPTY, filter, interval, switchMap } from 'rxjs';
 import {
   ConfirmRequestData,
   ConfirmRequestDialog,
@@ -47,10 +49,14 @@ import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { threadTime } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
+import { RealtimeService } from '../../services/realtime.service';
 import { ToastService } from 'components';
 
-/** How often the page asks for new requests (L2-051 AC3: a new request shows within five seconds). */
+/** How often the page asks for new requests while the event stream cannot connect (L2-051 AC7). */
 const POLL_MS = 5000;
+
+/** The page's own address: a notification about a request of the owner's opens it. */
+const PATH = '/my-business/requests';
 
 /** How long an owner can take back a confirmation (L2-052 AC4). */
 const UNDO_MS = 8000;
@@ -92,6 +98,7 @@ export class IncomingRequestsPage implements OnInit {
   private readonly clock = inject(ClockService);
   private readonly toasts = inject(ToastService);
   private readonly navigation = inject(NavigationStore);
+  private readonly realtime = inject(RealtimeService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly tabs = computed<TabListItem<IncomingTab>[]>(() => {
@@ -120,11 +127,42 @@ export class IncomingRequestsPage implements OnInit {
       : `${lead} · reply within a day to keep your “replies fast” badge`;
   });
 
+  /** Asks on a timer only while the event stream cannot connect (L2-051 AC7; ADR 0050). */
+  private readonly fallback = toObservable(this.realtime.connected).pipe(
+    switchMap((connected) => (connected ? EMPTY : interval(POLL_MS))),
+  );
+
+  constructor() {
+    // The stream's count of the owner's new requests moved: one arrived, or a customer cancelled one.
+    let count = this.navigation.summary().newRequestCount;
+    effect(() => {
+      const next = this.navigation.summary().newRequestCount;
+      if (next === count) return;
+      count = next;
+      untracked(() => {
+        // Before the first answer there is nothing to bring up to date.
+        if (this.lastNew !== null && next !== this.lastNew) this.refresh();
+      });
+    });
+    // The stream came back: what it could not say while it was down is read once.
+    let connected = this.realtime.connected();
+    effect(() => {
+      const now = this.realtime.connected();
+      if (now && !connected) untracked(() => this.refresh());
+      connected = now;
+    });
+  }
+
   ngOnInit(): void {
     this.load(this.tab());
-    interval(POLL_MS)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    // A notification about one of the owner's requests: a new one, or one a customer cancelled (L2-051 AC5).
+    this.realtime.received
+      .pipe(
+        filter((item) => item.kind === 'request' && item.target === PATH),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe(() => this.refresh());
+    this.fallback.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.refresh());
   }
 
   protected load(tab: IncomingTab): void {

@@ -46,12 +46,24 @@ export interface EventsApi {
 
 export const EVENTS_API = new InjectionToken<EventsApi>('EVENTS_API');
 
-/** The stream as server-sent events: the browser reconnects and sends `Last-Event-ID` itself. */
+/**
+ * The stream as server-sent events: the browser reconnects and sends `Last-Event-ID` itself. A stream
+ * that ends and opens again was never down; it is down when an attempt to connect fails (ADR 0050).
+ */
 @Injectable()
 export class SseEventsApi implements EventsApi {
   stream(): Observable<MemberEvent> {
     return new Observable<MemberEvent>((subscriber) => {
       const source = new EventSource('/api/events', { withCredentials: true });
+      let opened = false;
+      source.addEventListener('open', () => {
+        opened = true;
+        subscriber.next({ type: 'connection', connected: true });
+      });
+      source.addEventListener('error', () => {
+        if (!opened) subscriber.next({ type: 'connection', connected: false });
+        opened = false;
+      });
       source.addEventListener('notification', (event) => {
         const message = event as MessageEvent<string>;
         subscriber.next({

@@ -3,9 +3,12 @@ import type { Locator, Page } from '@playwright/test';
 /** The toasts that rise from the bottom of the screen. */
 export class Toasts {
   readonly region: Locator;
+  /** Every toast on show. */
+  readonly all: Locator;
 
   constructor(private readonly page: Page) {
     this.region = page.locator('.toast-region');
+    this.all = this.region.locator('.toast');
   }
 
   /** The toast with this title. */
