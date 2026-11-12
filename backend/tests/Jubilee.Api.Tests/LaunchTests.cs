@@ -2,8 +2,10 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Jubilee.Api.Tests.Support;
+using Jubilee.Application.Accounts;
 using Jubilee.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jubilee.Api.Tests;
 
@@ -223,5 +225,60 @@ public sealed class LaunchRateLimitTests(FiveLaunchSubmissionsFactory factory) :
         Assert.Equal(5, await factory.Query(db => db.BusinessPreRegistrations.CountAsync()));
         // The limit is of the sign-ups only.
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/launch")).StatusCode);
+    }
+}
+
+public sealed class LaunchSignUpTeamEmailTests(LaunchTeamEmailFactory factory) : IClassFixture<LaunchTeamEmailFactory>, IAsyncLifetime
+{
+    public Task InitializeAsync() => factory.Reset();
+
+    public Task DisposeAsync() => Task.CompletedTask;
+
+    private Task<HttpResponseMessage> SignUp(string email, string? firstName = "Joanna") =>
+        factory.CreateClient().PostAsJsonAsync("/api/launch/notifications", new { email, firstName, consent = true });
+
+    private async Task<IReadOnlyList<SentEmail>> Dispatched()
+    {
+        using var scope = factory.Services.CreateScope();
+        await scope.ServiceProvider.GetRequiredService<OutboxDispatcher>().DispatchDueAsync(CancellationToken.None);
+        return factory.Emails.Sent.ToList();
+    }
+
+    // L2-217 AC9
+    // Given a team address is configured, when a new address signs up,
+    // then one e-mail with the address and the first name goes to the team through the outbox.
+    [Fact]
+    public async Task L2_217_AC9_the_team_is_e_mailed_each_new_sign_up()
+    {
+        Assert.Equal(HttpStatusCode.Accepted, (await SignUp("joanna.adeyemi@example.com")).StatusCode);
+
+        Assert.Equal(1, await factory.Query(db => db.OutboxMessages.CountAsync()));
+        var sent = Assert.Single(await Dispatched());
+        Assert.Equal("team@jubilee.test", sent.To);
+        Assert.Equal("New launch notification sign-up", sent.Subject);
+        Assert.Contains("E-mail: joanna.adeyemi@example.com", sent.Body);
+        Assert.Contains("First name: Joanna", sent.Body);
+    }
+
+    // L2-217 AC9: without a first name the e-mail says so
+    [Fact]
+    public async Task L2_217_AC9_the_e_mail_says_when_no_first_name_was_given()
+    {
+        await SignUp("ruth@example.com", firstName: null);
+
+        Assert.Contains("First name: not given", Assert.Single(await Dispatched()).Body);
+    }
+
+    // L2-217 AC9, AC5
+    // Given an address that has signed up, when it signs up again, then the team is e-mailed no second time.
+    [Fact]
+    public async Task L2_217_AC9_a_repeat_sign_up_e_mails_no_one()
+    {
+        await SignUp("joanna.adeyemi@example.com");
+
+        Assert.Equal(HttpStatusCode.Accepted, (await SignUp("JOANNA.ADEYEMI@example.com", "Someone else")).StatusCode);
+
+        Assert.Equal(1, await factory.Query(db => db.OutboxMessages.CountAsync()));
+        Assert.Single(await Dispatched());
     }
 }

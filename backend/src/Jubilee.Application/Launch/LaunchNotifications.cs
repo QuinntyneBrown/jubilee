@@ -30,6 +30,13 @@ public static class LaunchValidation
         return email;
     }
 
+    /// <summary>
+    /// When the consent was given: the time the marketing host received the form, or now when it
+    /// named none or one that has not come yet (L2-218 AC9).
+    /// </summary>
+    public static DateTimeOffset ConsentTime(DateTimeOffset? receivedAt, DateTimeOffset now) =>
+        receivedAt is { } at && at <= now ? at : now;
+
     /// <summary>Consent is express: without it nothing is stored (L2-218 AC1).</summary>
     public static void Consent(Dictionary<string, string> errors, bool consent)
     {
@@ -40,10 +47,14 @@ public static class LaunchValidation
     }
 }
 
-/// <summary>"Tell me when it launches" (L2-217): an address, an optional first name and consent.</summary>
-public sealed record SignUpForLaunchCommand(string? Email, string? FirstName, bool Consent) : IRequest;
+/// <summary>
+/// "Tell me when it launches" (L2-217): an address, an optional first name and consent.
+/// <paramref name="ReceivedAt"/> is when the marketing host received it, when its proxy said so (L2-218 AC9).
+/// </summary>
+public sealed record SignUpForLaunchCommand(string? Email, string? FirstName, bool Consent, DateTimeOffset? ReceivedAt = null) : IRequest;
 
-public sealed class SignUpForLaunchCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<SignUpForLaunchCommand>
+public sealed class SignUpForLaunchCommandHandler(IAppDbContext db, LaunchSettings settings, TimeProvider clock)
+    : IRequestHandler<SignUpForLaunchCommand>
 {
     public async Task Handle(SignUpForLaunchCommand request, CancellationToken cancellationToken)
     {
@@ -66,7 +77,15 @@ public sealed class SignUpForLaunchCommandHandler(IAppDbContext db, TimeProvider
             return;
         }
 
-        db.LaunchSubscribers.Add(LaunchSubscriber.SignUp(email!, request.FirstName, clock.GetUtcNow()));
+        var now = clock.GetUtcNow();
+        var subscriber = LaunchSubscriber.SignUp(email!, request.FirstName, LaunchValidation.ConsentTime(request.ReceivedAt, now));
+        db.LaunchSubscribers.Add(subscriber);
+        if (!string.IsNullOrWhiteSpace(settings.TeamEmail))
+        {
+            // Written with the sign-up or not at all: only a new address tells the team (AC9).
+            db.OutboxMessages.Add(OutboxMessage.Email(null, settings.TeamEmail.Trim(), "New launch notification sign-up", Describe(subscriber), now));
+        }
+
         try
         {
             await db.SaveChangesAsync(cancellationToken);
@@ -76,4 +95,11 @@ public sealed class SignUpForLaunchCommandHandler(IAppDbContext db, TimeProvider
             // Two sign-ups of one address at once: the unique key kept the first, which is the same outcome.
         }
     }
+
+    private static string Describe(LaunchSubscriber subscriber) =>
+        "Someone asked to be told when Jubilee launches, from the launching-soon page.\n\n"
+        + $"E-mail: {subscriber.Email}\n"
+        + $"First name: {subscriber.FirstName ?? "not given"}\n\n"
+        + "They agreed to one e-mail, the launch notice. Nothing was sent to them now.\n\n"
+        + "Jubilee · Toronto's Christian marketplace\n";
 }
