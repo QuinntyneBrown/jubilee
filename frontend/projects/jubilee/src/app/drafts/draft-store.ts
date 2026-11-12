@@ -19,7 +19,7 @@ const KEY = 'jubilee-drafts';
 const LIFETIME = 30 * 24 * 60 * 60 * 1000;
 
 /**
- * DraftStore (L2-116, ADR 0045): the drafts of this device, in the browser's storage. A draft is
+ * DraftStore (L2-116, ADR 0046): the drafts of this device, in the browser's storage. A draft is
  * given back once, and only to the member who typed it. Nothing here reaches the server.
  */
 @Injectable({ providedIn: 'root' })

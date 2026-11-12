@@ -18,7 +18,7 @@ import { Toasts } from '../pages/toasts';
 
 // The sign-in prompt and return to origin (L2-012 AC2, AC4): a visitor starts an action, signs in
 // from the prompt and is brought back with the action carried on. The started action travels in
-// the return path (ADR 0045).
+// the return path (ADR 0046).
 
 const EMAIL = 'joanna.adeyemi@example.com';
 

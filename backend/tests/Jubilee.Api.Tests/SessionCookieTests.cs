@@ -18,7 +18,7 @@ public sealed class HostPrefixApiFactory : JubileeApiFactory
     protected override void ConfigureSettings(IWebHostBuilder builder) => builder.UseSetting("Session:HostPrefix", "true");
 }
 
-// The member session cookie (L2-135 AC1, ADR 0045): __Host-jubilee.session outside Development.
+// The member session cookie (L2-135 AC1, ADR 0046): __Host-jubilee.session outside Development.
 public abstract class SessionCookieTestsBase(JubileeApiFactory factory) : IAsyncLifetime
 {
     private const string Email = "joanna.adeyemi@example.com";
@@ -133,7 +133,7 @@ public sealed class DeployedSessionCookieTests(DeployedApiFactory factory)
 public sealed class HostPrefixSettingSessionCookieTests(HostPrefixApiFactory factory)
     : SessionCookieTestsBase(factory), IClassFixture<HostPrefixApiFactory>;
 
-// No cross-origin caller (L2-135 AC3, ADR 0045): the API approves no other origin.
+// No cross-origin caller (L2-135 AC3, ADR 0046): the API approves no other origin.
 public sealed class CrossOriginTests(JubileeApiFactory factory) : IClassFixture<JubileeApiFactory>
 {
     public static TheoryData<string> Origins => new()

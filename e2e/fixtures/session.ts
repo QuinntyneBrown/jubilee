@@ -116,7 +116,7 @@ export async function refuseAsExpired(
   return seen;
 }
 
-/** The name the app keeps a member's drafts under: its hash of the e-mail address (ADR 0045). */
+/** The name the app keeps a member's drafts under: its hash of the e-mail address (ADR 0046). */
 function draftOwner(email: string): string {
   const text = email.trim().toLowerCase();
   let h1 = 0xdeadbeef;

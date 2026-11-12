@@ -124,7 +124,7 @@ The feature is a vertical slice from the sign-in page and prompt to the
   "Message" on Legacy Financial its title is "Join to message Legacy
   Financial"; it offers "Sign in" and "Join free", which link to `/sign-in` and
   `/join` with the `returnUrl`.
-- **Return path** — address that carries the started action (ADR 0045). Each
+- **Return path** — address that carries the started action (ADR 0046). Each
   action that opens a dialog has an address: `/b/{slug}/message`,
   `/b/{slug}/book`, `/b/{slug}/quote`, `/b/{slug}/request` and
   `/b/{slug}/p/{product}/request`; the service, option and quantity chosen

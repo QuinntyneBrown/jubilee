@@ -45,7 +45,7 @@ and the `Jubilee database`. No cache takes part: sessions are rows of the
   any session older than 30 days and for a non-persistent session idle for
   more than 12 hours.
 - **`MemberSessionCookie`** — singleton of `Jubilee API` that decides the
-  name of the member cookie (ADR 0045). The cookie is `__Host-jubilee.session`
+  name of the member cookie (ADR 0046). The cookie is `__Host-jubilee.session`
   with `Secure` always, `HttpOnly`, `SameSite=Lax` and `Path=/`. Only the
   Development environment, which is served over plain HTTP, issues it as
   `jubilee.session` without the prefix; the setting `Session:HostPrefix`
@@ -66,7 +66,7 @@ and the `Jubilee database`. No cache takes part: sessions are rows of the
   matching header. The token is a double-submit token and is not stored in the
   session row (ADR 0013).
 - **No CORS middleware** — `Jubilee API` has no cross-origin caller and no
-  allowlist (ADR 0045). No answer carries an `Access-Control-Allow-*` header,
+  allowlist (ADR 0046). No answer carries an `Access-Control-Allow-*` header,
   so a browser denies each cross-origin read and each preflighted request.
 - **`SessionController`** — ASP.NET Core controller. `GET /api/session` returns
   the `SessionDto` (member summary, e-mail status and `otherSessionCount`).

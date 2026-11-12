@@ -26,7 +26,7 @@ function keyOf(control: Control): string {
 }
 
 /**
- * FormDraftDirective (L2-116, ADR 0045): makes a form a draft source. The draft is the value of
+ * FormDraftDirective (L2-116, ADR 0046): makes a form a draft source. The draft is the value of
  * the form's named controls; restoring writes the values back and tells the page with the
  * browser's own `input` and `change` events, as if the member had typed them.
  *

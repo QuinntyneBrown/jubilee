@@ -18,7 +18,7 @@ The slice is mostly client-side. `Jubilee API` contributes one precise signal: a
 in one place, an HTTP interceptor, so every form in the product gains the
 behaviour by registering as a draft source. Drafts are saved at two moments and
 not as the member types: when the session ends, and when the member confirms
-"Sign out" (ADR 0045). The outgoing message queue of the
+"Sign out" (ADR 0046). The outgoing message queue of the
 `Jubilee service worker` (`L2-119`–`L2-122`) is a separate mechanism for
 connectivity loss and is not part of this slice.
 

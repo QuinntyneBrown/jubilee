@@ -43,7 +43,7 @@ builder.Services.AddSwaggerGen();
 // has ended is told so (401 SESSION_EXPIRED) and the cookie is removed; a caller who never had one is
 // told to sign in. Either way the answer is a status code, never a redirect.
 builder.Services.AddSingleton<DatabaseTicketStore>();
-// The cookie is __Host-jubilee.session everywhere but on a developer's machine (L2-135 AC1, ADR 0045).
+// The cookie is __Host-jubilee.session everywhere but on a developer's machine (L2-135 AC1, ADR 0046).
 var sessionCookie = new MemberSessionCookie(builder.Configuration, builder.Environment);
 builder.Services.AddSingleton(sessionCookie);
 builder.Services

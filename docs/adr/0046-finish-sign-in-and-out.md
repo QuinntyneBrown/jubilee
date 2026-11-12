@@ -1,4 +1,4 @@
-# 0045. Finish sign in and out: drafts kept on the device, the action carried in the return path, the `__Host-` cookie and no cross-origin allowlist
+# 0046. Finish sign in and out: drafts kept on the device, the action carried in the return path, the `__Host-` cookie and no cross-origin allowlist
 
 ## Status
 

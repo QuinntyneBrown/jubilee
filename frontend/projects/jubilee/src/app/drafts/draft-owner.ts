@@ -1,7 +1,7 @@
 import { Member } from 'api';
 
 /**
- * Names the member a draft belongs to (ADR 0045): a 53-bit hash of the e-mail address, so the
+ * Names the member a draft belongs to (ADR 0046): a 53-bit hash of the e-mail address, so the
  * device keeps no address in clear. It keeps the address out of sight; it is not a secret.
  */
 export function draftOwner(member: Member): string {
