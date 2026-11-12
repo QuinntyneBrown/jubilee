@@ -7,14 +7,13 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ADMIN_API, QueueRow, QueueStage, ReferenceState, VerificationQueue } from 'api';
+import { ADMIN_API, QueueRow, QueueStage, VerificationQueue } from 'api';
 import {
   EmptyState,
   Icon,
   Button,
   RowListSkeleton,
   Badge,
-  BadgeTone,
   PageHeader,
   TabListItem,
   TabList,
@@ -26,16 +25,6 @@ import {
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { threadTime } from 'api';
-
-/** How the church reference is named and coloured in the queue; the word always says it too. */
-const REFERENCE: Record<ReferenceState, { label: string; tone: BadgeTone }> = {
-  confirmed: { label: 'Confirmed', tone: 'success' },
-  waiting: { label: 'Waiting', tone: 'warning' },
-  'cant-vouch': { label: 'Can’t vouch', tone: 'danger' },
-  'doesnt-know': { label: 'Doesn’t know', tone: 'danger' },
-  expired: { label: 'Expired', tone: 'warning' },
-  deleted: { label: 'Deleted', tone: 'info' },
-};
 
 /** The verification queue at /verifications (L2-099): submitted listings, oldest first. */
 @Component({
@@ -74,7 +63,7 @@ export class AdminVerificationsPage implements OnInit {
   protected readonly subtitle = computed(() => {
     const state = this.state();
     if (state.status === 'loading') return 'Loading the queue…';
-    if (state.status === 'error') return 'Listings waiting for a church reference or a review.';
+    if (state.status === 'error') return 'Listings waiting for a review.';
     const { total, readyToReview, oldestWaitingDays } = state.value;
     if (total === 0) return 'Nothing waiting';
     const noun = total === 1 ? 'listing' : 'listings';
@@ -99,10 +88,6 @@ export class AdminVerificationsPage implements OnInit {
       error: (error: unknown) =>
         this.state.set({ status: 'error', reference: errorReference(error, 'JB-ADM-503') }),
     });
-  }
-
-  protected reference(row: QueueRow): { label: string; tone: BadgeTone } {
-    return REFERENCE[row.reference];
   }
 
   protected submitted(row: QueueRow): string {

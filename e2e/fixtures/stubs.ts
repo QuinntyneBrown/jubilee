@@ -281,7 +281,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     case 'business-away':
       return stubMyBusiness(page, { awayUntil: '2026-11-16T05:00:00Z' });
     case 'business-pending':
-      return stubMyBusiness(page, { state: 'pending-reference' });
+      return stubMyBusiness(page, { state: 'ready-to-review' });
     case 'business-changes':
       return stubMyBusiness(page, { state: 'changes-requested' });
     case 'business-empty':

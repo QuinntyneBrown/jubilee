@@ -101,6 +101,7 @@ test.describe('browse home for a member (L2-021)', () => {
     await jb.open('browse.empty');
     await expect(browse.subline).toHaveText('The first verified businesses are on their way.');
     await expect(browse.emptyState).toContainText('No businesses are listed yet');
+    await expect(browse.emptyState).toContainText('you’re live once we verify you.');
     await expect(browse.stateAction('List your business')).toHaveAttribute('href', '/list');
     await expect(browse.featured).toHaveCount(0);
     await expect(browse.groups).toHaveCount(0);

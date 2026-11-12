@@ -39,7 +39,6 @@ const row = (
   name: string,
   category: string,
   owner: string,
-  reference: string,
   at: string,
   stage: string,
   label: string,
@@ -48,8 +47,6 @@ const row = (
   name,
   categoryName: category,
   ownerName: owner,
-  church: 'Grace Toronto Church',
-  reference,
   submittedAt: at,
   stage,
   stageLabel: label,
@@ -62,7 +59,6 @@ const ROWS = [
     'Luzandre.com',
     'Shops',
     'Naomi Laurent',
-    'confirmed',
     '2026-11-10T09:40:00-05:00',
     'ready-to-review',
     'Ready to review',
@@ -72,27 +68,24 @@ const ROWS = [
     'Laurent Photography',
     'Media',
     'Naomi Laurent',
-    'waiting',
     '2026-11-09T10:00:00-05:00',
-    'waiting-on-reference',
-    'Waiting on reference',
+    'ready-to-review',
+    'Ready to review',
   ),
   row(
     'a2',
     'Okafor & Sons Furniture',
     'Shops',
     'Tobe Okafor',
-    'cant-vouch',
     '2026-11-07T10:00:00-05:00',
-    'needs-a-decision',
-    'Needs a decision',
+    'ready-to-review',
+    'Ready to review',
   ),
   row(
     'a3',
     'Park Insurance Brokers',
     'Financial & insurance',
     'Samuel Park',
-    'confirmed',
     '2026-11-06T10:00:00-05:00',
     'ready-to-review',
     'Ready to review',
@@ -101,14 +94,10 @@ const ROWS = [
 
 const STAGES = [
   ['ready-to-review', 'Ready to review'],
-  ['waiting-on-reference', 'Waiting on reference'],
-  ['needs-a-decision', 'Needs a decision'],
   ['changes-requested', 'Changes requested'],
 ] as const;
 
 const CHECKS = [
-  ['owner-name', 'Owner’s name matches the reference'],
-  ['reference', 'Reference confirmed and can vouch'],
   ['tagline', 'Tagline and description are honest and clear'],
   ['photos', 'At least one photo of the products or work'],
   ['category', 'Category fits what they offer'],
@@ -159,16 +148,6 @@ export async function stubAdmin(
       emailConfirmed: true,
       memberSince: '2026-05-01T00:00:00Z',
       otherListings: 1,
-    },
-    reference: {
-      church: 'Grace Toronto Church',
-      referenceEmail: 'daniel@grace.example',
-      state: 'confirmed',
-      answeredByName: 'Daniel Okoro',
-      answeredByRole: 'Lead pastor',
-      answeredAt: '2026-11-10T11:12:00-05:00',
-      answer: 'vouches',
-      note: 'Naomi has served on our hospitality team for six years.',
     },
     flags: [],
     checklist: CHECKS.map(([key, label]) => ({
@@ -232,7 +211,7 @@ export async function stubAdmin(
       return route.fulfill({
         json: {
           total: ROWS.length,
-          readyToReview: 2,
+          readyToReview: ROWS.length,
           oldestWaitingDays: 4,
           filter,
           tabs: STAGES.map(([stage, label]) => ({

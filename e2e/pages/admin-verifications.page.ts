@@ -7,6 +7,10 @@ export class AdminVerificationsPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly subtitle: Locator;
   readonly tabsList: Locator;
+  /** Every filter tab, in order. */
+  readonly filters: Locator;
+  /** The table's column headings, in order. */
+  readonly columns: Locator;
   readonly rows: Locator;
   readonly empty: Locator;
   readonly alert: Locator;
@@ -19,6 +23,8 @@ export class AdminVerificationsPage extends AdminShellPage implements Screen {
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.subtitle = this.main.locator('.subtitle');
     this.tabsList = this.main.getByRole('tablist', { name: 'Queue filter' });
+    this.filters = this.tabsList.getByRole('tab');
+    this.columns = this.main.getByRole('columnheader');
     this.rows = this.main.locator('tbody tr');
     this.empty = this.main.locator('.empty');
     this.alert = this.main.getByRole('alert');
