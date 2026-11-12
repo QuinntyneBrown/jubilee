@@ -35,7 +35,7 @@ import { SessionService } from '../../services/session.service';
 type FieldName = 'firstName' | 'lastName' | 'email' | 'password' | 'agreement';
 type View = 'form' | 'submitting' | 'success' | 'error';
 
-const MAX = { name: 50, email: 254, password: 128, church: 100 };
+const MAX = { name: 50, email: 254, password: 128, church: 100, churchAddress: 200 };
 const MIN_PASSWORD = 10;
 const IDS: Record<FieldName, string> = {
   firstName: 'first',
@@ -124,6 +124,7 @@ export class JoinPage {
   protected readonly email = signal('');
   protected readonly password = signal('');
   protected readonly homeChurch = signal('');
+  protected readonly homeChurchAddress = signal('');
   protected readonly agreed = signal(false);
   protected readonly errors = signal<Partial<Record<FieldName, string>>>({});
   protected readonly sentTo = signal('');
@@ -177,6 +178,7 @@ export class JoinPage {
       email: this.email().trim(),
       password: this.password(),
       homeChurch: this.homeChurch().trim(),
+      homeChurchAddress: this.homeChurchAddress().trim(),
       agreementAccepted: true,
       challengeToken: this.challenge(),
     };

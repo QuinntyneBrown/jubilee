@@ -16,6 +16,8 @@ export class JoinPage extends ShellPage implements Screen {
   readonly email: Locator;
   readonly password: Locator;
   readonly homeChurch: Locator;
+  readonly homeChurchAddress: Locator;
+  readonly homeChurchAddressHint: Locator;
   readonly passwordHint: Locator;
   /** The button inside the password control: "Show password", then "Hide password". */
   readonly showPassword: Locator;
@@ -54,7 +56,9 @@ export class JoinPage extends ShellPage implements Screen {
     this.lastName = this.main.getByLabel('Last name');
     this.email = this.main.getByLabel('Email', { exact: true });
     this.password = this.main.getByLabel('Password', { exact: true });
-    this.homeChurch = this.main.getByLabel('Home church');
+    this.homeChurch = this.main.locator('#church');
+    this.homeChurchAddress = this.main.locator('#church-address');
+    this.homeChurchAddressHint = this.main.locator('#church-address-help');
     this.passwordHint = this.main.locator('#password-help');
     this.showPassword = this.main.getByRole('button', { name: 'Show password' });
     this.hidePassword = this.main.getByRole('button', { name: 'Hide password' });
@@ -90,6 +94,7 @@ export class JoinPage extends ShellPage implements Screen {
     email?: string;
     password?: string;
     church?: string;
+    churchAddress?: string;
     agree?: boolean;
   }): Promise<void> {
     if (values.first !== undefined) await this.firstName.fill(values.first);
@@ -97,6 +102,8 @@ export class JoinPage extends ShellPage implements Screen {
     if (values.email !== undefined) await this.email.fill(values.email);
     if (values.password !== undefined) await this.password.fill(values.password);
     if (values.church !== undefined) await this.homeChurch.fill(values.church);
+    if (values.churchAddress !== undefined)
+      await this.homeChurchAddress.fill(values.churchAddress);
     if (values.agree !== undefined) await this.agreement.setChecked(values.agree);
   }
 

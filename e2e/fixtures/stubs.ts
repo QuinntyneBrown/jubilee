@@ -15,7 +15,6 @@ import { stubPasswordReset } from './password-reset';
 import { NOTIFICATIONS, stubNotifications } from './notifications';
 import { stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
-import { stubReference } from './reference';
 import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
 import type { StubName } from './routes';
@@ -386,14 +385,6 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubStaff(page, 'network-refused');
     case 'staff-admin-only':
       return stubAdmin(page, {}, daniel);
-    case 'reference':
-      return stubReference(page);
-    case 'reference-loading':
-      return stubReference(page, { outcome: 'hang' });
-    case 'reference-error':
-      return stubReference(page, { outcome: 'load-fails' });
-    case 'reference-expired':
-      return stubReference(page, { outcome: 'closed' });
     case 'google-sign-in-off':
       return stubSession(page, visitorWithoutGoogle);
     case 'sign-in-failing':

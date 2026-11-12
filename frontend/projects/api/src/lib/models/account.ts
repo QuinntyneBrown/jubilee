@@ -5,6 +5,8 @@ export interface JoinRequest {
   email: string;
   password: string;
   homeChurch: string;
+  /** Optional, like the name, and independent of it (L2-196). */
+  homeChurchAddress: string;
   agreementAccepted: boolean;
   challengeToken: string | null;
 }

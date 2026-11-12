@@ -145,10 +145,27 @@
         </div>
         <div
           jb-field
+          label="Home church address"
+          controlId="church-address"
+          optional
+          hint="Shown to no one."
+        >
+          <input
+            jb-input
+            name="churchAddress"
+            type="text"
+            placeholder="e.g. 2700 Bristol Circle, Oakville"
+            maxlength="200"
+            [ngModel]="homeChurchAddress()"
+            (ngModelChange)="homeChurchAddress.set($event)"
+          />
+        </div>
+        <div
+          jb-field
           label="Pronouns"
           controlId="pronouns"
           optional
-          hint="Used in messages we write about you, such as a church reference request."
+          hint="Used in messages we write about you, such as a change request from the verification team."
         >
           <input
             jb-input

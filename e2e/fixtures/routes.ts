@@ -32,10 +32,6 @@ export type StubName =
   | 'search-error'
   | 'search-no-results'
   | 'search-start'
-  | 'reference'
-  | 'reference-loading'
-  | 'reference-error'
-  | 'reference-expired'
   | 'google-sign-in-off'
   | 'sign-in-failing'
   | 'sign-in-pending'
@@ -383,30 +379,6 @@ export const routes = {
     mock: 'dialogs/order-request/default.html',
     who: 'member',
     stub: 'order',
-  },
-  'church-reference': {
-    app: '/reference/e2e-token',
-    mock: 'pages/church-reference/default.html',
-    who: 'visitor',
-    stub: 'reference',
-  },
-  'church-reference.loading': {
-    app: '/reference/e2e-token',
-    mock: 'pages/church-reference/loading.html',
-    who: 'visitor',
-    stub: 'reference-loading',
-  },
-  'church-reference.error': {
-    app: '/reference/e2e-token',
-    mock: 'pages/church-reference/error.html',
-    who: 'visitor',
-    stub: 'reference-error',
-  },
-  'church-reference.expired': {
-    app: '/reference/e2e-token',
-    mock: 'pages/church-reference/expired.html',
-    who: 'visitor',
-    stub: 'reference-expired',
   },
   'list-business': {
     app: '/list',

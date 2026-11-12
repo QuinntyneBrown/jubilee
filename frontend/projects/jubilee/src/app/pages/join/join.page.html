@@ -135,6 +135,25 @@
             [readOnly]="view() === 'submitting'"
           />
         </div>
+        <div
+          jb-field
+          label="Home church address"
+          controlId="church-address"
+          optional
+          hint="Shown to no one."
+          hintAfter
+        >
+          <input
+            jb-input
+            name="homeChurchAddress"
+            type="text"
+            placeholder="e.g. 2700 Bristol Circle, Oakville"
+            [attr.maxlength]="max.churchAddress"
+            [ngModel]="homeChurchAddress()"
+            (ngModelChange)="homeChurchAddress.set($event)"
+            [readOnly]="view() === 'submitting'"
+          />
+        </div>
         <div>
           <jb-checkbox
             controlId="agree"
