@@ -43,6 +43,7 @@ something else: a new record supersedes it and both say so.
 | [0046](0046-finish-sign-in-and-out.md) | Finish sign in and out: drafts kept on the device by member, address and form; the started action carried in the return path; `__Host-jubilee.session` outside Development; no CORS allowlist because every caller is same-origin | Accepted |
 | [0047](0047-launch-forms-never-lose-a-submission.md) | The launch forms never lose a submission: `deploy.sh` sets the marketing host on every deployment and checks it, a forwarded request names the API's host, the marketing host keeps what the API cannot take and sends it again, the page keeps sending instead of showing a fault, and each new sign-up e-mails the team | Accepted |
 | [0048](0048-finish-book-a-meeting.md) | Finish book a meeting: meeting hours the owner sets (days, one window a day in Toronto time, a slot length) stored on the listing; the default times stand until an owner saves; saving never changes a request already sent | Accepted |
+| [0049](0049-finish-join-jubilee.md) | Finish joining: the unconfirmed address changed in a dialog of its own, an address in use said from the session, the resend limit said in the banner, and tokens kept out of the logs by `LoggedPath` | Accepted |
 
 ## Format
 
