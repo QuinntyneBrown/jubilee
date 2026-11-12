@@ -21,7 +21,7 @@ session, and never shared with the app (`L2-190`).
 
 ## Description
 
-- **`StaffSignInPage`** — Angular page of the admin application at `/sign-in`,
+- **`SignInPage`** — Angular page of the admin application at `/sign-in`,
   `/signed-out` and `/session-expired`, in the `bare` shell. It composes
   `jb-auth-layout`, `jb-lockup`, `jb-alert` and `jb-button`. The button "Sign in
   with your staff account" turns busy ("Signing in…") and navigates to

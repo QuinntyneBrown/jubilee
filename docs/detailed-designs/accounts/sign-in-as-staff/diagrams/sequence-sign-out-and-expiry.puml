@@ -8,7 +8,7 @@ skinparam ArrowColor #344054
 actor "Staff member" as actor
 box "Frontend — Jubilee Admin Web" #E0F2FE
   participant "jb-admin-bar" as bar
-  participant "sessionExpiryInterceptor" as expiry
+  participant "sessionExpiredInterceptor" as expiry
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "StaffSessionController" as ctrl

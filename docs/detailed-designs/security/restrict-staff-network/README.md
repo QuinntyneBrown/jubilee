@@ -47,7 +47,7 @@ trusted on its own.
   incoming copies of both headers.
 - **App Service access restrictions on `jubilee-to-admin`** — one allow rule
   per allowed range, default action deny (`eng/azure/README.md`).
-- **`StaffSignInPage` network state** — the admin application's sign-in screen
+- **`SignInPage` network state** — the admin application's sign-in screen
   shows "You're not on an allowed network…" and no button when
   `GET /api/staff/session` answers `NETWORK_NOT_ALLOWED`.
 

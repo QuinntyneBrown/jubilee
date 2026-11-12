@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Components — Sign in as staff
 
 Container_Boundary(admin, "Jubilee Admin Web") {
-  Component(page, "StaffSignInPage", "Angular page", "Sign-in button and messages")
+  Component(page, "SignInPage", "Angular page", "Sign-in button and messages")
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "StaffSignInController", "ASP.NET Core controller", "Start and callback")
