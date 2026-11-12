@@ -64,13 +64,13 @@ RECORDS
   fi
 fi
 
-thumbprint=$(az webapp config ssl list -g "$GROUP" --query "[?subjectName=='$ADMIN_HOST'].thumbprint | [0]" -o tsv)
+thumbprint=$(az webapp config ssl show -g "$GROUP" --certificate-name "$ADMIN_HOST" --query thumbprint -o tsv 2>/dev/null || true)
 if [[ -z "$thumbprint" ]]; then
   echo "== Creating the managed certificate of $ADMIN_HOST (a few minutes)"
   # az returns while the certificate is still being made; its warnings on the way are harmless.
   az webapp config ssl create -g "$GROUP" -n "$ADMIN_APP" --hostname "$ADMIN_HOST" -o none || true
   for attempt in $(seq 1 30); do
-    thumbprint=$(az webapp config ssl list -g "$GROUP" --query "[?subjectName=='$ADMIN_HOST'].thumbprint | [0]" -o tsv)
+    thumbprint=$(az webapp config ssl show -g "$GROUP" --certificate-name "$ADMIN_HOST" --query thumbprint -o tsv 2>/dev/null || true)
     [[ -n "$thumbprint" ]] && break
     sleep 20
   done
