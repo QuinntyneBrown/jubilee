@@ -115,6 +115,9 @@ hr, .divider { border: 0; border-top: var(--border-width-hairline) solid var(--c
 .btn--sm { min-height: var(--control-height-sm); padding-inline: var(--space-3); font-size: var(--font-size-sm); }
 .btn--lg { min-height: var(--control-height-lg); padding-inline: var(--space-6); font-size: var(--font-size-lg); }
 .btn--block { display: flex; width: 100%; }
+/* Full width on a phone, its own width from 640px (a form's one submit, L2-226 AC7). */
+.btn--block-narrow { display: flex; width: 100%; }
+@media (min-width: 40rem) { .btn--block-narrow { display: inline-flex; width: auto; align-self: flex-start; } }
 .btn--icon { padding: 0; width: var(--control-height-md); flex: none; }
 .btn--icon.btn--lg { width: var(--control-height-lg); }
 .btn--icon.btn--sm { width: var(--control-height-sm); }
@@ -567,7 +570,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .chip-row { display: flex; gap: var(--space-2); overflow-x: auto; scrollbar-width: none; padding: var(--space-1); margin: var(--space-5) calc(-1 * var(--space-1)) 0; list-style: none; }
 @media (min-width: 48rem) { .chip-row { flex-wrap: wrap; overflow: visible; } }
 .chip-row--plain { margin-top: 0; }
-
 /* ---------- Media tiles (stand in for photography) ----------------------------- */
 .media { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3; border-radius: var(--radius-lg); border: var(--border-width-hairline) solid var(--color-border-default); background: var(--color-bg-subtle); color: var(--color-fg-subtle); overflow: hidden; }
 .media > img { width: 100%; height: 100%; object-fit: cover; }
@@ -1085,3 +1087,162 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .booking-bar--static { position: static; }
 @media (min-width: 48rem) { .booking-bar { display: none; } }
 @media (max-width: 47.99rem) { body:has(.tabbar):has(.booking-bar) { padding-bottom: calc(var(--layout-tabbar-height) + var(--control-height-lg) + var(--space-6) + env(safe-area-inset-bottom)); } }
+
+/* ==========================================================================
+   Reviews (L1-031, L2-225 to L2-239, ADR 0058). One contiguous region per
+   block, opened by "=== block: <name> ===" and closed by "=== end: <name> ===",
+   so each can be lifted into its component's stylesheet whole. No block styles
+   another: a block that holds stars holds a .stars, styled here once.
+   ========================================================================== */
+
+/* === block: stars === */
+/* A rating shown, never chosen: five stars filled to the exact value (4.7 fills seven tenths of the
+   fifth). The host is role="img" with the rating in words; the stars are decoration. A track star
+   is drawn under each, and .stars__fill clips a gold star to its share. .stars--sm sits in a
+   review, .stars--lg beside the average of the summary. */
+.stars { --jb-stars-size: var(--icon-size-md); display: inline-flex; flex: none; align-items: center; gap: var(--space-0-5); vertical-align: middle; line-height: 0; }
+.stars--sm { --jb-stars-size: var(--icon-size-sm); }
+.stars--lg { --jb-stars-size: var(--icon-size-lg); }
+.stars__star { position: relative; display: block; flex: none; width: var(--jb-stars-size); height: var(--jb-stars-size); }
+.stars__track, .stars__glyph { display: block; width: var(--jb-stars-size); height: var(--jb-stars-size); stroke: none; }
+.stars__track { fill: var(--color-bg-subtle-hover); }
+.stars__fill { position: absolute; inset: 0 auto 0 0; overflow: hidden; }
+.stars__glyph { fill: var(--color-accent); }
+@media (forced-colors: active) { .stars__track { fill: GrayText; } .stars__glyph { fill: CanvasText; } }
+/* === end: stars === */
+
+/* === block: rating-inline === */
+/* The compact rating of a card: one gold star, the average to one decimal and the count in
+   brackets. The visible part is hidden from assistive technology; a hidden line says it in words. */
+.rating-inline { display: inline-flex; align-items: center; gap: var(--space-1); font: var(--text-body-sm); white-space: nowrap; }
+.rating-inline__star { width: var(--icon-size-sm); height: var(--icon-size-sm); flex: none; fill: var(--color-accent); stroke: none; }
+.rating-inline__average { font-weight: var(--font-weight-semibold); color: var(--color-fg-default); font-variant-numeric: tabular-nums; }
+.rating-inline__count { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+@media (forced-colors: active) { .rating-inline__star { fill: CanvasText; } }
+/* === end: rating-inline === */
+
+/* === block: rating-link === */
+/* The rating under a listing's name: the stars, the average and "{n} reviews", one link to the
+   Reviews section. With no reviews it is the plain line "No reviews yet". */
+.rating-link { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); min-height: var(--target-comfortable); font: var(--text-body-sm); color: var(--color-fg-default); text-decoration: none; }
+.rating-link__average { font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; }
+.rating-link__count { color: var(--color-fg-muted); text-underline-offset: 0.15em; }
+a.rating-link:hover .rating-link__count, a.rating-link[data-state="hover"] .rating-link__count { color: var(--color-fg-default); text-decoration: underline; }
+.rating-link--none { color: var(--color-fg-muted); }
+/* === end: rating-link === */
+
+/* === block: rating-summary === */
+/* The summary of a listing's reviews: the average large, its stars and the count; one bar for each
+   of 5 to 1 stars, each a toggle that filters the list (aria-pressed); and what "Verified" means. */
+.rating-summary { display: flex; flex-direction: column; gap: var(--space-5); min-width: 0; }
+.rating-summary__score { display: flex; align-items: flex-end; gap: var(--space-3); }
+.rating-summary__average { margin: 0; font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); font-size: var(--font-size-5xl); line-height: 1; letter-spacing: var(--letter-spacing-tight); font-variant-numeric: tabular-nums; }
+.rating-summary__detail { display: flex; flex-direction: column; gap: var(--space-1); padding-bottom: var(--space-1); }
+.rating-summary__count { font: var(--text-body-sm); color: var(--color-fg-muted); }
+.rating-summary__bars { display: flex; flex-direction: column; gap: 0; margin: 0; padding: 0; list-style: none; }
+.rating-summary__bar { display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: var(--target-comfortable); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--color-fg-default); font: var(--text-body-sm); text-align: left; cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard); }
+.rating-summary__bar:hover, .rating-summary__bar[data-state="hover"] { background: var(--color-bg-subtle); }
+.rating-summary__bar[aria-pressed="true"] { background: var(--color-bg-subtle); }
+.rating-summary__bar-label { display: inline-flex; align-items: center; gap: var(--space-1); flex: none; min-width: 2.25rem; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.rating-summary__bar-label .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); fill: currentColor; stroke: none; }
+.rating-summary__bar[aria-pressed="true"] .rating-summary__bar-label { color: var(--color-fg-default); font-weight: var(--font-weight-semibold); }
+.rating-summary__track { flex: 1; height: var(--space-2); overflow: hidden; border-radius: var(--radius-full); background: var(--color-bg-subtle-hover); }
+.rating-summary__fill { display: block; height: 100%; border-radius: var(--radius-full); background: var(--color-accent); }
+.rating-summary__bar-count { flex: none; min-width: 2rem; text-align: right; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.rating-summary__bar[aria-pressed="true"] .rating-summary__bar-count { color: var(--color-fg-default); font-weight: var(--font-weight-semibold); }
+.rating-summary__note { display: flex; gap: var(--space-2); align-items: flex-start; margin: 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
+.rating-summary__note .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); flex: none; margin-top: var(--space-0-5); color: var(--color-success-icon); }
+@media (forced-colors: active) { .rating-summary__fill { background: CanvasText; } .rating-summary__bar[aria-pressed="true"] { outline: var(--border-width-thick) solid Highlight; } }
+/* === end: rating-summary === */
+
+/* === block: review === */
+/* One review: the author's initials, name and date; the stars, the item and "Verified"; the text as
+   written; the actions of the viewer; and the owner's reply set off by a rule. .review--mine is the
+   member's own review, on a tinted ground and labelled "Your review". */
+.review { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.review--mine { padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-accent-subtle); }
+.review__head { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.review__avatar { display: grid; place-items: center; flex: none; width: var(--avatar-size-md); height: var(--avatar-size-md); border-radius: var(--radius-full); background: var(--color-bg-inverse); color: var(--color-fg-inverse); font: var(--text-label); font-weight: var(--font-weight-semibold); }
+.review__who { flex: 1; min-width: 0; }
+.review__author { margin: 0; font: var(--text-label); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); overflow-wrap: anywhere; }
+.review__label { margin-inline-start: var(--space-2); font: var(--text-body-sm); font-weight: var(--font-weight-medium); color: var(--color-fg-muted); }
+.review__meta { margin: 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
+.review__rating { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); font: var(--text-body-sm); }
+.review__item { color: var(--color-fg-default); overflow-wrap: anywhere; }
+.review__verified { display: inline-flex; align-items: center; gap: var(--space-1); font-weight: var(--font-weight-medium); color: var(--color-success-fg); }
+.review__verified .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+.review__text { margin: 0; max-width: 42rem; font: var(--text-body); white-space: pre-line; overflow-wrap: anywhere; }
+.review__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.review__reply { display: flex; flex-direction: column; gap: var(--space-1); margin-top: var(--space-1); padding-left: var(--space-4); border-left: var(--border-width-thick) solid var(--color-border-strong); }
+.review__reply-head { margin: 0; font: var(--text-label); font-weight: var(--font-weight-semibold); }
+.review__reply-date { font-weight: var(--font-weight-regular); color: var(--color-fg-muted); }
+.review__reply-text { margin: 0; max-width: 42rem; font: var(--text-body-sm); white-space: pre-line; overflow-wrap: anywhere; }
+@media (forced-colors: active) { .review--mine { border: var(--border-width-thick) solid CanvasText; } .review__avatar { forced-color-adjust: none; background: CanvasText; color: Canvas; } }
+/* === end: review === */
+
+/* === block: reviews === */
+/* The Reviews section of a listing: a heading and "Write a review"; from 48rem the summary is a
+   sticky column (260px, 300px from 64rem) beside the list; under it, the list's toolbar (what the
+   filter shows, "Clear" and the sort), the first reviews and "Show all". With no reviews it is one
+   line with a gold rule at its start. */
+.reviews { display: flex; flex-direction: column; gap: var(--space-6); margin-block: var(--space-12) var(--space-8); padding-top: var(--space-8); border-top: var(--border-width-hairline) solid var(--color-border-default); scroll-margin-top: calc(var(--layout-topbar-height) + var(--space-4)); }
+.reviews__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-4); }
+.reviews__title { margin: 0; font: var(--text-h2); font-stretch: var(--font-stretch-wide); }
+.reviews__body { display: grid; gap: var(--space-8); }
+.reviews__summary { min-width: 0; }
+.reviews__main { min-width: 0; }
+.reviews__toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); padding-bottom: var(--space-3); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
+.reviews__filter { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); margin: 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
+.reviews__clear { min-height: var(--target-comfortable); padding: 0 var(--space-1); border: 0; background: none; color: var(--color-fg-default); font: var(--text-label); font-weight: var(--font-weight-semibold); text-decoration: underline; text-underline-offset: 0.15em; cursor: pointer; }
+.reviews__sort { flex: none; }
+.reviews__list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.reviews__list > li { padding-block: var(--space-6); }
+.reviews__list > li + li { border-top: var(--border-width-hairline) solid var(--color-border-default); }
+.reviews__mine { margin-bottom: var(--space-6); }
+.reviews__none { padding-block: var(--space-6); font: var(--text-body-sm); color: var(--color-fg-muted); }
+.reviews__more { align-self: flex-start; }
+.reviews__notice { margin: 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
+.reviews__empty { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-4); max-width: 48rem; padding-left: var(--space-4); border-left: var(--border-width-thick) solid var(--color-accent); }
+.reviews__empty-title { margin: 0; font: var(--text-label); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); }
+.reviews__empty-text { margin: var(--space-1) 0 0; font: var(--text-body-sm); color: var(--color-fg-muted); }
+.reviews__error { max-width: 48rem; }
+.reviews__skeleton { display: flex; flex-direction: column; gap: var(--space-3); }
+@media (min-width: 40rem) { .reviews__empty { flex-direction: row; align-items: center; justify-content: space-between; } }
+@media (min-width: 48rem) {
+  .reviews__body { grid-template-columns: 16.25rem minmax(0, 1fr); gap: var(--space-12); }
+  .reviews__summary { position: sticky; top: calc(var(--layout-topbar-height) + var(--space-6)); align-self: start; }
+}
+@media (min-width: 64rem) { .reviews__body { grid-template-columns: 18.75rem minmax(0, 1fr); } }
+/* === end: reviews === */
+
+/* === block: review-subject === */
+/* What a review is about, at the top of the Write a review screen: a small photo or category tile,
+   the listing's name and its category ("Hosted by …" for a space). */
+.review-subject { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.review-subject__media { display: grid; place-items: center; flex: none; width: var(--control-height-lg); height: var(--control-height-lg); overflow: hidden; border-radius: var(--radius-md); background: var(--color-bg-subtle); color: var(--color-fg-default); }
+.review-subject__media img { width: 100%; height: 100%; object-fit: cover; }
+.review-subject__media .icon { width: var(--icon-size-md); height: var(--icon-size-md); }
+.review-subject__media--green { background: var(--color-success-bg); color: var(--color-success-fg); }
+.review-subject__media--gold { background: var(--color-accent-subtle); color: var(--color-fg-default); }
+.review-subject__media--blue { background: var(--color-info-bg); color: var(--color-info-fg); }
+.review-subject__text { min-width: 0; }
+.review-subject__name { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--text-label); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); }
+.review-subject__meta { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--text-body-sm); color: var(--color-fg-muted); }
+/* === end: review-subject === */
+
+/* === block: review-posted === */
+/* The posted state of the Write a review screen: a round check, "Thanks, your review is live.", what
+   happens next, the review in short between two rules, and the two ways on. */
+.review-posted { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); max-width: 36rem; padding-block: var(--space-8) var(--space-12); }
+.review-posted__mark { display: grid; place-items: center; width: var(--avatar-size-lg); height: var(--avatar-size-lg); border-radius: var(--radius-full); background: var(--color-success-solid); color: var(--color-fg-inverse); animation: fade-in var(--duration-base) var(--ease-enter); }
+.review-posted__mark .icon { width: var(--icon-size-lg); height: var(--icon-size-lg); stroke-width: 2.5; }
+.review-posted__title { margin: var(--space-3) 0 0; font: var(--text-h1); font-size: var(--font-size-3xl); font-stretch: var(--font-stretch-wide); }
+.review-posted__text { margin: 0; font: var(--text-body-lg); color: var(--color-fg-default); }
+.review-posted__summary { display: flex; flex-direction: column; gap: var(--space-1); width: 100%; margin-top: var(--space-5); padding-block: var(--space-5); border-block: var(--border-width-hairline) solid var(--color-border-default); }
+.review-posted__rating { display: flex; align-items: center; gap: var(--space-3); font: var(--text-label); font-weight: var(--font-weight-semibold); }
+.review-posted__item { margin: 0; font: var(--text-body-sm); color: var(--color-fg-muted); overflow-wrap: anywhere; }
+.review-posted__body { margin: var(--space-2) 0 0; font: var(--text-body); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; overflow-wrap: anywhere; }
+.review-posted__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-5); }
+@media (min-width: 48rem) { .review-posted { padding-block: var(--space-16); } .review-posted__title { font-size: var(--font-size-4xl); } }
+@media (prefers-reduced-motion: reduce) { .review-posted__mark { animation: none; } }
+/* === end: review-posted === */
