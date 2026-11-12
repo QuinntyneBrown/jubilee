@@ -92,6 +92,21 @@ test.describe('shop page (L2-034)', () => {
     await expect(shop.primaryAction).toHaveText('Send a message');
   });
 
+  test('AC3: a sold-out product says “Sold out” on its card, in words', async ({ page, jb }) => {
+    const shop = new BusinessPage(page);
+    await jb.open('shop.sold-out');
+
+    const mug = shop.productCard(1);
+    await expect(mug.name).toHaveText('Gold cross stoneware mug');
+    await expect(mug.badge).toHaveText('Sold out');
+    // The card is one link: its name reads the badge with the product and the price
+    await expect(mug.root).toHaveAccessibleName('Sold out Gold cross stoneware mug $24');
+    await expect(mug.root).toHaveAttribute('href', '/b/luzandre/p/gold-cross-stoneware-mug');
+    // A product in stock carries no badge
+    await expect(shop.productCard(0).badge).toHaveCount(0);
+    await expect(shop.productCards.locator('.media__tag')).toHaveCount(1);
+  });
+
   test('AC4 and L2-118: a shop that fails to load says so and quotes JB-BIZ-503', async ({
     page,
     jb,

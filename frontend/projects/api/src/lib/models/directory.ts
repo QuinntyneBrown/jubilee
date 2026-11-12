@@ -36,6 +36,8 @@ export interface ProductCard {
   perUnit: boolean;
   /** Stands in for the product photo until uploads exist. */
   tile: { tint: TileTint; icon: ProductTileIcon };
+  /** Stock 0 in every option: the card says "Sold out" (L2-034 AC3). */
+  soldOut: boolean;
 }
 
 /** How a space is rented (L2-197). */

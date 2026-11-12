@@ -265,6 +265,7 @@ export const screens: {
   { key: 'shop.loading', screen: (page) => new BusinessLoadingScreen(page) },
   { key: 'shop.error', screen: (page) => new BusinessPage(page) },
   { key: 'shop.empty', screen: (page) => new BusinessPage(page) },
+  { key: 'shop.sold-out', screen: (page) => new BusinessPage(page) },
   { key: 'product', screen: (page) => new ProductWithSizeScreen(page) },
   { key: 'product.invalid', screen: (page) => new ProductInvalidScreen(page) },
   { key: 'product.loading', screen: (page) => new ProductLoadingScreen(page) },

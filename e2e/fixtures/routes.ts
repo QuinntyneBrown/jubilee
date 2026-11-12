@@ -29,6 +29,7 @@ export type StubName =
   | 'shop-loading'
   | 'shop-error'
   | 'shop-empty'
+  | 'shop-sold-out'
   | 'product-loading'
   | 'product-error'
   | 'product-sold-out'
@@ -637,6 +638,12 @@ export const routes = {
     mock: 'pages/shop/empty.html',
     who: 'member',
     stub: 'shop-empty',
+  },
+  'shop.sold-out': {
+    app: '/b/luzandre',
+    mock: 'pages/shop/sold-out.html',
+    who: 'member',
+    stub: 'shop-sold-out',
   },
   product: {
     app: '/b/luzandre/p/faith-heavyweight-tee-charcoal',

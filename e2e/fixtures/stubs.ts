@@ -361,6 +361,14 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         products: [],
         productCount: 0,
       }));
+    case 'shop-sold-out':
+      // The seeded mug is in stock; the sold-out card comes from its owner's later edits.
+      return patchListing(page, luzandre, (listing) => ({
+        ...listing,
+        products: (listing['products'] as { slug: string }[]).map((product) =>
+          product.slug === 'gold-cross-stoneware-mug' ? { ...product, soldOut: true } : product,
+        ),
+      }));
     case 'product-loading':
       return page.route(tee, pending);
     case 'product-error':

@@ -110,13 +110,7 @@ const emails = [
   ['new-order-request', 'New order request from Joanna Adeyemi', `Hi Naomi,\n\nJoanna Adeyemi would like to order.\n\nGold cross stoneware mug × 2\nShip to M4C 1A1\nItem $48.00 · shipping $9.00 · estimated total $57.00 + tax\n\nConfirm stock and arrange payment: ${base}/my-business/requests${end}`, unsubscribe],
   ['new-message', 'New message from Legacy Financial', `Hi Joanna,\n\nLegacy Financial sent you a message on Jubilee.\n\nRead and reply: ${base}/messages/7f3a${end}`, unsubscribe],
   ['meeting-reminder', 'Your meeting starts in 1 hour', `Hi Joanna,\n\nDiscovery meeting with Legacy Financial starts at 10:00 a.m.\n\nDetails: ${base}/requests/2b91${end}`, unsubscribe],
-  ['back-in-stock', 'Faith heavyweight tee, charcoal is back in stock', `Hi Joanna,
-
-Luzandre.com has Faith heavyweight tee, charcoal again. You asked us to tell you.
-
-See it here: ${base}/b/luzandre/p/faith-heavyweight-tee-charcoal
-
-Jubilee doesn't take payment. Luzandre.com confirms stock and tells you how to pay.${end}`, unsubscribe],
+  ['back-in-stock', 'Faith heavyweight tee, charcoal is back in stock', `Hi Joanna,\n\nLuzandre.com has Faith heavyweight tee, charcoal again. You asked us to tell you.\n\nSee it here: ${base}/b/luzandre/p/faith-heavyweight-tee-charcoal\n\nJubilee doesn't take payment. Luzandre.com confirms stock and tells you how to pay.${end}`, unsubscribe],
 ];
 
 mkdirSync(out, { recursive: true });

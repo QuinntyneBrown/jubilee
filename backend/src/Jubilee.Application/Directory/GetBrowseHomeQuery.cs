@@ -75,7 +75,8 @@ public sealed class GetBrowseHomeQueryHandler(
                 x.ShopName,
                 x.Product.PriceCents,
                 x.Product.IsPerUnit,
-                new ProductTileDto(WireValues.Of(x.Product.TileTint), WireValues.Of(x.Product.TileIcon)))),
+                new ProductTileDto(WireValues.Of(x.Product.TileTint), WireValues.Of(x.Product.TileIcon)),
+                x.Product.IsSoldOut)),
         ];
     }
 }
