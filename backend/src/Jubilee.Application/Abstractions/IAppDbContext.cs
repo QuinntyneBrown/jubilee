@@ -29,6 +29,10 @@ public interface IAppDbContext
 
     DbSet<ListingReportEntry> ListingReportEntries { get; }
 
+    DbSet<Feedback> Feedback { get; }
+
+    DbSet<FeedbackScreenshot> FeedbackScreenshots { get; }
+
     DbSet<ListingView> ListingViews { get; }
 
     DbSet<ListingPhoto> ListingPhotos { get; }

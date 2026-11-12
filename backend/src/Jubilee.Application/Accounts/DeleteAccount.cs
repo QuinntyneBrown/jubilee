@@ -75,6 +75,9 @@ public sealed class DeleteAccountCommandHandler(IAppDbContext db, TimeProvider c
             listing.Delete(now);
         }
 
+        // Feedback is the member's own and leaves with them, screenshots first (L2-214 AC12).
+        db.FeedbackScreenshots.RemoveRange(await db.FeedbackScreenshots.Where(s => s.UploaderSubject == subject).ToListAsync(cancellationToken));
+        db.Feedback.RemoveRange(await db.Feedback.Where(f => f.MemberSubject == subject).ToListAsync(cancellationToken));
         db.SavedItems.RemoveRange(await db.SavedItems.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
         db.RecentSearches.RemoveRange(await db.RecentSearches.Where(s => s.MemberSubject == subject).ToListAsync(cancellationToken));
         db.Notifications.RemoveRange(await db.Notifications.Where(n => n.MemberSubject == subject).ToListAsync(cancellationToken));
