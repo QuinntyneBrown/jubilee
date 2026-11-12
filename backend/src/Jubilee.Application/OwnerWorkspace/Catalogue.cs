@@ -165,7 +165,8 @@ public sealed record SaveProductCommand(
     IReadOnlyList<OwnerProductOptionDto>? Options,
     string? IdempotencyKey) : IRequest<ProductRowDto>;
 
-public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<SaveProductCommand, ProductRowDto>
+public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings)
+    : IRequestHandler<SaveProductCommand, ProductRowDto>
 {
     public async Task<ProductRowDto> Handle(SaveProductCommand request, CancellationToken cancellationToken)
     {
@@ -251,8 +252,15 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
 
         var product = await db.Products.SingleOrDefaultAsync(p => p.Id == request.Id && p.ListingId == listing.Id && !p.IsDeleted, cancellationToken)
             ?? throw new NotFoundException("product_not_found", "We can't find that product.");
+        var wasSoldOut = product.IsSoldOut;
         product.Revise(name, cents!.Value, description);
         Apply(product, request, options);
+        if (product.ChangeSince(wasSoldOut) == StockChange.BackInStock)
+        {
+            // The members who asked are told with the change that brought the product back (L2-036 AC4).
+            await Listings.StockAlertNotifier.TellAsync(db, settings, product, now, cancellationToken);
+        }
+
         await db.SaveChangesAsync(cancellationToken);
         return CatalogueRules.Row(product, counts.GetValueOrDefault(product.Id));
     }

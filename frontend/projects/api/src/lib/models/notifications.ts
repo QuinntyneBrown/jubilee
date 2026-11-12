@@ -2,7 +2,7 @@ import { NavigationSummary } from './navigation';
 
 /** What a notification is about; the page picks its icon from it (L2-064). */
 export type NotificationKind =
-  'request' | 'message' | 'listing' | 'account' | 'reminder' | 'business';
+  'request' | 'message' | 'listing' | 'account' | 'reminder' | 'business' | 'product';
 
 export interface NotificationItem {
   id: string;

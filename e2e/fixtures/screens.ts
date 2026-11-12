@@ -187,6 +187,7 @@ export const screens: {
   { key: 'reset-password.error', screen: (page) => new ResetPasswordPage(page) },
   { key: 'notifications', screen: (page) => new NotificationsPage(page) },
   { key: 'notifications.read', screen: (page) => new NotificationsPage(page) },
+  { key: 'notifications.back-in-stock', screen: (page) => new NotificationsPage(page) },
   { key: 'notifications.empty', screen: (page) => new NotificationsPage(page) },
   { key: 'notifications.error', screen: (page) => new NotificationsPage(page) },
   { key: 'my-products', screen: (page) => new MyProductsPage(page) },

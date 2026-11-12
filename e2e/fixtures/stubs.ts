@@ -13,7 +13,7 @@ import { stubProfile } from './profile';
 import { stubSaved } from './saved';
 import { stubFeedback } from './feedback';
 import { stubPasswordReset } from './password-reset';
-import { NOTIFICATIONS, stubNotifications } from './notifications';
+import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from './notifications';
 import { SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
@@ -512,6 +512,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return void (await stubNotifications(page, { items: [] }));
     case 'notifications-error':
       return void (await stubNotifications(page, { list: 'fails' }));
+    case 'notifications-back-in-stock':
+      return void (await stubNotifications(page, { items: [BACK_IN_STOCK, ...NOTIFICATIONS] }));
     case 'products':
       return stubCatalogue(page);
     case 'products-empty':

@@ -101,6 +101,7 @@ export type StubName =
   | 'notifications-read'
   | 'notifications-empty'
   | 'notifications-error'
+  | 'notifications-back-in-stock'
   | 'password-reset'
   | 'reset-password'
   | 'reset-password-expired'
@@ -868,6 +869,12 @@ export const routes = {
     mock: 'pages/notifications/error.html',
     who: 'member',
     stub: 'notifications-error',
+  },
+  'notifications.back-in-stock': {
+    app: '/notifications',
+    mock: 'pages/notifications/back-in-stock.html',
+    who: 'member',
+    stub: 'notifications-back-in-stock',
   },
   'forgot-password': {
     app: '/forgot-password',

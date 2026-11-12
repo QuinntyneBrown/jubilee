@@ -1,5 +1,5 @@
 import { expect, test } from '../fixtures/jb-test';
-import { NOTIFICATIONS, stubNotifications } from '../fixtures/notifications';
+import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from '../fixtures/notifications';
 import { NotificationsPage } from '../pages/notifications.page';
 import { Toasts } from '../pages/toasts';
 
@@ -103,6 +103,46 @@ test.describe('stay notified (L2-064 to L2-070)', () => {
     await toasts.dismiss(toast).click();
     await expect.poll(() => fake.lastEventIds.length).toBeGreaterThan(2);
     await expect(toast).toHaveCount(0);
+  });
+
+  test('L2-036 AC4: a product back in stock is in the list, unread, and opens the product page', async ({
+    page,
+    jb,
+  }) => {
+    const centre = new NotificationsPage(page);
+    await jb.open('notifications.back-in-stock');
+
+    await expect(centre.subtitle).toHaveText('4 unread');
+    await expect(centre.items).toHaveCount(6);
+    const notice = centre.items.first();
+    await expect(notice).toContainText('Unread.');
+    await expect(notice).toContainText(BACK_IN_STOCK.title);
+    await expect(notice).toContainText('Luzandre.com has it again. You asked to be told.');
+    // Its kind has an icon of its own, the bag of a product
+    await expect(centre.bagIcon(BACK_IN_STOCK.title)).toHaveCount(1);
+
+    await centre.link(BACK_IN_STOCK.title).click();
+    await expect(page).toHaveURL(/\/b\/luzandre\/p\/faith-heavyweight-tee-charcoal$/);
+    await expect(centre.main.getByRole('heading', { level: 1 })).toHaveText(
+      'Faith heavyweight tee, charcoal',
+    );
+  });
+
+  test('L2-036 AC4 and L2-066 AC5: a product back in stock arrives as a toast with "View in shop"', async ({
+    page,
+    jb,
+  }) => {
+    const toasts = new Toasts(page);
+    const fake = await stubNotifications(page, { items: [] });
+    await jb.goto('/notifications');
+
+    fake.push(BACK_IN_STOCK);
+
+    const toast = toasts.withTitle(BACK_IN_STOCK.title);
+    await expect(toast).toContainText('Luzandre.com has it again. You asked to be told.');
+    await toasts.action(toast, 'View in shop').click();
+    await expect(page).toHaveURL(/\/b\/luzandre\/p\/faith-heavyweight-tee-charcoal$/);
+    expect(fake.opened).toEqual([BACK_IN_STOCK.id]);
   });
 
   test('L2-065: counts that change on the server reach the badges', async ({ page, jb }) => {

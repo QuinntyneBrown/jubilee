@@ -18,7 +18,7 @@ public sealed class Notification
 
     public string MemberSubject { get; private set; } = string.Empty;
 
-    /// <summary>What it is about: request, message, listing, account, reminder or business. The browser picks the icon from it.</summary>
+    /// <summary>What it is about: request, message, listing, account, reminder, business or product. The browser picks the icon from it.</summary>
     public string Kind { get; private set; } = string.Empty;
 
     public string Title { get; private set; } = string.Empty;

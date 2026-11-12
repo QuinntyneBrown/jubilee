@@ -171,7 +171,7 @@ public sealed class Product
 
         var wasSoldOut = IsSoldOut;
         Stock = CheckStock(stock);
-        return Change(wasSoldOut);
+        return ChangeSince(wasSoldOut);
     }
 
     /// <summary>Sets the stock of one option.</summary>
@@ -180,7 +180,7 @@ public sealed class Product
         var option = Options.Single(o => o.Label == optionLabel);
         var wasSoldOut = IsSoldOut;
         option.Stock = CheckStock(stock);
-        return Change(wasSoldOut);
+        return ChangeSince(wasSoldOut);
     }
 
     /// <summary>
@@ -203,14 +203,28 @@ public sealed class Product
         Put(optionLabel, stock - quantity);
     }
 
-    /// <summary>Undoes <see cref="ReduceStock"/>.</summary>
-    public void RestoreStock(string? optionLabel, int quantity)
+    /// <summary>Undoes <see cref="ReduceStock"/>; the last item coming back is <see cref="StockChange.BackInStock"/>.</summary>
+    public StockChange RestoreStock(string? optionLabel, int quantity)
     {
+        var wasSoldOut = IsSoldOut;
         if (StockOf(optionLabel) is { } stock)
         {
             Put(optionLabel, Math.Min(MaxStock, stock + quantity));
         }
+
+        return ChangeSince(wasSoldOut);
     }
+
+    /// <summary>
+    /// What happened to the stock since the product was, or was not, sold out: the answer for an
+    /// edit that replaces the options and their stock together (L2-036).
+    /// </summary>
+    public StockChange ChangeSince(bool wasSoldOut) => (wasSoldOut, IsSoldOut) switch
+    {
+        (false, true) => StockChange.BecameSoldOut,
+        (true, false) => StockChange.BackInStock,
+        _ => StockChange.None,
+    };
 
     private int? StockOf(string? optionLabel) =>
         Options.Count > 0 ? Options.SingleOrDefault(o => o.Label == optionLabel)?.Stock : Stock;
@@ -232,13 +246,6 @@ public sealed class Product
         : throw new ArgumentOutOfRangeException(nameof(stock), "Stock is a whole number from 0 to 9,999.");
 
     internal static int MaxQuantityFor(int? stock) => stock is { } tracked ? Math.Min(tracked, UntrackedMaxQuantity) : UntrackedMaxQuantity;
-
-    private StockChange Change(bool wasSoldOut) => (wasSoldOut, IsSoldOut) switch
-    {
-        (false, true) => StockChange.BecameSoldOut,
-        (true, false) => StockChange.BackInStock,
-        _ => StockChange.None,
-    };
 
     private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }
