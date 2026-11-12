@@ -25,7 +25,7 @@ document is served by the host, not by the API.
   given to another listing; a name changed back takes its old slug back. A renamed slug was the
   only way to make L2-113 AC2 reachable, and a slug that did not follow the name would leave the
   listing's address naming a business that no longer exists.
-- **An old slug answers 301.** `GET /api/listings/{slug}` and `GET /api/listings/{slug}/products/{product}`
+- **An old slug answers 301.** `GET /api/listings/{slug}` and `GET /api/listings/{slug}/products/{productSlug}`
   answer a kept slug with 301 to the same address under the current slug, so the browser follows
   it and the app, seeing a listing whose slug is not the one in its address, replaces the address
   with the current one (later calls such as a message or a booking use the current slug). Writes
@@ -38,12 +38,14 @@ document is served by the host, not by the API.
   seconds at most) and then:
   - 503 `MAINTENANCE` (the maintenance middleware): the static maintenance page with 503, the
     API's `Retry-After` and the back-by time written in Toronto time;
-  - another 5xx: the static server error page with 500 and the API's `JB-500-` reference;
+  - 500 (an unhandled error): the static server error page with 500 and the API's `JB-500-`
+    reference;
   - `{ "status": 301, "location" }`: a 301 to the current slug, the query kept;
   - `{ "status": 404 }`, or an address `routes.json` does not match: the app with 404;
   - `{ "status": 403 }`: the app with 403;
-  - 200, or no answer in time: the app with 200, as before. A page load is never refused because
-    the API is slow; the app shows its own load-error states.
+  - 200, another 5xx, or no answer in time: the app with 200, as before. A page load is never
+    refused because the API is slow or a dependency failed; the app shows its own load-error
+    states.
 
   The API answers 404 for `/b/{slug}` (and every address under it) whose listing is missing or not
   public to the caller, and for `/c/{category}` that is not one of the eleven; 301 for a kept slug;
