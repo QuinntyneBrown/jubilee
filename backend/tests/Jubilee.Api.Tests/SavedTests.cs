@@ -305,7 +305,7 @@ public sealed class SavedTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
         var overview = await Json(await _factory.CreateMemberClient("Naomi Laurent", "member|naomi").GetAsync("/api/my-business"));
 
         var stats = overview.GetProperty("stats");
-        Assert.Equal(2, stats.GetProperty("saved").GetInt32());
+        Assert.Equal(2, stats.GetProperty("saved").GetProperty("value").GetInt32());
         Assert.DoesNotContain("Joanna", overview.ToString());
     }
 }
