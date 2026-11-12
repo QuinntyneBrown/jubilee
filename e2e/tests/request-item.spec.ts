@@ -167,6 +167,91 @@ test.describe('request a product (L2-046)', () => {
     expect(fake.sends[0].idempotencyKey).toMatch(/^[\w-]{8,}$/);
   });
 
+  test('AC5: "Keep shopping" closes the dialog and goes back to the shop', async ({ page, jb }) => {
+    const dialog = new RequestItemDialog(page);
+    await new ProductPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    await stubOrder(page);
+    await jb.goto(`${tee}/request?option=M&quantity=1`);
+    await dialog.send.click();
+    await expect(dialog.title).toHaveText('Request sent to Luzandre.com');
+
+    await dialog.keepShopping.click();
+
+    await expect(page).toHaveURL('/b/luzandre');
+    await expect(dialog.root).toHaveCount(0);
+  });
+
+  test('AC3, AC4: by keyboard alone, the arrow keys choose pickup, the estimate follows and Enter on "Send request" sends once', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new RequestItemDialog(page);
+    await new ProductPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubOrder(page);
+    await jb.goto(`${tee}/request?option=M&quantity=1`);
+    await expect(dialog.total).toHaveText('$43.00 + tax');
+
+    await dialog.radio('Ship to me').focus();
+    await page.keyboard.press('ArrowDown');
+
+    await expect(dialog.radio('Pick up in Leslieville')).toBeChecked();
+    await expect(dialog.address).toHaveCount(0);
+    await expect(dialog.shippingAmount).toHaveText('Free');
+    await expect(dialog.total).toHaveText('$34.00 + tax');
+
+    await page.keyboard.press('Tab');
+    await expect(dialog.note).toBeFocused();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await expect(dialog.send).toBeFocused();
+    await page.keyboard.press('Enter');
+
+    await expect(dialog.title).toHaveText('Request sent to Luzandre.com');
+    await expect(dialog.viewRequest).toBeFocused();
+    expect(fake.sends).toHaveLength(1);
+    expect(fake.sends[0].deliveryMethodId).toBe(PICKUP_ID);
+  });
+
+  test('Escape closes the dialog, sends nothing and leaves the member on the product', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new RequestItemDialog(page);
+    await new ProductPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubOrder(page);
+    await jb.goto(`${tee}/request?option=M&quantity=1`);
+    await dialog.note.fill('Gift wrap please.');
+
+    await page.keyboard.press('Escape');
+
+    await expect(dialog.root).toHaveCount(0);
+    await expect(page).toHaveURL(tee);
+    expect(fake.sends).toHaveLength(0);
+  });
+
+  test('when the shop’s delivery methods cannot be read, the dialog says so and nothing can be sent', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new RequestItemDialog(page);
+    await new ProductPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubOrder(page, { optionsLoad: false });
+    await jb.goto(`${tee}/request?option=M&quantity=1`);
+
+    await expect(dialog.alert).toContainText('Requests aren’t available right now');
+    await expect(dialog.send).toHaveCount(0);
+
+    await dialog.closeButton.click();
+
+    await expect(dialog.root).toHaveCount(0);
+    await expect(page).toHaveURL(tee);
+    expect(fake.sends).toHaveLength(0);
+  });
+
   test('AC6: the request carries no price, shipping or total', async ({ page, jb }) => {
     const dialog = new RequestItemDialog(page);
     await new ProductPage(page).setWidth(1280);

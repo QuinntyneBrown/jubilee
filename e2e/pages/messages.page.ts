@@ -415,6 +415,8 @@ export class RequestItemDialog implements Screen {
   readonly cancel: Locator;
   readonly keepShopping: Locator;
   readonly viewRequest: Locator;
+  /** "Close" in the footer, when the dialog has nothing to offer. */
+  readonly closeButton: Locator;
 
   constructor(page: Page) {
     this.root = page.getByRole('dialog');
@@ -439,10 +441,16 @@ export class RequestItemDialog implements Screen {
     this.cancel = this.root.getByRole('button', { name: 'Cancel' });
     this.keepShopping = this.root.getByRole('link', { name: 'Keep shopping' });
     this.viewRequest = this.root.getByRole('link', { name: 'View request' });
+    this.closeButton = this.footer.getByRole('button', { name: 'Close' });
   }
 
   method(label: string): Locator {
     return this.methods.filter({ hasText: label });
+  }
+
+  /** The radio of a way to get the product, for the keyboard. */
+  radio(label: string): Locator {
+    return this.method(label).getByRole('radio');
   }
 
   async ready(): Promise<void> {

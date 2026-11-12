@@ -7,19 +7,16 @@ Person(member, "Member", "Asks a shop for a product")
 Person(owner, "Owner", "Receives the order request")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Order dialog and request pages")
-  Container(api, "Jubilee API", "ASP.NET Core", "HTTPS JSON API under /api and real-time hub")
+  Container(api, "Jubilee API", "ASP.NET Core", "HTTPS JSON API under /api and the event stream /api/events")
   Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and mail sending")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Products and requests and outbox")
-  ContainerDb(cache, "Cache", "Redis", "Sessions and idempotency keys")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Products and requests and notifications and outbox")
 }
 System_Ext(email, "E-mail provider", "Delivers the new request mail")
 
 Rel(member, web, "Uses", "HTTPS")
 Rel(owner, web, "Uses", "HTTPS")
-Rel(web, api, "Calls and subscribes", "JSON/HTTPS and WebSocket")
+Rel(web, api, "Calls and subscribes", "JSON/HTTPS and server-sent events")
 Rel(api, db, "Reads and writes", "EF Core")
-Rel(api, cache, "Reads session and stores idempotency key")
 Rel(worker, db, "Reads outbox", "EF Core")
-Rel(worker, api, "Publishes real-time events through EventsHub")
 Rel(worker, email, "Sends mail via")
 @enduml

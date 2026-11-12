@@ -7,7 +7,7 @@
 | confirm-request | 4 days | 90% |
 | decline-request | 4 days | 95% |
 | handle-incoming-requests | 5 days | 85% |
-| request-item | 4 days | 95% |
+| request-item | 4 days | 100% |
 | request-quote | 4 days | 95% |
 | request-space | 5 days | 100% |
 | track-requests | 5 days | 85% |
@@ -20,6 +20,6 @@ handle-incoming-requests, confirm-request, decline-request (ADR 0021): the owner
 
 track-requests, cancel-request (ADR 0022): the member's list and detail with the timeline, cancel with an 8-second undo, the booking completion and unanswered-request jobs, and polling for status changes are done with tests. The cancellation card, the owner notification and "Your requests" in the account menu have landed since. Deferred: the real-time channel in place of polling (L2-070), the owner's "Mark fulfilled" control (L2-043 AC5).
 
-request-item: the order request (delivery methods, free shipping, server-computed amounts, stock check at send, owner e-mail, idempotency) and its dialog on the product page are done with tests. The order card in the conversation, the in-app notification and stock reduction on confirm have landed since. Deferred: tax (shown as "+ tax", never calculated; ADR 0017).
+request-item (ADR 0017): the order request (delivery methods, free shipping, server-computed amounts, stock check at send, owner e-mail, idempotency) and its dialog on the product page are done with tests. The owner's in-app notification, its real-time event on the open page, the request under "New" in Incoming requests, the order card in the conversation, and the customer's notification and the stock reduction on confirm are now asserted for an order sent through the API (`OrderRequestTests`, `EventStreamTests`), and the dialog is proved by keyboard, with the focus on "View request" after sending (`request-item.spec.ts`). Nothing is left. Out of scope (ADR 0017): tax, shown as "+ tax" and never calculated; carts, checkout and payment, never.
 
 request-space (ADR 0042): the request dialog by term with its checks, the owner's confirm and decline, and the exact address released only to the accepted member are done with tests. Excludes deferred work (see ADR 0042): payment, leases, calendars and double booking.
