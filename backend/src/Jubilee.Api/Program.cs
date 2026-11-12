@@ -45,6 +45,15 @@ builder.Services
         options.Events.OnRedirectToAccessDenied = context => ProblemWriter.WriteAsync(
             context.HttpContext, StatusCodes.Status403Forbidden, "You can't do that.", code: "forbidden");
     });
+// The staff session of the admin application (ADR 0040): its own cookie, store and lifetime.
+builder.Services.AddSingleton<StaffTicketStore>();
+builder.Services.AddAuthentication().AddCookie(StaffSession.Scheme, StaffSession.Configure);
+builder.Services.AddOptions<CookieAuthenticationOptions>(StaffSession.Scheme)
+    .Configure<StaffTicketStore, TimeProvider>((options, store, time) =>
+    {
+        options.SessionStore = store;
+        options.TimeProvider = time;
+    });
 builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
     .Configure<DatabaseTicketStore, TimeProvider>((options, store, time) =>
     {
@@ -56,7 +65,8 @@ builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDef
 builder.Services.AddAuthorizationBuilder()
     .SetFallbackPolicy(new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
-        .Build());
+        .Build())
+    .AddStaffPolicies();
 
 var app = builder.Build();
 

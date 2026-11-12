@@ -241,7 +241,7 @@ public sealed class NotificationTests : IClassFixture<JubileeApiFactory>, IAsync
     [Fact]
     public async Task L2_064_AC6_the_owner_is_told_when_the_listing_is_verified_and_when_changes_are_requested()
     {
-        var verifier = _factory.CreateMemberClient("Esther Mensah", "member|esther", "verifier");
+        var verifier = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
         var approved = ListingMother.NonPublic(NonPublicState.ReadyToReview, "ready-co", "shops");
         approved.AssignOwner(JoannaId);
         var changes = ListingMother.NonPublic(NonPublicState.ReadyToReview, "changes-co", "shops");

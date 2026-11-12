@@ -100,6 +100,14 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     /// <summary>A client that keeps cookies but does not follow redirects, for the Google round trip.</summary>
     public HttpClient CreateNoRedirectClient() => CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
+    /// <summary>
+    /// A client over <c>https://localhost</c> that keeps cookies, copies the anti-CSRF cookie into its
+    /// header like the admin application, and does not follow redirects: the staff cookie is a
+    /// <c>__Host-</c> cookie, which is only kept over HTTPS.
+    /// </summary>
+    public HttpClient CreateHttpsClient() => CreateDefaultClient(
+        new Uri("https://localhost"), new CsrfCopyingHandler(), new Microsoft.AspNetCore.Mvc.Testing.Handlers.CookieContainerHandler());
+
     public HttpClient CreateMemberClient(string name = "Joanna Adeyemi", string? subject = null, string? role = null)
     {
         var client = CreateClient();

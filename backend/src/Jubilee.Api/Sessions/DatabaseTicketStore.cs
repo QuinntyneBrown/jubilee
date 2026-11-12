@@ -13,8 +13,11 @@ namespace Jubilee.Api.Sessions;
 /// random 256-bit key, the table keeps its hash and the serialised ticket. A session that is ended,
 /// older than 30 days or idle past its limit is not found, so the caller is asked to sign in again.
 /// </summary>
-public sealed class DatabaseTicketStore(IServiceScopeFactory scopes, TimeProvider clock) : ITicketStore
+public class DatabaseTicketStore(IServiceScopeFactory scopes, TimeProvider clock) : ITicketStore
 {
+    /// <summary>The kind of session this store keeps; a key is only ever found within its kind (ADR 0040).</summary>
+    protected virtual SessionKind Kind => SessionKind.Member;
+
     public const string SessionIdClaim = "sid";
     private static readonly TimeSpan ActivityGranularity = TimeSpan.FromMinutes(1);
 
@@ -23,9 +26,20 @@ public sealed class DatabaseTicketStore(IServiceScopeFactory scopes, TimeProvide
         var key = LinkTokens.NewValue();
         var id = Guid.NewGuid();
         ticket.Principal.Identities.First().AddClaim(new Claim(SessionIdClaim, id.ToString()));
-        var memberId = Guid.TryParse(ticket.Principal.FindFirst("sub")?.Value, out var member) ? member : (Guid?)null;
-        var session = MemberSession.Start(
-            id, memberId, LinkTokens.Hash(key), TicketSerializer.Default.Serialize(ticket), ticket.Properties.IsPersistent, clock.GetUtcNow());
+        var session = Kind == SessionKind.Staff
+            ? MemberSession.StartStaff(
+                id,
+                Guid.TryParse(ticket.Principal.FindFirst(StaffSession.StaffIdClaim)?.Value, out var staff) ? staff : null,
+                LinkTokens.Hash(key),
+                TicketSerializer.Default.Serialize(ticket),
+                clock.GetUtcNow())
+            : MemberSession.Start(
+                id,
+                Guid.TryParse(ticket.Principal.FindFirst("sub")?.Value, out var member) ? member : null,
+                LinkTokens.Hash(key),
+                TicketSerializer.Default.Serialize(ticket),
+                ticket.Properties.IsPersistent,
+                clock.GetUtcNow());
 
         await using var scope = scopes.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
@@ -85,9 +99,16 @@ public sealed class DatabaseTicketStore(IServiceScopeFactory scopes, TimeProvide
         }
     }
 
-    private static Task<MemberSession?> Find(IAppDbContext db, string key)
+    private Task<MemberSession?> Find(IAppDbContext db, string key)
     {
         var hash = LinkTokens.Hash(key);
-        return db.Sessions.SingleOrDefaultAsync(s => s.KeyHash == hash);
+        var kind = Kind;
+        return db.Sessions.SingleOrDefaultAsync(s => s.KeyHash == hash && s.Kind == kind);
     }
+}
+
+/// <summary>Keeps staff sessions (L2-190) the same way, as rows of kind <c>Staff</c>.</summary>
+public sealed class StaffTicketStore(IServiceScopeFactory scopes, TimeProvider clock) : DatabaseTicketStore(scopes, clock)
+{
+    protected override SessionKind Kind => SessionKind.Staff;
 }

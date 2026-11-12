@@ -36,7 +36,9 @@ public sealed class CsrfMiddleware(RequestDelegate next)
     {
         var unsafeMethod = HttpMethods.IsPost(context.Request.Method) || HttpMethods.IsPut(context.Request.Method)
             || HttpMethods.IsPatch(context.Request.Method) || HttpMethods.IsDelete(context.Request.Method);
-        if (unsafeMethod && context.Request.Cookies.ContainsKey(CsrfToken.SessionCookie))
+        var hasSession = context.Request.Cookies.ContainsKey(CsrfToken.SessionCookie)
+            || context.Request.Cookies.ContainsKey(Sessions.StaffSession.CookieName);
+        if (unsafeMethod && hasSession)
         {
             var cookie = context.Request.Cookies[CsrfToken.Cookie];
             var header = context.Request.Headers[CsrfToken.Header].ToString();
@@ -90,7 +92,9 @@ public sealed class AgreementRequiredMiddleware(RequestDelegate next)
     public async Task InvokeAsync(HttpContext context, ISender sender)
     {
         var path = context.Request.Path.Value ?? string.Empty;
+        // The agreement is a member's; a staff session is never asked for it.
         if (context.User.Identity?.IsAuthenticated == true
+            && !Sessions.StaffSession.IsStaff(context.User)
             && !Allowed.Contains(path, StringComparer.OrdinalIgnoreCase)
             && !path.StartsWith("/api/auth/", StringComparison.OrdinalIgnoreCase))
         {
