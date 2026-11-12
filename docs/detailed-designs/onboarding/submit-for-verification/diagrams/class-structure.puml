@@ -18,82 +18,143 @@ enum ListingStage {
   ReadyToReview
   ChangesRequested
   Live
-  Paused
-  OnHold
-  Removed
   Declined
 }
 
 class Listing {
   +Guid Id
-  +Guid OwnerId
+  +string Slug
   +string Name
-  +ListingSlug Slug
+  +string Tagline
+  +string? Highlight
+  +string CategorySlug
+  +ListingKind Kind
+  +string? OwnerId
   +ListingStage Stage
-  +DateTimeOffset? SubmittedAt
-  +DateTimeOffset? ReadyAt
-  +SubmitForVerification(now: DateTimeOffset): void
+  +bool IsPaused
+  +DateTimeOffset? WorkspaceChosenAt
+  +DateTimeOffset? StatementLapsedAt
+  +{static} Create(slug, name, tagline, categorySlug, now): Listing
+  +MoveTo(stage: ListingStage): void
+  +SetHighlight(highlight: string?): void
+  +PauseForStatement(now: DateTimeOffset): void
 }
 
-class Member {
+class ListingDraft {
   +Guid Id
-  +bool EmailConfirmed
-  +int MaxListings = 5
-  +CanStartListing(existing: int): bool
+  +string OwnerSubject
+  +IReadOnlyList<DraftItem> Items
 }
 
-class SubmitListingCommand {
+class ListingSubmission {
+  +Guid Id
   +Guid ListingId
-  +ListingDraftValues Values
+  +string OwnerSubject
+  +string StatementVersion
+  +DateTimeOffset AgreedAt
+  +DateTimeOffset SubmittedAt
   +string IdempotencyKey
+  +List<string> Flags
+  +DateTimeOffset? ReadyAt
+  +{static} Record(listingId, ownerSubject, idempotencyKey, flags, now): ListingSubmission
+  +MarkReady(now: DateTimeOffset): void
 }
 
-class SubmitListingCommandValidator {
-  +Validate(command: SubmitListingCommand): ValidationResult
+class StatementOfFaith <<static>> {
+  +string Version
+  +DateOnly UpdatedOn
+  +DateOnly AgreeBy
+}
+
+class StatementAgreement {
+  +string OwnerSubject
+  +string Version
+  +DateTimeOffset AgreedAt
+}
+
+class SubmitListingCommand <<record>> {
+  +string Subject
+  +string Name
+  +Guid DraftId
+  +DraftInput Input
+  +string? IdempotencyKey
 }
 
 class SubmitListingCommandHandler {
-  +Handle(command: SubmitListingCommand): Task<SubmissionResult>
+  +int MaxTaglineLength = 90
+  +Handle(command: SubmitListingCommand): Task<SubmittedListingDto>
+  -UniqueSlug(name: string): Task<string>
+  -AddItems(listing: Listing, input: DraftInput, now: DateTimeOffset): void
 }
 
-class SubmissionResult {
+class SubmittedListingDto <<record>> {
   +Guid ListingId
-  +string BusinessName
-  +ListingStage Stage
+  +string Slug
+  +string Name
+  +string Kind
+  +string Stage
   +DateTimeOffset SubmittedAt
 }
 
-class StartListingDraftCommand {
-  +Guid OwnerId
-  +ListingKind Kind
+class Slugs <<static>> {
+  +{static} From(text: string, fallback: string): string
+  +{static} Unique(slug: string, used: HashSet<string>): string
 }
 
-class StartListingDraftCommandHandler {
-  +Handle(command: StartListingDraftCommand): Task<ListingDraftDto>
+class AgreeToStatementCommand <<record>> {
+  +string Subject
+  +string Version
 }
 
-class OwnerListingSummary {
-  +Guid ListingId
+class StatementDueDto <<record>> {
+  +string Version
+  +string UpdatedOn
+  +string AgreeBy
+  +bool Overdue
+  +string Business
+}
+
+class RunStatementAgreementJobCommand <<record>> {
+  +string Job = "statement-agreement"
+  +TimeSpan Every = 24 hours
+}
+
+class ReviewOwner <<record>> {
   +string Name
-  +ListingStage Stage
+  +string Email
+  +bool EmailConfirmed
+  +DateTimeOffset MemberSince
+  +IReadOnlyList<ReviewOtherListing> OtherListings
 }
 
-class IdempotencyRecord {
-  +string Key
-  +Guid MemberId
-  +int StatusCode
-  +string ResponseBody
-  +DateTimeOffset ExpiresAt
+class ReviewOtherListing <<record>> {
+  +string Name
+  +string StageLabel
 }
 
-Member "1" --> "0..5" Listing : owns
+class VerificationReviewDto <<record>> {
+  +Guid Id
+  +string StageLabel
+  +ReviewOwner Owner
+  +IReadOnlyList<string> Flags
+  +int ItemCount
+}
+
 Listing --> ListingStage : has
 SubmitListingCommandHandler ..> SubmitListingCommand : handles
-SubmitListingCommandValidator ..> SubmitListingCommand : validates
-SubmitListingCommandHandler --> Listing : loads / mutates
-SubmitListingCommandHandler ..> SubmissionResult : returns
-SubmitListingCommand ..> IdempotencyRecord : keyed by
-StartListingDraftCommandHandler ..> StartListingDraftCommand : handles
-StartListingDraftCommandHandler ..> Member : checks limit on
-OwnerListingSummary ..> Listing : projects
+SubmitListingCommandHandler ..> ListingDraft : reads / removes
+SubmitListingCommandHandler ..> Listing : creates
+SubmitListingCommandHandler ..> ListingSubmission : records
+SubmitListingCommandHandler ..> Slugs : builds the slug with
+SubmitListingCommandHandler ..> SubmittedListingDto : returns
+ListingSubmission "1" --> "1" Listing : for
+ListingSubmission ..> StatementOfFaith : stamps Version of
+StatementAgreement ..> StatementOfFaith : names Version of
+AgreeToStatementCommand ..> StatementAgreement : records
+AgreeToStatementCommand ..> Listing : resumes
+StatementDueDto ..> StatementOfFaith : reads
+RunStatementAgreementJobCommand ..> Listing : pauses
+VerificationReviewDto *-- ReviewOwner : carries
+ReviewOwner "1" *-- "*" ReviewOtherListing : names
+ReviewOtherListing ..> Listing : projects
 @enduml

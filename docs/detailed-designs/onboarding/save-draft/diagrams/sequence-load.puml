@@ -17,39 +17,49 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ListBusinessPage" as page
-  participant "ListingDraftStore" as store
-  participant "ListingsApi" as client
+  participant "ListingDraftsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "ListingsController" as controller
+  participant "ListingDraftsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetListingDraftQueryHandler" as handler
+  participant "GetCurrentDraftQueryHandler" as current
+  participant "GetDraftQueryHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> page : Return to /list or open the draft from My business
-page -> store : load(listingId)
-page --> actor : Show "Loading your draft…"
-store -> client : getDraft(listingId)
-client -> controller : GET /api/listings/{listingId}/draft
-controller -> controller : Authenticate and check the caller owns the listing
-controller -> handler : Send GetListingDraftQuery
-handler -> db : Read the draft with its items
-alt Draft read
-  db --> handler : Draft
+actor -> page : Return to /list or choose the draft in the My business switcher
+page -> page : load() reads the query parameter draft
+page --> actor : Show "Loading your draft…" over skeleton fields
+alt /list
+  page -> client : current()
+  client -> controller : GET /api/listing-drafts/current
+  controller -> current : Send GetCurrentDraftQuery(subject)
+  current -> db : Read the caller's draft with the newest UpdatedAt and its items
+  db --> current : Draft or none
+  current --> controller : ListingDraftDto or null
+  controller --> client : 200 OK or 204 No Content
+else /list?draft={id}
+  page -> client : get(id)
+  client -> controller : GET /api/listing-drafts/{id}
+  controller -> handler : Send GetDraftQuery(subject, id)
+  handler -> db : Drafts.Owned(subject, id)
+  db --> handler : Draft or 404 draft_not_found (L2-133)
   handler --> controller : ListingDraftDto
   controller --> client : 200 OK
-  client --> store : Draft
-  store --> page : Draft signal
-  page --> actor : Restore each value (L2-077)
-else Service unavailable
-  db --> handler : Failure
-  handler --> controller : Error
-  controller --> client : 503 ProblemDetails with JB-LST-503
-  client --> store : Load error
-  store --> page : Error state
-  page --> actor : Show "We couldn't load your draft" with JB-LST-503 and "Try again"
+else /list?draft=new
+  page -> page : Start a blank form without a request
+end
+alt Draft read
+  client --> page : ListingDraft
+  page -> page : apply(draft) sets each signal
+  page --> actor : Restore each value and the items (L2-077)
+else No draft
+  client --> page : null
+  page --> actor : Show the empty form
+else Request failed
+  client --> page : Error
+  page --> actor : Show "We couldn’t load your draft" with JB-LST-503 and "Try again" (L2-118)
 end
 @enduml

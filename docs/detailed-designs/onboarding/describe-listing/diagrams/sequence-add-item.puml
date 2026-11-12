@@ -16,45 +16,49 @@ skinparam package {
 }
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "OnboardingItemsSection" as section
+  participant "ListBusinessPage" as page
   participant "ProductEditorDialog" as dialog
-  participant "ListingsApi" as client
+  participant "ListingDraftsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "ListingsController" as controller
+  participant "ListingDraftsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "AddProductCommandHandler" as handler
-  participant "Listing" as entity
+  participant "SaveListingDraftCommandHandler" as handler
+  participant "ListingDraft" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> section : Press "Add a product"
-section -> dialog : Open the product editor (L2-091)
-actor -> dialog : Enter name and price and save
-dialog -> client : addProduct(listingId, product)
-client -> controller : POST /api/listings/{listingId}/products
-controller -> controller : Authenticate and check the caller owns the listing (L2-133)
-alt Caller does not own the listing
-  controller --> client : 403 ProblemDetails
-  client --> dialog : Forbidden
-else Owner
-  controller -> handler : Send AddProductCommand
-  handler -> db : Load listing in stage Draft
-  db --> handler : Listing
-  handler -> entity : AddProduct(product)
-  entity --> handler : Product attached and not public (L2-073)
-  handler -> db : Save in one unit of work
-  db --> handler : Commit result
-  handler --> controller : ProductDto
-  controller --> client : 201 Created
-  client --> dialog : Saved product
-  dialog --> section : Close with the product
-  section --> actor : Show the product with name and price (L2-073)
+actor -> page : Press "Add a product"
+page -> dialog : Open with data.draft = true (L2-091)
+dialog --> actor : Show "Nothing is public until your listing is verified."
+actor -> dialog : Enter name and price and stock and description
+actor -> dialog : Press "Add product"
+dialog -> dialog : Check the fields as L2-091 does
+alt A field is invalid
+  dialog --> actor : Show the message under the field and focus it (L2-126)
+else Fields valid
+  dialog --> page : Close with a DraftItem and call no API (L2-073)
+  page -> page : Append to the items signal and start the autosave timer
+  page --> actor : Show the product with name and price and "Remove {name}"
 end
-note over section, dialog
+... The member presses "Save draft" or stops typing for 10 seconds ...
+page -> client : create(body) or save(id, body) with the items
+client -> controller : POST /api/listing-drafts or PUT /api/listing-drafts/{id}
+controller -> handler : Send SaveListingDraftCommand
+handler -> db : Load the caller's draft with Drafts.Owned
+db --> handler : ListingDraft
+handler -> entity : Save(values, items, now)
+entity --> handler : DraftItem rows replaced and not public (L2-073)
+handler -> db : Save changes
+db --> handler : Commit result
+handler --> controller : ListingDraftDto
+controller --> client : 200 OK or 201 Created
+client --> page : Saved draft
+note over page, dialog
   The Services section follows the same steps with
-  ServiceEditorDialog (L2-094) and AddServiceCommand.
+  ServiceEditorDialog (L2-094). Its DraftItem carries the
+  action and the meeting length and how the service meets.
 end note
 @enduml

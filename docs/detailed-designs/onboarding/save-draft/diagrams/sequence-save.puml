@@ -17,44 +17,59 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ListBusinessPage" as page
-  participant "DraftAutosaver" as auto
-  participant "ListingDraftStore" as store
-  participant "ListingsApi" as client
+  participant "ListingDraftsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "ListingsController" as controller
+  participant "ListingDraftsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "SaveListingDraftCommandHandler" as handler
-  participant "Listing" as entity
+  participant "ListingDraft" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 alt Member presses "Save draft"
   actor -> page : Press "Save draft"
-  page -> store : save(manual)
+  page -> page : saveDraft()
 else Member types and stops for 10 seconds (L2-077)
   actor -> page : Type in a field
-  page -> auto : notifyChange()
-  auto -> auto : Restart the 10-second timer
-  auto -> store : save(autosave)
+  page -> page : touched() restarts the AUTOSAVE_MS timer
+  page -> page : Timer ends and calls saveDraft(true)
 end
-store -> client : saveDraft(listingId, values, rowVersion)
-client -> controller : PUT /api/listings/{listingId}/draft
-controller -> controller : Authenticate and check the caller owns the listing
-controller -> handler : Send SaveListingDraftCommand
-handler -> db : Load listing in stage Draft
-db --> handler : Listing
-handler -> entity : ApplyDraft(values, now) without required-field rules (L2-077)
-entity --> handler : Values applied and LastTouchedAt set
+alt The page has no draft id
+  page -> client : create(body)
+  client -> controller : POST /api/listing-drafts
+  controller -> handler : Send SaveListingDraftCommand(subject, null, input)
+  handler -> db : Count the caller's listings and drafts
+  db --> handler : Count
+  alt Count is 5 or more (L2-079)
+    handler --> controller : ConflictException LISTING_LIMIT
+    controller --> client : 409 ProblemDetails
+    client --> page : Error
+    page --> actor : Show "You can list up to 5 businesses. Write to help@jubilee.example for more."
+  else Fewer than 5
+    handler -> entity : ListingDraft.Start(subject, now)
+  end
+else The page has a draft id
+  page -> client : save(id, body)
+  client -> controller : PUT /api/listing-drafts/{id}
+  controller -> handler : Send SaveListingDraftCommand(subject, id, input)
+  handler -> db : Drafts.Owned(subject, id)
+  db --> handler : ListingDraft or 404 draft_not_found (L2-133)
+end
+handler -> entity : Save(values, items, now) without required-field rules (L2-077)
+entity --> handler : Values kept and UpdatedAt set and NoticeSentAt cleared
 handler -> db : Save in one unit of work
 db --> handler : Commit result
-handler --> controller : ListingDraftDto with SavedAt
-controller --> client : 200 OK
-client --> store : Saved draft
-store --> page : Status saved at time
-opt Manual save
-  page --> actor : Show "Draft saved. Saved today at {time}."
-end
+handler --> controller : ListingDraftDto
+controller --> client : 201 Created or 200 OK
+client --> page : ListingDraft with updatedAt
+page -> page : Keep the draft id and set savedAt
+page --> actor : Show "Draft saved. Saved today at {time}."
+note over page
+  A failed autosave shows nothing.
+  A failed save by the button shows
+  "We couldn’t save that. Try again."
+end note
 @enduml

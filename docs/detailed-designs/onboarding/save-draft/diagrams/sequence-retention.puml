@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Warn about and delete an untouched draft
+title UML sequence behaviour — Warn about and delete an idle draft
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,41 +15,54 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 box "Backend — Jubilee Worker" #D1FADF
-  participant "DraftRetentionJob" as job
+  participant "ListingDraftExpiryJob" as job
   participant "OutboxDispatcherJob" as dispatcher
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "Listing" as entity
+  participant "RunListingDraftExpiryJobCommandHandler" as run
+  participant "ScheduledJobs" as jobs
+  participant "ExpireListingDraftsCommandHandler" as expire
+  participant "ListingDraft" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
-  participant "IEmailSender" as sender
 end box
 participant "E-mail provider" as provider
 actor "Member" as actor
-job -> job : Start on schedule and take the single-run lock (L2-182)
-job -> db : Select drafts untouched for 180 days with no notice sent
-db --> job : Drafts to warn
-loop Each draft to warn
-  job -> entity : MarkExpiryNoticeSent(now)
-  job -> db : Save listing and DraftExpiryNotice outbox message in one transaction
-  db --> job : Commit result
+job -> run : Send RunListingDraftExpiryJobCommand every 24 hours
+run -> jobs : RunOnceAsync("listing-draft-expiry", 24 hours, work)
+jobs -> db : Look for the JobRun of this occurrence and insert it
+alt Another instance claimed the occurrence (L2-182)
+  db --> jobs : Row found or key refused
+  jobs --> run : false and no work
+else This instance claims the day
+  db --> jobs : JobRun inserted
+  jobs -> expire : Send ExpireListingDraftsCommand
+  expire -> db : Select drafts whose NoticeSentAt is 14 days old or older
+  db --> expire : Drafts to delete
+  expire -> db : Remove each with its items (L2-077)
+  expire -> db : Select drafts with no notice and UpdatedAt 180 days old or older
+  db --> expire : Drafts to warn
+  loop Each draft to warn
+    expire -> entity : NoticeSent(now)
+    expire -> db : Add OutboxMessage.Email "Your draft of {title} will be deleted in 14 days"
+  end
+  expire -> db : Save changes
+  db --> expire : Commit result
+  expire --> jobs : Count of drafts handled
+  jobs -> db : JobRun.Succeed(now) records the last success
+  db --> jobs : Commit result
+  jobs --> run : true
 end
-job -> db : Select drafts with a notice sent 14 days ago and still untouched
-db --> job : Drafts to delete
-loop Each draft to delete
-  job -> db : Delete the draft with its items (L2-077)
-  db --> job : Commit result
-end
-job -> db : Record last success
-db --> job : Recorded
 dispatcher -> db : Read undispatched outbox messages
-db --> dispatcher : DraftExpiryNotice
-dispatcher -> sender : Send the draft expiry notice
-sender -> provider : Submit e-mail
-provider --> sender : Accepted
+db --> dispatcher : The draft expiry notice
+dispatcher -> provider : Send the e-mail
+provider --> dispatcher : Accepted
 provider -> actor : Deliver the notice
-sender --> dispatcher : Sent
 dispatcher -> db : Mark dispatched
 db --> dispatcher : Commit result
+note over entity
+  A save of the draft clears NoticeSentAt,
+  which cancels the deletion.
+end note
 @enduml

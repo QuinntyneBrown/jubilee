@@ -17,59 +17,72 @@ skinparam package {
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ListBusinessPage" as page
-  participant "ListingsApi" as client
+  participant "ListingDraftsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "IdempotencyMiddleware" as idem
-  participant "ListingsController" as controller
+  participant "ListingDraftsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "SubmitListingCommandHandler" as handler
   participant "Listing" as entity
+  participant "ListingSubmission" as submission
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> page : Press "Submit for verification"
-page -> page : Validate every field in the browser (L2-126)
+page -> page : check() applies each rule in the browser (L2-126)
 alt Three fields invalid
-  page --> actor : Show "Fix 3 things to continue" and move focus to the summary (L2-078)
+  page --> actor : Show "Fix 3 things to continue" in jb-form-summary and focus it (L2-078)
 else Form valid
-  page -> page : Make fields read-only and the button busy (L2-127)
-  page -> client : submit(listingId, values, idempotencyKey)
-  client -> idem : POST /api/listings/{listingId}/submission
-  idem -> idem : Look up the Idempotency-Key (L2-132)
-  alt Key seen within 24 hours
-    idem --> client : Original response
-  else First request
-    idem -> controller : Forward
-    controller -> controller : Authenticate and check the caller owns the listing (L2-133)
-    alt E-mail not confirmed
-      controller --> client : 403 EMAIL_UNCONFIRMED (L2-005)
-    else Validation fails on the server
-      controller --> client : 422 ProblemDetails with per-field codes
-    else Accepted
-      controller -> handler : Send SubmitListingCommand
-      handler -> db : Load listing in stage Draft
-      db --> handler : Listing
-      handler -> entity : Apply values and assign the slug (L2-072)
-      handler -> entity : SubmitForVerification(now)
-      entity --> handler : Stage ReadyToReview (L2-078)
-      handler -> db : Save the listing in one transaction
-      db --> handler : Commit result
-      handler --> controller : SubmissionResult
-      controller --> client : 200 OK
+  page -> page : Set busy: fields read-only and the button aria-busy (L2-127)
+  page -> client : create(body) or save(id, body)
+  client --> page : ListingDraft with its id
+  page -> client : submit(id, body with idempotencyKey from newKey()) (L2-132)
+  client -> controller : POST /api/listing-drafts/{id}/submit
+  controller -> controller : RequiresConfirmedEmail
+  alt E-mail not confirmed
+    controller --> client : 403 EMAIL_UNCONFIRMED (L2-005)
+  else Confirmed
+    controller -> handler : Send SubmitListingCommand
+    handler -> db : Find a ListingSubmission of the caller with this IdempotencyKey
+    alt Key seen before (L2-132)
+      db --> handler : Earlier submission
+      handler --> controller : The first SubmittedListingDto
+      controller --> client : 201 Created
+    else First request
+      handler -> db : Drafts.Owned(subject, draftId) (L2-133)
+      db --> handler : ListingDraft
+      handler -> handler : Check name and tagline and category and agreement
+      alt A rule fails
+        handler -> db : Save the typed values to the draft
+        handler --> controller : ValidationFailedException with a code per field
+        controller --> client : 422 ProblemDetails
+      else Accepted
+        handler -> handler : Flag CONTACT_IN_TEXT and build the unique slug (L2-072)
+        handler -> entity : Create and SetKind and AssignOwner and SetHighlight
+        handler -> entity : MoveTo(ReadyToReview) (L2-078)
+        handler -> handler : AddItems creates each Product or Service (L2-073)
+        handler -> submission : Record(listingId, subject, key, flags, now) with StatementOfFaith.Version (L2-075)
+        handler -> submission : MarkReady(now)
+        handler -> db : Add the listing and items and submission and remove the draft in one save
+        db --> handler : Commit result
+        handler --> controller : SubmittedListingDto
+        controller --> client : 201 Created
+      end
     end
   end
-  client --> page : Result or ProblemDetails
+  client --> page : SubmittedListing or ProblemDetails
   alt Submitted
-    page --> actor : Show "{Business} is in for verification." with "Go to My business"
-  else Refused
+    page --> actor : Show "{Business} is in for verification" with "Go to My business"
+  else 422
     page --> actor : Restore the editable form with the field errors
+  else Other failure
+    page --> actor : Show "We couldn’t save that. Try again."
   end
 end
 note over handler, db
   The listing is now in the verification queue (L2-099).
-  No e-mail is sent on submission.
+  No e-mail is sent on submission (ADR 0041).
 end note
 @enduml

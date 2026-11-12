@@ -4,14 +4,20 @@ LAYOUT_WITH_LEGEND()
 title Containers — Submit for verification
 
 Person(owner, "Owner", "Submits a listing")
+Person(verifier, "Verification team member", "Reviews a listing")
+System_Ext(email, "E-mail provider", "Delivers e-mail")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "Submit button and error summary and submitted state and listing switcher")
-  Container(api, "Jubilee API", "ASP.NET Core", "Submission and listing endpoints under /api/listings")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Listings")
-  ContainerDb(cache, "Cache", "Redis", "Sessions and idempotency keys")
+  Container(web, "Jubilee Web", "Angular single-page application", "Submit button and error summary and submitted state and the statement agreement dialog")
+  Container(admin, "Jubilee Admin Web", "Angular single-page application", "Review screen with the item count and the owner's other listings")
+  Container(api, "Jubilee API", "ASP.NET Core", "Endpoints under /api/listing-drafts and /api/statement-of-faith and /api/session")
+  Container(worker, "Jubilee Worker", ".NET worker service", "StatementAgreementJob and outbox dispatch")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and submissions and statement agreements and job runs and outbox")
 }
-Rel(owner, web, "Presses Submit for verification", "HTTPS")
-Rel(web, api, "Submits with an idempotency key", "JSON/HTTPS")
+Rel(owner, web, "Presses Submit for verification or I agree", "HTTPS")
+Rel(verifier, admin, "Opens a listing to review", "HTTPS")
+Rel(web, api, "Submits with an idempotency key in the body", "JSON/HTTPS")
+Rel(admin, api, "Reads the review", "JSON/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")
-Rel(api, cache, "Stores the idempotency key for 24 hours")
+Rel(worker, db, "Pauses listings of owners who have not agreed", "EF Core")
+Rel(worker, email, "Sends the paused notice", "HTTPS")
 @enduml
