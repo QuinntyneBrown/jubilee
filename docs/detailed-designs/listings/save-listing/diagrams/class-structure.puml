@@ -19,79 +19,112 @@ enum SavedItemKind {
 }
 
 class SavedItem {
+  +{static} int MaxItems = 500
   +Guid Id
-  +Guid MemberId
+  +string MemberSubject
   +SavedItemKind Kind
   +Guid TargetId
   +DateTimeOffset SavedAt
+  +{static} Business(memberSubject, listingId, now): SavedItem
+  +{static} Product(memberSubject, productId, now): SavedItem
 }
 
-class SavedList {
-  +{static} int MaxItems = 500
-  +Guid MemberId
-  +int Count
-  +Add(kind: SavedItemKind, targetId: Guid, now: DateTimeOffset): Result<SavedItem>
-  +Remove(kind: SavedItemKind, targetId: Guid): bool
+class SaveBusinessCommand {
+  +string MemberSubject
+  +string ListingSlug
 }
 
-class SaveItemCommand {
-  +Guid MemberId
-  +SavedItemKind Kind
-  +Guid TargetId
+class SaveProductCommand {
+  +string MemberSubject
+  +string ListingSlug
+  +string ProductSlug
 }
 
-class SaveItemCommandHandler {
-  +Handle(command: SaveItemCommand): Task<Result>
+class SaveHandler {
+  +{static} AddAsync(db, subject, kind, targetId, now): Task
+}
+
+class UnsaveBusinessCommand {
+  +string MemberSubject
+  +string ListingSlug
+}
+
+class UnsaveProductCommand {
+  +string MemberSubject
+  +string ListingSlug
+  +string ProductSlug
 }
 
 class UnsaveItemCommand {
-  +Guid MemberId
-  +SavedItemKind Kind
-  +Guid TargetId
-}
-
-class UnsaveItemCommandHandler {
-  +Handle(command: UnsaveItemCommand): Task<Result>
+  +string MemberSubject
+  +Guid ItemId
 }
 
 class GetSavedListQuery {
-  +Guid MemberId
+  +string MemberSubject
 }
 
 class GetSavedListQueryHandler {
-  +Handle(query: GetSavedListQuery): Task<Result<SavedListDto>>
+  +Handle(query: GetSavedListQuery): Task<SavedListDto>
 }
 
 class SavedListDto {
   +int BusinessCount
   +int ProductCount
-  +IReadOnlyList<SavedEntryDto> Entries
+  +IReadOnlyList<SavedItemDto> Items
 }
 
-class SavedEntryDto {
-  +SavedItemKind Kind
-  +Guid TargetId
-  +bool IsAvailable
+class SavedItemDto {
+  +Guid Id
+  +string Kind
+  +string Name
   +DateTimeOffset SavedAt
+  +bool Available
   +BusinessCardDto? Business
   +ProductCardDto? Product
 }
 
 class SavedStore {
-  +isSaved(kind: SavedItemKind, id: string): Signal<boolean>
-  +toggle(target: SaveTarget): Promise<void>
-  +undo(target: SaveTarget): Promise<void>
-  +load(): Promise<void>
+  +list: Signal<SavedList | null>
+  +load(): void
+  +reset(): void
+  +isSaved(target: SaveTarget): boolean
+  +isBusy(target: SaveTarget): boolean
+  +toggle(target: SaveTarget): void
+  +save(target: SaveTarget): void
+  +remove(target: SaveTarget): void
+  +removeItem(item: SavedItem, done): void
 }
 
-SavedList "1" *-- "0..500" SavedItem
+class CardHearts {
+  +attach(): void
+  +isSaved(target: SaveTarget): boolean
+  +isBusy(target: SaveTarget): boolean
+  +press(target: SaveTarget, button: HTMLElement): void
+}
+
+class PendingActionService {
+  +remember(action: PendingAction): void
+  +take(kind, path): boolean
+  +takeSave(path): SaveTarget | null
+}
+
+class Saveable <<jb-saveable>> {
+  +name: string
+  +saved: boolean
+  +busy: boolean
+  +pressed: output<HTMLButtonElement>
+}
+
 SavedItem --> "1" SavedItemKind
-SaveItemCommandHandler ..> SaveItemCommand : handles
-SaveItemCommandHandler --> SavedList : adds to
-UnsaveItemCommandHandler ..> UnsaveItemCommand : handles
-UnsaveItemCommandHandler --> SavedList : removes from
+SaveHandler ..> SavedItem : adds
+SaveBusinessCommand ..> SaveHandler : handled through
+SaveProductCommand ..> SaveHandler : handled through
 GetSavedListQueryHandler ..> GetSavedListQuery : handles
 GetSavedListQueryHandler ..> SavedListDto : returns
-SavedListDto *-- "0..*" SavedEntryDto
+SavedListDto *-- "0..500" SavedItemDto
 SavedStore ..> SavedListDto : holds
+CardHearts --> SavedStore : toggles through
+CardHearts --> PendingActionService : remembers a visitor's save in
+Saveable ..> CardHearts : pressed is handled by
 @enduml

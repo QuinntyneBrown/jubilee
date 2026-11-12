@@ -30,8 +30,7 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> page : Open /saved
-page -> store : load()
-store -> client : getSavedList()
+page -> client : list()
 client -> controller : GET /api/saved
 controller -> controller : Authenticate the session and take the member from it (L2-133)
 controller -> handler : Send GetSavedListQuery
@@ -39,9 +38,9 @@ handler -> db : Load SavedItem rows of the member newest first with targets
 db --> handler : Rows and the current state of each target
 handler -> handler : Mark paused or removed targets as not available (L2-042)
 handler --> controller : SavedListDto
-controller --> client : 200 with entries and counts
-client --> store : Typed result
-store --> page : Entries
+controller --> client : 200 with items and counts
+client --> page : SavedList
+page -> store : adopt(list)
 alt One or more items saved
   page --> actor : Show "3 businesses · 1 product" with cards newest saved first (L2-042)
   opt Entry is not available

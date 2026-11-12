@@ -16,7 +16,7 @@ skinparam package {
 }
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "SaveButton" as heart
+  participant "Heart (Saveable or page)" as heart
   participant "SavedStore" as store
   participant "ToastService" as toast
   participant "SavedApi" as client
@@ -25,38 +25,39 @@ box "Backend — Jubilee API" #D1FADF
   participant "SavedController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "SaveItemCommandHandler" as handler
-  participant "SavedList" as list
+  participant "SaveBusinessCommandHandler" as handler
+  participant "SaveHandler" as list
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> heart : Press the heart on an unsaved business
 heart -> store : toggle(target)
-store --> heart : Saved state set at once
-heart --> actor : Heart shows aria-pressed="true" (L2-041)
-store -> client : save(kind, id)
-client -> controller : PUT /api/saved/businesses/{id}
-controller -> controller : Authenticate the session and check the CSRF token
-controller -> handler : Send SaveItemCommand
-handler -> db : Load the member's saved count and the live target
-db --> handler : Count and target
-handler -> list : Add(kind, targetId, now)
+store --> heart : Saved state set at once, key busy
+heart --> actor : Heart shows aria-pressed="true" and aria-busy="true" (L2-041)
+store -> client : saveBusiness(slug)
+client -> controller : PUT /api/saved/businesses/{slug}
+controller -> controller : Authenticate the session and take the member from it
+controller -> handler : Send SaveBusinessCommand
+handler -> db : Find the public listing by its slug
+db --> handler : Listing
+handler -> list : AddAsync(db, subject, Business, listingId, now)
+list -> db : Is it saved already, and how many are saved?
 alt Fewer than 500 items saved
   list --> handler : SavedItem
   handler -> db : Save changes in one unit of work
   db --> handler : Commit result
   handler --> controller : Success
   controller --> client : 204 No Content
-  client --> store : Saved
+  client --> store : Saved, key no longer busy
   store -> toast : Show the success toast for 8 seconds
   toast --> actor : "Saved {business}. Find it any time under Saved." with "Undo" (L2-041)
   opt Member presses "Undo" within 8 seconds
     actor -> toast : Press "Undo"
-    toast -> store : undo(target)
+    toast -> store : remove(target)
     store --> heart : Unsaved state
-    store -> client : unsave(kind, id)
-    client -> controller : DELETE /api/saved/businesses/{id}
+    store -> client : unsaveBusiness(slug)
+    client -> controller : DELETE /api/saved/businesses/{slug}
     controller --> client : 204 No Content
     client --> store : Removed
     heart --> actor : Heart returns to unpressed (L2-041)

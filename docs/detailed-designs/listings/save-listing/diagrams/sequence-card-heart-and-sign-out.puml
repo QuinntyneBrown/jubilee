@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Save from a card, then sign out
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor, then member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "Saveable" as heart
+  participant "CardHearts" as hearts
+  participant "PendingActionService" as pending
+  participant "SignInRequiredDialog" as prompt
+  participant "SavedStore" as store
+  participant "App" as app
+  participant "SavedApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SavedController" as controller
+end box
+actor -> heart : Press "Save Legacy Financial" on a card
+heart -> hearts : pressed(button)
+alt No member signed in
+  hearts -> pending : remember({ kind: 'save', returnPath, target })
+  hearts -> prompt : Open "Join to save Legacy Financial" with the page as return address
+  actor -> prompt : Sign in or join
+  prompt --> actor : Back on the same page, signed in
+  hearts -> store : load()
+  store -> client : list()
+  client -> controller : GET /api/saved
+  hearts -> pending : takeSave(returnPath)
+  pending --> hearts : The remembered target, removed as it is read
+  hearts -> store : save(target), once
+  store -> client : saveBusiness(slug)
+  client -> controller : PUT /api/saved/businesses/{slug}
+  controller --> client : 204 No Content
+  heart --> actor : Heart pressed: "Saved. Remove Legacy Financial from saved" (L2-012 AC4)
+else A member is signed in
+  hearts -> store : toggle(target), ignored while the key is busy (L2-041 AC8)
+end
+actor -> app : Sign out, or the session ends
+app -> store : reset() when SessionService.member() is null
+store --> heart : No key saved, none busy, list forgotten
+heart --> actor : Every heart unpressed for the next person (L2-041 AC10)
+opt The next member signs in
+  hearts -> store : load()
+  store -> client : list()
+  client -> controller : GET /api/saved, the new member's list
+end
+@enduml
