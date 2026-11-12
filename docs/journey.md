@@ -1,5 +1,11 @@
 # Jubilee user journeys
 
+Every journey serves Jubilee's mission, the single level-0 requirement in
+[`specs/L0.md`](specs/L0.md):
+
+> Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to
+> prosper with purpose and resource His Kingdom.
+
 Each row is one end-to-end user journey to implement, ordered by the value it adds to the user, highest first. The journeys are composed
 from the feature designs in [`detailed-designs/`](detailed-designs/README.md), the requirements in
 [`specs/L2.md`](specs/L2.md) and the screens in [`mocks/`](mocks/README.md).

@@ -38,6 +38,11 @@ Security vulnerabilities are never reported in a public issue; see [`SECURITY.md
 3. For anything larger than a small fix, open an issue first so the approach can be agreed before
    you write code.
 
+Every change serves Jubilee's mission, the single level-0 requirement
+([`docs/specs/L0.md`](docs/specs/L0.md)): "Abiding in Jesus and for love of Him, Jubilee equips
+Christian business people in Toronto to prosper with purpose and resource His Kingdom." A change
+that cannot be traced back to it does not belong here.
+
 Use the words the requirements use ([`docs/specs/L1.md`](docs/specs/L1.md),
 [`docs/specs/L2.md`](docs/specs/L2.md) and [`docs/journey.md`](docs/journey.md)) in code, docs and
 UI; do not invent synonyms.

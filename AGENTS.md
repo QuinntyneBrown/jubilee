@@ -1,3 +1,13 @@
+## Mission
+
+> Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to
+> prosper with purpose and resource His Kingdom.
+
+This is Jubilee's mission and its single L0 requirement (`docs/specs/L0.md`). It is the motive of
+everything: every requirement, design, mock, line of code and line of copy points back to it.
+Quote it word for word, never paraphrased. Before adding or changing anything, ask how it serves
+the mission; if it does not, do not build it, and if a request works against it, say so.
+
 ## Project overview
 
 Jubilee is Toronto's Christian marketplace: a directory of verified Christian-owned businesses
@@ -7,8 +17,8 @@ directly. The .NET backend owns accounts, listings, requests, messaging, notific
 verification; the Angular frontend provides the app, and Playwright covers behaviour (and, run by
 hand, visual parity with the design reference).
 
-Roles, requirements and the journeys to build are in `docs/specs/L1.md`, `docs/specs/L2.md` and
-`docs/journey.md`. Use the words those documents use in code, docs and UI; do not invent synonyms.
+The mission is in `docs/specs/L0.md`. Roles, requirements and the journeys to build are in
+`docs/specs/L1.md` (each traces to L0-001), `docs/specs/L2.md` and `docs/journey.md`. Use the words those documents use in code, docs and UI; do not invent synonyms.
 
 The first journey (discover businesses) is implemented and created the layout below; every later
 feature follows it. `docs/estimates/` tracks how far each design is.
@@ -30,7 +40,8 @@ say so and propose the correction; do not work around it silently.
 - `docs/design-reference/magic-patterns/` — captures of the Magic Patterns design the mocks are
   drawn from; it trumps the mocks
 - `docs/design-system/` — tokens, foundations, components and patterns extracted from the mocks
-- `docs/specs/` — requirements (`L1.md` high level, `L2.md` detailed with acceptance criteria)
+- `docs/specs/` — requirements (`L0.md` the mission, `L1.md` high level, `L2.md` detailed with
+  acceptance criteria)
 - `docs/detailed-designs/` — per-feature designs derived from the requirements
 - `docs/adr/` — architecture decisions; read relevant ADRs before changing the areas they cover
 - `docs/estimates/` — effort and percent complete per design
