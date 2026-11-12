@@ -13,6 +13,8 @@ export class ReportListingDialog {
   readonly cancel: Locator;
   readonly close: Locator;
   readonly thanks: Locator;
+  /** Every radio of "What’s wrong?". */
+  readonly reasons: Locator;
 
   constructor(page: Page) {
     this.root = page.getByRole('dialog');
@@ -26,6 +28,7 @@ export class ReportListingDialog {
     this.cancel = this.root.getByRole('button', { name: 'Cancel' });
     this.close = this.root.getByRole('button', { name: 'Close' });
     this.thanks = this.root.locator('#dlg-desc');
+    this.reasons = this.root.getByRole('radio');
   }
 
   reason(label: string | RegExp): Locator {
