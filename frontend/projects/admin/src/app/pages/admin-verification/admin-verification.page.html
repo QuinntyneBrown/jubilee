@@ -111,9 +111,7 @@
             <div jb-description-item term="E-mail">
               {{ r.owner.email }} · {{ r.owner.emailConfirmed ? 'confirmed' : 'not confirmed' }}
             </div>
-            <div jb-description-item term="Other listings">
-              {{ r.owner.otherListings === 0 ? 'None' : r.owner.otherListings }}
-            </div>
+            <div jb-description-item term="Other listings" [value]="otherListings(r)"></div>
           </dl>
         </section>
         @if (spaceRows(); as rows) {
@@ -129,6 +127,11 @@
           </section>
         }
         <section jb-card heading="Checklist" headingId="chk">
+          @if (!r.space && r.itemCount === 0) {
+            <p class="text-caption" style="margin-top: var(--space-2)">
+              No products or services yet
+            </p>
+          }
           @if (r.flags.length > 0) {
             <p class="text-caption" style="margin-top: var(--space-2)">
               Flagged by the submission: {{ r.flags.join(', ') }}

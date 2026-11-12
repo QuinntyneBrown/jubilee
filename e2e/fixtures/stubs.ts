@@ -640,6 +640,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubAdmin(page, { stage: 'changes-requested' });
     case 'admin-review-space':
       return stubAdmin(page, { listing: SPACE_REVIEW });
+    case 'admin-review-no-items':
+      return stubAdmin(page, { listing: { itemCount: 0 } });
     case 'admin-review-error':
       return stubAdmin(page, { review: 'fails' });
     case 'moderation-reports':

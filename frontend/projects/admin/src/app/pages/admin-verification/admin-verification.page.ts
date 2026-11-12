@@ -176,6 +176,14 @@ export class AdminVerificationPage implements OnInit {
     });
   }
 
+  /** The owner's other listings and drafts, each with its stage, or "None" (L2-079 AC3). */
+  protected otherListings(review: VerificationReview): string {
+    const others = review.owner.otherListings;
+    return others.length === 0
+      ? 'None'
+      : others.map((other) => `${other.name} · ${other.stageLabel}`).join(', ');
+  }
+
   protected when(iso: string): string {
     return `${dayHeading(iso, this.clock.now()).split(' · ')[0].toLowerCase()}, ${clockTime(iso)}`;
   }

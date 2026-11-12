@@ -158,6 +158,7 @@ export type StubName =
   | 'admin-review-changes-requested'
   | 'admin-review-error'
   | 'admin-review-space'
+  | 'admin-review-no-items'
   | 'moderation-reports'
   | 'moderation-reports-empty'
   | 'moderation-reports-error'
@@ -1336,6 +1337,13 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'admin-review-changes-requested',
+  },
+  'admin-verification.no-items': {
+    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-verification/no-items.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-review-no-items',
   },
   'admin-verification.space': {
     app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',

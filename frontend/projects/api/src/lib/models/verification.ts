@@ -28,12 +28,18 @@ export interface VerificationQueue {
   rows: QueueRow[];
 }
 
+/** Another listing of the owner, or a draft not yet submitted, with its stage (L2-079 AC3). */
+export interface ReviewOtherListing {
+  name: string;
+  stageLabel: string;
+}
+
 export interface ReviewOwner {
   name: string;
   email: string;
   emailConfirmed: boolean;
   memberSince: string;
-  otherListings: number;
+  otherListings: ReviewOtherListing[];
 }
 
 export interface ReviewCheck {
@@ -72,6 +78,8 @@ export interface VerificationReview {
   changedSinceRequest: string[];
   isOwnListing: boolean;
   cannotDecideBecause: string | null;
+  /** How many products or services the listing has (L2-073 AC3). */
+  itemCount: number;
   /** A space's details; null for a business (L2-200 AC3). */
   space?: ReviewSpace | null;
 }

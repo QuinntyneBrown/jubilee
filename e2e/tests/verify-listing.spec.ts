@@ -1,4 +1,4 @@
-import { LISTING_ID, stubAdmin } from '../fixtures/admin';
+import { LISTING_ID, SPACE_REVIEW, stubAdmin } from '../fixtures/admin';
 import { daniel } from '../fixtures/staff';
 import { expect, test } from '../fixtures/jb-test';
 import { AdminVerificationPage } from '../pages/admin-verification.page';
@@ -177,6 +177,65 @@ test.describe('verify a listing: the review (L2-100)', () => {
     await expect(review.checks).toHaveCount(3);
     await expect(review.preview).toContainText('Pending verification');
     await expect(review.breadcrumb).toContainText('Verification queue');
+  });
+
+  test('L2-079 AC3: the owner panel names the other listings with their stages, and a draft', async ({
+    page,
+    jb,
+  }) => {
+    const review = new AdminVerificationPage(page);
+    await review.setWidth(1280);
+    await stubAdmin(page, {
+      otherListings: [
+        { name: 'Laurent Photography', stageLabel: 'Pending verification' },
+        { name: 'Laurent Studio', stageLabel: 'Draft' },
+      ],
+    });
+    await jb.gotoAdmin(REVIEW);
+
+    await expect(review.ownerRow('Other listings')).toHaveText(
+      'Laurent Photography · Pending verification, Laurent Studio · Draft',
+    );
+  });
+
+  test('L2-079 AC3: an owner with no other listing and no draft shows None', async ({
+    page,
+    jb,
+  }) => {
+    const review = new AdminVerificationPage(page);
+    await review.setWidth(1280);
+    await stubAdmin(page, { otherListings: [] });
+    await jb.gotoAdmin(REVIEW);
+
+    await expect(review.ownerRow('Other listings')).toHaveText('None');
+  });
+
+  test('L2-073 AC3: a listing with no products or services yet says so above the checklist', async ({
+    page,
+    jb,
+  }) => {
+    const review = new AdminVerificationPage(page);
+    await review.setWidth(1280);
+    await stubAdmin(page, { listing: { itemCount: 0 } });
+    await jb.gotoAdmin(REVIEW);
+
+    await expect(review.noItems).toHaveText('No products or services yet');
+    await expect(review.checks).toHaveCount(3);
+  });
+
+  test('L2-073 AC3: a listing with a product, and a space, do not say it', async ({ page, jb }) => {
+    const review = new AdminVerificationPage(page);
+    await review.setWidth(1280);
+    const fake = await stubAdmin(page);
+    await jb.gotoAdmin(REVIEW);
+
+    await expect(review.checks).toHaveCount(3);
+    await expect(review.noItems).toHaveCount(0);
+
+    fake.listing = { ...SPACE_REVIEW, itemCount: 0 };
+    await page.reload();
+    await expect(review.space).toBeVisible();
+    await expect(review.noItems).toHaveCount(0);
   });
 
   test('AC3: ticking and unticking a check saves the checklist', async ({ page, jb }) => {
