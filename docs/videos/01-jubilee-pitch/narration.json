@@ -3,42 +3,43 @@
   "note": "Film seconds. Each segment is spoken inside [start, end]. 'hit' with 'lead' (or 'tail') places the segment so the word after the lead (or the tail word) lands on that time. 'caption' starts a new caption; segments without one extend the caption before them.",
   "lines": [
     { "scene": 1, "segments": [
-      { "text": "On Sunday, you know exactly who to trust.", "start": 0.60, "end": 3.40, "caption": "On Sunday, you know exactly who to trust." }
+      { "text": "On Sunday, we're sent out to bear fruit that will last.", "start": 0.6, "end": 3.4, "caption": "On Sunday, we’re sent out to bear fruit that will last." }
     ] },
     { "scene": 2, "segments": [
-      { "text": "On Monday, the pipe bursts, and you're scrolling through strangers.", "start": 7.50, "end": 11.40, "caption": "On Monday, the pipe bursts, and you’re scrolling through strangers." }
+      { "text": "On Monday, you open for business.", "start": 7.5, "end": 9.5, "caption": "On Monday, you open for business." },
+      { "text": "Can believers find you?", "start": 9.6, "end": 11.4, "caption": "Can believers find you?" }
     ] },
     { "scene": 3, "segments": [
-      { "text": "Meet Jubilee.", "start": 14.70, "end": 15.60, "caption": "Meet Jubilee." },
-      { "text": "Toronto's Christian businesses, all in one place.", "start": 16.50, "end": 18.60, "caption": "Toronto’s Christian businesses, all in one place." }
+      { "text": "Meet Jubilee.", "start": 14.7, "end": 15.6, "caption": "Meet Jubilee." },
+      { "text": "Toronto's Christian businesses, prospering with purpose.", "start": 16.5, "end": 18.6, "caption": "Toronto’s Christian businesses, prospering with purpose." }
     ] },
     { "scene": 4, "segments": [
-      { "text": "Every business is verified by the Jubilee team.", "start": 22.00, "end": 24.20, "lead": "Every business is", "hit": 22.80, "caption": "Every business is verified by the Jubilee team." },
-      { "text": "Your money stays in the community.", "start": 24.30, "end": 26.00, "caption": "Your money stays in the community. And it’s free to join." },
-      { "text": "And it's free to join.", "start": 26.10, "end": 27.40 }
+      { "text": "God gives us the power to get wealth.", "start": 22.8, "end": 24.4, "caption": "God gives us the power to get wealth." },
+      { "text": "Business has always resourced the Kingdom.", "start": 24.5, "end": 26.0, "caption": "Business has always resourced the Kingdom." },
+      { "text": "And together, we strengthen our city.", "start": 26.05, "end": 27.4, "caption": "And together, we strengthen our city." }
     ] },
     { "scene": 5, "segments": [
-      { "text": "Shop Christian makers:", "start": 29.00, "end": 30.50, "caption": "Shop Christian makers: Bibles, gifts, apparel and fresh flowers." },
-      { "text": "Bibles,", "start": 30.60, "end": 31.16 },
-      { "text": "gifts,", "start": 31.20, "end": 31.76 },
-      { "text": "apparel and fresh flowers.", "start": 31.78, "end": 32.95, "lead": "apparel and fresh", "hit": 32.40 }
+      { "text": "Shop with purpose:", "start": 29.0, "end": 30.5, "caption": "Shop with purpose: Bibles, gifts, apparel and fresh flowers." },
+      { "text": "Bibles,", "start": 30.6, "end": 31.16 },
+      { "text": "gifts,", "start": 31.2, "end": 31.76 },
+      { "text": "apparel and fresh flowers.", "start": 31.78, "end": 32.95, "lead": "apparel and fresh", "hit": 32.4 }
     ] },
     { "scene": 6, "segments": [
-      { "text": "Hire the advisors and trades your church already recommends,", "start": 36.20, "end": 39.30, "caption": "Hire the advisors and trades your church already recommends," },
-      { "text": "and book in a tap.", "start": 39.35, "end": 40.55, "tail": "tap.", "hit": 40.20, "caption": "and book in a tap." }
+      { "text": "Hire believers who work as for the Lord,", "start": 36.2, "end": 39.3, "caption": "Hire believers who work as for the Lord," },
+      { "text": "and book in a tap.", "start": 39.35, "end": 40.55, "tail": "tap.", "hit": 40.2, "caption": "and book in a tap." }
     ] },
     { "scene": 7, "segments": [
-      { "text": "Own a business?", "start": 43.50, "end": 44.70, "caption": "Own a business? Your church family is looking for you." },
-      { "text": "Your church family is looking for you.", "start": 44.95, "end": 46.80 }
+      { "text": "Own a business? Bear fruit.", "start": 43.5, "end": 45.1, "caption": "Own a business? Bear fruit." },
+      { "text": "Prosper with purpose and resource His Kingdom.", "start": 45.2, "end": 47.4, "caption": "Prosper with purpose and resource His Kingdom." }
     ] },
     { "scene": 8, "segments": [
-      { "text": "Create your page,", "start": 50.85, "end": 52.10, "caption": "Create your page, get verified by our team," },
-      { "text": "get verified by our team,", "start": 52.20, "end": 53.60 },
-      { "text": "and welcome customers who already trust you.", "start": 53.70, "end": 55.10, "caption": "and welcome customers who already trust you." }
+      { "text": "Create your page,", "start": 50.85, "end": 52.1, "caption": "Create your page, welcome believers who want to buy from you," },
+      { "text": "welcome believers who want to buy from you,", "start": 52.2, "end": 53.9 },
+      { "text": "and resource the Kingdom.", "start": 54.0, "end": 55.1, "caption": "and resource the Kingdom." }
     ] },
     { "scene": 9, "segments": [
-      { "text": "Jubilee.", "start": 58.00, "end": 58.65, "caption": "Jubilee. Your community is open for business." },
-      { "text": "Your community is open for business.", "start": 58.80, "end": 61.00 }
+      { "text": "Jubilee.", "start": 58.0, "end": 58.65, "caption": "Jubilee. Your business was meant to outlast you." },
+      { "text": "Your business was meant to outlast you.", "start": 58.8, "end": 61.0 }
     ] }
   ]
 }
