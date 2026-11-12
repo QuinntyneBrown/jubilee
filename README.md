@@ -253,6 +253,8 @@ jubilee/
 | Document | What it covers |
 |---|---|
 | [Mission](docs/specs/L0.md) | Why Jubilee exists: the single level-0 requirement everything traces to |
+| [Scripture](docs/scripture.md) | The passages the mission rests on and all content is framed from |
+| [Elevator pitch](docs/elevator-pitch.md) | The first-contact pitch for Christian business people |
 | [High-level requirements](docs/specs/L1.md) | What Jubilee must do, in 25 requirements, and the roles |
 | [Detailed requirements](docs/specs/L2.md) | Acceptance criteria for every requirement |
 | [Mocks](docs/mocks/README.md) | 67 screens in 271 states; the source of truth for the UI |
