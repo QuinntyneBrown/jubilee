@@ -19,6 +19,7 @@ export type StubName =
   | 'browse-rooms-empty'
   | 'space-loading'
   | 'space-error'
+  | 'space-requested'
   | 'rooms-empty'
   | 'business-loading'
   | 'business-error'
@@ -382,6 +383,16 @@ export const routes = {
     mock: 'dialogs/request-quote/default.html',
     who: 'member',
   },
+  'request-space.short-stay': {
+    app: '/b/roncesvalles-guest-suite/request',
+    mock: 'dialogs/request-space/short-stay.html',
+    who: 'member',
+  },
+  'request-space.long-term': {
+    app: '/b/annex-basement-apartment/request',
+    mock: 'dialogs/request-space/long-term.html',
+    who: 'member',
+  },
   'order-request': {
     app: '/b/luzandre/p/faith-heavyweight-tee-charcoal/request?option=M&quantity=1',
     mock: 'dialogs/order-request/default.html',
@@ -584,6 +595,12 @@ export const routes = {
     app: '/b/east-york-roommate',
     mock: 'pages/space/roommate.html',
     who: 'member',
+  },
+  'space.requested': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/requested.html',
+    who: 'member',
+    stub: 'space-requested',
   },
   'space.signed-out': {
     app: '/b/roncesvalles-guest-suite',

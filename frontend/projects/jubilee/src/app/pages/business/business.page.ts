@@ -62,6 +62,10 @@ import {
 } from '../../dialogs/report-listing/report-listing.dialog';
 import { RequestQuoteDialog } from '../../dialogs/request-quote/request-quote.dialog';
 import {
+  RequestSpaceData,
+  RequestSpaceDialog,
+} from '../../dialogs/request-space/request-space.dialog';
+import {
   ShareListingData,
   ShareListingDialog,
 } from '../../dialogs/share-listing/share-listing.dialog';
@@ -161,10 +165,8 @@ export class BusinessPage {
   private readonly dialog = inject(Dialog);
   private readonly savedStore = inject(SavedStore);
   private slug = '';
-  /** Which dialog the address asks for: /b/:slug/message or /b/:slug/book. */
-  private readonly composing = signal<'message' | 'book' | 'quote' | 'share' | 'report' | null>(
-    null,
-  );
+  /** Which dialog the address asks for: /b/:slug/message, /book, /request (a space) and so on. */
+  private readonly composing = signal<Composing | null>(null);
   private composeRef?: { close: () => void };
 
   protected readonly state = signal<LoadState<ListingPage>>({ status: 'loading' });
@@ -208,13 +210,9 @@ export class BusinessPage {
     const state = this.state();
     if (state.status !== 'loaded' || !state.value.openRequestId) return null;
     const listing = state.value;
-    const host = listing.ownerName?.split(/[ ,&]/)[0].trim() || listing.name;
-    const replies = listing.details.replies
-      ? `, ${WHO_REPLIES[listing.details.replies].replace('replies ', '')}`
-      : '';
     return {
-      heading: `Sent to ${host}`,
-      text: `You’ll hear back in Messages${replies}. The exact address is shared once they accept.`,
+      heading: `Sent to ${hostFirstName(listing)}`,
+      text: `You’ll hear back in Messages, ${replies(listing)}. The exact address is shared once they accept.`,
     };
   });
 
@@ -247,9 +245,8 @@ export class BusinessPage {
     });
     const urls = this.route.url.subscribe((segments) =>
       this.composing.set(
-        segments.length === 3 &&
-          ['message', 'book', 'quote', 'share', 'report'].includes(segments[2].path)
-          ? (segments[2].path as 'message' | 'book' | 'quote' | 'share' | 'report')
+        segments.length === 3 && (COMPOSING as readonly string[]).includes(segments[2].path)
+          ? (segments[2].path as Composing)
           : null,
       ),
     );
@@ -260,6 +257,7 @@ export class BusinessPage {
         if (composing && state.status === 'loaded' && !this.composeRef) {
           if (composing === 'book' || composing === 'quote')
             this.openRequest(state.value, composing);
+          else if (composing === 'request') this.openSpaceRequest(state.value);
           else if (composing === 'share') this.openShare(state.value);
           else if (composing === 'report') this.openReport(state.value);
           else this.compose(state.value);
@@ -412,6 +410,60 @@ export class BusinessPage {
     ref.closed.subscribe(leave);
   }
 
+  /**
+   * The call to action of a space (L2-197): a member asks for it in a dialog by its term; a
+   * visitor is asked to join or sign in first and comes back to the same dialog (AC2). A sent
+   * request turns the booking card into "Sent to …" (AC9).
+   */
+  private openSpaceRequest(listing: ListingPage): void {
+    const space = listing.space;
+    if (!space || listing.openRequestId || listing.viewerRelation === 'owner') {
+      this.leaveDialog();
+      return;
+    }
+    if (!this.session.member()) {
+      const ref = this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+        data: { title: `Join to request ${listing.name}`, returnUrl: `/b/${this.slug}/request` },
+        ariaLabelledBy: 'dlg-title',
+        ariaDescribedBy: 'dlg-desc',
+        ariaModal: true,
+        backdropClass: 'backdrop',
+      });
+      this.composeRef = ref;
+      ref.closed.subscribe(() => this.leaveDialog());
+      return;
+    }
+    const ref = this.dialog.open<string, RequestSpaceData>(RequestSpaceDialog, {
+      data: {
+        slug: listing.slug,
+        name: listing.name,
+        neighbourhood: space.neighbourhood,
+        term: space.term,
+        rent: space.rent,
+        minimumStay: space.minimumStay,
+        minimumStayLabel: space.minimumStayLabel,
+        callToAction: space.callToAction,
+        hostFirstName: hostFirstName(listing),
+        replies: replies(listing),
+      },
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+    });
+    this.composeRef = ref;
+    ref.closed.subscribe((requestId) => {
+      if (requestId) {
+        this.state.update((state) =>
+          state.status === 'loaded'
+            ? { status: 'loaded', value: { ...state.value, openRequestId: requestId } }
+            : state,
+        );
+      }
+      this.leaveDialog();
+    });
+  }
+
   /** "Share" (L2-038): anyone, signed in or not, gets the listing's link. */
   private openShare(listing: ListingPage): void {
     const ref = this.dialog.open<void, ShareListingData>(ShareListingDialog, {
@@ -481,6 +533,21 @@ export class BusinessPage {
   protected link(action: string): string[] {
     return ['/b', this.slug, action];
   }
+}
+
+const COMPOSING = ['message', 'book', 'quote', 'request', 'share', 'report'] as const;
+type Composing = (typeof COMPOSING)[number];
+
+/** "Paul" of "Paul & Marta Kowalski": who a member writes to about a space. */
+function hostFirstName(listing: ListingPage): string {
+  return listing.ownerName?.split(/[ ,&]/)[0].trim() || listing.name;
+}
+
+/** "usually within a day": how soon the host answers, a day when there is too little to say. */
+function replies(listing: ListingPage): string {
+  return listing.details.replies
+    ? WHO_REPLIES[listing.details.replies].replace('replies ', '')
+    : 'usually within a day';
 }
 
 function row(term: string, value: string | null): DetailRow | null {

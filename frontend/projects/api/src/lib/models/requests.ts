@@ -57,6 +57,20 @@ export interface QuoteOptions {
   usuallyReplies: string | null;
 }
 
+/**
+ * `POST /api/requests/spaces` (L2-197): a Short stay sends its check-in and check-out, any other
+ * term its move-in and months. No price: the server computes it from the stored rent (AC8).
+ */
+export interface RequestSpaceRequest {
+  listingSlug: string;
+  checkIn: string | null;
+  checkOut: string | null;
+  moveIn: string | null;
+  stayMonths: number | null;
+  note: string | null;
+  idempotencyKey: string;
+}
+
 export interface RequestQuoteRequest {
   listingSlug: string;
   serviceId: string | null;

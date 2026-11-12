@@ -1,7 +1,7 @@
 /** The tabs of the owner's requests page, as the API names them (L2-051). */
 export type IncomingTab = 'new' | 'confirmed' | 'declined' | 'all';
 
-export type RequestKind = 'order' | 'booking' | 'quote';
+export type RequestKind = 'order' | 'booking' | 'quote' | 'space';
 
 export interface IncomingRequestRow {
   id: string;

@@ -219,6 +219,9 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return page.route(roncesvalles, pending);
     case 'space-error':
       return page.route(roncesvalles, (route) => route.fulfill(unavailable('JB-BIZ-503')));
+    case 'space-requested':
+      // The member has an open request for the suite (L2-197 AC9).
+      return patchListing(page, roncesvalles, (listing) => ({ ...listing, openRequestId: 'r-space' }));
     case 'business-loading':
       return page.route(legacyFinancial, pending);
     case 'business-error':

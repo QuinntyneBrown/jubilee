@@ -7,7 +7,7 @@ export type Status = 'new' | 'confirmed' | 'declined' | 'cancelled' | 'completed
 
 export interface FakeMemberRequest {
   id: string;
-  kind: 'booking' | 'quote' | 'order';
+  kind: 'booking' | 'quote' | 'order' | 'space';
   kindLabel: string;
   title: string;
   business: string;
@@ -24,6 +24,8 @@ export interface FakeMemberRequest {
   shortNotice?: boolean;
   unanswered?: boolean;
   conversationId?: string | null;
+  /** What the server says at the top, when the test needs its own words (a space's address). */
+  callout?: { tone: string; title: string; text: string; quote: string | null };
 }
 
 export interface FakeMemberRequests {
@@ -152,6 +154,7 @@ const LABEL: Record<Status, string> = {
 const isOpen = (r: FakeMemberRequest) => r.status === 'new' || r.status === 'confirmed';
 
 function callout(r: FakeMemberRequest) {
+  if (r.callout) return r.callout;
   switch (r.status) {
     case 'new':
       return r.unanswered

@@ -16,6 +16,7 @@ import {
   QuoteOptions,
   RequestItemRequest,
   RequestQuoteRequest,
+  RequestSpaceRequest,
 } from '../models/requests';
 
 /** Contract of the request endpoints a member uses to ask a business for something (L2-043). */
@@ -27,6 +28,7 @@ export interface RequestsApi {
   requestQuote(request: RequestQuoteRequest): Observable<BookedRequest>;
   orderOptions(shopSlug: string, productSlug: string): Observable<OrderOptions>;
   requestItem(request: RequestItemRequest): Observable<BookedRequest>;
+  requestSpace(request: RequestSpaceRequest): Observable<BookedRequest>;
   list(tab: MemberRequestTab, cursor: string | null): Observable<MemberRequests>;
   get(id: string): Observable<MemberRequestDetail>;
   cancel(id: string): Observable<CancelDecision>;
@@ -72,6 +74,10 @@ export class HttpRequestsApi implements RequestsApi {
 
   requestItem(request: RequestItemRequest): Observable<BookedRequest> {
     return this.http.post<BookedRequest>('/api/requests/orders', request);
+  }
+
+  requestSpace(request: RequestSpaceRequest): Observable<BookedRequest> {
+    return this.http.post<BookedRequest>('/api/requests/spaces', request);
   }
 
   list(tab: MemberRequestTab, cursor: string | null): Observable<MemberRequests> {
