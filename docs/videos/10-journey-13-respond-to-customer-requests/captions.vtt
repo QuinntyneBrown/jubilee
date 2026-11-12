@@ -1,0 +1,103 @@
+WEBVTT
+
+00:00:00.429 --> 00:00:04.016
+Journey thirteen: respond to customer requests.
+
+00:00:04.016 --> 00:00:09.512
+An owner sees the requests customers sent, and confirms or declines each
+
+00:00:09.512 --> 00:00:14.397
+one. This run takes the journey from ninety percent to complete.
+
+00:00:15.254 --> 00:00:20.940
+Naomi owns Luzandre.com. Incoming requests shows three new ones: two
+
+00:00:20.940 --> 00:00:25.790
+orders and a quote request, each with Decline and Confirm.
+
+00:00:26.491 --> 00:00:31.482
+New in this run, the page listens to the event stream instead of asking
+
+00:00:31.482 --> 00:00:36.544
+every five seconds. Grace sends a booking request, and it is on the page
+
+00:00:36.544 --> 00:00:39.427
+at once, announced in one toast, not two.
+
+00:00:40.130 --> 00:00:45.651
+Naomi confirms Samuel's order, and closes the dialog with Escape before
+
+00:00:45.651 --> 00:00:49.850
+the answer is back. This time the answer is a failure.
+
+00:00:50.552 --> 00:00:56.441
+She is still told. A danger toast says: couldn't confirm the order.
+
+00:00:56.441 --> 00:01:02.242
+Samuel's request is still new. It stays until she dismisses it, or
+
+00:01:02.242 --> 00:01:03.824
+presses Try again.
+
+00:01:04.527 --> 00:01:08.442
+Try again confirms the same request from the page.
+
+00:01:08.442 --> 00:01:13.767
+Order confirmed, Samuel has been told, and Undo is offered as usual.
+
+00:01:14.468 --> 00:01:19.165
+The decline dialog now opens on Keep request, the safe choice.
+
+00:01:19.165 --> 00:01:24.014
+Naomi writes to David and declines, but David cancelled a moment
+
+00:01:24.014 --> 00:01:24.620
+earlier.
+
+00:01:25.322 --> 00:01:30.669
+So the dialog closes, the list is read again, and a toast says why:
+
+00:01:30.669 --> 00:01:35.138
+request not declined. David Chen cancelled this request.
+
+00:01:35.840 --> 00:01:40.155
+An owner who answers within a day keeps the Replies fast badge.
+
+00:01:40.155 --> 00:01:44.951
+Members now see it: on the listing page beside the credentials, and on
+
+00:01:44.951 --> 00:01:46.184
+the business card.
+
+00:01:47.219 --> 00:01:52.686
+Behind the screen. While the event stream cannot connect, the page asks
+
+00:01:52.686 --> 00:01:57.306
+every five seconds, and stops the moment the stream is back.
+
+00:01:57.306 --> 00:02:00.155
+While it is connected, no timer runs.
+
+00:02:01.012 --> 00:02:05.516
+The job that awards the badge now runs once per hour, however many
+
+00:02:05.516 --> 00:02:08.723
+instances are up, and records its last success.
+
+00:02:08.723 --> 00:02:13.636
+And the tests now assert that the customer is told of a confirmation and
+
+00:02:13.636 --> 00:02:14.524
+of a decline.
+
+00:02:15.382 --> 00:02:20.533
+Journey thirteen is complete. Left for the owner: the visual, responsive
+
+00:02:20.533 --> 00:02:25.256
+and accessibility sweeps, and the migration that adds the job runs
+
+00:02:25.256 --> 00:02:30.265
+table. Retries and the dead-letter queue belong to the background jobs
+
+00:02:30.265 --> 00:02:30.766
+design.
