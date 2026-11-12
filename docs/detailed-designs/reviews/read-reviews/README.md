@@ -55,14 +55,24 @@ The feature is a vertical slice from the cards and the listing page to
   order and narrow them. "Most relevant" puts reviews of the last 12 months
   first, then the longer text, then the newer; "Newest" by `createdAt`;
   "Highest rated" and "Lowest rated" by stars, then newest (`L2-229 AC5`).
-- **`BusinessPage`** (`pages/business/`) — after the listing loads, it loads
-  the reviews and holds them as a `LoadState<ListingReviews>`. It composes:
+- **`ListingReviewsStore`** (`jubilee/src/app/services/listing-reviews.store.ts`)
+  — provided by the page (`providers`), so the rating under the name and the
+  section read one answer. It holds the reviews as a `LoadState<ListingReviews>`,
+  the star filter, the sort and whether all show; it counts the summary from
+  the reviews it holds (`summarize`), so an edit or a removal redraws it.
+- **`BusinessPage`** (`pages/business/`) — after a live listing loads, it
+  loads the reviews into the store. It composes:
   - `jb-rating-link` (new) under the name: `jb-stars`, the average and
     "{n} reviews" as a link to `#reviews`; "No reviews yet" with none.
-  - `jb-reviews` (new) after the content and before "More in {category}",
-    with the reviews, the listing's name, its kind (for the empty line), and
-    the actions the page allows. It emits `write`, `edit`, `remove`, `reply`
-    and `report`; the page navigates to `/b/{slug}/review` or opens the dialogs.
+  - `jb-listing-reviews` (`pages/business/listing-reviews.ts`, a container
+    like `jb-inbox-list`) after the content and before "More in {category}".
+    It draws `jb-reviews` from the store, offers "Write a review" (a link to
+    `/b/{slug}/review`; a visitor gets the "Join to review {name}" prompt), and
+    gives each review the viewer's actions through the `actions` template:
+    Edit and Remove on the member's own review, Reply or Edit reply and Report
+    for the owner, Report for any other member. It opens the dialogs and shows
+    their toasts. On a product page it shows no Edit or Remove: the author
+    changes a review from the listing's page, as the posted screen says.
   - On a load error, `jb-reviews` shows "We couldn’t load the reviews." with
     "Try again" and the error reference; the rest of the page works
     (`L2-228 AC9`). While loading it shows its skeleton.

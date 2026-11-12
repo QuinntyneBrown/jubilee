@@ -51,6 +51,8 @@ export class ReviewsRegion {
   readonly ratingLink: Locator;
   readonly write: Locator;
   readonly notice: Locator;
+  /** The summary: the average, its stars, the count, the bars and the note. */
+  readonly summary: Locator;
   readonly average: Locator;
   readonly summaryStars: Locator;
   readonly count: Locator;
@@ -79,6 +81,7 @@ export class ReviewsRegion {
     this.ratingLink = main.locator('.rating-link');
     this.write = this.root.getByRole('link', { name: 'Write a review' });
     this.notice = this.root.locator('.reviews__notice');
+    this.summary = this.root.locator('.rating-summary');
     this.average = this.root.locator('.rating-summary__average');
     this.summaryStars = this.root.locator('.rating-summary [role="img"]');
     this.count = this.root.locator('.rating-summary__count');

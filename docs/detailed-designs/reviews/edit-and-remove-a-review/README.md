@@ -28,7 +28,10 @@ Only the author edits or removes a review; an owner never does
 - **`EditReviewDialog`** — new CDK dialog
   (`frontend/projects/jubilee/src/app/dialogs/edit-review/`,
   `edit-review.dialog.ts` and `edit-review.dialog.html`, no stylesheet). Its
-  data is the slug, the review and the listing's items with their legend. It
+  data is the review, the listing's name, its items with their legend, and
+  whether it is a space. The items are a business's services; a shop's review
+  keeps the product it is about (the listing page's product cards carry no
+  id), and a space's is about the stay. It
   composes `jb-dialog` titled "Edit your review", `fieldset[jb-star-scale]`
   "Your rating" (the words of `L2-226`), the `jb-chip` item row when there is
   more than one item, the `jb-field` "Tell others about it" with its counter,
@@ -36,8 +39,9 @@ Only the author edits or removes a review; an owner never does
   - Validation as `L2-227 AC1, AC2`; nothing is sent while a message shows.
   - "Save changes" says "Saving…" and is busy; `ReviewsApi.edit(id, request)`
     puts the change with a 10-second `timeout`.
-  - On success the dialog closes with the changed `ReviewItem`; the page
-    reloads the reviews (the summary changes), shows the toast "Review updated"
+  - On success the dialog closes with the changed review; the page's
+    `ListingReviewsStore` puts it in place and counts the summary again, and
+    the page shows the toast "Review updated"
     and focus returns to "Edit".
   - On a failure a `jb-alert` "We couldn’t save that" says "Your review has not
     changed. Try again." and everything typed is kept (`L2-128`).

@@ -126,7 +126,7 @@ export function joannasReview(): FakeReview {
       5,
       'Discovery meeting',
       at(11, 10),
-      'Trevor walked us through our budget with no pressure at all and sent the written notes the same evening. We left with a plan we can keep.',
+      'Trevor took the time to understand what we needed before suggesting anything. Clear, honest and no pressure. We’d go back.',
     ),
     itemId: 'svc-discovery',
     mine: true,

@@ -44,9 +44,11 @@
       heading="We couldn’t load the reviews."
       class="reviews__error"
     >
-      The rest of the page still works. If it keeps happening, tell us and quote
-      <code>{{ reference() }}</code
-      >.
+      <div>
+        The rest of the page still works. If it keeps happening, tell us and quote
+        <code>{{ reference() }}</code
+        >.
+      </div>
       <button slot="actions" jb-button size="sm" type="button" (click)="retry.emit()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>

@@ -5,6 +5,8 @@ import { ShellPage } from './shell.page';
 /** The Write a review screen at /b/:slug/review (L2-226, L2-227), with its posted state. */
 export class WriteReviewPage extends ShellPage implements Screen {
   readonly backLink: Locator;
+  /** The listing being reviewed: its tile, name and category or host. */
+  readonly subject: Locator;
   readonly subjectName: Locator;
   readonly subjectMeta: Locator;
   readonly heading: Locator;
@@ -37,6 +39,7 @@ export class WriteReviewPage extends ShellPage implements Screen {
   constructor(page: Page) {
     super(page);
     this.backLink = this.main.locator('a.back-link');
+    this.subject = this.main.locator('.review-subject');
     this.subjectName = this.main.locator('.review-subject__name');
     this.subjectMeta = this.main.locator('.review-subject__meta');
     this.heading = this.main.getByRole('heading', { level: 1 });

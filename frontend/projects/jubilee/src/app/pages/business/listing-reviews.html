@@ -52,7 +52,7 @@
         jbRequiresConnection
         (click)="edit(item.source, editButton.element)"
       >
-        Edit
+        <svg jb-icon name="edit"></svg>Edit
       </button>
       <button
         #removeButton
@@ -62,7 +62,7 @@
         jbRequiresConnection
         (click)="remove(item.source, removeButton.element)"
       >
-        Remove
+        <svg jb-icon name="trash"></svg>Remove
       </button>
     }
   } @else if (viewer() !== 'visitor') {
@@ -78,7 +78,7 @@
           (item.source.reply ? 'Edit reply to ' : 'Reply to ') + item.source.author
         "
       >
-        {{ item.source.reply ? 'Edit reply' : 'Reply' }}
+        <svg jb-icon name="reply"></svg>{{ item.source.reply ? 'Edit reply' : 'Reply' }}
       </button>
     }
     <button

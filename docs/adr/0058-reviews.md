@@ -106,5 +106,10 @@ keep the measure honest and the copy free of any push towards a good review.
   product so the recording and the mocks have them.
 - Deferred, each its own later change: photos on reviews; "Helpful"; the "Top rated" shelf;
   ratings on service rows; a member's list of their own reviews; an anonymous choice for sensitive
-  services; paging reviews on the server.
+  services; paging reviews on the server; the choice of product when a shop's review is edited
+  (the listing page's product cards carry no id, so an edited shop review keeps its product).
+- As built, the app holds a page's reviews in a `ListingReviewsStore` provided by the listing or
+  product page, so the rating under the name and the "Reviews" section read one answer, and the
+  `jb-listing-reviews` container opens the dialogs. A product page shows the product's reviews
+  with Report, and the author edits or removes a review from the listing's page.
 - `docs/design-reference/magic-patterns/README.md` lists the differences from the frames.

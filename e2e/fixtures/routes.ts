@@ -692,6 +692,13 @@ export const routes = {
     who: 'member',
     stub: 'write-review',
   },
+  // Posted in the app by rating and writing (the parity spec's arrange); the mock is the state.
+  'write-review.posted': {
+    app: '/b/legacy-financial/review',
+    mock: 'pages/write-review/posted.html',
+    who: 'member',
+    stub: 'write-review',
+  },
   'write-review.single-item': {
     app: '/b/deeks-insurance/review',
     mock: 'pages/write-review/single-item.html',
