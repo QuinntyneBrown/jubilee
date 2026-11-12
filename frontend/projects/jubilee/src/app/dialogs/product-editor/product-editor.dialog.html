@@ -1,6 +1,6 @@
 <jb-dialog
   heading="{{ editing ? 'Edit product' : 'Add a product' }}"
-  description="Changes show on your public listing as soon as you save."
+  [description]="note"
   icon="bag"
   [busy]="busy()"
   (closed)="close()"

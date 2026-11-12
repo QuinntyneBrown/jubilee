@@ -233,6 +233,117 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         });
     }
 
+    // L2-073 AC1, AC2: the draft keeps what the product editor and the service editor ask
+    [Fact]
+    public async Task L2_073_AC1_a_draft_keeps_every_field_of_the_editors()
+    {
+        var product = new { name = "Walnut prayer bench", detail = (string?)null, priceKind = "amount", priceCents = 18500, stock = 3, description = "Solid walnut kneeling bench, oiled finish, folds flat." };
+        var saved = await SaveNew(Joanna(), Body(items: [product]));
+
+        var item = saved.GetProperty("items")[0];
+        Assert.Equal(3, item.GetProperty("stock").GetInt32());
+        Assert.Equal("Solid walnut kneeling bench, oiled finish, folds flat.", item.GetProperty("description").GetString());
+
+        var service = new { name = "Engagement session", detail = "45 min", priceKind = "free", priceCents = (int?)null, action = "book", durationMinutes = 45, offersVideo = true, offersInPerson = true, inPersonPlace = "12 Queen St E, Toronto" };
+        var again = await Json(await Joanna().PutAsJsonAsync($"/api/listing-drafts/{saved.GetProperty("id").GetGuid()}", Body(kind: "services", items: [service])));
+
+        item = again.GetProperty("items")[0];
+        Assert.Equal("book", item.GetProperty("action").GetString());
+        Assert.Equal(45, item.GetProperty("durationMinutes").GetInt32());
+        Assert.True(item.GetProperty("offersVideo").GetBoolean());
+        Assert.True(item.GetProperty("offersInPerson").GetBoolean());
+        Assert.Equal("12 Queen St E, Toronto", item.GetProperty("inPersonPlace").GetString());
+    }
+
+    // L2-073 AC5: a product becomes a product of the listing with its stock and description
+    [Fact]
+    public async Task L2_073_AC5_a_product_is_submitted_with_its_stock_and_description()
+    {
+        var items = new object[]
+        {
+            new { name = "Walnut prayer bench", detail = (string?)null, priceKind = "amount", priceCents = 18500, stock = 3, description = "Solid walnut kneeling bench." },
+            new { name = "Gold cross stoneware mug", detail = (string?)null, priceKind = "amount", priceCents = 2400, stock = 0, description = (string?)null },
+            new { name = "Tee", detail = (string?)null, priceKind = "amount", priceCents = 3400, stock = 12000, description = new string('x', 1200) },
+        };
+        var draft = await SaveNew(Joanna(), Body(items: items));
+
+        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), Body(items: items));
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var listing = await ListingOf("luzandre-com");
+        await _factory.WithDb(async db =>
+        {
+            var products = (await db.Products.Where(p => p.ListingId == listing.Id).ToListAsync()).ToDictionary(p => p.Name);
+            Assert.Equal(3, products["Walnut prayer bench"].Stock);
+            Assert.Equal("Solid walnut kneeling bench.", products["Walnut prayer bench"].Description);
+            Assert.Equal(18500, products["Walnut prayer bench"].PriceCents);
+            Assert.True(products["Gold cross stoneware mug"].IsSoldOut);
+            Assert.Null(products["Gold cross stoneware mug"].Description);
+
+            // A stock the product editor would refuse is not tracked; a description is cut to its limit.
+            Assert.Null(products["Tee"].Stock);
+            Assert.Equal(Product.MaxDescriptionLength, products["Tee"].Description!.Length);
+        });
+    }
+
+    // L2-073 AC5: a service members can book keeps its meeting length and how it meets
+    [Fact]
+    public async Task L2_073_AC5_a_service_members_can_book_keeps_its_length_and_how_it_meets()
+    {
+        var items = new object[]
+        {
+            new { name = "Engagement session", detail = "45 min", priceKind = "free", priceCents = (int?)null, action = "book", durationMinutes = 45, offersVideo = true, offersInPerson = true, inPersonPlace = "12 Queen St E, Toronto" },
+            new { name = "Wedding day coverage", detail = "8 hours", priceKind = "amount", priceCents = 220000, action = "ask", durationMinutes = (int?)null, offersVideo = true, offersInPerson = false, inPersonPlace = (string?)null },
+        };
+        var body = Body(kind: "services", category: "media", place: "GTA", items: items);
+        var draft = await SaveNew(Joanna(), body);
+
+        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var listing = await ListingOf("luzandre-com");
+        await _factory.WithDb(async db =>
+        {
+            var services = await db.Services.Where(s => s.ListingId == listing.Id).OrderBy(s => s.Position).ToListAsync();
+            Assert.Equal(ServiceAction.Book, services[0].Action);
+            Assert.Equal(45, services[0].DurationMinutes);
+            Assert.True(services[0].OffersVideo);
+            Assert.True(services[0].OffersInPerson);
+            Assert.Equal("12 Queen St E, Toronto", services[0].InPersonPlace);
+            Assert.Equal(ServiceAction.Ask, services[1].Action);
+            Assert.Null(services[1].DurationMinutes);
+        });
+    }
+
+    // L2-073 AC5: booking details the service editor's endpoint would refuse fall back to "Ask for a quote"
+    [Theory]
+    [InlineData(10, true, false, null)]
+    [InlineData(481, true, false, null)]
+    [InlineData(null, true, false, null)]
+    [InlineData(30, false, false, null)]
+    [InlineData(30, false, true, " ")]
+    public async Task L2_073_AC5_a_service_with_booking_details_the_api_would_not_accept_is_kept_as_ask(int? minutes, bool video, bool inPerson, string? place)
+    {
+        var items = new object[]
+        {
+            new { name = "Engagement session", detail = "45 min", priceKind = "free", priceCents = (int?)null, action = "book", durationMinutes = minutes, offersVideo = video, offersInPerson = inPerson, inPersonPlace = place },
+        };
+        var body = Body(kind: "services", category: "media", place: "GTA", items: items);
+        var draft = await SaveNew(Joanna(), body);
+
+        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var listing = await ListingOf("luzandre-com");
+        await _factory.WithDb(async db =>
+        {
+            var service = await db.Services.SingleAsync(s => s.ListingId == listing.Id);
+            Assert.Equal(ServiceAction.Ask, service.Action);
+            Assert.Null(service.DurationMinutes);
+            Assert.False(service.OffersInPerson);
+        });
+    }
+
     // L2-073 AC3
     [Fact]
     public async Task L2_073_AC3_a_listing_with_no_products_or_services_may_be_submitted()

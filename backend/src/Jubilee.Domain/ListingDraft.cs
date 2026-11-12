@@ -1,11 +1,17 @@
 namespace Jubilee.Domain;
 
-/// <summary>A product or service an owner added while listing a business (L2-073).</summary>
+/// <summary>
+/// A product or service an owner added while listing a business (L2-073), with what the product
+/// editor and the service editor ask. Like the draft it belongs to, it is kept as typed; submitting
+/// turns it into a <see cref="Product"/> or a <see cref="Service"/>.
+/// </summary>
 public sealed class DraftItem
 {
     public const int MaxNameLength = 120;
 
     public const int MaxDetailLength = 200;
+
+    public const int MaxPlaceLength = 200;
 
     public DraftItem()
     {
@@ -24,6 +30,35 @@ public sealed class DraftItem
     public ServicePriceKind PriceKind { get; init; }
 
     public int? PriceCents { get; init; }
+
+    /// <summary>A product's description (L2-091).</summary>
+    public string? Description { get; init; }
+
+    /// <summary>A product's stock; null is not tracked.</summary>
+    public int? Stock { get; init; }
+
+    /// <summary>What members can do with a service: book a time or ask for a quote (L2-094).</summary>
+    public ServiceAction Action { get; init; } = ServiceAction.Ask;
+
+    /// <summary>The length of a meeting, for a service members can book.</summary>
+    public int? DurationMinutes { get; init; }
+
+    public bool OffersVideo { get; init; } = true;
+
+    public bool OffersInPerson { get; init; }
+
+    /// <summary>Where an in-person meeting happens.</summary>
+    public string? InPersonPlace { get; init; }
+
+    /// <summary>
+    /// True when the booking details are ones the service editor accepts (L2-094 AC4): 15 to 480
+    /// minutes, at least one way to meet, and a place when in person.
+    /// </summary>
+    public bool CanBeBooked =>
+        Action == ServiceAction.Book
+        && DurationMinutes is >= 15 and <= 480
+        && (OffersVideo || OffersInPerson)
+        && (!OffersInPerson || !string.IsNullOrWhiteSpace(InPersonPlace));
 }
 
 /// <summary>
@@ -120,6 +155,13 @@ public sealed class ListingDraft
                 Detail = Cut(item.Detail, DraftItem.MaxDetailLength),
                 PriceKind = item.PriceKind,
                 PriceCents = item.PriceCents is > 0 ? item.PriceCents : null,
+                Description = Cut(item.Description, Product.MaxDescriptionLength),
+                Stock = item.Stock,
+                Action = item.Action,
+                DurationMinutes = item.DurationMinutes,
+                OffersVideo = item.OffersVideo,
+                OffersInPerson = item.OffersInPerson,
+                InPersonPlace = Cut(item.InPersonPlace, DraftItem.MaxPlaceLength),
                 Position = _items.Count + 1,
             });
         }

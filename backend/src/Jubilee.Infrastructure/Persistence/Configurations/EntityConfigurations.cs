@@ -576,6 +576,10 @@ public sealed class DraftItemConfiguration : IEntityTypeConfiguration<DraftItem>
         builder.Property(i => i.Name).HasMaxLength(DraftItem.MaxNameLength).IsRequired();
         builder.Property(i => i.Detail).HasMaxLength(DraftItem.MaxDetailLength);
         builder.Property(i => i.PriceKind).HasConversion<string>().HasMaxLength(16);
+        builder.Property(i => i.Description).HasMaxLength(Product.MaxDescriptionLength);
+        builder.Property(i => i.Action).HasConversion<string>().HasMaxLength(16);
+        builder.Property(i => i.InPersonPlace).HasMaxLength(DraftItem.MaxPlaceLength);
+        builder.Ignore(i => i.CanBeBooked);
     }
 }
 

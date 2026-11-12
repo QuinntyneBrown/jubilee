@@ -1,6 +1,6 @@
 <jb-dialog
   heading="{{ editing ? 'Edit service' : 'Add a service' }}"
-  description="Changes show on your public listing as soon as you save."
+  [description]="note"
   icon="wrench"
   [busy]="busy()"
   (closed)="close()"

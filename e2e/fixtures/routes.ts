@@ -475,6 +475,19 @@ export const routes = {
     who: 'member',
     stub: 'listing-draft',
   },
+  // The editors opened from "Add a product" and "Add a service" on /list (L2-073).
+  'product-editor.onboarding': {
+    app: '/list',
+    mock: 'dialogs/product-editor/onboarding.html',
+    who: 'member',
+    stub: 'listing-draft',
+  },
+  'service-editor.onboarding': {
+    app: '/list',
+    mock: 'dialogs/service-editor/onboarding.html',
+    who: 'member',
+    stub: 'listing-draft',
+  },
   'statement-of-faith': {
     app: '/statement-of-faith',
     mock: 'pages/statement-of-faith/default.html',

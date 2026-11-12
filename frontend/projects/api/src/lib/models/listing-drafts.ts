@@ -5,12 +5,27 @@ export type OfferKind = 'products' | 'services' | 'space';
 export type ItemPriceKind = 'free' | 'amount' | 'ask';
 
 /** A product or service the owner added while listing (L2-073). */
+/**
+ * A product or a service of a draft, with what its editor asks (L2-073). The fields of the other
+ * kind keep their defaults: a product is asked about and a service has no stock.
+ */
 export interface DraftItem {
   name: string;
   /** A service's short detail. */
   detail: string | null;
   priceKind: ItemPriceKind;
   priceCents: number | null;
+  /** A product's description. */
+  description: string | null;
+  /** A product's stock; null is not tracked. */
+  stock: number | null;
+  /** What members can do with a service (L2-094). */
+  action: 'book' | 'ask';
+  /** The length of a meeting, for a service members can book. */
+  durationMinutes: number | null;
+  offersVideo: boolean;
+  offersInPerson: boolean;
+  inPersonPlace: string | null;
 }
 
 /**

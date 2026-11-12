@@ -55,7 +55,8 @@ import {
   MomentCheck,
   Section,
 } from 'components';
-import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
+import { ProductEditorDialog } from '../../dialogs/product-editor/product-editor.dialog';
+import { ServiceEditorDialog } from '../../dialogs/service-editor/service-editor.dialog';
 import { SessionService } from '../../services/session.service';
 import { clockTime, newKey } from 'api';
 import { momentCheckIn } from '../../services/moment-check-in';
@@ -152,7 +153,8 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
 
 /**
  * ListBusinessPage (L2-071 to L2-079): the member writes the listing, sees how it will look, saves a
- * draft and submits it for verification. Items are added through a dialog, never inline.
+ * draft and submits it for verification. Products and services are added through their editors
+ * (L2-073), which keep them with the draft: no listing exists until it is submitted.
  */
 @Component({
   selector: 'jb-list-business-page',
@@ -372,19 +374,27 @@ export class ListBusinessPage {
   }
 
   protected addItem(): void {
-    this.dialog
-      .open<DraftItem | undefined>(ListingItemDialog, {
-        data: { kind: this.kind() },
-        ariaLabelledBy: 'dlg-title',
-        ariaDescribedBy: 'dlg-desc',
-        panelClass: 'dialog-overlay',
-        backdropClass: 'dialog-backdrop',
-      })
-      .closed.subscribe((item) => {
-        if (!item) return;
-        this.items.update((list) => [...list, item]);
-        this.touched();
-      });
+    const options = {
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      panelClass: 'dialog-overlay',
+      backdropClass: 'dialog-backdrop',
+      disableClose: true,
+    };
+    const opened = this.isServices()
+      ? this.dialog.open<DraftItem>(ServiceEditorDialog, {
+          ...options,
+          data: { service: null, draft: true },
+        })
+      : this.dialog.open<DraftItem>(ProductEditorDialog, {
+          ...options,
+          data: { product: null, draft: true },
+        });
+    opened.closed.subscribe((item) => {
+      if (!item) return;
+      this.items.update((list) => [...list, item]);
+      this.touched();
+    });
   }
 
   private check(): Partial<Record<FieldName, string>> {

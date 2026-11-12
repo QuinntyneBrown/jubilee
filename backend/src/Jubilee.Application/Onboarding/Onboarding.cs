@@ -11,7 +11,36 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Onboarding;
 
-public sealed record DraftItemDto(string Name, string? Detail, string PriceKind, int? PriceCents);
+/// <summary>
+/// One product or service of a draft, with what its editor asks (L2-073): a product's stock and
+/// description; a service's action and, when members can book it, its length and how it meets.
+/// </summary>
+public sealed record DraftItemDto(
+    string Name,
+    string? Detail,
+    string PriceKind,
+    int? PriceCents,
+    string? Description,
+    int? Stock,
+    string Action,
+    int? DurationMinutes,
+    bool OffersVideo,
+    bool OffersInPerson,
+    string? InPersonPlace)
+{
+    public static DraftItemDto From(DraftItem item) => new(
+        item.Name,
+        item.Detail,
+        WireValues.Of(item.PriceKind),
+        item.PriceCents,
+        item.Description,
+        item.Stock,
+        item.Action == ServiceAction.Book ? "book" : "ask",
+        item.DurationMinutes,
+        item.OffersVideo,
+        item.OffersInPerson,
+        item.InPersonPlace);
+}
 
 public sealed record ListingDraftDto(
     Guid Id,
@@ -36,7 +65,7 @@ public sealed record ListingDraftDto(
         draft.Place,
         draft.Agreed,
         draft.UpdatedAt,
-        [.. draft.Items.OrderBy(i => i.Position).Select(i => new DraftItemDto(i.Name, i.Detail, WireValues.Of(i.PriceKind), i.PriceCents))],
+        [.. draft.Items.OrderBy(i => i.Position).Select(DraftItemDto.From)],
         draft.Space is null ? null : SpaceDraftDto.From(draft.Space));
 
     public static string Wire(ListingKind kind) => kind switch
@@ -101,7 +130,18 @@ public sealed record DraftInput(
     IReadOnlyList<DraftItemInput>? Items,
     SpaceInput? Space = null);
 
-public sealed record DraftItemInput(string? Name, string? Detail, string? PriceKind, int? PriceCents);
+public sealed record DraftItemInput(
+    string? Name,
+    string? Detail,
+    string? PriceKind,
+    int? PriceCents,
+    string? Description = null,
+    int? Stock = null,
+    string? Action = null,
+    int? DurationMinutes = null,
+    bool? OffersVideo = null,
+    bool? OffersInPerson = null,
+    string? InPersonPlace = null);
 
 public sealed record SubmittedListingDto(
     Guid ListingId, string Slug, string Name, string Kind, string Stage, DateTimeOffset SubmittedAt);
@@ -181,6 +221,13 @@ public static class Drafts
             Detail = i.Detail,
             PriceKind = PriceKindOf(i.PriceKind),
             PriceCents = i.PriceCents,
+            Description = i.Description,
+            Stock = i.Stock,
+            Action = string.Equals(i.Action, "book", StringComparison.OrdinalIgnoreCase) ? ServiceAction.Book : ServiceAction.Ask,
+            DurationMinutes = i.DurationMinutes,
+            OffersVideo = i.OffersVideo ?? true,
+            OffersInPerson = i.OffersInPerson ?? false,
+            InPersonPlace = i.InPersonPlace,
         });
 
     public static void Apply(ListingDraft draft, DraftInput input, DateTimeOffset now) =>
@@ -405,6 +452,11 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
                 var slug = Slugs.Unique(Slugs.From(items[i].Name, "product"), slugs);
                 var product = Product.Create(
                     listing.Id, slug, items[i].Name, items[i].PriceCents ?? 0, false, (TileTint)(i % 4), TileIcon.Bag, now.AddSeconds(-i));
+
+                // The draft kept what was typed; the listing takes only what the product editor accepts (L2-073 AC5).
+                var description = items[i].Description?.Trim();
+                product.Revise(product.Name, product.PriceCents, description?.Length > Product.MaxDescriptionLength ? description[..Product.MaxDescriptionLength] : description);
+                product.SetStock(items[i].Stock is >= 0 and <= Product.MaxStock ? items[i].Stock : null);
                 db.Products.Add(product);
             }
 
@@ -420,7 +472,14 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
                 ServicePriceKind.Amount when item.PriceCents is > 0 => ServicePrice.Amount(item.PriceCents.Value),
                 _ => ServicePrice.Ask,
             };
-            db.Services.Add(Service.Create(listing.Id, i + 1, item.Name, item.Detail ?? string.Empty, price, ServiceAction.Ask));
+            var service = Service.Create(listing.Id, i + 1, item.Name, item.Detail ?? string.Empty, price, ServiceAction.Ask);
+            if (item.CanBeBooked)
+            {
+                // Booking details the service editor would refuse leave the service as "Ask for a quote" (L2-073 AC5).
+                service.Revise(service.Name, service.Detail, price, ServiceAction.Book, item.DurationMinutes, item.OffersVideo, item.OffersInPerson, item.InPersonPlace);
+            }
+
+            db.Services.Add(service);
         }
     }
 }

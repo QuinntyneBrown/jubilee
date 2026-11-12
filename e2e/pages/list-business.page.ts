@@ -93,6 +93,11 @@ export class ListBusinessPage extends ShellPage implements Screen {
     return [{ name: 'main', locator: this.main }];
   }
 
+  /** The button that takes a product or a service out of the draft again. */
+  removeItem(name: string): Locator {
+    return this.main.getByRole('button', { name: `Remove ${name}`, exact: true });
+  }
+
   /** Fills the fields a valid submission needs. */
   async fillValid(): Promise<void> {
     await this.name.fill('Luzandre.com');
@@ -194,30 +199,5 @@ export class SpaceFields {
     await name.fill('Bright basement apartment in the Annex');
     await this.fillValid();
     await this.facts.fill('1 bedroom\n1 bath');
-  }
-}
-
-/** The dialog that adds a product or a service to the listing being written. */
-export class ListingItemDialog {
-  readonly root: Locator;
-  readonly title: Locator;
-  readonly name: Locator;
-  readonly detail: Locator;
-  readonly pricing: Locator;
-  readonly price: Locator;
-  readonly fieldError: Locator;
-  readonly add: Locator;
-  readonly cancel: Locator;
-
-  constructor(page: Page) {
-    this.root = page.getByRole('dialog');
-    this.title = this.root.locator('.dialog__title');
-    this.name = this.root.locator('#d-name');
-    this.detail = this.root.locator('#d-meta');
-    this.pricing = this.root.locator('#d-pricing');
-    this.price = this.root.locator('#d-price');
-    this.fieldError = this.root.locator('.field__error');
-    this.add = this.root.getByRole('button', { name: /^Add (product|service)$/ });
-    this.cancel = this.root.getByRole('button', { name: 'Cancel' });
   }
 }

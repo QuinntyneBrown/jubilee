@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CATALOGUE_API, OwnerProduct } from 'api';
+import { CATALOGUE_API, DraftItem, OwnerProduct } from 'api';
 import {
   Button,
   Alert,
@@ -27,6 +27,11 @@ import { FormDraftDirective } from '../../drafts/form-draft.directive';
 export interface ProductEditorData {
   /** The product to change; null adds one. */
   product: OwnerProduct | null;
+  /**
+   * On List your business no listing exists yet (L2-073 AC1): the editor checks its fields, calls
+   * no API and closes with the product as a `DraftItem`, which the page keeps with the draft.
+   */
+  draft?: boolean;
 }
 
 export interface ProductSaved {
@@ -41,7 +46,10 @@ type FieldName = 'name' | 'price' | 'stock' | 'description';
 /** A submission that takes longer than this fails rather than spinning (L2-127 AC2). */
 const SAVE_TIMEOUT_MS = 10_000;
 
-/** ProductEditorDialog (L2-091): add or change a product; it is live on the listing as soon as it is saved. */
+/**
+ * ProductEditorDialog (L2-091): add or change a product; it is live on the listing as soon as it
+ * is saved. Opened with `draft`, it adds a product to a listing that is still being written.
+ */
 @Component({
   selector: 'jb-product-editor-dialog',
   imports: [
@@ -60,7 +68,7 @@ const SAVE_TIMEOUT_MS = 10_000;
   templateUrl: './product-editor.dialog.html',
 })
 export class ProductEditorDialog {
-  private readonly ref = inject<DialogRef<ProductSaved>>(DialogRef);
+  private readonly ref = inject<DialogRef<ProductSaved | DraftItem>>(DialogRef);
   private readonly api = inject(CATALOGUE_API);
   protected readonly data = inject<ProductEditorData>(DIALOG_DATA);
 
@@ -69,6 +77,10 @@ export class ProductEditorDialog {
   private readonly product = this.data.product;
 
   protected readonly editing = this.product !== null;
+  /** When what is saved becomes public. */
+  protected readonly note = this.data.draft
+    ? 'Nothing is public until your listing is verified.'
+    : 'Changes show on your public listing as soon as you save.';
   protected readonly view = signal<View>('form');
   protected readonly busy = computed(() => this.view() === 'busy');
   protected readonly failure = signal('');
@@ -101,8 +113,24 @@ export class ProductEditorDialog {
       setTimeout(() => document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
       return;
     }
-    this.view.set('busy');
     const stock = this.stock().trim();
+    if (this.data.draft) {
+      this.ref.close({
+        name: this.name().trim(),
+        detail: null,
+        priceKind: 'amount',
+        priceCents: Math.round(Number(this.price().trim()) * 100),
+        description: this.description().trim() || null,
+        stock: stock === '' ? null : Number(stock),
+        action: 'ask',
+        durationMinutes: null,
+        offersVideo: true,
+        offersInPerson: false,
+        inPersonPlace: null,
+      });
+      return;
+    }
+    this.view.set('busy');
     this.api
       .saveProduct(this.product?.id ?? null, {
         name: this.name().trim(),
@@ -150,6 +178,10 @@ export class ProductEditorDialog {
     const stock = this.stock().trim();
     if (stock !== '' && (!/^\d{1,4}$/.test(stock) || Number(stock) > 9999)) {
       problems.stock = 'Enter a whole number from 0 to 9,999, or leave it empty.';
+    }
+    // A draft has no server to refuse a long description, so the editor says it (L2-091).
+    if (this.data.draft && this.description().trim().length > 1000) {
+      problems.description = 'Shorten the description to 1,000 characters.';
     }
     return problems;
   }

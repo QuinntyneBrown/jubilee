@@ -8,7 +8,22 @@ namespace Jubilee.Api.Controllers;
 
 /// <summary>One product or service of a draft. Unknown fields are refused (L2-133 AC4).</summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
-public sealed record DraftItemRequest(string? Name, string? Detail, string? PriceKind, int? PriceCents);
+public sealed record DraftItemRequest(
+    string? Name,
+    string? Detail,
+    string? PriceKind,
+    int? PriceCents,
+    string? Description = null,
+    int? Stock = null,
+    string? Action = null,
+    int? DurationMinutes = null,
+    bool? OffersVideo = null,
+    bool? OffersInPerson = null,
+    string? InPersonPlace = null)
+{
+    public DraftItemInput ToInput() =>
+        new(Name, Detail, PriceKind, PriceCents, Description, Stock, Action, DurationMinutes, OffersVideo, OffersInPerson, InPersonPlace);
+}
 
 /// <summary>The space fields of the form (L2-199). Unknown fields are refused.</summary>
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
@@ -48,7 +63,7 @@ public sealed record ListingDraftRequest(
 {
     public DraftInput ToInput() => new(
         Kind, Name, Tagline, CategorySlug, Highlight, Place, Agreed,
-        Items?.Select(i => new DraftItemInput(i.Name, i.Detail, i.PriceKind, i.PriceCents)).ToList(),
+        Items?.Select(i => i.ToInput()).ToList(),
         Space?.ToInput());
 }
 
