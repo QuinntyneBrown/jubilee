@@ -4,7 +4,9 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  Injector,
   OnInit,
+  afterNextRender,
   computed,
   effect,
   inject,
@@ -145,6 +147,8 @@ export class ConversationPage implements OnInit {
   private readonly dialog = inject(Dialog);
   private readonly photos = inject(PhotoAttachmentService);
   private readonly realtime = inject(RealtimeService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   protected readonly starters = STARTERS;
   protected readonly state = signal<LoadState<Conversation>>({ status: 'loading' });
@@ -179,6 +183,11 @@ export class ConversationPage implements OnInit {
     const replies = conversation.replies ? ` · ${REPLIES[conversation.replies]}` : '';
     return `${conversation.counterpart.name}${replies}`;
   });
+
+  /** The first name of the other side: "Trevor" of "Trevor Chew" (L2-057 AC3, L2-062 AC1). */
+  protected readonly firstName = computed(
+    () => this.conversation()?.counterpart.name.trim().split(' ')[0] ?? '',
+  );
 
   /** The day the owner is back, while they are away; null once that day has come (L2-062). */
   protected readonly awayUntil = computed(() => this.awayDayOf(this.conversation()));
@@ -241,9 +250,14 @@ export class ConversationPage implements OnInit {
       if (item.kind === 'message' && item.target === `/messages/${this.id()}`) this.refresh(true);
       else if (item.kind === 'request') this.refresh(false);
     });
-    // Keep the newest message in view after the log changes.
+    // Keep the newest message in view after the log changes, unless earlier messages were just
+    // added above: then the member stays where they were reading (L2-057 AC7).
     effect(() => {
       this.entries();
+      if (this.keepPlace) {
+        this.keepPlace = false;
+        return;
+      }
       queueMicrotask(() => this.composer()?.nativeElement.scrollIntoView?.({ block: 'end' }));
     });
   }
@@ -323,10 +337,9 @@ export class ConversationPage implements OnInit {
     const day = this.awayDayOf(conversation);
     if (!conversation || !day) return;
     if (this.toasts.toasts().some((toast) => toast.id === this.awayToast)) return;
-    const firstName = conversation.counterpart.name.trim().split(' ')[0];
     this.awayToast = this.toasts.show({
       tone: 'info',
-      title: `${firstName} is away until ${day}`,
+      title: `${this.firstName()} is away until ${day}`,
       text: 'They’ll see your message when they’re back.',
     });
   }
@@ -410,12 +423,38 @@ export class ConversationPage implements OnInit {
     void this.queue.remove(queued);
   }
 
+  /** Set while earlier messages are added, so the log is not scrolled to its end for them. */
+  private keepPlace = false;
+
   protected loadEarlier(): void {
     const first = this.messages()[0];
     if (!first || this.loadingEarlier()) return;
     this.loadingEarlier.set(true);
     this.api.open(this.id(), first.id).subscribe({
       next: (page) => {
+        // The message at the top is where the member is reading: it stays where it is on the screen.
+        const reading = this.host.nativeElement.querySelector<HTMLElement>(
+          `[data-message="${first.id}"]`,
+        );
+        const top = reading?.getBoundingClientRect().top;
+        this.keepPlace = page.messages.length > 0 || (page.requests ?? []).length > 0;
+        const restore = (): void => {
+          if (reading && top !== undefined) {
+            window.scrollBy({
+              top: reading.getBoundingClientRect().top - top,
+              behavior: 'instant',
+            });
+          }
+        };
+        // Once when the messages are in the page, and once more after the browser has settled its
+        // own scroll position for what was added above.
+        afterNextRender(
+          () => {
+            restore();
+            requestAnimationFrame(restore);
+          },
+          { injector: this.injector },
+        );
         this.messages.update((current) => [...page.messages, ...current]);
         this.cards.update((cards) => mergeCards(page.requests ?? [], cards));
         this.hasMore.set(page.hasMore);

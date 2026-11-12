@@ -187,6 +187,9 @@ test.describe('messages written offline (L2-120)', () => {
     await goOnline(page);
 
     await expect.poll(() => fake.sends.length).toBe(3);
+    await expect(new ConnectionBannerRegion(page).root).toContainText(
+      'You’re back online. 3 saved messages were sent.',
+    );
     expect(fake.sends.map((s) => s.body)).toEqual(['First', 'Second', 'Third']);
     expect(new Set(fake.sends.map((s) => s.idempotencyKey)).size).toBe(3);
   });
@@ -220,6 +223,47 @@ test.describe('messages written offline (L2-120)', () => {
     await expect(bubble.tryAgain).toBeVisible();
     await bubble.delete.click();
     await expect(conversation.bubbles.filter({ hasText: 'Too late' })).toHaveCount(0);
+  });
+
+  test('AC3: a message that has waited more than 24 hours is marked "Not sent", and can be tried again or deleted', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    // The queue is looked at every 200 ms here, not every minute; a day is still a day.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, {
+        expiryEvery: 200,
+      });
+    });
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages/c-legacy');
+    await conversation.ready();
+    await expect(conversation.bubbles).toHaveCount(3);
+    await goOffline(page);
+    await conversation.composer.fill('Are you there?');
+    await conversation.send.click();
+    const bubble = conversation.bubble('Are you there?');
+    await expect(bubble.status).toHaveText('Waiting to send');
+
+    // 23 hours later it is still waiting.
+    await page.clock.setFixedTime(new Date('2026-11-11T13:00:00Z'));
+    await page.waitForTimeout(600);
+    await expect(bubble.status).toHaveText('Waiting to send');
+
+    // A day and a minute after it was written.
+    await page.clock.setFixedTime(new Date('2026-11-11T14:01:00Z'));
+
+    await expect(bubble.time).toContainText('Not sent.');
+    await expect(bubble.tryAgain).toBeVisible();
+    await expect(bubble.delete).toBeVisible();
+    expect(fake.sends).toEqual([]);
+
+    await goOnline(page);
+    await bubble.tryAgain.click();
+
+    await expect.poll(() => fake.sends.map((s) => s.body)).toEqual(['Are you there?']);
   });
 
   test('L2-120 AC4: a message with a photo is not queued offline: it says "Not sent" and "Try again" sends it once', async ({

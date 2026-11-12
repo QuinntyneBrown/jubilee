@@ -79,7 +79,7 @@
             jb-empty-state
             [compact]="true"
             icon="message"
-            [heading]="'Say hello to ' + conversation.counterpart.name"
+            [heading]="'Say hello to ' + firstName()"
           >
             Ask a question or tell them what you need.
           </div>
@@ -113,6 +113,7 @@
               @case ('message') {
                 <li
                   jb-message-bubble
+                  [attr.data-message]="entry.message.id"
                   [mine]="entry.message.mine"
                   [sender]="entry.message.mine ? 'You' : entry.message.senderFirstName"
                   [text]="entry.message.body"

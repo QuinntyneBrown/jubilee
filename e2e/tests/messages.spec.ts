@@ -2,6 +2,7 @@ import { expect, test } from '../fixtures/jb-test';
 import {
   legacyMessages,
   manyRows,
+  ownerRows,
   photoMessages,
   requestCards,
   stubMessaging,
@@ -62,7 +63,49 @@ test.describe('the inbox (L2-056)', () => {
 
     await expect(messages.subtitle).toHaveText('No conversations yet');
     await expect(messages.emptyState).toBeVisible();
+    await expect(messages.emptyBlock).toContainText(
+      'Open a business and tap Message to ask a question, get a quote or book a time. Replies land here.',
+    );
     await expect(messages.browseBusinesses).toHaveAttribute('href', '/');
+  });
+
+  test('AC5: on a wide screen with no conversation open, the right pane says to pick one', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1024);
+    await jb.signInAs('member');
+    await stubMessaging(page);
+    await jb.goto('/messages');
+
+    await expect(messages.pickPrompt).toBeVisible();
+    await expect(messages.pickBlock).toContainText('Choose one on the left to read and reply.');
+
+    await messages.setWidth(1023);
+    await expect(messages.pickPrompt).toBeHidden();
+    await expect(messages.list.rows).toHaveCount(4);
+  });
+
+  test('AC6: an owner’s conversations with members are named with the member and the business', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { rows: ownerRows() });
+    await jb.goto('/messages');
+
+    await expect(messages.list.rows).toHaveCount(4);
+    await expect(messages.list.name(messages.list.rows.nth(0))).toHaveText('Legacy Financial');
+    await expect(messages.list.name(messages.list.rows.nth(1))).toHaveText(
+      'Samuel Park · Luzandre.com',
+    );
+    await expect(messages.list.name(messages.list.rows.nth(3))).toHaveText(
+      'Ruth Mensah · Luzandre.com',
+    );
+    await expect(messages.list.snippet(messages.list.rows.nth(1))).toContainText('Unread.');
   });
 
   test('the inbox says it is loading', async ({ page, jb }) => {
@@ -287,11 +330,36 @@ test.describe('search messages (L2-059)', () => {
     expect(fake.searches.at(-1)).toBe('legacy');
 
     await messages.list.search.fill('roofing');
-    await expect(messages.list.noResults).toContainText('No messages match ‘roofing’');
+    await expect(messages.list.noResults).toContainText('No messages match “roofing”');
+    await expect(messages.list.noResults).toContainText(
+      'Check the spelling, or search by business name.',
+    );
 
     await messages.list.clearSearch.click();
     await expect(messages.list.rows).toHaveCount(4);
     await expect(messages.list.search).toHaveValue('');
+  });
+
+  test('AC1: the search is asked within 300 ms of the last keystroke, once', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/messages');
+    await expect(messages.list.rows).toHaveCount(4);
+    const asked = page.waitForRequest((request) => request.url().includes('q=trevor'));
+
+    await messages.list.search.pressSequentially('trevor');
+    const lastKey = Date.now();
+    await asked;
+
+    expect(Date.now() - lastKey).toBeLessThan(300);
+    await expect(messages.list.rows).toHaveCount(1);
+    // One request for the whole word, none for the letters on the way.
+    expect(fake.searches.filter((q) => q !== null)).toEqual(['trevor']);
   });
 });
 
@@ -359,6 +427,85 @@ test.describe('a conversation (L2-057)', () => {
     await expect(conversation.bubbles.nth(0)).toContainText('An earlier question');
     await expect(conversation.showEarlier).toHaveCount(0);
     expect(fake.opened.at(-1)?.before).toBe('m-1');
+  });
+
+  test('AC7: the message the member was reading stays where it was when earlier ones are added', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    // A conversation of 100 messages: the latest 50 are open, and 50 more wait above them.
+    const fifty = (label: string, from: string) =>
+      Array.from({ length: 50 }, (_, index) => ({
+        id: `m-${label}-${index}`,
+        body: `${label} message ${index + 1}`,
+        sentAt: new Date(Date.parse(from) + index * 60_000).toISOString(),
+        mine: index % 2 === 0,
+        senderFirstName: index % 2 === 0 ? 'Joanna' : 'Trevor',
+        attachment: null,
+      }));
+    await stubMessaging(page, {
+      hasMore: true,
+      messages: fifty('Later', '2026-11-10T12:00:00Z'),
+      earlier: fifty('Earlier', '2026-11-09T14:00:00Z'),
+      requests: [],
+    });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(50);
+    const reading = conversation.bubbles.first();
+    await expect(reading).toContainText('Later message 1');
+    await expect(conversation.list.rows).toHaveCount(4);
+    // The conversation opens at its newest message; the member goes up to the oldest one shown.
+    await conversation.settledScreenTop(reading);
+    await conversation.showEarlier.focus();
+    const before = await conversation.settledScreenTop(reading);
+    await expect(reading).toBeInViewport();
+
+    await page.keyboard.press('Enter');
+
+    await expect(conversation.bubbles).toHaveCount(100);
+    const stillReading = conversation.bubbles.nth(50);
+    await expect(stillReading).toContainText('Later message 1');
+    await expect(stillReading).toBeInViewport();
+    // Fifty messages were added above it, and it has not moved on the screen.
+    await expect.poll(() => conversation.screenTop(stillReading)).toBeGreaterThanOrEqual(before - 2);
+    await expect.poll(() => conversation.screenTop(stillReading)).toBeLessThanOrEqual(before + 2);
+    await expect(conversation.bubbles.first()).toContainText('Earlier message 1');
+    await expect(conversation.bubbles.first()).not.toBeInViewport();
+  });
+
+  test('AC3: a conversation with no message says hello to the owner by first name and offers three openers', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { messages: [], requests: [] });
+    await jb.goto('/messages/c-legacy');
+
+    await expect(conversation.sayHello).toContainText('Say hello to Trevor');
+    await expect(conversation.sayHello).not.toContainText('Trevor Chew');
+    await expect(conversation.sayHello).toContainText('Ask a question or tell them what you need.');
+    await expect(conversation.openers).toHaveText([
+      'Do you offer a first meeting?',
+      'What does it cost?',
+      'Can we meet by video?',
+    ]);
+
+    await conversation.openers.nth(1).click();
+    await expect(conversation.composer).toHaveValue('What does it cost?');
+    expect(fake.sends).toEqual([]);
+
+    // By keyboard too: another opener replaces the text, and Enter in the composer sends it.
+    await conversation.openers.nth(2).focus();
+    await page.keyboard.press('Enter');
+    await expect(conversation.composer).toHaveValue('Can we meet by video?');
+    await conversation.composer.press('Enter');
+    await expect(conversation.bubbles).toHaveCount(1);
+    expect(fake.sends[0].body).toBe('Can we meet by video?');
   });
 
   test('it says it is loading', async ({ page, jb }) => {
@@ -1381,6 +1528,8 @@ test.describe('send a message (L2-058)', () => {
     const failed = conversation.bubble('Can we do Thursday?');
     await expect(failed.root).toHaveClass(/bubble--failed/);
     await expect(failed.time).toContainText('Not sent. Check your connection.');
+    await expect(failed.root).toContainText('Can we do Thursday?');
+    await expect(failed.delete).toBeVisible();
 
     fake.delivery = 'ok';
     await failed.tryAgain.click();
@@ -1388,6 +1537,36 @@ test.describe('send a message (L2-058)', () => {
     await expect(conversation.bubble('Can we do Thursday?').time).toHaveText('9:00 a.m.');
     expect(fake.sends).toHaveLength(1);
     expect(fake.sends[0].body).toBe('Can we do Thursday?');
+    // Two tries reached the API, and the second carried the key of the first.
+    expect(fake.attempts).toHaveLength(2);
+    expect(fake.attempts[1].idempotencyKey).toBe(fake.attempts[0].idempotencyKey);
+    expect(fake.attempts[0].idempotencyKey).toMatch(/^[\w-]{8,}$/);
+  });
+
+  test('AC1: when the server confirms, the time takes the place of "Sending…" and nothing moves', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { delivery: 'held' });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(3);
+
+    await conversation.composer.fill('Should I bring last year’s tax return?');
+    await conversation.send.click();
+    const bubble = conversation.bubble('Should I bring');
+    await expect(bubble.status).toHaveText('Sending…');
+    const sending = await conversation.pageBox(bubble.root);
+    const composerWhileSending = await conversation.pageBox(conversation.composerForm);
+
+    fake.delivery = 'ok';
+    fake.release();
+
+    await expect(bubble.time).toHaveText('9:00 a.m.');
+    expect(await conversation.pageBox(bubble.root)).toEqual(sending);
+    expect(await conversation.pageBox(conversation.composerForm)).toEqual(composerWhileSending);
   });
 
   test('AC3: a failed message can be deleted', async ({ page, jb }) => {

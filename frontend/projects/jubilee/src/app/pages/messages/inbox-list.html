@@ -40,7 +40,7 @@
         jb-empty-state
         [compact]="true"
         icon="search"
-        [heading]="'No messages match ‘' + store.search() + '’'"
+        [heading]="'No messages match “' + store.search() + '”'"
       >
         Check the spelling, or search by business name.
         <button slot="actions" jb-button type="button" (click)="clear()">Clear search</button>
@@ -51,7 +51,7 @@
           <li>
             <a
               jb-thread-row
-              [name]="row.title"
+              [name]="nameOf(row)"
               [time]="time(row.lastMessageAt)"
               [preview]="row.preview"
               [unread]="row.unread"

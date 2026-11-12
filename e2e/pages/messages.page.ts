@@ -64,7 +64,11 @@ export class MessagesPage extends ShellPage implements Screen {
   readonly subtitle: Locator;
   readonly list: InboxListRegion;
   readonly pickPrompt: Locator;
+  /** The whole "Pick a conversation" block of the right pane: its heading and what it says. */
+  readonly pickBlock: Locator;
   readonly emptyState: Locator;
+  /** The whole "Start a conversation" block: its heading, what it says and its action. */
+  readonly emptyBlock: Locator;
   readonly browseBusinesses: Locator;
   readonly errorState: Locator;
   readonly errorReference: Locator;
@@ -76,7 +80,13 @@ export class MessagesPage extends ShellPage implements Screen {
     this.subtitle = this.main.locator('.subtitle');
     this.list = new InboxListRegion(page);
     this.pickPrompt = this.main.getByRole('heading', { name: 'Pick a conversation' });
+    this.pickBlock = this.main
+      .locator('.empty')
+      .filter({ has: page.getByRole('heading', { name: 'Pick a conversation' }) });
     this.emptyState = this.main.getByRole('heading', { name: 'Start a conversation' });
+    this.emptyBlock = this.main
+      .locator('.empty')
+      .filter({ has: page.getByRole('heading', { name: 'Start a conversation' }) });
     this.browseBusinesses = this.main.getByRole('link', { name: 'Browse businesses' });
     this.errorState = this.main.getByRole('alert');
     this.errorReference = this.errorState.locator('code');
@@ -149,6 +159,9 @@ export class ConversationPage extends ShellPage implements Screen {
   /** Everything in the timeline, in order: day separators, bubbles and cards. */
   readonly timeline: Locator;
   readonly showEarlier: Locator;
+  /** A conversation with no message yet: who to say hello to, and the suggested openers (L2-057 AC3). */
+  readonly sayHello: Locator;
+  readonly openers: Locator;
   readonly linksInMessages: Locator;
   readonly away: Locator;
   readonly announcement: Locator;
@@ -184,6 +197,8 @@ export class ConversationPage extends ShellPage implements Screen {
     this.cards = this.log.locator('.request-card');
     this.timeline = this.log.locator('> li');
     this.showEarlier = this.log.getByRole('button', { name: 'Show earlier messages' });
+    this.sayHello = this.main.locator('.chat .empty');
+    this.openers = this.main.locator('.chat .chip');
     this.linksInMessages = this.bubbles.getByRole('link');
     this.away = this.main.locator('[data-testid="away"]');
     this.announcement = this.main.locator('.chat > [role="status"].visually-hidden');
@@ -211,6 +226,31 @@ export class ConversationPage extends ShellPage implements Screen {
 
   bubble(text: string | RegExp): BubbleRegion {
     return new BubbleRegion(this.bubbles.filter({ hasText: text }));
+  }
+
+  /** How far down the screen something starts, as the member sees it now. */
+  screenTop(locator: Locator): Promise<number> {
+    return locator.evaluate((element) => Math.round(element.getBoundingClientRect().top));
+  }
+
+  /** `screenTop` once the page has stopped moving: the same in two looks, 150 ms apart. */
+  async settledScreenTop(locator: Locator): Promise<number> {
+    let last = await this.screenTop(locator);
+    for (let look = 0; look < 20; look++) {
+      await this.page.waitForTimeout(150);
+      const now = await this.screenTop(locator);
+      if (now === last) return now;
+      last = now;
+    }
+    return last;
+  }
+
+  /** The box something takes on the page, wherever the page is scrolled to. */
+  pageBox(locator: Locator): Promise<{ top: number; height: number; width: number }> {
+    return locator.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return { top: box.top + window.scrollY, height: box.height, width: box.width };
+    });
   }
 
   async ready(): Promise<void> {

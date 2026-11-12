@@ -22,12 +22,13 @@ import {
   SearchField,
   ToastService,
 } from 'components';
-import { ClockService } from 'api';
+import { ClockService, InboxRow } from 'api';
 import { MessagesStore } from '../../services/messages.store';
 import { threadTime } from 'api';
 import { RealtimeService } from '../../services/realtime.service';
 
-const SEARCH_DELAY_MS = 250;
+/** Well inside the 300 ms L2-059 AC1 allows between the last keystroke and the answer. */
+const SEARCH_DELAY_MS = 150;
 
 /**
  * The list of conversations with its search (L2-056, L2-059): the left column of the Messages
@@ -121,6 +122,14 @@ export class InboxList {
           ?.nativeElement.focus(),
       { injector: this.injector },
     );
+  }
+
+  /**
+   * Who a row is with. A conversation a member holds with the owner's business is named with the
+   * member and the business, so an owner can tell it from her own (L2-056 AC6).
+   */
+  protected nameOf(row: InboxRow): string {
+    return row.title === row.businessName ? row.title : `${row.title} · ${row.businessName}`;
   }
 
   protected time(iso: string): string {

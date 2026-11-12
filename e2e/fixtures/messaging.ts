@@ -92,6 +92,36 @@ export const manyRows = (count: number): FakeRow[] => [
   }),
 ];
 
+/**
+ * An owner's inbox (docs/mocks/pages/messages/owner.html): her own conversations with businesses,
+ * and two that members hold with her business. For those the title is the member (L2-056 AC6).
+ */
+export const ownerRows = (): FakeRow[] => {
+  const [legacy, , books] = inboxRows();
+  const withLuzandre = (id: string, member: string, preview: string, at: string, unread: boolean) => ({
+    ...row(id, member, 'luzandre-com', preview, at, unread),
+    businessName: 'Luzandre.com',
+  });
+  return [
+    legacy,
+    withLuzandre(
+      'c-samuel',
+      'Samuel Park',
+      'Samuel: Could the team tees be ready by the 20th?',
+      '2026-11-09T15:00:00Z',
+      true,
+    ),
+    books,
+    withLuzandre(
+      'c-ruth',
+      'Ruth Mensah',
+      'You: The mug set ships Monday.',
+      '2026-10-28T15:00:00Z',
+      false,
+    ),
+  ];
+};
+
 export const legacyMessages = (): FakeMessage[] => [
   message(
     'm-1',
@@ -213,7 +243,8 @@ export const photoMessages = (): FakeMessage[] => [
   },
 ];
 
-export type Delivery = 'ok' | 'fail' | 'hang' | 'rate-limited' | 'unconfirmed';
+/** `held` keeps a send unanswered until `release()` is called, then stores it. */
+export type Delivery = 'ok' | 'fail' | 'hang' | 'held' | 'rate-limited' | 'unconfirmed';
 
 /** What the fake answers, and what it was asked; a test changes these while it runs. */
 export interface FakeMessaging {
@@ -227,6 +258,8 @@ export interface FakeMessaging {
   conversation: 'ok' | 'loading' | 'error' | 'not-found';
   /** How the next sends and starts are answered. */
   delivery: Delivery;
+  /** Answers the sends that `held` is keeping. */
+  release(): void;
   awayUntil: string | null;
   muted: boolean;
   /** How saving a mute is answered. */
@@ -289,6 +322,7 @@ export async function stubMessaging(
   initial: Partial<FakeMessaging> = {},
 ): Promise<FakeMessaging> {
   const events: { id: string; item: object }[] = [];
+  const held: (() => void)[] = [];
   const fake: FakeMessaging = {
     inbox: 'ok',
     paging: 'ok',
@@ -296,6 +330,9 @@ export async function stubMessaging(
     inboxTotal: null,
     conversation: 'ok',
     delivery: 'ok',
+    release() {
+      for (const answer of held.splice(0)) answer();
+    },
     awayUntil: null,
     muted: false,
     muting: 'ok',
@@ -462,9 +499,10 @@ export async function stubMessaging(
     });
   });
 
-  await page.route('**/api/conversations/c-legacy/messages', (route) => {
+  await page.route('**/api/conversations/c-legacy/messages', async (route) => {
     const body = route.request().postDataJSON() as FakeMessaging['sends'][number];
     fake.attempts.push(body);
+    if (fake.delivery === 'held') await new Promise<void>((resolve) => held.push(resolve));
     const failure = fail(route);
     if (failure) return failure;
     fake.sends.push(body);
