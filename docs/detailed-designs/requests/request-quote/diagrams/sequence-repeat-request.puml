@@ -20,34 +20,30 @@ box "Frontend — Jubilee Web" #E0F2FE
   participant "RequestsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "IdempotencyMiddleware" as idem
   participant "RequestsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "RequestQuoteCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
   database "Jubilee database" as db
 end box
-actor -> dialog : Press "Send request" twice, or the network retries
+actor -> dialog : Press "Send request" again after a failure, or the network retries
 dialog -> client : requestQuote(command, same idempotency key)
-client -> idem : POST /api/requests/quotes with Idempotency-Key
-idem -> cache : Look up key for this member (L2-132)
-cache --> idem : Stored result or nothing
-alt key seen within 24 hours
-  idem --> client : Original 201 response
+client -> controller : POST /api/requests/quotes with the key in the body
+controller -> handler : Send RequestQuoteCommand
+handler -> db : Look for the member's request with this key (L2-132)
+alt the member already sent this key
+  db --> handler : The first request
+  handler --> controller : BookedRequestDto of the first request
+  controller --> client : 201 Created
   client --> dialog : Same request ID
 else first use of the key
-  idem -> controller : Continue
-  controller -> handler : Send RequestQuoteCommand
-  handler -> db : Save request in one unit of work
+  db --> handler : None
+  handler -> db : Save request, owner notification and outbox e-mail in one save
   db --> handler : Commit result
-  handler --> controller : RequestCreatedResult
-  controller --> idem : 201 Created
-  idem -> cache : Store result under the key for 24 hours
-  cache --> idem : Stored
-  idem --> client : 201 Created
+  handler --> controller : BookedRequestDto
+  controller --> client : 201 Created
   client --> dialog : Request ID
 end
 dialog --> actor : Show one sent request

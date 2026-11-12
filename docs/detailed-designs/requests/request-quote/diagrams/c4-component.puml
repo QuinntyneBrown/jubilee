@@ -4,33 +4,32 @@ LAYOUT_WITH_LEGEND()
 title Components — Request a quote
 
 Container_Boundary(web, "Jubilee Web") {
-  Component(dialog, "RequestQuoteDialog", "Angular dialog", "Collects description and date and budget and phone")
-  Component(fv, "QuoteFormValidators", "Angular validators", "Check the fields before sending")
-  Component(session, "SessionService", "Angular service", "Supplies profile phone and confirmation state")
-  Component(client, "RequestsApi", "Typed HTTP client", "Calls POST /api/requests/quotes")
+  Component(dialog, "RequestQuoteDialog", "Angular dialog", "Collects description and date and budget and phone - checks them for feedback")
+  Component(client, "RequestsApi", "Typed HTTP client", "Calls the quote endpoints")
 }
 Container_Boundary(api, "Jubilee API") {
+  Component(listingCtrl, "ListingBookingController", "ASP.NET Core controller", "Exposes the quote options of a listing")
   Component(ctrl, "RequestsController", "ASP.NET Core controller", "Exposes /api/requests endpoints")
-  Component(idem, "IdempotencyMiddleware", "ASP.NET Core middleware", "Returns the original result for a repeated key")
-  Component(val, "RequestQuoteCommandValidator", "FluentValidation validator", "Repeats the field rules on the server")
-  Component(handler, "RequestQuoteCommandHandler", "MediatR handler", "Creates the quote request")
+  Component(options, "GetQuoteOptionsQueryHandler", "MediatR handler", "Names the business and the owner and gives the caller's profile phone")
+  Component(handler, "RequestQuoteCommandHandler", "MediatR handler", "Checks the fields and creates the quote request once per idempotency key")
   Component(entity, "Request", "Domain entity", "Owns the request lifecycle")
+  Component(tell, "NotificationRules", "Application rules", "Writes the owner's in-app notification")
+  Component(mail, "EmailPolicy", "Application rules", "Queues the owner's e-mail in the outbox")
 }
 Container_Boundary(worker, "Jubilee Worker") {
-  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Dispatches notification and mail and real-time event")
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Sends the owner's e-mail from the outbox")
 }
-ContainerDb(db, "Jubilee database", "SQL Server", "Requests and conversations and outbox")
-ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
+ContainerDb(db, "Jubilee database", "SQL Server", "Members and requests and notifications and outbox")
 
-Rel(dialog, fv, "Validates with")
-Rel(dialog, session, "Reads profile from")
-Rel(dialog, client, "Sends quote request through")
+Rel(dialog, client, "Loads options and sends quote request through")
+Rel(client, listingCtrl, "Calls", "JSON/HTTPS")
 Rel(client, ctrl, "Calls", "JSON/HTTPS")
-Rel(ctrl, idem, "Runs behind")
-Rel(idem, cache, "Reads and writes keys")
-Rel(ctrl, val, "Validates command with")
+Rel(listingCtrl, options, "Sends GetQuoteOptionsQuery")
 Rel(ctrl, handler, "Sends RequestQuoteCommand")
+Rel(options, db, "Reads listing and the caller's member", "EF Core")
 Rel(handler, entity, "Creates")
-Rel(handler, db, "Persists request and outbox", "EF Core")
+Rel(handler, tell, "Tells the owner through")
+Rel(handler, mail, "Queues e-mail through")
+Rel(handler, db, "Persists request and notification and outbox", "EF Core")
 Rel(outbox, db, "Reads outbox", "EF Core")
 @enduml
