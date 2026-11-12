@@ -1416,7 +1416,9 @@ test.describe('send a message (L2-058)', () => {
     await conversation.composer.fill('Hello again');
     await conversation.send.click();
 
-    await expect(conversation.bubble('Hello again').time).toContainText('wait a few minutes');
+    await expect(conversation.bubble('Hello again').time).toContainText(
+      'Not sent. You’re doing that a lot. Try again in 1 minute.',
+    );
   });
 });
 
@@ -1441,6 +1443,57 @@ test.describe('message a business (L2-055)', () => {
       'Trevor Chew usually replies within a day. The conversation continues in Messages.',
     );
     await expect(dialog.message).toBeFocused();
+    await expect(dialog.messageLabel).toHaveText('Your message (required)');
+    await expect(dialog.hint).toHaveText('Be specific and Trevor can answer in one reply.');
+    await expect(dialog.counter).toHaveCount(0);
+  });
+
+  test('AC5: typing stops at 4,000 characters, and a counter shows for the last 200', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new NewMessageDialog(page);
+    await new BusinessPage(page).setWidth(360);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page);
+    await jb.goto('/b/legacy-financial/message');
+
+    await dialog.message.fill('a'.repeat(3799));
+    await expect(dialog.counter).toHaveCount(0);
+
+    await page.keyboard.type('b');
+    await expect(dialog.counter).toHaveText('200 characters left');
+
+    await dialog.message.fill('a'.repeat(3998));
+    await page.keyboard.type('b');
+    await expect(dialog.counter).toHaveText('1 character left');
+
+    // Three more keys: only the first fits.
+    await page.keyboard.type('cde');
+    await expect(dialog.counter).toHaveText('0 characters left');
+    await expect(dialog.message).toHaveValue(`${'a'.repeat(3998)}bc`);
+
+    await dialog.send.click();
+    await expect(page).toHaveURL(/\/messages\/c-legacy$/);
+    expect(fake.starts[0].body).toHaveLength(4000);
+  });
+
+  test('L2-137 AC1: starting conversations too fast says how long to wait and keeps the text', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new NewMessageDialog(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { delivery: 'rate-limited' });
+    await jb.goto('/b/legacy-financial/message');
+
+    await dialog.message.fill('Hello Trevor');
+    await dialog.send.click();
+
+    await expect(dialog.alert).toContainText('You’re doing that a lot');
+    await expect(dialog.alert).toContainText('Try again in 1 minute.');
+    await expect(dialog.message).toHaveValue('Hello Trevor');
   });
 
   test('AC3: sending starts the conversation and opens it in Messages', async ({ page, jb }) => {
@@ -1481,14 +1534,17 @@ test.describe('message a business (L2-055)', () => {
     expect(fake.starts).toHaveLength(0);
   });
 
-  test('AC5: more than 4,000 characters is not sent', async ({ page, jb }) => {
+  test('AC5: more than 4,000 characters, put there past the limit, is not sent', async ({
+    page,
+    jb,
+  }) => {
     const dialog = new NewMessageDialog(page);
     await new BusinessPage(page).setWidth(1280);
     await jb.signInAs('member');
     const fake = await stubMessaging(page);
     await jb.goto('/b/legacy-financial/message');
 
-    await dialog.message.fill('a'.repeat(4001));
+    await dialog.putPastTheLimit('a'.repeat(4001));
     await dialog.send.click();
 
     await expect(dialog.fieldError).toContainText('4,000 characters');
@@ -1524,13 +1580,18 @@ test.describe('message a business (L2-055)', () => {
     await dialog.send.click();
 
     await expect(dialog.alert).toContainText('We couldn’t send that');
+    await expect(dialog.alert).toContainText(
+      'Your connection dropped before it reached us. Nothing was sent and what you typed is still here. Try again.',
+    );
     await expect(dialog.message).toHaveValue('Hello Trevor');
+    const firstKey = fake.attempts[0].idempotencyKey;
 
     fake.delivery = 'ok';
     await dialog.send.click();
 
     await expect(page).toHaveURL(/\/messages\/c-legacy$/);
     expect(fake.starts).toHaveLength(1);
+    expect(fake.starts[0].idempotencyKey).toBe(firstKey);
   });
 
   test('L2-005 AC2: a member who has not confirmed the e-mail is told to', async ({ page, jb }) => {

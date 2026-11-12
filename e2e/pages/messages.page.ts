@@ -309,6 +309,10 @@ export class NewMessageDialog {
   readonly title: Locator;
   readonly description: Locator;
   readonly message: Locator;
+  readonly messageLabel: Locator;
+  readonly hint: Locator;
+  /** How many characters are left, shown for the last 200 (L2-055 AC5). */
+  readonly counter: Locator;
   readonly fieldError: Locator;
   readonly alert: Locator;
   readonly send: Locator;
@@ -317,6 +321,9 @@ export class NewMessageDialog {
 
   constructor(page: Page) {
     this.root = page.getByRole('dialog');
+    this.messageLabel = this.root.locator('.field__label');
+    this.hint = this.root.locator('.field__help');
+    this.counter = this.root.locator('.field__counter');
     this.panel = this.root.locator('.dialog__panel');
     this.title = this.root.locator('.dialog__title');
     this.description = this.root.locator('#dlg-desc');
@@ -326,6 +333,17 @@ export class NewMessageDialog {
     this.send = this.root.getByRole('button', { name: 'Send message' });
     this.cancel = this.root.getByRole('button', { name: 'Cancel' });
     this.close = this.root.getByRole('button', { name: 'Close' });
+  }
+
+  /**
+   * Puts text in the field as a script would, past the limit that stops typing and pasting at
+   * 4,000 characters, to prove the dialog itself still refuses a longer message.
+   */
+  async putPastTheLimit(text: string): Promise<void> {
+    await this.message.evaluate((field, value) => {
+      (field as HTMLTextAreaElement).value = value;
+      field.dispatchEvent(new Event('input', { bubbles: true }));
+    }, text);
   }
 }
 

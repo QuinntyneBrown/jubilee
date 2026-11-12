@@ -268,6 +268,8 @@ export interface FakeMessaging {
   searches: (string | null)[];
   opened: { before: string | null }[];
   sends: { body: string; idempotencyKey: string; attachmentId?: string }[];
+  /** Every send and start the app tried, answered or not: a retry must carry the key of its first try. */
+  attempts: { body: string; idempotencyKey: string }[];
   starts: { listingSlug: string; body: string; idempotencyKey: string }[];
 }
 
@@ -350,6 +352,7 @@ export async function stubMessaging(
     searches: [],
     opened: [],
     sends: [],
+    attempts: [],
     starts: [],
     ...initial,
   };
@@ -393,6 +396,7 @@ export async function stubMessaging(
     const request = route.request();
     if (request.method() === 'POST') {
       const body = request.postDataJSON() as FakeMessaging['starts'][number];
+      fake.attempts.push(body);
       const failure = fail(route);
       if (failure) return failure;
       fake.starts.push(body);
@@ -460,6 +464,7 @@ export async function stubMessaging(
 
   await page.route('**/api/conversations/c-legacy/messages', (route) => {
     const body = route.request().postDataJSON() as FakeMessaging['sends'][number];
+    fake.attempts.push(body);
     const failure = fail(route);
     if (failure) return failure;
     fake.sends.push(body);

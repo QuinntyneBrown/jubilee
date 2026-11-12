@@ -2,7 +2,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MESSAGES_API } from 'api';
+import { MESSAGES_API, tryAgainIn } from 'api';
 import { Button, Alert, Field, Textarea, DialogFrame, DialogBody, DialogFooter } from 'components';
 import { newKey } from 'api';
 import { FormDraftDirective } from '../../drafts/form-draft.directive';
@@ -10,6 +10,8 @@ import { FormDraftDirective } from '../../drafts/form-draft.directive';
 export interface NewMessageData {
   slug: string;
   businessName: string;
+  /** Who answers, as the hint names them: the owner's first name, or the business when no owner is named. */
+  answeredBy: string;
   /** For example "Trevor Chew usually replies within a day." */
   intro: string;
 }
@@ -20,6 +22,8 @@ export type NewMessageResult = string | undefined;
 type View = 'form' | 'invalid' | 'busy' | 'failed';
 
 const MAX = 4000;
+/** The counter shows for the last 200 characters (L2-055 AC5). */
+const COUNTED = 200;
 
 /**
  * NewMessageDialog (L2-055): the first message to a business. The conversation then continues
@@ -51,6 +55,14 @@ export class NewMessageDialog {
   protected readonly failure = signal({ title: '', text: '' });
   protected readonly error = signal('');
   protected readonly busy = computed(() => this.view() === 'busy');
+  protected readonly max = MAX;
+  /** "150 characters left", once 200 or fewer are left; null before that. */
+  protected readonly counter = computed(() => {
+    const left = MAX - this.text().length;
+    if (left > COUNTED) return null;
+    const shown = Math.max(0, left);
+    return `${shown} ${shown === 1 ? 'character' : 'characters'} left`;
+  });
   private readonly key = newKey();
 
   protected send(): void {
@@ -92,9 +104,10 @@ function describe(error: unknown): { title: string; text: string } {
       };
     }
     if (error.status === 429) {
+      // The words of L2-137 AC1, with the wait the API named.
       return {
-        title: 'You’re sending messages quickly',
-        text: 'Wait a few minutes and try again. What you typed is still here.',
+        title: 'You’re doing that a lot',
+        text: `${tryAgainIn(error)} What you typed is still here.`,
       };
     }
     if (error.status === 409 && code === 'OWN_LISTING') {

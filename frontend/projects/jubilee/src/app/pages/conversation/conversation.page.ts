@@ -40,7 +40,7 @@ import {
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { MessagesStore } from '../../services/messages.store';
-import { awayDay, clockTime, dayHeading, dayKey, newKey } from 'api';
+import { awayDay, clockTime, dayHeading, dayKey, newKey, tryAgainIn } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
 import { RealtimeService } from '../../services/realtime.service';
 import { ConnectionService } from '../../services/offline/connection.service';
@@ -599,7 +599,8 @@ function problemOf(error: unknown, upload = false): string {
   }
   if (error instanceof HttpErrorResponse) {
     const code = (error.error as { code?: string } | null)?.code;
-    if (error.status === 429) return 'Not sent. You’re sending quickly; wait a few minutes.';
+    // The words of L2-137 AC1, with the wait the API named.
+    if (error.status === 429) return `Not sent. You’re doing that a lot. ${tryAgainIn(error)}`;
     if (error.status === 403 && code === 'EMAIL_UNCONFIRMED')
       return 'Not sent. Confirm your e-mail first.';
     if (error.status === 422) return 'Not sent. Check the message.';
