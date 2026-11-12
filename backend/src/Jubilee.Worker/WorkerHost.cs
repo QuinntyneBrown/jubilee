@@ -22,6 +22,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<OutboxDispatcherJob>();
         builder.Services.AddHostedService<PasswordResetJob>();
         builder.Services.AddHostedService<ListingDraftExpiryJob>();
+        builder.Services.AddHostedService<StatementAgreementJob>();
         builder.Services.AddHostedService<ResponseTimeBadgeJob>();
         builder.Services.AddHostedService<BookingCompletionJob>();
         builder.Services.AddHostedService<MeetingReminderJob>();
@@ -142,6 +143,46 @@ public sealed class ListingDraftExpiryJob(IServiceScopeFactory scopes, ILogger<L
         catch (OperationCanceledException)
         {
             logger.LogInformation("The draft expiry job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Once a day: after the 30 days to agree to an updated statement of faith, pauses each live listing of
+/// an owner who has not agreed and e-mails the owner once per listing (L2-075 AC6). The tick is hourly so
+/// an instance that starts late in a day still serves the next one;
+/// <see cref="Jubilee.Application.Jobs.ScheduledJobs"/> lets only one instance run each day and records
+/// its success (L2-182 AC1).
+/// </summary>
+public sealed class StatementAgreementJob(IServiceScopeFactory scopes, ILogger<StatementAgreementJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var paused = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Onboarding.RunStatementAgreementJobCommand(), stoppingToken);
+                    if (paused > 0)
+                    {
+                        logger.LogInformation("Paused {Count} listings whose owners have not agreed to the statement of faith.", paused);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The statement of faith job failed. It will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The statement of faith job is stopping.");
         }
     }
 }

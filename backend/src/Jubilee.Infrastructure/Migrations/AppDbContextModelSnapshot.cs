@@ -884,6 +884,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<int>("Stage")
                         .HasColumnType("int");
 
+                    b.Property<DateTimeOffset?>("StatementLapsedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Tagline")
                         .IsRequired()
                         .HasMaxLength(200)

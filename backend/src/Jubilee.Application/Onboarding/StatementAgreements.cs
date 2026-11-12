@@ -77,6 +77,93 @@ public sealed class AgreeToStatementCommandHandler(IAppDbContext db, TimeProvide
             db.StatementAgreements.Add(StatementAgreement.Record(request.Subject, request.Version, clock.GetUtcNow()));
         }
 
+        // Each listing the daily job paused is live again at once, without new verification (L2-075 AC6).
+        foreach (var lapsed in await db.Listings.Where(l => l.OwnerId == request.Subject && l.StatementLapsedAt != null).ToListAsync(cancellationToken))
+        {
+            lapsed.ResumeAfterStatement();
+        }
+
         await db.SaveChangesAsync(cancellationToken);
     }
+}
+
+/// <summary>
+/// The daily statement-of-faith job (L2-075 AC6, L2-182 AC1): once the 30 days to agree have passed,
+/// pauses each live listing of an owner who has not agreed to the current version and e-mails the owner
+/// once per listing. Runs once a day however many instances of the worker run. The answer is the
+/// number of listings paused, or null when another instance already ran today.
+/// </summary>
+public sealed record RunStatementAgreementJobCommand : IRequest<int?>
+{
+    public const string Job = "statement-agreement";
+
+    public static readonly TimeSpan Every = TimeSpan.FromHours(24);
+}
+
+public sealed class RunStatementAgreementJobCommandHandler(Jobs.ScheduledJobs jobs, IAppDbContext db, TimeProvider clock, Accounts.AccountSettings settings)
+    : IRequestHandler<RunStatementAgreementJobCommand, int?>
+{
+    public async Task<int?> Handle(RunStatementAgreementJobCommand command, CancellationToken cancellationToken)
+    {
+        int? paused = null;
+        await jobs.RunOnceAsync(
+            RunStatementAgreementJobCommand.Job,
+            RunStatementAgreementJobCommand.Every,
+            async token => paused = await PauseOverdue(token),
+            cancellationToken);
+        return paused;
+    }
+
+    private async Task<int> PauseOverdue(CancellationToken cancellationToken)
+    {
+        var now = clock.GetUtcNow();
+        if (!StatementOfFaith.IsOverdue(now))
+        {
+            return 0;
+        }
+
+        // A listing already stamped is paused already, so a repeat sends nothing.
+        var live = await db.Listings
+            .Where(l => l.OwnerId != null && l.DeletedAt == null && l.Stage == ListingStage.Live && !l.IsPaused && l.StatementLapsedAt == null)
+            .ToListAsync(cancellationToken);
+        var paused = 0;
+        foreach (var owned in live.GroupBy(l => l.OwnerId!))
+        {
+            if (!StatementOfFaith.IsDue(await StatementAgreements.LatestAgreedAsync(db, owned.Key, cancellationToken)))
+            {
+                continue;
+            }
+
+            var owner = Guid.TryParse(owned.Key, out var ownerId)
+                ? await db.Members.AsNoTracking().SingleOrDefaultAsync(m => m.Id == ownerId, cancellationToken)
+                : null;
+            foreach (var listing in owned)
+            {
+                listing.PauseForStatement(now);
+                paused++;
+                if (owner is not null)
+                {
+                    db.OutboxMessages.Add(OutboxMessage.Email(
+                        owner.Id,
+                        owner.Email,
+                        $"{listing.Name} is paused until you agree to the statement of faith",
+                        Body(owner.FirstName, listing.Name),
+                        now));
+                }
+            }
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return paused;
+    }
+
+    /// <summary>The e-mail of <c>emails/statement-lapsed</c>.</summary>
+    private string Body(string firstName, string business) =>
+        $"Hi {firstName},\n\n"
+        + $"We updated Jubilee’s statement of faith on {Date(StatementOfFaith.UpdatedOn)} and asked every owner to read it and agree within {StatementOfFaith.DaysToAgree} days. "
+        + $"We have not had your agreement, so {business} is paused: it is hidden from browse and search. Your requests and your messages stay, and nothing is deleted.\n\n"
+        + $"Read the statement and agree, and {business} is live again at once: {settings.PublicBaseUrl.TrimEnd('/')}/my-business\n\n"
+        + "Jubilee · Toronto's Christian marketplace\n";
+
+    private static string Date(DateOnly day) => day.ToString("d MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture);
 }
