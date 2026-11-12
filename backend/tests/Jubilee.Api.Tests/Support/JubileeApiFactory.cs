@@ -5,6 +5,7 @@ using Jubilee.Application.Directory;
 using Jubilee.Infrastructure.Persistence;
 using Jubilee.Tests.Shared;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,12 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
 
     public FakeGoogle Google { get; } = new();
 
+    /// <summary>Test-only: the caller's address for one request (TestServer has none of its own).</summary>
+    public const string RemoteAddressHeader = "X-Test-Remote-Address";
+
+    /// <summary>The shared secret of the admin host's proxy in these tests (ADR 0040).</summary>
+    public const string StaffProxyKey = "test-staff-proxy-key";
+
     /// <summary>The staff directory (Entra ID) staff sign in at (L2-189).</summary>
     public FakeStaffDirectory StaffDirectory { get; } = new();
 
@@ -59,9 +66,12 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("Email:WebhookSecret", "test-webhook-secret");
         builder.UseSetting("App:PublicBaseUrl", "https://jubilee.test");
         builder.UseSetting("StaffSignIn:PublicBaseUrl", "https://admin.jubilee.test");
+        builder.UseSetting("StaffAccess:AllowedNetworks", "127.0.0.1, ::1, 10.0.0.0/8, 2001:db8::/32");
+        builder.UseSetting("StaffAccess:ProxyKey", StaffProxyKey);
         ConfigureSettings(builder);
         builder.ConfigureServices(services =>
         {
+            services.AddSingleton<Microsoft.AspNetCore.Hosting.IStartupFilter, RemoteAddressStartupFilter>();
             services.RemoveAll<TimeProvider>();
             services.AddSingleton<TimeProvider>(_clock);
             services
@@ -245,4 +255,24 @@ public static class JsonElementExtensions
 {
     public static string[] Slugs(this JsonElement array) =>
         [.. array.EnumerateArray().Select(e => e.GetProperty("slug").GetString()!)];
+}
+
+/// <summary>
+/// Test-only: gives each request the connection address a real server would, 127.0.0.1 (the loopback
+/// proxy) unless <see cref="JubileeApiFactory.RemoteAddressHeader"/> names another. Runs before the API's pipeline.
+/// </summary>
+internal sealed class RemoteAddressStartupFilter : Microsoft.AspNetCore.Hosting.IStartupFilter
+{
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+    {
+        app.Use((context, nextMiddleware) =>
+        {
+            context.Connection.RemoteIpAddress = context.Request.Headers.TryGetValue(JubileeApiFactory.RemoteAddressHeader, out var value)
+                ? System.Net.IPAddress.Parse(value.ToString())
+                : System.Net.IPAddress.Loopback;
+            context.Request.Headers.Remove(JubileeApiFactory.RemoteAddressHeader);
+            return nextMiddleware(context);
+        });
+        next(app);
+    };
 }

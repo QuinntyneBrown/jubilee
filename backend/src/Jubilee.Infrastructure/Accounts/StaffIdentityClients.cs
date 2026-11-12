@@ -99,7 +99,8 @@ public sealed class EntraStaffIdentityClient(HttpClient http, IConfiguration con
 
 /// <summary>
 /// Local development without Entra ID (ADR 0040): the start sends the browser straight back to the
-/// callback, which signs in <c>StaffSignIn:DevelopmentEmail</c> with a password and a second factor.
+/// callback, which signs in <c>StaffSignIn:DevelopmentEmail</c> (named <c>StaffSignIn:DevelopmentName</c>)
+/// with a password and a second factor.
 /// The API refuses to start with it outside the Development environment.
 /// </summary>
 public sealed class DevelopmentStaffIdentityClient(IConfiguration configuration) : IStaffIdentityClient
@@ -112,5 +113,10 @@ public sealed class DevelopmentStaffIdentityClient(IConfiguration configuration)
         new($"{redirectUri}?code=development&state={Uri.EscapeDataString(state)}");
 
     public Task<StaffIdentity> RedeemAsync(string redirectUri, string code, string codeVerifier, string nonce, CancellationToken cancellationToken) =>
-        Task.FromResult(new StaffIdentity(TenantId, $"development|{Email}", Email, Email, ["pwd", "mfa"]));
+        Task.FromResult(new StaffIdentity(
+            TenantId,
+            $"development|{Email}",
+            Email,
+            configuration["StaffSignIn:DevelopmentName"] is { Length: > 0 } name ? name : "Miriam Castillo",
+            ["pwd", "mfa"]));
 }

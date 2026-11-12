@@ -1,11 +1,15 @@
 // Serves a built Angular application on Azure App Service (Linux) with nothing but Node's
-// standard library. Used by eng/azure/deploy.sh for both sites:
+// standard library. Used by eng/azure/deploy.sh for the three sites:
 //   - the marketing site: static files only;
-//   - the app: static files, and /api sent to the Jubilee API running beside it (API_ORIGIN).
+//   - the app: static files, and /api sent to the Jubilee API running beside it (API_ORIGIN);
+//   - the admin application: static files, and /api sent to https://app.jubilee.to (API_ORIGIN) with
+//     the caller's address in X-Jubilee-Client-Address, proved by X-Jubilee-Proxy-Key (PROXY_KEY).
+//     See ADR 0040.
 // Unknown paths without a file extension answer index.html so the app's router can take them.
 'use strict';
 
 const http = require('node:http');
+const https = require('node:https');
 const fs = require('node:fs');
 const path = require('node:path');
 const zlib = require('node:zlib');
@@ -13,6 +17,7 @@ const zlib = require('node:zlib');
 const root = path.resolve(process.env.STATIC_ROOT || path.join(__dirname, 'public'));
 const port = Number(process.env.PORT || 8080);
 const api = process.env.API_ORIGIN ? new URL(process.env.API_ORIGIN) : null;
+const proxyKey = process.env.PROXY_KEY || '';
 
 const types = {
   '.html': 'text/html; charset=utf-8',
@@ -58,16 +63,43 @@ function plain(req, res, status, text) {
   res.end(req.method === 'HEAD' ? undefined : text);
 }
 
+// The caller's address as App Service's front end wrote it: the last X-Forwarded-For entry, without
+// its port ("203.0.113.5:51234", "[2001:db8::1]:51234"). Earlier entries came from the caller.
+function callerAddress(req) {
+  const entries = String(req.headers['x-forwarded-for'] || '')
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  const last = entries[entries.length - 1] || req.socket.remoteAddress || '';
+  const bracketed = /^\[([^\]]+)\](?::\d+)?$/.exec(last);
+  if (bracketed) {
+    return bracketed[1];
+  }
+  return /^[\d.]+:\d+$/.test(last) ? last.slice(0, last.lastIndexOf(':')) : last;
+}
+
 function proxy(req, res) {
-  const upstream = http.request(
+  const headers = { ...req.headers };
+  // A caller's own copies are never passed on (ADR 0040).
+  delete headers['x-jubilee-client-address'];
+  delete headers['x-jubilee-proxy-key'];
+  if (proxyKey) {
+    // The admin host: the API is on another host, so it is told who the caller is and that this
+    // proxy says so. Host names the API's host, as its front end requires.
+    headers['x-jubilee-client-address'] = callerAddress(req);
+    headers['x-jubilee-proxy-key'] = proxyKey;
+    headers.host = api.host;
+  }
+  const client = api.protocol === 'https:' ? https : http;
+  const upstream = client.request(
     {
       hostname: api.hostname,
-      port: api.port || 80,
+      port: api.port || (api.protocol === 'https:' ? 443 : 80),
       method: req.method,
       path: req.url,
-      // The headers pass unchanged: Host stays the public host, and X-Forwarded-For / -Proto are
-      // the ones App Service wrote, so the API sees the caller's address and HTTPS.
-      headers: req.headers,
+      // Beside the API (the app's host) the headers pass unchanged: Host stays the public host, and
+      // X-Forwarded-For / -Proto are the ones App Service wrote, so the API sees the caller and HTTPS.
+      headers,
     },
     (answer) => {
       res.writeHead(answer.statusCode || 502, answer.headers);

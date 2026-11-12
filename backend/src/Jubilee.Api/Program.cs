@@ -18,6 +18,20 @@ if (string.Equals(builder.Configuration["StaffSignIn:Provider"], "Development", 
 }
 
 builder.Services.AddApplication();
+// The caller's address (ADR 0040): X-Forwarded-For is believed only from server.js on loopback, and
+// only its last entry, the one App Service's front end appended. ASPNETCORE_FORWARDEDHEADERS_ENABLED is
+// not used, because it trusts every proxy.
+builder.Services.Configure<Microsoft.AspNetCore.Builder.ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
+        | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    options.ForwardLimit = 1;
+    options.KnownProxies.Clear();
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Add(System.Net.IPAddress.Loopback);
+    options.KnownProxies.Add(System.Net.IPAddress.IPv6Loopback);
+});
+builder.Services.AddSingleton(StaffNetworks.From(builder.Configuration));
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddSingleton<Jubilee.Application.Messaging.IAttachmentLinks, Jubilee.Api.Controllers.AttachmentLinks>();
@@ -78,6 +92,8 @@ builder.Services.AddAuthorizationBuilder()
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+app.UseMiddleware<StaffProxyMiddleware>();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -92,6 +108,8 @@ if (!app.Environment.IsProduction())
 }
 
 app.UseRouting();
+// Staff endpoints answer only an allowed network, before any session is read (L2-192).
+app.UseMiddleware<StaffNetworkMiddleware>();
 app.UseAuthentication();
 app.UseRateLimiter();
 app.UseMiddleware<CsrfMiddleware>();
