@@ -1,4 +1,4 @@
-# 04 · Journey 2: view a business and its products
+# 05 · Journey 2: view a business and its products
 
 The narration, scene by scene. The windows each line is spoken in are in `narration.json`; this file
 is the transcript. About 180 words over 80 seconds. The last scene is the mission, word for word
