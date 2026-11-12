@@ -122,3 +122,18 @@ export const INSIDE_CARDS: readonly MarketingBusiness[] = [
     photo: PHOTOS.law,
   },
 ];
+
+/** The eleven categories of the directory, in its order (L2-023 AC5), for the business pre-registration. */
+export const CATEGORIES: readonly { slug: string; name: string }[] = [
+  { slug: 'shops', name: 'Shops' },
+  { slug: 'rooms-rentals', name: 'Rooms & rentals' },
+  { slug: 'financial-insurance', name: 'Financial & insurance' },
+  { slug: 'legal-immigration', name: 'Legal & immigration' },
+  { slug: 'home-property', name: 'Home & property' },
+  { slug: 'real-estate-living', name: 'Real estate & living' },
+  { slug: 'health-family', name: 'Health & family' },
+  { slug: 'business-tech', name: 'Business & tech' },
+  { slug: 'learning', name: 'Learning' },
+  { slug: 'media', name: 'Media' },
+  { slug: 'community', name: 'Community' },
+];
