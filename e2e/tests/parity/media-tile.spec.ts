@@ -1,5 +1,6 @@
 import { parity } from '../../fixtures/parity';
 import { BrowsePage } from '../../pages/browse.page';
+import { BusinessPage } from '../../pages/business.page';
 
 // jb-media-tile: the tinted tile of a business with its tag and the square tile of a product.
 // The thumb beside a product's name is not compared: the mock gives each product its own icon
@@ -17,6 +18,12 @@ parity('media-tile', {
       route: 'browse',
       screen: (page) => new BrowsePage(page),
       region: (screen: BrowsePage) => screen.productCard(0).mediaTile,
+    },
+    {
+      name: 'photo',
+      route: 'business.photos',
+      screen: (page) => new BusinessPage(page),
+      region: (screen: BusinessPage) => screen.mediaTile,
     },
   ],
   reference: {
