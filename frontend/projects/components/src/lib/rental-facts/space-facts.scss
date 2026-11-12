@@ -1,0 +1,26 @@
+// Block: space-facts. The host is the list; its items are the cells of a ruled grid.
+:host {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--border-width-hairline);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  border: var(--border-width-hairline) solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background: var(--color-border-default);
+}
+
+.space-facts__item {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg-canvas);
+  font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 40rem) {
+  :host {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

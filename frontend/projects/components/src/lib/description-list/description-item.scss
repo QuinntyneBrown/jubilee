@@ -21,3 +21,22 @@ dd {
     margin-bottom: var(--space-3);
   }
 }
+
+// In ruled rows the item is the row: the label left, the value right.
+:host-context(.dl--rows) {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+
+  dt {
+    font: var(--text-body);
+  }
+
+  dd {
+    margin: 0;
+    text-align: right;
+    font-weight: var(--font-weight-medium);
+  }
+}

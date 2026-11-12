@@ -1,0 +1,22 @@
+<p class="booking-card__price">
+  {{ price() }} <span class="booking-card__unit">/ {{ per() }}</span>
+  @if (minimum(); as minimum) {
+    <span class="booking-card__minimum">{{ minimum }}</span>
+  }
+</p>
+@if (sent(); as sent) {
+  <div class="booking-card__sent" role="status">
+    <svg jb-icon name="verified"></svg>
+    <div>
+      <strong>{{ sent.heading }}</strong
+      >{{ sent.text }}
+    </div>
+  </div>
+}
+<div class="booking-card__actions">
+  <span class="booking-card__action"><ng-content select="[slot=action]" /></span>
+  <ng-content />
+</div>
+@if (!sent()) {
+  <p class="booking-card__note">You won’t pay anything until the host accepts.</p>
+}

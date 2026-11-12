@@ -1,5 +1,9 @@
 @let current = state();
-<a jb-back-link routerLink="/">Back to browse</a>
+@if (thing() === 'space') {
+  <a jb-back-link routerLink="/c/rooms-rentals">Back to rentals</a>
+} @else {
+  <a jb-back-link routerLink="/">Back to browse</a>
+}
 @switch (current.status) {
   @case ('loading') {
     <h1 class="visually-hidden">Loading this {{ thing() }}</h1>
@@ -14,9 +18,12 @@
         <span jb-skeleton shape="button" size="block"></span>
       </div>
     </div>
-    <section jb-section>
+    <section jb-section aria-hidden="true">
       <span jb-skeleton shape="title"></span>
-      @if (thing() === 'shop') {
+      @if (thing() === 'space') {
+        <span jb-skeleton shape="text"></span>
+        <span jb-skeleton shape="text" width="70"></span>
+      } @else if (thing() === 'shop') {
         <div style="margin-top: var(--space-4)">
           <ul jb-card-grid-skeleton shape="square" [count]="placeholders.length"></ul>
         </div>
@@ -39,7 +46,11 @@
       <button slot="actions" jb-button variant="primary" type="button" (click)="load()">
         <svg jb-icon name="refresh"></svg>Try again
       </button>
-      <a slot="actions" jb-button routerLink="/">Back to browse</a>
+      @if (thing() === 'space') {
+        <a slot="actions" jb-button routerLink="/c/rooms-rentals">Back to rentals</a>
+      } @else {
+        <a slot="actions" jb-button routerLink="/">Back to browse</a>
+      }
     </div>
   }
   @case ('loaded') {
@@ -54,205 +65,346 @@
         <a slot="actions" routerLink="/my-business">Go to My business</a>
       </div>
     }
-    <div class="split" style="margin-top: var(--space-2)">
-      <div>
-        @if (tile(); as media) {
-          <div jb-media-tile [tint]="media.tint" [icon]="media.icon" [tag]="media.label"></div>
-        }
-      </div>
-      <div jb-detail-head class="split__sticky">
-        <p jb-verified-business-label [category]="listing.category"></p>
-        <h1>{{ listing.name }}</h1>
-        @if (listing.ownerName) {
-          <p>
-            <strong>{{ listing.ownerName }}</strong>
+    @if (listing.space; as space) {
+      <div class="split" style="margin-top: var(--space-2)">
+        <div>
+          <div jb-media-tile [tint]="spaceTile(space).tint" [icon]="spaceTile(space).icon"></div>
+        </div>
+        <div jb-detail-head class="split__sticky">
+          <p jb-detail-head-kicker>
+            <svg jb-icon name="verified"></svg>Verified host · {{ space.neighbourhood }}
           </p>
-        }
-        <p class="lead">{{ listing.tagline }}</p>
-        @if (listing.credentials.length) {
-          <div class="cluster" style="gap: var(--space-2)">
-            @for (credential of listing.credentials; track $index) {
-              <span jb-tag>{{ credential }}</span>
-            }
-          </div>
-        }
-        <div jb-detail-head-actions>
-          @if (isOwner) {
-            <a jb-button variant="primary" size="lg" routerLink="/my-business/edit"
-              ><svg jb-icon name="edit"></svg>Edit listing</a
-            >
-            <a jb-button iconOnly [routerLink]="link('share')" aria-label="Share listing"
-              ><svg jb-icon name="share"></svg
-            ></a>
-          } @else {
-            @if (isShop && hasProducts) {
-              <a jb-button variant="primary" size="lg" [routerLink]="[]" fragment="products"
-                ><svg jb-icon name="bag"></svg>Shop products</a
+          <h1>{{ listing.name }}</h1>
+          <p class="lead">{{ listing.tagline }}</p>
+          <div
+            jb-booking-card
+            [rent]="space.rent"
+            [per]="space.per"
+            [minimum]="space.minimumStayLabel ? space.minimumStayLabel + ' min.' : null"
+            [sent]="sent()"
+          >
+            @if (isOwner) {
+              <a slot="action" jb-button variant="primary" size="lg" routerLink="/my-business/edit"
+                ><svg jb-icon name="edit"></svg>Edit listing</a
               >
-            } @else if (!isShop && hasServices) {
+            }
+            @if (!isOwner && !listing.openRequestId) {
               <a
+                slot="action"
                 jbRequiresConnection
                 jb-button
                 variant="primary"
                 size="lg"
-                [routerLink]="link('book')"
-                ><svg jb-icon name="calendar"></svg>Book a meeting</a
+                [routerLink]="link('request')"
+                >{{ space.callToAction }}</a
               >
-            } @else {
+            }
+            @if (!isOwner) {
               <a
                 jbRequiresConnection
                 jb-button
-                variant="primary"
+                iconOnly
                 size="lg"
                 [routerLink]="link('message')"
-                ><svg jb-icon name="message"></svg>Send a message</a
-              >
+                aria-label="Message host"
+                style="width: var(--control-height-lg)"
+                ><svg jb-icon name="message"></svg
+              ></a>
             }
-            <a
-              jbRequiresConnection
-              jb-button
-              iconOnly
-              size="lg"
-              [routerLink]="link('message')"
-              aria-label="Message"
-              style="width: var(--control-height-lg)"
-              ><svg jb-icon name="message"></svg
-            ></a>
-            <button
-              #saveButton
-              jbRequiresConnection
-              jb-button
-              iconOnly
-              size="lg"
-              type="button"
-              [attr.aria-label]="saved() ? 'Saved. Remove from saved' : 'Save'"
-              [attr.aria-pressed]="saved()"
-              [style.color]="saved() ? 'var(--color-danger-solid)' : null"
-              style="width: var(--control-height-lg)"
-              (click)="toggleSave(listing, saveButton.element)"
-            >
-              <svg jb-icon name="heart"></svg>
-            </button>
-            <a
-              jb-button
-              iconOnly
-              size="lg"
-              [routerLink]="link('share')"
-              aria-label="Share"
-              style="width: var(--control-height-lg)"
-              ><svg jb-icon name="share"></svg
-            ></a>
+            @if (!isOwner) {
+              <button
+                #spaceSaveButton
+                jbRequiresConnection
+                jb-button
+                iconOnly
+                size="lg"
+                type="button"
+                [attr.aria-label]="saved() ? 'Saved. Remove from saved' : 'Save'"
+                [attr.aria-pressed]="saved()"
+                [style.color]="saved() ? 'var(--color-danger-solid)' : null"
+                style="width: var(--control-height-lg)"
+                (click)="toggleSave(listing, spaceSaveButton.element)"
+              >
+                <svg jb-icon name="heart"></svg>
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="split">
+        <div>
+          <section jb-section labelledBy="place">
+            <h2 id="place">{{ space.place }}</h2>
+            <ul jb-space-facts [facts]="space.facts" style="margin-top: var(--space-4)"></ul>
+            <dl jb-description-list rows style="margin-top: var(--space-4)">
+              @for (row of spaceRows(); track row.term) {
+                <div jb-description-item [term]="row.term" [value]="row.value"></div>
+              }
+            </dl>
+          </section>
+          @if (space.included.length || space.rules.length) {
+            <div jb-section>
+              <div class="form-grid form-grid--2">
+                @if (space.included.length) {
+                  <section aria-labelledby="inc">
+                    <h2 id="inc">What’s included</h2>
+                    <ul
+                      jb-included-list
+                      [items]="space.included"
+                      style="margin-top: var(--space-4)"
+                    ></ul>
+                  </section>
+                }
+                @if (space.rules.length) {
+                  <section aria-labelledby="rules">
+                    <h2 id="rules">House rules</h2>
+                    <ul
+                      jb-house-rules
+                      [rules]="space.rules"
+                      style="margin-top: var(--space-4)"
+                    ></ul>
+                  </section>
+                }
+              </div>
+            </div>
           }
         </div>
-        @if (listing.highlight) {
-          <p jb-perk>{{ listing.highlight }}</p>
-        }
-      </div>
-    </div>
-    <div class="split">
-      <div>
-        @if (isShop) {
-          <section jb-section heading="Products" headingId="products">
-            @if (hasProducts) {
-              <span slot="action" class="text-caption"
-                >{{ listing.productCount | jbCount }}
-                {{ listing.productCount === 1 ? 'product' : 'products' }}</span
-              >
-            }
-            @if (hasProducts) {
-              <ul jb-card-grid columns="3">
-                @for (product of listing.products; track product.slug) {
-                  <li>
-                    <a
-                      jb-product-card
-                      [product]="product"
-                      [showShop]="false"
-                      [routerLink]="['/b', listing.slug, 'p', product.slug]"
-                    ></a>
-                  </li>
-                }
-              </ul>
-            } @else {
-              <div jb-empty-state icon="bag" heading="No products yet" [level]="3" [compact]="true">
-                {{ listing.name }} is setting up shop. Message them to ask what’s coming.
-                <a slot="actions" jb-button variant="primary" [routerLink]="link('message')"
-                  ><svg jb-icon name="message"></svg>Send a message</a
-                >
-              </div>
-            }
-          </section>
-          @if (hasServices) {
-            <section jb-section heading="Custom work" headingId="custom">
-              <ul jb-rows>
-                @for (service of listing.services; track service.id) {
-                  <li jb-service-row [service]="service" [actionLink]="link('quote')"></li>
-                }
-              </ul>
-            </section>
+        <aside jb-section class="stack stack--lg" aria-label="The people">
+          @if (space.household; as household) {
+            <section jb-household [text]="household"></section>
           }
-        } @else {
-          <section jb-section heading="Services" headingId="svc">
-            @if (hasServices) {
-              <ul jb-rows>
-                @for (service of listing.services; track service.id) {
-                  <li
-                    jb-service-row
-                    [service]="service"
-                    [actionLink]="link(service.action === 'book' ? 'book' : 'quote')"
-                  ></li>
-                }
-              </ul>
-            } @else {
-              <div
-                jb-empty-state
-                icon="calendar"
-                heading="No services listed yet"
-                [level]="3"
-                [compact]="true"
-              >
-                {{ listing.name }} is new on Jubilee and hasn’t added services. You can still
-                message them to ask what they offer.
-                <a slot="actions" jb-button variant="primary" [routerLink]="link('message')"
-                  ><svg jb-icon name="message"></svg>Send a message</a
-                >
-              </div>
-            }
-          </section>
-        }
-        @if (listing.about) {
-          <section jb-section labelledBy="about">
-            <h2 id="about">About</h2>
-            <p style="margin-top: var(--space-3)">{{ listing.about }}</p>
-          </section>
-        }
-      </div>
-      <div jb-section>
-        <aside jb-card heading="Details" headingId="det">
-          <dl jb-description-list style="margin-top: var(--space-4)">
-            @for (detail of details(); track detail.term) {
-              <div jb-description-item [term]="detail.term" [value]="detail.value"></div>
-            }
-          </dl>
+          <section
+            jb-host-card
+            [name]="listing.ownerName ?? listing.name"
+            [about]="listing.about"
+          ></section>
         </aside>
       </div>
-    </div>
-    @if (listing.related.length) {
-      <section
-        jb-section
-        divided
-        [heading]="'More in ' + listing.category.name"
-        headingId="more"
-        actionLabel="See all"
-        [actionLink]="['/c', listing.category.slug]"
-      >
-        <ul jb-card-grid>
-          @for (business of listing.related; track business.slug) {
-            <li>
-              <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>
-            </li>
+      @if (listing.relatedSpaces.length) {
+        <section
+          jb-section
+          divided
+          heading="More rooms & rentals"
+          headingId="more"
+          actionLabel="See all"
+          [actionLink]="['/c', listing.category.slug]"
+        >
+          <ul jb-card-grid>
+            @for (other of listing.relatedSpaces; track other.slug) {
+              <li>
+                <a jb-space-card [space]="other" [routerLink]="['/b', other.slug]"></a>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    } @else {
+      <div class="split" style="margin-top: var(--space-2)">
+        <div>
+          @if (tile(); as media) {
+            <div jb-media-tile [tint]="media.tint" [icon]="media.icon" [tag]="media.label"></div>
           }
-        </ul>
-      </section>
+        </div>
+        <div jb-detail-head class="split__sticky">
+          <p jb-verified-business-label [category]="listing.category"></p>
+          <h1>{{ listing.name }}</h1>
+          @if (listing.ownerName) {
+            <p>
+              <strong>{{ listing.ownerName }}</strong>
+            </p>
+          }
+          <p class="lead">{{ listing.tagline }}</p>
+          @if (listing.credentials.length) {
+            <div class="cluster" style="gap: var(--space-2)">
+              @for (credential of listing.credentials; track $index) {
+                <span jb-tag>{{ credential }}</span>
+              }
+            </div>
+          }
+          <div jb-detail-head-actions>
+            @if (isOwner) {
+              <a jb-button variant="primary" size="lg" routerLink="/my-business/edit"
+                ><svg jb-icon name="edit"></svg>Edit listing</a
+              >
+              <a jb-button iconOnly [routerLink]="link('share')" aria-label="Share listing"
+                ><svg jb-icon name="share"></svg
+              ></a>
+            } @else {
+              @if (isShop && hasProducts) {
+                <a jb-button variant="primary" size="lg" [routerLink]="[]" fragment="products"
+                  ><svg jb-icon name="bag"></svg>Shop products</a
+                >
+              } @else if (!isShop && hasServices) {
+                <a
+                  jbRequiresConnection
+                  jb-button
+                  variant="primary"
+                  size="lg"
+                  [routerLink]="link('book')"
+                  ><svg jb-icon name="calendar"></svg>Book a meeting</a
+                >
+              } @else {
+                <a
+                  jbRequiresConnection
+                  jb-button
+                  variant="primary"
+                  size="lg"
+                  [routerLink]="link('message')"
+                  ><svg jb-icon name="message"></svg>Send a message</a
+                >
+              }
+              <a
+                jbRequiresConnection
+                jb-button
+                iconOnly
+                size="lg"
+                [routerLink]="link('message')"
+                aria-label="Message"
+                style="width: var(--control-height-lg)"
+                ><svg jb-icon name="message"></svg
+              ></a>
+              <button
+                #saveButton
+                jbRequiresConnection
+                jb-button
+                iconOnly
+                size="lg"
+                type="button"
+                [attr.aria-label]="saved() ? 'Saved. Remove from saved' : 'Save'"
+                [attr.aria-pressed]="saved()"
+                [style.color]="saved() ? 'var(--color-danger-solid)' : null"
+                style="width: var(--control-height-lg)"
+                (click)="toggleSave(listing, saveButton.element)"
+              >
+                <svg jb-icon name="heart"></svg>
+              </button>
+              <a
+                jb-button
+                iconOnly
+                size="lg"
+                [routerLink]="link('share')"
+                aria-label="Share"
+                style="width: var(--control-height-lg)"
+                ><svg jb-icon name="share"></svg
+              ></a>
+            }
+          </div>
+          @if (listing.highlight) {
+            <p jb-perk>{{ listing.highlight }}</p>
+          }
+        </div>
+      </div>
+      <div class="split">
+        <div>
+          @if (isShop) {
+            <section jb-section heading="Products" headingId="products">
+              @if (hasProducts) {
+                <span slot="action" class="text-caption"
+                  >{{ listing.productCount | jbCount }}
+                  {{ listing.productCount === 1 ? 'product' : 'products' }}</span
+                >
+              }
+              @if (hasProducts) {
+                <ul jb-card-grid columns="3">
+                  @for (product of listing.products; track product.slug) {
+                    <li>
+                      <a
+                        jb-product-card
+                        [product]="product"
+                        [showShop]="false"
+                        [routerLink]="['/b', listing.slug, 'p', product.slug]"
+                      ></a>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <div
+                  jb-empty-state
+                  icon="bag"
+                  heading="No products yet"
+                  [level]="3"
+                  [compact]="true"
+                >
+                  {{ listing.name }} is setting up shop. Message them to ask what’s coming.
+                  <a slot="actions" jb-button variant="primary" [routerLink]="link('message')"
+                    ><svg jb-icon name="message"></svg>Send a message</a
+                  >
+                </div>
+              }
+            </section>
+            @if (hasServices) {
+              <section jb-section heading="Custom work" headingId="custom">
+                <ul jb-rows>
+                  @for (service of listing.services; track service.id) {
+                    <li jb-service-row [service]="service" [actionLink]="link('quote')"></li>
+                  }
+                </ul>
+              </section>
+            }
+          } @else {
+            <section jb-section heading="Services" headingId="svc">
+              @if (hasServices) {
+                <ul jb-rows>
+                  @for (service of listing.services; track service.id) {
+                    <li
+                      jb-service-row
+                      [service]="service"
+                      [actionLink]="link(service.action === 'book' ? 'book' : 'quote')"
+                    ></li>
+                  }
+                </ul>
+              } @else {
+                <div
+                  jb-empty-state
+                  icon="calendar"
+                  heading="No services listed yet"
+                  [level]="3"
+                  [compact]="true"
+                >
+                  {{ listing.name }} is new on Jubilee and hasn’t added services. You can still
+                  message them to ask what they offer.
+                  <a slot="actions" jb-button variant="primary" [routerLink]="link('message')"
+                    ><svg jb-icon name="message"></svg>Send a message</a
+                  >
+                </div>
+              }
+            </section>
+          }
+          @if (listing.about) {
+            <section jb-section labelledBy="about">
+              <h2 id="about">About</h2>
+              <p style="margin-top: var(--space-3)">{{ listing.about }}</p>
+            </section>
+          }
+        </div>
+        <div jb-section>
+          <aside jb-card heading="Details" headingId="det">
+            <dl jb-description-list style="margin-top: var(--space-4)">
+              @for (detail of details(); track detail.term) {
+                <div jb-description-item [term]="detail.term" [value]="detail.value"></div>
+              }
+            </dl>
+          </aside>
+        </div>
+      </div>
+      @if (listing.related.length) {
+        <section
+          jb-section
+          divided
+          [heading]="'More in ' + listing.category.name"
+          headingId="more"
+          actionLabel="See all"
+          [actionLink]="['/c', listing.category.slug]"
+        >
+          <ul jb-card-grid>
+            @for (business of listing.related; track business.slug) {
+              <li>
+                <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>
+              </li>
+            }
+          </ul>
+        </section>
+      }
     }
     @if (!isOwner) {
       <p class="text-caption" style="margin-top: var(--space-8)">
@@ -262,6 +414,20 @@
           ><svg jb-icon name="flag" size="sm"></svg> Report this listing</a
         >
       </p>
+    }
+    @if (listing.space; as space) {
+      @if (!isOwner && !listing.openRequestId) {
+        <jb-booking-bar [rent]="space.rent" [per]="space.per">
+          <a
+            jbRequiresConnection
+            jb-button
+            variant="primary"
+            size="lg"
+            [routerLink]="link('request')"
+            >{{ space.callToAction }}</a
+          >
+        </jb-booking-bar>
+      }
     }
   }
 }

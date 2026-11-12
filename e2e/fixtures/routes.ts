@@ -17,6 +17,8 @@ export type StubName =
   | 'category-long'
   | 'category-not-found'
   | 'browse-rooms-empty'
+  | 'space-loading'
+  | 'space-error'
   | 'rooms-empty'
   | 'business-loading'
   | 'business-error'
@@ -562,6 +564,46 @@ export const routes = {
     mock: 'pages/business/owner.html',
     who: 'member',
     stub: 'business-owner',
+  },
+  'space.short-stay': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/short-stay.html',
+    who: 'member',
+  },
+  'space.long-term': {
+    app: '/b/annex-basement-apartment',
+    mock: 'pages/space/long-term.html',
+    who: 'member',
+  },
+  'space.room': {
+    app: '/b/leslieville-family-room',
+    mock: 'pages/space/room.html',
+    who: 'member',
+  },
+  'space.roommate': {
+    app: '/b/east-york-roommate',
+    mock: 'pages/space/roommate.html',
+    who: 'member',
+  },
+  'space.signed-out': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/signed-out.html',
+    who: 'visitor',
+  },
+  // Opened from the Rooms & rentals category, so the page knows it is loading a space.
+  'space.loading': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/loading.html',
+    who: 'member',
+    stub: 'space-loading',
+    via: '/c/rooms-rentals',
+  },
+  'space.error': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/error.html',
+    who: 'member',
+    stub: 'space-error',
+    via: '/c/rooms-rentals',
   },
   shop: { app: '/b/luzandre', mock: 'pages/shop/default.html', who: 'member' },
   'shop.loading': {

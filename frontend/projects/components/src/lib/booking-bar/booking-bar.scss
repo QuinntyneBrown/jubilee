@@ -1,0 +1,40 @@
+// Block: booking-bar. The host is a spacer in the flow as tall as the bar it holds.
+:host {
+  display: block;
+  height: calc(var(--control-height-lg) + var(--space-6));
+}
+
+.booking-bar {
+  position: fixed;
+  inset: auto 0 calc(var(--layout-tabbar-height) + env(safe-area-inset-bottom)) 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--layout-margin);
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+  background: var(--color-bg-surface);
+}
+
+.booking-bar__price {
+  min-width: 0;
+  margin-right: auto;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-stretch: var(--font-stretch-wide);
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+.booking-bar__unit {
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+@media (min-width: 48rem) {
+  :host,
+  .booking-bar {
+    display: none;
+  }
+}

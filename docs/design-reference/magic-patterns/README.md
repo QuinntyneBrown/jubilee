@@ -119,6 +119,15 @@ it changes how the product looks, which a component move must not do.
 | Back link (`business-services-1280.png`) | a smaller arrow, closer to the words, Inter | the arrow at `--icon-size-md`, `--space-2` from the words, system text face |
 | Hero (`home-1280.png`) | heading on two lines, chips at regular weight, the page 1216 px wide | heading held to `18ch` (three lines), semibold chips, a 1184 px container |
 | Search field (top bar, `home-1280.png`) | 452 px wide, 12 px radius, Inter | a pill (`--radius-full`) that shares the bar with the navigation, system text face |
+| Space card (`browse-rooms-shelf-1280.png`) | a photo for each space, the shelf in another order | a tinted tile by term until spaces have photos (L2-088) |
+| Term filter (`browse-rooms-shelf-1280.png`) | filled ink chips, Inter | the plain chip row, system text face |
+| Booking card (`space-short-stay-1280.png`, `space-room-1280.png`) | dates (check-in and out, or move-in and stay) and a total in the card | the rent, the minimum stay and the call to action; the dates are asked in the request dialog (ADR 0040) |
+| Space facts (`space-short-stay-1280.png`) | a 794 px main column | the split’s 704 px main column |
+| Rental rows (`space-short-stay-1280.png`) | 12 px above and below each row, a 794 px main column | `--space-2` above and below, the split’s 704 px main column |
+| Included list (`space-short-stay-1280.png`) | other inclusions for the suite (fresh linens, coffee) | the seeded inclusions |
+| House rules (`space-short-stay-1280.png`) | a lighter rule beside each line, wider spacing | `--color-border-strong`, `--space-2` between rules |
+| Household (`space-room-1280.png`) | each member listed with an initial | the household as the owner wrote it, one text (L2-190) |
+| Host card (`space-short-stay-1280.png`) | a 362 px side column, the name in Inter | the split’s wider side column, the name in `--text-h4` |
 
 ## Refreshing
 

@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { LISTINGS_API, ListingPage, ReplyTimeBand } from 'api';
+import { LISTINGS_API, ListingPage, ReplyTimeBand, SpaceDetails } from 'api';
 import {
   BusinessCard,
   CountPipe,
@@ -40,6 +40,19 @@ import {
   DescriptionItem,
   CardGrid,
   CardGridSkeleton,
+  BookingBar,
+  BookingCard,
+  BookingSent,
+  DetailHeadKicker,
+  HostCard,
+  HouseRules,
+  Household,
+  IncludedList,
+  SpaceCard,
+  SpaceFacts,
+  TERM_TILES,
+  availability,
+  formatRent,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
@@ -123,6 +136,15 @@ interface DetailRow {
     DescriptionItem,
     CardGrid,
     CardGridSkeleton,
+    BookingBar,
+    BookingCard,
+    DetailHeadKicker,
+    HostCard,
+    HouseRules,
+    Household,
+    IncludedList,
+    SpaceCard,
+    SpaceFacts,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -158,12 +180,42 @@ export class BusinessPage {
     );
   });
 
-  /** What the page calls the listing: a shop, or a business. Known before it loads when the
-   * listing was reached from a list (L2-034 AC4). */
+  /** What the page calls the listing: a shop, a space or a business. Known before it loads when
+   * the listing was reached from a list (L2-034 AC4, L2-196 AC5). */
   protected readonly thing = computed(() => {
     const state = this.state();
     const kind = state.status === 'loaded' ? state.value.kind : this.hints.kindOf(this.slugValue());
-    return kind === 'shop' ? 'shop' : 'business';
+    return kind === 'shop' ? 'shop' : kind === 'space' ? 'space' : 'business';
+  });
+
+  /** The rows under the facts of a space (L2-196 AC1): when, how long, where and the rent. */
+  protected readonly spaceRows = computed<DetailRow[]>(() => {
+    const state = this.state();
+    const space = state.status === 'loaded' ? state.value.space : null;
+    if (!space) return [];
+    const available = availability(space.term, space.available);
+    const rows: (DetailRow | null)[] = [
+      row('Available', available === 'Available now' ? 'Now' : available),
+      row('Minimum stay', space.minimumStayLabel),
+      row('Neighbourhood', space.neighbourhood),
+      row('Rent', `${formatRent(space.rent)} per ${space.per}`),
+    ];
+    return rows.filter((r): r is DetailRow => r !== null);
+  });
+
+  /** The member's open request on the space: the card says it went (L2-197). */
+  protected readonly sent = computed<BookingSent | null>(() => {
+    const state = this.state();
+    if (state.status !== 'loaded' || !state.value.openRequestId) return null;
+    const listing = state.value;
+    const host = listing.ownerName?.split(/[ ,&]/)[0].trim() || listing.name;
+    const replies = listing.details.replies
+      ? `, ${WHO_REPLIES[listing.details.replies].replace('replies ', '')}`
+      : '';
+    return {
+      heading: `Sent to ${host}`,
+      text: `You’ll hear back in Messages${replies}. The exact address is shared once they accept.`,
+    };
   });
 
   protected readonly tile = computed(() => {
@@ -418,6 +470,11 @@ export class BusinessPage {
       return;
     }
     this.savedStore.toggle({ kind: 'business', slug: listing.slug, name: listing.name });
+  }
+
+  /** The tile that stands for a space's photo, by its term. */
+  protected spaceTile(space: SpaceDetails): (typeof TERM_TILES)[keyof typeof TERM_TILES] {
+    return TERM_TILES[space.term];
   }
 
   /** The route of an action of a later journey on this listing (ADR 0007). */

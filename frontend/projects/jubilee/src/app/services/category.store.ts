@@ -77,6 +77,7 @@ export class CategoryStore {
       next: (value) => {
         this.updating.set(false);
         this.hints.rememberCategory(value.businesses, value.category.slug);
+        this.hints.rememberSpaces(value.spaces);
         this.currentState.set({ status: 'loaded', value });
         // The server replaces an out-of-range page with the nearest valid one (L2-026).
         if (value.page !== query.page) this.navigate({ ...query, page: value.page }, true);

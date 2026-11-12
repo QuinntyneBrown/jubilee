@@ -21,6 +21,11 @@ export class ListingHints {
     }
   }
 
+  /** Remembers spaces seen on the rooms shelf, in Rooms & rentals or in search. */
+  rememberSpaces(spaces: readonly { slug: string; name: string }[]): void {
+    for (const space of spaces) this.remember(space.slug, 'space', space.name);
+  }
+
   remember(slug: string, kind: ListingKind, name: string): void {
     this.kinds.set(slug, kind);
     this.names.set(slug, name);

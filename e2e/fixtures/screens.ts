@@ -11,6 +11,7 @@ import { BrowsePage } from '../pages/browse.page';
 import { BusinessLoadingScreen, BusinessPage } from '../pages/business.page';
 import { CategoryFiltersScreen, CategoryPage } from '../pages/category.page';
 import { ForbiddenPage } from '../pages/forbidden.page';
+import { SpacePage } from '../pages/space.page';
 import { NotFoundPage } from '../pages/not-found.page';
 import {
   ProductInvalidScreen,
@@ -141,15 +142,28 @@ export const screens: {
   { key: 'browse.empty', screen: (page) => new BrowsePage(page) },
   { key: 'browse.error', screen: (page) => new BrowsePage(page) },
   { key: 'browse.edge', screen: (page) => new BrowsePage(page) },
+  { key: 'browse.rooms-term', screen: (page) => new BrowsePage(page) },
+  { key: 'browse.rooms-empty', screen: (page) => new BrowsePage(page) },
   { key: 'category', screen: (page) => new CategoryPage(page) },
   { key: 'category.loading', screen: (page) => new CategoryPage(page) },
   { key: 'category.empty', screen: (page) => new CategoryPage(page) },
   { key: 'category.error', screen: (page) => new CategoryPage(page) },
   { key: 'category.no-results', screen: (page) => new CategoryPage(page) },
   { key: 'category.long', screen: (page) => new CategoryPage(page) },
+  { key: 'category.rooms-rentals', screen: (page) => new CategoryPage(page) },
+  { key: 'category.rooms-rentals-empty', screen: (page) => new CategoryPage(page) },
+  { key: 'category.rooms-rentals-loading', screen: (page) => new CategoryPage(page) },
+  { key: 'category.rooms-rentals-error', screen: (page) => new CategoryPage(page) },
   // The filters sheet is the under-768 px form of the filters.
   { key: 'filters', screen: (page) => new CategoryFiltersScreen(page), below: 768 },
   { key: 'business', screen: (page) => new BusinessPage(page) },
+  { key: 'space.short-stay', screen: (page) => new SpacePage(page) },
+  { key: 'space.long-term', screen: (page) => new SpacePage(page) },
+  { key: 'space.room', screen: (page) => new SpacePage(page) },
+  { key: 'space.roommate', screen: (page) => new SpacePage(page) },
+  { key: 'space.signed-out', screen: (page) => new SpacePage(page) },
+  { key: 'space.loading', screen: (page) => new SpacePage(page) },
+  { key: 'space.error', screen: (page) => new SpacePage(page) },
   { key: 'business.loading', screen: (page) => new BusinessLoadingScreen(page) },
   { key: 'business.error', screen: (page) => new BusinessPage(page) },
   { key: 'business.empty', screen: (page) => new BusinessPage(page) },
@@ -175,7 +189,10 @@ export const screens: {
   { key: 'conversation.menu', screen: (page) => new ConversationMenuScreen(page) },
   { key: 'conversation.muted', screen: (page) => new ConversationMenuScreen(page) },
   { key: 'conversation.photo', screen: (page) => new ConversationPage(page) },
-  { key: 'conversation.photo-attached', screen: (page) => new ConversationPhotoAttachedScreen(page) },
+  {
+    key: 'conversation.photo-attached',
+    screen: (page) => new ConversationPhotoAttachedScreen(page),
+  },
   { key: 'conversation.photo-sending', screen: (page) => new ConversationPhotoSendingScreen(page) },
   { key: 'conversation.requests', screen: (page) => new ConversationRequestsScreen(page) },
   { key: 'conversation.arrived', screen: (page) => new ConversationPage(page) },

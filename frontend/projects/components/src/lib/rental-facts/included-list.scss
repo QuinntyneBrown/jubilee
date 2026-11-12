@@ -1,0 +1,16 @@
+// Block: included-list. The host is the list.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.included-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  --jb-icon-color: var(--color-success-icon);
+}

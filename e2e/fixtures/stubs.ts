@@ -24,6 +24,7 @@ const home = '**/api/directory/home';
 const categoryListings = '**/api/categories/*/listings?*';
 const legacyFinancial = '**/api/listings/legacy-financial';
 const luzandre = '**/api/listings/luzandre';
+const roncesvalles = '**/api/listings/roncesvalles-guest-suite';
 const tee = '**/api/listings/luzandre/products/faith-heavyweight-tee-charcoal';
 
 /** The ProblemDetails the API sends when a directory read cannot be served (L2-118). */
@@ -214,6 +215,10 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return page.route(categoryListings, (route) =>
         route.fulfill({ json: categoryPageFromMock('long') }),
       );
+    case 'space-loading':
+      return page.route(roncesvalles, pending);
+    case 'space-error':
+      return page.route(roncesvalles, (route) => route.fulfill(unavailable('JB-BIZ-503')));
     case 'business-loading':
       return page.route(legacyFinancial, pending);
     case 'business-error':
