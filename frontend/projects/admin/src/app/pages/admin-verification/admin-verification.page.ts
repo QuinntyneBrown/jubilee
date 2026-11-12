@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ADMIN_API, DecisionResult, ReferenceState, VerificationReview } from 'api';
+import { ADMIN_API, DecisionResult, ReferenceState, ReviewSpace, VerificationReview } from 'api';
 import {
   EmptyState,
   Icon,
@@ -26,6 +26,9 @@ import {
   DescriptionList,
   DescriptionItem,
   BusinessCardPreview,
+  SpaceCardPreview,
+  SpaceCardView,
+  formatRent,
 } from 'components';
 import {
   ApproveListingDialog,
@@ -47,6 +50,14 @@ const ANSWERS: Record<string, { label: string; tone: BadgeTone }> = {
   vouches: { label: 'Knows them and can vouch', tone: 'success' },
   'cant-vouch': { label: 'Knows them but can’t vouch', tone: 'danger' },
   'doesnt-know': { label: 'Doesn’t know them', tone: 'danger' },
+};
+
+/** A space's term as the owner chose it (L2-188). */
+const TERM_NAMES: Record<ReviewSpace['term'], string> = {
+  'short-stay': 'Short stay',
+  'long-term': 'Long term',
+  room: 'Room',
+  roommate: 'Roommate',
 };
 
 const WAITING_STATES: ReferenceState[] = ['waiting', 'expired', 'deleted'];
@@ -73,6 +84,7 @@ const WAITING_STATES: ReferenceState[] = ['waiting', 'expired', 'deleted'];
     DescriptionList,
     DescriptionItem,
     BusinessCardPreview,
+    SpaceCardPreview,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -120,6 +132,38 @@ export class AdminVerificationPage implements OnInit {
   protected readonly answer = computed(() => {
     const answer = this.review()?.reference.answer;
     return answer ? ANSWERS[answer] : null;
+  });
+  /** A space's rows, in the order the owner filled them in (L2-191 AC3). */
+  protected readonly spaceRows = computed(() => {
+    const space = this.review()?.space;
+    if (!space) return null;
+    const rows: { term: string; value: string }[] = [
+      { term: 'Term', value: TERM_NAMES[space.term] },
+      { term: 'Rent', value: `${formatRent(space.rent)} per ${space.per}` },
+      { term: 'Available', value: space.available },
+      { term: 'Minimum stay', value: space.minimumStayLabel },
+      { term: 'Neighbourhood', value: space.neighbourhood },
+      { term: 'The space', value: space.place },
+      { term: 'Key facts', value: space.facts.join(' · ') },
+      { term: 'What’s included', value: space.included.join(' · ') },
+    ];
+    if (space.household) rows.push({ term: 'Household', value: space.household });
+    rows.push({ term: 'House rules', value: space.rules.join(' · ') });
+    return rows.filter((row) => row.value !== '');
+  });
+  protected readonly spacePreview = computed<SpaceCardView | null>(() => {
+    const review = this.review();
+    const space = review?.space;
+    if (!review || !space) return null;
+    return {
+      name: review.name,
+      term: space.term,
+      rent: space.rent,
+      per: space.per,
+      facts: space.facts,
+      neighbourhood: space.neighbourhood,
+      available: space.available,
+    };
   });
   protected readonly noAnswer = computed(() => {
     const state = this.review()?.reference.state;

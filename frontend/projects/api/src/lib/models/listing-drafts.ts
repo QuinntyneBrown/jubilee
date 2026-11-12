@@ -1,4 +1,6 @@
-export type OfferKind = 'products' | 'services';
+import type { SpaceTerm } from './directory';
+
+export type OfferKind = 'products' | 'services' | 'space';
 
 export type ItemPriceKind = 'free' | 'amount' | 'ask';
 
@@ -9,6 +11,26 @@ export interface DraftItem {
   detail: string | null;
   priceKind: ItemPriceKind;
   priceCents: number | null;
+}
+
+/**
+ * The rental fields of a space (L2-190). The exact address goes only to the owner and, once
+ * they accept, to that renter (L2-199).
+ */
+export interface SpaceDraft {
+  term: SpaceTerm;
+  /** Whole dollars per night or per month; null until given. */
+  rent: number | null;
+  available: string;
+  /** Nights for a Short stay, months otherwise. */
+  minimumStay: number;
+  neighbourhood: string;
+  address: string;
+  place: string;
+  facts: string[];
+  included: string[];
+  household: string | null;
+  rules: string[];
 }
 
 /** The listing form as saved on the server (L2-077). */
@@ -26,6 +48,8 @@ export interface ListingDraft {
   agreed: boolean;
   updatedAt: string;
   items: DraftItem[];
+  /** The rental fields; null unless the draft is a space. */
+  space?: SpaceDraft | null;
 }
 
 /** What a save or a submit sends: the form, and for a submit the key that makes a repeat safe. */
@@ -40,6 +64,7 @@ export interface ListingDraftBody {
   pastorEmail: string;
   agreed: boolean;
   items: DraftItem[];
+  space: SpaceDraft | null;
   idempotencyKey: string | null;
 }
 

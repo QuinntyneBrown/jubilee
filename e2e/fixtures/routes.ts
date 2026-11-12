@@ -119,6 +119,7 @@ export type StubName =
   | 'admin-review-approved'
   | 'admin-review-changes-requested'
   | 'admin-review-error'
+  | 'admin-review-space'
   | 'moderation-reports'
   | 'moderation-reports-empty'
   | 'moderation-reports-error'
@@ -426,6 +427,12 @@ export const routes = {
   'list-business': {
     app: '/list',
     mock: 'pages/list-business/default.html',
+    who: 'member',
+    stub: 'listing-draft',
+  },
+  'list-business.space': {
+    app: '/list?kind=space',
+    mock: 'pages/list-business/space.html',
     who: 'member',
     stub: 'listing-draft',
   },
@@ -1023,6 +1030,12 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'admin-review-changes-requested',
+  },
+  'admin-verification.space': {
+    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-verification/space.html',
+    who: 'member',
+    stub: 'admin-review-space',
   },
   'admin-verification.error': {
     app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',

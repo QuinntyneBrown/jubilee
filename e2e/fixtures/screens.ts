@@ -126,6 +126,7 @@ export const screens: {
     key: 'admin-verification.changes-requested',
     screen: (page) => new AdminVerificationPage(page),
   },
+  { key: 'admin-verification.space', screen: (page) => new AdminVerificationPage(page) },
   { key: 'admin-verification.error', screen: (page) => new AdminVerificationPage(page) },
   { key: 'admin-reports', screen: (page) => new AdminReportsPage(page) },
   { key: 'admin-reports.empty', screen: (page) => new AdminReportsPage(page) },

@@ -24,7 +24,38 @@ export interface FakeAdmin {
   declines: { id: string; reason: string }[];
   /** The staff session the admin application reads. */
   staff: FakeStaff;
+  /** Fields that replace the opened listing's, such as a space's `kind` and `space`. */
+  listing: Record<string, unknown>;
 }
+
+/** A space under review (L2-191 AC3): the fields that replace the business of the default review. */
+export const SPACE_REVIEW = {
+  name: 'Bright basement apartment in the Annex',
+  tagline: 'Quiet one-bedroom with its own entrance, near the subway',
+  kind: 'space',
+  categorySlug: 'rooms-rentals',
+  categoryName: 'Rooms & rentals',
+  owner: {
+    name: 'Grace Okafor',
+    email: 'grace@okafor.example',
+    emailConfirmed: true,
+    memberSince: '2026-05-01T00:00:00Z',
+    otherListings: 0,
+  },
+  space: {
+    term: 'long-term',
+    rent: 1850,
+    per: 'month',
+    available: 'Dec 1',
+    minimumStayLabel: '12-month lease',
+    neighbourhood: 'The Annex',
+    place: 'Basement apartment',
+    facts: ['1 bedroom', '1 bath', '650 sq ft', 'Separate entrance'],
+    included: ['Utilities', 'Wi-Fi', 'Laundry', 'Private bath'],
+    household: null,
+    rules: ['No smoking', 'Quiet after 10 pm', 'One small pet considered'],
+  },
+};
 
 const problem = (status: number, body: object) => ({
   status,
@@ -133,6 +164,7 @@ export async function stubAdmin(
     changeRequests: [],
     declines: [],
     staff: undefined as unknown as FakeStaff,
+    listing: {},
     ...initial,
   };
 
@@ -199,6 +231,7 @@ export async function stubAdmin(
     changedSinceRequest: [],
     isOwnListing: fake.isOwnListing,
     cannotDecideBecause: fake.cannotDecideBecause,
+    ...fake.listing,
   });
 
   const result = (stage: string, label: string) => ({

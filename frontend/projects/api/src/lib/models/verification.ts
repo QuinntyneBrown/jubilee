@@ -91,6 +91,23 @@ export interface VerificationReview {
   changedSinceRequest: string[];
   isOwnListing: boolean;
   cannotDecideBecause: string | null;
+  /** A space's details; null for a business (L2-191 AC3). */
+  space?: ReviewSpace | null;
+}
+
+/** What the team reads of a space: every field but its exact address (L2-191 AC3). */
+export interface ReviewSpace {
+  term: 'short-stay' | 'long-term' | 'room' | 'roommate';
+  rent: number;
+  per: 'night' | 'month';
+  available: string;
+  minimumStayLabel: string;
+  neighbourhood: string;
+  place: string;
+  facts: string[];
+  included: string[];
+  household: string | null;
+  rules: string[];
 }
 
 /** The answer of the three decisions. */

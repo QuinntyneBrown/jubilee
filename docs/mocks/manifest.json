@@ -715,7 +715,8 @@
         "loading",
         "error",
         "approved",
-        "changes-requested"
+        "changes-requested",
+        "space"
       ],
       "not_applicable": {
         "empty": "A review page shows one listing; it has no collection that could be empty."

@@ -17,10 +17,18 @@ import {
   ListingDraft,
   ListingDraftBody,
   OfferKind,
+  SpaceDraft,
+  SpaceTerm,
   SubmittedListing,
 } from 'api';
 import { FormsModule } from '@angular/forms';
 import {
+  Chip,
+  SpaceCardPreview,
+  SpaceCardView,
+  Textarea,
+  InputGroup,
+  InputAddon,
   Icon,
   MediaTile,
   categoryTile,
@@ -51,13 +59,92 @@ import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialo
 import { SessionService } from '../../services/session.service';
 import { clockTime, newKey } from 'api';
 
-type FieldName = 'name' | 'tagline' | 'categorySlug' | 'church' | 'pastorEmail' | 'agreed';
+type FieldName =
+  | 'name'
+  | 'tagline'
+  | 'categorySlug'
+  | 'rent'
+  | 'available'
+  | 'neighbourhood'
+  | 'address'
+  | 'household'
+  | 'church'
+  | 'pastorEmail'
+  | 'agreed';
+
+/** The server names a space's fields `space.rent` and so on (L2-190). */
+const SPACE_FIELDS: Record<string, FieldName> = {
+  'space.rent': 'rent',
+  'space.available': 'available',
+  'space.neighbourhood': 'neighbourhood',
+  'space.address': 'address',
+  'space.household': 'household',
+};
+
+/** The four terms as the form offers them (L2-190 AC1). */
+const TERM_CHOICES: readonly { value: SpaceTerm; label: string; text: string }[] = [
+  {
+    value: 'short-stay',
+    label: 'Short stays',
+    text: 'Nights or weekends: a guest suite, a hall by the hour.',
+  },
+  {
+    value: 'long-term',
+    label: 'Long term',
+    text: 'A whole apartment, suite or house, by the month.',
+  },
+  { value: 'room', label: 'Rooms', text: 'A private room in a home you live in.' },
+  { value: 'roommate', label: 'Roommates', text: 'Share a place you rent with someone new.' },
+];
+
+/** The minimum stays a term offers (L2-190 AC2): nights for a Short stay, months otherwise. */
+const NIGHTS = [
+  { value: '1', label: '1 night' },
+  { value: '2', label: '2 nights' },
+  { value: '3', label: '3 nights' },
+  { value: '7', label: '1 week' },
+];
+const MONTHS = [
+  { value: '1', label: 'Month to month' },
+  { value: '4', label: '4 months' },
+  { value: '6', label: '6 months' },
+  { value: '12', label: '12-month lease' },
+];
+
+/** "The space" (L2-190 AC3). */
+const PLACES = [
+  'Private room',
+  'Basement apartment',
+  'Guest suite',
+  'Entire house',
+  'Condo',
+  'Event hall',
+];
+
+/** "What’s included" (L2-190 AC3). */
+const INCLUSIONS = [
+  'Utilities',
+  'Wi-Fi',
+  'Laundry',
+  'Furnished',
+  'Parking',
+  'Private bath',
+  'Kitchen use',
+  'Pets OK',
+];
+
+const MAX_RENT = 50_000;
 
 /** The element each field's summary link and first-invalid focus go to. */
 const FIELD_ID: Record<FieldName, string> = {
   name: 'name',
   tagline: 'tagline',
   categorySlug: 'cat',
+  rent: 'price',
+  available: 'avail',
+  neighbourhood: 'area',
+  address: 'address',
+  household: 'household',
   church: 'ref-church',
   pastorEmail: 'ref-email',
   agreed: 'agree',
@@ -67,6 +154,11 @@ const FIELD_ORDER: FieldName[] = [
   'name',
   'tagline',
   'categorySlug',
+  'rent',
+  'available',
+  'neighbourhood',
+  'address',
+  'household',
   'church',
   'pastorEmail',
   'agreed',
@@ -75,16 +167,30 @@ const AUTOSAVE_MS = 10_000;
 const TAGLINE_MAX = 90;
 
 /** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
-export function messageFor(field: FieldName, code: string): string {
+export function messageFor(field: FieldName, code: string, space = false): string {
   if (code.startsWith('TOO_LONG')) {
     const n = code.split(':')[1] ?? '';
     return `Shorten this to ${TAGLINE_MAX} characters. It has ${n}.`;
   }
   switch (field) {
     case 'name':
-      return 'Enter your business name as customers know it.';
+      return space
+        ? 'Enter a title that says what it is and where.'
+        : 'Enter your business name as customers know it.';
     case 'tagline':
-      return 'Enter one line on what you do.';
+      return space ? 'Enter one line renters should know.' : 'Enter one line on what you do.';
+    case 'rent':
+      return code === 'TOO_HIGH'
+        ? 'Enter a rent of $50,000 or less.'
+        : 'Enter the rent in whole dollars, like 950.';
+    case 'available':
+      return 'Say when renters can move in, like Mar 1 or Now.';
+    case 'neighbourhood':
+      return 'Enter the neighbourhood, like The Annex.';
+    case 'address':
+      return 'Enter the exact address. Renters only see it once you accept them.';
+    case 'household':
+      return 'Tell renters who lives there in a line or two.';
     case 'categorySlug':
       return 'Choose a category.';
     case 'church':
@@ -94,21 +200,25 @@ export function messageFor(field: FieldName, code: string): string {
         ? 'Your reference must be someone other than you.'
         : 'Enter your pastor’s e-mail address, like name@church.ca.';
     case 'agreed':
-      return 'Agree to the statement of faith to submit your listing.';
+      return space
+        ? 'Agree to the statement of faith and the rental terms to submit your space.'
+        : 'Agree to the statement of faith to submit your listing.';
   }
 }
 
 /** The summary's shorter wording ("Enter your business name"). */
-function summaryFor(field: FieldName, code: string): string {
-  if (code.startsWith('TOO_LONG') || code === 'OWN_EMAIL') return messageFor(field, code);
-  const text = messageFor(field, code);
+function summaryFor(field: FieldName, code: string, space: boolean): string {
+  if (code.startsWith('TOO_LONG') || code === 'OWN_EMAIL') return messageFor(field, code, space);
+  const text = messageFor(field, code, space);
   switch (field) {
     case 'name':
-      return 'Enter your business name';
+      return space ? 'Enter a listing title' : 'Enter your business name';
     case 'pastorEmail':
       return 'Enter your pastor’s e-mail address';
     case 'agreed':
-      return 'Agree to the statement of faith';
+      return space
+        ? 'Agree to the statement of faith and the rental terms'
+        : 'Agree to the statement of faith';
     default:
       return text.replace(/\.$/, '');
   }
@@ -146,6 +256,11 @@ function summaryFor(field: FieldName, code: string): string {
     Price,
     EmptyState,
     BusinessCardPreview,
+    Chip,
+    SpaceCardPreview,
+    Textarea,
+    InputGroup,
+    InputAddon,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',
@@ -173,12 +288,28 @@ export class ListBusinessPage {
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
 
+  // A space (L2-189, L2-190).
+  protected readonly termChoices = TERM_CHOICES;
+  protected readonly places = PLACES;
+  protected readonly inclusions = INCLUSIONS;
+  protected readonly term = signal<SpaceTerm>('long-term');
+  protected readonly rent = signal('');
+  protected readonly available = signal('');
+  protected readonly minimumStay = signal('1');
+  protected readonly neighbourhood = signal('');
+  protected readonly address = signal('');
+  protected readonly spacePlace = signal(PLACES[0]);
+  protected readonly facts = signal('');
+  protected readonly included = signal<string[]>([]);
+  protected readonly household = signal('');
+  protected readonly rules = signal('');
+
   protected readonly errors = signal<Partial<Record<FieldName, string>>>({});
   protected readonly summary = computed(() =>
     FIELD_ORDER.filter((f) => this.errors()[f]).map((f) => ({
       field: f,
       id: FIELD_ID[f],
-      text: summaryFor(f, this.codes[f] ?? ''),
+      text: summaryFor(f, this.codes[f] ?? '', this.isSpace()),
     })),
   );
   protected readonly failed = signal('');
@@ -188,6 +319,28 @@ export class ListBusinessPage {
 
   protected readonly tile = computed(() => categoryTile(this.categorySlug()));
   protected readonly isServices = computed(() => this.kind() === 'services');
+  protected readonly isSpace = computed(() => this.kind() === 'space');
+  protected readonly nightly = computed(() => this.term() === 'short-stay');
+  protected readonly minimumChoices = computed(() => (this.nightly() ? NIGHTS : MONTHS));
+  /** A Room or a Roommate says who lives there (L2-190 AC4). */
+  protected readonly householdLabel = computed(() =>
+    this.term() === 'room'
+      ? 'Who lives in the home'
+      : this.term() === 'roommate'
+        ? 'Who you are, and who you’re looking for'
+        : null,
+  );
+
+  /** How renters will see the space while it is written (L2-189 AC3). */
+  protected readonly spacePreview = computed<SpaceCardView>(() => ({
+    name: this.name().trim() || 'Your listing title',
+    term: this.term(),
+    rent: wholeDollars(this.rent()) ?? 0,
+    per: this.nightly() ? 'night' : 'month',
+    facts: lines(this.facts()),
+    neighbourhood: this.neighbourhood().trim() || 'Neighbourhood',
+    available: this.available().trim(),
+  }));
   protected readonly placeLabel = computed(() =>
     this.isServices() ? 'Area you serve' : 'Store address',
   );
@@ -207,6 +360,8 @@ export class ListBusinessPage {
     this.loading.set(true);
     this.loadFailed.set(false);
     const wanted = this.route.snapshot.queryParamMap.get('draft');
+    // /list?kind=space opens the space form (L2-189 AC2); a saved draft has the last word.
+    if (this.route.snapshot.queryParamMap.get('kind') === 'space') this.kind.set('space');
     const source: Observable<ListingDraft | null> =
       wanted === 'new' ? of(null) : wanted ? this.api.get(wanted) : this.api.current();
     source.subscribe({
@@ -232,6 +387,38 @@ export class ListBusinessPage {
     this.pastorEmail.set(draft.pastorEmail);
     this.agreed.set(draft.agreed);
     this.items.set(draft.items);
+    const space = draft.space;
+    if (space) {
+      this.term.set(space.term);
+      this.rent.set(space.rent ? String(space.rent) : '');
+      this.available.set(space.available);
+      this.minimumStay.set(String(space.minimumStay));
+      this.neighbourhood.set(space.neighbourhood);
+      this.address.set(space.address);
+      this.spacePlace.set(space.place || PLACES[0]);
+      this.facts.set(space.facts.join('\n'));
+      this.included.set([...space.included]);
+      this.household.set(space.household ?? '');
+      this.rules.set(space.rules.join('\n'));
+    }
+  }
+
+  /** A change of term keeps what was typed; only a minimum stay the new term lacks resets (AC5). */
+  protected setTerm(term: SpaceTerm): void {
+    if (term === this.term()) return;
+    this.term.set(term);
+    if (!this.minimumChoices().some((c) => c.value === this.minimumStay())) {
+      this.minimumStay.set(this.minimumChoices()[0].value);
+    }
+    this.clear('household');
+    this.touched();
+  }
+
+  protected toggleIncluded(item: string): void {
+    this.included.update((list) =>
+      list.includes(item) ? list.filter((i) => i !== item) : [...list, item],
+    );
+    this.touched();
   }
 
   protected setKind(kind: OfferKind): void {
@@ -258,14 +445,31 @@ export class ListBusinessPage {
       kind: this.kind(),
       name: this.name().trim(),
       tagline: this.tagline().trim(),
-      categorySlug: this.categorySlug() || null,
+      categorySlug: this.isSpace() ? null : this.categorySlug() || null,
       highlight: null,
-      place: this.place().trim() || null,
+      place: this.isSpace() ? null : this.place().trim() || null,
       church: this.church().trim(),
       pastorEmail: this.pastorEmail().trim(),
       agreed: this.agreed(),
-      items: this.items(),
+      items: this.isSpace() ? [] : this.items(),
+      space: this.isSpace() ? this.spaceBody() : null,
       idempotencyKey: null,
+    };
+  }
+
+  private spaceBody(): SpaceDraft {
+    return {
+      term: this.term(),
+      rent: wholeDollars(this.rent()),
+      available: this.available().trim(),
+      minimumStay: Number(this.minimumStay()),
+      neighbourhood: this.neighbourhood().trim(),
+      address: this.address().trim(),
+      place: this.spacePlace(),
+      facts: lines(this.facts()),
+      included: INCLUSIONS.filter((item) => this.included().includes(item)),
+      household: this.householdLabel() ? this.household().trim() || null : null,
+      rules: lines(this.rules()),
     };
   }
 
@@ -315,7 +519,15 @@ export class ListBusinessPage {
     const tagline = this.tagline().trim();
     if (!tagline) codes.tagline = 'REQUIRED';
     else if (tagline.length > TAGLINE_MAX) codes.tagline = `TOO_LONG:${tagline.length}`;
-    if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
+    if (this.isSpace()) {
+      const rent = wholeDollars(this.rent());
+      if (!rent) codes.rent = 'REQUIRED';
+      else if (rent > MAX_RENT) codes.rent = 'TOO_HIGH';
+      if (!this.available().trim()) codes.available = 'REQUIRED';
+      if (!this.neighbourhood().trim()) codes.neighbourhood = 'REQUIRED';
+      if (!this.address().trim()) codes.address = 'REQUIRED';
+      if (this.householdLabel() && !this.household().trim()) codes.household = 'REQUIRED';
+    } else if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
     if (!this.church().trim()) codes.church = 'REQUIRED';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.pastorEmail().trim()))
       codes.pastorEmail = 'INVALID';
@@ -328,7 +540,7 @@ export class ListBusinessPage {
     const errors: Partial<Record<FieldName, string>> = {};
     for (const field of FIELD_ORDER) {
       const code = codes[field];
-      if (code) errors[field] = messageFor(field, code);
+      if (code) errors[field] = messageFor(field, code, this.isSpace());
     }
     this.errors.set(errors);
     if (Object.keys(errors).length) {
@@ -361,7 +573,7 @@ export class ListBusinessPage {
         error: (error) => {
           this.busy.set(false);
           if (error instanceof HttpErrorResponse && error.status === 422 && error.error?.errors) {
-            this.show(error.error.errors as Partial<Record<FieldName, string>>);
+            this.show(fieldCodes(error.error.errors as Record<string, string>));
             return;
           }
           this.failed.set(this.problemText(error));
@@ -380,4 +592,28 @@ export class ListBusinessPage {
     if (!this.errors()[field]) return;
     this.errors.update((e) => ({ ...e, [field]: undefined }));
   }
+}
+
+/** The server's codes by the form's field names: `space.rent` is the rent field. */
+function fieldCodes(errors: Record<string, string>): Partial<Record<FieldName, string>> {
+  const codes: Partial<Record<FieldName, string>> = {};
+  for (const [key, code] of Object.entries(errors)) {
+    const field = (SPACE_FIELDS[key] ?? key) as FieldName;
+    if (field in FIELD_ID) codes[field] = code;
+  }
+  return codes;
+}
+
+/** "1,850" or "$950" as whole dollars; null when there is no number. */
+function wholeDollars(text: string): number | null {
+  const digits = text.replace(/[^0-9]/g, '');
+  return digits ? Number(digits) : null;
+}
+
+/** One entry per line, without the empty ones (key facts, house rules). */
+function lines(text: string): string[] {
+  return text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
 }

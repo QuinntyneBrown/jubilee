@@ -4,7 +4,7 @@ import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './moc
 import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
-import { stubAdmin } from './admin';
+import { SPACE_REVIEW, stubAdmin } from './admin';
 import { daniel, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { stubIncoming } from './incoming-requests';
@@ -393,6 +393,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubAdmin(page, { stage: 'live' });
     case 'admin-review-changes-requested':
       return stubAdmin(page, { stage: 'changes-requested' });
+    case 'admin-review-space':
+      return stubAdmin(page, { listing: SPACE_REVIEW });
     case 'admin-review-error':
       return stubAdmin(page, { review: 'fails' });
     case 'moderation-reports':

@@ -128,6 +128,7 @@ it changes how the product looks, which a component move must not do.
 | House rules (`space-short-stay-1280.png`) | a lighter rule beside each line, wider spacing | `--color-border-strong`, `--space-2` between rules |
 | Household (`space-room-1280.png`) | each member listed with an initial | the household as the owner wrote it, one text (L2-190) |
 | Host card (`space-short-stay-1280.png`) | a 362 px side column, the name in Inter | the split’s wider side column, the name in `--text-h4` |
+| Space card preview (`list-a-space-1280.png`) | a photo, “From Mar 1”, nothing marked pending | the tinted tile by term until the owner adds photos, “Pending verification” until approved (L2-189 AC3) |
 
 ## Refreshing
 

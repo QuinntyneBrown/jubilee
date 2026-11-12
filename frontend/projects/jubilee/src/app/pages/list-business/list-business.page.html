@@ -11,9 +11,11 @@
         <a slot="actions" jb-button variant="primary" routerLink="/my-business"
           >Go to My business</a
         >
-        <a slot="actions" jb-button routerLink="/my-business">
-          {{ done.kind === 'services' ? 'Add more services' : 'Add more products' }}
-        </a>
+        @if (done.kind !== 'space') {
+          <a slot="actions" jb-button routerLink="/my-business">
+            {{ done.kind === 'services' ? 'Add more services' : 'Add more products' }}
+          </a>
+        }
       </div>
       <div jb-card heading="What happens next">
         <ol jb-timeline style="text-align: left; margin-top: var(--space-4)">
@@ -35,10 +37,15 @@
   } @else {
     <div class="split" style="margin-top: var(--space-6)">
       <div>
-        <h1>List your business</h1>
+        <h1>{{ isSpace() ? 'List a space' : 'List your business' }}</h1>
         <p class="subtitle" style="margin-bottom: var(--space-6)">
-          Free for Christian-owned businesses in Toronto. Every listing is verified with a church
-          reference.
+          @if (isSpace()) {
+            Free for Toronto’s Christian community. Every listing is verified with a church
+            reference.
+          } @else {
+            Free for Christian-owned businesses in Toronto. Every listing is verified with a church
+            reference.
+          }
         </p>
         @if (loading()) {
           <p class="visually-hidden" role="status">Loading your draft…</p>
@@ -81,7 +88,7 @@
           <form class="form" novalidate (submit)="$event.preventDefault(); submit()">
             <fieldset [disabled]="busy()">
               <legend>What do you offer?</legend>
-              <jb-choice-cards>
+              <jb-choice-cards columns="3">
                 <jb-choice-card
                   name="offer"
                   controlId="offer-p"
@@ -102,12 +109,30 @@
                   >Advisors, brokers, lawyers, trades, photographers, speakers,
                   lessons.</jb-choice-card
                 >
+                <jb-choice-card
+                  name="offer"
+                  controlId="offer-r"
+                  icon="key"
+                  heading="A space"
+                  [checked]="kind() === 'space'"
+                  (selected)="setKind('space')"
+                  >A room, suite, apartment or hall to rent.</jb-choice-card
+                >
               </jb-choice-cards>
               <p jb-field-help style="margin-top: var(--space-2)">
                 Offer both? Pick the main one now and add the other after you’re verified.
               </p>
             </fieldset>
-            <div jb-field label="Business name" controlId="name" required [error]="errors().name">
+            <div
+              jb-field
+              [label]="isSpace() ? 'Listing title' : 'Business name'"
+              [hint]="
+                isSpace() ? 'Say what it is and where: “Furnished room in Leslieville”.' : null
+              "
+              controlId="name"
+              required
+              [error]="errors().name"
+            >
               <input
                 jb-input
                 name="name"
@@ -121,7 +146,7 @@
             </div>
             <div
               jb-field
-              label="One line on what you do"
+              [label]="isSpace() ? 'One line renters should know' : 'One line on what you do'"
               controlId="tagline"
               required
               [hint]="
@@ -142,86 +167,282 @@
                 (ngModelChange)="tagline.set($event); clear('tagline'); touched()"
               />
             </div>
-            <div class="form-grid form-grid--2">
-              <div jb-field label="Category" controlId="cat" [error]="errors().categorySlug">
-                <select
-                  jb-select
-                  name="category"
-                  [ngModel]="categorySlug()"
-                  (ngModelChange)="categorySlug.set($event); clear('categorySlug'); touched()"
-                >
-                  @for (category of categories; track category.slug) {
-                    <option [value]="category.slug">{{ category.name }}</option>
-                  }
-                </select>
-              </div>
-              <div jb-field [label]="placeLabel()" controlId="area">
-                <input
-                  jb-input
-                  name="place"
-                  type="text"
-                  [readOnly]="busy()"
-                  [ngModel]="place()"
-                  (ngModelChange)="place.set($event); touched()"
-                />
-              </div>
-            </div>
-            <fieldset [disabled]="busy()">
-              <legend>{{ isServices() ? 'Services' : 'Products' }}</legend>
-              <p jb-field-help>
-                @if (isServices()) {
-                  Add a few to start. A price is optional; “Ask” is fine.
-                } @else {
-                  Add a few to start. You can add the rest later.
-                }
-              </p>
-              <ul jb-item-list style="margin-top: var(--space-2)">
-                @for (item of items(); track $index) {
-                  <li jb-item-list-item>
-                    @if (!isServices()) {
-                      <div
-                        jb-media-tile
-                        size="thumb"
-                        [tint]="tile().tint"
-                        [icon]="tile().icon"
-                      ></div>
-                    }
-                    <span jb-item-list-name
-                      >{{ item.name }}
-                      @if (item.detail) {
-                        <span class="text-muted"> · {{ item.detail }}</span>
-                      }
-                    </span>
-                    <span jb-price>
-                      @if (item.priceKind === 'amount' && item.priceCents !== null) {
-                        {{ format(item.priceCents) }}
-                      } @else if (item.priceKind === 'free') {
-                        Free
-                      } @else {
-                        Ask
-                      }
-                    </span>
-                    <button
-                      jb-button
-                      iconOnly
-                      variant="ghost"
-                      size="sm"
-                      type="button"
-                      [attr.aria-label]="'Remove ' + item.name"
-                      (click)="removeItem($index)"
+            @if (isSpace()) {
+              <fieldset [disabled]="busy()">
+                <legend>How are you renting it?</legend>
+                <jb-choice-cards>
+                  @for (choice of termChoices; track choice.value) {
+                    <jb-choice-card
+                      name="term"
+                      [controlId]="'term-' + choice.value"
+                      [heading]="choice.label"
+                      [checked]="term() === choice.value"
+                      (selected)="setTerm(choice.value)"
+                      >{{ choice.text }}</jb-choice-card
                     >
-                      <svg jb-icon name="close"></svg>
+                  }
+                </jb-choice-cards>
+              </fieldset>
+              <div class="form-grid form-grid--3">
+                <div
+                  jb-field
+                  [label]="nightly() ? 'Price per night' : 'Price per month'"
+                  controlId="price"
+                  required
+                  [error]="errors().rent"
+                >
+                  <jb-input-group>
+                    <span slot="prefix" jb-input-addon aria-hidden="true">$</span>
+                    <input
+                      jb-input
+                      name="rent"
+                      type="text"
+                      inputmode="numeric"
+                      required
+                      [readOnly]="busy()"
+                      [ngModel]="rent()"
+                      (ngModelChange)="rent.set($event); clear('rent'); touched()"
+                    />
+                  </jb-input-group>
+                </div>
+                <div
+                  jb-field
+                  [label]="nightly() ? 'Available' : 'Move-in date'"
+                  controlId="avail"
+                  required
+                  [error]="errors().available"
+                >
+                  <input
+                    jb-input
+                    name="available"
+                    type="text"
+                    required
+                    [readOnly]="busy()"
+                    [ngModel]="available()"
+                    (ngModelChange)="available.set($event); clear('available'); touched()"
+                  />
+                </div>
+                <div
+                  jb-field
+                  [label]="nightly() ? 'Minimum nights' : 'Minimum stay'"
+                  controlId="min"
+                >
+                  <select
+                    jb-select
+                    name="minimumStay"
+                    [disabled]="busy()"
+                    [ngModel]="minimumStay()"
+                    (ngModelChange)="minimumStay.set($event); touched()"
+                  >
+                    @for (choice of minimumChoices(); track choice.value) {
+                      <option [value]="choice.value">{{ choice.label }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+              <div class="form-grid form-grid--2">
+                <div
+                  jb-field
+                  label="Neighbourhood"
+                  hint="Your exact address is only shared once you accept a request."
+                  controlId="area"
+                  required
+                  [error]="errors().neighbourhood"
+                >
+                  <input
+                    jb-input
+                    name="neighbourhood"
+                    type="text"
+                    required
+                    [readOnly]="busy()"
+                    [ngModel]="neighbourhood()"
+                    (ngModelChange)="neighbourhood.set($event); clear('neighbourhood'); touched()"
+                  />
+                </div>
+                <div
+                  jb-field
+                  label="Exact address"
+                  hint="Only the renter whose request you accept sees it."
+                  controlId="address"
+                  required
+                  [error]="errors().address"
+                >
+                  <input
+                    jb-input
+                    name="address"
+                    type="text"
+                    autocomplete="street-address"
+                    required
+                    [readOnly]="busy()"
+                    [ngModel]="address()"
+                    (ngModelChange)="address.set($event); clear('address'); touched()"
+                  />
+                </div>
+              </div>
+              <div class="form-grid form-grid--2">
+                <div jb-field label="The space" controlId="place">
+                  <select
+                    jb-select
+                    name="spacePlace"
+                    [disabled]="busy()"
+                    [ngModel]="spacePlace()"
+                    (ngModelChange)="spacePlace.set($event); touched()"
+                  >
+                    @for (choice of places; track choice) {
+                      <option [value]="choice">{{ choice }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+              <div
+                jb-field
+                label="Key facts"
+                hint="One per line, like “1 bedroom” or “Separate entrance”. Up to four."
+                controlId="facts"
+                optional
+              >
+                <textarea
+                  jb-textarea
+                  name="facts"
+                  rows="4"
+                  [readOnly]="busy()"
+                  [ngModel]="facts()"
+                  (ngModelChange)="facts.set($event); touched()"
+                ></textarea>
+              </div>
+              <fieldset [disabled]="busy()">
+                <legend>What’s included</legend>
+                <div class="cluster" style="gap: var(--space-2)">
+                  @for (item of inclusions; track item) {
+                    <button
+                      jb-chip
+                      type="button"
+                      [selected]="included().includes(item)"
+                      (click)="toggleIncluded(item)"
+                    >
+                      {{ item }}
+                    </button>
+                  }
+                </div>
+              </fieldset>
+              @if (householdLabel(); as label) {
+                <div
+                  jb-field
+                  [label]="label"
+                  hint="Renters choose people as much as rooms. A few honest lines go a long way."
+                  controlId="household"
+                  required
+                  [error]="errors().household"
+                >
+                  <textarea
+                    jb-textarea
+                    name="household"
+                    rows="3"
+                    required
+                    [readOnly]="busy()"
+                    [ngModel]="household()"
+                    (ngModelChange)="household.set($event); clear('household'); touched()"
+                  ></textarea>
+                </div>
+              }
+              <div jb-field label="House rules" hint="One per line." controlId="rules" optional>
+                <textarea
+                  jb-textarea
+                  name="rules"
+                  rows="3"
+                  [readOnly]="busy()"
+                  [ngModel]="rules()"
+                  (ngModelChange)="rules.set($event); touched()"
+                ></textarea>
+              </div>
+              <fieldset>
+                <legend>Photos</legend>
+                <p jb-field-help>
+                  Add photos from My business once you submit. The first photo is your cover.
+                </p>
+              </fieldset>
+            } @else {
+              <div class="form-grid form-grid--2">
+                <div jb-field label="Category" controlId="cat" [error]="errors().categorySlug">
+                  <select
+                    jb-select
+                    name="category"
+                    [ngModel]="categorySlug()"
+                    (ngModelChange)="categorySlug.set($event); clear('categorySlug'); touched()"
+                  >
+                    @for (category of categories; track category.slug) {
+                      <option [value]="category.slug">{{ category.name }}</option>
+                    }
+                  </select>
+                </div>
+                <div jb-field [label]="placeLabel()" controlId="area">
+                  <input
+                    jb-input
+                    name="place"
+                    type="text"
+                    [readOnly]="busy()"
+                    [ngModel]="place()"
+                    (ngModelChange)="place.set($event); touched()"
+                  />
+                </div>
+              </div>
+              <fieldset [disabled]="busy()">
+                <legend>{{ isServices() ? 'Services' : 'Products' }}</legend>
+                <p jb-field-help>
+                  @if (isServices()) {
+                    Add a few to start. A price is optional; “Ask” is fine.
+                  } @else {
+                    Add a few to start. You can add the rest later.
+                  }
+                </p>
+                <ul jb-item-list style="margin-top: var(--space-2)">
+                  @for (item of items(); track $index) {
+                    <li jb-item-list-item>
+                      @if (!isServices()) {
+                        <div
+                          jb-media-tile
+                          size="thumb"
+                          [tint]="tile().tint"
+                          [icon]="tile().icon"
+                        ></div>
+                      }
+                      <span jb-item-list-name
+                        >{{ item.name }}
+                        @if (item.detail) {
+                          <span class="text-muted"> · {{ item.detail }}</span>
+                        }
+                      </span>
+                      <span jb-price>
+                        @if (item.priceKind === 'amount' && item.priceCents !== null) {
+                          {{ format(item.priceCents) }}
+                        } @else if (item.priceKind === 'free') {
+                          Free
+                        } @else {
+                          Ask
+                        }
+                      </span>
+                      <button
+                        jb-button
+                        iconOnly
+                        variant="ghost"
+                        size="sm"
+                        type="button"
+                        [attr.aria-label]="'Remove ' + item.name"
+                        (click)="removeItem($index)"
+                      >
+                        <svg jb-icon name="close"></svg>
+                      </button>
+                    </li>
+                  }
+                  <li jb-item-list-item>
+                    <button jb-button variant="link" type="button" (click)="addItem()">
+                      <svg jb-icon name="plus"></svg
+                      >{{ isServices() ? 'Add a service' : 'Add a product' }}
                     </button>
                   </li>
-                }
-                <li jb-item-list-item>
-                  <button jb-button variant="link" type="button" (click)="addItem()">
-                    <svg jb-icon name="plus"></svg
-                    >{{ isServices() ? 'Add a service' : 'Add a product' }}
-                  </button>
-                </li>
-              </ul>
-            </fieldset>
+                </ul>
+              </fieldset>
+            }
             <fieldset [disabled]="busy()">
               <legend>Church reference</legend>
               <p jb-field-help>
@@ -274,8 +495,12 @@
                 [describedBy]="errors().agreed ? 'agree-error' : null"
                 (checkedChange)="agreed.set($event); clear('agreed'); touched()"
                 >I agree to Jubilee’s
-                <a href="/statement-of-faith" target="_blank" rel="noopener">statement of faith</a>
-                and to deal honestly with every customer.</jb-checkbox
+                <a href="/statement-of-faith" target="_blank" rel="noopener">statement of faith</a
+                >{{
+                  isSpace()
+                    ? ', and confirm I’m allowed to rent this space and will follow Ontario’s tenancy rules.'
+                    : ' and to deal honestly with every customer.'
+                }}</jb-checkbox
               >
               @if (errors().agreed; as message) {
                 <span jb-field-error id="agree-error">{{ message }}</span>
@@ -311,16 +536,20 @@
           class="text-caption"
           style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3)"
         >
-          How members see you
+          {{ isSpace() ? 'How renters see it' : 'How members see you' }}
         </h2>
-        <div
-          jb-business-card-preview
-          [name]="name() || 'Your business name'"
-          [tagline]="tagline() || 'One line on what you do'"
-          [tint]="tile().tint"
-          [icon]="tile().icon"
-          [tag]="isServices() ? 'Business' : 'Shop'"
-        ></div>
+        @if (isSpace()) {
+          <div jb-space-card-preview [space]="spacePreview()"></div>
+        } @else {
+          <div
+            jb-business-card-preview
+            [name]="name() || 'Your business name'"
+            [tagline]="tagline() || 'One line on what you do'"
+            [tint]="tile().tint"
+            [icon]="tile().icon"
+            [tag]="isServices() ? 'Business' : 'Shop'"
+          ></div>
+        }
       </aside>
     </div>
   }
