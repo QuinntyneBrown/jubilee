@@ -28,7 +28,7 @@ public class SpacePageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task L2_196_AC1_a_space_page_has_its_rental_details_host_and_call_to_action()
+    public async Task L2_204_AC1_a_space_page_has_its_rental_details_host_and_call_to_action()
     {
         await _factory.Arrange(Suite());
 
@@ -59,7 +59,7 @@ public class SpacePageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     [InlineData(SpaceTerm.LongTerm, "Request a viewing")]
     [InlineData(SpaceTerm.Room, "Request a viewing")]
     [InlineData(SpaceTerm.Roommate, "Meet the household")]
-    public async Task L2_197_AC1_the_call_to_action_fits_the_term(SpaceTerm term, string callToAction)
+    public async Task L2_205_AC1_the_call_to_action_fits_the_term(SpaceTerm term, string callToAction)
     {
         await _factory.Arrange(ListingMother.Space("a-space", term));
 
@@ -70,7 +70,7 @@ public class SpacePageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task L2_196_AC2_a_room_shows_who_lives_there()
+    public async Task L2_204_AC2_a_room_shows_who_lives_there()
     {
         await _factory.Arrange(ListingMother.Space("leslieville-room", SpaceTerm.Room, household: "Ruth and Kwame with our daughter Abena."));
 
@@ -80,7 +80,7 @@ public class SpacePageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task L2_196_AC1_more_rooms_and_rentals_lists_up_to_four_other_spaces_newest_first()
+    public async Task L2_204_AC1_more_rooms_and_rentals_lists_up_to_four_other_spaces_newest_first()
     {
         await _factory.Arrange(
             Suite(),
@@ -97,7 +97,7 @@ public class SpacePageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task L2_196_a_business_page_has_no_space()
+    public async Task L2_204_a_business_page_has_no_space()
     {
         await _factory.Arrange(ListingMother.Public("plumber"));
 
@@ -108,7 +108,7 @@ public class SpacePageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task L2_196_AC6_L2_199_AC1_no_one_reads_the_exact_address_on_the_page()
+    public async Task L2_204_AC6_L2_207_AC1_no_one_reads_the_exact_address_on_the_page()
     {
         await _factory.Arrange(Suite());
 

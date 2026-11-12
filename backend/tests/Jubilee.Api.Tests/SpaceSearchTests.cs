@@ -23,7 +23,7 @@ public sealed class SpaceSearchTests : IClassFixture<JubileeApiFactory>, IAsyncL
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task L2_195_AC1_a_space_is_a_business_result_with_its_space_card()
+    public async Task L2_203_AC1_a_space_is_a_business_result_with_its_space_card()
     {
         var json = await _factory.GetJson("/api/search?q=room");
 
@@ -41,7 +41,7 @@ public sealed class SpaceSearchTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [InlineData("Leslieville", "neighbourhood")]
     [InlineData("entrance", "key facts")]
     [InlineData("basement", "the space")]
-    public async Task L2_195_AC2_a_space_is_found_by_its_neighbourhood_its_place_and_its_facts(string query, string field)
+    public async Task L2_203_AC2_a_space_is_found_by_its_neighbourhood_its_place_and_its_facts(string query, string field)
     {
         var hit = (await _factory.GetJson($"/api/search?q={query}")).GetProperty("hits")[0];
 
@@ -50,7 +50,7 @@ public sealed class SpaceSearchTests : IClassFixture<JubileeApiFactory>, IAsyncL
     }
 
     [Fact]
-    public async Task L2_195_AC3_the_address_is_never_searched_nor_answered()
+    public async Task L2_203_AC3_the_address_is_never_searched_nor_answered()
     {
         var raw = await _factory.CreateClient().GetStringAsync("/api/search?q=curzon");
         var room = await _factory.CreateClient().GetStringAsync("/api/search?q=room");
@@ -61,7 +61,7 @@ public sealed class SpaceSearchTests : IClassFixture<JubileeApiFactory>, IAsyncL
     }
 
     [Fact]
-    public async Task L2_195_a_business_result_has_no_space_card()
+    public async Task L2_203_a_business_result_has_no_space_card()
     {
         var hit = (await _factory.GetJson("/api/search?q=plumber")).GetProperty("hits")[0];
 

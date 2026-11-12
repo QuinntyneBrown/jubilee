@@ -296,7 +296,7 @@ public class VerifiedMarkTests
 public class CategoryCatalogueTests
 {
     [Fact]
-    public void L2_023_AC5_L2_188_AC4_the_eleven_categories_are_fixed_and_ordered()
+    public void L2_023_AC5_L2_196_AC4_the_eleven_categories_are_fixed_and_ordered()
     {
         Assert.Equal(
             [
