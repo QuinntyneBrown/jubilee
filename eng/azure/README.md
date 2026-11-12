@@ -95,6 +95,10 @@ deployment (ADR 0047); there is no step to run by hand.
   the time the marketing host received it. The container log says `Kept a launch submission (n
   waiting).` and `Sent n kept launch submissions (n waiting).`, with no personal data. Files 12
   months old are deleted unsent.
+- **Just after a deployment.** The plan is one B1 worker for the three sites, and it is at full
+  CPU for several minutes while they restart. A form sent then is usually kept, and reaches the
+  database a few minutes later, once the API answers within 8 seconds. The API does not count a
+  kept submission against the 5 an hour of its address, so nothing holds it back.
 - **Reading the submissions.** `jubilee launch list --kind notifications` (or `--kind businesses`)
   prints CSV to whoever holds the connection string; each run is written to the audit log. The
   rows are deleted 12 months after they were sent. To check that one sign-up arrived without

@@ -110,10 +110,14 @@ function callerAddress(req) {
 // What the API is told of a forwarded request. On another host, Host names the API. With the proxy
 // key the API is told who the caller is and that this proxy says so, in place of anything the
 // caller sent (ADR 0040). The two headers of a launch submission are this proxy's to state, never
-// the caller's (ADR 0047).
+// the caller's (ADR 0047). Beside the API without a key (the app's host) nothing is stated and
+// nothing is removed: what the marketing host's proxy stated passes, and the API believes it only
+// with the key.
 function stamp(headers, address) {
-  delete headers['x-jubilee-received-at'];
-  delete headers['x-jubilee-kept'];
+  if (remote || proxyKey) {
+    delete headers['x-jubilee-received-at'];
+    delete headers['x-jubilee-kept'];
+  }
   if (remote) {
     headers.host = api.host;
   }

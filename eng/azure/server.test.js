@@ -181,6 +181,34 @@ test('Given the API beside it on loopback, when /api is forwarded, then Host sta
   assert.equal(api.requests[0].headers.host, 'app.jubilee.test');
 });
 
+// The app's host runs this server in front of the API on loopback, without a key of its own. What
+// the marketing host's proxy states of a launch submission reaches the API through it (L2-218 AC9).
+test('Given the API beside it on loopback and no key, when a kept launch submission is forwarded, then what the marketing host stated passes unchanged', async () => {
+  const api = await standIn('127.0.0.1', () => ({ status: 202 }));
+  const site = await host({ API_ORIGIN: api.origin });
+
+  await post(site, '/api/launch/notifications', SIGN_UP, {
+    'X-Jubilee-Proxy-Key': 'the-proxy-key',
+    'X-Jubilee-Client-Address': '203.0.113.5',
+    'X-Jubilee-Received-At': '2026-11-12T16:01:10.000Z',
+    'X-Jubilee-Kept': 'true',
+  });
+
+  assert.equal(api.requests[0].headers['x-jubilee-proxy-key'], 'the-proxy-key');
+  assert.equal(api.requests[0].headers['x-jubilee-received-at'], '2026-11-12T16:01:10.000Z');
+  assert.equal(api.requests[0].headers['x-jubilee-kept'], 'true');
+});
+
+test('Given an API on another host, when a caller states a received time and a kept mark itself, then neither reaches the API', async () => {
+  const api = await standIn('127.0.0.2', () => ({ status: 200, body: '{}' }));
+  const site = await host({ API_ORIGIN: api.origin, PROXY_KEY: 'the-proxy-key' });
+
+  await call(site, { path: '/api/launch', headers: { 'X-Jubilee-Received-At': '2020-01-01T00:00:00.000Z', 'X-Jubilee-Kept': 'true' } });
+
+  assert.equal(api.requests[0].headers['x-jubilee-received-at'], undefined);
+  assert.equal(api.requests[0].headers['x-jubilee-kept'], undefined);
+});
+
 test('Given API_PATHS names /api/launch, when another /api path is asked for, then it answers 404 and the API is not called', async () => {
   const api = await standIn('127.0.0.2', () => ({ status: 200, body: '{}' }));
   const site = await host({ API_ORIGIN: api.origin, API_PATHS: '/api/launch' });

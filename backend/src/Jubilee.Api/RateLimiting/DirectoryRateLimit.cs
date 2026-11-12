@@ -56,6 +56,13 @@ public static class DirectoryRateLimit
 {
     public const string Policy = "directory-reads";
 
+    /// <summary>
+    /// A submission the marketing host kept and sends again (L2-218 AC9). It is not counted: sending it
+    /// again is the marketing host's doing, and a count would hold it back for an hour each time the API
+    /// was slow to take it. Its number is bounded by what the marketing host keeps.
+    /// </summary>
+    private static bool Kept(HttpContext context) => context.Features.Get<Middleware.ProxiedSubmission>() is { Kept: true };
+
     public static IServiceCollection AddJubileeRateLimiting(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<RateLimitOptions>(configuration.GetSection(RateLimitOptions.Section));
@@ -109,6 +116,11 @@ public static class DirectoryRateLimit
             limiter.AddPolicy(LaunchRateLimit.SignUps, context =>
             {
                 var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                if (Kept(context))
+                {
+                    return RateLimitPartition.GetNoLimiter("launch-kept");
+                }
+
                 var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 return RateLimitPartition.GetFixedWindowLimiter($"launch-sign-up:{client}", _ => new FixedWindowRateLimiterOptions
                 {
@@ -120,6 +132,11 @@ public static class DirectoryRateLimit
             limiter.AddPolicy(LaunchRateLimit.PreRegistrations, context =>
             {
                 var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                if (Kept(context))
+                {
+                    return RateLimitPartition.GetNoLimiter("launch-kept");
+                }
+
                 var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 return RateLimitPartition.GetFixedWindowLimiter($"launch-pre-registration:{client}", _ => new FixedWindowRateLimiterOptions
                 {
