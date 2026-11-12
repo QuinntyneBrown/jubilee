@@ -1,0 +1,40 @@
+name: Check a launch sign-up
+
+# Says whether one address is among the launch notification sign-ups in production, without
+# showing the list (eng/azure/README.md, ADR 0046). Started by hand from the Actions tab. It reads
+# and changes no data; the reading is written to the audit log (L2-218 AC4).
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: The e-mail address to look for
+        required: true
+        type: string
+
+# Never beside a deployment: both open the SQL firewall for themselves.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # sign in to Azure with OpenID Connect; no stored password
+
+jobs:
+  check:
+    name: Look for the sign-up
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: backend/global.json
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Count the sign-ups and look for the address
+        env:
+          ADDRESS: ${{ inputs.email }}
+        run: bash eng/azure/check-launch.sh "$ADDRESS"
