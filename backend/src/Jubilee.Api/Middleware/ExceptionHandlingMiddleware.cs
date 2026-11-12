@@ -43,7 +43,7 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 context.User.FindFirst("sub")?.Value ?? "anonymous",
                 context.Connection.RemoteIpAddress,
                 context.Request.Method,
-                context.Request.Path.Value,
+                LoggedPath.Of(context),
                 context.TraceIdentifier);
             return ProblemWriter.WriteAsync(
                 context, StatusCodes.Status403Forbidden, "You don't have access to this.", forbidden.Message, forbidden.Code);
@@ -85,7 +85,7 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 "{Reference}: could not serve {Method} {Path}. CorrelationId {CorrelationId}",
                 reference,
                 context.Request.Method,
-                context.Request.Path.Value,
+                LoggedPath.Of(context),
                 context.TraceIdentifier);
             return ProblemWriter.WriteAsync(
                 context,
@@ -102,7 +102,7 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
             "{Reference}: unhandled error serving {Method} {Path}. CorrelationId {CorrelationId}",
             unhandled,
             context.Request.Method,
-            context.Request.Path.Value,
+            LoggedPath.Of(context),
             context.TraceIdentifier);
         return ProblemWriter.WriteAsync(
             context, StatusCodes.Status500InternalServerError, "Something went wrong.", code: "unexpected_error", reference: unhandled);
