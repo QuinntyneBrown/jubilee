@@ -411,7 +411,9 @@
         "loading",
         "empty",
         "error",
-        "no-results"
+        "no-results",
+        "more",
+        "owner"
       ]
     },
     {
@@ -433,6 +435,7 @@
         "photo",
         "photo-attached",
         "photo-sending",
+        "photo-not-sent",
         "requests",
         "arrived"
       ]
@@ -845,7 +848,8 @@
         "busy",
         "invalid",
         "failed",
-        "restored"
+        "restored",
+        "counter"
       ]
     },
     {

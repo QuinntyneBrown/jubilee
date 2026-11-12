@@ -101,7 +101,7 @@ a real scanner in a test.
   conversation is named "{member} · {business}".
 - **No new component.** The toast, the button, the field counter and the thread row exist. The
   new mocks are `pages/messages/more.html`, `pages/messages/owner.html`,
-  `dialogs/new-message/counter.html` and `pages/conversation/photo-refused.html`;
+  `dialogs/new-message/counter.html` and `pages/conversation/photo-not-sent.html`;
   `notifications/message-toast/info.html` and `pages/conversation/away.html` changed.
 
 ## Consequences
