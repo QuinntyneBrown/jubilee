@@ -142,6 +142,33 @@ public sealed partial class EmailNotificationTests : IClassFixture<JubileeApiFac
         Assert.True(stored.EmailMessages);
     }
 
+    // L2-224 AC1 and AC5: what the unsubscribe page is told
+    [Fact]
+    public async Task L2_224_the_unsubscribe_answers_with_the_category_and_a_second_time_changes_nothing_more()
+    {
+        await AskForQuote();
+        _factory.Clock.Advance(TimeSpan.FromMinutes(2));
+        await Dispatch();
+        var email = Assert.Single(EmailsTo(_naomi));
+        // The footer link opens the page; the page posts the same token to the address of the header.
+        var token = email.UnsubscribeUrl!.Split('/')[^1];
+        Assert.Contains($"href=\"https://jubilee.test/unsubscribe/{token}\"", email.Html);
+
+        var first = await _factory.CreateClient().PostAsJsonAsync($"/api/email/unsubscribe/{token}", new { });
+        var second = await _factory.CreateClient().PostAsJsonAsync($"/api/email/unsubscribe/{token}", new { });
+
+        foreach (var response in new[] { first, second })
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("requests", (await Json(response)).GetProperty("category").GetString());
+        }
+
+        Member stored = null!;
+        await _factory.WithDb(async db => stored = await db.Members.AsNoTracking().SingleAsync(m => m.Id == _naomi.Id));
+        Assert.False(stored.EmailRequests);
+        Assert.True(stored.EmailMessages);
+    }
+
     [Fact]
     public async Task L2_068_AC3_a_forged_unsubscribe_link_is_refused_and_changes_nothing()
     {

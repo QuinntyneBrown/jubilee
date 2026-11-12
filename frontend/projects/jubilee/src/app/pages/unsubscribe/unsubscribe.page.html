@@ -1,0 +1,45 @@
+<jb-auth-layout>
+  @switch (view()) {
+    @case ('loading') {
+      <div jb-empty-state loading heading="Unsubscribing you…" [level]="1">
+        This takes a moment.
+      </div>
+    }
+    @case ('done') {
+      <div jb-empty-state status icon="check" heading="You’re unsubscribed" [level]="1">
+        {{ stops() }} You can turn it back on in your notification settings. We always e-mail you
+        about sign-in and security, whatever you choose.
+        <a slot="actions" jb-button variant="primary" routerLink="/account/notifications"
+          >Notification settings</a
+        >
+        <a slot="actions" jb-button routerLink="/">Browse businesses</a>
+      </div>
+    }
+    @case ('invalid') {
+      <div jb-empty-state icon="info" heading="This link doesn’t work" [level]="1">
+        Nothing has changed. Copy the whole link from the e-mail, or choose which e-mails you get in
+        your notification settings.
+        <a slot="actions" jb-button variant="primary" routerLink="/account/notifications"
+          >Notification settings</a
+        >
+        <a slot="actions" jb-button routerLink="/">Browse businesses</a>
+      </div>
+    }
+    @default {
+      <div
+        jb-empty-state
+        icon="alert"
+        heading="We couldn’t unsubscribe you"
+        [level]="1"
+        [error]="true"
+      >
+        Nothing has changed yet. Check your connection and try again. If it keeps happening, tell us
+        and quote <code>JB-PREF-503</code>.
+        <button slot="actions" jb-button variant="primary" type="button" (click)="unsubscribe()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" jb-button routerLink="/account/notifications">Notification settings</a>
+      </div>
+    }
+  }
+</jb-auth-layout>

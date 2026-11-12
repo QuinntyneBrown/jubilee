@@ -29,6 +29,7 @@ import {
 } from '../pages/sign-out-others.dialog';
 import { DataDownloadPage } from '../pages/data-download.page';
 import { ConfirmEmailChangePage } from '../pages/confirm-email-change.page';
+import { UnsubscribePage } from '../pages/unsubscribe.page';
 import { NotificationSettingsPage } from '../pages/notification-settings.page';
 import { SavedPage } from '../pages/saved.page';
 import { FeedbackPage } from '../pages/feedback.page';
@@ -169,6 +170,11 @@ export const screens: {
   { key: 'confirm-email-change.success', screen: (page) => new ConfirmEmailChangePage(page) },
   { key: 'confirm-email-change.expired', screen: (page) => new ConfirmEmailChangePage(page) },
   { key: 'confirm-email-change.in-use', screen: (page) => new ConfirmEmailChangePage(page) },
+  { key: 'unsubscribe.loading', screen: (page) => new UnsubscribePage(page) },
+  { key: 'unsubscribe.success', screen: (page) => new UnsubscribePage(page) },
+  { key: 'unsubscribe.summary', screen: (page) => new UnsubscribePage(page) },
+  { key: 'unsubscribe.invalid', screen: (page) => new UnsubscribePage(page) },
+  { key: 'unsubscribe.error', screen: (page) => new UnsubscribePage(page) },
   { key: 'browse.feedback-launcher', screen: (page) => new FeedbackLauncherScreen(page) },
   { key: 'feedback-panel', screen: (page) => new FeedbackPanelScreen(page) },
   { key: 'feedback-panel.rate-chosen', screen: (page) => new FeedbackPanelRateChosenScreen(page) },

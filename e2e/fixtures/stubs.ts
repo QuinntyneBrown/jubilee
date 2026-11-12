@@ -14,6 +14,7 @@ import { stubSaved } from './saved';
 import { stubFeedback } from './feedback';
 import { stubPasswordReset } from './password-reset';
 import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from './notifications';
+import { stubUnsubscribe } from './unsubscribe';
 import { LISTING_PHOTOS, stubListingMedia } from './photos';
 import { OTHER_BUSINESSES, SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
@@ -557,6 +558,16 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return void (await stubProfile(page, { confirm: 'expired' }));
     case 'confirm-email-change-in-use':
       return void (await stubProfile(page, { confirm: 'email-in-use' }));
+    case 'unsubscribe':
+      return void (await stubUnsubscribe(page, 'messages'));
+    case 'unsubscribe-summary':
+      return void (await stubUnsubscribe(page, 'summary'));
+    case 'unsubscribe-invalid':
+      return void (await stubUnsubscribe(page, 'invalid'));
+    case 'unsubscribe-error':
+      return void (await stubUnsubscribe(page, 'fails'));
+    case 'unsubscribe-loading':
+      return void (await stubUnsubscribe(page, 'pending'));
     case 'feedback':
       return void (await stubFeedback(page));
     case 'feedback-empty':
