@@ -103,14 +103,14 @@ Builds on: journey 30 (Work in the admin application) for the staff session and 
 ## Phase 1: Requirements (`engineering-requirements`)
 
 - Read the sources above. The requirements for this journey exist; do not rewrite or renumber them.
-- For each gap, find its acceptance criteria in `docs/specs/L2.md`. Where a criterion is silent, vague or contradicts what was decided since, correct it with the skill. A new requirement takes the next free number (`L2-215` at the time of writing; check first) and traces to its L1 requirement.
+- For each gap, find its acceptance criteria in `docs/specs/L2.md`. Where a criterion is silent, vague or contradicts what was decided since, correct it with the skill. A new requirement takes the next free number (`L2-219` at the time of writing; check first) and traces to its L1 requirement.
 - Keep the traceability matrix in `docs/specs/L2.md` true.
 
 ## Phase 2: Detailed design and decisions (`writing-software-design-documents`)
 
 - Bring each design listed above in line with the code as built and with what this prompt adds: classes, endpoints, events and jobs by the names the code uses. Several designs still describe names that were never built; correct them.
 - Re-render changed diagrams with `python .claude/skills/writing-software-design-documents/scripts/render_puml.py docs/detailed-designs`.
-- Record each decision this prompt forces in a new ADR in `docs/adr/` (after `0043`; check the folder and its `README.md` index), or amend the journey's own ADR where the decision reverses a deferral it made.
+- Record each decision this prompt forces in a new ADR in `docs/adr/` (after `0044`; check the folder and its `README.md` index), or amend the journey's own ADR where the decision reverses a deferral it made.
 
 ## Phase 3: Mocks and design system (`writing-html-mocks`, `extracting-design-systems`)
 

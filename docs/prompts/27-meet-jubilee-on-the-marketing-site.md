@@ -2,14 +2,14 @@
 
 ## Goal
 
-A visitor reads the marketing page, watches the pitch film, and opens the app or starts listing (`frontend/projects/marketing/src/app/`, one page, one folder per section; ADR 0013).
+A visitor reads the marketing page and watches the pitch film (`frontend/projects/marketing/src/app/`, one page, one folder per section; ADR 0013). While Jubilee is launching soon the page has no link to the app: `L2-185` is suspended and journey 31 takes its place (ADR 0044). **Run this prompt only when the owner has decided to open Jubilee.** Before that day it works against journey 31; if launch has not been decided, do only the second gap below and say so.
 
 Roles: Visitor. Journey 27 in `docs/journey.md`, recorded at 95% complete on 12 November 2026. This prompt takes it to 100%.
 
 What is left, from an audit of the code and its tests against the acceptance criteria:
 
-- The one recorded gap is the app's production address: the page's links to the app and to listing must point at it, from one configured value, not a literal repeated per link.
-- Check every criterion of `L2-183` to `L2-186` (the film's captions and controls by keyboard, the mission stated word for word after the film, reduced motion, both themes) for a behaviour spec and close what you find.
+- `L2-185`: at launch, the page's calls to action open the app and start a listing again. ADR 0044 removed the `APP_URL` token, `environment.ts` and its `fileReplacements` entry; bring the address back as one configured value, and decide with the owner's launch decision what becomes of the launch forms (`launch-forms`, `launch-notification`, `business-pre-registration`) and the launching-soon badge.
+- Check every criterion of `L2-183`, `L2-184` and `L2-186` (the film's captions and controls by keyboard, the mission stated word for word after the film, reduced motion, both themes) for a behaviour spec and close what you find.
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.
 
@@ -76,46 +76,53 @@ Everything already built and tested in this journey stays as it is. Nothing outs
 Detailed designs (read each `README.md` and its `diagrams/`):
 
 - `docs/detailed-designs/marketing/show-marketing-site/README.md`
+- `docs/detailed-designs/marketing/launching-soon/README.md`
 
-Requirements in `docs/specs/L2.md` (those the designs cite, and those the gaps name): `L2-183`, `L2-184`, `L2-185`, `L2-186`.
+Requirements in `docs/specs/L2.md` (those the designs cite, and those the gaps name): `L2-023`, `L2-136`, `L2-137`, `L2-148`, `L2-149`, `L2-150`, `L2-183`, `L2-184`, `L2-185`, `L2-186`, `L2-215`, `L2-216`, `L2-217`, `L2-218`.
 
 Mocks (every state file in each folder; the full list is in `docs/mocks/manifest.json`):
 
 - `docs/mocks/pages/marketing-home/`
 
-Decisions already recorded: `docs/adr/0013-marketing-site-application.md`.
+Decisions already recorded: `docs/adr/0013-marketing-site-application.md`, `docs/adr/0044-launching-soon.md`.
 
 Code and tests that exist today:
 
-- `e2e/tests/marketing-home.spec.ts`, `e2e/pages/marketing-home.page.ts`
+- `e2e/tests/marketing-home.spec.ts`, `launch-notification.spec.ts`, `e2e/pages/marketing-home.page.ts`
+- `frontend/projects/marketing/src/app/app.config.ts`, `content.ts`
 - `frontend/projects/components/src/lib/styles/marketing.css` (foundations only)
 - `eng/azure/README.md`
 
 Progress notes: `docs/estimates/marketing.md`.
 
+Builds on: journey 31 (Get ready for launch), which this prompt retires or reshapes at launch. If the seam this journey needs from another journey is missing, build only that seam and note it. Do not stop.
+
 ## Phase 1: Requirements (`engineering-requirements`)
 
 - Read the sources above. The requirements for this journey exist; do not rewrite or renumber them.
-- For each gap, find its acceptance criteria in `docs/specs/L2.md`. Where a criterion is silent, vague or contradicts what was decided since, correct it with the skill. A new requirement takes the next free number (`L2-215` at the time of writing; check first) and traces to its L1 requirement.
+- For each gap, find its acceptance criteria in `docs/specs/L2.md`. Where a criterion is silent, vague or contradicts what was decided since, correct it with the skill. A new requirement takes the next free number (`L2-219` at the time of writing; check first) and traces to its L1 requirement.
 - Keep the traceability matrix in `docs/specs/L2.md` true.
+- Lift the suspension of `L2-185` in `docs/specs/L2.md` and state what `L2-215` to `L2-218` become after launch (withdrawn, or kept for a waiting list). Do not renumber.
 
 ## Phase 2: Detailed design and decisions (`writing-software-design-documents`)
 
 - Bring each design listed above in line with the code as built and with what this prompt adds: classes, endpoints, events and jobs by the names the code uses. Several designs still describe names that were never built; correct them.
 - Re-render changed diagrams with `python .claude/skills/writing-software-design-documents/scripts/render_puml.py docs/detailed-designs`.
-- Record each decision this prompt forces in a new ADR in `docs/adr/` (after `0043`; check the folder and its `README.md` index), or amend the journey's own ADR where the decision reverses a deferral it made.
+- Record each decision this prompt forces in a new ADR in `docs/adr/` (after `0044`; check the folder and its `README.md` index), or amend the journey's own ADR where the decision reverses a deferral it made.
+- Write the ADR that supersedes the launch parts of ADR 0044, and update both marketing designs.
 
 ## Phase 3: Mocks and design system (`writing-html-mocks`, `extracting-design-systems`)
 
-- No gap in this journey shows a new screen state. Confirm that by checking each gap against the mocks above; if one does have a visible result with no mock, add the mock state and its design-system entry before the code.
+- Change `docs/mocks/pages/marketing-home/` first: the calls to action as links to the app, and the launch sections removed or changed as decided. The Magic Patterns reference trumps the mock.
 - A new or changed component is documented in `docs/design-system/` and registered there before it is built in `frontend/projects/components`. Run `npm run design:check` in `frontend/`.
 - If the Magic Patterns reference in `docs/design-reference/magic-patterns/` shows the state, it trumps the mock.
 
 ## Phase 4: Incremental implementation (`implementing-incrementally`, test-first)
 
 - Plan thin vertical slices. The list is a guide; where its wording and `docs/specs/L2.md` differ, the requirement wins. For example:
-  1. Every link to the app reads one configured address; a spec proves each call to action lands on it.
-  2. Any marketing criterion found without a behaviour spec.
+  1. Every call to action reads one configured app address; a spec proves each lands on it.
+  2. The launch sections and badge after launch, as the requirement now states.
+  3. Any marketing criterion found without a behaviour spec.
 - For each slice:
   - Write the Given-When-Then criteria, taken from the acceptance criteria of the requirements above.
   - Write the acceptance test: an integration test against the API in `backend/tests/Jubilee.Api.Tests/`
@@ -139,16 +146,17 @@ Progress notes: `docs/estimates/marketing.md`.
 
 These need the repository owner. Prepare everything in the repository that they depend on, write the steps where the owner will find them, and list them in your final summary. Do not score a criterion as done while its owner step is open.
 
-- Confirm the app's production address and set it for the marketing build (`eng/azure/README.md`).
+- Decide the launch day and confirm the app's production address; set it for the marketing build (`eng/azure/README.md`).
+- Send the launch notice to the addresses collected in journey 31 (read with the CLI).
 
 ## Deferred (out of scope)
 
-- A router, session or API on the marketing site (ADR 0013 forbids them).
-- New copy or sections.
+- A router or session on the marketing site (ADR 0013 forbids them).
+- New copy or sections beyond the launch change.
 
 ## Done means
 
-- Every call to action on the marketing site opens the app at its production address, and every marketing criterion has a passing spec.
+- On launch day every call to action on the marketing site opens the app at its production address, and every marketing criterion has a passing spec.
 - Every acceptance criterion of the requirements listed above has a passing test, or is listed as an owner step with the reason.
 - All the new and existing tests pass: `pwsh eng/Test-Backend.ps1` at the root; `npm run lint`, `npm run format:check`, `npm run design:check` and `npm run build` in `frontend/`; `npm run typecheck`, `npm test` and `npm run parity` in `e2e/`. No sweep was run.
 - `docs/estimates/` and row 27 of `docs/journey.md` show the true figures, and the requirements, designs, mocks and code agree.
