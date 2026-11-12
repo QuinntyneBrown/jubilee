@@ -40,10 +40,10 @@ controller -> controller : Authenticate
 controller -> handler : Send GetInboxQuery
 handler -> db : Select conversations where caller is the member or owns the listing (L2-056)
 db --> handler : Counts of the whole inbox and the first 50 rows by LastMessageAt then Id
-handler -> handler : Build previews and HasMore (L2-056)
+handler -> handler : Build previews (L2-056)
 handler --> controller : InboxDto
 controller --> client : 200 OK
-client --> store : Rows and counts and hasMore
+client --> store : Rows and counts of the whole inbox
 store --> page : State
 alt no conversations
   page --> member : Show "Start a conversation." with "Browse businesses"
@@ -54,17 +54,17 @@ else conversations exist
     page --> member : Show "Pick a conversation." in the right pane
   end
 end
-opt hasMore and the member presses "Show more conversations"
+opt fewer rows than totalCount and the member presses "Show more conversations"
   list -> store : loadMore()
   list --> member : Button busy and "Loading more conversations…" announced
-  store -> client : inbox(search, id of the last row shown)
-  client -> controller : GET /api/conversations?before={conversationId}
-  controller -> handler : Send GetInboxQuery with Before
-  handler -> db : The 50 rows after that conversation in the same order
+  store -> client : inbox(search, number of rows shown)
+  client -> controller : GET /api/conversations?skip={n}
+  controller -> handler : Send GetInboxQuery with Skip
+  handler -> db : The 50 rows after the first n in the same order
   db --> handler : Rows
   handler --> controller : InboxDto
   controller --> client : 200 OK
-  client --> store : Next rows and hasMore
+  client --> store : Next rows and counts
   store --> list : Rows added below what is shown
   list --> member : "{n} more conversations shown." announced (L2-056)
 end

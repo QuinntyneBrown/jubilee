@@ -1,5 +1,11 @@
 import { expect, test } from '../fixtures/jb-test';
-import { legacyMessages, photoMessages, requestCards, stubMessaging } from '../fixtures/messaging';
+import {
+  legacyMessages,
+  manyRows,
+  photoMessages,
+  requestCards,
+  stubMessaging,
+} from '../fixtures/messaging';
 import { brokenLargeJpeg, largePng, pdfNamedJpeg, smallJpeg } from '../fixtures/photos';
 import { BusinessPage } from '../pages/business.page';
 import { NotFoundPage } from '../pages/not-found.page';
@@ -88,6 +94,179 @@ test.describe('the inbox (L2-056)', () => {
     await jb.goto('/messages');
 
     await expect(page).toHaveURL(/\/sign-in\?returnUrl=%2Fmessages$/);
+  });
+});
+
+test.describe('a long inbox (L2-056 AC7)', () => {
+  test('AC7: the newest 50 are listed with the counts of the whole inbox, and "Show more conversations" adds the rest', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(64) });
+    await jb.goto('/messages');
+
+    await expect(messages.subtitle).toHaveText('64 conversations · 2 unread');
+    await expect(messages.list.rows).toHaveCount(50);
+
+    await messages.list.showMore.click();
+
+    await expect(messages.list.rows).toHaveCount(64);
+    await expect(messages.list.name(messages.list.rows.nth(63))).toHaveText('Business 60');
+    await expect(messages.list.moreStatus).toHaveText('14 more conversations shown.');
+    await expect(messages.list.showMore).toHaveCount(0);
+    expect(fake.pages).toEqual([50]);
+    await expect(messages.subtitle).toHaveText('64 conversations · 2 unread');
+  });
+
+  test('AC7: with 50 conversations or fewer there is no button', async ({ page, jb }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { rows: manyRows(50) });
+    await jb.goto('/messages');
+
+    await expect(messages.list.rows).toHaveCount(50);
+    await expect(messages.list.showMore).toHaveCount(0);
+  });
+
+  test('AC7: by keyboard the button adds 50 at a time and keeps focus; when it goes, focus is on the first row added', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(120) });
+    await jb.goto('/messages');
+    await expect(messages.list.rows).toHaveCount(50);
+
+    await messages.list.showMore.focus();
+    const lastShown = await messages.list.topOf(messages.list.rows.nth(49));
+    await page.keyboard.press('Enter');
+
+    await expect(messages.list.rows).toHaveCount(100);
+    await expect(messages.list.moreStatus).toHaveText('50 more conversations shown.');
+    await expect(messages.list.showMore).toBeFocused();
+    // The rows are added below: what was shown has not moved.
+    expect(await messages.list.topOf(messages.list.rows.nth(49))).toBe(lastShown);
+
+    await page.keyboard.press('Enter');
+
+    await expect(messages.list.rows).toHaveCount(120);
+    await expect(messages.list.showMore).toHaveCount(0);
+    await expect(messages.list.rows.nth(100)).toBeFocused();
+    expect(fake.pages).toEqual([50, 100]);
+  });
+
+  test.describe('on a phone', () => {
+    test.use({ hasTouch: true, viewport: { width: 360, height: 760 } });
+
+    test('AC7: the button is pressed by touch and the list grows', async ({ page, jb }) => {
+      const messages = new MessagesPage(page);
+      await jb.signInAs('member');
+      await stubMessaging(page, { rows: manyRows(51) });
+      await jb.goto('/messages');
+      await expect(messages.list.rows).toHaveCount(50);
+
+      await messages.list.showMore.tap();
+
+      await expect(messages.list.rows).toHaveCount(51);
+      await expect(messages.list.moreStatus).toHaveText('1 more conversation shown.');
+    });
+  });
+
+  test('AC7: while more load the button is busy, says so, and cannot ask twice', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(64), paging: 'hang' });
+    await jb.goto('/messages');
+
+    await messages.list.showMore.click();
+
+    await expect(messages.list.showMore).toHaveAttribute('aria-busy', 'true');
+    await expect(messages.list.moreStatus).toHaveText('Loading more conversations…');
+    await messages.list.showMore.click({ force: true });
+    expect(fake.pages).toEqual([50]);
+  });
+
+  test('AC7: when more cannot be loaded the rows stay, a toast says so and the button tries again', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    const toasts = new Toasts(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(64), paging: 'fail' });
+    await jb.goto('/messages');
+
+    await messages.list.showMore.click();
+
+    await expect(toasts.withTitle('We couldn’t load more conversations')).toContainText(
+      'Try again.',
+    );
+    await expect(messages.list.rows).toHaveCount(50);
+
+    fake.paging = 'ok';
+    await messages.list.showMore.click();
+
+    await expect(messages.list.rows).toHaveCount(64);
+  });
+
+  test('AC7: a search is paged the same way', async ({ page, jb }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { rows: manyRows(64) });
+    await jb.goto('/messages');
+    await expect(messages.list.rows).toHaveCount(50);
+
+    await messages.list.search.fill('business');
+
+    await expect(messages.list.name(messages.list.rows.first())).toHaveText('Business 01');
+    await expect(messages.list.rows).toHaveCount(50);
+    await messages.list.showMore.click();
+    await expect(messages.list.rows).toHaveCount(60);
+    await expect(messages.list.showMore).toHaveCount(0);
+  });
+
+  test('AC7, L2-070: a new message moves its conversation to the top and keeps the rows already loaded', async ({
+    page,
+    jb,
+  }) => {
+    const messages = new MessagesPage(page);
+    await messages.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubMessaging(page, { rows: manyRows(64), live: true });
+    await jb.goto('/messages');
+    await messages.list.showMore.click();
+    await expect(messages.list.rows).toHaveCount(64);
+
+    fake.arrive('Are you still looking for a quote?', 'c-60');
+
+    await expect(messages.list.name(messages.list.rows.first())).toHaveText('Business 60');
+    await expect(messages.list.rows).toHaveCount(64);
+    await expect(messages.list.showMore).toHaveCount(0);
+  });
+
+  test('AC7: the list beside an open conversation is paged too', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { rows: manyRows(64) });
+    await jb.goto('/messages/c-legacy');
+    await expect(conversation.list.rows).toHaveCount(50);
+
+    await conversation.list.showMore.click();
+
+    await expect(conversation.list.rows).toHaveCount(64);
   });
 });
 

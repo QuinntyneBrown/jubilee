@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  afterNextRender,
+  inject,
+  input,
+  signal,
+  viewChildren,
+  Injector,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import {
@@ -10,6 +20,7 @@ import {
   ThreadRow,
   ThreadRowSkeleton,
   SearchField,
+  ToastService,
 } from 'components';
 import { ClockService } from 'api';
 import { MessagesStore } from '../../services/messages.store';
@@ -47,8 +58,29 @@ export class InboxList {
   readonly selectedId = input<string | null>(null);
 
   protected readonly text = signal(this.store.search());
+  /** What a screen reader is told about "Show more conversations" (L2-056 AC7). */
+  protected readonly moreStatus = signal('');
+
+  private readonly toasts = inject(ToastService);
+  private readonly injector = inject(Injector);
+  private readonly rows = viewChildren(ThreadRow, { read: ElementRef<HTMLElement> });
 
   constructor() {
+    this.store.moreLoaded.pipe(takeUntilDestroyed()).subscribe((result) => {
+      if (result === 'failed') {
+        this.moreStatus.set('');
+        this.toasts.show({
+          tone: 'danger',
+          title: 'We couldn’t load more conversations',
+          text: 'Try again.',
+        });
+        return;
+      }
+      const noun = result.added === 1 ? 'conversation' : 'conversations';
+      this.moreStatus.set(`${result.added} more ${noun} shown.`);
+      // The button is gone once everything is listed: focus goes to the first row it added.
+      if (!this.store.hasMore() && result.first) this.focusRow(result.first);
+    });
     // A message that arrives changes a row, its place and what is unread (L2-056, L2-070).
     inject(RealtimeService)
       .received.pipe(takeUntilDestroyed())
@@ -73,6 +105,22 @@ export class InboxList {
   protected clear(): void {
     this.text.set('');
     this.store.load('');
+  }
+
+  protected showMore(): void {
+    if (this.store.loadingMore()) return;
+    this.moreStatus.set('Loading more conversations…');
+    this.store.loadMore();
+  }
+
+  private focusRow(id: string): void {
+    afterNextRender(
+      () =>
+        this.rows()
+          .find((row) => row.nativeElement.dataset['conversation'] === id)
+          ?.nativeElement.focus(),
+      { injector: this.injector },
+    );
   }
 
   protected time(iso: string): string {

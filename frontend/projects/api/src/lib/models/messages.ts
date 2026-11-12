@@ -12,8 +12,10 @@ export interface InboxRow {
 }
 
 export interface Inbox {
+  /** The conversations of the whole inbox, or of the whole search; more than one answer lists. */
   totalCount: number;
   unreadCount: number;
+  /** At most 50: the page asked for. */
   conversations: InboxRow[];
 }
 

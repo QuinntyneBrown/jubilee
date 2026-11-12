@@ -47,7 +47,6 @@ class ConversationRules <<static>> {
 class InboxDto {
   +int TotalCount
   +int UnreadCount
-  +bool HasMore
   +IReadOnlyList<InboxRowDto> Conversations
 }
 class InboxRowDto {

@@ -75,6 +75,9 @@ public sealed record StartedConversationDto(Guid ConversationId, Guid MessageId)
 internal static class ConversationRules
 {
     public const int PageSize = 50;
+
+    /// <summary>How many conversations one answer of the inbox holds (L2-056 AC7).</summary>
+    public const int InboxPageSize = 50;
     public const int MessagesPerWindow = 30;
     public static readonly TimeSpan MessageWindow = TimeSpan.FromMinutes(10);
     public const int NewConversationsPerDay = 10;
@@ -310,8 +313,11 @@ public sealed class SendMessageCommandHandler(IAppDbContext db, TimeProvider clo
     }
 }
 
-/// <summary>The inbox: a person's conversations, newest first, optionally searched (L2-056, L2-059).</summary>
-public sealed record GetInboxQuery(string Subject, string? Search) : IRequest<InboxDto>;
+/// <summary>
+/// The inbox: a person's conversations, newest first, optionally searched, 50 at a time after the
+/// first <see cref="Skip"/> (L2-056, L2-059). The counts are of the whole inbox or search.
+/// </summary>
+public sealed record GetInboxQuery(string Subject, string? Search, int Skip = 0) : IRequest<InboxDto>;
 
 public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<GetInboxQuery, InboxDto>
 {
@@ -330,9 +336,21 @@ public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<Get
                     && m.Body.ToLower().Contains(term)));
         }
 
+        var total = await rows.CountAsync(cancellationToken);
+        var unread = await rows.CountAsync(
+            r => db.Messages.Any(m => m.ConversationId == r.Conversation.Id
+                && (r.AsOwner
+                    ? !m.FromOwner && (r.Conversation.OwnerReadAt == null || m.CreatedAt > r.Conversation.OwnerReadAt)
+                    : m.FromOwner && !m.HiddenFromMember
+                        && (r.Conversation.MemberReadAt == null || m.CreatedAt > r.Conversation.MemberReadAt))),
+            cancellationToken);
+
+        // The id settles the order of conversations touched in the same instant, so pages never overlap.
         var listed = await rows
             .OrderByDescending(r => r.Conversation.LastMessageAt)
-            .Take(200)
+            .ThenBy(r => r.Conversation.Id)
+            .Skip(Math.Max(0, request.Skip))
+            .Take(ConversationRules.InboxPageSize)
             .Select(r => new
             {
                 r.Conversation.Id,
@@ -369,7 +387,7 @@ public sealed class GetInboxQueryHandler(IAppDbContext db) : IRequestHandler<Get
             r.LastMessageAt,
             r.Unread,
             r.AsOwner ? r.OwnerMuted : r.MemberMuted)).ToList();
-        return new InboxDto(conversations.Count, conversations.Count(c => c.Unread), conversations);
+        return new InboxDto(total, unread, conversations);
     }
 
     private static string Preview(string? body, string? sender, string? senderName, string subject)

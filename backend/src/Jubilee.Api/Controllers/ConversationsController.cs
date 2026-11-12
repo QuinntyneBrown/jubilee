@@ -26,8 +26,8 @@ public sealed class ConversationsController(ISender sender) : ControllerBase
 
     [HttpGet]
     [ErrorReference("JB-MSG-503")]
-    public Task<InboxDto> Inbox([FromQuery] string? q, CancellationToken cancellationToken) =>
-        sender.Send(new GetInboxQuery(Subject, q), cancellationToken);
+    public Task<InboxDto> Inbox([FromQuery] string? q, [FromQuery] int skip, CancellationToken cancellationToken) =>
+        sender.Send(new GetInboxQuery(Subject, q, skip), cancellationToken);
 
     [HttpPost]
     [RequiresConfirmedEmail]

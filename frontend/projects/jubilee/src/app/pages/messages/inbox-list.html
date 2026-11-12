@@ -57,11 +57,20 @@
               [unread]="row.unread"
               [muted]="row.muted"
               [current]="row.id === selectedId()"
+              [attr.data-conversation]="row.id"
               [routerLink]="['/messages', row.id]"
             ></a>
           </li>
         }
       </ul>
+      @if (store.hasMore()) {
+        <div jb-inbox-tools>
+          <button jb-button block type="button" [busy]="store.loadingMore()" (click)="showMore()">
+            Show more conversations
+          </button>
+        </div>
+      }
     }
   }
 }
+<p class="visually-hidden" role="status" data-testid="more-status">{{ moreStatus() }}</p>

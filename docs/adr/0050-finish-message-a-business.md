@@ -42,13 +42,16 @@ a real scanner in a test.
   is where the toast would lead. The criterion now says what is built. It also means a first
   message to an owner who is away shows the away toast, because the conversation opens.
 - **The inbox is paged by 50, with a button.** `GET /api/conversations` answers the 50
-  conversations with the most recent activity and `hasMore`; `?before={conversationId}` answers
-  the 50 after that conversation in the same order (last activity, then id, so two conversations
-  touched in the same instant keep a fixed order). `totalCount` and `unreadCount` count the whole
-  inbox, or the whole search result, not the page. "Show more conversations" follows the list:
+  conversations with the most recent activity; `?skip={n}` answers the 50 after the first `n` in
+  the same order (last activity, then id, so two conversations touched in the same instant keep a
+  fixed order). `totalCount` and `unreadCount` count the whole inbox, or the whole search result,
+  not the page, so the page knows there is more while it lists fewer rows than `totalCount`. A
+  count of rows is used, not a cursor over the time and the id, because it reads the same on SQL
+  Server, SQLite and the InMemory provider; a conversation that moves to the top between two
+  pages can only repeat a row, which the page drops by its id. "Show more conversations" follows the list:
   a button, not endless scrolling, so the keyboard and a screen reader reach it; what was added
   is announced. A new message refreshes the first page and keeps the rows already loaded below it.
-  An unknown `before` answers the first page.
+  When the button goes because everything is listed, focus moves to the first row that was added.
 - **"Show earlier messages" keeps the member's place.** L2-057 AC7 asked for loading on scroll;
   the button built by ADR 0014 stays because it works without a pointer, and the criterion now
   says so. After the older messages are added, the message that was at the top is brought back to

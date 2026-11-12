@@ -17,9 +17,15 @@ export class InboxListRegion {
   readonly noResults: Locator;
   readonly clearSearch: Locator;
   readonly error: Locator;
+  /** "Show more conversations", under the list while there are more than it shows (L2-056 AC7). */
+  readonly showMore: Locator;
+  /** What a screen reader is told while more conversations load and when they are shown. */
+  readonly moreStatus: Locator;
 
   constructor(page: Page) {
     this.root = page.locator('.inbox__list');
+    this.showMore = this.root.getByRole('button', { name: 'Show more conversations' });
+    this.moreStatus = this.root.locator('[data-testid="more-status"]');
     this.search = this.root.getByRole('searchbox', { name: 'Search messages' });
     this.searchField = this.root.getByRole('search');
     this.rows = this.root.locator('a.thread');
@@ -32,6 +38,11 @@ export class InboxListRegion {
 
   row(name: string | RegExp): Locator {
     return this.rows.filter({ hasText: name });
+  }
+
+  /** How far down the document a row starts, wherever the page is scrolled to. */
+  topOf(row: Locator): Promise<number> {
+    return row.evaluate((element) => element.getBoundingClientRect().top + window.scrollY);
   }
 
   name(row: Locator): Locator {

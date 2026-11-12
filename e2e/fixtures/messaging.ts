@@ -79,6 +79,19 @@ export const inboxRows = (): FakeRow[] => [
   ),
 ];
 
+/**
+ * A long inbox (L2-056 AC7): the four conversations of the mock, then enough others, each older
+ * than the one before, to make `count` in all.
+ */
+export const manyRows = (count: number): FakeRow[] => [
+  ...inboxRows(),
+  ...Array.from({ length: count - 4 }, (_, index) => {
+    const number = String(index + 1).padStart(2, '0');
+    const at = new Date(Date.parse('2026-10-20T15:00:00Z') - index * 3_600_000).toISOString();
+    return row(`c-${number}`, `Business ${number}`, `business-${number}`, 'See you soon.', at, false);
+  }),
+];
+
 export const legacyMessages = (): FakeMessage[] => [
   message(
     'm-1',
@@ -205,6 +218,12 @@ export type Delivery = 'ok' | 'fail' | 'hang' | 'rate-limited' | 'unconfirmed';
 /** What the fake answers, and what it was asked; a test changes these while it runs. */
 export interface FakeMessaging {
   inbox: 'ok' | 'empty' | 'loading' | 'error';
+  /** How a read of the inbox past its first page is answered (L2-056 AC7). */
+  paging: 'ok' | 'hang' | 'fail';
+  /** The `skip` of each read of the inbox past its first page. */
+  pages: number[];
+  /** Says the inbox holds this many conversations, whatever `rows` holds; null counts `rows`. */
+  inboxTotal: number | null;
   conversation: 'ok' | 'loading' | 'error' | 'not-found';
   /** How the next sends and starts are answered. */
   delivery: Delivery;
@@ -265,6 +284,9 @@ export async function stubMessaging(
   const events: { id: string; item: object }[] = [];
   const fake: FakeMessaging = {
     inbox: 'ok',
+    paging: 'ok',
+    pages: [],
+    inboxTotal: null,
     conversation: 'ok',
     delivery: 'ok',
     awayUntil: null,
@@ -373,8 +395,17 @@ export async function stubMessaging(
         json: { conversationId: 'c-legacy', messageId: 'm-started' },
       });
     }
-    const q = new URL(request.url()).searchParams.get('q');
-    fake.searches.push(q);
+    const params = new URL(request.url()).searchParams;
+    const q = params.get('q');
+    const skip = Number(params.get('skip') ?? 0);
+    if (skip > 0) {
+      fake.pages.push(skip);
+      if (fake.paging === 'hang') return hang(route);
+      if (fake.paging === 'fail')
+        return route.fulfill(problem(503, 'service_unavailable', 'JB-MSG-503'));
+    } else {
+      fake.searches.push(q);
+    }
     if (fake.inbox === 'loading') return hang(route);
     if (fake.inbox === 'error')
       return route.fulfill(problem(503, 'service_unavailable', 'JB-MSG-503'));
@@ -384,11 +415,12 @@ export async function stubMessaging(
         : fake.rows.filter(
             (r) => !q || `${r.title} ${r.preview}`.toLowerCase().includes(q.toLowerCase()),
           );
+    // The API answers 50 at a time, with the counts of the whole inbox or search.
     return route.fulfill({
       json: {
-        totalCount: rows.length,
+        totalCount: fake.inboxTotal ?? rows.length,
         unreadCount: rows.filter((r) => r.unread).length,
-        conversations: rows,
+        conversations: rows.slice(skip, skip + 50),
       },
     });
   });

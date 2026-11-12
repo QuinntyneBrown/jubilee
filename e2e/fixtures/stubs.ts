@@ -227,8 +227,14 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMessaging(page, { inbox: 'loading' });
     case 'messages-error':
       return stubMessaging(page, { inbox: 'error' });
+    case 'messages-more':
+      // The mock draws four of the 64 conversations, with "Show more conversations" under them.
+      return stubMessaging(page, { inboxTotal: 64 });
     case 'conversation':
       return stubMessaging(page);
+    case 'conversation-away':
+      // Back on Thursday 12 November, two days after the mocks' today.
+      return stubMessaging(page, { awayUntil: '2026-11-12T05:00:00Z' });
     case 'conversation-loading':
       return stubMessaging(page, { conversation: 'loading' });
     case 'conversation-error':

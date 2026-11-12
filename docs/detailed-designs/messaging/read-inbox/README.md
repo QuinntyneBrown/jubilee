@@ -74,10 +74,11 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
   rows already loaded below it. No event type is added to the stream for
   messaging.
 - **"Show more conversations"** — a button that follows the list while
-  `hasMore` is true. A button is used, not endless scrolling, so the keyboard
+  fewer rows are listed than `totalCount`. A button is used, not endless scrolling, so the keyboard
   and a screen reader reach it. While the next page loads the button is busy and
   "Loading more conversations…" is announced, then "{n} more conversations
-  shown." When every conversation is listed the button is gone. If the page
+  shown." When every conversation is listed the button is gone and focus moves to the
+  first row that was added. If the page
   cannot be loaded, the rows shown stay and an error toast says "We couldn’t
   load more conversations. Try again." (L2-056, ADR 0050).
 - **Unread count** — the navigation badge follows the `counts` event of the same
@@ -85,29 +86,30 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
   conversation marks it read on the server, and the next `counts` event corrects
   the badge.
 - **`MessagesApi`** — service contract with the injection token `MESSAGES_API`,
-  implemented by `HttpMessagesApi`. `inbox(search?, before?)` calls
-  `GET /api/conversations?q={term}&before={conversationId}` and `mute` calls
+  implemented by `HttpMessagesApi`. `inbox(search?, skip?)` calls
+  `GET /api/conversations?q={term}&skip={n}` and `mute` calls
   `PUT /api/conversations/{id}/mute`.
 - **`ConversationsController`** — ASP.NET Core controller. It authenticates the
   session cookie and dispatches the query or command through MediatR. `Inbox`
-  takes `q` and `before` from the query string.
+  takes `q` and `skip` from the query string.
 - **`GetInboxQueryHandler`** — MediatR handler for
-  `GetInboxQuery(Subject, Search, Before)`. It selects conversations in which
+  `GetInboxQuery(Subject, Search, Skip)`. It selects conversations in which
   the caller is the member or owns the listing (`ConversationRules.RowsFor`),
   orders them by `LastMessageAt` descending and then by `Id`, so two
   conversations touched in the same instant keep a fixed order, and builds an
   `InboxRowDto` per row. It answers `ConversationRules.InboxPageSize`, `50`,
-  rows. `Before` names a conversation: the answer is the 50 after it in the same
-  order. An unknown `Before` answers the first page. With a search term it keeps
+  rows. `Skip` is the number of rows the page already lists: the answer is the 50
+  after them in the same order. A count is used, not a cursor, because it reads
+  the same on every database provider (ADR 0050). With a search term it keeps
   only conversations whose business name, participant name or message text
   matches, and it applies the participant filter before the match so search
   never reaches another member's conversations. The match is a case-insensitive
   contains match over the business name, the owner's name, the member's name and
   the text of messages the person may see. A search is paged the same way.
 - **`InboxDto`** and **`InboxRowDto`** — response types.
-  `InboxDto(TotalCount, UnreadCount, HasMore, Conversations)`: `TotalCount` and
+  `InboxDto(TotalCount, UnreadCount, Conversations)`: `TotalCount` and
   `UnreadCount` count the whole inbox, or the whole search result, not the page,
-  and `HasMore` says that rows follow the page. `InboxRowDto` carries one
+  so the page knows that rows follow while it lists fewer than `TotalCount`. `InboxRowDto` carries one
   conversation with `Title`, `BusinessName`, `Preview`, `LastMessageAt`,
   `Unread` and `Muted`.
 - **`SetConversationMutedCommandHandler`** — MediatR handler behind the mute
@@ -179,8 +181,8 @@ the open page on the event stream.
 ### Class structure
 
 `MessagesStore` loads pages through `MessagesApi`. `GetInboxQueryHandler`
-handles `GetInboxQuery` and returns an `InboxDto` of `InboxRowDto` rows with
-`HasMore`. `SetConversationMutedCommandHandler` loads a `Conversation`, which
+handles `GetInboxQuery` and returns an `InboxDto` of `InboxRowDto` rows with the counts of
+the whole inbox. `SetConversationMutedCommandHandler` loads a `Conversation`, which
 holds a read mark and a mute flag for each of its two sides.
 
 ![Class diagram for reading the inbox](diagrams/class-structure.png)

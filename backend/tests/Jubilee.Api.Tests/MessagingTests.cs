@@ -222,6 +222,92 @@ public sealed class MessagingTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         Assert.True(addressed.GetProperty("unread").GetBoolean());
     }
 
+    // L2-056 AC7
+    private async Task<List<string>> ManyWriteToLegacy(int count, bool sameInstant = false)
+    {
+        var ids = new List<string>();
+        for (var number = 1; number <= count; number++)
+        {
+            ids.Add(await StartedId(_factory.CreateMemberClient($"Member {number:00}", $"member|m{number}")));
+            if (!sameInstant)
+            {
+                _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+            }
+        }
+
+        return ids;
+    }
+
+    private static List<string> Ids(JsonElement inbox) =>
+        [.. inbox.GetProperty("conversations").EnumerateArray().Select(r => r.GetProperty("id").GetString()!)];
+
+    [Fact]
+    public async Task L2_056_AC7_the_inbox_answers_the_50_newest_and_the_next_50_follow_with_the_counts_of_the_whole_inbox()
+    {
+        var started = await ManyWriteToLegacy(53);
+        var trevor = Trevor();
+
+        var first = await Json(await trevor.GetAsync("/api/conversations"));
+        var second = await Json(await trevor.GetAsync("/api/conversations?skip=50"));
+
+        Assert.Equal(53, first.GetProperty("totalCount").GetInt32());
+        Assert.Equal(53, first.GetProperty("unreadCount").GetInt32());
+        Assert.Equal(Enumerable.Reverse(started).Take(50), Ids(first));
+        Assert.Equal(53, second.GetProperty("totalCount").GetInt32());
+        Assert.Equal(53, second.GetProperty("unreadCount").GetInt32());
+        Assert.Equal(Enumerable.Reverse(started).Skip(50), Ids(second));
+    }
+
+    [Fact]
+    public async Task L2_056_AC7_conversations_touched_in_the_same_instant_keep_one_order_across_pages()
+    {
+        var started = await ManyWriteToLegacy(53, sameInstant: true);
+        var trevor = Trevor();
+
+        var first = Ids(await Json(await trevor.GetAsync("/api/conversations")));
+        var second = Ids(await Json(await trevor.GetAsync("/api/conversations?skip=50")));
+
+        Assert.Equal(50, first.Count);
+        Assert.Equal(3, second.Count);
+        Assert.Equal(started.Order(), first.Concat(second).Order());
+    }
+
+    [Fact]
+    public async Task L2_056_AC7_L2_059_a_search_is_paged_the_same_way_and_counts_what_it_found()
+    {
+        await ManyWriteToLegacy(53);
+        var trevor = Trevor();
+
+        var found = await Json(await trevor.GetAsync("/api/conversations?q=member%205"));
+        var all = await Json(await trevor.GetAsync("/api/conversations?q=member"));
+        var rest = await Json(await trevor.GetAsync("/api/conversations?q=member&skip=50"));
+
+        // "Member 50" to "Member 53".
+        Assert.Equal(4, found.GetProperty("totalCount").GetInt32());
+        Assert.Equal(4, Ids(found).Count);
+        Assert.Equal(53, all.GetProperty("totalCount").GetInt32());
+        Assert.Equal(50, Ids(all).Count);
+        Assert.Equal(3, Ids(rest).Count);
+        Assert.Empty(Ids(all).Intersect(Ids(rest)));
+    }
+
+    [Fact]
+    public async Task L2_056_AC7_past_the_end_or_before_the_start_nothing_breaks_and_nobody_elses_rows_appear()
+    {
+        await ManyWriteToLegacy(3);
+        var trevor = Trevor();
+
+        var past = await Json(await trevor.GetAsync("/api/conversations?skip=500"));
+        var negative = await Json(await trevor.GetAsync("/api/conversations?skip=-5"));
+        var naomi = await Json(await Naomi().GetAsync("/api/conversations?skip=1"));
+
+        Assert.Empty(Ids(past));
+        Assert.Equal(3, past.GetProperty("totalCount").GetInt32());
+        Assert.Equal(3, Ids(negative).Count);
+        Assert.Empty(Ids(naomi));
+        Assert.Equal(0, naomi.GetProperty("totalCount").GetInt32());
+    }
+
     // L2-057 AC1, AC2
     [Fact]
     public async Task L2_057_AC1_AC2_opening_a_conversation_shows_the_header_and_messages_and_marks_them_read()
