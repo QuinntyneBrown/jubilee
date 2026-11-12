@@ -82,8 +82,10 @@ keep the measure honest and the copy free of any push towards a good review.
   `memberGuard`) as the frame draws it; the posted state is a state of the page. Editing,
   removing, replying and reporting are CDK dialogs (`edit-review`, `remove-review`,
   `reply-review`, `report-review`).
-- **Limits** (L2-137), counted in the handlers as reports are: 5 new reviews per member per day,
-  30 edits and replies per hour, 10 review reports per day.
+- **Limits** (L2-137): 5 new reviews per member per day and 10 review reports per day, counted in
+  the handlers from the stored rows as reports are; 30 edits and replies per member per hour, held
+  by the API's rate limiter (policy `review-changes`, `RateLimits:ReviewChangesPerHour`) as
+  confirmation resends are, because an edit leaves no row to count.
 - **Account data.** Deleting an account deletes the member's reviews and the reports they sent
   and recounts the stars; the data download holds the reviews they wrote, the reports they sent
   and, for an owner, the reviews of their listings with their replies.

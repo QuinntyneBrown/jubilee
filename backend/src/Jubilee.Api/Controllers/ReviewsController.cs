@@ -43,3 +43,33 @@ public sealed class ListingReviewsController(ISender sender) : ControllerBase
 
     private string MemberName => User.FindFirst("name")?.Value ?? "Member";
 }
+
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record ReplyBody(string? Text);
+
+/// <summary>
+/// One review: its author changes or removes it, the owner of its listing replies (L2-232, L2-233, L2-237 AC5).
+/// Anyone else is answered 404, as if it did not exist (L2-133 AC2); a reply by anyone but the owner is 403 NOT_OWNER.
+/// </summary>
+[ApiController]
+[Route("api/reviews/{id:guid}")]
+[ErrorReference("JB-REV-503")]
+public sealed class ReviewsController(ISender sender) : ControllerBase
+{
+    [HttpPut]
+    [EnableRateLimiting(ReviewRateLimit.Changes)]
+    public async Task<ActionResult<ReviewDto>> Edit(Guid id, ReviewBody body, CancellationToken cancellationToken) =>
+        Ok(await sender.Send(new EditReviewCommand(id, User.ToViewer().Subject!, body.Rating, body.ItemId, body.Text), cancellationToken));
+
+    [HttpDelete]
+    public async Task<IActionResult> Remove(Guid id, CancellationToken cancellationToken)
+    {
+        await sender.Send(new RemoveReviewCommand(id, User.ToViewer().Subject!), cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPut("reply")]
+    [EnableRateLimiting(ReviewRateLimit.Changes)]
+    public async Task<ActionResult<ReviewDto>> Reply(Guid id, ReplyBody body, CancellationToken cancellationToken) =>
+        Ok(await sender.Send(new ReplyToReviewCommand(id, User.ToViewer().Subject!, body.Text), cancellationToken));
+}

@@ -26,6 +26,15 @@ public sealed class RateLimitOptions
 
     /// <summary>Business pre-registrations allowed per client IP address per hour (L2-137 AC1).</summary>
     public int LaunchPreRegistrationsPerHour { get; set; } = 5;
+
+    /// <summary>Changes to reviews and replies to them allowed per member per hour (L2-237 AC6).</summary>
+    public int ReviewChangesPerHour { get; set; } = 30;
+}
+
+/// <summary>Edits of reviews and owners' replies: 30 an hour per member (L2-237 AC6, ADR 0058).</summary>
+public static class ReviewRateLimit
+{
+    public const string Changes = "review-changes";
 }
 
 /// <summary>The forms of the launching-soon marketing page: 5 an hour each per IP address (L2-218 AC3).</summary>
@@ -109,6 +118,17 @@ public static class DirectoryRateLimit
                 return RateLimitPartition.GetFixedWindowLimiter($"resend:{member}", _ => new FixedWindowRateLimiterOptions
                 {
                     PermitLimit = Math.Max(1, limit.ConfirmationResendsPerHour),
+                    Window = TimeSpan.FromHours(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.AddPolicy(ReviewRateLimit.Changes, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var member = context.User.FindFirst("sub")?.Value ?? context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter($"review-change:{member}", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.ReviewChangesPerHour),
                     Window = TimeSpan.FromHours(1),
                     QueueLimit = 0,
                 });
