@@ -46,6 +46,28 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await expect(business.listingCard).not.toContainText('Church reference');
   });
 
+  test('L2-085 AC2 and AC6: "Saved by members" shows the members who saved the business and how many are new this week', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    await stubMyBusiness(page);
+    await jb.goto(OVERVIEW);
+
+    await expect(business.stats).toHaveCount(4);
+    await expect(business.statValue('Saved by members')).toHaveText('28');
+    await expect(business.statNote('Saved by members')).toHaveText('↑ 4 this week');
+  });
+
+  test('L2-085 AC6: a week with no new save says so in words', async ({ page, jb }) => {
+    const business = new MyBusinessPage(page);
+    await stubMyBusiness(page, { saved: { value: 28, change: 0 } });
+    await jb.goto(OVERVIEW);
+
+    await expect(business.statValue('Saved by members')).toHaveText('28');
+    await expect(business.statNote('Saved by members')).toHaveText('None new this week');
+  });
+
   test('L2-085: the requests that need a reply are listed and can be confirmed from here', async ({
     page,
     jb,

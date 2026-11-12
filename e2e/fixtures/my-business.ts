@@ -35,6 +35,8 @@ export interface FakeBusiness {
   state: string;
   paused: boolean;
   justApproved: boolean;
+  /** "Saved by members": the members who saved the business, and those who first did so this week (L2-085 AC6). */
+  saved: { value: number; change: number };
   version: number;
   photos: FakePhoto[];
   listing: {
@@ -122,6 +124,7 @@ export async function stubMyBusiness(
     state: 'live',
     paused: false,
     justApproved: false,
+    saved: { value: 28, change: 4 },
     version: 0,
     photos: [],
     listing: {
@@ -211,7 +214,7 @@ export async function stubMyBusiness(
             openRequests: 3,
             newSinceYesterday: 2,
             unansweredMessages: 1,
-            saved: null,
+            saved: fake.saved,
           }
         : null,
       needsReply: live

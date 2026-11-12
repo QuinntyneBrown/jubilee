@@ -58,6 +58,16 @@ export class MyBusinessPage extends ShellPage implements Screen {
     return this.stats.filter({ hasText: label });
   }
 
+  /** The figure of one stat. */
+  statValue(label: string | RegExp): Locator {
+    return this.stat(label).locator('.stat__value');
+  }
+
+  /** The note under the figure: how it moved. */
+  statNote(label: string | RegExp): Locator {
+    return this.stat(label).locator('.stat__delta');
+  }
+
   section(name: string | RegExp): Locator {
     return this.sections.getByRole('link', { name });
   }

@@ -119,9 +119,17 @@
               [value]="stats.unansweredMessages"
               note="Reply within a day to keep your badge"
             ></div>
-            @if (stats.saved !== null) {
-              <div jb-stat label="Saved by members" [value]="stats.saved" note="This week"></div>
-            }
+            <div
+              jb-stat
+              label="Saved by members"
+              [value]="stats.saved.value"
+              [note]="
+                stats.saved.change > 0
+                  ? '↑ ' + stats.saved.change + ' this week'
+                  : 'None new this week'
+              "
+              [trend]="stats.saved.change > 0 ? 'up' : null"
+            ></div>
           </div>
           <div class="split">
             <section

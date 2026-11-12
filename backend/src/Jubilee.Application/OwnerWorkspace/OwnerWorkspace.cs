@@ -12,7 +12,8 @@ namespace Jubilee.Application.OwnerWorkspace;
 /// <summary>A figure on My business with how it moved against the week before (L2-085 AC2).</summary>
 public sealed record StatDto(int Value, int Change);
 
-public sealed record MyBusinessStatsDto(StatDto Views, int OpenRequests, int NewSinceYesterday, int UnansweredMessages, int? Saved);
+/// <summary><c>Saved</c> is the members who saved the business, and how many of them first did so in the last 7 days (L2-085 AC6).</summary>
+public sealed record MyBusinessStatsDto(StatDto Views, int OpenRequests, int NewSinceYesterday, int UnansweredMessages, StatDto Saved);
 
 public sealed record NeedsReplyDto(Guid Id, string Kind, string KindLabel, string CustomerName, string Title, DateTimeOffset SentAt);
 
@@ -198,7 +199,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
                 fresh.Count,
                 fresh.Count(r => r.CreatedAt > now.AddDays(-1)),
                 conversations,
-                await SavedByMembers(listing.Id, cancellationToken));
+                await SavedByMembers(listing.Id, now, cancellationToken));
 
             var products = await db.Products.AsNoTracking().Where(p => p.ListingId == listing.Id).ToListAsync(cancellationToken);
             var services = await db.Services.AsNoTracking().CountAsync(s => s.ListingId == listing.Id, cancellationToken);
@@ -239,13 +240,19 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             listing.AwayUntil is { } back && back > now ? back : null);
     }
 
-    /// <summary>How many different members saved the business or one of its products: a count, never who (L2-041 AC6).</summary>
-    private async Task<int> SavedByMembers(Guid listingId, CancellationToken cancellationToken)
+    /// <summary>
+    /// How many different members saved the business or one of its products, and how many of them saved the first of
+    /// those in the last 7 days: a count, never who (L2-041 AC6, L2-085 AC6). A removed save leaves no row, so the
+    /// change is never below zero (ADR 0051).
+    /// </summary>
+    private async Task<StatDto> SavedByMembers(Guid listingId, DateTimeOffset now, CancellationToken cancellationToken)
     {
         var productIds = await db.Products.AsNoTracking().Where(p => p.ListingId == listingId).Select(p => p.Id).ToListAsync(cancellationToken);
-        return await db.SavedItems.AsNoTracking()
+        var saves = await db.SavedItems.AsNoTracking()
             .Where(i => (i.Kind == SavedItemKind.Business && i.TargetId == listingId) || (i.Kind == SavedItemKind.Product && productIds.Contains(i.TargetId)))
-            .Select(i => i.MemberSubject).Distinct().CountAsync(cancellationToken);
+            .Select(i => new { i.MemberSubject, i.SavedAt }).ToListAsync(cancellationToken);
+        var first = saves.GroupBy(i => i.MemberSubject).Select(g => g.Min(i => i.SavedAt)).ToList();
+        return new StatDto(first.Count, first.Count(at => at > now.AddDays(-7)));
     }
 }
 

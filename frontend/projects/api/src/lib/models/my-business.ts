@@ -15,7 +15,8 @@ export interface BusinessStats {
   openRequests: number;
   newSinceYesterday: number;
   unansweredMessages: number;
-  saved: number | null;
+  /** The members who saved the business; `change` is how many first did so in the last 7 days (L2-085 AC6). */
+  saved: BusinessStat;
 }
 
 export interface NeedsReply {

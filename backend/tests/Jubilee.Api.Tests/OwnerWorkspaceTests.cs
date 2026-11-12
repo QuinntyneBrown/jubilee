@@ -87,6 +87,41 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal(1, overview.GetProperty("newRequests").GetInt32());
     }
 
+    // L2-085 AC2 and AC6: how many members saved the business or one of its products, and how many of them first did so this week
+    [Fact]
+    public async Task L2_085_AC6_saved_by_members_counts_each_member_once_with_those_who_first_saved_this_week()
+    {
+        var mug = Product.Create(_listing.Id, "mug", "Mug", 2400, false, TileTint.Gold, TileIcon.Mug, ListingMother.Now);
+        var other = ListingMother.Public("someone-else");
+        await _factory.Arrange(
+            mug,
+            other,
+            // Ruth saved the business a month ago and a product yesterday: one member, not new this week.
+            SavedItem.Business("member|ruth", _listing.Id, ListingMother.Now.AddDays(-30)),
+            SavedItem.Product("member|ruth", mug.Id, ListingMother.Now.AddDays(-1)),
+            // David saved the business eight days ago: not new this week.
+            SavedItem.Business("member|david", _listing.Id, ListingMother.Now.AddDays(-8)),
+            // Samuel saved the business six days ago and Esther a product today: both new this week.
+            SavedItem.Business("member|samuel", _listing.Id, ListingMother.Now.AddDays(-6)),
+            SavedItem.Product("member|esther", mug.Id, ListingMother.Now.AddHours(-1)),
+            // A save of another business is not counted.
+            SavedItem.Business("member|joanna", other.Id, ListingMother.Now.AddDays(-1)));
+
+        var saved = (await Json(await Naomi().GetAsync("/api/my-business"))).GetProperty("stats").GetProperty("saved");
+
+        Assert.Equal(4, saved.GetProperty("value").GetInt32());
+        Assert.Equal(2, saved.GetProperty("change").GetInt32());
+    }
+
+    [Fact]
+    public async Task L2_085_AC6_a_business_nobody_saved_shows_zero_and_no_change()
+    {
+        var saved = (await Json(await Naomi().GetAsync("/api/my-business"))).GetProperty("stats").GetProperty("saved");
+
+        Assert.Equal(0, saved.GetProperty("value").GetInt32());
+        Assert.Equal(0, saved.GetProperty("change").GetInt32());
+    }
+
     // L2-085 AC1, L2-086
     [Fact]
     public async Task L2_086_a_listing_that_is_not_live_shows_where_it_stands_and_no_numbers()
