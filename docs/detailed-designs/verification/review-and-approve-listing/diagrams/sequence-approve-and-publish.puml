@@ -52,7 +52,7 @@ alt a decision already exists or the version is stale
   dialog --> actor : Close and show the other verifier's decision
 else no decision yet
   handler -> entity : Approve(verifier, note, now)
-  entity --> handler : Stage Live, Verified true, VerifiedOn, VerificationDecision
+  entity --> handler : Stage Live, Verified true, ApprovedAt, VerificationDecision
   handler -> db : Save listing, AuditEntry (L2-180) and OutboxMessage in one unit of work
   db --> handler : Commit result
   handler --> controller : Typed result

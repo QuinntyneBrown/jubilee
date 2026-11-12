@@ -1,6 +1,6 @@
 # 0020. Verification decisions
 
-Status: accepted; "Who is on the team" and the deferral of L2-098 AC2 superseded by [0040](0040-separate-admin-application.md). Amended by ADR 0041, 12 November 2026: the church reference is removed. The stages `waiting-on-reference` and `needs-a-decision` are gone, the checklist has three items, the change area `reference` is gone, a resubmitted listing always returns to Ready to review, a decline is made from Ready to review, and the reference privacy and retention rules (`reference.viewed`, `ReferenceRetentionJob`) have nothing left to act on. `Listing.ReferenceConfirmedOn` is renamed `VerifiedOn`. The rest stands.
+Status: accepted; "Who is on the team" and the deferral of L2-098 AC2 superseded by [0040](0040-separate-admin-application.md). Amended by ADR 0041, 12 November 2026: the church reference is removed. The stages `waiting-on-reference` and `needs-a-decision` are gone, the checklist has three items, the change area `reference` is gone, a resubmitted listing always returns to Ready to review, a decline is made from Ready to review, and the reference privacy and retention rules (`reference.viewed`, `ReferenceRetentionJob`) have nothing left to act on. `Listing.ReferenceConfirmedOn` is dropped; `Listing.ApprovedAt` says when a listing was verified. The rest stands.
 
 ## Context
 

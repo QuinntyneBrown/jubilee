@@ -72,7 +72,7 @@ class ListingSummary {
   +int ProductCount
   +int SoldOutCount
   +int ServiceCount
-  +DateOnly? VerifiedOn
+  +DateTimeOffset? ApprovedAt
 }
 
 class RequestCard {

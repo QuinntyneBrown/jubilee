@@ -36,7 +36,7 @@ class Listing {
   +string Name
   +ListingStage Stage
   +bool Verified
-  +DateOnly? VerifiedOn
+  +DateTimeOffset? ApprovedAt
   +DateTimeOffset SubmittedAt
   +byte[] RowVersion
   +Approve(verifier: Member, note: string, now: DateTimeOffset): VerificationDecision

@@ -67,7 +67,7 @@ read models in the `Jubilee database`.
   build the `BusinessOverview`: the four statistics, up to 3 `new` requests for
   "Needs your reply", and the "Your listing" summary (for example "4 products ·
   1 sold out", the service count, and the verification status "Verified Jun 2026", read from
-  `Listing.VerifiedOn`).
+  `Listing.ApprovedAt`).
 - **`OverviewStats`** — value object with `ListingViews7Days` and its change on
   the previous 7 days, `OpenRequests` and `NewSinceYesterday`,
   `UnansweredMessages`, and `SavedByMembers` with its weekly change.

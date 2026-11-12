@@ -62,7 +62,7 @@ The feature is a vertical slice from the review page to the database, with
   state, and writes a `ListingApproved` `OutboxMessage`, all in one unit of
   work.
 - **`Listing.Approve`** — domain method. It accepts the stage "Ready to review",
-  sets `Stage` to `Live`, `Verified` to true and `VerifiedOn` to the date, and
+  sets `Stage` to `Live`, `Verified` to true and `ApprovedAt` to the time, and
   records a `VerificationDecision`. A listing in "Changes requested" or one
   that already carries a decision for the current submission is refused; the
   handler maps the refusal and a stale `RowVersion` to HTTP 409.
