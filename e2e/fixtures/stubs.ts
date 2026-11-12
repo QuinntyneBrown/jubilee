@@ -333,7 +333,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       }));
     case 'business-loading':
       return page.route(legacyFinancial, pending);
-    case 'business-error':
+    case 'business-retrying':
       return page.route(legacyFinancial, (route) => route.fulfill(unavailable('JB-BIZ-503')));
     case 'business-empty':
       return patchListing(page, legacyFinancial, (listing) => ({
@@ -450,7 +450,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMyBusiness(page, { state: 'changes-requested' });
     case 'business-empty':
       return stubMyBusiness(page, { state: 'none' });
-    case 'business-error':
+    case 'business-retrying':
       return stubMyBusiness(page, { overview: 'fails' });
     case 'business-paused':
       return stubMyBusiness(page, { paused: true });
@@ -607,6 +607,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubSent(page, '**/api/launch/notifications', pending);
     case 'launch-notify-failing':
       return stubSent(page, '**/api/launch/notifications', failed);
+    case 'launch-notify-recovering':
+      return stubSent(page, '**/api/launch/notifications', failedOnce());
     case 'launch-notify-limited':
       return stubSent(page, '**/api/launch/notifications', limited);
     case 'launch-notify-challenge':
@@ -615,6 +617,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubSent(page, '**/api/launch/businesses', pending);
     case 'launch-business-failing':
       return stubSent(page, '**/api/launch/businesses', failed);
+    case 'launch-business-recovering':
+      return stubSent(page, '**/api/launch/businesses', failedOnce());
     case 'launch-business-limited':
       return stubSent(page, '**/api/launch/businesses', limited);
     case 'launch-business-challenge':
@@ -702,6 +706,12 @@ function failed(route: Route): Promise<void> {
     contentType: 'application/problem+json',
     body: JSON.stringify({ title: 'Something went wrong', status: 500, reference: 'JB-AUTH-503' }),
   });
+}
+
+/** The first send fails on the way; the next one, which the form sends by itself, is accepted. */
+function failedOnce(): (route: Route) => Promise<void> {
+  let sends = 0;
+  return (route) => (++sends === 1 ? failed(route) : route.fulfill({ status: 202, body: '' }));
 }
 
 /** Too many from one address: 42 minutes to wait, as the mocks show (L2-137 AC1). */

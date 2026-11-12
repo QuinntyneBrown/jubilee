@@ -26,14 +26,15 @@ import {
   Select,
   Textarea,
 } from 'components';
-import { map, timeout } from 'rxjs';
+import { map } from 'rxjs';
 import {
   challengeFailed,
   EMAIL_INVALID,
   EMAIL_PATTERN,
   FormNotice,
+  keepSending,
   ROBOT,
-  SEND_TIMEOUT_MS,
+  STILL_SENDING,
   TOO_LONG,
   tooMany,
 } from '../launch-forms/launch-messages';
@@ -219,7 +220,7 @@ export class BusinessPreRegistration {
         consent: true,
         challengeToken: this.challenge(),
       })
-      .pipe(timeout(SEND_TIMEOUT_MS))
+      .pipe(keepSending(() => this.notice.set(STILL_SENDING)))
       .subscribe({
         next: () => {
           this.sentTo.set(email);
@@ -258,9 +259,10 @@ export class BusinessPreRegistration {
     return errors;
   }
 
-  /** Whatever went wrong, every value typed stays where it was (L2-216 AC6 to AC8). */
+  /** An answer the visitor can act on: every value typed stays where it was (L2-216 AC6 to AC8). */
   private failed(error: unknown): void {
     this.view.set('form');
+    this.notice.set(null);
     if (challengeFailed(error)) {
       // One token passes one check: ask for a fresh one (L2-137 AC2).
       this.challenge.set(null);
@@ -275,12 +277,6 @@ export class BusinessPreRegistration {
       this.focusSummary();
     } else if (error instanceof HttpErrorResponse && error.status === 429) {
       this.notice.set(tooMany(error));
-    } else {
-      this.notice.set({
-        tone: 'danger',
-        heading: 'We couldn’t send your details.',
-        text: 'Nothing is lost: what you typed is still here. Try again in a moment.',
-      });
     }
   }
 

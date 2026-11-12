@@ -18,7 +18,13 @@
   } @else {
     <form jb-launch-form tone="paper" aria-label="Launch notification" (submit)="send($event)">
       @if (notice(); as notice) {
-        <div slot="notice" jb-alert role="alert" [tone]="notice.tone" [heading]="notice.heading">
+        <div
+          slot="notice"
+          jb-alert
+          [role]="notice.tone === 'info' ? 'status' : 'alert'"
+          [tone]="notice.tone"
+          [heading]="notice.heading"
+        >
           {{ notice.text }}
         </div>
       }
