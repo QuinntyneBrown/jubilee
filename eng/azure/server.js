@@ -80,12 +80,10 @@ function callerAddress(req) {
 
 function proxy(req, res) {
   const headers = { ...req.headers };
-  // A caller's own copies are never passed on (ADR 0040).
-  delete headers['x-jubilee-client-address'];
-  delete headers['x-jubilee-proxy-key'];
   if (proxyKey) {
     // The admin host: the API is on another host, so it is told who the caller is and that this
-    // proxy says so. Host names the API's host, as its front end requires.
+    // proxy says so, in place of anything the caller sent (ADR 0040). Host names the API's host,
+    // as its front end requires.
     headers['x-jubilee-client-address'] = callerAddress(req);
     headers['x-jubilee-proxy-key'] = proxyKey;
     headers.host = api.host;
@@ -99,6 +97,8 @@ function proxy(req, res) {
       path: req.url,
       // Beside the API (the app's host) the headers pass unchanged: Host stays the public host, and
       // X-Forwarded-For / -Proto are the ones App Service wrote, so the API sees the caller and HTTPS.
+      // The admin host's X-Jubilee-Proxy-Key and X-Jubilee-Client-Address pass too: the API believes
+      // the address only with the right key, compared in fixed time, and removes both either way.
       headers,
     },
     (answer) => {

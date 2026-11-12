@@ -6,6 +6,7 @@ How Jubilee is hosted, and how to deploy it again. Set up on 11 November 2026.
 |---|---|---|
 | `https://www.jubilee.to`, `https://jubilee.to` | the marketing site (`frontend/projects/marketing`) | `jubilee-to-www` |
 | `https://app.jubilee.to` | the app (`frontend/projects/jubilee`), the API under `/api`, the worker | `jubilee-to-app` |
+| `https://admin.jubilee.to` | the admin application (`frontend/projects/admin`), `/api` sent to the app's host | `jubilee-to-admin` (to create, see "The admin application") |
 
 ## Resources
 
@@ -46,11 +47,68 @@ certificates for the three host names.
 
 | `Email__ConnectionString`, `Email__From`, `Email__WebhookSecret` | set by `configure-email.sh` (see "E-mail" below); without the first, no e-mail leaves |
 
+| `StaffSignIn__TenantId`, `StaffSignIn__ClientId`, `StaffSignIn__ClientSecret`, `StaffSignIn__PublicBaseUrl` | staff sign-in (see "The admin application" below) |
+| `StaffAccess__AllowedNetworks`, `StaffAccess__ProxyKey` | the networks the staff endpoints answer, and the key of the admin host's proxy; without the first, every staff endpoint is refused |
+
 Not configured yet, so this feature is off: the bot challenge of the join form (Cloudflare
 Turnstile). It needs a Turnstile widget for `app.jubilee.to` and two settings: `BotChallenge__SiteKey`
 (public; the join form reads it from `GET /api/session` and shows the challenge) and
 `BotChallenge__SecretKey` (the API verifies the token with it). Set both or neither: with only the
 site key the form sends a token nobody checks, and with only the secret every join is refused.
+
+## The admin application
+
+The verification team's screens are a separate application at `https://admin.jubilee.to` (ADR
+0040). Staff sign in through Microsoft Entra ID with a second factor, and the staff endpoints of
+the API (`/api/admin/*`, `/api/staff/*`) answer only an allowed network. Until the steps below are
+done, nobody can use those endpoints in production: the allow-list is empty, so the API refuses
+them all, and `deploy.sh` skips the admin application because its App Service does not exist.
+
+None of these steps is run by the repository or its workflows. In order:
+
+1. **Entra ID app registration.** In the Jubilee tenant: App registrations, New registration,
+   `Jubilee admin`, single tenant, platform Web, redirect URI
+   `https://admin.jubilee.to/api/staff/sign-in/callback`. Under Authentication, tick "ID tokens".
+   Under Certificates and secrets, add a client secret. Note the tenant ID and the client ID. The
+   API uses the v1.0 endpoints, whose ID token carries `amr`.
+2. **Second factor.** A Conditional Access policy for the `Jubilee admin` application that grants
+   access only with multifactor authentication, for every staff member. The API refuses a sign-in
+   whose `amr` does not name `mfa` (L2-189 AC3), so a staff member without a second factor is told
+   to set one up.
+3. **The allowed networks.** The address ranges of the Jubilee staff networks, as CIDR, separated
+   by commas (`203.0.113.0/24, 2001:db8:5::/48`).
+4. **The App Service.** `jubilee-to-admin` on `jubilee-plan`, Node 22, start-up command
+   `node server.js`, HTTPS only, TLS 1.2, Always On, FTP off. Settings:
+
+   | Setting | Value |
+   |---|---|
+   | `API_ORIGIN` | `https://app.jubilee.to` |
+   | `PROXY_KEY` | a new random key (`openssl rand -base64 32`), the same as `StaffAccess__ProxyKey` |
+   | `SCM_DO_BUILD_DURING_DEPLOYMENT` | `false` |
+
+   Under Networking, Access restrictions, allow the staff networks of step 3 and deny the rest, so
+   that the application itself only answers there.
+5. **The settings of `jubilee-to-app`** (in Cloud Shell, with `read -rs` for the secrets, as for
+   Google sign-in): `StaffSignIn__TenantId`, `StaffSignIn__ClientId`, `StaffSignIn__ClientSecret`,
+   `StaffSignIn__PublicBaseUrl=https://admin.jubilee.to`, `StaffAccess__AllowedNetworks` (step 3)
+   and `StaffAccess__ProxyKey` (the key of step 4). Never set `StaffSignIn__Provider`: its only
+   other value, `Development`, signs anyone in and the API refuses to start with it outside the
+   Development environment.
+6. **DNS.** `CNAME admin → jubilee-to-admin.azurewebsites.net.` and `TXT asuid.admin` with the
+   domain verification ID; then add the host name to `jubilee-to-admin` with a managed certificate.
+7. **Deploy.** Run the Deploy workflow (or `bash eng/azure/deploy.sh --migrate`, which applies the
+   staff migrations). It now deploys `jubilee-to-admin` too.
+8. **The first administrator.** In Cloud Shell, with the connection string as in `deploy.sh`:
+   `dotnet run --project backend/src/Jubilee.Cli -- staff grant --email {address} --role admin`,
+   and `--role verifier` for each member of the verification team. The address is the staff
+   member's Entra ID address; the first sign-in binds the account to that identity.
+9. **Check.** From a staff network, open `https://admin.jubilee.to`, sign in with a second factor
+   and see the queue. From any other network the screen says "You're not on an allowed network."
+   `az webapp log tail -n jubilee-to-app` shows a refused staff request as `Failed authorization`
+   or `NETWORK_NOT_ALLOWED`.
+
+Rotating the proxy key means setting the new value on both App Services at once. Revoking a staff
+member's roles (`jubilee staff revoke`) ends their staff sessions.
 
 ## Google sign-in
 
@@ -95,6 +153,7 @@ Without the two settings Google sign-in is off: the join and sign-in pages show 
 | A | `@` | `20.116.40.17` (inbound address of `jubilee-to-www`) |
 | CNAME | `www` | `jubilee-to-www.azurewebsites.net.` |
 | CNAME | `app` | `jubilee-to-app.azurewebsites.net.` |
+| CNAME | `admin` | `jubilee-to-admin.azurewebsites.net.` (to add, see "The admin application") |
 | TXT | `asuid`, `asuid.www`, `asuid.app` | the App Service domain verification ID |
 
 | TXT | `notify` | `v=spf1 include:spf.protection.outlook.com -all` (SPF of the sending domain) |
@@ -142,8 +201,9 @@ large mailing. Rotating the key is `az communication regenerate-key` followed by
 ## Deploying
 
 Every push to `main` is deployed by [`.github/workflows/deploy.yml`](../../.github/workflows/deploy.yml)
-once CI has passed on it. The workflow applies new EF Core migrations, builds and packages both
-sites, deploys them and waits for the health check. It can also be started by hand from the
+once CI has passed on it. The workflow applies new EF Core migrations, builds and packages the
+three sites, deploys them (the admin application once `jubilee-to-admin` exists) and waits for the
+health check. It can also be started by hand from the
 Actions tab.
 
 The workflow signs in to Azure with OpenID Connect, so the repository holds no password. It needs
@@ -166,7 +226,7 @@ To deploy by hand instead, in Azure Cloud Shell (bash):
 
 ```
 git clone https://github.com/QuinntyneBrown/jubilee.git && cd jubilee
-bash eng/azure/deploy.sh             # build, package, deploy both sites
+bash eng/azure/deploy.sh             # build, package, deploy the sites
 bash eng/azure/deploy.sh --migrate   # the same, after applying new EF Core migrations
 ```
 

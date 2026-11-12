@@ -11,6 +11,7 @@ set -euo pipefail
 GROUP=${GROUP:-rg-jubilee-prod}
 WWW_APP=${WWW_APP:-jubilee-to-www}   # www.jubilee.to and jubilee.to: frontend/projects/marketing
 APP_APP=${APP_APP:-jubilee-to-app}   # app.jubilee.to: frontend/projects/jubilee, the API and the worker
+ADMIN_APP=${ADMIN_APP:-jubilee-to-admin} # admin.jubilee.to: frontend/projects/admin (ADR 0040)
 
 root=$(cd "$(dirname "$0")/../.." && pwd)
 work=$(mktemp -d)
@@ -68,6 +69,13 @@ cp "$root/eng/azure/server.js" "$work/www/"
 cp -r "$root/frontend/dist/marketing/browser" "$work/www/public"
 (cd "$work/www" && zip -qr ../www.zip .)
 
+# The admin application: server.js and the built application. Its /api goes to the app's host,
+# with API_ORIGIN and PROXY_KEY set on the App Service (README.md), never in the package.
+mkdir -p "$work/admin"
+cp "$root/eng/azure/server.js" "$work/admin/"
+cp -r "$root/frontend/dist/admin/browser" "$work/admin/public"
+(cd "$work/admin" && zip -qr ../admin.zip .)
+
 # The app: server.js, start.sh, the built app, the API and the worker (published above), and a
 # Node binary, because the .NET image of App Service has none.
 mkdir -p "$work/app/bin"
@@ -82,6 +90,13 @@ node_file=$(curl -sL "$node_release/SHASUMS256.txt" | grep -o 'node-v22[0-9.]*-l
 
 echo "== Deploying"
 az webapp deploy -g "$GROUP" -n "$WWW_APP" --src-path "$work/www.zip" --type zip -o none
+# The admin application is deployed once its App Service exists (README.md, "The admin
+# application"); until then the step says so and the rest of the deployment goes on.
+if az webapp show -g "$GROUP" -n "$ADMIN_APP" -o none 2>/dev/null; then
+  az webapp deploy -g "$GROUP" -n "$ADMIN_APP" --src-path "$work/admin.zip" --type zip -o none
+else
+  echo "== Skipping the admin application: App Service $ADMIN_APP does not exist yet (README.md)."
+fi
 # The app is restarted only after every file is in place: a container that starts while the
 # package is still being copied does not find start.sh and stops. Without a restart there is no
 # start-up to track, and az would wait ten minutes for one and fail: --track-status false.
@@ -94,7 +109,7 @@ health=${HEALTH_URL:-https://app.jubilee.to/api/health}
 sleep 30
 for attempt in $(seq 1 40); do
   if curl -fsS --max-time 10 "$health" >/dev/null 2>&1; then
-    echo "Deployed. https://www.jubilee.to  $health"
+    echo "Deployed. https://www.jubilee.to  https://admin.jubilee.to  $health"
     exit 0
   fi
   sleep 15
