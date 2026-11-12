@@ -1,8 +1,10 @@
 import { parity } from '../../fixtures/parity';
 import { BrowsePage } from '../../pages/browse.page';
 import { CategoryPage } from '../../pages/category.page';
+import { SearchPage } from '../../pages/search.page';
 
-// jb-space-card: on the rooms shelf of Browse and in the Rooms & rentals category (L2-194).
+// jb-space-card: on the rooms shelf of Browse, in the Rooms & rentals category (L2-194) and in
+// search (L2-195).
 parity('space-card', {
   cases: [
     {
@@ -16,6 +18,12 @@ parity('space-card', {
       route: 'category.rooms-rentals',
       screen: (page) => new CategoryPage(page),
       region: (screen: CategoryPage) => screen.spaceCard(1).root,
+    },
+    {
+      name: 'search',
+      route: 'search.spaces',
+      screen: (page) => new SearchPage(page),
+      region: (screen: SearchPage) => screen.spaceCard(0).root,
     },
   ],
   reference: {

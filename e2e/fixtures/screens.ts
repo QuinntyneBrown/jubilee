@@ -202,6 +202,7 @@ export const screens: {
   { key: 'search.loading', screen: (page) => new SearchPage(page) },
   { key: 'search.empty', screen: (page) => new SearchPage(page) },
   { key: 'search.error', screen: (page) => new SearchPage(page) },
+  { key: 'search.spaces', screen: (page) => new SearchPage(page) },
   { key: 'search.no-results', screen: (page) => new SearchPage(page) },
   { key: 'sign-in', screen: (page) => new SignInPage(page) },
   { key: 'sign-in.error', screen: (page) => new SignInErrorScreen(page) },

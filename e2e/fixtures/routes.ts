@@ -37,6 +37,7 @@ export type StubName =
   | 'search-error'
   | 'search-no-results'
   | 'search-start'
+  | 'search-spaces'
   | 'reference'
   | 'reference-loading'
   | 'reference-error'
@@ -705,6 +706,12 @@ export const routes = {
     mock: 'pages/search/error.html',
     who: 'member',
     stub: 'search-error',
+  },
+  'search.spaces': {
+    app: '/search?q=room',
+    mock: 'pages/search/spaces.html',
+    who: 'visitor',
+    stub: 'search-spaces',
   },
   'search.no-results': {
     app: '/search?q=plumbre',

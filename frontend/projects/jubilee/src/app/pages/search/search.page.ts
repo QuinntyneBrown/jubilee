@@ -19,6 +19,8 @@ import {
   TabList,
   SearchField,
   MediaTile,
+  CardGrid,
+  SpaceCard,
 } from 'components';
 import { SearchStore } from '../../services/search.store';
 
@@ -46,6 +48,8 @@ function plural(count: number, one: string, many: string): string {
   selector: 'jb-search-page',
   imports: [
     RouterLink,
+    CardGrid,
+    SpaceCard,
     EmptyState,
     Icon,
     MatchExplanation,
@@ -93,6 +97,9 @@ export class SearchPage {
     const kind = this.store.tab();
     return state.value.hits.filter((hit) => hit.kind === kind);
   });
+  /** Spaces are listed as space cards (L2-195 AC1); every other hit is a row. */
+  protected readonly spaces = computed(() => this.shown().flatMap((hit) => hit.space ?? []));
+  protected readonly rows = computed(() => this.shown().filter((hit) => !hit.space));
 
   constructor() {
     this.route.queryParamMap.subscribe((params) => this.store.open(params.get('q')));

@@ -65,6 +65,61 @@ export function noResults(
   };
 }
 
+/** A space as search returns it (L2-195): its card, never its address. */
+function spaceHit(space: {
+  slug: string;
+  name: string;
+  term: string;
+  rent: number;
+  facts: string[];
+  neighbourhood: string;
+  available: string;
+}) {
+  return {
+    kind: 'business',
+    name: space.name,
+    slug: space.slug,
+    productSlug: null,
+    businessName: space.name,
+    categorySlug: 'rooms-rentals',
+    explanation: null,
+    space: { ...space, per: 'month', coverPhoto: null },
+  };
+}
+
+/** "room" finds the room in Leslieville and the roommate in East York, as the mock shows (L2-195). */
+export const spaceResults = (
+  others: unknown[] = [],
+): { query: string; businessCount: number; hits: unknown[] } & Record<string, unknown> => ({
+  query: 'room',
+  businessCount: 2 + others.length,
+  serviceCount: 0,
+  productCount: 0,
+  hasMatchExplanations: false,
+  hits: [
+    spaceHit({
+      slug: 'furnished-room-leslieville',
+      name: 'Furnished room in a family home, Leslieville',
+      term: 'room',
+      rent: 950,
+      facts: ['Double bed', 'Shared bath'],
+      neighbourhood: 'Leslieville',
+      available: 'Now',
+    }),
+    spaceHit({
+      slug: 'roommate-east-york',
+      name: 'Roommate wanted: 3-bedroom house in East York',
+      term: 'roommate',
+      rent: 1100,
+      facts: ['Unfurnished room', 'Shared bath (2)'],
+      neighbourhood: 'East York',
+      available: 'Jan 1',
+    }),
+    ...others,
+  ],
+  suggestion: null,
+});
+
 /** The empty search page of a member with a history, as the mocks show it. */
 export const memberSearchStart = {
   recent: ['plumber', 'family lawyer', 'journaling Bible', 'wedding flowers'].map((query, i) => ({
@@ -281,6 +336,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         page,
         noResults('plumbre', { closeTerm: 'plumber', categorySlug: 'home-property' }),
       );
+    case 'search-spaces':
+      return stubSearch(page, spaceResults());
     case 'search-start':
       return stubSearchStart(page, memberSearchStart);
     case 'member-requests':

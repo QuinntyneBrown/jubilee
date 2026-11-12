@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { ShellPage } from './shell.page';
+import { SpaceCard } from './space-card';
 
 /** The search page: results, the empty search page, no results and the load-error state. */
 export class SearchPage extends ShellPage implements Screen {
@@ -10,6 +11,8 @@ export class SearchPage extends ShellPage implements Screen {
   readonly tabButtons: Locator;
   readonly panel: Locator;
   readonly rows: Locator;
+  /** Spaces among the results, as space cards (L2-195). */
+  readonly spaceCards: Locator;
   readonly marks: Locator;
   readonly emptyState: Locator;
   readonly emptyTitle: Locator;
@@ -36,6 +39,7 @@ export class SearchPage extends ShellPage implements Screen {
     this.tabButtons = this.tablist.getByRole('tab');
     this.panel = this.main.getByRole('tabpanel');
     this.rows = this.panel.locator('li.row');
+    this.spaceCards = this.panel.locator('ul.card-grid a.space-card');
     this.marks = this.rows.locator('mark');
     this.emptyState = this.main.locator('.empty:not(.empty--error)');
     this.emptyTitle = this.emptyState.locator('.empty__title');
@@ -56,6 +60,10 @@ export class SearchPage extends ShellPage implements Screen {
 
   tab(name: string): Locator {
     return this.tablist.getByRole('tab', { name: new RegExp(`^${name}`) });
+  }
+
+  spaceCard(index: number): SpaceCard {
+    return new SpaceCard(this.spaceCards.nth(index));
   }
 
   row(index: number): Locator {

@@ -144,32 +144,43 @@
             “{{ results.query }}”.
           </p>
         } @else {
-          <ul jb-rows style="border-top: 0">
-            @for (hit of shown(); track $index) {
-              <li jb-row>
-                <a
-                  slot="leading"
-                  [routerLink]="link(hit)"
-                  style="flex: none; width: 6rem"
-                  tabindex="-1"
-                  aria-hidden="true"
-                >
-                  <div jb-media-tile tint="ink" [icon]="icon(hit)"></div>
-                </a>
+          @if (spaces().length > 0) {
+            <ul jb-card-grid style="margin-top: var(--space-6)">
+              @for (space of spaces(); track space.slug) {
+                <li>
+                  <a jb-space-card [space]="space" [routerLink]="['/b', space.slug]"></a>
+                </li>
+              }
+            </ul>
+          }
+          @if (rows().length > 0) {
+            <ul jb-rows style="border-top: 0">
+              @for (hit of rows(); track $index) {
+                <li jb-row>
+                  <a
+                    slot="leading"
+                    [routerLink]="link(hit)"
+                    style="flex: none; width: 6rem"
+                    tabindex="-1"
+                    aria-hidden="true"
+                  >
+                    <div jb-media-tile tint="ink" [icon]="icon(hit)"></div>
+                  </a>
 
-                <a jb-row-title [routerLink]="link(hit)">{{ hit.name }}</a>
-                <div jb-row-meta>
-                  {{ categoryName(hit.categorySlug) }}
-                  @if (hit.kind !== 'business') {
-                    · {{ hit.businessName }}
-                  }
-                  @if (hit.explanation; as explanation) {
-                    · <span jb-match-explanation [explanation]="explanation"></span>
-                  }
-                </div>
-              </li>
-            }
-          </ul>
+                  <a jb-row-title [routerLink]="link(hit)">{{ hit.name }}</a>
+                  <div jb-row-meta>
+                    {{ categoryName(hit.categorySlug) }}
+                    @if (hit.kind !== 'business') {
+                      · {{ hit.businessName }}
+                    }
+                    @if (hit.explanation; as explanation) {
+                      · <span jb-match-explanation [explanation]="explanation"></span>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          }
         }
       </div>
     }
