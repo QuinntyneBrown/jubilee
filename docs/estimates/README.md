@@ -10,7 +10,7 @@
 | [responsive-design](responsive-design.md) | 6 days | 40% |
 | [design-system](design-system.md) | 6 days | 30% |
 | [interaction-states](interaction-states.md) | 17 days | 5% |
-| [system-pages](system-pages.md) | 10 days | 86% |
+| [system-pages](system-pages.md) | 10 days | 100% |
 | [listings](listings.md) | 20 days | 100% |
 | [accounts](accounts.md) | 50 days | 93% |
 | [security](security.md) | 34 days | 32% |

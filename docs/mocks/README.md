@@ -12,6 +12,11 @@ keeps the mocks' BEM classes and accessible state semantics.
   the backend embeds by `node tools/email-mocks/build.mjs`; change the layout or the script, not
   the files. They are not screens, so they are not in `manifest.json` or the matrix below.
 
+- **The static server error and maintenance pages** (`frontend/projects/jubilee/public/static/`, L2-115 AC3,
+  L2-117 AC1, ADR 0056) are built from `pages/server-error/default.html` and
+  `pages/maintenance/default.html` by `node tools/static-pages/build.mjs`: change the mock or the
+  script, then run it.
+
 - **`assets/og-image.html`** draws `og-image.png`, the 1200 × 630 link-preview image of every shared
   listing (L2-038 AC4, ADR 0055), from the tokens and the lockup. Screenshot it at 1200 × 630 and
   copy the result to `frontend/projects/jubilee/public/og-image.png`.

@@ -6,3 +6,5 @@ package-lock.json
 # one-rule-per-line form while its blocks move into the components (ADR 0035).
 projects/components/src/lib/styles/tokens.css
 projects/components/src/lib/styles/ui.css
+# Built by tools/static-pages/build.mjs from the mocks; change the mock or the script (ADR 0056).
+projects/jubilee/public/static/
