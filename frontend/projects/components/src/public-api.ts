@@ -154,3 +154,6 @@ export * from './lib/video-player/video-player';
 export * from './lib/workspace-header/workspace-header';
 export * from './lib/toast-region/toast-region';
 export * from './lib/toast-region/toast.service';
+export * from './lib/space-card/space-card';
+export * from './lib/space-card/space-terms';
+export * from './lib/term-filter/term-filter';

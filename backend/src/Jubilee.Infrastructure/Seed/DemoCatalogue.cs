@@ -176,21 +176,9 @@ internal static class DemoCatalogue
             () => SpaceDetails.Create(
                 SpaceTerm.ShortStay, 120, "Most weekends", 2, "Roncesvalles", "48 Galley Ave, Toronto ON M6R 1G9", "Guest suite",
                 ["Queen bed", "Private bath", "Sleeps 2", "Self check-in"],
-                ["Wi-Fi", "Private bath", "Parking"],
+                ["Wi-Fi", "Furnished", "Parking", "Private bath"],
                 null,
                 ["Check-in after 3 pm", "No parties", "No smoking"])),
-        new(
-            "annex-basement-apartment",
-            "Bright basement apartment in the Annex",
-            "Separate entrance, garden walkout, five minutes to Bathurst station",
-            "Grace & Daniel Okafor",
-            "We live upstairs with our two kids and attend Trinity Annex. We’d love a tenant who’ll stay a while.",
-            () => SpaceDetails.Create(
-                SpaceTerm.LongTerm, 1850, "Mar 1", 12, "The Annex", "112 Brunswick Ave, Toronto ON M5S 2L7", "Basement apartment",
-                ["1 bedroom", "1 bath", "650 sq ft", "Separate entrance"],
-                ["Utilities", "Wi-Fi", "Laundry"],
-                null,
-                ["No smoking", "Quiet after 10 pm", "One small pet considered"])),
         new(
             "leslieville-family-room",
             "Furnished room in a family home, Leslieville",
@@ -200,19 +188,31 @@ internal static class DemoCatalogue
             () => SpaceDetails.Create(
                 SpaceTerm.Room, 950, "Now", 4, "Leslieville", "27 Curzon St, Toronto ON M4M 3B4", "Private room",
                 ["Double bed", "Shared bath", "Furnished", "Desk"],
-                ["Utilities", "Wi-Fi", "Laundry", "Kitchen use"],
+                ["Utilities", "Wi-Fi", "Laundry", "Furnished", "Kitchen use"],
                 "Ruth and Kwame with our daughter Abena (14) and a very calm cat. We eat together on Sundays and you’re always welcome.",
                 ["No overnight guests", "No smoking or alcohol", "Share the chore rota"])),
         new(
+            "annex-basement-apartment",
+            "Bright basement apartment in the Annex",
+            "Separate entrance, garden walkout, five minutes to Bathurst station",
+            "Grace & Daniel Okafor",
+            "We live upstairs with our two kids and attend Trinity Annex. We’d love a tenant who’ll stay a while.",
+            () => SpaceDetails.Create(
+                SpaceTerm.LongTerm, 1850, "Dec 1", 12, "The Annex", "112 Brunswick Ave, Toronto ON M5S 2L7", "Basement apartment",
+                ["1 bedroom", "1 bath", "650 sq ft", "Separate entrance"],
+                ["Utilities", "Wi-Fi", "Laundry", "Private bath"],
+                null,
+                ["No smoking", "Quiet after 10 pm", "One small pet considered"])),
+        new(
             "east-york-roommate",
             "Roommate wanted: 3-bedroom house in East York",
-            "Two housemates looking for a third — big kitchen, backyard, near Pape",
+            "Two housemates looking for a third: big kitchen, backyard, near Pape",
             "Hannah Lee",
             "We’re both at Sanctuary Toronto and pray together most Wednesdays. Looking for someone tidy and friendly.",
             () => SpaceDetails.Create(
-                SpaceTerm.Roommate, 1100, "Apr 1", 6, "East York", "9 Cosburn Ave, Toronto ON M4K 2E8", "Entire house",
+                SpaceTerm.Roommate, 1100, "Jan 1", 6, "East York", "9 Cosburn Ave, Toronto ON M4K 2E8", "Private room",
                 ["Unfurnished room", "Shared bath (2)", "Backyard", "Parking spot"],
-                ["Wi-Fi", "Laundry", "Parking"],
+                ["Wi-Fi", "Laundry", "Parking", "Kitchen use"],
                 "Two women in our late 20s, a nurse and a grad student. Looking for a third who’s tidy, friendly and up for a weekly house dinner.",
                 ["Weekly house dinner", "Clean as you go", "No smoking"])),
         new(
@@ -222,7 +222,7 @@ internal static class DemoCatalogue
             "Samuel & Joy Tan",
             "We’re on a mission posting in Kenya and want our home cared for by someone from the community.",
             () => SpaceDetails.Create(
-                SpaceTerm.LongTerm, 2400, "May 1", 6, "Scarborough", "300 Borough Dr, Unit 1204, Toronto ON M1P 4P5", "Condo",
+                SpaceTerm.LongTerm, 2400, "Feb 1", 6, "Scarborough", "300 Borough Dr, Unit 1204, Toronto ON M1P 4P5", "Condo",
                 ["2 bedrooms", "2 baths", "Furnished", "1 parking"],
                 ["Utilities", "Furnished", "Parking"],
                 null,

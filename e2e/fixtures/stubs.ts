@@ -160,6 +160,34 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return page.route(home, (route) => route.fulfill(unavailable('JB-DIR-503')));
     case 'browse-edge':
       return page.route(home, (route) => route.fulfill({ json: browseHomeFromMock('edge') }));
+    case 'browse-rooms-empty':
+      // No roommate is listed: the shelf has four spaces and nothing for "Roommates".
+      return page.route(home, async (route) => {
+        const answer = await recordedAnswer(route);
+        const body = answer.body as { rooms: { count: number; spaces: { term: string }[] } };
+        const spaces = body.rooms.spaces.filter((space) => space.term !== 'roommate');
+        await fulfil(route, { ...answer, body: { ...body, rooms: { count: 4, spaces } } });
+      });
+    case 'rooms-empty':
+      return page.route(categoryListings, (route) =>
+        route.fulfill({
+          json: {
+            category: { slug: 'rooms-rentals', name: 'Rooms & rentals' },
+            totalCount: 4,
+            matchCount: 0,
+            fact: null,
+            filters: { offers: [], areas: [] },
+            sort: 'newest',
+            page: 1,
+            pageSize: 16,
+            pageCount: 1,
+            businesses: [],
+            suggestions: [],
+            term: 'roommate',
+            spaces: [],
+          },
+        }),
+      );
     case 'category-loading':
       return page.route(categoryListings, pending);
     case 'category-empty':

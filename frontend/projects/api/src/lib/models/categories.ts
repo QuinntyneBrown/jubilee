@@ -9,7 +9,8 @@ export interface Category extends CategoryLink {
 }
 
 /**
- * The ten categories, in their fixed order (L2-023). They never change at run time, so pages
+ * The eleven categories, in their fixed order (L2-023). "Rooms & rentals" lists spaces, not
+ * businesses (L2-188). They never change at run time, so pages
  * can render the category links before any request has answered.
  */
 export const CATEGORIES: readonly Category[] = [
@@ -18,6 +19,12 @@ export const CATEGORIES: readonly Category[] = [
     name: 'Shops',
     blurb: 'Bookshops, apparel, gifts and more.',
     trades: 'bookseller, maker or shopkeeper',
+  },
+  {
+    slug: 'rooms-rentals',
+    name: 'Rooms & rentals',
+    blurb: 'Rooms, suites and places to stay from people you can trust.',
+    trades: 'host with a room, suite or hall',
   },
   {
     slug: 'financial-insurance',

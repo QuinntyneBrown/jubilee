@@ -36,7 +36,8 @@ export class HttpDirectoryApi implements DirectoryApi {
   }
 
   getCategory(slug: string, query: CategoryQuery): Observable<CategoryPage> {
-    const params = filterParams(query).set('sort', query.sort).set('page', query.page);
+    let params = filterParams(query).set('sort', query.sort).set('page', query.page);
+    if (query.term) params = params.set('term', query.term);
     return this.http.get<CategoryPage>(`/api/categories/${encodeURIComponent(slug)}/listings`, {
       params,
     });

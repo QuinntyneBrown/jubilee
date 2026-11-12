@@ -31,6 +31,8 @@ export class Section {
   readonly level = input<2 | 3>(2);
   readonly actionLabel = input<string | null>(null);
   readonly actionLink = input<string | readonly unknown[] | null>(null);
+  /** Words read after the action's label by assistive technology only (" rooms and rentals"). */
+  readonly actionHint = input<string | null>(null);
   /** The id of a heading the section writes itself. */
   readonly labelledBy = input<string | null>(null);
   readonly divided = input(false, { transform: booleanAttribute });

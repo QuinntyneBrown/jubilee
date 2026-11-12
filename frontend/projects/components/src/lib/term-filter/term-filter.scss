@@ -1,0 +1,5 @@
+// Block: term-filter, the chip row of terms. The cards it filters follow 20 px below it.
+:host {
+  display: block;
+  margin-bottom: var(--space-5);
+}

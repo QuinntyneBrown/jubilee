@@ -24,6 +24,10 @@ import {
   PageHeader,
   Breadcrumb,
   CardGrid,
+  CardTitle,
+  Section,
+  SpaceCard,
+  TermFilter,
 } from 'components';
 import { combineLatest } from 'rxjs';
 import {
@@ -77,6 +81,10 @@ function businesses(count: number): string {
     PageHeader,
     Breadcrumb,
     CardGrid,
+    CardTitle,
+    Section,
+    SpaceCard,
+    TermFilter,
   ],
   providers: [CategoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -100,12 +108,21 @@ export class CategoryPage {
     return CATEGORIES.find((category) => category.slug === slug) ?? null;
   });
 
+  /** Rooms & rentals lists spaces, not businesses (L2-193). */
+  protected readonly rooms = computed(() => this.slug().get('category') === 'rooms-rentals');
+
   protected readonly filterCount = computed(
     () => this.store.query().offers.length + this.store.query().areas.length,
   );
 
   protected readonly subtitle = computed(() => {
     const state = this.store.state();
+    if (this.rooms()) {
+      if (state.status === 'loading') return 'Loading spaces…';
+      if (state.status !== 'loaded') return this.category()?.blurb ?? '';
+      const n = state.value.matchCount;
+      return `${formatCount(n)} ${n === 1 ? 'space' : 'spaces'}`;
+    }
     if (state.status === 'loading') return 'Loading businesses…';
     if (state.status !== 'loaded') return this.category()?.blurb ?? '';
     const page = state.value;

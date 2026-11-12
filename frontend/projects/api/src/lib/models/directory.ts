@@ -38,6 +38,30 @@ export interface ProductCard {
   tile: { tint: TileTint; icon: ProductTileIcon };
 }
 
+/** How a space is rented (L2-188). */
+export type SpaceTerm = 'short-stay' | 'long-term' | 'room' | 'roommate';
+
+/** A space as its card shows it (L2-194). It never carries an exact address. */
+export interface SpaceCard {
+  slug: string;
+  name: string;
+  term: SpaceTerm;
+  rent: number;
+  per: 'night' | 'month';
+  /** Up to two key facts. */
+  facts: string[];
+  neighbourhood: string;
+  available: string;
+  coverPhoto: string | null;
+}
+
+/** "Rooms & places to stay" on Browse (L2-192): the newest spaces overall and per term. */
+export interface RoomsShelf {
+  /** Live spaces in all. */
+  count: number;
+  spaces: SpaceCard[];
+}
+
 export interface CategoryGroup {
   slug: string;
   name: string;
@@ -60,6 +84,7 @@ export interface BrowseHome {
   featured: BusinessCard[];
   products: ProductCard[];
   groups: CategoryGroup[];
+  rooms: RoomsShelf;
 }
 
 export type OfferFilter = 'free-quote' | 'emergency-calls' | 'open-saturdays';
@@ -76,6 +101,8 @@ export interface CategoryFilters {
 export interface CategoryQuery extends CategoryFilters {
   sort: ListingSort;
   page: number;
+  /** Rooms & rentals only: the term chosen, or null for any length (L2-193 AC2). */
+  term: SpaceTerm | null;
 }
 
 /** How many businesses would match if one applied filter were removed. */
@@ -98,4 +125,8 @@ export interface CategoryPage {
   pageCount: number;
   businesses: BusinessCard[];
   suggestions: FilterSuggestion[];
+  /** Rooms & rentals only: the term applied, or null. */
+  term: SpaceTerm | null;
+  /** Rooms & rentals only: its spaces, newest first; empty for any other category. */
+  spaces: SpaceCard[];
 }

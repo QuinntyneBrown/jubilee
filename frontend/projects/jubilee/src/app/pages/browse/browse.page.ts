@@ -5,9 +5,10 @@ import {
   computed,
   effect,
   inject,
+  signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { CATEGORIES } from 'api';
+import { CATEGORIES, SpaceCard as SpaceCardModel, SpaceTerm } from 'api';
 import {
   BusinessCard,
   CardGridSkeleton,
@@ -32,6 +33,9 @@ import {
   ScrollerItem,
   DirectoryGroup,
   DirectoryGroups,
+  CardGrid,
+  SpaceCard,
+  TermFilter,
 } from 'components';
 import { ClockService } from 'api';
 import { REQUIRES_CONNECTION } from '../../directives/requires-connection';
@@ -42,8 +46,8 @@ import { SessionService } from '../../services/session.service';
 
 /**
  * The browse home (L2-021, L2-022): the hero with the greeting or the tagline, the category
- * chips, the featured businesses, products from the shops and the directory grouped by
- * category. A visitor sees the same directory with a join panel.
+ * chips, the featured businesses, the rooms and places to stay (L2-192), products from the shops
+ * and the directory grouped by category. A visitor sees the same directory with a join panel.
  */
 @Component({
   selector: 'jb-browse-page',
@@ -72,6 +76,9 @@ import { SessionService } from '../../services/session.service';
     ScrollerItem,
     DirectoryGroup,
     DirectoryGroups,
+    CardGrid,
+    SpaceCard,
+    TermFilter,
   ],
   providers: [DirectoryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -88,6 +95,8 @@ export class BrowsePage {
   protected readonly store = inject(DirectoryStore);
   protected readonly member = inject(SessionService).member;
   protected readonly categories = CATEGORIES;
+  /** The term of the rooms shelf; it filters the spaces already loaded (L2-192 AC3). */
+  protected readonly shelfTerm = signal<SpaceTerm | null>(null);
 
   /** "Morning" before 12:00, "Afternoon" from 12:00, "Evening" from 17:00, Toronto time. */
   protected readonly greeting = computed(() => {
@@ -120,6 +129,12 @@ export class BrowsePage {
       }
     });
     inject(DestroyRef).onDestroy(() => connection.detail.set(null));
+  }
+
+  /** Up to four spaces of the chosen term, newest first, as the server ordered them. */
+  protected shelf(spaces: readonly SpaceCardModel[]): SpaceCardModel[] {
+    const term = this.shelfTerm();
+    return spaces.filter((space) => term === null || space.term === term).slice(0, 4);
   }
 
   protected search(query: string): void {

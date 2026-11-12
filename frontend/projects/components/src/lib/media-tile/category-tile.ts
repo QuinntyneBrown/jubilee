@@ -22,6 +22,7 @@ const TILES: Readonly<Record<string, CategoryTile>> = {
   learning: { tint: 'blue', icon: 'book', label: 'Learning' },
   media: { tint: 'ink', icon: 'image', label: 'Media' },
   community: { tint: 'green', icon: 'user', label: 'Community' },
+  'rooms-rentals': { tint: 'blue', icon: 'bed', label: 'Rooms' },
 };
 
 const FALLBACK: CategoryTile = { tint: 'ink', icon: 'store', label: '' };

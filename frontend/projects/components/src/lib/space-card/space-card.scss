@@ -1,0 +1,110 @@
+// Block: space-card, a room or rental in a grid. The host is the link.
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+}
+
+.space-card__media {
+  position: relative;
+}
+
+// The frame takes the card's shadow under the pointer (the media tile's --jb-media-shadow knob).
+:host(:hover) .space-card__media,
+:host([data-state='hover']) .space-card__media {
+  --jb-media-shadow: var(--shadow-2);
+}
+
+:host(:hover) .space-card__title,
+:host([data-state='hover']) .space-card__title {
+  text-decoration: underline;
+}
+
+.space-card__badge {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: var(--space-0-5) var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-surface);
+  color: var(--color-fg-default);
+  font: var(--text-caption);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-1);
+}
+
+.space-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-stretch: var(--font-stretch-wide);
+  font-size: var(--font-size-lg);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: var(--line-height-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 40rem) {
+  .space-card__price {
+    font-size: var(--font-size-xl);
+  }
+}
+
+.space-card__unit {
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.space-card__title {
+  margin-top: var(--space-0-5);
+  font: var(--text-label);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.space-card__facts {
+  margin-top: var(--space-1);
+  font: var(--text-body-sm);
+  color: var(--color-fg-default);
+}
+
+.space-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-0-5) var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+  font: var(--text-body-sm);
+}
+
+.space-card__area {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-fg-muted);
+}
+
+.space-card__pin {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  flex: none;
+}
+
+.space-card__available {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-success-fg);
+}

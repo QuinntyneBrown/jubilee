@@ -35,8 +35,8 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
         Assert.Equal(
             [
                 ("roncesvalles-guest-suite", "short-stay", 120, "night"),
-                ("annex-basement-apartment", "long-term", 1850, "month"),
                 ("leslieville-family-room", "room", 950, "month"),
+                ("annex-basement-apartment", "long-term", 1850, "month"),
                 ("east-york-roommate", "roommate", 1100, "month"),
                 ("scarborough-furnished-condo", "long-term", 2400, "month"),
             ],

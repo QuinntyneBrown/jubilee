@@ -16,6 +16,8 @@ export type StubName =
   | 'category-error'
   | 'category-long'
   | 'category-not-found'
+  | 'browse-rooms-empty'
+  | 'rooms-empty'
   | 'business-loading'
   | 'business-error'
   | 'business-empty'
@@ -455,7 +457,43 @@ export const routes = {
     stub: 'browse-error',
   },
   'browse.edge': { app: '/', mock: 'pages/browse/edge.html', who: 'member', stub: 'browse-edge' },
+  // The member chooses "Rooms" on the term filter of "Rooms & places to stay".
+  'browse.rooms-term': {
+    app: '/',
+    mock: 'pages/browse/rooms-term.html',
+    who: 'member',
+  },
+  // No roommate is listed, and the member chooses "Roommates".
+  'browse.rooms-empty': {
+    app: '/',
+    mock: 'pages/browse/rooms-empty.html',
+    who: 'member',
+    stub: 'browse-rooms-empty',
+  },
   category: { app: '/c/home-property', mock: 'pages/category/default.html', who: 'member' },
+  'category.rooms-rentals': {
+    app: '/c/rooms-rentals',
+    mock: 'pages/category/rooms-rentals.html',
+    who: 'member',
+  },
+  'category.rooms-rentals-empty': {
+    app: '/c/rooms-rentals?term=roommate',
+    mock: 'pages/category/rooms-rentals-empty.html',
+    who: 'member',
+    stub: 'rooms-empty',
+  },
+  'category.rooms-rentals-loading': {
+    app: '/c/rooms-rentals',
+    mock: 'pages/category/rooms-rentals-loading.html',
+    who: 'member',
+    stub: 'category-loading',
+  },
+  'category.rooms-rentals-error': {
+    app: '/c/rooms-rentals',
+    mock: 'pages/category/rooms-rentals-error.html',
+    who: 'member',
+    stub: 'category-error',
+  },
   'category.loading': {
     app: '/c/home-property',
     mock: 'pages/category/loading.html',

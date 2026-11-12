@@ -2,14 +2,15 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@an
 
 /**
  * A row of chips, on the list that holds them. It scrolls sideways on a phone and wraps from
- * 768 px. `plain` drops the space above it, for a row that follows a heading.
+ * 768 px. `plain` drops the space above it, for a row that follows a heading. On a `div` it holds
+ * toggle chips without list items, as a `role="group"` (the term filter).
  *
  *     <ul jb-chip-row>
  *       <li><a jb-chip routerLink="/" selected>All</a></li>
  *     </ul>
  */
 @Component({
-  selector: 'ul[jb-chip-row]',
+  selector: 'ul[jb-chip-row], div[jb-chip-row]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'chip-row', '[class.chip-row--plain]': 'plain()' },
   templateUrl: './chip-row.html',

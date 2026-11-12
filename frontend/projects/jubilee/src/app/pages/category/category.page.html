@@ -2,97 +2,149 @@
 @let name = state.status === 'loaded' ? state.value.category.name : (category()?.name ?? '');
 <nav jb-breadcrumb [items]="[{ label: 'Browse', link: '/' }, { label: name }]"></nav>
 <jb-page-header #heading focusable [heading]="name" [subtitle]="subtitle()"> </jb-page-header>
-@switch (state.status) {
-  @case ('loading') {
-    <p class="visually-hidden" role="status">Loading businesses…</p>
-    <ul jb-card-grid-skeleton [count]="8"></ul>
-  }
-  @case ('error') {
-    <div jb-empty-state icon="alert" heading="We couldn’t load this category" [error]="true">
-      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
-      <code>{{ state.reference }}</code
-      >.
-      <button slot="actions" jb-button variant="primary" type="button" (click)="store.load()">
-        <svg jb-icon name="refresh"></svg>Try again
-      </button>
-      <a slot="actions" jb-button routerLink="/">Back to browse</a>
-    </div>
-  }
-  @case ('loaded') {
-    @let page = state.value;
-    @if (page.totalCount === 0) {
-      <div jb-empty-state icon="wrench" heading="No one has listed here yet">
-        Know a Christian {{ category()?.trades ?? 'business owner' }} in Toronto? Invite them to
-        list free, or list your own business.
-        <a slot="actions" jb-button variant="primary" routerLink="/list"
-          ><svg jb-icon name="plus"></svg>List your business</a
-        >
-        <a slot="actions" jb-button routerLink="/">Browse other categories</a>
-      </div>
-    } @else {
-      <div class="cluster cluster--between" style="margin-bottom: var(--space-6)">
-        <div class="cluster only-desktop" role="group" aria-label="Filters">
-          @for (chip of chips; track chip.filter.value) {
-            <button
-              jb-chip
-              type="button"
-              [selected]="store.isOn(chip.filter)"
-              (click)="store.toggle(chip.filter)"
-            >
-              {{ chip.label }}
-            </button>
-          }
-        </div>
-        <button
-          jb-button
-          class="only-mobile"
-          type="button"
-          (click)="openFilters(page.category.slug, page.matchCount)"
-        >
-          <svg jb-icon name="filter"></svg>Filters{{ filterCount() ? ' · ' + filterCount() : '' }}
+@if (rooms()) {
+  <!-- Rooms & rentals lists spaces, filtered by term; no business filters or sort (L2-193). -->
+  @switch (state.status) {
+    @case ('error') {
+      <div jb-empty-state icon="alert" heading="We couldn’t load this category" [error]="true">
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote <code>{{ state.reference }}</code
+        >.
+        <button slot="actions" jb-button variant="primary" type="button" (click)="store.load()">
+          <svg jb-icon name="refresh"></svg>Try again
         </button>
-        <div
-          jb-field
-          label="Sort"
-          controlId="sort"
-          style="flex-direction: row; align-items: center; gap: var(--space-2)"
-        >
-          <select
-            jb-select
-            controlSize="sm"
-            #sort
-            style="width: auto"
-            (change)="sortBy(sort.element.value)"
-          >
-            @for (option of sorts; track option.value) {
-              <option [value]="option.value" [selected]="option.value === page.sort">
-                {{ option.label }}
-              </option>
-            }
-          </select>
-        </div>
+        <a slot="actions" jb-button routerLink="/">Back to browse</a>
       </div>
-      @if (page.matchCount === 0) {
-        <div jb-empty-state icon="filter" heading="No businesses match these filters">
-          {{ suggestion(page.suggestions) }}
-          <a slot="actions" jb-button variant="primary" [routerLink]="[]" (click)="store.clear()"
-            >Clear all filters</a
+    }
+    @default {
+      <jb-term-filter [term]="store.query().term" (termChange)="store.chooseTerm($event)" />
+      @if (state.status === 'loaded') {
+        @let page = state.value;
+        @if (page.spaces.length === 0) {
+          <div jb-empty-state compact status icon="key">
+            Nothing listed for this yet. New rooms and rentals are added every week.
+          </div>
+        } @else {
+          <ul jb-card-grid [attr.aria-busy]="store.busy()">
+            @for (space of page.spaces; track space.slug) {
+              <li>
+                <a jb-space-card [space]="space" [routerLink]="['/b', space.slug]"></a>
+              </li>
+            }
+          </ul>
+          <jb-pagination [page]="page.page" [pageSize]="page.pageSize" [total]="page.matchCount" />
+        }
+        <section jb-section divided labelledBy="spare">
+          <div class="cluster cluster--between">
+            <div>
+              <h2 jb-card-title id="spare">Have a spare room, suite or hall?</h2>
+              <p class="text-muted">Rent it to someone from the community. Free to list.</p>
+            </div>
+            <a jb-button variant="primary" routerLink="/list" [queryParams]="{ kind: 'space' }"
+              >List a space</a
+            >
+          </div>
+        </section>
+      } @else {
+        <p class="visually-hidden" role="status">Loading spaces…</p>
+        <ul jb-card-grid-skeleton [count]="8"></ul>
+      }
+    }
+  }
+} @else {
+  @switch (state.status) {
+    @case ('loading') {
+      <p class="visually-hidden" role="status">Loading businesses…</p>
+      <ul jb-card-grid-skeleton [count]="8"></ul>
+    }
+    @case ('error') {
+      <div jb-empty-state icon="alert" heading="We couldn’t load this category" [error]="true">
+        Nothing is lost. Check your connection and try again. If it keeps happening, tell us and
+        quote
+        <code>{{ state.reference }}</code
+        >.
+        <button slot="actions" jb-button variant="primary" type="button" (click)="store.load()">
+          <svg jb-icon name="refresh"></svg>Try again
+        </button>
+        <a slot="actions" jb-button routerLink="/">Back to browse</a>
+      </div>
+    }
+    @case ('loaded') {
+      @let page = state.value;
+      @if (page.totalCount === 0) {
+        <div jb-empty-state icon="wrench" heading="No one has listed here yet">
+          Know a Christian {{ category()?.trades ?? 'business owner' }} in Toronto? Invite them to
+          list free, or list your own business.
+          <a slot="actions" jb-button variant="primary" routerLink="/list"
+            ><svg jb-icon name="plus"></svg>List your business</a
           >
-          @if (recentFilter(); as recent) {
-            <button slot="actions" jb-button type="button" (click)="store.remove(recent.filter)">
-              Remove “{{ recent.label }}”
-            </button>
-          }
+          <a slot="actions" jb-button routerLink="/">Browse other categories</a>
         </div>
       } @else {
-        <ul jb-card-grid [attr.aria-busy]="store.busy()">
-          @for (business of page.businesses; track business.slug) {
-            <li>
-              <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>
-            </li>
-          }
-        </ul>
-        <jb-pagination [page]="page.page" [pageSize]="page.pageSize" [total]="page.matchCount" />
+        <div class="cluster cluster--between" style="margin-bottom: var(--space-6)">
+          <div class="cluster only-desktop" role="group" aria-label="Filters">
+            @for (chip of chips; track chip.filter.value) {
+              <button
+                jb-chip
+                type="button"
+                [selected]="store.isOn(chip.filter)"
+                (click)="store.toggle(chip.filter)"
+              >
+                {{ chip.label }}
+              </button>
+            }
+          </div>
+          <button
+            jb-button
+            class="only-mobile"
+            type="button"
+            (click)="openFilters(page.category.slug, page.matchCount)"
+          >
+            <svg jb-icon name="filter"></svg>Filters{{ filterCount() ? ' · ' + filterCount() : '' }}
+          </button>
+          <div
+            jb-field
+            label="Sort"
+            controlId="sort"
+            style="flex-direction: row; align-items: center; gap: var(--space-2)"
+          >
+            <select
+              jb-select
+              controlSize="sm"
+              #sort
+              style="width: auto"
+              (change)="sortBy(sort.element.value)"
+            >
+              @for (option of sorts; track option.value) {
+                <option [value]="option.value" [selected]="option.value === page.sort">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+        @if (page.matchCount === 0) {
+          <div jb-empty-state icon="filter" heading="No businesses match these filters">
+            {{ suggestion(page.suggestions) }}
+            <a slot="actions" jb-button variant="primary" [routerLink]="[]" (click)="store.clear()"
+              >Clear all filters</a
+            >
+            @if (recentFilter(); as recent) {
+              <button slot="actions" jb-button type="button" (click)="store.remove(recent.filter)">
+                Remove “{{ recent.label }}”
+              </button>
+            }
+          </div>
+        } @else {
+          <ul jb-card-grid [attr.aria-busy]="store.busy()">
+            @for (business of page.businesses; track business.slug) {
+              <li>
+                <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>
+              </li>
+            }
+          </ul>
+          <jb-pagination [page]="page.page" [pageSize]="page.pageSize" [total]="page.matchCount" />
+        }
       }
     }
   }

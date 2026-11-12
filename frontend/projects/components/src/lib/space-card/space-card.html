@@ -1,0 +1,21 @@
+<div class="space-card__media">
+  <div
+    jb-media-tile
+    [tint]="tile().tint"
+    [icon]="tile().icon"
+    [photo]="space().coverPhoto ?? null"
+  ></div>
+  <span class="space-card__badge" [id]="id + '-b'">{{ badge() }}</span>
+</div>
+<p class="space-card__price" [id]="id + '-p'">
+  {{ rent() }} <span class="space-card__unit">/ {{ space().per }}</span>
+</p>
+<h3 class="space-card__title" [id]="id + '-t'">{{ space().name }}</h3>
+@if (facts()) {
+  <p class="space-card__facts">{{ facts() }}</p>
+}
+<p class="space-card__meta">
+  <span class="space-card__area" [id]="id + '-a'"
+    ><svg jb-icon class="space-card__pin" name="pin"></svg>{{ space().neighbourhood }}</span
+  ><span class="space-card__available">{{ available() }}</span>
+</p>

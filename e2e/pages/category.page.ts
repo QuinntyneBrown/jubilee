@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { BusinessCard } from './business-card';
+import { SpaceCard, TermFilter } from './space-card';
 import { FiltersDialog } from './filters.dialog';
 import { ShellPage } from './shell.page';
 
@@ -29,6 +30,12 @@ export class CategoryPage extends ShellPage implements Screen {
   readonly errorReference: Locator;
   readonly tryAgain: Locator;
   readonly filters: FiltersDialog;
+  /** Rooms & rentals (L2-193): the term filter, the space cards and the closing call to list. */
+  readonly termFilter: TermFilter;
+  readonly spaceCards: Locator;
+  readonly loadingSpaceCards: Locator;
+  readonly spare: Locator;
+  readonly listASpace: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -55,6 +62,11 @@ export class CategoryPage extends ShellPage implements Screen {
     this.errorReference = this.errorState.locator('code');
     this.tryAgain = this.errorState.getByRole('button', { name: 'Try again' });
     this.filters = new FiltersDialog(page);
+    this.termFilter = new TermFilter(this.main.getByRole('group', { name: 'Length of stay' }));
+    this.spaceCards = this.main.locator('ul.card-grid a.space-card');
+    this.loadingSpaceCards = this.main.locator('ul.card-grid[aria-hidden="true"] > li');
+    this.spare = this.main.getByRole('region', { name: 'Have a spare room, suite or hall?' });
+    this.listASpace = this.spare.getByRole('link', { name: 'List a space' });
   }
 
   chip(name: string): Locator {
@@ -63,6 +75,10 @@ export class CategoryPage extends ShellPage implements Screen {
 
   card(index: number): BusinessCard {
     return new BusinessCard(this.cards.nth(index));
+  }
+
+  spaceCard(index: number): SpaceCard {
+    return new SpaceCard(this.spaceCards.nth(index));
   }
 
   cardNames(): Locator {
@@ -92,7 +108,7 @@ export class CategoryPage extends ShellPage implements Screen {
 
   async ready(): Promise<void> {
     await this.main
-      .locator('ul.card-grid a.biz-card, .empty, .skeleton')
+      .locator('ul.card-grid a.biz-card, ul.card-grid a.space-card, .empty, .skeleton')
       .first()
       .waitFor({ state: 'attached' });
   }
