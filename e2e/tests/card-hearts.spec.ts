@@ -5,6 +5,7 @@ import { BusinessPage } from '../pages/business.page';
 import { CategoryPage } from '../pages/category.page';
 import { ProductPage } from '../pages/product.page';
 import { SearchPage } from '../pages/search.page';
+import { SignInRequiredDialog } from '../pages/sign-in-required.dialog';
 import { Toasts } from '../pages/toasts';
 
 // Hearts on business, product and space cards (L2-041 AC7 to AC10, ADR 0054). The saved list is
@@ -207,5 +208,59 @@ test.describe('the heart on product and space cards (L2-041 AC7)', () => {
 
     await expect(more.heart).toHaveAttribute('aria-pressed', 'true');
     expect(fake.calls[0]).toMatch(/^PUT products\/luzandre\//);
+  });
+});
+
+test.describe('a visitor presses the heart on a card (L2-041 AC9, L2-012 AC4)', () => {
+  test('AC9: the prompt opens, and after signing in on the same page the item is saved once', async ({
+    page,
+    jb,
+  }) => {
+    const browse = new BrowsePage(page);
+    const prompt = new SignInRequiredDialog(page);
+    const toasts = new Toasts(page);
+    await jb.open('browse.signed-out');
+    const heart = browse.featuredCard(1).heart;
+
+    await expect(heart).toHaveAttribute('aria-pressed', 'false');
+    await heart.click();
+    await expect(prompt.title).toHaveText('Join to save Luzandre.com');
+    await expect(prompt.joinFree).toHaveAttribute('href', /returnUrl=%2F$/);
+
+    // Signing in brings the visitor back to Browse, where the heart they pressed is saved.
+    await jb.signInAs('member');
+    const fake = await stubSaved(page, { items: [] });
+    await jb.goto('/');
+    await expect(
+      toasts.withTitle('Saved Luzandre.com. Find it any time under Saved.'),
+    ).toBeVisible();
+    await expect(heart).toHaveAttribute('aria-pressed', 'true');
+    expect(fake.calls).toEqual(['PUT businesses/luzandre']);
+
+    // Once: coming back to the page does not save it again.
+    await jb.goto('/');
+    await expect(heart).toHaveAttribute('aria-pressed', 'false');
+    expect(fake.calls).toEqual(['PUT businesses/luzandre']);
+  });
+
+  test('AC9: closing the prompt focuses the heart again, and signing in elsewhere saves nothing', async ({
+    page,
+    jb,
+  }) => {
+    const browse = new BrowsePage(page);
+    const prompt = new SignInRequiredDialog(page);
+    await jb.open('browse.signed-out');
+    const heart = browse.productCard(0).heart;
+
+    await heart.click();
+    await expect(prompt.title).toHaveText('Join to save Faith heavyweight tee, charcoal');
+    await prompt.close.click();
+    await expect(heart).toBeFocused();
+
+    await jb.signInAs('member');
+    const fake = await stubSaved(page, { items: [] });
+    await jb.goto('/c/home-property');
+    await expect(new CategoryPage(page).card(0).heart).toBeVisible();
+    expect(fake.calls).toEqual([]);
   });
 });

@@ -43,7 +43,9 @@ export class CardHearts {
       untracked(() => {
         if (!member) return;
         this.store.load();
-        void path;
+        if (path === null) return;
+        const target = this.pending.takeSave(path);
+        if (target && !this.store.isSaved(target)) this.store.save(target);
       });
     });
   }
@@ -68,7 +70,19 @@ export class CardHearts {
 
   /** The heart of a card was pressed. */
   press(target: SaveTarget, heart: HTMLElement): void {
-    void heart;
-    if (this.session.member()) this.store.toggle(target);
+    if (this.session.member()) {
+      this.store.toggle(target);
+      return;
+    }
+    const returnPath = this.router.url;
+    this.pending.remember({ kind: 'save', returnPath, target });
+    this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+      data: { title: `Join to save ${target.name}`, returnUrl: returnPath },
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+      restoreFocus: heart,
+    });
   }
 }
