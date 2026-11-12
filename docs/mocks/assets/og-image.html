@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<title>og-image.png · source — Jubilee mocks</title>
+<meta name="description" content="The 1200 × 630 link-preview image of every shared listing (L2-038 AC4, ADR 0055). Screenshot this page at 1200 × 630 to frontend/projects/jubilee/public/og-image.png.">
+<link rel="stylesheet" href="../../design-system/tokens/tokens.css">
+<style>
+  /* Drawn from the tokens: the brand band (ink in both themes), the lockup of docs/assets/jubilee-icon.svg and the wordmark. */
+  html, body { margin: 0; }
+  .og {
+    box-sizing: border-box;
+    width: 1200px;
+    height: 630px;
+    padding: 96px 112px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+    background: var(--color-bg-brand);
+    color: var(--color-fg-on-brand);
+  }
+  .og__lockup { display: flex; align-items: center; gap: 40px; }
+  .og__mark { width: 176px; height: 176px; flex: none; }
+  .og__wordmark {
+    font-family: var(--font-family-display);
+    font-weight: var(--font-weight-bold);
+    font-stretch: var(--font-stretch-wide);
+    letter-spacing: var(--letter-spacing-tighter);
+    font-size: 184px;
+    line-height: 1;
+  }
+  .og__line {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-weight: var(--font-weight-semibold);
+    font-size: 48px;
+    line-height: 1.2;
+    color: var(--color-fg-on-brand-muted);
+  }
+  .og__bar { width: 120px; height: 12px; background: var(--color-accent); }
+</style>
+</head>
+<body>
+<div class="og">
+  <div class="og__lockup">
+    <svg class="og__mark" viewBox="0 0 96 96" aria-hidden="true">
+      <rect width="96" height="96" rx="20" fill="#0b0e14" stroke="#2f3542" stroke-width="2"/>
+      <g transform="translate(18 18) scale(0.6)" fill="none" stroke-width="14.5" stroke-linecap="butt">
+        <path d="M60 8 V60 A20 20 0 0 1 20 60 V38" stroke="#f4f2ec" stroke-linejoin="miter"/>
+        <path d="M36 27 H84" stroke="#ffb81c"/>
+      </g>
+    </svg>
+    <span class="og__wordmark">jubilee</span>
+  </div>
+  <div class="og__bar" aria-hidden="true"></div>
+  <p class="og__line">Toronto’s Christian marketplace</p>
+</div>
+</body>
+</html>
