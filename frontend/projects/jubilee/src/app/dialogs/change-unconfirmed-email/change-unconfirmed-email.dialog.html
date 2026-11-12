@@ -1,0 +1,68 @@
+<jb-dialog
+  [heading]="view() === 'sent' ? 'Check your new inbox' : 'Use another e-mail'"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  @if (view() === 'sent') {
+    <span slot="description"
+      >We sent a link to {{ sentTo() }}. It works for 24 hours. The earlier link no longer
+      works.</span
+    >
+  } @else {
+    <span slot="description"
+      >We’ll send a new link to this address. The link we sent to {{ current }} stops working.</span
+    >
+  }
+  @if (view() === 'sent') {
+    <div jb-dialog-footer>
+      <button jb-button variant="primary" type="button" cdkFocusInitial (click)="close()">
+        Done
+      </button>
+    </div>
+  } @else {
+    <form
+      jb-dialog-body
+      class="stack"
+      id="change-unconfirmed-email-form"
+      novalidate
+      (ngSubmit)="send()"
+    >
+      @if (notice(); as stopped) {
+        <div
+          jb-alert
+          [tone]="stopped.limited ? 'warning' : 'danger'"
+          [heading]="stopped.heading"
+          role="alert"
+        >
+          <div>{{ stopped.text }}</div>
+        </div>
+      }
+      <div jb-field label="New e-mail" controlId="ce-email" [error]="problem()">
+        <input
+          jb-input
+          name="email"
+          type="email"
+          autocomplete="email"
+          maxlength="254"
+          cdkFocusInitial
+          [readOnly]="busy()"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+        />
+      </div>
+    </form>
+    <div jb-dialog-footer>
+      <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button
+        jb-button
+        variant="primary"
+        type="submit"
+        form="change-unconfirmed-email-form"
+        [disabled]="busy()"
+        [busy]="busy()"
+      >
+        {{ busy() ? 'Sending…' : 'Send confirmation link' }}
+      </button>
+    </div>
+  }
+</jb-dialog>

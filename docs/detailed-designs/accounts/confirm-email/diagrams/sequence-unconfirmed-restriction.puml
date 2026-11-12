@@ -16,16 +16,16 @@ skinparam package {
 }
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "VerifyEmailBanner" as banner
+  participant "App with jb-verify-email-banner" as banner
   participant "SessionService" as session
-  participant "AccountApi" as client
+  participant "SessionApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "SessionController" as controller
-  participant "ConfirmedEmailRequirement" as policy
+  participant "RequiresConfirmedEmailAttribute" as policy
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetSessionQueryHandler" as handler
+  participant "GetMemberAccountQueryHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
@@ -38,20 +38,22 @@ banner --> actor : Show "Confirm your e-mail to message businesses. We sent a li
 actor -> banner : Try to message - book - request or list
 banner --> actor : Action blocked in the UI (L2-005)
 opt request reaches the API anyway
-  client -> policy : POST to a restricted endpoint
-  policy -> db : Read member e-mail status
-  db --> policy : Unconfirmed
-  policy --> client : 403 with code EMAIL_UNCONFIRMED (L2-005)
+  actor -> policy : POST to a restricted endpoint
+  policy -> handler : Send GetMemberAccountQuery
+  handler -> db : Read member e-mail status
+  db --> handler : Unconfirmed
+  handler --> policy : MemberAccountDto with EmailStatus unconfirmed
+  policy --> actor : 403 with code EMAIL_UNCONFIRMED (L2-005)
 end
-actor -> session : Return to the tab after confirming in another tab
+actor -> session : Return to the window after confirming in another tab
 session -> client : getSession()
 client -> controller : GET /api/session
-controller -> handler : Send GetSessionQuery
+controller -> handler : Send GetMemberAccountQuery
 handler -> db : Load member
 db --> handler : Member with EmailStatus Confirmed
-handler --> controller : Session view
-controller --> client : 200 with e-mail status confirmed
-client --> session : Session view
+handler --> controller : MemberAccountDto
+controller --> client : 200 with emailStatus confirmed
+client --> session : SessionDto
 session --> banner : Confirmed
 banner --> actor : Show "E-mail confirmed. You can now message businesses and book meetings." and enable the actions without reload
 @enduml

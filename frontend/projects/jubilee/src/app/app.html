@@ -16,7 +16,9 @@
     [state]="bannerState()"
     [email]="member.email"
     [busy]="resending()"
+    [wait]="resendWait()"
     (resend)="resend()"
+    (changeEmail)="changeEmail($event)"
   ></div>
 }
 @if (routeData().shell === 'app' && confirmedBanner() && !unconfirmed() && member(); as signedIn) {

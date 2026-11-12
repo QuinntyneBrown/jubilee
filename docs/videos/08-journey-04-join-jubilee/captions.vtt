@@ -1,0 +1,64 @@
+WEBVTT
+
+00:00:00.650 --> 00:00:06.619
+Journey four: join Jubilee. A visitor creates an account by e-mail or
+
+00:00:06.619 --> 00:00:12.242
+Google and confirms the address. This run finishes what was left.
+
+00:00:13.112 --> 00:00:17.094
+A member who has just joined can browse, search and save.
+
+00:00:17.094 --> 00:00:21.915
+Until the address is confirmed, a banner on every signed-in page says
+
+00:00:21.915 --> 00:00:23.312
+where the link went.
+
+00:00:24.027 --> 00:00:28.749
+If the address was mistyped, Change e-mail now opens a dialog.
+
+00:00:28.749 --> 00:00:34.157
+It asks for the new address and no password, because the address is not
+
+00:00:34.157 --> 00:00:34.995
+proven yet.
+
+00:00:35.709 --> 00:00:39.148
+The new address replaces the unconfirmed one.
+
+00:00:39.148 --> 00:00:44.422
+Earlier links stop working, a new link goes out, and the banner names
+
+00:00:44.422 --> 00:00:45.645
+the new address.
+
+00:00:46.362 --> 00:00:50.640
+An address that another account already uses is not taken.
+
+00:00:50.640 --> 00:00:55.730
+The dialog says so beside the field, and the member keeps the address
+
+00:00:55.730 --> 00:00:56.394
+they had.
+
+00:00:57.097 --> 00:01:00.085
+Send it again works five times an hour.
+
+00:01:00.085 --> 00:01:05.449
+After that nothing more is sent, and the banner says how long to wait.
+
+00:01:06.330 --> 00:01:11.517
+Behind the screen, a token in a request path is now written to the logs
+
+00:01:11.517 --> 00:01:16.484
+as redacted. Confirmation and reset tokens travel in request bodies,
+
+00:01:16.484 --> 00:01:21.306
+which are never logged. A test reads the captured log to prove it.
+
+00:01:22.180 --> 00:01:25.513
+Journey four stands at ninety-eight percent.
+
+00:01:25.513 --> 00:01:30.892
+One step is left for the owner: the keys of the bot challenge in Azure.

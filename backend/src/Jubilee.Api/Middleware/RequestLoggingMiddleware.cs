@@ -20,7 +20,7 @@ public sealed class RequestLoggingMiddleware(RequestDelegate next, ILogger<Reque
             logger.LogInformation(
                 "HTTP {Method} {Path} responded {StatusCode} in {ElapsedMs} ms. CorrelationId {CorrelationId}",
                 context.Request.Method,
-                context.Request.Path.Value,
+                LoggedPath.Of(context),
                 context.Response.StatusCode,
                 (long)Stopwatch.GetElapsedTime(started).TotalMilliseconds,
                 context.TraceIdentifier);

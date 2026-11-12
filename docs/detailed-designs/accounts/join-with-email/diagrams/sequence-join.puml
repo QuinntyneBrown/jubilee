@@ -20,17 +20,17 @@ box "Frontend — Jubilee Web" #E0F2FE
   participant "AccountApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "RateLimitMiddleware" as limit
+  participant "ASP.NET Core rate limiter" as limit
   participant "AccountController" as controller
+  participant "ExceptionHandlingMiddleware" as errors
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "JoinWithEmailCommandValidator" as validator
   participant "JoinWithEmailCommandHandler" as handler
+  participant "AccountEmails" as emails
   participant "Member" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
-  database "Cache" as cache
 end box
 participant "Bot challenge provider" as bot
 participant "Breached-password service" as breach
@@ -38,39 +38,57 @@ participant "Breached-password service" as breach
 actor -> page : Fill the form and press "Create account"
 page -> page : Validate every field (L2-002)
 alt browser validation fails
-  page --> actor : Show ErrorSummary "Fix 3 things to continue" and keep typed values
+  page --> actor : Show FormSummary "Fix 3 things to continue" and keep typed values
 else form is valid
-  page -> client : join(form, challengeToken)
+  page -> client : join(request)
   client -> limit : POST /api/account/join
-  limit -> cache : Increment join counter for the IP (L2-137)
-  cache --> limit : Count within 5 per hour
-  limit -> controller : Forward request
-  controller -> bot : Verify challenge token (L2-137)
-  bot --> controller : Challenge passed
-  controller -> validator : Validate JoinWithEmailCommand (L2-002)
-  validator -> breach : Range query for the password hash prefix (L2-134)
-  breach --> validator : Not breached
-  validator -> db : Look up normalised e-mail
-  db --> validator : No account uses it
-  alt server validation fails
-    validator --> controller : Field error codes
-    controller --> client : 422 ProblemDetails with per-field codes
-    client --> page : Field errors
-    page --> actor : Show every problem at once
-  else command is valid
-    controller -> handler : Send JoinWithEmailCommand
-    handler -> handler : Hash password with Argon2id (L2-134)
-    handler -> entity : Member.Join with normalised e-mail (L2-001)
-    entity --> handler : Member with EmailStatus Unconfirmed
-    handler -> handler : Issue confirmation LinkToken for 24 hours (L2-140)
-    handler -> db : Save member - token hash - outbox message in one unit of work
-    db --> handler : Commit result
-    handler -> cache : Store new Session (L2-010)
-    cache --> handler : Session identifier
-    handler --> controller : JoinResult
-    controller --> client : 201 Created with session cookie
-    client --> page : Joined member
-    page --> actor : Show "Check your e-mail" naming the address
+  limit -> limit : Count the join for the IP address under AccountRateLimit.Joins (L2-137)
+  alt more than 5 joins in the hour
+    limit --> client : 429 with Retry-After
+    client --> page : Rate-limit error
+    page --> actor : Show "You’re doing that a lot. Try again in {n} minutes."
+  else within the limit
+    limit -> controller : Forward request
+    controller -> bot : Verify challenge token through IBotChallengeVerifier (L2-137)
+    bot --> controller : Passed or not
+    alt challenge not passed
+      controller -> errors : Throw ValidationFailedException with challenge CHALLENGE_FAILED
+      errors --> client : 422 ProblemDetails
+      client --> page : Challenge error
+      page --> actor : Show "We couldn’t check that you’re not a robot. Wait a moment and try again."
+    else challenge passed
+      controller -> handler : Send JoinWithEmailCommand
+      handler -> handler : Check lengths - password policy - agreement (L2-002)
+      handler -> breach : Range query through IBreachedPasswordChecker (L2-134)
+      breach --> handler : Breached or not
+      handler -> db : Look up the member by EmailKey
+      db --> handler : Holder or nothing
+      alt a field is invalid
+        opt the e-mail belongs to an account
+          handler -> emails : QueueAddressInUseNotice(holder) (L2-141)
+          handler -> db : Save the outbox message
+        end
+        handler -> errors : Throw ValidationFailedException with every field code
+        errors --> client : 422 ProblemDetails with per-field codes
+        client --> page : Field errors
+        page --> actor : Show every problem at once
+      else command is valid
+        handler -> handler : Hash password with IPasswordHasher - Argon2id (L2-134)
+        handler -> entity : Member.Join with normalised e-mail (L2-001)
+        entity --> handler : Member with EmailStatus Unconfirmed
+        handler -> emails : QueueConfirmationAsync(member)
+        emails -> emails : LinkTokens.NewValue and LinkTokens.Hash - LinkToken for 24 hours (L2-140)
+        emails --> handler : LinkToken and OutboxMessage added
+        handler -> db : Save member - token hash - outbox message in one unit of work
+        db --> handler : Commit result
+        handler --> controller : Member
+        controller -> db : SignInMemberAsync stores a new MemberSession (L2-010)
+        db --> controller : Session key
+        controller --> client : 201 Created with cookie __Host-jubilee.session (L2-135)
+        client --> page : JoinResponse
+        page --> actor : Show "Check your e-mail" naming the address
+      end
+    end
   end
 end
 @enduml

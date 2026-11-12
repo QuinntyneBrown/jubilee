@@ -117,7 +117,8 @@
         "error",
         "success",
         "expired",
-        "success-return"
+        "success-return",
+        "limit"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."
@@ -1152,6 +1153,26 @@
       }
     },
     {
+      "id": "change-email",
+      "kind": "dialog",
+      "title": "Change e-mail",
+      "opens_from": "account",
+      "states": [
+        "default",
+        "invalid",
+        "taken",
+        "wrong-password",
+        "busy",
+        "sent",
+        "unconfirmed",
+        "unconfirmed-invalid",
+        "unconfirmed-taken",
+        "unconfirmed-busy",
+        "unconfirmed-sent",
+        "unconfirmed-limit"
+      ]
+    },
+    {
       "id": "delete-account",
       "kind": "dialog",
       "title": "Delete account",
@@ -1252,7 +1273,8 @@
         "success",
         "warning",
         "danger",
-        "persistent"
+        "persistent",
+        "limit"
       ]
     },
     {

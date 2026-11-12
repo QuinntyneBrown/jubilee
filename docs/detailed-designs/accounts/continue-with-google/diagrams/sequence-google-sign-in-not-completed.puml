@@ -1,0 +1,91 @@
+@startuml
+title UML sequence behaviour — A Google sign-in that is not completed
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "JoinPage or SignInPage" as page
+  participant "SessionService" as session
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SessionController" as sessions
+  participant "GoogleSignInController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "CompleteGoogleSignInCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "IGoogleIdentityClient" as oidc
+  participant "IOidcTransactionStore" as txn
+end box
+participant "Google Identity" as google
+
+group Google sign-in is not configured (L2-003)
+  session -> sessions : GET /api/session
+  sessions -> oidc : IsConfigured
+  oidc --> sessions : false
+  sessions --> session : SessionDto with googleSignIn false
+  page -> session : Read googleSignIn
+  page --> actor : Show neither the Google button nor the divider "or use email"
+  opt a start request is made all the same
+    actor -> controller : GET /api/auth/google/start?from=join|sign-in
+    controller -> oidc : IsConfigured
+    oidc --> controller : false
+    controller --> actor : 302 to /{from}?error=google - nothing is saved and no request leaves for Google
+  end
+end
+
+group Google sign-in is configured and started
+  actor -> page : Press the Google button
+  page -> controller : GET /api/auth/google/start?from=join|sign-in&returnUrl=...
+  controller -> txn : SaveAsync(OidcTransaction with From and ReturnUrl)
+  controller --> actor : 302 to Google
+  actor -> google : Cancel - or sign in and consent
+  google --> actor : 302 to /api/auth/google/callback with code or error - and state
+  actor -> controller : GET /api/auth/google/callback
+  controller -> txn : ConsumeAsync(state)
+  txn --> controller : OidcTransaction or nothing
+  alt state missing - unknown or already used
+    controller --> actor : 302 to /sign-in?error=google (L2-003)
+  else error=access_denied - the visitor cancelled at Google
+    controller --> actor : 302 to /{from}?error=google-cancelled&returnUrl=... (L2-003)
+  else any other error or no code
+    controller --> actor : 302 to /{from}?error=google&returnUrl=...
+  else code present
+    controller -> oidc : RedeemAsync(redirectUri, code, codeVerifier, nonce)
+    oidc -> google : Token request with code verifier (PKCE)
+    google --> oidc : ID token or an error
+    alt exchange fails - ID token invalid or nonce mismatch
+      oidc --> controller : Exception
+      controller -> controller : Log the warning "A Google sign-in could not be completed."
+      controller --> actor : 302 to /{from}?error=google&returnUrl=... (L2-003)
+    else identity returned
+      oidc --> controller : GoogleIdentity
+      controller -> handler : Send CompleteGoogleSignInCommand
+      handler --> controller : Outcome EmailNotVerified - e-mail unverified - unparsable or of a deleted account
+      controller --> actor : 302 to /{from}?error=google-email&returnUrl=... (L2-003)
+    end
+  end
+  actor -> page : Follow the redirect - no session cookie is set
+  page -> page : googleNotice(error)
+  alt error=google-cancelled
+    page --> actor : Status notice "You didn’t finish with Google. Try again, or use your e-mail and password."
+  else error=google-email
+    page --> actor : Alert "Use a Google account with a confirmed e-mail, or join with e-mail."
+  else error=google
+    page --> actor : Alert "We couldn’t sign you in with Google. Try again, or use your e-mail and password."
+  end
+end
+@enduml

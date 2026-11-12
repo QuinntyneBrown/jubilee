@@ -1,6 +1,14 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures/jb-test';
-import { stubConfirmation, stubResend, stubSession, unconfirmedSession } from '../fixtures/stubs';
+import {
+  stubConfirmation,
+  stubResend,
+  stubResendLimited,
+  stubSession,
+  stubUnconfirmedEmailChange,
+  unconfirmedSession,
+} from '../fixtures/stubs';
+import { ChangeUnconfirmedEmailDialog } from '../pages/change-unconfirmed-email.dialog';
 import {
   JoinErrorScreen,
   JoinPage,
@@ -274,6 +282,21 @@ test.describe('join with e-mail (L2-001)', () => {
     await expect(join.summary).toContainText('Fix 1 thing to continue');
   });
 
+  test('L2-002 AC6: after a refusal every value typed is still there', async ({ page, jb }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.fill({ ...valid, password: 'short', agree: false });
+    await join.createAccount.click();
+
+    await expect(join.summary).toContainText('Fix 2 things to continue');
+    await expect(join.firstName).toHaveValue(valid.first);
+    await expect(join.lastName).toHaveValue(valid.last);
+    await expect(join.email).toHaveValue(valid.email);
+    await expect(join.homeChurch).toHaveValue(valid.church);
+    await expect(join.homeChurchAddress).toHaveValue(valid.churchAddress);
+  });
+
   test('AC4: an address that already has an account is refused beside the field', async ({
     page,
     jb,
@@ -530,6 +553,199 @@ test.describe('confirm the e-mail address (L2-004)', () => {
   });
 });
 
+test.describe('use another e-mail before confirming (L2-004)', () => {
+  const another = 'joanna@adeyemi.example';
+
+  test('AC5: "Use another e-mail" asks for the address in a dialog, sends it and names the new one', async ({
+    page,
+    jb,
+  }) => {
+    const sent = await stubUnconfirmedEmailChange(page);
+    const verify = new VerifyEmailPage(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email');
+
+    await verify.useAnother.click();
+
+    await expect(dialog.title).toHaveText('Use another e-mail');
+    await expect(dialog.description).toContainText(unconfirmedSession.email);
+    await expect(dialog.email).toBeFocused();
+    await expect(dialog.password).toHaveCount(0);
+
+    await dialog.email.fill(another);
+    await dialog.send.click();
+
+    await expect(dialog.title).toHaveText('Check your new inbox');
+    await expect(dialog.description).toContainText(`We sent a link to ${another}.`);
+    expect(sent).toEqual([{ email: another }]);
+
+    await dialog.done.click();
+    await expect(dialog.root).toHaveCount(0);
+    await expect(verify.text).toContainText(another);
+    await expect(verify.useAnother).toBeFocused();
+  });
+
+  test('AC5: "Change e-mail" in the banner opens the same dialog, and the banner names the new address', async ({
+    page,
+    jb,
+  }) => {
+    await stubUnconfirmedEmailChange(page);
+    const banner = new VerifyEmailBannerRegion(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email-banner');
+
+    await banner.changeEmail.click();
+    await expect(dialog.title).toHaveText('Use another e-mail');
+    await dialog.email.fill(another);
+    await dialog.email.press('Enter');
+    await dialog.done.click();
+
+    await expect(banner.banner).toContainText(another);
+  });
+
+  test('AC5: an address that bounced is changed from the banner too', async ({ page, jb }) => {
+    const banner = new VerifyEmailBannerRegion(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email-banner.danger');
+
+    await banner.changeEmail.click();
+
+    await expect(dialog.title).toHaveText('Use another e-mail');
+  });
+
+  test('AC5: by keyboard the dialog opens, and Escape closes it and returns to the button', async ({
+    page,
+    jb,
+  }) => {
+    const verify = new VerifyEmailPage(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email');
+
+    await verify.useAnother.focus();
+    await page.keyboard.press('Enter');
+    await expect(dialog.email).toBeFocused();
+    await page.keyboard.press('Escape');
+
+    await expect(dialog.root).toHaveCount(0);
+    await expect(verify.useAnother).toBeFocused();
+  });
+
+  test('AC8: an empty or incomplete address is not sent and the field says why', async ({
+    page,
+    jb,
+  }) => {
+    const sent = await stubUnconfirmedEmailChange(page);
+    const verify = new VerifyEmailPage(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email');
+    await verify.useAnother.click();
+
+    await dialog.send.click();
+    await expect(dialog.emailError).toHaveText('Enter the e-mail you want to use.');
+    await expect(dialog.email).toHaveAttribute('aria-invalid', 'true');
+    await expect(dialog.email).toBeFocused();
+
+    await dialog.email.fill('joanna@adeyemi');
+    await dialog.send.click();
+    await expect(dialog.emailError).toHaveText(
+      'Enter a full e-mail address, like name@example.com.',
+    );
+    expect(sent).toEqual([]);
+  });
+
+  test('AC8: an address the server refuses is explained beside the field and kept', async ({
+    page,
+    jb,
+  }) => {
+    await stubUnconfirmedEmailChange(page, 'invalid');
+    const verify = new VerifyEmailPage(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email');
+    await verify.useAnother.click();
+
+    await dialog.email.fill(another);
+    await dialog.send.click();
+
+    await expect(dialog.emailError).toHaveText(
+      'Enter a full e-mail address, like name@example.com.',
+    );
+    await expect(dialog.email).toHaveValue(another);
+  });
+
+  test('AC8: while the address is sent the button says so and the dialog cannot be closed', async ({
+    page,
+    jb,
+  }) => {
+    await stubUnconfirmedEmailChange(page, 'hang');
+    const verify = new VerifyEmailPage(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email');
+    await verify.useAnother.click();
+
+    await dialog.email.fill(another);
+    await dialog.send.click();
+
+    await expect(dialog.send).toHaveText('Sending…');
+    await expect(dialog.send).toBeDisabled();
+    await expect(dialog.cancel).toBeDisabled();
+    await expect(dialog.close).toBeDisabled();
+    await page.keyboard.press('Escape');
+    await expect(dialog.title).toBeVisible();
+  });
+
+  test('AC9: an address another account uses is not taken; the field says so and the page keeps the old one', async ({
+    page,
+    jb,
+  }) => {
+    const sent = await stubUnconfirmedEmailChange(page, 'in-use');
+    const verify = new VerifyEmailPage(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email');
+    await verify.useAnother.click();
+
+    await dialog.email.fill('david.chen@example.com');
+    await dialog.send.click();
+
+    await expect(dialog.emailError).toHaveText(
+      'An account already uses this e-mail. Use another address.',
+    );
+    await expect(dialog.title).toHaveText('Use another e-mail');
+    await expect(dialog.email).toHaveValue('david.chen@example.com');
+    expect(sent).toHaveLength(1);
+    await dialog.cancel.click();
+    await expect(verify.text).toContainText(unconfirmedSession.email);
+  });
+
+  test('AC10: past the hourly limit the dialog says how long to wait', async ({ page, jb }) => {
+    await stubUnconfirmedEmailChange(page, 'limited');
+    const verify = new VerifyEmailPage(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email');
+    await verify.useAnother.click();
+
+    await dialog.email.fill(another);
+    await dialog.send.click();
+
+    await expect(dialog.alert).toContainText('You’re doing that a lot.');
+    await expect(dialog.alert).toContainText('Try again in 42 minutes.');
+    await expect(dialog.email).toHaveValue(another);
+  });
+
+  test('a request that fails says nothing was sent and can be sent again', async ({ page, jb }) => {
+    await stubUnconfirmedEmailChange(page, 'fail');
+    const verify = new VerifyEmailPage(page);
+    const dialog = new ChangeUnconfirmedEmailDialog(page);
+    await jb.open('verify-email');
+    await verify.useAnother.click();
+
+    await dialog.email.fill(another);
+    await dialog.send.click();
+
+    await expect(dialog.alert).toContainText('We couldn’t send that');
+    await expect(dialog.send).toBeEnabled();
+  });
+});
+
 test.describe('restricted until the address is confirmed (L2-005)', () => {
   test('AC1: an unconfirmed member sees the banner, with no way to dismiss it', async ({
     page,
@@ -552,6 +768,56 @@ test.describe('restricted until the address is confirmed (L2-005)', () => {
     await banner.sendAgain.click();
 
     await expect(banner.banner).toContainText('We sent a new link');
+  });
+
+  test('AC5: past the hourly limit the banner sends nothing more and says how long to wait', async ({
+    page,
+    jb,
+  }) => {
+    await stubResendLimited(page);
+    const banner = new VerifyEmailBannerRegion(page);
+    await jb.open('verify-email-banner');
+
+    await banner.sendAgain.click();
+
+    await expect(banner.banner).toContainText('You’re doing that a lot.');
+    await expect(banner.banner).toContainText('Try again in 42 minutes.');
+    await expect(banner.banner).not.toContainText('We sent a new link');
+    await expect(banner.sendAgain).toHaveCount(0);
+    await expect(banner.changeEmail).toBeVisible();
+    await expect(banner.dismiss).toHaveCount(0);
+  });
+
+  test('AC5: past the hourly limit the waiting page says how long to wait', async ({
+    page,
+    jb,
+  }) => {
+    await stubResendLimited(page);
+    const verify = new VerifyEmailPage(page);
+    await jb.open('verify-email');
+
+    await verify.sendAgain.click();
+
+    await expect(verify.problem).toHaveText('You’re doing that a lot. Try again in 42 minutes.');
+    await expect(verify.status).toHaveCount(0);
+  });
+
+  test('AC5: past the hourly limit "Check your e-mail" says how long to wait', async ({
+    page,
+    jb,
+  }) => {
+    await stubJoin(page, 201, { email: valid.email });
+    await stubResendLimited(page);
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await join.sendAgain.click();
+
+    await expect(join.resendProblem).toHaveText(
+      'You’re doing that a lot. Try again in 42 minutes.',
+    );
   });
 
   test('AC3: an address that bounced says so and offers to change it', async ({ page, jb }) => {

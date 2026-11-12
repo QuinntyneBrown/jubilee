@@ -5,17 +5,18 @@ title Containers — Continue with Google
 
 Person(visitor, "Visitor", "Joins or signs in with Google")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "JoinPage - SignInPage - GoogleAgreementPage")
-  Container(api, "Jubilee API", "ASP.NET Core", "Runs the authorization code flow with PKCE")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Members and their Google identity")
-  ContainerDb(cache, "Cache", "Redis", "Pending sign-in transactions and sessions")
+  Container(web, "Jubilee Web", "Angular single-page application", "JoinPage - SignInPage - JoinAgreementPage")
+  Container(api, "Jubilee API", "ASP.NET Core", "Runs the authorization code flow with PKCE and starts the session")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members with their Google identity - sessions")
+  ContainerDb(cache, "Cache", "Redis or in-process", "Pending sign-in transactions for 10 minutes")
 }
 System_Ext(google, "Google Identity", "OpenID Connect provider")
 
 Rel(visitor, web, "Uses", "HTTPS")
-Rel(web, api, "Navigates to /api/auth/google/start and posts the agreement", "HTTPS")
+Rel(web, api, "Reads googleSignIn - navigates to /api/auth/google/start - posts the agreement", "HTTPS")
 Rel(api, google, "Redirects the browser to - exchanges the code with", "OpenID Connect")
-Rel(visitor, google, "Consents at", "HTTPS")
-Rel(api, cache, "Stores state - nonce - code verifier - session", "Redis protocol")
-Rel(api, db, "Reads and writes members", "EF Core")
+Rel(visitor, google, "Consents or cancels at", "HTTPS")
+Rel(api, cache, "Stores state - nonce - code verifier - return URL - starting page", "IDistributedCache")
+Rel(api, db, "Reads and writes members and sessions", "EF Core")
+Rel(api, web, "Redirects to the return URL - /join/agreement - or the starting page with ?error", "HTTPS")
 @enduml

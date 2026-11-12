@@ -35,8 +35,10 @@ actor -> page : Open /verify-email/:token
 page -> page : Read the token and remove it from the address bar (L2-140)
 page --> actor : Show "Confirming your e-mail…"
 page -> client : confirmEmail(token)
-client -> controller : POST /api/account/confirmation
+client -> controller : POST /api/account/confirmation with the token in the body
+controller -> controller : Set Referrer-Policy no-referrer (L2-140)
 controller -> handler : Send ConfirmEmailCommand
+handler -> handler : LinkTokens.Hash(token)
 handler -> db : Find LinkToken by SHA-256 hash and purpose (L2-140)
 db --> handler : Token and member - or nothing
 alt token unknown or malformed
@@ -46,7 +48,7 @@ alt token unknown or malformed
   page --> actor : Show "This link has expired" with "Send a new link"
 else token already used
   handler --> controller : AlreadyConfirmed if the member is confirmed - otherwise Expired
-  controller --> client : 200 with outcome
+  controller --> client : 200 with outcome already-confirmed or expired
   client --> page : Outcome
   page --> actor : Show the success state or the expired state (L2-004)
 else token older than 24 hours or superseded
@@ -57,7 +59,7 @@ else token older than 24 hours or superseded
 else token valid
   handler -> token : Redeem(now)
   token --> handler : Marked used
-  handler -> entity : ConfirmEmail(now) (L2-004)
+  handler -> entity : ConfirmEmail() (L2-004)
   entity --> handler : EmailStatus Confirmed
   handler -> db : Save changes in one unit of work
   db --> handler : Commit result
@@ -68,6 +70,6 @@ else token valid
 end
 opt server or network failure
   client --> page : Failure
-  page --> actor : Show "We couldn't load your verification" with JB-VERIFY-502 and "Try again"
+  page --> actor : Show "We couldn’t load your verification" with JB-VERIFY-502 and "Try again"
 end
 @enduml

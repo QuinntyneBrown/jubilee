@@ -124,7 +124,7 @@ public sealed class StaffNetworkMiddleware(RequestDelegate next, StaffNetworks n
                 "Failed authorization (NETWORK_NOT_ALLOWED) for anonymous from {Address} on {Method} {Path}. CorrelationId {CorrelationId}",
                 context.Connection.RemoteIpAddress,
                 context.Request.Method,
-                path.Value,
+                LoggedPath.Of(context),
                 context.TraceIdentifier);
             await ProblemWriter.WriteAsync(
                 context,

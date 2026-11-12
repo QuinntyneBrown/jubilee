@@ -16,12 +16,13 @@ skinparam package {
 }
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "AgreementGuard" as guard
-  participant "GoogleAgreementPage" as page
+  participant "App" as guard
+  participant "JoinAgreementPage" as page
   participant "AccountApi" as client
   participant "SessionService" as session
 end box
 box "Backend — Jubilee API" #D1FADF
+  participant "CsrfMiddleware" as csrf
   participant "AccountController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
@@ -33,27 +34,28 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
 end box
 
 actor -> guard : Open any route after joining with Google
-guard -> session : Read agreement flag
+guard -> session : Read agreementRequired
 session --> guard : Agreement not accepted
-guard --> actor : Redirect to /join/agreement (L2-003)
-actor -> page : Tick the agreement and continue
+guard --> actor : Navigate to /join/agreement with the return URL (L2-003)
+actor -> page : Tick the agreement and press "Continue"
 alt agreement not ticked
   page --> actor : Show "Agree to the statement of faith to join."
 else agreement ticked
   page -> client : acceptAgreement()
-  client -> controller : POST /api/account/agreement
-  controller -> controller : Authenticate session and check anti-CSRF token (L2-135)
+  client -> csrf : POST /api/account/agreement with cookie __Host-jubilee.session
+  csrf -> csrf : Check the anti-CSRF token (L2-135)
+  csrf -> controller : Forward request
   controller -> handler : Send AcceptAgreementCommand
   handler -> db : Load member
   db --> handler : Member
-  handler -> entity : AcceptAgreement(now)
+  handler -> entity : AcceptAgreement(now, termsVersion)
   entity --> handler : Account usable
   handler -> db : Save changes in one unit of work
   db --> handler : Commit result
-  handler --> controller : Result
+  handler --> controller : Done
   controller --> client : 204 No Content
   client --> page : Accepted
-  page -> session : Refresh the signed-in member
+  page -> session : resolve()
   session --> page : Agreement accepted
   page --> actor : Navigate to the return URL or /
 end

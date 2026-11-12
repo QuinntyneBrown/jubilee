@@ -21,8 +21,7 @@ enum EmailStatus {
 enum LinkTokenPurpose {
   EmailConfirmation
   PasswordReset
-  EmailChange
-  DataDownload
+  ChangeEmail
 }
 
 enum ConfirmEmailOutcome {
@@ -33,10 +32,11 @@ enum ConfirmEmailOutcome {
 
 class Member {
   +Guid Id
-  +EmailAddress Email
+  +string Email
+  +string EmailKey
   +EmailStatus EmailStatus
   +bool EmailBounced
-  +ConfirmEmail(now: DateTimeOffset): void
+  +ConfirmEmail(): void
   +ReplaceUnconfirmedEmail(email: EmailAddress): void
   +MarkEmailBounced(): void
   +CanTransact(): bool
@@ -46,58 +46,105 @@ class LinkToken {
   +Guid Id
   +Guid MemberId
   +LinkTokenPurpose Purpose
-  +byte[] TokenHash
+  +string TokenHash
   +DateTimeOffset ExpiresAt
   +DateTimeOffset? UsedAt
   +DateTimeOffset? SupersededAt
+  +{static} Issue(memberId: Guid, purpose: LinkTokenPurpose, tokenHash: string, now: DateTimeOffset, lifetime: TimeSpan): LinkToken
   +IsRedeemable(now: DateTimeOffset): bool
   +Redeem(now: DateTimeOffset): void
   +Supersede(now: DateTimeOffset): void
 }
 
-interface ILinkTokenService {
-  +Issue(memberId: Guid, purpose: LinkTokenPurpose, lifetime: TimeSpan): IssuedToken
-  +Find(rawToken: string, purpose: LinkTokenPurpose): Task<LinkToken>
-  +SupersedeOutstanding(memberId: Guid, purpose: LinkTokenPurpose): void
+class LinkTokens <<static>> {
+  +{static} NewValue(): string
+  +{static} Hash(value: string): string
 }
 
-class ConfirmEmailCommand {
-  +string Token
+class AccountEmails {
+  +QueueConfirmationAsync(member: Member, cancellationToken: CancellationToken): Task
+  +QueueAddressInUseNotice(holder: Member): void
+}
+
+class ConfirmEmailCommand <<record>> {
+  +string? Token
+}
+
+class ConfirmEmailResult <<record>> {
+  +ConfirmEmailOutcome Outcome
+  +string? FirstName
 }
 
 class ConfirmEmailCommandHandler {
-  +Handle(command: ConfirmEmailCommand): Task<ConfirmEmailOutcome>
+  +Handle(request: ConfirmEmailCommand, cancellationToken: CancellationToken): Task<ConfirmEmailResult>
 }
 
-class ChangeUnconfirmedEmailCommand {
+class ChangeUnconfirmedEmailCommand <<record>> {
   +Guid MemberId
-  +string NewEmail
+  +string? Email
 }
 
 class ChangeUnconfirmedEmailCommandHandler {
-  +Handle(command: ChangeUnconfirmedEmailCommand): Task<Result>
+  +Handle(request: ChangeUnconfirmedEmailCommand, cancellationToken: CancellationToken): Task
 }
 
-class ConfirmedEmailRequirement {
-  +string FailureCode = "EMAIL_UNCONFIRMED"
-  +IsMet(member: Member): bool
+class ValidationFailedException {
+  +IReadOnlyDictionary<string, string> Errors
+}
+
+class RequiresConfirmedEmailAttribute <<action filter>> {
+  +OnActionExecutionAsync(context: ActionExecutingContext, next: ActionExecutionDelegate): Task
+}
+
+class GetMemberAccountQueryHandler {
+  +Handle(request: GetMemberAccountQuery, cancellationToken: CancellationToken): Task<MemberAccountDto?>
+}
+
+class RecordEmailBounceCommand <<record>> {
+  +string Address
 }
 
 class RecordEmailBounceCommandHandler {
-  +Handle(command: RecordEmailBounceCommand): Task<Result>
+  +Handle(request: RecordEmailBounceCommand, cancellationToken: CancellationToken): Task
+}
+
+class LoggedPath <<static>> {
+  +{static} Of(context: HttpContext): string
+}
+
+class ChangeUnconfirmedEmailDialog <<Angular>>
+
+interface AccountApi <<TypeScript>> {
+  +confirmEmail(token: string): Observable<ConfirmEmailResponse>
+  +resendConfirmation(): Observable<void>
+  +changeUnconfirmedEmail(email: string): Observable<void>
+}
+
+class SessionService <<Angular>> {
+  +member: Signal<Member | null>
+  +unconfirmed: Signal<boolean>
+  +resolve(): Observable<SessionState>
 }
 
 Member --> EmailStatus : has
 Member "1" --> "*" LinkToken : receives
 LinkToken --> LinkTokenPurpose : has
-ILinkTokenService --> LinkToken : issues and finds
+AccountEmails ..> LinkTokens : uses
+AccountEmails --> LinkToken : issues and supersedes
 ConfirmEmailCommandHandler ..> ConfirmEmailCommand : handles
-ConfirmEmailCommandHandler ..> ILinkTokenService : uses
+ConfirmEmailCommandHandler ..> LinkTokens : hashes with
+ConfirmEmailCommandHandler --> LinkToken : redeems
 ConfirmEmailCommandHandler --> Member : confirms
-ConfirmEmailCommandHandler ..> ConfirmEmailOutcome : returns
+ConfirmEmailCommandHandler ..> ConfirmEmailResult : returns
+ConfirmEmailResult --> ConfirmEmailOutcome : has
 ChangeUnconfirmedEmailCommandHandler ..> ChangeUnconfirmedEmailCommand : handles
-ChangeUnconfirmedEmailCommandHandler ..> ILinkTokenService : uses
+ChangeUnconfirmedEmailCommandHandler ..> AccountEmails : uses
+ChangeUnconfirmedEmailCommandHandler ..> ValidationFailedException : throws
 ChangeUnconfirmedEmailCommandHandler --> Member : mutates
-ConfirmedEmailRequirement ..> Member : reads
+RequiresConfirmedEmailAttribute ..> GetMemberAccountQueryHandler : asks
+GetMemberAccountQueryHandler ..> Member : reads
+RecordEmailBounceCommandHandler ..> RecordEmailBounceCommand : handles
 RecordEmailBounceCommandHandler --> Member : marks bounced
+ChangeUnconfirmedEmailDialog ..> AccountApi : uses
+ChangeUnconfirmedEmailDialog ..> SessionService : reloads
 @enduml

@@ -14,6 +14,9 @@
         typo.</span
       >
     }
+    @case ('limited') {
+      <span><strong>You’re doing that a lot.</strong> {{ wait() }}</span>
+    }
     @case ('expired') {
       <span><strong>Your confirmation link expired.</strong> Links work for 24 hours.</span>
     }
@@ -26,7 +29,16 @@
   }
   <!-- One block per projected node: a slot node beside another in a block is not projected. -->
   @if (state() === 'bounced') {
-    <a slot="actions" jb-button size="sm" routerLink="/account">Change e-mail</a>
+    <button
+      #change
+      slot="actions"
+      jb-button
+      size="sm"
+      type="button"
+      (click)="changeEmail.emit(change.element)"
+    >
+      Change e-mail
+    </button>
   }
   @if (state() === 'expired' || state() === 'persistent') {
     <button
@@ -40,8 +52,18 @@
       {{ state() === 'expired' ? 'Send a new link' : 'Send it again' }}
     </button>
   }
-  @if (state() === 'persistent') {
-    <a slot="actions" routerLink="/account">Change e-mail</a>
+  @if (state() === 'persistent' || state() === 'limited') {
+    <button
+      #change
+      slot="actions"
+      jb-button
+      variant="link"
+      size="sm"
+      type="button"
+      (click)="changeEmail.emit(change.element)"
+    >
+      Change e-mail
+    </button>
   }
   @if (state() === 'confirmed') {
     <button jb-close-button type="button" aria-label="Dismiss" (click)="dismiss.emit()"></button>

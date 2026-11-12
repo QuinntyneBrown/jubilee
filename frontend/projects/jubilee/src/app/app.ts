@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { ACCOUNT_API } from 'api';
+import { ACCOUNT_API, isRateLimited, tryAgainIn } from 'api';
 import {
   ChromeMember,
   ConnectionBanner,
@@ -26,6 +26,7 @@ import {
 import { filter, map, startWith } from 'rxjs';
 import { JbRouteData } from './app.routes';
 import { AccountMenuData, AccountMenuDialog } from './dialogs/account-menu/account-menu.dialog';
+import { openChangeUnconfirmedEmail } from './dialogs/change-unconfirmed-email/change-unconfirmed-email.dialog';
 import type { FeedbackDialogData } from './dialogs/feedback/feedback.dialog';
 import { ConnectionService, STATUS_URL } from './services/offline/connection.service';
 import { QueueDrainer } from './services/offline/queue-drainer';
@@ -109,8 +110,16 @@ export class App {
   });
   private readonly resent = signal(false);
   protected readonly resending = signal(false);
+  /** "Try again in 42 minutes.", once the resend limit was reached (L2-005 AC5). */
+  protected readonly resendWait = signal('');
   protected readonly bannerState = computed<VerifyEmailBannerState>(() =>
-    this.unconfirmed()?.emailBounced ? 'bounced' : this.resent() ? 'sent' : 'persistent',
+    this.unconfirmed()?.emailBounced
+      ? 'bounced'
+      : this.resendWait()
+        ? 'limited'
+        : this.resent()
+          ? 'sent'
+          : 'persistent',
   );
 
   /** Shown once when the address was unconfirmed and now is, until it is dismissed (L2-005 AC4, L2-067 AC2). */
@@ -175,8 +184,16 @@ export class App {
         this.resent.set(true);
         this.resending.set(false);
       },
-      error: () => this.resending.set(false),
+      error: (error: unknown) => {
+        if (isRateLimited(error)) this.resendWait.set(tryAgainIn(error));
+        this.resending.set(false);
+      },
     });
+  }
+
+  /** "Change e-mail" in the banner (L2-004 AC5): the unconfirmed address is replaced in a dialog. */
+  protected changeEmail(opener: HTMLElement): void {
+    openChangeUnconfirmedEmail(this.dialog, opener);
   }
 
   /** The account menu from the avatar (L2-019); focus returns to the avatar when it closes. */

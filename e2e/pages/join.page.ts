@@ -44,6 +44,8 @@ export class JoinPage extends ShellPage implements Screen {
   readonly sentHeading: Locator;
   readonly sentText: Locator;
   readonly sendAgain: Locator;
+  /** What stopped "Send it again" on "Check your e-mail": the hourly limit, or a failure. */
+  readonly resendProblem: Locator;
   readonly errorState: Locator;
 
   constructor(page: Page) {
@@ -81,6 +83,7 @@ export class JoinPage extends ShellPage implements Screen {
     this.sentHeading = this.main.getByRole('heading', { name: 'Check your e-mail' });
     this.sentText = this.main.locator('.empty__text');
     this.sendAgain = this.main.getByRole('button', { name: 'Send it again' });
+    this.resendProblem = this.main.locator('p[role="alert"]');
     this.errorState = this.main.getByRole('alert').filter({ hasText: 'JB-AUTH-503' });
   }
 

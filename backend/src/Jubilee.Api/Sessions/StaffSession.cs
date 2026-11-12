@@ -109,7 +109,7 @@ public static class StaffSession
             caller?.FindFirst("sub")?.Value ?? "anonymous",
             http.Connection.RemoteIpAddress,
             http.Request.Method,
-            http.Request.Path.Value,
+            LoggedPath.Of(http),
             http.TraceIdentifier);
 
     /// <summary>True when the caller is a staff session; member-only rules (the agreement) do not apply to it.</summary>
