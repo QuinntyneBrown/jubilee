@@ -1,0 +1,64 @@
+WEBVTT
+
+00:00:00.650 --> 00:00:06.619
+Journey four: join Jubilee. A visitor creates an account by e-mail or
+
+00:00:06.619 --> 00:00:12.242
+Google and confirms the address. This run finishes what was left.
+
+00:00:13.103 --> 00:00:17.085
+A member who has just joined can browse, search and save.
+
+00:00:17.085 --> 00:00:21.906
+Until the address is confirmed, a banner on every signed-in page says
+
+00:00:21.906 --> 00:00:23.303
+where the link went.
+
+00:00:24.020 --> 00:00:28.742
+If the address was mistyped, Change e-mail now opens a dialog.
+
+00:00:28.742 --> 00:00:34.150
+It asks for the new address and no password, because the address is not
+
+00:00:34.150 --> 00:00:34.988
+proven yet.
+
+00:00:35.702 --> 00:00:39.141
+The new address replaces the unconfirmed one.
+
+00:00:39.141 --> 00:00:44.415
+Earlier links stop working, a new link goes out, and the banner names
+
+00:00:44.415 --> 00:00:45.638
+the new address.
+
+00:00:46.343 --> 00:00:50.621
+An address that another account already uses is not taken.
+
+00:00:50.621 --> 00:00:55.711
+The dialog says so beside the field, and the member keeps the address
+
+00:00:55.711 --> 00:00:56.375
+they had.
+
+00:00:57.085 --> 00:01:00.073
+Send it again works five times an hour.
+
+00:01:00.073 --> 00:01:05.437
+After that nothing more is sent, and the banner says how long to wait.
+
+00:01:06.316 --> 00:01:10.978
+Behind the screen, a token in a request path is now written to the logs
+
+00:01:10.978 --> 00:01:15.508
+as redacted. And the member session cookie carries the Host prefix; a
+
+00:01:15.508 --> 00:01:20.236
+cookie under the earlier name is removed, and the member signs in again.
+
+00:01:21.116 --> 00:01:24.449
+Journey four stands at ninety-eight percent.
+
+00:01:24.449 --> 00:01:29.828
+One step is left for the owner: the keys of the bot challenge in Azure.

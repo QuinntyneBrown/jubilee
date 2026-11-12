@@ -78,7 +78,8 @@ if (!flag('--keep-recording') || !fs.existsSync(timelineFile)) {
   fs.rmSync(timelineFile, { force: true });
   const env = { ...process.env };
   for (const key of ['JB_SWEEPS', 'JB_BASELINE', 'JB_PARITY', 'JB_RECORD_API', 'CI']) delete env[key];
-  const recorded = spawnSync('npx', ['playwright', 'test', '-c', 'playwright.demo.config.ts', path.join(folder, 'demo.spec.ts')], { cwd: path.join(repo, 'e2e'), stdio: 'inherit', env });
+  // On Windows npx is a .cmd file, which only a shell can start.
+  const recorded = spawnSync('npx', ['playwright', 'test', '-c', 'playwright.demo.config.ts', path.join(folder, 'demo.spec.ts')], { cwd: path.join(repo, 'e2e'), stdio: 'inherit', env, shell: process.platform === 'win32' });
   if (recorded.status !== 0 || !fs.existsSync(timelineFile)) throw new Error('the recording failed: see the Playwright output above');
 }
 const timeline = JSON.parse(fs.readFileSync(timelineFile, 'utf8'));
