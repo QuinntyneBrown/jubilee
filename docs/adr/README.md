@@ -24,7 +24,7 @@ something else: a new record supersedes it and both say so.
 | [0018](0018-listing-onboarding-decisions.md) | Listing onboarding: drafts, limit, submission flags, expiry | Accepted, amended by 0041 |
 | [0019](0019-church-reference-decisions.md) | Church reference: hashed links, owner-safe status, resend, remind, change | Superseded by 0041 |
 | [0020](0020-verification-decisions.md) | Verification: the team, decisions, stages, overdue, checklist, retention and audit | Accepted, partly superseded by 0040, amended by 0041 |
-| [0013](0013-server-side-sessions.md) | Server-side sessions in the database, sign-in throttling, drafts and the sign-in prompt | Accepted |
+| [0013](0013-server-side-sessions.md) | Server-side sessions in the database, sign-in throttling, drafts and the sign-in prompt | Accepted, completed by 0045 |
 | [0008](0008-frontend-file-per-type.md) | Frontend: one file per type, no single-file components (`templateUrl`, never `template`) | Accepted |
 | [0013](0013-marketing-site-application.md) | Marketing site: a second, static Angular application with editorial content and one `APP_URL` | Accepted, amended by 0044 |
 | [0035](0035-presentation-in-the-components-library.md) | Prefer best practice; presentation only in `components`, one encapsulated `.scss` per component, BEM names | Accepted |
@@ -40,6 +40,7 @@ something else: a new record supersedes it and both say so.
 | [0043](0043-member-feedback.md) | Member feedback: one feedback record of four kinds, a corner dialog for the panel, check-ins addressed by id, statuses and replies shown while writing them is deferred | Accepted |
 | [0044](0044-launching-soon.md) | Launching soon: the marketing site sends two forms to `/api/launch` on its own origin, links nowhere outside itself, `APP_URL` removed, submissions read with the CLI, the way back is a revert | Accepted |
 | [0045](0045-finish-view-business-and-products.md) | Finish viewing a business and its products: back-in-stock notices written with the stock change, once per alert, under "Request updates"; `stockChange` for the owner's toast; `status` for the preview of a listing that is not public | Accepted |
+| [0045](0045-finish-sign-in-and-out.md) | Finish sign in and out: drafts kept on the device by member, address and form; the started action carried in the return path; `__Host-jubilee.session` outside Development; no CORS allowlist because every caller is same-origin | Accepted |
 
 ## Format
 
