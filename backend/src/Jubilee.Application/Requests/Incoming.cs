@@ -161,7 +161,7 @@ internal static class IncomingRules
     };
 
     /// <summary>
-    /// The listing the owner works on: the one named, or else their live listing. A caller who owns
+    /// The listing the owner works on: the one named, or else the one their workspace shows (L2-079 AC5). A caller who owns
     /// nothing, or not the one named, is refused (L2-051 AC6, L2-133 AC3).
     /// </summary>
     public static async Task<Listing> Owned(IAppDbContext db, string subject, string? slug, CancellationToken cancellationToken)
@@ -169,7 +169,7 @@ internal static class IncomingRules
         var owned = (await db.Listings.AsNoTracking().Where(l => l.OwnerId == subject && l.DeletedAt == null).ToListAsync(cancellationToken))
             .OrderBy(l => l.CreatedAt).ToList();
         var listing = slug is null
-            ? owned.FirstOrDefault(l => l.Stage == ListingStage.Live) ?? owned.FirstOrDefault()
+            ? OwnerWorkspace.Workspace.Current(owned)
             : owned.SingleOrDefault(l => l.Slug == slug);
         return listing ?? throw new ForbiddenException("FORBIDDEN", "This area is for the owner of the business.");
     }

@@ -341,6 +341,7 @@ export class EditListingPage implements OnInit {
 
     const draft = this.draft();
     const changes: ListingChanges = {
+      listingId: editor.id,
       version: editor.version,
       name: draft.name.trim(),
       tagline: draft.tagline.trim(),

@@ -14,7 +14,7 @@ import { stubSaved } from './saved';
 import { stubFeedback } from './feedback';
 import { stubPasswordReset } from './password-reset';
 import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from './notifications';
-import { SUITE, stubMyBusiness } from './my-business';
+import { OTHER_BUSINESSES, SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
@@ -461,6 +461,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubMyBusiness(page);
     case 'business-away':
       return stubMyBusiness(page, { awayUntil: '2026-11-16T05:00:00Z' });
+    case 'business-switcher':
+      return stubMyBusiness(page, { others: OTHER_BUSINESSES });
     case 'business-pending':
       return stubMyBusiness(page, { state: 'ready-to-review' });
     case 'business-changes':

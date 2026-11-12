@@ -147,6 +147,122 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal(JsonValueKind.Null, overview.GetProperty("listingId").ValueKind);
     }
 
+    private async Task<Listing> SecondListing()
+    {
+        var second = ListingMother.NonPublic(NonPublicState.ReadyToReview, "laurent-photography", "media");
+        second.Reword("Laurent Photography", "Portraits and church events", "media", null);
+        second.AssignOwner(NaomiId);
+        await _factory.Arrange(second);
+        return second;
+    }
+
+    // L2-079 AC4: the switcher names each listing with its stage and each draft not yet submitted
+    [Fact]
+    public async Task L2_079_AC4_the_overview_names_each_of_the_owners_businesses_and_drafts()
+    {
+        var second = await SecondListing();
+        var draft = await Json(await Naomi().PostAsJsonAsync("/api/listing-drafts", new { kind = "services", name = "Laurent Studio", agreed = false }));
+        var someoneElses = ListingMother.Public("someone-else");
+        someoneElses.AssignOwner("member|joanna");
+        await _factory.Arrange(someoneElses);
+
+        var overview = await Json(await Naomi().GetAsync("/api/my-business"));
+
+        Assert.Equal("Luzandre.com", overview.GetProperty("name").GetString());
+        var businesses = overview.GetProperty("businesses").EnumerateArray().ToList();
+        Assert.Equal(
+            ["Luzandre.com|listing|Live|True", "Laurent Photography|listing|Pending verification|False", "Laurent Studio|draft|Draft|False"],
+            businesses.Select(b => $"{b.GetProperty("name").GetString()}|{b.GetProperty("kind").GetString()}|{b.GetProperty("stageLabel").GetString()}|{b.GetProperty("current").GetBoolean()}"));
+        Assert.Equal(_listing.Id, businesses[0].GetProperty("id").GetGuid());
+        Assert.Equal(second.Id, businesses[1].GetProperty("id").GetGuid());
+        Assert.Equal(draft.GetProperty("id").GetGuid(), businesses[2].GetProperty("id").GetGuid());
+    }
+
+    [Fact]
+    public async Task L2_079_AC4_an_owner_with_one_business_has_one_entry_and_a_paused_listing_says_so()
+    {
+        var naomi = Naomi();
+        await naomi.PostAsync("/api/my-business/pause", null);
+
+        var businesses = (await Json(await naomi.GetAsync("/api/my-business"))).GetProperty("businesses");
+
+        Assert.Equal(1, businesses.GetArrayLength());
+        Assert.Equal("Paused", businesses[0].GetProperty("stageLabel").GetString());
+        Assert.Empty((await Json(await Joanna().GetAsync("/api/my-business"))).GetProperty("businesses").EnumerateArray());
+    }
+
+    // L2-079 AC5: the choice moves every page of the workspace and is kept
+    [Fact]
+    public async Task L2_079_AC5_choosing_another_business_moves_the_whole_workspace_to_it_until_the_owner_chooses_again()
+    {
+        var second = await SecondListing();
+        var naomi = Naomi();
+        await _factory.Arrange(Request.AskForQuote(
+            "member|david", "David Chen", second.Id, null, "Church portraits", "Forty families", null, null, null, Guid.NewGuid().ToString(), ListingMother.Now.AddHours(-2)));
+
+        var chosen = await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = second.Id });
+
+        Assert.Equal(HttpStatusCode.NoContent, chosen.StatusCode);
+        var overview = await Json(await naomi.GetAsync("/api/my-business"));
+        Assert.Equal("Laurent Photography", overview.GetProperty("name").GetString());
+        Assert.Equal("ready-to-review", overview.GetProperty("state").GetString());
+        Assert.Equal(
+            ["Luzandre.com|False", "Laurent Photography|True"],
+            overview.GetProperty("businesses").EnumerateArray().Select(b => $"{b.GetProperty("name").GetString()}|{b.GetProperty("current").GetBoolean()}"));
+        Assert.Equal("Laurent Photography", (await Json(await naomi.GetAsync("/api/my-business/listing"))).GetProperty("name").GetString());
+        Assert.Equal("Laurent Photography", (await Json(await naomi.GetAsync("/api/my-business/products"))).GetProperty("business").GetString());
+        var requests = await Json(await naomi.GetAsync("/api/my-business/requests"));
+        Assert.Contains("Church portraits", requests.GetRawText());
+
+        _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+        await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = _listing.Id });
+
+        Assert.Equal("Luzandre.com", (await Json(await naomi.GetAsync("/api/my-business"))).GetProperty("name").GetString());
+        Assert.DoesNotContain("Church portraits", (await Json(await naomi.GetAsync("/api/my-business/requests"))).GetRawText());
+    }
+
+    // L2-079 AC5, L2-133: the choice is the owner's own
+    [Fact]
+    public async Task L2_079_AC5_a_listing_of_another_member_cannot_be_chosen_and_nothing_changes()
+    {
+        var theirs = ListingMother.Public("someone-else");
+        theirs.AssignOwner("member|joanna");
+        await _factory.Arrange(theirs);
+        var naomi = Naomi();
+
+        var refused = await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = theirs.Id });
+        var unknown = await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = Guid.NewGuid() });
+        var extra = await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = _listing.Id, ownerId = "member|naomi" });
+        var visitor = await _factory.CreateClient().PutAsJsonAsync("/api/my-business/current", new { listingId = _listing.Id });
+
+        Assert.Equal(HttpStatusCode.Forbidden, refused.StatusCode);
+        Assert.Equal("FORBIDDEN", (await Json(refused)).GetProperty("code").GetString());
+        Assert.Equal(HttpStatusCode.Forbidden, unknown.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, extra.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, visitor.StatusCode);
+        Assert.Equal("Luzandre.com", (await Json(await naomi.GetAsync("/api/my-business"))).GetProperty("name").GetString());
+        await _factory.WithDb(async db => Assert.Null((await db.Listings.SingleAsync(l => l.Id == theirs.Id)).WorkspaceChosenAt));
+    }
+
+    // ADR 0051: a form opened on one business is not saved onto another after a switch in a second tab
+    [Fact]
+    public async Task L2_087_AC8_a_save_from_an_editor_opened_on_another_business_is_refused()
+    {
+        var second = await SecondListing();
+        var naomi = Naomi();
+        await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = second.Id });
+
+        var stale = await naomi.PutAsJsonAsync("/api/my-business/listing", new
+        {
+            listingId = _listing.Id, version = 0, name = "Luzandre.com", tagline = "Custom church team tees", category = "shops",
+            about = "We print.", where = "Leslieville", hours = "Mon to Fri, 10 to 6", website = "", highlight = "",
+        });
+
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+        Assert.Equal("LISTING_CHANGED", (await Json(stale)).GetProperty("code").GetString());
+        await _factory.WithDb(async db => Assert.Equal("Laurent Photography", (await db.Listings.SingleAsync(l => l.Id == second.Id)).Name));
+    }
+
     // L2-097, L2-133
     [Fact]
     public async Task L2_097_only_the_owner_reaches_the_editor_photos_and_pause()

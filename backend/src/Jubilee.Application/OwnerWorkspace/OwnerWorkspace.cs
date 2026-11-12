@@ -19,6 +19,12 @@ public sealed record NeedsReplyDto(Guid Id, string Kind, string KindLabel, strin
 
 public sealed record MyBusinessSummaryDto(int Products, int SoldOut, int Services, string Verification);
 
+/// <summary>
+/// One entry of the switcher on My business (L2-079 AC4): a listing with its stage, or a draft not yet submitted.
+/// <c>Kind</c> is <c>listing</c> or <c>draft</c>; <c>Current</c> marks the listing the workspace shows.
+/// </summary>
+public sealed record BusinessOptionDto(Guid Id, string Name, string Kind, string StageLabel, bool Current);
+
 /// <summary>What the owner sees on My business (L2-085, L2-086).</summary>
 public sealed record MyBusinessDto(
     string State,
@@ -36,7 +42,11 @@ public sealed record MyBusinessDto(
     IReadOnlyList<NeedsReplyDto> NeedsReply,
     MyBusinessSummaryDto? Summary,
     OwnerVerificationDto? Verification,
-    DateTimeOffset? AwayUntil = null);
+    DateTimeOffset? AwayUntil = null)
+{
+    /// <summary>The owner's listings, oldest first, then their drafts (L2-079 AC4); empty for a member who owns nothing.</summary>
+    public IReadOnlyList<BusinessOptionDto> Businesses { get; init; } = [];
+}
 
 /// <summary>The owner's away period after a change: the instant they are back, or none (L2-062).</summary>
 public sealed record AwayPeriodDto(DateTimeOffset? AwayUntil);
@@ -78,14 +88,36 @@ internal static class Workspace
     public const int MaxHours = 200;
     public static readonly TimeSpan JustApprovedFor = TimeSpan.FromDays(7);
 
-    /// <summary>The owner's listing (the live one first). A caller who owns nothing is refused (L2-097 AC1, L2-133).</summary>
+    /// <summary>
+    /// The listing the owner works on: the one they chose last in the switcher (L2-079 AC5), else the live one, else
+    /// the oldest. A caller who owns nothing is refused (L2-097 AC1, L2-133).
+    /// </summary>
     public static async Task<Listing?> Find(IAppDbContext db, string subject, bool track, CancellationToken cancellationToken)
     {
         var query = track ? db.Listings : db.Listings.AsNoTracking();
-        var owned = (await query.Where(l => l.OwnerId == subject && l.DeletedAt == null).ToListAsync(cancellationToken))
-            .OrderBy(l => l.CreatedAt).ToList();
-        return owned.FirstOrDefault(l => l.Stage == ListingStage.Live) ?? owned.FirstOrDefault();
+        return Current(await OwnedBy(query, subject, cancellationToken));
     }
+
+    /// <summary>The owner's listings, oldest first.</summary>
+    public static async Task<List<Listing>> OwnedBy(IQueryable<Listing> listings, string subject, CancellationToken cancellationToken) =>
+        (await listings.Where(l => l.OwnerId == subject && l.DeletedAt == null).ToListAsync(cancellationToken))
+            .OrderBy(l => l.CreatedAt).ToList();
+
+    public static Listing? Current(IReadOnlyList<Listing> owned) =>
+        owned.Where(l => l.WorkspaceChosenAt is not null).OrderByDescending(l => l.WorkspaceChosenAt).FirstOrDefault()
+            ?? owned.FirstOrDefault(l => l.Stage == ListingStage.Live)
+            ?? owned.FirstOrDefault();
+
+    /// <summary>The stage in the owner's words, as the switcher says it (L2-079 AC4).</summary>
+    public static string StageLabel(Listing listing) => State(listing) switch
+    {
+        "live" => "Live",
+        "paused" => "Paused",
+        "changes-requested" => "Changes requested",
+        "declined" => "Declined",
+        "draft" => "Draft",
+        _ => "Pending verification",
+    };
 
     public static async Task<Listing> Owned(IAppDbContext db, string subject, CancellationToken cancellationToken) =>
         await Find(db, subject, true, cancellationToken)
@@ -169,11 +201,20 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
     public async Task<MyBusinessDto> Handle(GetMyBusinessQuery request, CancellationToken cancellationToken)
     {
         var now = clock.GetUtcNow();
-        var listing = await Workspace.Find(db, request.Subject, false, cancellationToken);
+        var owned = await Workspace.OwnedBy(db.Listings.AsNoTracking(), request.Subject, cancellationToken);
+        var listing = Workspace.Current(owned);
         if (listing is null)
         {
             return new MyBusinessDto("none", null, null, null, null, null, "You haven't listed a business yet", false, null, false, 0, null, [], null, null, null);
         }
+
+        var drafts = (await db.ListingDrafts.AsNoTracking().Where(d => d.OwnerSubject == request.Subject).ToListAsync(cancellationToken))
+            .OrderBy(d => d.CreatedAt);
+        List<BusinessOptionDto> businesses =
+        [
+            .. owned.Select(l => new BusinessOptionDto(l.Id, l.Name, "listing", Workspace.StageLabel(l), l.Id == listing.Id)),
+            .. drafts.Select(d => new BusinessOptionDto(d.Id, string.IsNullOrWhiteSpace(d.Name) ? "Untitled business" : d.Name, "draft", "Draft", false)),
+        ];
 
         var state = Workspace.State(listing);
         var submission = await db.ListingSubmissions.AsNoTracking().SingleOrDefaultAsync(s => s.ListingId == listing.Id, cancellationToken);
@@ -237,7 +278,10 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             needs,
             summary,
             verification,
-            listing.AwayUntil is { } back && back > now ? back : null);
+            listing.AwayUntil is { } back && back > now ? back : null)
+        {
+            Businesses = businesses,
+        };
     }
 
     /// <summary>
@@ -256,6 +300,21 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
     }
 }
 
+/// <summary>The owner chooses which of their businesses the workspace shows (L2-079 AC5). Only their own can be chosen.</summary>
+public sealed record ChooseBusinessCommand(string Subject, Guid ListingId) : IRequest;
+
+public sealed class ChooseBusinessCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<ChooseBusinessCommand>
+{
+    public async Task Handle(ChooseBusinessCommand request, CancellationToken cancellationToken)
+    {
+        var listing = await db.Listings
+            .SingleOrDefaultAsync(l => l.Id == request.ListingId && l.OwnerId == request.Subject && l.DeletedAt == null, cancellationToken)
+            ?? throw new ForbiddenException("FORBIDDEN", "This area is for the owner of the business.");
+        listing.ChooseForWorkspace(clock.GetUtcNow());
+        await db.SaveChangesAsync(cancellationToken);
+    }
+}
+
 public sealed record GetListingEditorQuery(string Subject) : IRequest<ListingEditorDto>;
 
 public sealed class GetListingEditorQueryHandler(IAppDbContext db) : IRequestHandler<GetListingEditorQuery, ListingEditorDto>
@@ -269,7 +328,7 @@ public sealed class GetListingEditorQueryHandler(IAppDbContext db) : IRequestHan
 
 public sealed record SaveListingCommand(
     string Subject, int Version, string? Name, string? Tagline, string? CategorySlug, string? About, string? Where,
-    string? Hours, string? Website, string? Highlight, Onboarding.SpaceInput? Space = null) : IRequest<ListingEditorDto>;
+    string? Hours, string? Website, string? Highlight, Onboarding.SpaceInput? Space = null, Guid? ListingId = null) : IRequest<ListingEditorDto>;
 
 public sealed class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<SaveListingCommand, ListingEditorDto>
 {
@@ -359,7 +418,8 @@ public sealed class SaveListingCommandHandler(IAppDbContext db, TimeProvider clo
             throw new ValidationFailedException(errors);
         }
 
-        if (request.Version != listing.Version)
+        // The editor may say which listing it opened: after a switch in another tab it is not this one (ADR 0051).
+        if (request.Version != listing.Version || (request.ListingId is { } opened && opened != listing.Id))
         {
             throw new ConflictException("LISTING_CHANGED", "This listing changed since you opened it. Reload to see the latest.");
         }

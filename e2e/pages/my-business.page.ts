@@ -27,6 +27,12 @@ export class MyBusinessPage extends ShellPage implements Screen {
   readonly reference: Locator;
   readonly tryAgain: Locator;
   readonly loading: Locator;
+  /** The select that switches between the owner's businesses (L2-079). */
+  readonly switcher: Locator;
+  readonly switcherOptions: Locator;
+  readonly listAnother: Locator;
+  /** "List your business", on the invitation of a member who has none. */
+  readonly listYours: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -52,6 +58,10 @@ export class MyBusinessPage extends ShellPage implements Screen {
     this.reference = this.main.locator('code');
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.loading = this.main.getByRole('status');
+    this.switcher = this.main.getByRole('combobox', { name: 'Business' });
+    this.switcherOptions = this.switcher.getByRole('option');
+    this.listAnother = this.main.getByRole('link', { name: 'List another business' });
+    this.listYours = this.main.getByRole('link', { name: 'List your business' });
   }
 
   stat(label: string | RegExp): Locator {
@@ -66,6 +76,11 @@ export class MyBusinessPage extends ShellPage implements Screen {
   /** The note under the figure: how it moved. */
   statNote(label: string | RegExp): Locator {
     return this.stat(label).locator('.stat__delta');
+  }
+
+  /** Chooses a business in the switcher by the words of its option. */
+  async chooseBusiness(label: string): Promise<void> {
+    await this.switcher.selectOption({ label });
   }
 
   section(name: string | RegExp): Locator {

@@ -37,7 +37,7 @@
       <div jb-empty-state icon="store" heading="List your business free">
         Tell members what you offer, submit it for verification, and you’re live once we approve it.
         It takes about ten minutes.
-        <a slot="actions" jb-button variant="primary" routerLink="/list-business">
+        <a slot="actions" jb-button variant="primary" routerLink="/list">
           <svg jb-icon name="plus"></svg>List your business
         </a>
         <a slot="actions" jb-button routerLink="/help">How verification works</a>
@@ -84,6 +84,27 @@
           ></button>
         </div>
       }
+      <div class="cluster">
+        @if (b.businesses.length > 1) {
+          <label class="visually-hidden" for="business-switcher">Business</label>
+          <select
+            jb-select
+            #switcher
+            id="business-switcher"
+            controlSize="sm"
+            (change)="choose(b, switcher.element)"
+          >
+            @for (option of b.businesses; track option.id) {
+              <option [value]="option.id" [selected]="option.current">
+                {{ option.name }} · {{ option.stageLabel }}
+              </option>
+            }
+          </select>
+        }
+        <a jb-button size="sm" variant="ghost" routerLink="/list" [queryParams]="{ draft: 'new' }">
+          <svg jb-icon name="plus"></svg>List another business
+        </a>
+      </div>
       <jb-workspace-header
         [heading]="b.name!"
         [subtitle]="b.subtitle"

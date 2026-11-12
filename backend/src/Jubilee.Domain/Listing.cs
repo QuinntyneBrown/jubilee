@@ -62,6 +62,14 @@ public sealed class Listing
     /// <summary>When a change of name or category asked the verification team to look again (L2-087 AC6).</summary>
     public DateTimeOffset? RecheckRequestedAt { get; private set; }
 
+    /// <summary>
+    /// When the owner last chose this listing in the switcher of My business (L2-079 AC5); null until they choose.
+    /// The owner's workspace shows the listing chosen last.
+    /// </summary>
+    public DateTimeOffset? WorkspaceChosenAt { get; private set; }
+
+    public void ChooseForWorkspace(DateTimeOffset now) => WorkspaceChosenAt = now;
+
     /// <summary>A listing paused this long needs verifying again before it is public (L2-096 AC4).</summary>
     public static readonly TimeSpan PausedTooLong = TimeSpan.FromDays(365);
 

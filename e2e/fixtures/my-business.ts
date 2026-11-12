@@ -16,6 +16,40 @@ export interface FakePhoto {
   height: number;
 }
 
+/** One entry of the switcher on My business (L2-079 AC4). */
+export interface FakeBusinessOption {
+  id: string;
+  name: string;
+  kind: 'listing' | 'draft';
+  stageLabel: string;
+  current: boolean;
+  /** The state My business shows once this listing is chosen. */
+  state?: string;
+}
+
+export const LUZANDRE = '7c1d0000-0000-4000-8000-000000000001';
+export const LAURENT_PHOTOGRAPHY = '7c1d0000-0000-4000-8000-000000000002';
+export const LAURENT_STUDIO = '7c1d0000-0000-4000-8000-0000000000d1';
+
+/** Naomi's other business, waiting for verification, and a draft she has not submitted. */
+export const OTHER_BUSINESSES: FakeBusinessOption[] = [
+  {
+    id: LAURENT_PHOTOGRAPHY,
+    name: 'Laurent Photography',
+    kind: 'listing',
+    stageLabel: 'Pending verification',
+    current: false,
+    state: 'ready-to-review',
+  },
+  {
+    id: LAURENT_STUDIO,
+    name: 'Laurent Studio',
+    kind: 'draft',
+    stageLabel: 'Draft',
+    current: false,
+  },
+];
+
 export interface FakeBusiness {
   /** `fails` answers the overview with a 503; `forbidden` with a 403. */
   overview: Outcome | 'forbidden';
@@ -33,6 +67,12 @@ export interface FakeBusiness {
   /** The refusal of the next photo upload, by the API's code; null accepts it. */
   photoRefusal: { status: number; code: string } | null;
   state: string;
+  /** The owner's other listings and drafts, after the one the fake describes (L2-079). */
+  others: FakeBusinessOption[];
+  /** How choosing another business is answered. */
+  choose: Outcome;
+  /** The listings chosen in the switcher, in order. */
+  choices: string[];
   paused: boolean;
   justApproved: boolean;
   /** "Saved by members": the members who saved the business, and those who first did so this week (L2-085 AC6). */
@@ -122,6 +162,9 @@ export async function stubMyBusiness(
     resume: 'ok',
     photoRefusal: null,
     state: 'live',
+    others: [],
+    choose: 'ok',
+    choices: [],
     paused: false,
     justApproved: false,
     saved: { value: 28, change: 4 },
@@ -157,7 +200,7 @@ export async function stubMyBusiness(
       }));
 
   const editor = () => ({
-    id: '7c1d0000-0000-4000-8000-000000000001',
+    id: LUZANDRE,
     version: fake.version,
     slug: 'luzandre-com',
     stage: fake.state === 'paused' ? 'live' : fake.state,
@@ -167,6 +210,22 @@ export async function stubMyBusiness(
     photos: photos(),
     recheckRequested: false,
   });
+
+  let current = LUZANDRE;
+  const first = { name: fake.listing.name, state: fake.state };
+  const businesses = (): FakeBusinessOption[] => [
+    {
+      id: LUZANDRE,
+      name: first.name,
+      kind: 'listing',
+      stageLabel: fake.paused && current === LUZANDRE ? 'Paused' : 'Live',
+      current: current === LUZANDRE,
+    },
+    ...fake.others.map(({ state: _state, ...option }) => ({
+      ...option,
+      current: option.id === current,
+    })),
+  ];
 
   const overview = () => {
     if (fake.state === 'none') {
@@ -186,12 +245,14 @@ export async function stubMyBusiness(
         needsReply: [],
         summary: null,
         verification: null,
+        businesses: [],
       };
     }
     const live = fake.state === 'live' || fake.state === 'paused';
     return {
       state: fake.paused ? 'paused' : fake.state,
-      listingId: '7c1d0000-0000-4000-8000-000000000001',
+      listingId: current,
+      businesses: businesses(),
       name: fake.listing.name,
       slug: 'luzandre-com',
       tagline: fake.listing.tagline,
@@ -281,6 +342,17 @@ export async function stubMyBusiness(
     if (fake.overview === 'fails') return route.fulfill(problem(503, { reference: 'JB-BIZ-503' }));
     if (fake.overview === 'forbidden') return route.fulfill(problem(403, { code: 'FORBIDDEN' }));
     return route.fulfill({ json: overview() });
+  });
+
+  await page.route(/\/api\/my-business\/current$/, (route: Route) => {
+    const { listingId } = route.request().postDataJSON() as { listingId: string };
+    fake.choices.push(listingId);
+    if (fake.choose === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
+    const chosen = fake.others.find((option) => option.id === listingId);
+    current = listingId;
+    fake.listing = { ...fake.listing, name: chosen?.name ?? first.name };
+    fake.state = chosen?.state ?? first.state;
+    return route.fulfill({ status: 204 });
   });
 
   await page.route(/\/api\/my-business\/(listing|pause|resume|away|photos.*)$/, (route: Route) => {

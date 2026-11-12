@@ -99,6 +99,7 @@ export type StubName =
   | 'business'
   | 'business-pending'
   | 'business-away'
+  | 'business-switcher'
   | 'business-changes'
   | 'business-empty'
   | 'business-retrying'
@@ -840,6 +841,12 @@ export const routes = {
     mock: 'pages/my-business/away.html',
     who: 'member',
     stub: 'business-away',
+  },
+  'my-business.businesses': {
+    app: '/my-business',
+    mock: 'pages/my-business/businesses.html',
+    who: 'member',
+    stub: 'business-switcher',
   },
   'my-business.pending': {
     app: '/my-business',
