@@ -13,10 +13,11 @@ skinparam class {
 ' --------------------------
 title Class structure — Handle incoming requests
 
-enum RequestType {
+enum RequestKind {
   Booking
   Quote
   Order
+  Space
 }
 
 enum RequestStatus {
@@ -29,95 +30,146 @@ enum RequestStatus {
 
 class Request {
   +Guid Id
-  +RequestType Type
+  +RequestKind Kind
   +RequestStatus Status
-  +Guid MemberId
+  +string MemberSubject
+  +string MemberName
   +Guid ListingId
-  +Guid ConversationId
-  +DeclineReason? DeclineReason
+  +string? ServiceName
+  +string? Note
+  +string? DeclineReason
   +string? DeclineMessage
   +DateTimeOffset CreatedAt
   +DateTimeOffset? NudgedAt
-  +Confirm(actorId: Guid, now: DateTimeOffset): void
-  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
-  +Cancel(actorId: Guid, now: DateTimeOffset): void
-  +Complete(actorId: Guid?, now: DateTimeOffset): void
-  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
-  +MarkNudged(now: DateTimeOffset): void
+  +{static} TimeSpan UndoWindow = 8 seconds
+  +Confirm(actor: string, now: DateTimeOffset): void
+  +UndoConfirm(actor: string, now: DateTimeOffset): void
+  +Decline(actor: string, now: DateTimeOffset, reason: string, message: string): void
+  +Cancel(actor: string, now: DateTimeOffset): void
+  +UndoCancel(actor: string, now: DateTimeOffset): void
+  +Complete(actor: string, now: DateTimeOffset): void
 }
 
 class RequestTransition {
   +Guid Id
-  +RequestStatus? From
+  +RequestStatus From
   +RequestStatus To
-  +Guid? ActorId
-  +DateTimeOffset OccurredAt
+  +string Actor
+  +DateTimeOffset At
   +DateTimeOffset? UndoableUntil
 }
 
 Request "1" *-- "1..*" RequestTransition : records
-Request --> RequestType : has
+Request --> RequestKind : has
 Request --> RequestStatus : has
 
-enum IncomingTab {
-  New
-  Confirmed
-  Declined
-  All
-}
-
 class ListIncomingRequestsQuery {
-  +Guid ListingId
-  +IncomingTab Tab
-  +string? Cursor
+  +string Subject
+  +string? Tab
+  +string? ListingSlug
 }
 
 class ListIncomingRequestsQueryHandler {
-  +int DeclinedRetentionDays = 90
-  +Handle(query: ListIncomingRequestsQuery): Task<IncomingRequestsPageDto>
+  +{static} int PageSize = 50
+  +Handle(query: ListIncomingRequestsQuery): Task<IncomingRequestsDto>
 }
 
-class IncomingRequestsPageDto {
+class IncomingRules <<static>> {
+  +{static} TimeSpan DeclinedKept = 90 days
+  +{static} Owned(db: IAppDbContext, subject: string, slug: string?): Task<Listing>
+  +{static} OwnedRequest(db: IAppDbContext, subject: string, id: Guid): Task<(Request, Listing)>
+  +{static} Invalid(request: Request): ConflictException
+}
+
+class IncomingRequestsDto {
+  +OwnerListingDto Listing
+  +string Tab
+  +RequestCountsDto Counts
+  +bool RepliesFast
   +IReadOnlyList<IncomingRequestRowDto> Rows
-  +IReadOnlyDictionary<IncomingTab, int> Counts
-  +string? NextCursor
+}
+
+class OwnerListingDto {
+  +string Name
+  +string Slug
+  +bool Verified
+}
+
+class RequestCountsDto {
+  +int New
+  +int Confirmed
+  +int Declined
+  +int All
 }
 
 class IncomingRequestRowDto {
   +Guid Id
-  +string CustomerInitials
+  +string Kind
+  +string KindLabel
   +string CustomerName
+  +string CustomerInitials
   +string Title
-  +RequestType Type
+  +string Detail
   +DateTimeOffset SentAt
-  +string Summary
-  +RequestStatus Status
+  +string Status
+  +string StatusLabel
+  +string? Total
+  +string? When
 }
 
-class ResponseTimeCalculator {
-  +int WindowDays = 30
-  +int MinimumResponses = 3
-  +Compute(listingId: Guid, now: DateTimeOffset): ResponseTimeStat
+class ResponseTimeBadgeJob {
+  #ExecuteAsync(stoppingToken: CancellationToken): Task
+}
+
+class RunResponseTimeBadgeJobCommand
+
+class ScheduledJobs {
+  +RunOnceAsync(job: string, every: TimeSpan, work): Task<bool>
+  +LastSuccessAsync(job: string): Task<DateTimeOffset?>
+}
+
+class JobRun {
+  +string Job
+  +DateTimeOffset Occurrence
+  +DateTimeOffset ClaimedAt
+  +DateTimeOffset? SucceededAt
+  +{static} OccurrenceOf(now: DateTimeOffset, every: TimeSpan): DateTimeOffset
+  +{static} Claim(job: string, occurrence: DateTimeOffset, now: DateTimeOffset): JobRun
+  +Succeed(now: DateTimeOffset)
+}
+
+class RecomputeResponseTimesCommand
+
+class RecomputeResponseTimesCommandHandler {
+  +Handle(command: RecomputeResponseTimesCommand): Task<int>
 }
 
 class ResponseTimeStat {
+  +{static} TimeSpan Window = 30 days
+  +{static} TimeSpan FastUnder = 24 hours
+  +{static} int MinimumResponses = 3
   +Guid ListingId
   +TimeSpan? MedianFirstResponse
   +int ResponseCount
   +bool RepliesFast
   +DateTimeOffset ComputedAt
-}
-
-class ResponseTimeBadgeJob {
-  +ExecuteAsync(stoppingToken: CancellationToken): Task
+  +{static} Compute(listingId: Guid, responses: IReadOnlyList<TimeSpan>, now: DateTimeOffset): ResponseTimeStat
+  +Set(responses: IReadOnlyList<TimeSpan>, now: DateTimeOffset): void
 }
 
 ListIncomingRequestsQueryHandler ..> ListIncomingRequestsQuery : handles
-ListIncomingRequestsQuery --> IncomingTab : filters by
-ListIncomingRequestsQueryHandler ..> IncomingRequestsPageDto : returns
-IncomingRequestsPageDto "1" *-- "*" IncomingRequestRowDto : contains
+ListIncomingRequestsQueryHandler ..> IncomingRules : finds the owned listing with
+ListIncomingRequestsQueryHandler ..> IncomingRequestsDto : returns
+IncomingRequestsDto "1" *-- "1" OwnerListingDto : names
+IncomingRequestsDto "1" *-- "1" RequestCountsDto : counts
+IncomingRequestsDto "1" *-- "*" IncomingRequestRowDto : contains
 ListIncomingRequestsQueryHandler ..> Request : reads
-ResponseTimeBadgeJob ..> ResponseTimeCalculator : uses
-ResponseTimeCalculator ..> RequestTransition : reads first owner transition
-ResponseTimeCalculator ..> ResponseTimeStat : produces
+ListIncomingRequestsQueryHandler ..> ResponseTimeStat : reads RepliesFast
+ResponseTimeBadgeJob ..> RunResponseTimeBadgeJobCommand : sends every ten minutes
+RunResponseTimeBadgeJobCommand ..> ScheduledJobs : runs once through
+ScheduledJobs --> JobRun : claims and completes
+ScheduledJobs ..> RecomputeResponseTimesCommand : sends
+RecomputeResponseTimesCommandHandler ..> RecomputeResponseTimesCommand : handles
+RecomputeResponseTimesCommandHandler ..> RequestTransition : reads first owner transition
+RecomputeResponseTimesCommandHandler --> ResponseTimeStat : computes and sets
 @enduml

@@ -247,10 +247,13 @@
             </p>
           }
           <p class="lead">{{ listing.tagline }}</p>
-          @if (listing.credentials.length) {
+          @if (listing.credentials.length || listing.repliesFast) {
             <div class="cluster" style="gap: var(--space-2)">
               @for (credential of listing.credentials; track $index) {
                 <span jb-tag>{{ credential }}</span>
+              }
+              @if (listing.repliesFast) {
+                <span jb-badge tone="success">Replies fast</span>
               }
             </div>
           }

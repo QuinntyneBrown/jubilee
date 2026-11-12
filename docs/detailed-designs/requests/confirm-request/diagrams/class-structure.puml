@@ -13,10 +13,11 @@ skinparam class {
 ' --------------------------
 title Class structure — Confirm a request
 
-enum RequestType {
+enum RequestKind {
   Booking
   Quote
   Order
+  Space
 }
 
 enum RequestStatus {
@@ -29,90 +30,136 @@ enum RequestStatus {
 
 class Request {
   +Guid Id
-  +RequestType Type
+  +RequestKind Kind
   +RequestStatus Status
-  +Guid MemberId
+  +string MemberSubject
+  +string MemberName
   +Guid ListingId
-  +Guid ConversationId
-  +DeclineReason? DeclineReason
-  +string? DeclineMessage
+  +Guid? ServiceId
+  +string? ServiceName
+  +string? OptionLabel
+  +int? Quantity
+  +int? TotalCents
   +DateTimeOffset CreatedAt
-  +DateTimeOffset? NudgedAt
-  +Confirm(actorId: Guid, now: DateTimeOffset): void
-  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
-  +Cancel(actorId: Guid, now: DateTimeOffset): void
-  +Complete(actorId: Guid?, now: DateTimeOffset): void
-  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
-  +MarkNudged(now: DateTimeOffset): void
+  +{static} TimeSpan UndoWindow = 8 seconds
+  +Confirm(actor: string, now: DateTimeOffset): void
+  +UndoConfirm(actor: string, now: DateTimeOffset): void
+  +Decline(actor: string, now: DateTimeOffset, reason: string, message: string): void
+  +Cancel(actor: string, now: DateTimeOffset): void
+  +UndoCancel(actor: string, now: DateTimeOffset): void
+  +Complete(actor: string, now: DateTimeOffset): void
 }
 
 class RequestTransition {
   +Guid Id
-  +RequestStatus? From
+  +RequestStatus From
   +RequestStatus To
-  +Guid? ActorId
-  +DateTimeOffset OccurredAt
+  +string Actor
+  +DateTimeOffset At
   +DateTimeOffset? UndoableUntil
 }
 
 Request "1" *-- "1..*" RequestTransition : records
-Request --> RequestType : has
+Request --> RequestKind : has
 Request --> RequestStatus : has
 
 class InvalidTransitionException {
   +RequestStatus From
-  +string Attempted
-  +string Code = "INVALID_TRANSITION"
+  +RequestStatus To
+}
+
+class ConflictException {
+  +string Code
+  +IReadOnlyDictionary<string, string> Facts
+}
+
+class IncomingRules <<static>> {
+  +{static} OwnedRequest(db: IAppDbContext, subject: string, id: Guid): Task<(Request, Listing)>
+  +{static} Invalid(request: Request): ConflictException
+  +{static} TellCustomer(...): void
+  +{static} QueueEmail(...): Task
 }
 
 class ConfirmRequestCommand {
+  +string Subject
   +Guid RequestId
-  +Guid ActorId
 }
 
 class ConfirmRequestCommandHandler {
-  +Handle(command: ConfirmRequestCommand): Task<ConfirmResult>
+  +Handle(command: ConfirmRequestCommand): Task<RequestDecisionDto>
+  +{static} ConfirmedKey(requestId: Guid): string
 }
 
-class ConfirmResult {
-  +RequestStatus Status
-  +DateTimeOffset UndoableUntil
+class RequestDecisionDto {
+  +Guid Id
+  +string Status
+  +string StatusLabel
+  +string Kind
+  +string CustomerFirstName
+  +DateTimeOffset? UndoUntil
 }
 
 class UndoConfirmRequestCommand {
+  +string Subject
   +Guid RequestId
-  +Guid ActorId
 }
 
 class UndoConfirmRequestCommandHandler {
-  +Handle(command: UndoConfirmRequestCommand): Task<RequestStatus>
+  +Handle(command: UndoConfirmRequestCommand): Task<RequestDecisionDto>
 }
 
 class Product {
   +Guid Id
-  +int Stock
-  +ReduceStock(optionId: Guid?, quantity: int): void
-  +RestoreStock(optionId: Guid?, quantity: int): void
+  +string Name
+  +int? Stock
+  +ReduceStock(optionLabel: string?, quantity: int): void
+  +RestoreStock(optionLabel: string?, quantity: int): StockChange
+}
+
+class InsufficientStockException {
+  +int Available
+  +int Requested
 }
 
 class OutboxMessage {
   +Guid Id
-  +string Type
-  +string Payload
-  +DateTimeOffset? NotBefore
-  +DateTimeOffset? DispatchedAt
-  +DateTimeOffset? CancelledAt
-  +Cancel(now: DateTimeOffset): bool
+  +string ToAddress
+  +string Subject
+  +string TextBody
+  +DateTimeOffset NextAttemptAt
+  +DateTimeOffset? SentAt
+  +DateTimeOffset? FailedAt
+  +Guid? CorrelationId
+  +{static} Email(...): OutboxMessage
+  +IsDue(now: DateTimeOffset): bool
+}
+
+class Notification {
+  +string MemberSubject
+  +string Kind
+  +string Title
+  +string Detail
+  +string Target
+  +DateTimeOffset? ReadAt
+  +Guid? CorrelationId
 }
 
 Request ..> InvalidTransitionException : throws
+Product ..> InsufficientStockException : throws
+IncomingRules ..> ConflictException : builds INVALID_TRANSITION
 ConfirmRequestCommandHandler ..> ConfirmRequestCommand : handles
+ConfirmRequestCommandHandler ..> IncomingRules : finds the owned request with
 ConfirmRequestCommandHandler --> Request : calls Confirm
 ConfirmRequestCommandHandler --> Product : reduces stock
-ConfirmRequestCommandHandler ..> ConfirmResult : returns
-ConfirmRequestCommandHandler ..> OutboxMessage : writes
+ConfirmRequestCommandHandler ..> ConflictException : throws INSUFFICIENT_STOCK
+ConfirmRequestCommandHandler ..> RequestDecisionDto : returns
+ConfirmRequestCommandHandler ..> OutboxMessage : queues with the undo window as delay
+ConfirmRequestCommandHandler ..> Notification : tells the customer with
 UndoConfirmRequestCommandHandler ..> UndoConfirmRequestCommand : handles
-UndoConfirmRequestCommandHandler --> Request : calls UndoLastTransition
+UndoConfirmRequestCommandHandler ..> IncomingRules : finds the owned request with
+UndoConfirmRequestCommandHandler --> Request : calls UndoConfirm
 UndoConfirmRequestCommandHandler --> Product : restores stock
-UndoConfirmRequestCommandHandler ..> OutboxMessage : cancels pending
+UndoConfirmRequestCommandHandler ..> RequestDecisionDto : returns
+UndoConfirmRequestCommandHandler ..> OutboxMessage : removes unsent
+UndoConfirmRequestCommandHandler ..> Notification : removes unread
 @enduml

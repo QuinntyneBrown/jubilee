@@ -27,6 +27,7 @@ export type StubName =
   | 'business-edge'
   | 'business-owner'
   | 'business-preview'
+  | 'business-replies-fast'
   | 'shop-loading'
   | 'shop-error'
   | 'shop-empty'
@@ -594,6 +595,12 @@ export const routes = {
     mock: 'pages/business/preview.html',
     who: 'member',
     stub: 'business-preview',
+  },
+  'business.replies-fast': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/replies-fast.html',
+    who: 'member',
+    stub: 'business-replies-fast',
   },
   'space.short-stay': {
     app: '/b/roncesvalles-guest-suite',

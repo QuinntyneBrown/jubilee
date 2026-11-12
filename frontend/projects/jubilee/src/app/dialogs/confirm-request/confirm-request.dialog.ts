@@ -14,8 +14,23 @@ import {
   Price,
 } from 'components';
 
+/**
+ * How a confirmation ended when its dialog was already closed (L2-052 AC5, AC7): confirmed, or not,
+ * with the server's sentence when the request can no longer be confirmed.
+ */
+export type LateConfirmation =
+  { confirmed: true; decision: RequestDecision } | { confirmed: false; conflict: string | null };
+
 export interface ConfirmRequestData {
   request: IncomingRequestRow;
+  /** Told the answer when the dialog was closed before it came, so it is still reported. */
+  settled?: (outcome: LateConfirmation) => void;
+}
+
+/** What the server said when a request can no longer be answered, such as a cancellation; null for any other failure. */
+export function requestConflict(error: unknown): string | null {
+  if (!(error instanceof HttpErrorResponse) || error.status !== 409) return null;
+  return (error.error as { detail?: string } | null)?.detail ?? 'This request has changed.';
 }
 
 type View = 'form' | 'busy' | 'failed' | 'conflict';
@@ -54,7 +69,10 @@ export function requestNoun(kind: IncomingRequestRow['kind']): string {
 export class ConfirmRequestDialog {
   private readonly ref = inject<DialogRef<RequestDecision>>(DialogRef);
   private readonly api = inject(INCOMING_REQUESTS_API);
-  protected readonly request = inject<ConfirmRequestData>(DIALOG_DATA).request;
+  private readonly data = inject<ConfirmRequestData>(DIALOG_DATA);
+  protected readonly request = this.data.request;
+  /** False once the dialog is closed; Escape closes it even while the answer is on its way. */
+  private open = true;
 
   protected readonly view = signal<View>('form');
   /** What the server said when the request can no longer be confirmed, such as a cancellation. */
@@ -69,16 +87,26 @@ export class ConfirmRequestDialog {
     ? `Only confirm if the space is free then. ${this.firstName} gets your exact address when you confirm.`
     : `Only confirm if you can fulfil “${this.request.title}”.`;
 
+  constructor() {
+    this.ref.closed.subscribe(() => (this.open = false));
+  }
+
   protected confirm(): void {
     if (this.busy()) return;
     this.view.set('busy');
     this.api.confirm(this.request.id).subscribe({
-      next: (decision) => this.ref.close(decision),
+      next: (decision) => {
+        if (this.open) this.ref.close(decision);
+        else this.data.settled?.({ confirmed: true, decision });
+      },
       error: (error: unknown) => {
-        if (error instanceof HttpErrorResponse && error.status === 409) {
-          this.conflict.set(
-            (error.error as { detail?: string } | null)?.detail ?? 'This request has changed.',
-          );
+        const conflict = requestConflict(error);
+        if (!this.open) {
+          this.data.settled?.({ confirmed: false, conflict });
+          return;
+        }
+        if (conflict !== null) {
+          this.conflict.set(conflict);
           this.view.set('conflict');
           return;
         }

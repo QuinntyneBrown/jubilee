@@ -632,6 +632,26 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("FeedbackScreenshots", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.JobRun", b =>
+                {
+                    b.Property<string>("Job")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTimeOffset>("Occurrence")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("ClaimedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("SucceededAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Job", "Occurrence");
+
+                    b.ToTable("JobRuns", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.LaunchSubscriber", b =>
                 {
                     b.Property<Guid>("Id")

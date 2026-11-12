@@ -25,16 +25,26 @@ export interface FakeIncoming {
   list: Outcome | 'forbidden' | 'empty';
   /** `cancelled` answers as if the customer had cancelled a moment earlier (409). */
   confirm: Outcome | 'cancelled';
+  /** How long the confirm takes to answer, so a test can close the dialog first. */
+  confirmDelayMs: number;
   undo: Outcome;
-  decline: Outcome;
+  /** `cancelled` answers as if the customer had cancelled a moment earlier (409). */
+  decline: Outcome | 'cancelled';
+  /**
+   * The event stream (L2-070): `ok` answers with what arrived since the browser last asked and is asked
+   * again at once, as a stream that stays up; `down` refuses every attempt to connect.
+   */
+  stream: 'ok' | 'down';
   repliesFast: boolean;
   rows: FakeRow[];
   listRequests: string[];
   confirms: string[];
   undos: string[];
   declines: { id: string; reason: string; message: string }[];
-  /** Adds a new request, as if a member had just sent one. */
+  /** Adds a new request, as if a member had just sent one: the owner's notification goes down the stream. */
   arrive: (row?: Partial<FakeRow>) => FakeRow;
+  /** The customer cancels a request, as the stream tells the owner. */
+  cancel: (id: string) => void;
 }
 
 export const naomi = {
@@ -110,11 +120,30 @@ export async function stubIncoming(
   member = naomi,
 ): Promise<FakeIncoming> {
   let arrivals = 0;
+  let ticks = 1_000;
+  const events: { id: string; item: object }[] = [];
+  const tell = (title: string, detail: string) => {
+    ticks += 1;
+    events.push({
+      id: String(ticks),
+      item: {
+        id: `c3000000-0000-4000-8000-0000000${ticks}`,
+        kind: 'request',
+        title,
+        detail,
+        target: '/my-business/requests',
+        at: NOW,
+        read: false,
+      },
+    });
+  };
   const fake: FakeIncoming = {
     list: 'ok',
     confirm: 'ok',
+    confirmDelayMs: 0,
     undo: 'ok',
     decline: 'ok',
+    stream: 'ok',
     repliesFast: false,
     rows: seedRows(),
     listRequests: [],
@@ -139,7 +168,13 @@ export async function stubIncoming(
         ...extra,
       };
       fake.rows.unshift(row);
+      tell(`New ${row.kindLabel.toLowerCase()} request from ${row.customerName}`, row.title);
       return row;
+    },
+    cancel: (id) => {
+      const row = fake.rows.find((item) => item.id === id)!;
+      fake.rows.splice(fake.rows.indexOf(row), 1);
+      tell(`${row.customerName} cancelled their request`, row.title);
     },
     ...initial,
   };
@@ -147,19 +182,34 @@ export async function stubIncoming(
   const count = (label?: string) =>
     fake.rows.filter((row) => !label || row.statusLabel === label).length;
 
+  const navigation = () => ({
+    unreadConversationCount: 2,
+    unreadNotificationCount: 3,
+    newRequestCount: count('New'),
+    ownsListing: true,
+    isVerifier: false,
+    verificationCount: 0,
+  });
+
   await page.route('**/api/session', (r) => r.fulfill({ json: member }));
-  await page.route('**/api/me/navigation', (r) =>
-    r.fulfill({
-      json: {
-        unreadConversationCount: 2,
-        unreadNotificationCount: 3,
-        newRequestCount: count('New'),
-        ownsListing: true,
-        isVerifier: false,
-        verificationCount: 0,
-      },
-    }),
-  );
+  await page.route('**/api/me/navigation', (r) => r.fulfill({ json: navigation() }));
+
+  // The stream is asked again soon after every answer, as a browser does, and says what it last received.
+  await page.route('**/api/events', (route: Route) => {
+    if (fake.stream === 'down') return route.abort('connectionrefused');
+    const last = route.request().headers()['last-event-id'];
+    const frames = events
+      .filter((entry) => last === undefined || Number(entry.id) > Number(last))
+      .map(
+        (entry) => `id: ${entry.id}\nevent: notification\ndata: ${JSON.stringify(entry.item)}\n\n`,
+      )
+      .join('');
+    return route.fulfill({
+      status: 200,
+      contentType: 'text/event-stream',
+      body: `: connected\nretry: 300\n\n${frames}event: counts\ndata: ${JSON.stringify(navigation())}\n\n`,
+    });
+  });
 
   const decision = (row: FakeRow, label: string) => ({
     id: row.id,
@@ -170,7 +220,7 @@ export async function stubIncoming(
     undoUntil: null,
   });
 
-  await page.route('**/api/my-business/requests**', (route: Route) => {
+  await page.route('**/api/my-business/requests**', async (route: Route) => {
     const request = route.request();
     const url = new URL(request.url());
     const parts = url.pathname.split('/').filter(Boolean).slice(3); // after api/my-business/requests
@@ -212,6 +262,7 @@ export async function stubIncoming(
       return route.fulfill({ json: decision(row, 'New') });
     }
     if (action === 'confirm') {
+      if (fake.confirmDelayMs) await new Promise((done) => setTimeout(done, fake.confirmDelayMs));
       if (fake.confirm === 'cancelled') {
         row.statusLabel = 'Declined';
         return route.fulfill(
@@ -228,6 +279,16 @@ export async function stubIncoming(
     }
     const body = request.postDataJSON() as { reason: string; message: string };
     if (fake.decline === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
+    if (fake.decline === 'cancelled') {
+      fake.rows.splice(fake.rows.indexOf(row), 1);
+      return route.fulfill(
+        problem(409, {
+          code: 'INVALID_TRANSITION',
+          detail: `${row.customerName} cancelled this request.`,
+          requestStatus: 'cancelled',
+        }),
+      );
+    }
     fake.declines.push({ id, reason: body.reason, message: body.message });
     row.statusLabel = 'Declined';
     return route.fulfill({ json: decision(row, 'Declined') });

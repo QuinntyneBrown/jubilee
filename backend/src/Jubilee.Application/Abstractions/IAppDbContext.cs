@@ -78,6 +78,9 @@ public interface IAppDbContext
     DbSet<AuditRecord> AuditRecords { get; }
 
     DbSet<ResponseTimeStat> ResponseTimeStats { get; }
+
+    DbSet<JobRun> JobRuns { get; }
+
     DbSet<MemberSession> Sessions { get; }
 
     DbSet<SignInFailure> SignInFailures { get; }

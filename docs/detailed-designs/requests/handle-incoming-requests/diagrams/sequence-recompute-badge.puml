@@ -18,34 +18,55 @@ box "Backend — Jubilee Worker" #D1FADF
   participant "ResponseTimeBadgeJob" as job
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "ResponseTimeCalculator" as calc
+  participant "ScheduledJobs" as once
+  participant "RecomputeResponseTimesCommandHandler" as calc
   participant "ResponseTimeStat" as stat
+  participant "ResponseTimes" as fast
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "BusinessCard" as card
+  participant "BusinessPage and BusinessCard" as card
 end box
 actor "Member" as member
-job -> job : Start at least hourly, at most once per schedule across instances (L2-182)
-job -> db : Read live listings
-db --> job : Listings
-loop each listing
-  job -> calc : Compute(listingId, now)
-  calc -> db : Read first responses to requests and messages in the last 30 days
-  db --> calc : Response times
-  calc -> calc : Take the median and the count
-  alt median under 24 hours and at least 3 responses
-    calc -> stat : RepliesFast = true (L2-054)
-  else median 24 hours or more, or fewer than 3 responses
-    calc -> stat : RepliesFast = false (L2-054)
+job -> job : Tick every ten minutes
+job -> once : Send RunResponseTimeBadgeJobCommand; RunOnceAsync for this job and the start of the hour in UTC (L2-182)
+once -> db : Insert JobRun with key (Job, Occurrence) and ClaimedAt
+alt another instance already claimed the hour
+  db --> once : Row found, or the insert refused by the key
+  once --> job : Nothing done
+else this instance claims the hour
+  db --> once : JobRun inserted
+  once -> calc : Send RecomputeResponseTimesCommand
+  calc -> db : Read live listings, requests with transitions, conversations, messages and stats
+  db --> calc : Stored data
+  loop each live listing
+    calc -> calc : Gather first responses to requests and messages in the last 30 days
+    calc -> stat : Set(responses, now), or Compute for a listing without a stat
+    stat -> stat : Take the median and the count
+    alt median under 24 hours and at least 3 responses
+      stat --> calc : RepliesFast = true (L2-054)
+    else median 24 hours or more, or fewer than 3 responses
+      stat --> calc : RepliesFast = false (L2-054)
+    end
   end
-  stat --> calc : Stat
-  calc --> job : ResponseTimeStat
+  calc -> db : Save stats in one SaveChangesAsync
+  db --> calc : Commit result
+  alt the work ended
+    calc --> once : Count of listings
+    once -> db : Set SucceededAt on the JobRun, the job's last success (L2-182)
+    once --> job : Done
+  else the work threw
+    calc --> once : Exception
+    once -> once : Leave the JobRun without SucceededAt; the next hour runs again
+    once --> job : Exception, logged
+  end
 end
-job -> db : Save stats and record the last success
-db --> job : Commit result
-member -> card : View a listing
-card --> member : Show "Replies fast" badge when RepliesFast is true
+member -> card : View a business page or a business card
+card -> fast : repliesFast of BusinessCardDto or ListingPageDto, read through FastListings
+fast -> db : Read ResponseTimeStat
+db --> fast : Listings that reply fast
+fast --> card : repliesFast
+card --> member : Show the jb-badge "Replies fast" when repliesFast is true; nothing for a space
 @enduml

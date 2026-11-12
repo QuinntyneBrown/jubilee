@@ -19,12 +19,19 @@ import {
   DialogBody,
   DialogFooter,
 } from 'components';
-import { requestNoun } from '../confirm-request/confirm-request.dialog';
+import { requestConflict, requestNoun } from '../confirm-request/confirm-request.dialog';
 import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface DeclineRequestData {
   request: IncomingRequestRow;
 }
+
+/** The request could no longer be declined (L2-053 AC6): what the server said, such as a cancellation. */
+export interface DeclineConflict {
+  conflict: string;
+}
+
+export type DeclineResult = RequestDecision | DeclineConflict;
 
 type View = 'form' | 'busy' | 'failed';
 
@@ -50,7 +57,7 @@ const MAX_MESSAGE = 1000;
   templateUrl: './decline-request.dialog.html',
 })
 export class DeclineRequestDialog {
-  private readonly ref = inject<DialogRef<RequestDecision>>(DialogRef);
+  private readonly ref = inject<DialogRef<DeclineResult>>(DialogRef);
   private readonly api = inject(INCOMING_REQUESTS_API);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly request = inject<DeclineRequestData>(DIALOG_DATA).request;
@@ -78,7 +85,12 @@ export class DeclineRequestDialog {
     this.view.set('busy');
     this.api.decline(this.request.id, this.reason(), message).subscribe({
       next: (decision) => this.ref.close(decision),
-      error: () => this.view.set('failed'),
+      error: (error: unknown) => {
+        // The request is no longer new: there is nothing left to decline or to try again (L2-053 AC6).
+        const conflict = requestConflict(error);
+        if (conflict !== null) this.ref.close({ conflict });
+        else this.view.set('failed');
+      },
     });
   }
 

@@ -55,7 +55,9 @@
     </div>
   </form>
   <div jb-dialog-footer>
-    <button jb-button type="button" [disabled]="busy()" (click)="close()">Keep request</button>
+    <button jb-button type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
+      Keep request
+    </button>
     <button
       jb-button
       variant="danger"

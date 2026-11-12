@@ -17,17 +17,22 @@ public sealed record BusinessCardDto(
     string? Highlight,
     string CategorySlug,
     bool Verified,
-    string? CoverPhoto)
+    string? CoverPhoto,
+    bool RepliesFast)
 {
-    /// <summary><c>Verified</c> comes from <see cref="VerifiedListingSpecification"/> (L2-111).</summary>
-    public static BusinessCardDto From(Listing listing) => new(
+    /// <summary>
+    /// <c>Verified</c> comes from <see cref="VerifiedListingSpecification"/> (L2-111). <paramref name="fast"/> holds the
+    /// listings that carry the "Replies fast" badge (L2-054 AC1); a space never does (AC3).
+    /// </summary>
+    public static BusinessCardDto From(Listing listing, IReadOnlySet<Guid> fast) => new(
         listing.Slug,
         listing.Name,
         listing.Tagline,
         listing.Highlight,
         listing.CategorySlug,
         VerifiedListingSpecification.IsSatisfiedBy(listing),
-        CoverPhoto: null); // Photo upload arrives with the listing form; cards show the category tile.
+        CoverPhoto: null, // Photo upload arrives with the listing form; cards show the category tile.
+        RepliesFast: listing.Kind != ListingKind.Space && fast.Contains(listing.Id));
 }
 
 /// <summary>

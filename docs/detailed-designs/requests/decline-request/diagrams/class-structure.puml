@@ -13,10 +13,11 @@ skinparam class {
 ' --------------------------
 title Class structure — Decline a request
 
-enum RequestType {
+enum RequestKind {
   Booking
   Quote
   Order
+  Space
 }
 
 enum RequestStatus {
@@ -29,86 +30,125 @@ enum RequestStatus {
 
 class Request {
   +Guid Id
-  +RequestType Type
+  +RequestKind Kind
   +RequestStatus Status
-  +Guid MemberId
+  +string MemberSubject
+  +string MemberName
   +Guid ListingId
-  +Guid ConversationId
-  +DeclineReason? DeclineReason
+  +string? DeclineReason
   +string? DeclineMessage
   +DateTimeOffset CreatedAt
-  +DateTimeOffset? NudgedAt
-  +Confirm(actorId: Guid, now: DateTimeOffset): void
-  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
-  +Cancel(actorId: Guid, now: DateTimeOffset): void
-  +Complete(actorId: Guid?, now: DateTimeOffset): void
-  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
-  +MarkNudged(now: DateTimeOffset): void
+  +{static} int MaxNoteLength = 1000
+  +{static} string[] DeclineReasons
+  +Confirm(actor: string, now: DateTimeOffset): void
+  +UndoConfirm(actor: string, now: DateTimeOffset): void
+  +Decline(actor: string, now: DateTimeOffset, reason: string, message: string): void
+  +Cancel(actor: string, now: DateTimeOffset): void
+  +UndoCancel(actor: string, now: DateTimeOffset): void
+  +Complete(actor: string, now: DateTimeOffset): void
 }
 
 class RequestTransition {
   +Guid Id
-  +RequestStatus? From
+  +RequestStatus From
   +RequestStatus To
-  +Guid? ActorId
-  +DateTimeOffset OccurredAt
+  +string Actor
+  +DateTimeOffset At
   +DateTimeOffset? UndoableUntil
 }
 
 Request "1" *-- "1..*" RequestTransition : records
-Request --> RequestType : has
+Request --> RequestKind : has
 Request --> RequestStatus : has
-
-enum DeclineReason {
-  CantMeetDate
-  OutOfStock
-  OutsideOffer
-  SomethingElse
-}
 
 class InvalidTransitionException {
   +RequestStatus From
-  +string Attempted
-  +string Code = "INVALID_TRANSITION"
+  +RequestStatus To
+}
+
+class ConflictException {
+  +string Code
+  +IReadOnlyDictionary<string, string>? Facts
+}
+
+class ValidationFailedException {
+  +IReadOnlyDictionary<string, string> Errors
+}
+
+class IncomingRules <<static>> {
+  +{static} OwnedRequest(db: IAppDbContext, subject: string, id: Guid): Task<(Request, Listing)>
+  +{static} Invalid(request: Request): ConflictException
+  +{static} TellCustomer(...): void
+  +{static} QueueEmail(...): Task
+}
+
+class DeclineRequestBody {
+  +string? Reason
+  +string? Message
 }
 
 class DeclineRequestCommand {
+  +string Subject
   +Guid RequestId
-  +Guid ActorId
-  +DeclineReason Reason
-  +string Message
-}
-
-class DeclineRequestCommandValidator {
-  +int MessageMaxLength = 1000
-  +Validate(command: DeclineRequestCommand): ValidationResult
+  +string? Reason
+  +string? Message
 }
 
 class DeclineRequestCommandHandler {
-  +Handle(command: DeclineRequestCommand): Task<RequestStatus>
+  +Handle(command: DeclineRequestCommand): Task<RequestDecisionDto>
 }
 
-class RequestDeclinedEvent {
-  +Guid RequestId
-  +Guid MemberId
-  +DeclineReason Reason
-  +string Message
+class RequestDecisionDto {
+  +Guid Id
+  +string Status
+  +string StatusLabel
+  +string Kind
+  +string CustomerFirstName
+  +DateTimeOffset? UndoUntil
 }
 
 class Conversation {
   +Guid Id
-  +Guid MemberId
   +Guid ListingId
-  +AppendRequestCard(request: Request, text: string?, now: DateTimeOffset): void
+  +string MemberSubject
+  +{static} Start(...): Conversation
 }
 
-Request --> DeclineReason : has
+class Message {
+  +Guid ConversationId
+  +bool FromOwner
+  +string? IdempotencyKey
+  +{static} Send(...): Message
+}
+
+class Notification {
+  +string MemberSubject
+  +string Kind
+  +string Title
+  +string Detail
+  +string Target
+  +Guid? CorrelationId
+}
+
+class OutboxMessage {
+  +Guid Id
+  +string ToAddress
+  +string Subject
+  +string TextBody
+  +DateTimeOffset NextAttemptAt
+  +Guid? CorrelationId
+}
+
 Request ..> InvalidTransitionException : throws
-Request "*" --> "1" Conversation : linked to
+IncomingRules ..> ConflictException : builds INVALID_TRANSITION
+DeclineRequestBody ..> DeclineRequestCommand : becomes
 DeclineRequestCommandHandler ..> DeclineRequestCommand : handles
-DeclineRequestCommandValidator ..> DeclineRequestCommand : validates
-DeclineRequestCommand --> DeclineReason : carries
+DeclineRequestCommandHandler ..> IncomingRules : finds the owned request with
+DeclineRequestCommandHandler ..> ValidationFailedException : throws for reason or message
 DeclineRequestCommandHandler --> Request : calls Decline
-DeclineRequestCommandHandler --> Conversation : appends decline card
-DeclineRequestCommandHandler ..> RequestDeclinedEvent : writes to outbox
+DeclineRequestCommandHandler ..> RequestDecisionDto : returns
+DeclineRequestCommandHandler --> Message : writes the decline message
+Conversation "1" *-- "*" Message : holds
+DeclineRequestCommandHandler ..> Notification : tells the customer with
+DeclineRequestCommandHandler ..> OutboxMessage : queues the e-mail
 @enduml

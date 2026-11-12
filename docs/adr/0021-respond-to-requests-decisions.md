@@ -1,6 +1,6 @@
 # 0021. Respond to requests decisions
 
-Status: accepted
+Status: accepted, amended by 0050
 
 ## Context
 
@@ -26,6 +26,8 @@ An owner confirms or declines the requests members send (L2-051 to L2-053), and 
 - L2-052 AC5: the danger toast "Couldn't confirm the order" when the dialog was closed; the dialog stays open on failure and offers "Try again".
 - Showing the "replies fast" badge on the public listing and cards (journey 15 reads `RepliesFast`).
 - The `declined` tab's mock (no-results) has no route of its own; the tab is reached by choosing it.
+
+The third and fourth deferrals, and the bullet "New requests reach the page by polling", are closed by ADR 0050. The first two have landed since: the Requests count on My business, and the confirmation card and the in-app notification (ADR 0025).
 
 ## Consequences
 

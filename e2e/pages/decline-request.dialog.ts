@@ -11,7 +11,7 @@ export class DeclineRequestDialog {
   readonly keep: Locator;
   readonly decline: Locator;
 
-  constructor(page: Page) {
+  constructor(private readonly page: Page) {
     this.root = page.getByRole('dialog');
     this.title = this.root.locator('.dialog__title');
     this.reason = this.root.getByRole('combobox', { name: 'Reason' });
@@ -20,5 +20,10 @@ export class DeclineRequestDialog {
     this.alert = this.root.getByRole('alert');
     this.keep = this.root.getByRole('button', { name: 'Keep request' });
     this.decline = this.root.getByRole('button', { name: 'Decline request' });
+  }
+
+  /** Closes the dialog with the keyboard. */
+  async escape(): Promise<void> {
+    await this.page.keyboard.press('Escape');
   }
 }

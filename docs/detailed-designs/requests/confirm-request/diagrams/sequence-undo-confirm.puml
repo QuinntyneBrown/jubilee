@@ -17,8 +17,8 @@ skinparam package {
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ToastService" as toast
-  participant "RequestsApi" as client
   participant "IncomingRequestsPage" as page
+  participant "IncomingRequestsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "IncomingRequestsController" as controller
@@ -32,34 +32,33 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> toast : Press "Undo" within 8 seconds
-toast -> client : undoConfirm(requestId)
+toast -> page : Run the action of the toast
+page -> client : undoConfirm(requestId)
 client -> controller : POST /api/my-business/requests/{id}/confirm/undo
-controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
-controller -> handler : Send UndoConfirmRequestCommand
-handler -> db : Load request, last transition, product and pending outbox messages
+controller -> controller : Authenticate the session cookie
+controller -> handler : Send UndoConfirmRequestCommand(subject, requestId)
+handler -> db : IncomingRules.OwnedRequest: load request with transitions and its listing (L2-133)
 db --> handler : Current state
-handler -> entity : UndoLastTransition(actor, now) (L2-052)
+handler -> entity : UndoConfirm(actor, now) (L2-052)
 alt same actor and before UndoableUntil
   entity --> handler : Status New, RequestTransition recorded
-  opt request type is Order
-    handler -> product : RestoreStock(option, quantity)
-    product --> handler : Stock restored
+  opt request kind is Order
+    handler -> product : RestoreStock(optionLabel, quantity)
+    product --> handler : StockChange
   end
-  opt e-mail OutboxMessage not yet dispatched
-    handler -> db : Cancel the e-mail message and withdraw the customer's notification (L2-052)
-    db --> handler : Cancelled
-  end
-  handler -> db : Save changes in one unit of work
+  handler -> db : Remove the message keyed request:{id}:confirmed, the unsent OutboxMessage rows and the customer's unread Notification (L2-052)
+  handler -> db : Save changes in one SaveChangesAsync
   db --> handler : Commit result
-  handler --> controller : Status New
+  handler --> controller : RequestDecisionDto with status new
   controller --> client : 200 OK
-  client --> page : Status New
-  page --> actor : Show the request under New again
-else undo window has passed
+  client --> page : RequestDecision
+  page -> page : Read the list again
+  page --> actor : Show the request under New again and the toast "Confirmation undone"
+else undo window has passed, or another actor
   entity --> handler : InvalidTransitionException
-  handler --> controller : Conflict
+  handler --> controller : IncomingRules.Invalid
   controller --> client : 409 INVALID_TRANSITION
-  client --> page : Still confirmed
-  page --> actor : Show the request as confirmed
+  client --> page : Error
+  page --> actor : Show danger toast "Couldn’t undo the confirmation"; the request stays confirmed
 end
 @enduml

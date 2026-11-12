@@ -48,6 +48,8 @@ export class BusinessPage extends ShellPage implements Screen {
   readonly ownerName: Locator;
   readonly tagline: Locator;
   readonly credentialTags: Locator;
+  /** "Replies fast" beside the credentials (L2-054). */
+  readonly repliesFast: Locator;
   readonly actions: Locator;
   readonly primaryAction: Locator;
   readonly messageLink: Locator;
@@ -96,6 +98,7 @@ export class BusinessPage extends ShellPage implements Screen {
     this.ownerName = this.main.locator('.detail-head p > strong');
     this.tagline = this.main.locator('.detail-head .lead');
     this.credentialTags = this.main.locator('.detail-head .tag');
+    this.repliesFast = this.main.locator('.detail-head .badge');
     this.actions = this.main.locator('.detail-head__actions');
     this.primaryAction = this.actions.locator('.btn--primary');
     this.bookLink = this.actions.getByRole('link', { name: 'Book a meeting' });

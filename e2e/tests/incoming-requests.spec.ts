@@ -83,7 +83,7 @@ test.describe('respond to customer requests: the list (L2-051)', () => {
     await expect(requests.rows).toHaveCount(3);
   });
 
-  test('L2-051 AC5: a request that arrives while the page is open appears at the top with a toast', async ({
+  test('L2-051 AC5, L2-070 AC1: a request that arrives over the event stream appears at the top at once, with one toast', async ({
     page,
     jb,
   }) => {
@@ -96,11 +96,71 @@ test.describe('respond to customer requests: the list (L2-051)', () => {
 
     fake.arrive();
 
-    await expect(requests.rows).toHaveCount(4, { timeout: 10_000 });
+    // Well inside the five seconds a timer would take: the stream told the page.
+    await expect(requests.rows).toHaveCount(4, { timeout: 2_500 });
     await expect(requests.rows.first()).toContainText('Grace Adeyemi');
     await expect(requests.statusTab(/^New/)).toContainText('4');
     const toast = toasts.withTitle('New booking request');
+    await expect(toast).toHaveCount(1);
     await expect(toast).toContainText('Grace Adeyemi asked for Consultation.');
+    await expect(toasts.all).toHaveCount(1);
+  });
+
+  test('L2-051 AC5: a request the customer cancels leaves the open page without the owner asking', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page);
+    await jb.goto(PATH);
+    await expect(requests.rows).toHaveCount(3);
+
+    fake.cancel(RUTH);
+
+    await expect(requests.row('Ruth Mensah')).toHaveCount(0, { timeout: 2_500 });
+    await expect(requests.statusTab(/^New/)).toContainText('2');
+  });
+
+  test('L2-051 AC7: while the event stream is connected the page does not ask on a timer', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page);
+    await jb.goto(PATH);
+    await expect(requests.rows).toHaveCount(3);
+    const asked = fake.listRequests.length;
+
+    // Longer than the five seconds between two questions of the fallback.
+    await requests.idle(6_500);
+
+    expect(fake.listRequests.length).toBe(asked);
+  });
+
+  test('L2-051 AC7: when the event stream cannot connect the page asks every five seconds, so a new request still appears', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { stream: 'down' });
+    await jb.goto(PATH);
+    await expect(requests.rows).toHaveCount(3);
+    // The page has read its counts; from here only the timer can tell it of a new request.
+    await requests.idle(1_000);
+    const asked = fake.listRequests.length;
+
+    fake.arrive();
+    await requests.idle(1_000);
+    expect(fake.listRequests.length).toBe(asked);
+
+    await expect(requests.rows).toHaveCount(4, { timeout: 10_000 });
+    await expect(toasts.withTitle('New booking request')).toContainText(
+      'Grace Adeyemi asked for Consultation.',
+    );
   });
 
   test('L2-051 AC6: an answer of 403 shows the forbidden page', async ({ page, jb }) => {
@@ -200,6 +260,113 @@ test.describe('respond to customer requests: confirm (L2-052)', () => {
     await dialog.tryAgain.click();
     await expect(dialog.root).toHaveCount(0);
     expect(fake.confirms).toEqual([SAMUEL]);
+  });
+});
+
+test.describe('respond to customer requests: the dialog was closed before the answer came (L2-052 AC5, AC7)', () => {
+  test('L2-052 AC5: a confirmation that fails after the dialog was closed is said in a danger toast, and "Try again" confirms it', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new ConfirmRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { confirm: 'fails', confirmDelayMs: 600 });
+    await jb.goto(PATH);
+
+    await requests.confirmButton('Samuel Park').click();
+    await dialog.confirm.click();
+    await dialog.escape();
+    await expect(dialog.root).toHaveCount(0);
+
+    const failed = toasts.danger('Couldn’t confirm the order');
+    await expect(failed).toContainText('Samuel’s request is still new. Try again.');
+    await expect(failed).toHaveRole('alert');
+    await expect(requests.row('Samuel Park')).toBeVisible();
+    expect(fake.confirms).toEqual([]);
+
+    fake.confirm = 'ok';
+    fake.confirmDelayMs = 0;
+    await toasts.action(failed, 'Try again').click();
+
+    await expect(failed).toHaveCount(0);
+    const confirmed = toasts.withTitle('Order confirmed');
+    await expect(confirmed).toContainText('Samuel has been told.');
+    await expect(toasts.action(confirmed, 'Undo')).toBeVisible();
+    expect(fake.confirms).toEqual([SAMUEL]);
+    await expect(requests.row('Samuel Park')).toHaveCount(0);
+  });
+
+  test('L2-052 AC5: "Try again" that fails again says so again, by the keyboard alone', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new ConfirmRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { confirm: 'fails', confirmDelayMs: 600 });
+    await jb.goto(PATH);
+
+    await requests.confirmButton('Samuel Park').click();
+    await dialog.confirm.click();
+    await dialog.escape();
+    const failed = toasts.danger('Couldn’t confirm the order');
+    await expect(failed).toBeVisible();
+    fake.confirmDelayMs = 0;
+
+    await toasts.action(failed, 'Try again').focus();
+    await page.keyboard.press('Enter');
+
+    await expect(failed).toHaveCount(1);
+    await expect(failed).toContainText('Samuel’s request is still new. Try again.');
+    expect(fake.confirms).toEqual([]);
+  });
+
+  test('L2-052 AC7: a confirmation that succeeds after the dialog was closed still shows its toast with Undo', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new ConfirmRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { confirmDelayMs: 600 });
+    await jb.goto(PATH);
+
+    await requests.confirmButton('Samuel Park').click();
+    await dialog.confirm.click();
+    await dialog.escape();
+    await expect(dialog.root).toHaveCount(0);
+
+    const confirmed = toasts.withTitle('Order confirmed');
+    await expect(confirmed).toContainText('Samuel has been told.');
+    await expect(requests.row('Samuel Park')).toHaveCount(0);
+    await toasts.action(confirmed, 'Undo').click();
+    await expect(toasts.withTitle('Confirmation undone')).toBeVisible();
+    expect(fake.undos).toEqual([SAMUEL]);
+  });
+
+  test('L2-052 AC6: a request the customer cancelled is said in a toast when the dialog was already closed', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new ConfirmRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    await stubIncoming(page, { confirm: 'cancelled', confirmDelayMs: 600 });
+    await jb.goto(PATH);
+
+    await requests.confirmButton('Samuel Park').click();
+    await dialog.confirm.click();
+    await dialog.escape();
+
+    const failed = toasts.danger('Couldn’t confirm the order');
+    await expect(failed).toContainText('Samuel Park cancelled this request.');
+    await expect(toasts.action(failed, 'Try again')).toHaveCount(0);
+    await expect(requests.row('Samuel Park')).toHaveCount(0);
   });
 });
 
@@ -325,6 +492,50 @@ test.describe('respond to customer requests: decline (L2-053)', () => {
     await dialog.decline.click();
     await expect(dialog.root).toHaveCount(0);
     expect(fake.declines.map((d) => d.id)).toEqual([DAVID]);
+  });
+
+  test('L2-053 AC6: a request the customer cancelled is not declined: the dialog closes, the list reloads and a toast says why', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new DeclineRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { decline: 'cancelled' });
+    await jb.goto(PATH);
+    await expect(requests.rows).toHaveCount(3);
+
+    await requests.declineButton('David Chen').click();
+    await dialog.message.fill('Thank you, David. We cannot take that many this month.');
+    await dialog.decline.click();
+
+    await expect(dialog.root).toHaveCount(0);
+    const told = toasts.danger('Request not declined');
+    await expect(told).toContainText('David Chen cancelled this request.');
+    await expect(requests.row('David Chen')).toHaveCount(0);
+    await expect(requests.statusTab(/^New/)).toContainText('2');
+    await expect(requests.statusTab(/^Declined/)).toContainText('0');
+    expect(fake.declines).toEqual([]);
+  });
+
+  test('L2-129 AC1: the decline dialog opens on "Keep request", and Escape keeps the request', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new DeclineRequestDialog(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page);
+    await jb.goto(PATH);
+
+    await requests.declineButton('Ruth Mensah').click();
+
+    await expect(dialog.keep).toBeFocused();
+    await dialog.escape();
+    await expect(dialog.root).toHaveCount(0);
+    await expect(requests.row('Ruth Mensah')).toBeVisible();
+    expect(fake.declines).toEqual([]);
   });
 
   test('L2-053 AC5: the note stops at 1,000 characters', async ({ page, jb }) => {

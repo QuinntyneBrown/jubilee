@@ -680,6 +680,18 @@ public sealed class ResponseTimeStatConfiguration : IEntityTypeConfiguration<Res
     }
 }
 
+public sealed class JobRunConfiguration : IEntityTypeConfiguration<JobRun>
+{
+    public void Configure(EntityTypeBuilder<JobRun> builder)
+    {
+        builder.ToTable("JobRuns");
+
+        // The key is the guard of L2-182 AC1: one row per job and occurrence, whoever inserts first.
+        builder.HasKey(r => new { r.Job, r.Occurrence });
+        builder.Property(r => r.Job).HasMaxLength(64);
+    }
+}
+
 public sealed class ListingPhotoConfiguration : IEntityTypeConfiguration<ListingPhoto>
 {
     public void Configure(EntityTypeBuilder<ListingPhoto> builder)

@@ -4,9 +4,9 @@
 |---|---|---|
 | book-meeting | 4 days | 100% |
 | cancel-request | 4 days | 95% |
-| confirm-request | 4 days | 90% |
-| decline-request | 4 days | 95% |
-| handle-incoming-requests | 5 days | 85% |
+| confirm-request | 4 days | 100% |
+| decline-request | 4 days | 100% |
+| handle-incoming-requests | 5 days | 100% |
 | request-item | 4 days | 100% |
 | request-quote | 4 days | 95% |
 | request-space | 5 days | 100% |
@@ -16,7 +16,7 @@ book-meeting (ADR 0015, ADR 0048): requests, availability, idempotent booking, t
 
 request-quote: the quote request (validation, idempotency, owner e-mail, refusal for unconfirmed members) and its dialog are done with tests. The quote card in the conversation, the in-app notification and the shop "Ask" entry point have landed since. Deferred: the phone prefill from the profile (L2-045 AC1).
 
-handle-incoming-requests, confirm-request, decline-request (ADR 0021): the owner's list with tabs, polling and the new-request toast, confirm with stock reduction and an 8-second undo, decline with a reason and note, the response-time badge job, and the toast service are done with tests. The confirmation card, the in-app notifications and the Requests count on My business and the top bar have landed since. Deferred: the "Replies fast" badge on public listings (L2-054 AC1), the danger toast when the dialog was closed (L2-052 AC5), the real-time channel in place of polling (L2-070).
+handle-incoming-requests, confirm-request, decline-request (ADR 0021, ADR 0050): the owner's list with tabs, confirm with stock reduction and an 8-second undo, decline with a reason and note, the confirmation card, the in-app notifications and the Requests counts were done with tests. Journey 13 is now finished: the page listens to the event stream and asks on a timer only while the stream cannot connect (`incoming-requests.spec.ts`); a business that replies fast carries the "Replies fast" badge on its listing page and its business card (`IncomingRequestTests`, `business.spec.ts`, the parity specs of `badge` and `business-card`); the response-time job runs once per hour across instances and records its success through `JobRun` (`ResponseTimeJobTests`); a confirmation that answers after its dialog was closed is reported in a toast, with "Try again" on a failure; a decline of a request that is no longer new closes the dialog and says why; the customer's in-app notification on confirm and on decline is asserted. Nothing is left. Out of scope here: the retries and the dead-letter queue of `L2-182` AC2 (operations, run-background-jobs), and the badge on a space, a directory row or a search result (ADR 0050).
 
 track-requests, cancel-request (ADR 0022): the member's list and detail with the timeline, cancel with an 8-second undo, the booking completion and unanswered-request jobs, and polling for status changes are done with tests. The cancellation card, the owner notification and "Your requests" in the account menu have landed since. Deferred: the real-time channel in place of polling (L2-070), the owner's "Mark fulfilled" control (L2-043 AC5).
 

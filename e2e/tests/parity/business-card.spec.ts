@@ -14,6 +14,12 @@ parity('business-card', {
       region: (screen: SavedPage) => screen.businessCard('Legacy Financial'),
     },
     {
+      name: 'replies-fast',
+      route: 'business.replies-fast',
+      screen: (page) => new BusinessPage(page),
+      region: (screen: BusinessPage) => screen.relatedCard(0).root,
+    },
+    {
       name: 'product',
       route: 'browse',
       screen: (page) => new BrowsePage(page),

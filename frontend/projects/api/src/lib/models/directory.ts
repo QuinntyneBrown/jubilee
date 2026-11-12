@@ -14,6 +14,8 @@ export interface BusinessCard {
   categorySlug: string;
   verified: boolean;
   coverPhoto: null;
+  /** The business carries the "Replies fast" badge (L2-054). */
+  repliesFast: boolean;
 }
 
 /** A business as the one-line directory row shows it. */

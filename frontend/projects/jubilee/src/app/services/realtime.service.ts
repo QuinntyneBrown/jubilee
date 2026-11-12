@@ -6,6 +6,9 @@ import { NavigationStore } from './navigation.store';
 import { SessionService } from './session.service';
 import { ToastService } from 'components';
 
+/** Where the owner answers requests; a notification about a request of theirs opens it. */
+const INCOMING = '/my-business/requests';
+
 const OPEN: Record<NotificationKind, string> = {
   message: 'Open conversation',
   request: 'View request',
@@ -33,6 +36,13 @@ export class RealtimeService {
   private subscription: Subscription | null = null;
   private readonly seen = new Set<string>();
   private readonly arrived = signal(0);
+  private readonly up = signal(true);
+
+  /**
+   * Whether the stream is up; false from the moment an attempt to connect fails until one opens. A
+   * page that must not miss an event asks on a timer while it is false (L2-051 AC7; ADR 0050).
+   */
+  readonly connected = this.up.asReadonly();
 
   /** Grows with each notification that arrives, so a list on screen can read again. */
   readonly arrivals = this.arrived.asReadonly();
@@ -47,6 +57,10 @@ export class RealtimeService {
   start(): void {
     if (this.subscription) return;
     this.subscription = this.events.stream().subscribe((event) => {
+      if (event.type === 'connection') {
+        this.up.set(event.connected);
+        return;
+      }
       if (event.type === 'counts') {
         this.navigation.apply(event.counts);
         return;
@@ -56,7 +70,10 @@ export class RealtimeService {
       this.arrived.update((count) => count + 1);
       this.items.next(event.item);
       // A message in the conversation that is open is read where it lands, not in a toast.
-      if (event.item.kind === 'message' && this.router.url.split('?')[0] === event.item.target) {
+      const here = this.router.url.split('?')[0];
+      if (event.item.kind === 'message' && here === event.item.target) return;
+      // The owner's requests page says a new request in its own words (L2-051 AC5).
+      if (event.item.kind === 'request' && here === INCOMING && event.item.target === INCOMING) {
         return;
       }
       this.announce(event.item);
@@ -66,6 +83,7 @@ export class RealtimeService {
   stop(): void {
     this.subscription?.unsubscribe();
     this.subscription = null;
+    this.up.set(true);
   }
 
   private announce(item: NotificationItem): void {

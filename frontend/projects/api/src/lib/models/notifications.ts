@@ -29,4 +29,6 @@ export interface UnreadCount {
 /** What the open page learns over the event stream (L2-070). */
 export type MemberEvent =
   | { type: 'notification'; id: string; item: NotificationItem }
-  | { type: 'counts'; counts: NavigationSummary };
+  | { type: 'counts'; counts: NavigationSummary }
+  /** Whether the stream is up: false once an attempt to connect has failed, true when one opens. */
+  | { type: 'connection'; connected: boolean };

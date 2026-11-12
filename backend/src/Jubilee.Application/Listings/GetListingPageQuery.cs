@@ -107,6 +107,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             ? await others.OrderByDescending(l => l.ApprovedAt).ThenBy(l => l.SortName).Take(RelatedSpaceCount).ToListAsync(cancellationToken)
             : [];
 
+        var fast = await Requests.ResponseTimes.FastListings(db, cancellationToken);
         return new ListingPageDto(
             listing.Slug,
             WireValues.Of(listing.Kind),
@@ -133,9 +134,10 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             [.. services.Select(ServiceRowDto.From)],
             productCount,
             [.. products.Select(p => ProductCardDto.From(p, listing))],
-            [.. related.Select(BusinessCardDto.From)],
+            [.. related.Select(l => BusinessCardDto.From(l, fast))],
             SpacePageDto.From(listing),
-            [.. relatedSpaces.Where(l => l.Space is not null).Select(SpaceCardDto.From)]);
+            [.. relatedSpaces.Where(l => l.Space is not null).Select(SpaceCardDto.From)],
+            RepliesFast: !isSpace && fast.Contains(listing.Id));
     }
 
     private static string Wire(ViewerRelation relation) => relation.ToString().ToLowerInvariant();

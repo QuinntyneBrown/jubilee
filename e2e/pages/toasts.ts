@@ -3,9 +3,12 @@ import type { Locator, Page } from '@playwright/test';
 /** The toasts that rise from the bottom of the screen. */
 export class Toasts {
   readonly region: Locator;
+  /** Every toast on show. */
+  readonly all: Locator;
 
   constructor(private readonly page: Page) {
     this.region = page.locator('.toast-region');
+    this.all = this.region.locator('.toast');
   }
 
   /** The toast with this title. */
@@ -19,6 +22,13 @@ export class Toasts {
   warning(title: string | RegExp): Locator {
     return this.region
       .locator('.toast.toast--warning')
+      .filter({ has: this.page.locator('.toast__title', { hasText: title }) });
+  }
+
+  /** The danger toast with this title: something failed; it stays until dismissed. */
+  danger(title: string | RegExp): Locator {
+    return this.region
+      .locator('.toast.toast--danger')
       .filter({ has: this.page.locator('.toast__title', { hasText: title }) });
   }
 

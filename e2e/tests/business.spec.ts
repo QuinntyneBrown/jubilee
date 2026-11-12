@@ -1,4 +1,4 @@
-import { expect, test } from '../fixtures/jb-test';
+import { expect, test, themes } from '../fixtures/jb-test';
 import { patchListing } from '../fixtures/stubs';
 import { BusinessPage } from '../pages/business.page';
 import { NotFoundPage } from '../pages/not-found.page';
@@ -274,5 +274,55 @@ test.describe('related businesses (L2-040)', () => {
 
     await expect(business.heading).toHaveText('Legacy Financial');
     await expect(business.related).toHaveCount(0);
+  });
+});
+
+test.describe('the "Replies fast" badge (L2-054)', () => {
+  for (const theme of themes) {
+    test(`AC1: a business that answers within a day says so on its page and on its card, in words (${theme})`, async ({
+      page,
+      jb,
+    }) => {
+      const business = new BusinessPage(page);
+      await business.setWidth(1280);
+      await jb.open('business.replies-fast', { theme });
+
+      await expect(business.heading).toHaveText('Legacy Financial');
+      await expect(business.repliesFast).toHaveText('Replies fast');
+      await expect(business.repliesFast).toBeVisible();
+      await expect(business.relatedCard(0).name).toHaveText('Deeks Insurance');
+      await expect(business.relatedCard(0).repliesFast).toHaveText('Replies fast');
+      await expect(business.relatedCard(0).repliesFast).toBeVisible();
+    });
+  }
+
+  test('AC1: the badge fits beside the credentials and on the card on a phone', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    await business.setWidth(360);
+    await jb.open('business.replies-fast');
+
+    await expect(business.repliesFast).toBeInViewport();
+    await business.relatedCard(0).root.scrollIntoViewIfNeeded();
+    await expect(business.relatedCard(0).repliesFast).toBeInViewport();
+    expect(await business.overflowsHorizontally()).toBe(false);
+  });
+
+  test('AC3: a business without the badge shows nothing in its place, on its page or on a card', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    await business.setWidth(1280);
+    await jb.open('business');
+
+    await expect(business.heading).toHaveText('Legacy Financial');
+    await expect(business.credentialTags).toHaveText(['CKA® · CFP® · CLU®']);
+    await expect(business.repliesFast).toHaveCount(0);
+    await expect(business.relatedCards).toHaveCount(2);
+    await expect(business.relatedCard(0).repliesFast).toHaveCount(0);
+    await expect(business.relatedCard(1).repliesFast).toHaveCount(0);
   });
 });

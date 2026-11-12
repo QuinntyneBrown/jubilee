@@ -108,6 +108,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
     public DbSet<AuditRecord> AuditRecords => Use(inner.AuditRecords);
 
     public DbSet<ResponseTimeStat> ResponseTimeStats => Use(inner.ResponseTimeStats);
+
+    public DbSet<JobRun> JobRuns => Use(inner.JobRuns);
     public DbSet<MemberSession> Sessions => Use(inner.Sessions);
 
     public DbSet<SignInFailure> SignInFailures => Use(inner.SignInFailures);

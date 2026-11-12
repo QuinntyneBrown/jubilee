@@ -17,39 +17,42 @@ skinparam package {
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "IncomingRequestsPage" as page
-  participant "IncomingRequestsStore" as store
-  participant "RequestsApi" as client
+  participant "IncomingRequestsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "IncomingRequestsController" as controller
-  participant "ListingOwnerPolicy" as policy
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "ListIncomingRequestsQueryHandler" as handler
+  participant "IncomingRules" as rules
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> page : Open /my-business/requests
-page -> store : load(tab New)
-store -> client : listIncoming(tab)
+page -> page : memberGuard passes for a signed-in member; set state to loading
+page -> client : list(tab new)
 client -> controller : GET /api/my-business/requests?tab=new
 controller -> controller : Authenticate the session cookie
-controller -> policy : Is the caller the owner or a co-owner of the listing (L2-133)
-policy --> controller : Allowed or refused
-alt caller is not the owner or a co-owner
-  controller --> client : 403 ProblemDetails (L2-051)
-  client --> store : Forbidden
-  store --> page : Forbidden
-  page --> actor : Show the forbidden page
+controller -> handler : Send ListIncomingRequestsQuery(subject, tab, listing)
+handler -> rules : Owned(subject, listing) (L2-133)
+rules -> db : Read the caller's listings
+db --> rules : Listings
+alt caller owns no listing, or not the one named
+  rules --> handler : ForbiddenException
+  handler --> controller : ForbiddenException
+  controller --> client : 403 ProblemDetails, code FORBIDDEN (L2-051)
+  client --> page : Forbidden
+  page --> actor : Go to /forbidden and show the forbidden page
 else caller owns the listing
-  controller -> handler : Send ListIncomingRequestsQuery
-  handler -> db : Count per tab and read rows newest first; Declined limited to 90 days
-  db --> handler : Rows and counts
-  handler --> controller : IncomingRequestsPageDto
+  rules --> handler : Listing
+  handler -> db : Read the listing's requests newest first; Declined limited to 90 days; read RepliesFast
+  db --> handler : Requests and stat
+  handler -> handler : Count per tab over the whole listing and take at most 50 rows of the tab
+  handler --> controller : IncomingRequestsDto
   controller --> client : 200 OK
-  client --> store : Rows and counts
-  store --> page : List state
+  client --> page : IncomingRequests
+  page -> page : Set state to loaded and remember the New requests seen
   alt no requests at all
     page --> actor : Show "No requests yet." with "Share your listing"
   else chosen tab is empty

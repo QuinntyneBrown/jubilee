@@ -15,7 +15,7 @@
 | [accounts](accounts.md) | 50 days | 91% |
 | [security](security.md) | 34 days | 31% |
 | [messaging](messaging.md) | 17 days | 94% |
-| [requests](requests.md) | 39 days | 94% |
+| [requests](requests.md) | 39 days | 97% |
 | [notifications](notifications.md) | 16 days | 89% |
 | [onboarding](onboarding.md) | 17 days | 91% |
 | [admin](admin.md) | 7 days | 90% |
@@ -24,7 +24,7 @@
 | [privacy](privacy.md) | 12 days | 13% |
 | [accessibility](accessibility.md) | 10 days | 0% |
 | [performance](performance.md) | 9 days | 6% |
-| [operations](operations.md) | 30 days | 30% |
+| [operations](operations.md) | 30 days | 31% |
 | [offline](offline.md) | 12 days | 83% |
 | [marketing](marketing.md) | 13 days | 98% |
 | [feedback](feedback.md) | 9 days | 97% |
