@@ -39,7 +39,8 @@ live listing, or the oldest.
   `jb-field` "Business" with a `jb-select` when the owner has more than one entry, and "List another
   business" (`/list?draft=new`) for every owner with a listing. A draft in the select opens
   `/list?draft={id}`. A native select works by touch and by keyboard with nothing to build, so no
-  new component and no menu was added. The other workspace pages follow the choice without showing
+  new component and no menu was added; `jb-select` gains the `fit` input (`select--fit`), which
+  sizes the select to its longest option so that it sits beside the link. The other workspace pages follow the choice without showing
   the select; their header names the business.
 - **A re-check tells the owner and the team by e-mail.** When `Listing.Edit` reports a changed name
   or category on a live listing, `SaveListingCommandHandler` (besides the stamp and the audit record
@@ -58,8 +59,9 @@ live listing, or the oldest.
   page. A drop sends the same `PUT /api/my-business/photos/{id}/position` the buttons send; a drop
   in the same place sends nothing. The handle is a pointer affordance only (`aria-hidden`, out of
   the tab order): the keyboard equivalent is "Move photo {n} earlier" and "Move photo {n} later",
-  which were already there. The CDK is the platform's drag and drop (ADR 0035); no component or
-  stylesheet was added.
+  which were already there. A move the API refuses puts the photos back in the order they had and
+  says so. The CDK is the platform's drag and drop (ADR 0035); no component or stylesheet was
+  added.
 - **Public photos are a `picture` with `srcset`, drawn by `jb-media-tile`.** `ListingPageDto` gains
   `Photos` (`ListingPagePhotoDto`: key, alt, width, height), in the owner's order; `CoverPhoto`
   stays null and is no longer read. `jb-media-tile` takes `photoKey` and `photoWidth`: it renders a
@@ -67,16 +69,22 @@ live listing, or the oldest.
   is never wider than the original, so a 500 pixel photo offers 320w and 500w), a `sizes` hint,
   explicit `width` and `height`, and `fetchpriority="high"` or `loading="lazy"` as its `priority`
   input says. The listing page shows the cover in place of the tinted tile and the other photos
-  under "Photos"; the editor's own thumbnails use the same input. The business card in lists still
+  under "Photos"; the editor's own thumbnails use the same input. The listing page is read through
+  the directory cache, so `DirectoryCacheInvalidationInterceptor` now also clears it when a
+  `ListingPhoto` is added, moved or removed: a photo is public on the next request. The business card in lists still
   shows the tile: `BusinessCardDto` is part of the 60-second directory cache and of every recorded
   list, and the card's photo belongs with the CDN work of `L2-155` AC3.
-- **The pause bound is proved where it was not.** `DirectoryCacheTests` already proved the four
-  cached reads. `PauseBoundTests` proves the rest of `L2-096` AC2 and AC3 through the owner's own
-  endpoints: after `POST /api/my-business/pause` the next request of search, the search suggestions,
-  the listing page, its shop and product pages and the related businesses of a neighbour no longer
-  holds the listing, the listing's address is 404 to others, no public answer may be kept by a
-  browser or CDN for longer than 60 seconds (`Cache-Control`), and `POST /api/my-business/resume`
-  brings all of it back on the next request.
+- **The pause bound is proved where it was not.** `DirectoryCacheTests` already proved the welcome
+  page, the browse home and the category lists. `PauseBoundTests` proves `L2-096` AC2 and AC3 and
+  `L2-028` AC2 across every public read, through the owner's own endpoints: after
+  `POST /api/my-business/pause` the next request of the welcome page, the browse home, the category
+  list and its count, search and the related businesses on a neighbour's page no longer holds the
+  listing, and its own address is 404 to others while the owner still opens it;
+  `POST /api/my-business/resume` brings all of it back on the next request. A pause the API is not
+  told of (written behind the application) is gone from the same reads once 60 seconds have
+  passed, and no public answer may be kept by a browser or a CDN for longer than 60 seconds
+  (`Cache-Control`), search not at all. The tests fail when `IDirectoryReadCache.TimeToLive` or
+  `PublicDirectoryCacheAttribute.MaxAgeSeconds` is lengthened. No production code changed.
 
 ## Consequences
 
