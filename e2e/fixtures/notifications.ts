@@ -24,8 +24,15 @@ export interface FakeNotifications {
   allRead: number;
   /** Events the stream sends once the browser asks again; each one has the id the browser echoes. */
   push(item: FakeNotification, id?: string): void;
-  /** What the stream was asked for, by `Last-Event-ID`. */
+  /**
+   * What the stream was asked for: the `Last-Event-ID` header the browser sends when it reconnects by
+   * itself, or the `lastEventId` in the address when the app opens the stream again (L2-070 AC4).
+   */
   lastEventIds: (string | undefined)[];
+  /** `refused` answers the stream with a 503, after which a browser gives up on it. */
+  stream: 'ok' | 'refused';
+  /** How many times the stream was refused. */
+  refusals: number;
   /** Counts the stream sends, when they change. */
   counts: { unreadConversationCount: number; newRequestCount: number } | null;
 }
@@ -113,6 +120,8 @@ export async function stubNotifications(
     opened: [],
     allRead: 0,
     lastEventIds: [],
+    stream: 'ok',
+    refusals: 0,
     counts: null,
     push(item, id) {
       ticks += 1;
@@ -159,8 +168,14 @@ export async function stubNotifications(
   });
 
   // The stream asks again soon after every answer, as a browser does, and says what it last received.
-  await page.route('**/api/events', (route: Route) => {
-    const last = route.request().headers()['last-event-id'];
+  await page.route(/\/api\/events(\?.*)?$/, (route: Route) => {
+    if (fake.stream === 'refused') {
+      fake.refusals += 1;
+      return route.fulfill(problem(503, { code: 'SERVICE_UNAVAILABLE' }));
+    }
+    const last =
+      new URL(route.request().url()).searchParams.get('lastEventId') ??
+      route.request().headers()['last-event-id'];
     fake.lastEventIds.push(last);
     const fresh = queue.filter((entry) => last === undefined || Number(entry.id) > Number(last));
     const frames = fresh
