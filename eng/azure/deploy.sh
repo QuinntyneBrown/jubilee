@@ -90,13 +90,7 @@ node_file=$(curl -sL "$node_release/SHASUMS256.txt" | grep -o 'node-v22[0-9.]*-l
 
 echo "== Deploying"
 az webapp deploy -g "$GROUP" -n "$WWW_APP" --src-path "$work/www.zip" --type zip -o none
-# The admin application is deployed once its App Service exists (README.md, "The admin
-# application"); until then the step says so and the rest of the deployment goes on.
-if az webapp show -g "$GROUP" -n "$ADMIN_APP" -o none 2>/dev/null; then
-  az webapp deploy -g "$GROUP" -n "$ADMIN_APP" --src-path "$work/admin.zip" --type zip -o none
-else
-  echo "== Skipping the admin application: App Service $ADMIN_APP does not exist yet (README.md)."
-fi
+az webapp deploy -g "$GROUP" -n "$ADMIN_APP" --src-path "$work/admin.zip" --type zip -o none
 # The app is restarted only after every file is in place: a container that starts while the
 # package is still being copied does not find start.sh and stops. Without a restart there is no
 # start-up to track, and az would wait ten minutes for one and fail: --track-status false.

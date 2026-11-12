@@ -6,13 +6,13 @@ How Jubilee is hosted, and how to deploy it again. Set up on 11 November 2026.
 |---|---|---|
 | `https://www.jubilee.to`, `https://jubilee.to` | the marketing site (`frontend/projects/marketing`) | `jubilee-to-www` |
 | `https://app.jubilee.to` | the app (`frontend/projects/jubilee`), the API under `/api`, the worker | `jubilee-to-app` |
-| `https://admin.jubilee.to` | the admin application (`frontend/projects/admin`), `/api` sent to the app's host | `jubilee-to-admin` (to create, see "The admin application") |
+| `https://admin.jubilee.to` | the admin application (`frontend/projects/admin`), `/api` sent to the app's host | `jubilee-to-admin` |
 
 ## Resources
 
 Everything is in the resource group `rg-jubilee-prod`, Canada Central.
 
-- `jubilee-plan`: one Linux App Service plan, B1. Both web apps run on it.
+- `jubilee-plan`: one Linux App Service plan, B1. The three web apps run on it.
 - `jubilee-to-www`: Node 22. Start-up command `node server.js`. `server.js` serves the built
   marketing page; it answers byte ranges so the pitch film can be seeked.
 - `jubilee-to-app`: .NET 10. Start-up command `bash /home/site/wwwroot/start.sh`, which runs three
@@ -29,8 +29,8 @@ Everything is in the resource group `rg-jubilee-prod`, Canada Central.
 - `jubilee-sql-28686` / database `jubilee`: Azure SQL, Basic tier. The firewall admits Azure
   services only.
 
-Both web apps are HTTPS only, TLS 1.2 or later, Always On, FTP off, with App Service managed
-certificates for the three host names.
+The web apps are HTTPS only, TLS 1.2 or later, Always On, FTP off, with App Service managed
+certificates for the four host names.
 
 ### Settings of `jubilee-to-app`
 
@@ -60,11 +60,16 @@ site key the form sends a token nobody checks, and with only the secret every jo
 
 The verification team's screens are a separate application at `https://admin.jubilee.to` (ADR
 0040). Staff sign in through Microsoft Entra ID with a second factor, and the staff endpoints of
-the API (`/api/admin/*`, `/api/staff/*`) answer only an allowed network. Until the steps below are
-done, nobody can use those endpoints in production: the allow-list is empty, so the API refuses
-them all, and `deploy.sh` skips the admin application because its App Service does not exist.
+the API (`/api/admin/*`, `/api/staff/*`) answer only an allowed network. The App Service, its
+proxy key, the DNS records and the certificate were set up on 11 November 2026 (steps 4 and 6, and
+the key of step 5), and every deployment publishes the application. Until the remaining steps are
+done, nobody can use the staff endpoints in production: the allow-list is empty, so the API
+refuses them all. The access restrictions of step 4 are not set yet either, so the application's
+own files answer any network.
 
-None of these steps is run by the repository or its workflows. In order:
+None of these steps is run by the workflows. `bash eng/azure/create-admin.sh`, in Cloud Shell,
+does step 4 (without the access restrictions), the proxy key of step 5 and the Azure half of
+step 6; it prints the two DNS records and is run again once they are published. In order:
 
 1. **Entra ID app registration.** In the Jubilee tenant: App registrations, New registration,
    `Jubilee admin`, single tenant, platform Web, redirect URI
@@ -153,8 +158,8 @@ Without the two settings Google sign-in is off: the join and sign-in pages show 
 | A | `@` | `20.116.40.17` (inbound address of `jubilee-to-www`) |
 | CNAME | `www` | `jubilee-to-www.azurewebsites.net.` |
 | CNAME | `app` | `jubilee-to-app.azurewebsites.net.` |
-| CNAME | `admin` | `jubilee-to-admin.azurewebsites.net.` (to add, see "The admin application") |
-| TXT | `asuid`, `asuid.www`, `asuid.app` | the App Service domain verification ID |
+| CNAME | `admin` | `jubilee-to-admin.azurewebsites.net.` |
+| TXT | `asuid`, `asuid.www`, `asuid.app`, `asuid.admin` | the App Service domain verification ID |
 
 | TXT | `notify` | `v=spf1 include:spf.protection.outlook.com -all` (SPF of the sending domain) |
 | TXT | `notify` | `ms-domain-verification=…`, the value Azure shows for the domain |
@@ -202,7 +207,7 @@ large mailing. Rotating the key is `az communication regenerate-key` followed by
 
 Every push to `main` is deployed by [`.github/workflows/deploy.yml`](../../.github/workflows/deploy.yml)
 once CI has passed on it. The workflow applies new EF Core migrations, builds and packages the
-three sites, deploys them (the admin application once `jubilee-to-admin` exists) and waits for the
+three sites, deploys them and waits for the
 health check. It can also be started by hand from the
 Actions tab.
 
