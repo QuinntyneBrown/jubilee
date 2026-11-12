@@ -276,6 +276,7 @@
         "offline",
         "signed-out",
         "edge",
+        "feedback-launcher",
         "rooms-term",
         "rooms-empty"
       ]
@@ -514,6 +515,41 @@
       }
     },
     {
+      "id": "feedback",
+      "kind": "page",
+      "title": "Feedback",
+      "route": "/feedback/:tab",
+      "requirements": [
+        "L2-212",
+        "L2-213"
+      ],
+      "states": [
+        "default",
+        "rate-invalid",
+        "bug",
+        "bug-invalid",
+        "bug-screenshots",
+        "kudos",
+        "kudos-business",
+        "kudos-no-business",
+        "kudos-invalid",
+        "sending",
+        "failed",
+        "sent-rating",
+        "sent-bug",
+        "sent-kudos-team",
+        "sent-kudos-business",
+        "history-empty",
+        "history-loading",
+        "history-error"
+      ],
+      "not_applicable": {
+        "loading": "The form needs no data and shows at once; only Your feedback loads, and that is the state history-loading.",
+        "empty": "The only collection is Your feedback; with nothing in it the page is the state history-empty.",
+        "error": "The form cannot fail to load; a failed load of Your feedback is the state history-error and a failed send is the state failed."
+      }
+    },
+    {
       "id": "list-business",
       "kind": "page",
       "title": "List your business",
@@ -526,6 +562,8 @@
         "invalid",
         "submitting",
         "success",
+        "success-check-in-low",
+        "success-check-in-thanks",
         "draft-saved",
         "space",
         "space-short-stay",
@@ -829,6 +867,31 @@
         "failed",
         "success"
       ]
+    },
+    {
+      "id": "feedback",
+      "kind": "dialog",
+      "title": "Feedback panel",
+      "opens_from": "browse",
+      "requirements": [
+        "L2-210"
+      ],
+      "states": [
+        "default",
+        "rate-chosen",
+        "bug",
+        "bug-ready",
+        "kudos",
+        "kudos-ready",
+        "busy",
+        "failed",
+        "sent-rating",
+        "sent-bug",
+        "sent-kudos"
+      ],
+      "not_applicable": {
+        "invalid": "The send button is disabled until there is something to send, so the panel has nothing to mark invalid."
+      }
     },
     {
       "id": "sign-in-required",

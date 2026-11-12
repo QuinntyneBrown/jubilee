@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moment check · Jubilee design system</title>
+<meta name="description" content="The moment check: one question under a confirmation with a score of 1 to 5 between two words, then a field and Send for a low score or a line of thanks.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">Jubilee DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/star-scale.html">Star scale</a></li>
+      <li><a href="../components/score-scale.html">Score scale</a></li>
+      <li><a href="../components/file-list.html">File list</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/tab-bar.html">Tab bar</a></li>
+      <li><a href="../components/feedback-launcher.html">Feedback launcher</a></li>
+      <li><a href="../components/sidebar-navigation.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/stepper.html">Stepper</a></li>
+      <li><a href="../components/footer.html">Footer</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/accordion.html">Accordion</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/drawer.html">Drawer</a></li>
+      <li><a href="../components/popover.html">Popover</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout-primitives.html">Layout primitives</a></li>
+      <li><a href="../components/auth-layout.html">Auth layout</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/timeline.html">Timeline</a></li>
+      <li><a href="../components/business-card.html">Business card</a></li>
+      <li><a href="../components/directory-row.html">Directory row</a></li>
+      <li><a href="../components/media-tile.html">Media tile</a></li>
+      <li><a href="../components/message-thread.html">Message thread</a></li>
+      <li><a href="../components/notification-item.html">Notification item</a></li>
+      <li><a href="../components/feedback-history.html">Feedback history</a></li>
+      <li><a href="../components/hero-band.html">Hero band</a></li>
+      <li><a href="../components/lockup.html">Lockup</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert and banner</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/moment-check.html">Moment check</a></li>
+      <li><a href="../components/progress-bar.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback-and-loading.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error-states.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs-and-overlays.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/tables-and-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/member-feedback.html">Member feedback</a></li>
+      <li><a href="../patterns/content-and-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Feedback</p>
+      <h1>Moment check</h1>
+      <p class="ds-lead">A moment check asks one question right after something that matters: how easy was it? It sits under a confirmation, takes one tap to answer and never gets in the way.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Score scale + follow-up</span><span class="ds-pill">L2-211</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <p>Use it on the confirmation of a request that was just sent (a meeting, a quote, an order) and of a listing that was just submitted. Nowhere else: the <a href="../components/feedback-launcher.html">Feedback launcher</a> covers every other moment.</p>
+      <ul>
+        <li>The score is stored the moment it is chosen. Choosing another score replaces it.</li>
+        <li>A score of 4 or 5 shows “Thanks, that helps us.” A score of 3 or less shows a field, “What got in the way?”, and “Send”; sending shows the thanks.</li>
+        <li>If the answer cannot be stored nothing is said. The question is a courtesy and never an error on a success screen. Ignoring it stores nothing.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy">
+        <figure class="ds-anatomy__figure"><div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc40" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc40" value="2" checked><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc40" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc40" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc40" value="5"><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p><div class="moment-check__follow-up"><div class="field"><label class="field__label" for="mc40-note">What got in the way? <span class="optional">(optional)</span></label><textarea class="textarea" id="mc40-note" rows="2" maxlength="1000"></textarea></div><div class="moment-check__actions"><button class="btn" type="button">Send</button></div></div></div><span class="ds-callout" style="left: 3%; top: 8%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 20%; top: 26%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 10%; top: 40%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 30%; top: 62%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 8%; top: 92%;" aria-hidden="true">5</span></figure>
+        <ol class="ds-anatomy__list"><li><div><b>Question</b><small><code>.moment-check__question</code>, <code>--text-label</code> semibold, under a hairline that sets the check apart from the confirmation.</small></div></li><li><div><b>Scale</b><small>A <a href="../components/score-scale.html">Score scale</a>, <code>.score-scale--wide</code>, whose hidden legend repeats the question and the ends.</small></div></li><li><div><b>Ends</b><small><code>.moment-check__ends</code>: “Very hard” and “Very easy”, <code>--text-caption</code>, muted.</small></div></li><li><div><b>Follow-up field</b><small>In <code>.moment-check__follow-up</code>: a <a href="../components/textarea.html">Textarea</a> in a <a href="../components/form-field.html">Form field</a>, optional, 1,000 characters.</small></div></li><li><div><b>Send</b><small>A default <a href="../components/button.html">Button</a> in <code>.moment-check__actions</code>.</small></div></li></ol>
+      </div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc41" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc41" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc41" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc41" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc41" value="5"><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p></div>
+      </div>
+        <div class="ds-example__caption"><span>On a page, under the confirmation of a submitted listing.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="moment-check"&gt;&lt;p class="moment-check__question"&gt;How easy was it to list your business?&lt;/p&gt;&lt;fieldset class="score-scale score-scale--wide"&gt;&lt;legend class="visually-hidden"&gt;How easy was it to list your business? 1 is very hard, 5 is very easy.&lt;/legend&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc41" value="1"&gt;&lt;span&gt;1&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc41" value="2"&gt;&lt;span&gt;2&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc41" value="3"&gt;&lt;span&gt;3&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc41" value="4"&gt;&lt;span&gt;4&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc41" value="5"&gt;&lt;span&gt;5&lt;/span&gt;&lt;/label&gt;&lt;/fieldset&gt;&lt;p class="moment-check__ends" aria-hidden="true"&gt;&lt;span&gt;Very hard&lt;/span&gt;&lt;span&gt;Very easy&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="dialog__panel" style="position: relative; animation: none; border-radius: var(--radius-lg);"><div class="dialog__header"><div class="dialog__icon dialog__icon--info" aria-hidden="true"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg></div><div class="dialog__heading"><h3 class="dialog__title">Request sent to Legacy Financial</h3><p class="dialog__desc">Trevor usually confirms within a day.</p></div></div><div class="dialog__body"><div class="moment-check"><p class="moment-check__question">How easy was it to send your request?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to send your request? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc42" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc42" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc42" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc42" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc42" value="5"><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p></div></div><div class="dialog__footer"><button class="btn" type="button">Close</button><button class="btn btn--primary" type="button">View request</button></div></div>
+      </div>
+        <div class="ds-example__caption"><span>In a dialog’s body, between the confirmation and its actions.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="dialog__panel" style="position: relative; animation: none; border-radius: var(--radius-lg);"&gt;&lt;div class="dialog__header"&gt;&lt;div class="dialog__icon dialog__icon--info" aria-hidden="true"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12l6 6L20 6"/&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class="dialog__heading"&gt;&lt;h3 class="dialog__title"&gt;Request sent to Legacy Financial&lt;/h3&gt;&lt;p class="dialog__desc"&gt;Trevor usually confirms within a day.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="dialog__body"&gt;&lt;div class="moment-check"&gt;&lt;p class="moment-check__question"&gt;How easy was it to send your request?&lt;/p&gt;&lt;fieldset class="score-scale score-scale--wide"&gt;&lt;legend class="visually-hidden"&gt;How easy was it to send your request? 1 is very hard, 5 is very easy.&lt;/legend&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc42" value="1"&gt;&lt;span&gt;1&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc42" value="2"&gt;&lt;span&gt;2&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc42" value="3"&gt;&lt;span&gt;3&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc42" value="4"&gt;&lt;span&gt;4&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc42" value="5"&gt;&lt;span&gt;5&lt;/span&gt;&lt;/label&gt;&lt;/fieldset&gt;&lt;p class="moment-check__ends" aria-hidden="true"&gt;&lt;span&gt;Very hard&lt;/span&gt;&lt;span&gt;Very easy&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="dialog__footer"&gt;&lt;button class="btn" type="button"&gt;Close&lt;/button&gt;&lt;button class="btn btn--primary" type="button"&gt;View request&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="sizes" data-na="One size. The scale and the follow-up are at most 24rem wide; the hairline spans the container."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">One size. The scale and the follow-up are at most 24rem wide; the hairline spans the container.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc43" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc43" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc43" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc43" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc43" value="5"><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p></div>
+      </div>
+        <div class="ds-example__caption"><span>Unanswered.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="moment-check"&gt;&lt;p class="moment-check__question"&gt;How easy was it to list your business?&lt;/p&gt;&lt;fieldset class="score-scale score-scale--wide"&gt;&lt;legend class="visually-hidden"&gt;How easy was it to list your business? 1 is very hard, 5 is very easy.&lt;/legend&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc43" value="1"&gt;&lt;span&gt;1&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc43" value="2"&gt;&lt;span&gt;2&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc43" value="3"&gt;&lt;span&gt;3&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc43" value="4"&gt;&lt;span&gt;4&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc43" value="5"&gt;&lt;span&gt;5&lt;/span&gt;&lt;/label&gt;&lt;/fieldset&gt;&lt;p class="moment-check__ends" aria-hidden="true"&gt;&lt;span&gt;Very hard&lt;/span&gt;&lt;span&gt;Very easy&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc44" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc44" value="2" checked><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc44" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc44" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc44" value="5"><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p><div class="moment-check__follow-up"><div class="field"><label class="field__label" for="mc44-note">What got in the way? <span class="optional">(optional)</span></label><textarea class="textarea" id="mc44-note" rows="2" maxlength="1000"></textarea></div><div class="moment-check__actions"><button class="btn" type="button">Send</button></div></div></div>
+      </div>
+        <div class="ds-example__caption"><span>A score of 3 or less: the field and “Send”.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="moment-check"&gt;&lt;p class="moment-check__question"&gt;How easy was it to list your business?&lt;/p&gt;&lt;fieldset class="score-scale score-scale--wide"&gt;&lt;legend class="visually-hidden"&gt;How easy was it to list your business? 1 is very hard, 5 is very easy.&lt;/legend&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc44" value="1"&gt;&lt;span&gt;1&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc44" value="2" checked&gt;&lt;span&gt;2&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc44" value="3"&gt;&lt;span&gt;3&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc44" value="4"&gt;&lt;span&gt;4&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc44" value="5"&gt;&lt;span&gt;5&lt;/span&gt;&lt;/label&gt;&lt;/fieldset&gt;&lt;p class="moment-check__ends" aria-hidden="true"&gt;&lt;span&gt;Very hard&lt;/span&gt;&lt;span&gt;Very easy&lt;/span&gt;&lt;/p&gt;&lt;div class="moment-check__follow-up"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="mc44-note"&gt;What got in the way? &lt;span class="optional"&gt;(optional)&lt;/span&gt;&lt;/label&gt;&lt;textarea class="textarea" id="mc44-note" rows="2" maxlength="1000"&gt;&lt;/textarea&gt;&lt;/div&gt;&lt;div class="moment-check__actions"&gt;&lt;button class="btn" type="button"&gt;Send&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <div class="ds-example"><div class="ds-example__canvas">
+        <div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc45" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc45" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc45" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc45" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc45" value="5" checked><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p><div class="moment-check__follow-up"><p class="moment-check__thanks" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg>Thanks, that helps us.</p></div></div>
+      </div>
+        <div class="ds-example__caption"><span>A score of 4 or 5, or a note that was sent: the thanks, in a <code>role="status"</code> line.</span></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="moment-check"&gt;&lt;p class="moment-check__question"&gt;How easy was it to list your business?&lt;/p&gt;&lt;fieldset class="score-scale score-scale--wide"&gt;&lt;legend class="visually-hidden"&gt;How easy was it to list your business? 1 is very hard, 5 is very easy.&lt;/legend&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc45" value="1"&gt;&lt;span&gt;1&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc45" value="2"&gt;&lt;span&gt;2&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc45" value="3"&gt;&lt;span&gt;3&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc45" value="4"&gt;&lt;span&gt;4&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="mc45" value="5" checked&gt;&lt;span&gt;5&lt;/span&gt;&lt;/label&gt;&lt;/fieldset&gt;&lt;p class="moment-check__ends" aria-hidden="true"&gt;&lt;span&gt;Very hard&lt;/span&gt;&lt;span&gt;Very easy&lt;/span&gt;&lt;/p&gt;&lt;div class="moment-check__follow-up"&gt;&lt;p class="moment-check__thanks" role="status"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12l6 6L20 6"/&gt;&lt;/svg&gt;Thanks, that helps us.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes">
+        <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;"><div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc46" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc46" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc46" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc46" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc46" value="5" checked><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p><div class="moment-check__follow-up"><p class="moment-check__thanks" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg>Thanks, that helps us.</p></div></div></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0;"><div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc47" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc47" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc47" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc47" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc47" value="5" checked><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p><div class="moment-check__follow-up"><p class="moment-check__thanks" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg>Thanks, that helps us.</p></div></div></div></div>
+      </div>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul>
+        <li>The scale and the follow-up fill the container up to 24rem; at 360px each of the five options is about 60px wide.</li>
+        <li>In a dialog the check scrolls with the body; the dialog’s actions stay in reach.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The check has no surface of its own: it takes the page or the dialog behind it, and a <code>--color-border-default</code> hairline above. The thanks line is <code>--color-success-fg</code> with a check icon, so the colour is not the only carrier.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>A plain container. The scale is a <code>&lt;fieldset&gt;</code> of native radios whose hidden legend is the question and the meaning of the ends (“… 1 is very hard, 5 is very easy.”), so it is one group of five choices. The visible ends are hidden from assistive technology.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody><tr><td><kbd>Tab</kbd></td><td>Into the scale, then the field and “Send” when they show.</td></tr><tr><td><kbd>←</kbd> / <kbd>→</kbd></td><td>Choose a score.</td></tr><tr><td><kbd>Enter</kbd> / <kbd>Space</kbd> on “Send”</td><td>Sends the note.</td></tr></tbody></table></div>
+      <h3>Focus</h3>
+      <p>The shared ring on the option, the field and the button. Choosing a score does not move focus; the follow-up appears after the scale in the order.</p>
+      <h3>Labelling</h3>
+      <p>The field has a visible label, “What got in the way? (optional)”. The thanks line is a live region (<code>role="status"</code>), so it is announced when it replaces the field.</p>
+      <h3>Contrast</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Question on the page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div><div class="ds-pair"><span>Ends on the page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div><div class="ds-pair"><span>Thanks on the page</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-canvas" data-min="4.5"></span></div><div class="ds-pair"><span>Thanks in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface-raised" data-min="4.5"></span></div><div class="ds-pair"><span>Ends in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-raised" data-min="4.5"></span></div></div></div><div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);"><div class="ds-pair"><span>Question on the page</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-canvas" data-min="4.5"></span></div><div class="ds-pair"><span>Ends on the page</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-canvas" data-min="4.5"></span></div><div class="ds-pair"><span>Thanks on the page</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-canvas" data-min="4.5"></span></div><div class="ds-pair"><span>Thanks in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-success-fg|--color-bg-surface-raised" data-min="4.5"></span></div><div class="ds-pair"><span>Ends in a dialog</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-raised" data-min="4.5"></span></div></div></div></div>
+      <h3>Motion</h3>
+      <p>The follow-up fades in over <code>--duration-base</code>; under reduced motion it appears at once.</p>
+      <h3>Touch</h3>
+      <p>Each option is at least 44px tall; “Send” is a 44px button.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul>
+        <li>The question names the thing just done: “How easy was it to send your request?”, “How easy was it to list your business?”</li>
+        <li>The ends are “Very hard” and “Very easy”. The field is “What got in the way?”. The thanks is “Thanks, that helps us.”</li>
+        <li>Never an error, a required mark or a reminder. One question per confirmation.</li>
+      </ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont"><figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc48" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc48" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc48" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc48" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc48" value="5"><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p></div></div><figcaption>Ask about what the member just did, once, under the confirmation.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><div class="stack"><div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc49" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc49" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc49" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc49" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc49" value="5"><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p></div><div class="moment-check"><p class="moment-check__question">How likely are you to recommend Jubilee?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How likely are you to recommend Jubilee? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc50" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc50" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc50" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc50" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc50" value="5"><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p></div></div></div><figcaption>A second question. The feedback page is where a member says more.</figcaption></figure><figure class="ds-do"><div class="ds-example__canvas ds-example__canvas--stack"><div class="moment-check"><p class="moment-check__question">How easy was it to list your business?</p><fieldset class="score-scale score-scale--wide"><legend class="visually-hidden">How easy was it to list your business? 1 is very hard, 5 is very easy.</legend><label class="score-scale__option"><input type="radio" name="mc51" value="1"><span>1</span></label><label class="score-scale__option"><input type="radio" name="mc51" value="2"><span>2</span></label><label class="score-scale__option"><input type="radio" name="mc51" value="3"><span>3</span></label><label class="score-scale__option"><input type="radio" name="mc51" value="4"><span>4</span></label><label class="score-scale__option"><input type="radio" name="mc51" value="5" checked><span>5</span></label></fieldset><p class="moment-check__ends" aria-hidden="true"><span>Very hard</span><span>Very easy</span></p><div class="moment-check__follow-up"><p class="moment-check__thanks" role="status"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg>Thanks, that helps us.</p></div></div></div><figcaption>Thank the member in a line and leave the confirmation as it was.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas ds-example__canvas--stack"><div class="alert alert--danger" role="alert"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><div class="alert__title">We couldn’t save your answer</div></div></div></div><figcaption>An error for a failed check-in. The success screen stays a success.</figcaption></figure></div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table">
+        <thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+        <tbody><tr><td>Hairline</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr><tr><td>Question</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr><tr><td>Ends</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr><tr><td>Thanks</td><td><code>--color-success-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-fg" data-swatch></i><span data-token="--color-success-fg"></span></span></td></tr><tr><td>Space above the question</td><td><code>--space-5</code></td><td colspan="2"><span data-token="--space-5"></span></td></tr><tr><td>Gap between parts</td><td><code>--space-3</code> / <code>--space-2</code></td><td colspan="2"><span data-token="--space-3"></span> / <span data-token="--space-2"></span></td></tr><tr><td>Question / ends / thanks</td><td><code>--text-label</code> / <code>--text-caption</code></td><td colspan="2"><span data-token="--text-label"></span> / <span data-token="--text-caption"></span></td></tr><tr><td>Thanks icon</td><td><code>--icon-size-sm</code></td><td colspan="2"><span data-token="--icon-size-sm"></span></td></tr><tr><td>Follow-up fade</td><td><code>--duration-base</code> / <code>--ease-enter</code></td><td colspan="2"><span data-token="--duration-base"></span> / <span data-token="--ease-enter"></span></td></tr></tbody>
+      </table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="moment-check"&gt;
+  &lt;p class="moment-check__question"&gt;How easy was it to send your request?&lt;/p&gt;
+  &lt;fieldset class="score-scale score-scale--wide"&gt;&lt;legend class="visually-hidden"&gt;How easy was it to send your request? 1 is very hard, 5 is very easy.&lt;/legend&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="check-in" value="1"&gt;&lt;span&gt;1&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="check-in" value="2" checked&gt;&lt;span&gt;2&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="check-in" value="3"&gt;&lt;span&gt;3&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="check-in" value="4"&gt;&lt;span&gt;4&lt;/span&gt;&lt;/label&gt;&lt;label class="score-scale__option"&gt;&lt;input type="radio" name="check-in" value="5"&gt;&lt;span&gt;5&lt;/span&gt;&lt;/label&gt;&lt;/fieldset&gt;
+  &lt;p class="moment-check__ends" aria-hidden="true"&gt;&lt;span&gt;Very hard&lt;/span&gt;&lt;span&gt;Very easy&lt;/span&gt;&lt;/p&gt;
+  &lt;div class="moment-check__follow-up"&gt;
+    &lt;div class="field"&gt;&lt;label class="field__label" for="check-in-note"&gt;What got in the way? &lt;span class="optional"&gt;(optional)&lt;/span&gt;&lt;/label&gt;&lt;textarea class="textarea" id="check-in-note" rows="2" maxlength="1000"&gt;&lt;/textarea&gt;&lt;/div&gt;
+    &lt;div class="moment-check__actions"&gt;&lt;button class="btn" type="button"&gt;Send&lt;/button&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+      <p>Answered, the follow-up holds the thanks instead:</p>
+      <pre><code>&lt;div class="moment-check__follow-up"&gt;&lt;p class="moment-check__thanks" role="status"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 12l6 6L20 6"/&gt;&lt;/svg&gt;Thanks, that helps us.&lt;/p&gt;&lt;/div&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody><tr><td><code>.moment-check</code></td><td>The container, with the hairline above.</td></tr><tr><td><code>.moment-check__question</code></td><td>The visible question.</td></tr><tr><td><code>.score-scale.score-scale--wide</code></td><td>The scale.</td></tr><tr><td><code>.moment-check__ends</code></td><td>The two words under the ends of the scale.</td></tr><tr><td><code>.moment-check__follow-up</code></td><td>What a score opens: the field and <code>.moment-check__actions</code>, or <code>.moment-check__thanks</code>.</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Drawn in these mocks:</p>
+      <ul><li><a href="../../mocks/pages/list-business/success.html">pages/list-business/success</a> (unanswered, on a page)</li><li><a href="../../mocks/pages/list-business/success-check-in-low.html">pages/list-business/success-check-in-low</a> (a low score)</li><li><a href="../../mocks/pages/list-business/success-check-in-thanks.html">pages/list-business/success-check-in-thanks</a> (answered)</li><li><a href="../../mocks/dialogs/book-meeting/success.html">dialogs/book-meeting/success</a> (in a dialog)</li><li><a href="../../mocks/dialogs/request-quote/success.html">dialogs/request-quote/success</a> (in a dialog)</li><li><a href="../../mocks/dialogs/order-request/success.html">dialogs/order-request/success</a> (in a dialog)</li></ul>
+      <p>New with member feedback (L1-029, ADR 0043). The Magic Patterns frame labels the field by its placeholder and sends with a small ink pill; the system gives the field a visible label and uses the default button.</p>
+    </section>
+
+    <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

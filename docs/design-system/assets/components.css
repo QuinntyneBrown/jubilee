@@ -831,6 +831,171 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 @media (max-width: 39.99rem) { .detail-head__actions .btn--primary { flex-basis: 100%; } }
 .empty__text, .alert__body, .toast__text { overflow-wrap: anywhere; }
 
+/* ==========================================================================
+   Member feedback (L1-029, L2-210 to L2-213, ADR 0043). One contiguous region
+   per block, opened by "=== block: <name> ===" and closed by "=== end: <name> ===",
+   so each can be lifted into its component's stylesheet whole.
+   ========================================================================== */
+
+/* === block: feedback-launcher === */
+/* The way into the feedback panel, fixed at the bottom right of every member screen. Under 48rem it
+   is a round icon button that sits above the phone tab bar; from 48rem a pill with its label. It
+   shares the bars' layer, so dialogs and toasts cover it. */
+.feedback-launcher { position: fixed; z-index: var(--z-sticky); right: var(--space-4); bottom: calc(var(--layout-tabbar-height) + env(safe-area-inset-bottom) + var(--space-6)); display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); width: var(--control-height-md); height: var(--control-height-md); padding: 0; border: var(--border-width-hairline) solid var(--color-border-inverse); border-radius: var(--radius-full); background: var(--color-bg-inverse); color: var(--color-fg-inverse); font: var(--text-label); font-weight: var(--font-weight-semibold); white-space: nowrap; box-shadow: var(--shadow-3); cursor: pointer; transition: transform var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
+.feedback-launcher:hover, .feedback-launcher[data-state="hover"] { box-shadow: var(--shadow-4); }
+.feedback-launcher:active, .feedback-launcher[data-state="active"] { transform: scale(0.97); }
+.feedback-launcher:focus-visible, .feedback-launcher[data-state="focus"] { border-radius: var(--radius-full); }
+.feedback-launcher__label { display: none; }
+.feedback-launcher--static { position: static; }
+/* A screen with a booking bar keeps the launcher clear of it on a phone. */
+@media (max-width: 47.99rem) { body:has(.booking-bar) .feedback-launcher { bottom: calc(var(--layout-tabbar-height) + env(safe-area-inset-bottom) + var(--control-height-lg) + var(--space-6) + var(--space-4)); } }
+@media (min-width: 48rem) {
+  .feedback-launcher { right: var(--space-6); bottom: var(--space-6); width: auto; padding: 0 var(--space-4); }
+  .feedback-launcher__label { display: inline; }
+}
+@media (prefers-reduced-motion: reduce) { .feedback-launcher:active, .feedback-launcher[data-state="active"] { transform: none; } }
+@media (forced-colors: active) { .feedback-launcher { forced-color-adjust: none; background: ButtonFace; color: ButtonText; border-color: ButtonText; } }
+@media print { .feedback-launcher { display: none; } }
+/* === end: feedback-launcher === */
+
+/* === block: dialog--corner === */
+/* A placement of the dialog: the bottom sheet every dialog is under 40rem, and from 40rem a card in
+   the bottom right corner instead of the centre. The scrim stays at every width.
+   .dialog__footer-start is the slot a footer keeps at its leading edge (the "Full form" link button). */
+.dialog__footer-start { margin-inline-end: auto; align-self: center; }
+.dialog__footer-start:empty { display: none; }
+@media (min-width: 40rem) {
+  .dialog--corner { place-items: end; }
+  .dialog--corner .dialog__panel { max-width: 24rem; transform-origin: bottom right; }
+}
+/* === end: dialog--corner === */
+
+/* === block: tabs--segmented === */
+/* A look of the tab list: a pill track whose selected tab is a raised pill. Each tab holds an icon
+   and its label. .tabs--lg is the page size: from 40rem the track is as wide as its tabs. */
+.tabs--segmented { display: flex; gap: var(--space-1); padding: var(--space-1); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-full); background: var(--color-bg-surface-sunken); overflow: visible; }
+.tabs--segmented .tab { flex: 1 1 auto; min-width: 0; justify-content: center; gap: var(--space-2); padding-inline: var(--space-2); border-radius: var(--radius-full); font-weight: var(--font-weight-semibold); transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard); }
+.tabs--segmented .tab::after { content: none; }
+.tabs--segmented .tab .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+.tabs--segmented .tab[aria-selected="true"], .tabs--segmented .tab[data-state="selected"] { background: var(--color-bg-surface-raised); box-shadow: var(--shadow-1); }
+.tabs--segmented .tab:focus-visible, .tabs--segmented .tab[data-state="focus"] { border-radius: var(--radius-full); }
+@media (min-width: 40rem) {
+  .tabs--segmented.tabs--lg { display: inline-flex; }
+  .tabs--segmented.tabs--lg .tab { flex: none; padding-inline: var(--space-5); }
+}
+@media (forced-colors: active) { .tabs--segmented .tab[aria-selected="true"] { outline: var(--border-width-thick) solid Highlight; outline-offset: calc(-1 * var(--border-width-thick)); } }
+/* === end: tabs--segmented === */
+
+/* === block: star-scale === */
+/* A rating of 1 to 5 as five native radios in a group. The chosen star and those before it are
+   filled; the state is the radio's :checked. Each star is a 44px target. .star-scale--lg is the
+   page size. --jb-star-size is the drawn star. */
+.star-scale { --jb-star-size: var(--avatar-size-sm); }
+.star-scale > legend { padding: 0; margin-bottom: var(--space-2); font: var(--text-label); color: var(--color-fg-default); }
+.star-scale__stars { display: flex; flex-wrap: wrap; align-items: center; margin-inline-start: calc((var(--jb-star-size) - var(--target-comfortable)) / 2); }
+.star-scale__star { position: relative; display: grid; place-items: center; flex: none; width: var(--target-comfortable); height: var(--target-comfortable); border-radius: var(--radius-md); cursor: pointer; }
+.star-scale__star input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.star-scale__star .icon { width: var(--jb-star-size); height: var(--jb-star-size); fill: none; stroke: var(--color-border-strong); stroke-width: 1.75; transition: fill var(--duration-fast) var(--ease-standard), stroke var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard); }
+.star-scale__star:has(input:checked) .icon, .star-scale__star:has(~ .star-scale__star input:checked) .icon, .star-scale__star[data-state="checked"] .icon { fill: var(--color-accent); stroke: var(--color-accent-border); }
+@media (hover: hover) { .star-scale__star:hover .icon, .star-scale__star:has(~ .star-scale__star:hover) .icon { stroke: var(--color-fg-default); } }
+.star-scale__star[data-state="hover"] .icon { stroke: var(--color-fg-default); }
+.star-scale__star:active .icon { transform: scale(0.9); }
+.star-scale__star:has(input:focus-visible), .star-scale__star[data-state="focus"] { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: calc(-1 * var(--focus-ring-width)); }
+.star-scale__star:has(input:disabled), .star-scale__star[data-state="disabled"] { opacity: 0.5; cursor: not-allowed; }
+.star-scale__star:has(input:disabled) input { cursor: not-allowed; }
+.star-scale__word { margin-inline-start: var(--space-2); font: var(--text-label); font-weight: var(--font-weight-semibold); color: var(--color-fg-default); }
+.star-scale:not(:has(input:checked)) .star-scale__word { color: var(--color-fg-muted); }
+.star-scale--lg { --jb-star-size: calc(var(--avatar-size-sm) + var(--space-1)); }
+.star-scale--lg .star-scale__word { font-size: var(--font-size-lg); }
+.star-scale[aria-invalid="true"] .star-scale__star .icon, .star-scale[data-state="invalid"] .star-scale__star .icon { stroke: var(--color-danger-solid); }
+.star-scale__error { margin-top: var(--space-1); font: var(--text-body-sm); color: var(--color-danger-fg); display: flex; gap: var(--space-1); align-items: flex-start; }
+.star-scale__error::before { content: "⚠" / ""; flex: none; }
+@media (prefers-reduced-motion: reduce) { .star-scale__star:active .icon { transform: none; } }
+@media (forced-colors: active) { .star-scale__star:has(input:checked) .icon, .star-scale__star:has(~ .star-scale__star input:checked) .icon { fill: Highlight; stroke: Highlight; } }
+/* === end: star-scale === */
+
+/* === block: score-scale === */
+/* A score of 1 to 5 as five native radios drawn as square buttons, each a 44px target, under a
+   visually hidden legend. .score-scale--wide shares a row of at most 24rem equally (the moment
+   check-in). */
+.score-scale { display: flex; gap: var(--space-2); }
+.score-scale__option { position: relative; display: grid; place-items: center; flex: none; width: var(--control-height-md); height: var(--control-height-md); border: var(--border-width-hairline) solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-bg-surface); color: var(--color-fg-default); font: var(--text-label); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard); }
+.score-scale__option input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.score-scale__option:hover, .score-scale__option[data-state="hover"] { background: var(--color-bg-subtle); border-color: var(--color-fg-muted); }
+.score-scale__option:has(input:checked), .score-scale__option[data-state="checked"] { background: var(--color-accent); border-color: var(--color-accent-border); color: var(--color-fg-on-accent); font-weight: var(--font-weight-bold); }
+.score-scale__option:has(input:focus-visible), .score-scale__option[data-state="focus"] { outline: var(--focus-ring-width) solid var(--color-focus-ring); outline-offset: var(--focus-ring-offset); }
+.score-scale__option:has(input:disabled), .score-scale__option[data-state="disabled"] { opacity: 0.5; cursor: not-allowed; }
+.score-scale__option:has(input:disabled) input { cursor: not-allowed; }
+.score-scale--wide { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: 24rem; }
+.score-scale--wide .score-scale__option { width: auto; }
+@media (forced-colors: active) { .score-scale__option { forced-color-adjust: none; border-color: CanvasText; } .score-scale__option:has(input:checked) { background: Highlight; color: HighlightText; } }
+/* === end: score-scale === */
+
+/* === block: score-rows === */
+/* The parts of Jubilee, each with its score scale: a name and a detail, the scale under them below
+   40rem and beside them from there. */
+.score-rows { list-style: none; margin: 0; padding: 0; border-top: var(--border-width-hairline) solid var(--color-border-default); }
+.score-rows__row { display: flex; flex-direction: column; gap: var(--space-3); padding-block: var(--space-4); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
+.score-rows__text { min-width: 0; }
+.score-rows__name { font: var(--text-label); font-size: var(--font-size-md); }
+.score-rows__detail { font: var(--text-body-sm); color: var(--color-fg-muted); }
+@media (min-width: 40rem) { .score-rows__row { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--space-4); } }
+/* === end: score-rows === */
+
+/* === block: moment-check === */
+/* One question after a moment that matters: the question, a wide score scale between two words,
+   then either a field and "Send" (a low score) or a line of thanks. */
+.moment-check { display: flex; flex-direction: column; gap: var(--space-3); padding-top: var(--space-5); border-top: var(--border-width-hairline) solid var(--color-border-default); text-align: left; }
+.moment-check__question { font: var(--text-label); font-weight: var(--font-weight-semibold); color: var(--color-fg-default); }
+.moment-check__ends { display: flex; justify-content: space-between; max-width: 24rem; margin-top: calc(-1 * var(--space-2)); font: var(--text-caption); color: var(--color-fg-muted); }
+.moment-check__follow-up { display: flex; flex-direction: column; gap: var(--space-2); max-width: 24rem; animation: fade-in var(--duration-base) var(--ease-enter); }
+.moment-check__actions { display: flex; }
+.moment-check__thanks { display: inline-flex; align-items: center; gap: var(--space-2); font: var(--text-label); color: var(--color-success-fg); }
+.moment-check__thanks .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+/* === end: moment-check === */
+
+/* === block: feedback-history === */
+/* "Your feedback": what the member sent, newest first, each with the icon of its kind, a title, a
+   line of date, reference and status in words, and the team's reply under it. */
+.feedback-history { min-width: 0; }
+.feedback-history__heading { font: var(--text-label); font-weight: var(--font-weight-semibold); letter-spacing: var(--letter-spacing-normal); }
+.feedback-history__list { list-style: none; margin: var(--space-3) 0 0; padding: 0; border-top: var(--border-width-hairline) solid var(--color-border-default); }
+.feedback-history__item { display: flex; align-items: flex-start; gap: var(--space-3); padding-block: var(--space-4); }
+.feedback-history__item + .feedback-history__item { border-top: var(--border-width-hairline) solid var(--color-border-default); }
+.feedback-history__icon { display: grid; place-items: center; flex: none; width: var(--avatar-size-sm); height: var(--avatar-size-sm); border-radius: var(--radius-full); background: var(--color-bg-subtle); color: var(--color-fg-default); }
+.feedback-history__icon .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); }
+.feedback-history__body { flex: 1; min-width: 0; }
+.feedback-history__title { font: var(--text-label); font-size: var(--font-size-md); overflow-wrap: anywhere; }
+.feedback-history__meta { margin-top: var(--space-0-5); font: var(--text-body-sm); color: var(--color-fg-muted); }
+.feedback-history__status { font-weight: var(--font-weight-semibold); color: var(--color-fg-default); }
+.feedback-history__reply { margin-top: var(--space-2); padding-left: var(--space-3); border-left: var(--border-width-thick) solid var(--color-accent); font: var(--text-body-sm); color: var(--color-fg-default); overflow-wrap: anywhere; }
+.feedback-history__empty { margin-top: var(--space-3); padding-top: var(--space-4); border-top: var(--border-width-hairline) solid var(--color-border-default); font: var(--text-body-sm); color: var(--color-fg-muted); }
+.feedback-history__error { margin-top: var(--space-3); }
+.feedback-history__placeholder { flex: none; width: var(--avatar-size-sm); height: var(--avatar-size-sm); }
+/* === end: feedback-history === */
+
+/* === block: file-list === */
+/* Files chosen for a form: a dashed button that opens the file picker, the chosen files by name,
+   each with "Remove", and a line for a file that was refused. */
+.file-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.file-list__add { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-2); width: 100%; padding: var(--space-6) var(--space-4); border: var(--border-width-thick) dashed var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-bg-surface); color: var(--color-fg-default); font: var(--text-label); font-weight: var(--font-weight-semibold); cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard); }
+.file-list__add .icon { width: var(--icon-size-lg); height: var(--icon-size-lg); color: var(--color-fg-muted); }
+.file-list__add:hover, .file-list__add[data-state="hover"] { background: var(--color-bg-subtle); border-color: var(--color-fg-muted); }
+.file-list__add:focus-visible, .file-list__add[data-state="focus"] { border-radius: var(--radius-md); }
+.file-list__add:disabled, .file-list__add[data-state="disabled"] { opacity: 0.5; cursor: not-allowed; }
+.file-list__items { list-style: none; margin: 0; padding: 0; border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-bg-surface); }
+.file-list__item { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-1) var(--space-1) var(--space-1) var(--space-3); }
+.file-list__item + .file-list__item { border-top: var(--border-width-hairline) solid var(--color-border-default); }
+.file-list__item > .icon { color: var(--color-fg-muted); }
+.file-list__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: var(--text-label); }
+.file-list__remove { flex: none; min-height: var(--target-comfortable); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-full); background: none; color: var(--color-fg-link); font: var(--text-label); text-decoration: underline; text-underline-offset: 0.15em; cursor: pointer; }
+.file-list__remove:hover, .file-list__remove[data-state="hover"] { background: var(--color-bg-subtle); color: var(--color-fg-link-hover); }
+.file-list__remove:focus-visible, .file-list__remove[data-state="focus"] { border-radius: var(--radius-full); }
+.file-list__remove:disabled { color: var(--color-fg-disabled); cursor: not-allowed; }
+.file-list__error { font: var(--text-body-sm); color: var(--color-danger-fg); display: flex; gap: var(--space-1); align-items: flex-start; }
+.file-list__error::before { content: "⚠" / ""; flex: none; }
+/* === end: file-list === */
+
 /* ---------- Rooms and rentals (L1-028, ADR 0042) ---------------------------------------------------- */
 /* Space card: a room or rental in a grid. Rent, term and where come first; that is what renters scan for. */
 .space-card { display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none; border-radius: var(--radius-lg); }

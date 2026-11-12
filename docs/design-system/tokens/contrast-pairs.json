@@ -525,6 +525,18 @@
       "bg": "--color-bg-subtle-hover",
       "min": 3,
       "note": "progress fill on its track"
+    },
+    {
+      "fg": "--color-success-fg",
+      "bg": "--color-bg-surface-raised",
+      "min": 4.5,
+      "note": "moment check thanks in a dialog"
+    },
+    {
+      "fg": "--color-danger-solid",
+      "bg": "--color-bg-canvas",
+      "min": 3,
+      "note": "invalid star outline on the page"
     }
   ]
 }
