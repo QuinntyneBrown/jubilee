@@ -1,0 +1,151 @@
+/* Jubilee business cards. Vistaprint standard card: full bleed 3.61 x 2.11 in,
+   trim 3.5 x 2 in, safe 3.36 x 1.86 in. Every measurement is in em and
+   1em = 1in; the render script sets the inch to 600 px (600 DPI). */
+
+@font-face {
+  /* The variable file with the width axis: the wordmark is set at wdth 110. */
+  font-family: "Archivo";
+  src: url("../../design-system/assets/fonts/Archivo.woff2") format("woff2");
+  font-weight: 400 900;
+  font-stretch: 62% 125%;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../../design-system/assets/fonts/Inter.woff2") format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: block;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.card-face {
+  position: relative;
+  overflow: hidden;
+  width: 3.61em;
+  height: 2.11em;
+  font-size: 600px;
+  font-family: "Inter", sans-serif;
+}
+
+.card-face--night {
+  background: #0b0e14;
+}
+
+.card-face--cream {
+  background: #f4f2ec;
+}
+
+/* Content is held inside the safe area, 0.125in from the bleed edge. */
+.card-face__safe {
+  position: absolute;
+  inset: 0.125em;
+}
+
+/* --- Front ------------------------------------------------------------- */
+
+.front {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 0.0408em;
+}
+
+.lockup__mark {
+  flex-shrink: 0;
+  width: 0.374em;
+  height: 0.374em;
+}
+
+.lockup__wordmark {
+  margin-top: -0.06em;
+  color: #f4f2ec;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.34em;
+  font-weight: 700;
+  font-variation-settings: "wdth" 110;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.front__line {
+  margin-top: 1.5em;
+  color: rgba(244, 242, 236, 0.78);
+  font-size: 0.098em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* --- Back -------------------------------------------------------------- */
+
+.back {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0.06em 0.05em;
+}
+
+.back__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.1em;
+}
+
+.back__name {
+  color: #0b0e14;
+  font-family: "Archivo", sans-serif;
+  font-size: 0.155em;
+  font-weight: 700;
+  font-variation-settings: "wdth" 110;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.back__title {
+  margin-top: 0.35em;
+  color: #5b5f68;
+  font-size: 0.098em;
+  line-height: 1.5;
+}
+
+.back__mark {
+  flex-shrink: 0;
+  width: 0.3em;
+  height: 0.3em;
+}
+
+.back__contact {
+  color: #0b0e14;
+  font-size: 0.098em;
+  line-height: 1.5;
+}
+
+.back__email {
+  font-weight: 500;
+}
+
+.back__website {
+  color: #5b5f68;
+}
