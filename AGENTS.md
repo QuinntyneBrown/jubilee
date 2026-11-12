@@ -52,6 +52,8 @@ say so and propose the correction; do not work around it silently.
 - `docs/audits/` — audits of the codebase against its rules, each with the fixes it calls for
 - `docs/scripture.md` — the passages the mission and all of Jubilee's content are framed from
 - `docs/elevator-pitch.md` — the first-contact pitch for Christian business people
+- `docs/personas/` — invented people in Toronto who come across Jubilee, one folder each: who they
+  are, their onboarding and profile journeys, and their feedback
 - `docs/journey.md`, `docs/prompts/` — the user journeys and one implementation prompt per journey
 - `eng/` — local engineering scripts (`Test-Backend.ps1`, `Start-E2eApi.ps1`, `Start-FreshStack.ps1`)
 - `eng/azure/` — how Jubilee is hosted on Azure and the script that deploys it (see its `README.md`)
