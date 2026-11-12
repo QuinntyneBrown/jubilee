@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Serve a published photo
+title UML sequence behaviour — Serve a photo
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -14,34 +14,47 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Visitor" as user
+actor "Participant or Visitor" as user
 box "Frontend — Jubilee Web" #E0F2FE
   participant "Browser" as browser
-  participant "BusinessPage" as page
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "ListingsController" as controller
+  participant "AttachmentsController" as attachments
+  participant "MediaController" as media
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetAttachmentQueryHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  participant "CDN on the media domain" as cdn
-  database "Media storage public container" as media
+  participant "FileMediaStore" as store
+  database "Jubilee database" as db
 end box
-user -> browser : Open /b/:slug
-browser -> page : Start page
-page -> controller : GET /api/listings/{slug}
-controller --> page : Listing with photo URLs of Published media only
-page --> browser : img elements pointing at the media domain
-browser -> cdn : GET /{random key}.jpg without Jubilee cookies (L2-138)
-alt Object cached at the CDN
-  cdn --> browser : 200 image
-else Not cached
-  cdn -> media : Fetch object
-  alt Key names a published object
-    media --> cdn : Object with stored Content-Type
-    cdn --> browser : 200 with Content-Type image/jpeg and X-Content-Type-Options nosniff (L2-138)
-  else Key unknown, quarantined or rejected
-    media --> cdn : Not found
-    cdn --> browser : 404. No public URL reaches quarantine (L2-138)
+alt message photo
+  user -> browser : Open a conversation with a photo
+  browser -> attachments : GET /api/attachments/{id}?expires=…&sig=…
+  attachments -> handler : Send GetAttachmentQuery
+  handler -> handler : Check the signature and the expiry through IAttachmentLinks (L2-060)
+  alt link forged or older than 5 minutes
+    handler --> attachments : Not found
+    attachments --> browser : 404
+  else link valid
+    handler -> db : Load MessageAttachment
+    db --> handler : Key and ContentType
+    handler -> store : Read(key, 0, format)
+    store --> handler : Bytes
+    handler --> attachments : AttachmentContent
+    attachments --> browser : 200 with the stored Content-Type, nosniff and private, no-store
+  end
+else listing photo
+  user -> browser : Open /b/:slug
+  browser -> media : GET /media/{key}/{width}.{jpg|webp}
+  media -> media : Accept a key of 32 hexadecimal characters and the widths 320, 640 and 1280
+  alt name not of that form or nothing stored under it
+    media --> browser : 404
+  else rendition stored
+    media -> store : Read(key, width, format)
+    store --> media : Bytes
+    media --> browser : 200 with Content-Type image/jpeg or image/webp, nosniff and a long cache life (L2-138)
   end
 end
 browser --> user : Show the photo

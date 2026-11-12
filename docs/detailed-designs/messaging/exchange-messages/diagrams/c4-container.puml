@@ -8,8 +8,10 @@ Person(owner, "Owner", "Replies and sets the away period")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Conversation page with timeline and composer and the away period dialog")
   Container(api, "Jubilee API", "ASP.NET Core", "Conversation and message and attachment endpoints and the event stream")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and messages and attachments and notifications")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Conversations and messages and attachment rows and notifications")
+  ContainerDb(media, "Media store", "Folder outside the web root", "Bytes of each message photo under a random key")
 }
+System_Ext(scanner, "Malware scanner", "clamd daemon")
 
 Rel(member, web, "Uses", "HTTPS")
 Rel(owner, web, "Uses", "HTTPS")
@@ -17,4 +19,6 @@ Rel(web, api, "Calls /api/conversations and /api/my-business/away", "JSON/HTTPS"
 Rel(web, api, "Fetches photos by signed link from /api/attachments", "HTTPS")
 Rel(api, web, "Sends notification and counts events on GET /api/events", "Server-sent events")
 Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, scanner, "Scans each photo before storing it", "INSTREAM/TCP 3310")
+Rel(api, media, "Saves and reads photo bytes", "File system")
 @enduml

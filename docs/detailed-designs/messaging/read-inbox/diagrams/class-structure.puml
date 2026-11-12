@@ -13,38 +13,48 @@ skinparam class {
 ' --------------------------
 title Class structure — Read the inbox
 
-class MessagesStore <<signal store>> {
-  +rows: Signal<InboxRowDto[]>
-  +total: Signal<number>
-  +unread: Signal<number>
-  +term: Signal<string>
-  +load(): void
-  +search(term: string): void
-  +setMuted(id: string, muted: boolean): void
+class InboxList <<Angular container>> {
+  +selectedId: string?
+  +typed(value: string): void
+  +searchNow(): void
+  +clear(): void
+}
+class MessagesStore <<Angular service>> {
+  +state: Signal<LoadState<Inbox>>
+  +search: Signal<string>
+  +load(search: string): void
+  +loadMore(): void
 }
 class RealtimeService <<Angular service>> {
   +received: Observable<NotificationItem>
 }
 class MessagesApi <<service contract>> {
-  +inbox(term: string): Observable<InboxDto>
+  +inbox(search?: string, before?: string): Observable<Inbox>
   +mute(id: string, muted: boolean): Observable<void>
 }
 class GetInboxQuery {
   +string Subject
-  +string Search
+  +string? Search
+  +Guid? Before
 }
 class GetInboxQueryHandler {
   +Handle(query: GetInboxQuery): Task<InboxDto>
 }
+class ConversationRules <<static>> {
+  +const int InboxPageSize = 50
+  +RowsFor(db: IAppDbContext, subject: string): IQueryable<ConversationRow>
+}
 class InboxDto {
   +int TotalCount
   +int UnreadCount
+  +bool HasMore
   +IReadOnlyList<InboxRowDto> Conversations
 }
 class InboxRowDto {
   +Guid Id
   +string Title
   +string BusinessName
+  +string BusinessSlug
   +string Preview
   +DateTimeOffset LastMessageAt
   +bool Unread
@@ -71,12 +81,13 @@ class Conversation {
   +Mute(asOwner: bool, muted: bool): void
 }
 
-MessagesStore ..> MessagesApi : calls
+InboxList ..> MessagesStore : reads and loads
 InboxList ..> RealtimeService : reads again on message notifications
-MessagesStore "1" o-- "*" InboxRowDto : holds
+MessagesStore ..> MessagesApi : calls
 MessagesApi ..> GetInboxQuery : GET /api/conversations
 MessagesApi ..> SetConversationMutedCommand : PUT mute
 GetInboxQueryHandler ..> GetInboxQuery : handles
+GetInboxQueryHandler ..> ConversationRules : scopes and pages with
 GetInboxQueryHandler ..> InboxDto : returns
 InboxDto "1" *-- "*" InboxRowDto : contains
 SetConversationMutedCommandHandler ..> SetConversationMutedCommand : handles

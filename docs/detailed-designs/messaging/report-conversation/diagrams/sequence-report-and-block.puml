@@ -35,14 +35,15 @@ actor "Verification team member" as verifier
 member -> page : Press "More" in the conversation header
 page -> menu : Open with "Mute" and "Report conversation" (L2-061)
 member -> menu : Choose "Report conversation"
-menu -> dialog : Open "Report this conversation" with canBlock
+menu -> page : Report chosen
+page -> dialog : Open "Report this conversation" with canBlock
 member -> dialog : Fill "Tell us what happened" and press "Send report"
 alt description is empty
   dialog --> member : Show "Add a sentence or two so we know what to check." (L2-063)
 else description given
   dialog -> client : report(id, reason, block)
   client -> controller : POST /api/conversations/{id}/report { reason, block }
-  controller -> controller : Authenticate and apply endpoint policy
+  controller -> controller : Authenticate
   controller -> handler : Send ReportConversationCommand
   handler -> db : Load conversation for a participant (L2-133)
   alt caller is not a participant
@@ -56,19 +57,30 @@ else description given
     handler -> db : Find the caller's unresolved report on the conversation
     db --> handler : Report or none
     opt no unresolved report
-      handler -> handler : File ConversationReport with the reason (L2-063)
+      handler -> db : Count the caller's reports of the last 24 hours
+      db --> handler : Count
+      alt 10 already filed
+        handler --> controller : Rate limited
+        controller --> client : 429 with Retry-After (L2-137)
+        client --> dialog : Failed
+        dialog --> member : "You’re doing that a lot. Try again in {n} minutes."
+      else under the limit
+        handler -> handler : File ConversationReport with the reason (L2-063)
+      end
     end
-    opt block is true and the caller is the member
-      handler -> entity : Block() (L2-063)
-      entity --> handler : BlockedByMember set
+    opt report filed or already open
+      opt block is true and the caller is the member
+        handler -> entity : Block() (L2-063)
+        entity --> handler : BlockedByMember set
+      end
+      handler -> db : Save report and block in one unit of work
+      db --> handler : Commit result
+      handler --> controller : Done
+      controller --> client : 204 No Content
+      client --> dialog : Report sent
+      dialog --> member : Show "Thanks for telling us." and "{Business} is blocked." when blocked
+      verifier -> db : Sees the report in the reports list (L2-105)
     end
-    handler -> db : Save report and block in one unit of work
-    db --> handler : Commit result
-    handler --> controller : Done
-    controller --> client : 204 No Content
-    client --> dialog : Report sent
-    dialog --> member : Show "Thanks for telling us." and "{Business} is blocked." when blocked
-    verifier -> db : Sees the report in the reports list (L2-105)
   end
 end
 @enduml

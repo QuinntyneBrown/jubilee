@@ -16,7 +16,7 @@ skinparam package {
 }
 actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "InboxSearchBox" as search
+  participant "InboxList" as search
   participant "MessagesStore" as store
   participant "MessagesApi" as client
 end box
@@ -29,21 +29,21 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-member -> search : Type "trevor"
-search -> search : Debounce so the query runs within 300 ms (L2-059)
-search -> store : search(term)
+member -> search : Type "trevor" in "Search messages"
+search -> search : Wait 250 ms after the last keystroke so the list shows within 300 ms (L2-059)
+search -> store : load(term)
 store -> client : inbox(term)
 client -> controller : GET /api/conversations?q=trevor
-controller -> controller : Authenticate and apply endpoint policy
+controller -> controller : Authenticate
 controller -> handler : Send GetInboxQuery with the search term
 handler -> db : Match business name and participant name and message text within the caller's conversations (L2-059)
-db --> handler : Matching rows
+db --> handler : Counts of the matches and the first 50 matching rows
 handler --> controller : InboxDto
 controller --> client : 200 OK
 client --> store : Rows
 alt no match
   store --> search : Empty result
-  search --> member : Show "No messages match" with "Clear search"
+  search --> member : Show "No messages match “trevor”." with "Clear search"
 else matches
   store --> search : Filtered rows
   search --> member : Show only matching conversations

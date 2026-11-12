@@ -15,46 +15,52 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Verification team member" as verifier
-box "Frontend — Jubilee Web" #E0F2FE
+box "Frontend — Jubilee Admin" #E0F2FE
   participant "AdminReportPage" as page
   participant "AdminApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "AdminReportsController" as controller
-  participant "ReportedConversationAccessPolicy" as policy
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetReportedConversationQueryHandler" as handler
-  participant "IAuditLog" as audit
+  participant "OpenReportCommandHandler" as handler
+  participant "AuditLog" as audit
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 verifier -> page : Open a report
-page -> client : getReportedConversation(reportId)
-client -> controller : GET /api/admin/reports/{reportId}/conversation
-controller -> controller : Authenticate and require Verifier or Admin role (L2-133)
-controller -> policy : Authorize(staff, conversationId)
-policy -> db : Find open report on the conversation
-db --> policy : Report or none
-alt no open report
-  policy --> controller : Denied
-  controller -> audit : Record refused access (L2-180)
-  audit -> db : Append AuditEntry
-  db --> audit : Stored
-  controller --> client : 403 ProblemDetails (L2-063)
-  client --> page : Forbidden
-else open report exists
-  policy --> controller : Allowed
-  controller -> audit : Record staff access to personal data (L2-180)
-  audit -> db : Append AuditEntry
-  db --> audit : Stored
-  controller -> handler : Send GetReportedConversationQuery
-  handler -> db : Load conversation and messages
-  db --> handler : Conversation
-  handler --> controller : ConversationDto
-  controller --> client : 200 OK
-  client --> page : Conversation
-  page --> verifier : Show messages as plain text with safe links
+page -> client : openReport(id)
+client -> controller : POST /api/admin/reports/{id}/open
+controller -> controller : RequiresVerifier checks the staff session (L2-133)
+alt no staff session of the verification team
+  controller --> client : 403 STAFF_SESSION_REQUIRED
+  client --> page : Refused
+else verifier
+  controller -> handler : Send OpenReportCommand
+  handler -> db : Load the report by its id
+  alt the id is not a report
+    db --> handler : No row
+    handler --> controller : Not found
+    controller --> client : 404 and nothing recorded (L2-063)
+  else report found
+    db --> handler : Report and its listing
+    handler -> handler : Move an open report to InReview
+    alt conversation report that is not resolved
+      handler -> audit : Record conversation.viewed with "Report {id}" as the reason (L2-150, L2-180)
+      audit -> db : Append AuditRecord
+      handler -> db : Save and load the conversation's messages
+      db --> handler : Messages
+      handler --> controller : ReportDetailDto with ReportedConversationDto
+      controller --> client : 200 OK
+      client --> page : Report and conversation
+      page --> verifier : Show the messages as text in jb-message-bubble
+    else report resolved
+      handler --> controller : ReportDetailDto with no conversation
+      controller --> client : 200 OK
+      client --> page : Report only
+      page --> verifier : Show the report without the conversation (L2-063)
+    end
+  end
 end
 @enduml

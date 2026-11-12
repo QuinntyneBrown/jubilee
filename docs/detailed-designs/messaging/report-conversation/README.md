@@ -24,13 +24,15 @@ is never shown to the member or counted as unread (ADR 0014).
 
 Staff access follows the statement on the help page: "Our team reads a
 conversation only when one of you reports it." A verification team member can
-read a conversation only while an open report exists on it, and each staff read
-or refused attempt is recorded in the audit log. Review and resolution of
-reports belong to the administration subsystem (L2-105).
+read a conversation only through its report, and only while that report is
+open; each staff read is recorded in the audit log with the report as its
+reason. Review and resolution of reports belong to the administration subsystem
+(L2-105).
 
 ## Description
 
-The feature is a vertical slice from the conversation page to the database.
+The feature is a vertical slice from the conversation page to the database. The
+decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0050.
 
 - **`jb-menu`** — component of the `components` library built on CDK Menu
   (`@angular/cdk/menu`). "More" in the conversation header opens it with the
@@ -46,34 +48,45 @@ The feature is a vertical slice from the conversation page to the database.
   conversation. Try again." The mute flag and its effect on the inbox are
   described in `read-inbox`.
 - **`ReportConversationDialog`** — CDK dialog of the app
-  (`frontend/projects/jubilee/src/app/dialogs/report-conversation/`), opened by
-  "Report conversation" in the conversation menu. It is titled "Report this
-  conversation" and says "Reports are private. Our verification team reads this
-  conversation only while the report is open." It has one required field, "Tell
-  us what happened", of at most 1,000 characters with a counter. A member also
-  sees the checkbox "Block {business}" with "They won't be told. Their messages
-  will stop reaching you."; an owner does not. The page passes `canBlock` from
-  `GET /api/conversations/{id}` to decide. Its action is "Send report".
+  (`frontend/projects/jubilee/src/app/dialogs/report-conversation/`), composed
+  of `jb-dialog`, `jb-field`, `jb-textarea`, `jb-checkbox`, `jb-alert` and
+  `jb-button`, and opened by "Report conversation" in the conversation menu. It
+  is titled "Report this conversation" and says "Reports are private. Our
+  verification team reads this conversation only while the report is open." It
+  has one required field, "Tell us what happened", of at most 1,000 characters
+  with a counter. A member also sees the checkbox "Block {business}" with "They
+  won't be told. Their messages will stop reaching you."; an owner does not.
+  `ConversationPage` passes `canBlock` from `GET /api/conversations/{id}` in
+  `ReportConversationData` to decide. Its action is "Send report". Closing the
+  dialog returns focus to "More".
 - **Dialog states** — an empty description shows "Add a sentence or two so we
-  know what to check." under the field and nothing is sent. On success the dialog
-  says "Thanks for telling us. Your report is private. Our verification team
-  reviews it within one business day." and, when the member blocked the business,
-  "{Business} is blocked." On failure the dialog keeps what was typed and "Send
-  report" tries again.
-- **`MessagesApi`** — service contract with the injection token `MESSAGES_API`.
-  It calls `PUT /api/conversations/{id}/mute` and
+  know what to check." under the field, focus moves to the field and nothing is
+  sent. On success the dialog says "Thanks for telling us. Your report is
+  private. Our verification team reviews it within one business day." and, when
+  the member blocked the business, "{Business} is blocked." On failure, or when
+  no answer comes within 10 seconds, the dialog keeps what was typed and "Send
+  report" tries again. A `429` shows "You’re doing that a lot. Try again in
+  {n} minutes.", with {n} from `Retry-After` (L2-137).
+- **`MessagesApi`** — service contract with the injection token `MESSAGES_API`,
+  implemented by `HttpMessagesApi`. `mute` calls
+  `PUT /api/conversations/{id}/mute` and `report` calls
   `POST /api/conversations/{id}/report` with the body `{ reason, block }`.
-- **`ConversationsController`** — ASP.NET Core controller for those routes. It
-  authenticates the session cookie and applies the endpoint policy. A caller who
-  is not a participant receives HTTP `404` (L2-133). The report route answers
-  `204 No Content`, and `422` with the code `REQUIRED` on `reason` for an empty
-  reason.
+- **`ConversationsController`** — ASP.NET Core controller for those routes. A
+  caller who is not a participant receives HTTP `404` (L2-133). The report route
+  answers `204 No Content`, and `422` with the code `REQUIRED` on `reason` for an
+  empty reason.
 - **`ReportConversationCommandHandler`** — MediatR handler. It files a
-  `ConversationReport` with the reason, calls `Conversation.Block` when `block`
-  is true and the caller is the member, and saves both in one unit of work. A
-  participant has at most one unresolved report per conversation: a repeat files
-  nothing new and still applies the block. That rule makes the route safe to
-  retry, so it carries no idempotency key (ADR 0039).
+  `ConversationReport` with the reason, cut at 1,000 characters, calls
+  `Conversation.Block` when `block` is true and the caller is the member, and
+  saves both in one unit of work. A participant has at most one unresolved
+  report per conversation: a repeat files nothing new and still applies the
+  block. That rule makes the route safe to retry, so it carries no idempotency
+  key (L2-063, L2-132, ADR 0039).
+- **Report limit** — a member may file `ConversationRules.ReportsPerDay`, `10`,
+  conversation reports in 24 hours, counted from the stored reports as the
+  message limits are. One more is answered with `429` and `Retry-After`. A
+  repeat while a report is open files nothing and is not refused, so a block can
+  still be applied (L2-137, ADR 0050).
 - **`ConversationReport`** — domain entity. It holds the conversation, the
   reporter, the reason and a `ReportStatus` of `Open`, `InReview` or `Resolved`.
   The verification team sees it in the same list as listing reports (ADR 0033).
@@ -85,20 +98,36 @@ The feature is a vertical slice from the conversation page to the database.
   as unread. The business is answered `201` as if the message were delivered, and
   nobody is told (ADR 0014). A block does not hide request cards (ADR 0039).
 - **`AdminReportsController`** — ASP.NET Core controller for
-  `GET /api/admin/reports/{reportId}/conversation`, restricted to the `Verifier`
-  and `Admin` roles.
-- **`ReportedConversationAccessPolicy`** — authorization policy. It allows a
-  staff read only when an open report exists on the conversation; otherwise the
-  API returns HTTP `403`. No other route returns message content to staff.
-- **`IAuditLog`** — application service. It appends an `AuditEntry` with actor,
-  action, target, time and reason for each staff read and each refused staff
-  read (L2-180). Entries are append-only.
-- **`MessageTextComponent`** — Angular component used wherever message text is
-  shown, including the staff view. It binds message text as text, never as
-  HTML. It splits the text into text and link segments and renders each link as
-  an anchor whose content is the link text and whose `rel` is
-  `nofollow noopener noreferrer`. The server stores message text as plain text
-  and returns it unchanged.
+  `/api/admin/reports`, used by the admin application (ADR 0040). It carries
+  `[RequiresVerifier]`: only a staff session of the verification team reaches
+  it, and a member session is refused with `403` and code
+  `STAFF_SESSION_REQUIRED`. A report is read with
+  `POST /api/admin/reports/{id}/open`.
+- **`OpenReportCommandHandler`** — MediatR handler behind that route and the
+  only staff read of a conversation. It moves the report to `InReview` and
+  answers `ReportDetailDto`. For a conversation report that is not resolved, the
+  answer carries `ReportedConversationDto`: the member's name and the messages
+  as sender, body and time. Once the report is resolved the answer carries no
+  conversation. Nothing in the admin API reads a conversation by its own id, and
+  staff calling `/api/conversations/{id}` receive `404` like anyone who is not a
+  participant, so a conversation without an open report cannot be read. A
+  verifier cannot open a report about their own listing (`403`, code
+  `OWN_LISTING`).
+- **`AuditLog.Record`** — writes an `AuditRecord` with the actor, the action
+  `conversation.viewed`, the report as target and "Report {id}" as the reason
+  each time staff read a reported conversation (L2-150, L2-180). Records are
+  append-only. A read that returns no conversation writes no such record.
+- **Message text** — `jb-message-bubble` binds message text as text, never as
+  HTML, and the admin report page does the same. Markup in a message shows as
+  the characters typed. A web address in a message is shown as text and is not
+  made into a link, so there is no anchor to carry `rel`. The server stores
+  message text as plain text and returns it unchanged.
+- **Open** — the bot challenge on the report form (L2-137 AC2) and the
+  suspension of new conversations after three spam reports (L2-137 AC3) are not
+  built; they belong to the `security/limit-abuse` design (ADR 0050).
+- **Tests** — `MessagingTests` (`L2_063_…`, `L2_061_…`) and `ModerationTests`
+  (`L2_063_AC3_…`) in the backend, and "mute a conversation (L2-061)" and
+  "report a conversation (L2-063)" in `e2e/tests/messages.spec.ts`.
 
 ## Requirements
 
@@ -109,7 +138,10 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 |-------|--------------|-------------|
 | `L2-061` | `L1-009` | "More" in the header of an open conversation shall open a menu with "Mute" (or "Unmute") and "Report conversation" that works by touch and by keyboard. Muting shall stop e-mail about new replies, show a toast with "Undo", and show "Muted" in the header. |
 | `L2-063` | `L1-009` | Either participant may report a conversation to the verification team with the conversation attached, and may block the other side. A message from a blocked business shall be refused without telling the business it was blocked. Staff shall not read conversation content without an open report on that conversation. Links in message text shall be rendered as text with `rel="nofollow noopener noreferrer"` and never as raw HTML. A participant with a report on the conversation that is still open shall not file a second one; a block chosen with it shall still apply. |
+| `L2-132` | `L1-018` | Each create request shall carry a client-generated idempotency key. A report of a conversation shall carry no key: a participant has at most one report open on a conversation, so a repeat files nothing new. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API call before doing anything else. |
+| `L2-137` | `L1-019` | The server shall answer 429 with `Retry-After` past 10 reports per member per day, and the UI shall show "You're doing that a lot. Try again in {n} minutes." |
+| `L2-150` | `L1-020` | When a verifier views a reported conversation, the access shall be recorded in the audit log with the reason (report ID). |
 | `L2-180` | `L1-025` | Each sensitive action, including staff access to personal data, shall produce an append-only audit record of actor, action, target, time, before and after values, and reason. |
 
 ## Diagrams
@@ -125,8 +157,9 @@ system.
 
 ### Containers
 
-`Jubilee Web` calls the mute, report and admin endpoints of `Jubilee API`,
-which persists reports, blocks and audit entries in `Jubilee database`.
+`Jubilee Web` calls the mute and report endpoints of `Jubilee API`, and
+`Jubilee Admin` calls its admin endpoints. The API persists reports, blocks and
+audit records in `Jubilee database`.
 
 ![C4 container view for reporting a conversation](diagrams/c4-container.png)
 
@@ -134,9 +167,9 @@ which persists reports, blocks and audit entries in `Jubilee database`.
 
 `ConversationPage` opens `jb-menu`, which mutes or opens
 `ReportConversationDialog`; both call `MessagesApi`. `ConversationsController`
-dispatches the mute, report and send commands; `AdminReportsController`
-evaluates `ReportedConversationAccessPolicy` and records each access through
-`IAuditLog`.
+dispatches the mute, report and send commands. `AdminReportsController`
+dispatches `OpenReportCommand`, whose handler returns the conversation only
+while its report is open and records the read through `AuditLog`.
 
 ![C4 component view for reporting a conversation](diagrams/c4-component.png)
 
@@ -145,8 +178,8 @@ evaluates `ReportedConversationAccessPolicy` and records each access through
 `ReportConversationCommandHandler` files a `ConversationReport` on a
 `Conversation` and sets `BlockedByMember` through it when the member chose to
 block. A `Message` sent by a blocked business carries `HiddenFromMember`.
-`ReportedConversationAccessPolicy` requires an open `ConversationReport` and
-records an `AuditEntry`.
+`OpenReportCommandHandler` reads the messages through an unresolved
+`ConversationReport` and writes an `AuditRecord`.
 
 ![Class diagram for reporting a conversation](diagrams/class-structure.png)
 
@@ -154,9 +187,9 @@ records an `AuditEntry`.
 
 The member or owner opens the dialog from the conversation menu. The handler
 verifies the caller is a participant, files the report unless the caller already
-has an unresolved one on the conversation, applies the block when a member chose
-it, and commits both. The report then appears in the verification team's list
-(ADR 0033).
+has an unresolved one on the conversation or has reached the daily limit,
+applies the block when a member chose it, and commits both. The report then
+appears in the verification team's list (ADR 0033).
 
 ![Sequence diagram for reporting and blocking](diagrams/sequence-report-and-block.png)
 
@@ -170,8 +203,9 @@ of a block; the message is stored hidden and never reaches the member.
 
 ### Behaviour — staff read of a reported conversation
 
-The policy looks for an open report on the conversation. Without one the API
-returns `403`; with one it returns the conversation. Both outcomes append an
-`AuditEntry`.
+A verifier opens a report in the admin application. While the report is not
+resolved the handler returns the conversation and appends an `AuditRecord`.
+Once it is resolved the answer carries no conversation, and an id that is not a
+report answers `404`.
 
 ![Sequence diagram for a staff read of a reported conversation](diagrams/sequence-staff-read-reported-conversation.png)
