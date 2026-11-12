@@ -92,6 +92,27 @@ public partial class AccountTests : IClassFixture<JubileeApiFactory>, IAsyncLife
         Assert.Equal(storedAddress, member.HomeChurchAddress);
     }
 
+    // L2-196 AC7, L2-145 AC1
+    [Fact]
+    public async Task L2_196_AC7_the_home_church_and_its_address_are_in_the_members_own_account_and_in_no_other_answer_of_joining()
+    {
+        var (client, _) = await JoinedMember();
+
+        var own = await (await client.GetAsync("/api/account")).Content.ReadAsStringAsync();
+        Assert.Contains("Grace Toronto Church", own);
+        Assert.Contains("383 Jarvis Street, Toronto", own);
+        foreach (var path in new[] { "/api/session", "/api/me/navigation" })
+        {
+            var answer = await (await client.GetAsync(path)).Content.ReadAsStringAsync();
+            Assert.DoesNotContain("Grace Toronto Church", answer);
+            Assert.DoesNotContain("383 Jarvis Street", answer);
+        }
+
+        await Dispatch();
+        Assert.All(_factory.Emails.Sent, mail => Assert.DoesNotContain("Grace Toronto Church", mail.Body + mail.Html));
+        Assert.DoesNotContain(_factory.Logs.Entries, e => e.Message.Contains("Grace Toronto Church") || e.Message.Contains("383 Jarvis Street"));
+    }
+
     // L2-196 AC4
     [Fact]
     public async Task L2_188_AC4_a_home_church_address_over_200_characters_is_refused_and_200_is_kept()

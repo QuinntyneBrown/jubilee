@@ -282,6 +282,21 @@ test.describe('join with e-mail (L2-001)', () => {
     await expect(join.summary).toContainText('Fix 1 thing to continue');
   });
 
+  test('L2-002 AC6: after a refusal every value typed is still there', async ({ page, jb }) => {
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+
+    await join.fill({ ...valid, password: 'short', agree: false });
+    await join.createAccount.click();
+
+    await expect(join.summary).toContainText('Fix 2 things to continue');
+    await expect(join.firstName).toHaveValue(valid.first);
+    await expect(join.lastName).toHaveValue(valid.last);
+    await expect(join.email).toHaveValue(valid.email);
+    await expect(join.homeChurch).toHaveValue(valid.church);
+    await expect(join.homeChurchAddress).toHaveValue(valid.churchAddress);
+  });
+
   test('AC4: an address that already has an account is refused beside the field', async ({
     page,
     jb,
