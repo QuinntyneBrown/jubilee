@@ -4,10 +4,10 @@ Static HTML mocks for every page, dialog and notification of Jubilee, Toronto's 
 marketplace, in every state. They are the design reference for the Angular frontend: the app
 keeps the mocks' BEM classes and accessible state semantics.
 
-- **83 screens, 423 mocks:** 49 pages (278 states), 27 dialogs (110 states), 7 notifications (35 states).
+- **83 screens, 427 mocks:** 49 pages (281 states), 27 dialogs (110 states), 7 notifications (36 states).
 - Every mock is responsive (360, 768 and 1280 px), themed light and dark through tokens, and
   keyboard-accessible.
-- **18 e-mails** in [`emails/`](emails/index.html) (L2-179, ADR 0038): each as the HTML a mail
+- **19 e-mails** in [`emails/`](emails/index.html) (L2-179, ADR 0038): each as the HTML a mail
   client shows at 600 px, a dark rendition and its plain-text part. They are built from the layout
   the backend embeds by `node tools/email-mocks/build.mjs`; change the layout or the script, not
   the files. They are not screens, so they are not in `manifest.json` or the matrix below.

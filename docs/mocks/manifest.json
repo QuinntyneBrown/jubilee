@@ -325,7 +325,8 @@
         "error",
         "saved",
         "owner",
-        "edge"
+        "edge",
+        "preview"
       ]
     },
     {
@@ -365,7 +366,8 @@
         "default",
         "loading",
         "empty",
-        "error"
+        "error",
+        "sold-out"
       ]
     },
     {
@@ -475,7 +477,8 @@
         "loading",
         "empty",
         "error",
-        "read"
+        "read",
+        "back-in-stock"
       ]
     },
     {
@@ -1141,7 +1144,8 @@
         "warning",
         "danger",
         "with-action",
-        "stacked"
+        "stacked",
+        "back-in-stock"
       ]
     },
     {
