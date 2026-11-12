@@ -21,7 +21,11 @@ Everything is in the resource group `rg-jubilee-prod`, Canada Central.
   processes in the one container:
   - the API (`Jubilee.Api`) on `127.0.0.1:5080`, not reachable from outside;
   - the worker (`Jubilee.Worker`);
-  - `server.js` on the public port, which serves the built app and sends `/api` to the API.
+  - `server.js` on the public port, which serves the built app and sends `/api` to the API. A
+    link-preview fetcher's `/b/{slug}` (Facebook, X, LinkedIn, WhatsApp, Slack and the others of
+    `previewAgents`) is answered with the API's `/api/listings/{slug}/social-preview`, so a shared
+    listing shows its name, tagline and `og-image.png` (ADR 0055). Nothing outside `server.js` is
+    needed for it; the preview's addresses come from `App__PublicBaseUrl`.
 
   The app and the API share an origin because the app calls `/api` by relative address and the
   session cookie is same-site. The API cannot serve the app's files itself: its security headers
