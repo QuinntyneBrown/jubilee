@@ -47,7 +47,7 @@
     />
     <div style="margin-top: var(--space-6)">
       <div class="split">
-        <form jb-card class="form" novalidate (ngSubmit)="save()" #form="ngForm">
+        <form jb-card jbDraft="listing" class="form" novalidate (ngSubmit)="save()" #form="ngForm">
           @if (saved(); as done) {
             <div jb-alert tone="success" heading="Listing updated">
               <div>

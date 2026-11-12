@@ -54,7 +54,14 @@
           style="max-width: 42rem; margin-bottom: var(--space-4)"
         />
       }
-      <form jb-card narrow class="form" novalidate (submit)="$event.preventDefault(); save()">
+      <form
+        jb-card
+        narrow
+        jbDraft="profile"
+        class="form"
+        novalidate
+        (submit)="$event.preventDefault(); save()"
+      >
         <div class="form-grid form-grid--2">
           <div jb-field label="First name" controlId="first" [error]="problem('firstName')">
             <input

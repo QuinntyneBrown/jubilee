@@ -47,6 +47,7 @@ import { clockTime, dayLabel, fullDate, monthYear } from 'api';
 import { SessionService } from '../../services/session.service';
 import { ToastService } from 'components';
 import { ACCOUNT_TABS } from './account-tabs';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 type FieldName = 'firstName' | 'lastName' | 'phone' | 'postalCode';
 
@@ -80,6 +81,7 @@ const MESSAGES: Record<string, string> = {
 @Component({
   selector: 'jb-account-page',
   imports: [
+    FormDraftDirective,
     FormsModule,
     EmptyState,
     Icon,

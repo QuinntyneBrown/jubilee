@@ -28,6 +28,7 @@ import {
   formatRent,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 /** What the dialog knows of the space from its page: no extra read is needed. */
 export interface RequestSpaceData {
@@ -77,6 +78,7 @@ const SUBMIT_TIMEOUT_MS = 10_000;
 @Component({
   selector: 'jb-request-space-dialog',
   imports: [
+    FormDraftDirective,
     FormsModule,
     RouterLink,
     Alert,

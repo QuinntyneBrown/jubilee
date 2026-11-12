@@ -36,6 +36,7 @@ import {
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from 'api';
 import { momentCheckIn } from '../../services/moment-check-in';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface RequestItemData {
   shopSlug: string;
@@ -65,6 +66,7 @@ function money(cents: number): string {
 @Component({
   selector: 'jb-request-item-dialog',
   imports: [
+    FormDraftDirective,
     FormsModule,
     RouterLink,
     MediaTile,

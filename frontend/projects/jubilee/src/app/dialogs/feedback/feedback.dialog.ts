@@ -27,6 +27,7 @@ import {
   screenName,
   SUBMIT_TIMEOUT_MS,
 } from './feedback-words';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface FeedbackDialogData {
   /** The `page` of the route the member was on when the panel opened. */
@@ -57,6 +58,7 @@ const SEND: Record<FeedbackTab, string> = {
 @Component({
   selector: 'jb-feedback-dialog',
   imports: [
+    FormDraftDirective,
     FormsModule,
     RouterLink,
     Alert,

@@ -20,6 +20,7 @@ import {
   Textarea,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
+import { FormDraftDirective } from '../../drafts/form-draft.directive';
 
 export interface ReportConversationData {
   conversationId: string;
@@ -43,6 +44,7 @@ const SUBMIT_TIMEOUT_MS = 10_000;
 @Component({
   selector: 'jb-report-conversation-dialog',
   imports: [
+    FormDraftDirective,
     FormsModule,
     Button,
     Alert,
