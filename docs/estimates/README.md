@@ -11,7 +11,7 @@
 | [design-system](design-system.md) | 6 days | 30% |
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 74% |
-| [listings](listings.md) | 20 days | 87% |
+| [listings](listings.md) | 20 days | 93% |
 | [accounts](accounts.md) | 50 days | 84% |
 | [security](security.md) | 34 days | 31% |
 | [messaging](messaging.md) | 17 days | 94% |
@@ -32,7 +32,7 @@
 ## Roadmap
 
 1. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
-2. listings: the back-in-stock notice, the sold-out badge on shop cards and crawler routing for shared links
+2. listings: crawler routing for shared links, the `og-image.png` asset and the team notification e-mail of a report
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
 4. operations, performance, admin, marketing: backups, availability, latency and page budgets; set up the admin application and the launching-soon forms in production (`eng/azure/README.md`)
 5. Polish the remaining 60–90% designs: draft restore after session expiry, the daily e-mail summary, offline and notification details

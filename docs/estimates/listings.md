@@ -5,8 +5,8 @@
 | report-listing | 2 days | 90% |
 | save-listing | 3 days | 90% |
 | share-listing | 3 days | 70% |
-| view-business-page | 3 days | 90% |
-| view-product | 5 days | 80% |
+| view-business-page | 3 days | 100% |
+| view-product | 5 days | 100% |
 | view-space | 4 days | 100% |
 
 save-listing (ADR 0027): the saved list, save and unsave of businesses and products, the hearts on the business and product pages with Undo and the offline and limit messages, the return from sign-in, the saved page with its empty, error, loading and unavailable states, and the owner's count are done with tests. Deferred: hearts on list cards, a Saved link in the chrome (journey 20), clearing the store on sign-out (journey 5).
@@ -15,4 +15,4 @@ report-listing and share-listing (ADR 0029): the report dialog (reason, descript
 
 view-space (ADR 0042): the space page with its booking card and bar, facts, rows, inclusions, rules, household, host and related spaces, and the owner's editing of a space (L2-209) are done with tests. Excludes deferred work (see ADR 0042): hourly rent.
 
-view-business-page and view-product: the business and shop pages, the product page with its options, quantity and sold-out state, the stock alert and the owner's view are done with tests (`business.spec.ts`, `shop.spec.ts`, `product.spec.ts`, `product-sold-out.spec.ts`, `ListingPageTests`, `ShopPageTests`, `ProductPageTests`, `StockAlertTests`). Left: the "Sold out" badge on shop product cards (L2-034 AC3), the listing status on the owner's preview (L2-028 AC3), the back-in-stock notice in the app and by e-mail (L2-036 AC2) and the owner's sold-out toast (L2-036 AC3).
+view-business-page and view-product (ADR 0007, ADR 0045): the business and shop pages, the "Sold out" badge on product cards, the product page with its options, quantity and sold-out state, the stock alert, the back-in-stock notice in the app and by e-mail, the owner's sold-out toast, the owner's view and the preview of a listing that is not public with its status (L2-219) are done with tests (`business.spec.ts`, `business-owner.spec.ts`, `business-preview.spec.ts`, `shop.spec.ts`, `product.spec.ts`, `product-sold-out.spec.ts`, `notifications.spec.ts`, `catalogue.spec.ts`, `ListingPageTests`, `ShopPageTests`, `ProductPageTests`, `StockAlertTests`, `BackInStockTests`, `OwnerViewTests`, `CatalogueTests`). Nothing is left. Outside these designs: product and cover photos (journey 16 and the listing form) and a sold-out toast when a confirmed order takes the last item (ADR 0045).
