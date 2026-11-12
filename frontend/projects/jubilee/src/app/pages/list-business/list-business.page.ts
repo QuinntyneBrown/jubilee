@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Observable, switchMap, of } from 'rxjs';
+import { Observable, switchMap, of, timeout } from 'rxjs';
 import {
   CATEGORIES,
   DraftItem,
@@ -105,6 +105,8 @@ const FIELD_ORDER: FieldName[] = [
   'agreed',
 ];
 const AUTOSAVE_MS = 10_000;
+/** A submission still unanswered after this long fails rather than spinning forever (L2-127 AC2). */
+const SUBMIT_TIMEOUT_MS = 10_000;
 const TAGLINE_MAX = 90;
 /** The green line of the card, as in the listing editor (L2-072 AC7, L2-087). */
 const HIGHLIGHT_MAX = 30;
@@ -442,6 +444,8 @@ export class ListBusinessPage {
           this.draftId = draft.id;
           return this.api.submit(draft.id, body);
         }),
+        // The idempotency key makes the retry safe if the first try did arrive (L2-132).
+        timeout(SUBMIT_TIMEOUT_MS),
       )
       .subscribe({
         next: (listing) => {

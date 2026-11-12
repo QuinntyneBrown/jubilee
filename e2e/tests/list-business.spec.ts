@@ -387,6 +387,27 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await expect(list.name).toHaveAttribute('readonly', '');
   });
 
+  test('L2-127 AC2: a submission that takes longer than 10 seconds fails and can be tried again', async ({
+    page,
+    jb,
+  }) => {
+    const list = new ListBusinessPage(page);
+    await list.setWidth(1280);
+    await page.clock.install();
+    await jb.signInAs('member');
+    await stubListingDrafts(page, { outcome: 'hang' });
+    await jb.goto('/list');
+    await list.fillValid();
+
+    await list.submit.click();
+    await expect(list.submit).toHaveAttribute('aria-busy', 'true');
+    await page.clock.fastForward(10_500);
+
+    await expect(list.alert).toContainText('We couldn’t save that. Try again.');
+    await expect(list.submit).not.toHaveAttribute('aria-busy', 'true');
+    await expect(list.name).not.toHaveAttribute('readonly', '');
+  });
+
   test('a field the server refuses is shown on that field', async ({ page, jb }) => {
     const list = new ListBusinessPage(page);
     await list.setWidth(1280);
