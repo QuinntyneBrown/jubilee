@@ -137,7 +137,7 @@ test('journey 7: book a meeting', async ({ demo }) => {
   await demo.scene('proved');
 
   await demo.card('Journey 7 is complete', [
-    'L2-220 and ADR 0047 record the work; the booking design describes the code as built.',
+    'L2-220 and ADR 0048 record the work; the booking design describes the code as built.',
     'Left for the owner: the visual, responsive and accessibility sweeps.',
     'Not built: different hours on different days, calendars and double booking.',
   ]);

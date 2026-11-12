@@ -1,6 +1,6 @@
 # 07 · Journey 7: Book a meeting
 
-> **Runtime:** 2:47 (166.8 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 7
+> **Runtime:** 2:47 (166.6 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 7
 
 **Video:** [07-journey-07-book-a-meeting.mp4](07-journey-07-book-a-meeting.mp4) · **Audio:** [07-journey-07-book-a-meeting.mp3](07-journey-07-book-a-meeting.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
@@ -15,7 +15,7 @@ booking endpoints by `e2e/fixtures/booking.ts`, as in `meeting-hours.spec.ts` an
 `book-meeting.spec.ts` (ADR 0009); the two halves are two businesses (Luzandre.com and Legacy
 Financial) given the same hours. Three cards say what the run settled behind the screen: the rules
 the API enforces (`MeetingHoursTests.cs`), the two criteria of `L2-044` that gained a test, and
-what is left for the owner (ADR 0047).
+what is left for the owner (ADR 0048).
 
 ## Run sheet
 
@@ -33,7 +33,7 @@ what is left for the owner (ADR 0047).
 | 10 | `send` | 1:38 | 1:50 | Thursday at 10:30 a.m., sent: "Request sent to Legacy Financial" |
 | 11 | `rules` | 1:50 | 2:11 | Card: the API decides (`L2-220` AC4, AC5), `MeetingHoursTests.cs` |
 | 12 | `proved` | 2:11 | 2:27 | Card: `L2-044` AC6 in `book-meeting.spec.ts`, `L2-044` AC5 in `BookingTests.cs` |
-| 13 | `close` | 2:27 | 2:46 | Card: journey 7 is complete; the sweeps are left for the owner |
+| 13 | `close` | 2:27 | 2:45 | Card: journey 7 is complete; the sweeps are left for the owner |
 
 ## Rebuild
 

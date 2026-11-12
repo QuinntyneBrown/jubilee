@@ -1,115 +1,115 @@
 WEBVTT
 
-00:00:00.482 --> 00:00:05.524
+00:00:00.425 --> 00:00:05.467
 Journey seven: book a meeting. A member requests a meeting time for a
 
-00:00:05.524 --> 00:00:10.493
+00:00:05.467 --> 00:00:10.436
 service with a business. This run takes the journey from ninety-five
 
-00:00:10.493 --> 00:00:11.954
+00:00:10.436 --> 00:00:11.897
 percent to complete.
 
-00:00:12.809 --> 00:00:18.059
+00:00:12.753 --> 00:00:18.004
 Until now, every business met at the same five fixed times.
 
-00:00:18.059 --> 00:00:24.199
+00:00:18.004 --> 00:00:24.144
 Now the owner decides. Naomi owns Luzandre.com, and My services has a
 
-00:00:24.199 --> 00:00:26.513
+00:00:24.144 --> 00:00:26.457
 new button: Meeting hours.
 
-00:00:27.216 --> 00:00:32.138
+00:00:27.159 --> 00:00:32.081
 The dialog shows the hours in force: the days of the week, from and
 
-00:00:32.138 --> 00:00:36.251
+00:00:32.081 --> 00:00:36.194
 until as Toronto times, and how often a time is offered.
 
-00:00:36.251 --> 00:00:39.336
+00:00:36.194 --> 00:00:39.279
 Requests she already has keep their times.
 
-00:00:40.038 --> 00:00:45.365
+00:00:39.982 --> 00:00:45.310
 Naomi meets on Tuesday, Thursday and Saturday, so she unticks the other
 
-00:00:45.365 --> 00:00:47.166
+00:00:45.310 --> 00:00:47.110
 days and ticks Saturday.
 
-00:00:47.869 --> 00:00:51.966
+00:00:47.812 --> 00:00:51.909
 She sets from to ten, and by mistake until to nine.
 
-00:00:51.966 --> 00:00:57.508
+00:00:51.909 --> 00:00:57.451
 Save hours saves nothing, and the field says: choose a time after ten
 
-00:00:57.508 --> 00:00:57.829
+00:00:57.451 --> 00:00:57.772
 a.m.
 
-00:00:58.531 --> 00:01:04.493
+00:00:58.476 --> 00:01:04.438
 She corrects it to noon and saves. The dialog closes, and My services
 
-00:01:04.493 --> 00:01:06.739
+00:01:04.438 --> 00:01:06.684
 says: meeting hours saved.
 
-00:01:07.449 --> 00:01:12.736
+00:01:07.394 --> 00:01:12.682
 Now a member. Joanna books a meeting with Legacy Financial, a business
 
-00:01:12.736 --> 00:01:17.948
+00:01:12.682 --> 00:01:17.893
 that saved those same hours. She picks a Thursday and is offered four
 
-00:01:17.948 --> 00:01:22.329
+00:01:17.893 --> 00:01:22.274
 times: every thirty minutes from ten, each ending by noon.
 
-00:01:23.031 --> 00:01:28.308
+00:01:22.976 --> 00:01:28.253
 A sixty-minute review must end by noon as well, so eleven thirty is no
 
-00:01:28.308 --> 00:01:29.439
+00:01:28.253 --> 00:01:29.384
 longer offered.
 
-00:01:30.141 --> 00:01:35.640
+00:01:30.087 --> 00:01:35.586
 A Friday is not one of the days. The dialog says Trevor can't meet on
 
-00:01:35.640 --> 00:01:38.589
+00:01:35.586 --> 00:01:38.535
 that day, and names the days he does.
 
-00:01:39.293 --> 00:01:45.536
+00:01:39.237 --> 00:01:45.481
 Joanna goes back to Thursday, chooses ten thirty and sends the request.
 
-00:01:45.536 --> 00:01:50.021
+00:01:45.481 --> 00:01:49.965
 Nothing is charged. Trevor confirms it or declines.
 
-00:01:51.100 --> 00:01:56.434
+00:01:51.043 --> 00:01:56.377
 Behind the screen, the API decides, and checks again whatever the dialog
 
-00:01:56.434 --> 00:02:01.545
+00:01:56.377 --> 00:02:01.488
 checked. The hours are Toronto times of day on either side of a clock
 
-00:02:01.545 --> 00:02:06.730
+00:02:01.488 --> 00:02:06.673
 change, only the owner sets them, and requests already sent keep their
 
-00:02:06.730 --> 00:02:10.804
+00:02:06.673 --> 00:02:10.747
 day, time and status. Nineteen API test cases prove it.
 
-00:02:11.660 --> 00:02:14.718
+00:02:11.605 --> 00:02:14.664
 Two criteria that had no test now have one.
 
-00:02:14.718 --> 00:02:19.768
+00:02:14.664 --> 00:02:19.713
 In the browser, the note of a booking stops at one thousand characters.
 
-00:02:19.768 --> 00:02:24.676
+00:02:19.713 --> 00:02:24.621
 In the API, the owner gets an in-app notification of the booking, and
 
-00:02:24.676 --> 00:02:27.236
+00:02:24.621 --> 00:02:27.181
 the member one when it is confirmed.
 
-00:02:28.093 --> 00:02:32.993
-Requirement two hundred and twenty and decision record forty-seven hold
+00:02:28.040 --> 00:02:32.914
+Requirement two hundred and twenty and decision record forty-eight hold
 
-00:02:32.993 --> 00:02:35.822
+00:02:32.914 --> 00:02:35.728
 this work, and journey seven is complete.
 
-00:02:35.822 --> 00:02:40.515
+00:02:35.728 --> 00:02:40.395
 Left for the owner: the visual, responsive and accessibility sweeps.
 
-00:02:40.515 --> 00:02:45.415
+00:02:40.395 --> 00:02:45.268
 Different hours on different days, calendars and double booking are not
 
-00:02:45.415 --> 00:02:45.829
+00:02:45.268 --> 00:02:45.680
 built.

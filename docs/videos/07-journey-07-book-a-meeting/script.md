@@ -26,4 +26,4 @@ Behind the screen, the API decides, and checks again whatever the dialog checked
 
 Two criteria that had no test now have one. In the browser, the note of a booking stops at one thousand characters. In the API, the owner gets an in-app notification of the booking, and the member one when it is confirmed.
 
-Requirement two hundred and twenty and decision record forty-seven hold this work, and journey seven is complete. Left for the owner: the visual, responsive and accessibility sweeps. Different hours on different days, calendars and double booking are not built.
+Requirement two hundred and twenty and decision record forty-eight hold this work, and journey seven is complete. Left for the owner: the visual, responsive and accessibility sweeps. Different hours on different days, calendars and double booking are not built.
