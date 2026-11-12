@@ -7,8 +7,10 @@ Person(visitor, "Visitor", "Is asked to sign in before reporting")
 Person(member, "Member", "Reports a listing privately")
 Person(verifier, "Verification team member", "Reviews reports within one business day")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(mail, "E-mail service", "Delivers e-mail")
 
 Rel(visitor, jubilee, "Presses Report this listing in", "HTTPS")
 Rel(member, jubilee, "Sends a private report in", "HTTPS")
-Rel(jubilee, verifier, "Notifies of the new report")
+Rel(jubilee, mail, "Sends New report: {business} through")
+Rel(mail, verifier, "Delivers the e-mail to the team's address")
 @enduml

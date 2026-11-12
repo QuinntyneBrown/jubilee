@@ -14,10 +14,10 @@ skinparam class {
 title Class structure — Report a listing
 
 enum ReportReason {
-  NotARealBusiness
-  MisleadingOrOutOfDate
+  NotRealBusiness
+  Misleading
   BadExperience
-  SomethingElse
+  Other
 }
 
 enum ReportStatus {
@@ -26,70 +26,79 @@ enum ReportStatus {
   Resolved
 }
 
-class Report {
+class ListingReport {
   +Guid Id
   +Guid ListingId
-  +Guid ReporterId
+  +string ReporterSubject
+  +string ReporterName
   +ReportStatus Status
   +DateTimeOffset CreatedAt
-  +{static} Create(listingId: Guid, reporterId: Guid, reason: ReportReason, description: string, now: DateTimeOffset): Report
-  +AcceptsAdditionAt(now: DateTimeOffset): bool
-  +AddEntry(reason: ReportReason, description: string, now: DateTimeOffset): void
+  +{static} int MaxDescriptionLength = 2000
+  +{static} Open(listingId, reporterSubject, reporterName, now): ListingReport
+  +AcceptsAdditionAt(now): bool
+  +Add(reason, description, idempotencyKey, now): ListingReportEntry
 }
 
-class ReportEntry {
+class ListingReportEntry {
   +Guid Id
+  +Guid ReportId
   +ReportReason Reason
   +string Description
-  +DateTimeOffset SubmittedAt
+  +string IdempotencyKey
+  +DateTimeOffset CreatedAt
 }
 
 class ReportListingCommand {
-  +string ListingSlug
-  +Guid ReporterId
-  +ReportReason? Reason
-  +string Description
-}
-
-class ReportListingCommandValidator {
-  +{static} int MaxDescriptionLength = 2000
-  +Validate(command: ReportListingCommand): ValidationResult
+  +string Subject
+  +string Slug
+  +string? Reason
+  +string? Description
+  +string? IdempotencyKey
+  +string? ReporterName
 }
 
 class ReportListingCommandHandler {
-  +Handle(command: ReportListingCommand): Task<Result<Guid>>
+  +{static} int EntriesPerHour = 10
+  +Handle(command): Task<ReportedDto>
+}
+
+class ReportSubmitted {
+  +{static} Tell(db, team, listing, report, entry, now): void
+}
+
+class VerificationTeam {
+  +{static} Tell(db, settings, subject, body, now, correlationId): void
+}
+
+class VerificationSettings {
+  +string? TeamEmail
+  +string AdminBaseUrl
 }
 
 class Listing {
   +Guid Id
-  +Guid OwnerId
+  +string OwnerId
   +string Slug
-  +IsPublic(): bool
+  +string Name
 }
 
 class OutboxMessage {
   +Guid Id
-  +string Type
-  +string Payload
-  +DateTimeOffset OccurredAt
-  +DateTimeOffset? DispatchedAt
+  +string ToAddress
+  +string Subject
+  +string TextBody
+  +Guid? CorrelationId
+  +{static} Email(...): OutboxMessage
 }
 
-class IdempotencyRecord {
-  +string Key
-  +Guid MemberId
-  +int StatusCode
-  +string ResponseBody
-  +DateTimeOffset ExpiresAt
-}
-
-Report "1" *-- "1..*" ReportEntry
-Report --> "1" ReportStatus
-ReportEntry --> "1" ReportReason
-Report "0..*" --> "1" Listing : about
+ListingReport "1" *-- "1..*" ListingReportEntry
+ListingReport --> "1" ReportStatus
+ListingReportEntry --> "1" ReportReason
+ListingReport "0..*" --> "1" Listing : about
 ReportListingCommandHandler ..> ReportListingCommand : handles
-ReportListingCommandValidator ..> ReportListingCommand : validates
-ReportListingCommandHandler --> Report : creates or extends
-ReportListingCommandHandler ..> OutboxMessage : writes
-ReportListingCommand --> "0..1" ReportReason
+ReportListingCommandHandler --> ListingReport : creates or extends
+ReportListingCommandHandler ..> ReportSubmitted : tells the team through
+ReportSubmitted ..> VerificationTeam : uses
+VerificationTeam ..> VerificationSettings : reads
+VerificationTeam ..> OutboxMessage : writes
 @enduml

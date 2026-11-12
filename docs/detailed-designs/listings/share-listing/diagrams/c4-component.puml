@@ -4,28 +4,22 @@ LAYOUT_WITH_LEGEND()
 title Components — Share a listing
 
 Container_Boundary(web, "Jubilee Web") {
-  Component(dialog, "ShareListingDialog", "Angular dialog", "Share {business} with the link and four actions")
-  Component(builder, "ShareLinkBuilder", "Angular service", "Builds the canonical link and the mailto and WhatsApp URLs")
-  Component(clip, "ClipboardService", "Angular service", "Writes text to the clipboard")
-  Component(share, "WebShareService", "Angular service", "Detects and calls the Web Share API")
-  Component(announce, "LiveAnnouncer", "Angular service", "Polite live-region announcements")
+  Component(page, "BusinessPage", "Angular page", "Opens the dialog at /b/{slug}/share")
+  Component(dialog, "ShareListingDialog", "Angular dialog", "Share {business} with the link, Copy, E-mail, WhatsApp and More…; a polite status says Link copied")
+}
+Container_Boundary(host, "App host") {
+  Component(server, "server.js", "Node.js", "Sends a link-preview fetcher's /b/{slug} to the social preview (previewAgents)")
 }
 Container_Boundary(api, "Jubilee API") {
-  Component(doc, "ListingDocumentController", "ASP.NET Core controller", "Serves the HTML document for /b/{slug}")
-  Component(handler, "GetListingPreviewQueryHandler", "MediatR handler", "Loads title and description and image of a live listing")
-  Component(tags, "OpenGraphTagBuilder", "Application service", "Encodes the Open Graph meta tags")
+  Component(controller, "SharePreviewController", "ASP.NET Core controller", "GET /api/listings/{slug}/social-preview")
+  Component(handler, "GetSharePreviewQueryHandler", "MediatR handler", "Encodes the Open Graph tags of a public listing")
 }
 ContainerDb(db, "Jubilee database", "SQL Server", "Listing rows")
-ContainerDb(cache, "Cache", "Redis", "Preview data")
 System_Ext(apps, "Social or chat app", "Fetches link previews")
 
-Rel(dialog, builder, "Gets links from")
-Rel(dialog, clip, "Copies through")
-Rel(dialog, share, "Shares through")
-Rel(dialog, announce, "Announces Copied through")
-Rel(apps, doc, "Requests /b/{slug}", "HTTPS")
-Rel(doc, handler, "Sends GetListingPreviewQuery")
-Rel(doc, tags, "Injects tags built by")
-Rel(handler, cache, "Reads and writes", "Redis protocol")
+Rel(page, dialog, "Opens")
+Rel(apps, server, "Requests /b/{slug}", "HTTPS")
+Rel(server, controller, "Forwards a preview fetcher to", "HTTP")
+Rel(controller, handler, "Sends GetSharePreviewQuery")
 Rel(handler, db, "Queries", "EF Core")
 @enduml

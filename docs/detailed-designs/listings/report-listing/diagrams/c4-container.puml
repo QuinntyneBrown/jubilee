@@ -5,17 +5,19 @@ title Containers — Report a listing
 
 Person(member, "Member", "Reports a listing")
 Person(verifier, "Verification team member", "Reviews reports")
+System_Ext(mail, "E-mail service", "Delivers e-mail")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Report dialog on the listing page")
-  Container(api, "Jubilee API", "ASP.NET Core", "Validates and stores reports")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches verifier notifications from the outbox")
-  ContainerDb(cache, "Cache", "Redis", "Idempotency keys for 24 hours")
+  Container(api, "Jubilee API", "ASP.NET Core", "Validates and stores reports and the team's e-mail")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Sends the outbox e-mails")
+  Container(admin, "Jubilee Admin", "Angular single-page application", "Reports list at /reports")
   ContainerDb(db, "Jubilee database", "SQL Server", "Reports and outbox")
 }
 Rel(member, web, "Uses", "HTTPS")
 Rel(web, api, "Posts the report to", "JSON/HTTPS")
-Rel(api, cache, "Stores the idempotency record in", "Redis protocol")
-Rel(api, db, "Writes the report and outbox message in", "EF Core")
+Rel(api, db, "Writes the report and the outbox message in", "EF Core")
 Rel(worker, db, "Reads the outbox from", "EF Core")
-Rel(worker, verifier, "Notifies in-app")
+Rel(worker, mail, "Sends New report: {business} through")
+Rel(mail, verifier, "Delivers to the team's address")
+Rel(verifier, admin, "Opens /reports/{id} in")
 @enduml

@@ -4,28 +4,28 @@ LAYOUT_WITH_LEGEND()
 title Components — Report a listing
 
 Container_Boundary(web, "Jubilee Web") {
-  Component(dialog, "ReportListingDialog", "Angular dialog", "Reason and description form with counter")
+  Component(dialog, "ReportListingDialog", "Angular dialog", "Reason and description form with counter; one key per dialog (newKey)")
   Component(signin, "SignInRequiredDialog", "Angular dialog", "Sign-in prompt for visitors")
-  Component(keys, "IdempotencyKeyFactory", "Angular service", "Creates one key per dialog instance")
-  Component(client, "ReportsApi", "Typed HTTP client", "Posts listing reports")
+  Component(client, "ReportsApi (REPORTS_API)", "Typed HTTP client", "Posts listing reports with the Idempotency-Key header")
 }
-Container_Boundary(api, "Jubilee API") {
-  Component(idem, "IdempotencyMiddleware", "ASP.NET Core middleware", "Replays the result of a repeated key")
-  Component(ctrl, "ReportsController", "ASP.NET Core controller", "POST /api/listings/{slug}/reports")
-  Component(validator, "ReportListingCommandValidator", "FluentValidation validator", "Reason and description rules")
-  Component(handler, "ReportListingCommandHandler", "MediatR handler", "Creates a report or adds to an open one")
-  Component(report, "Report", "Domain entity", "Owns entries and the 24-hour merge rule")
+Container_Boundary(api, "Jubilee API and Application") {
+  Component(ctrl, "ListingReportsController", "ASP.NET Core controller", "POST /api/listings/{slug}/reports")
+  Component(handler, "ReportListingCommandHandler", "MediatR handler", "Checks the key, the rules and the rate; creates a report or adds to one")
+  Component(report, "ListingReport", "Domain entity", "Owns entries and the 24-hour addition rule")
+  Component(notice, "ReportSubmitted", "Application notice", "Writes the team's e-mail of a report")
+  Component(team, "VerificationTeam", "Application service", "Decides who on the team is told (VerificationSettings)")
 }
-ContainerDb(cache, "Cache", "Redis", "Idempotency keys")
-ContainerDb(db, "Jubilee database", "SQL Server", "Report and OutboxMessage rows")
+Container_Boundary(worker, "Jubilee Worker") {
+  Component(job, "OutboxDispatcherJob", "Background job", "Sends due outbox e-mails")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "ListingReport, ListingReportEntry and OutboxMessage rows")
 
-Rel(dialog, keys, "Gets a key from")
 Rel(dialog, client, "Submits through")
-Rel(client, idem, "Calls with Idempotency-Key", "JSON/HTTPS")
-Rel(idem, cache, "Reads and writes", "Redis protocol")
-Rel(idem, ctrl, "Passes new requests to")
+Rel(client, ctrl, "Calls with Idempotency-Key", "JSON/HTTPS")
 Rel(ctrl, handler, "Sends ReportListingCommand")
-Rel(handler, validator, "Is validated by")
 Rel(handler, report, "Creates or extends")
-Rel(handler, db, "Saves report and outbox message", "EF Core")
+Rel(handler, notice, "Tells the team through")
+Rel(notice, team, "Tell(subject, body)")
+Rel(handler, db, "Saves report and outbox message in one transaction", "EF Core")
+Rel(job, db, "Reads due OutboxMessage rows", "EF Core")
 @enduml

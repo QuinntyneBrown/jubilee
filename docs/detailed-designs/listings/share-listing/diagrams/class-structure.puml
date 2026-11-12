@@ -14,58 +14,42 @@ skinparam class {
 title Class structure — Share a listing
 
 class ShareListingDialog {
-  +listing: ShareTarget
+  +data: ShareListingData
+  +url: string
+  +mailto: string
+  +whatsapp: string
+  +canShare: boolean
   +copied: Signal<boolean>
-  +canUseNativeShare: boolean
   +copy(): Promise<void>
-  +openEmail(): void
-  +openWhatsApp(): void
-  +openNativeShare(): Promise<void>
-  +done(): void
+  +more(): Promise<void>
+  +close(): void
 }
 
-class ShareTarget {
+class ShareListingData {
   +slug: string
-  +name: string
-  +tagline: string
+  +businessName: string
 }
 
-class ShareLinkBuilder {
-  +canonicalUrl(slug: string): string
-  +mailtoUrl(target: ShareTarget): string
-  +whatsAppUrl(target: ShareTarget): string
+class "server.js" as Server {
+  +previewAgents: RegExp
+  +previewPath(req): string | null
+  +proxy(req, res, path)
 }
 
-class ClipboardService {
-  +writeText(text: string): Promise<boolean>
+class SharePreviewController {
+  +Get(slug: string): Task<ContentResult>
 }
 
-class WebShareService {
-  +isSupported(): boolean
-  +share(data: ShareData): Promise<void>
-}
-
-class ListingDocumentController {
-  +Get(slug: string): Task<IActionResult>
-}
-
-class GetListingPreviewQuery {
+class GetSharePreviewQuery {
   +string Slug
 }
 
-class GetListingPreviewQueryHandler {
-  +Handle(query: GetListingPreviewQuery): Task<Result<ListingPreview>>
+class GetSharePreviewQueryHandler {
+  +Handle(query: GetSharePreviewQuery): Task<string>
 }
 
-class ListingPreview {
-  +string CanonicalUrl
-  +string Title
-  +string Description
-  +string ImageUrl
-}
-
-class OpenGraphTagBuilder {
-  +Build(preview: ListingPreview): string
+class AccountSettings {
+  +string PublicBaseUrl
 }
 
 class Listing {
@@ -73,18 +57,12 @@ class Listing {
   +string Slug
   +string Name
   +string Tagline
-  +ListingStage Stage
-  +IsPublic(): bool
 }
 
-ShareListingDialog --> "1" ShareTarget : shares
-ShareListingDialog ..> ShareLinkBuilder : uses
-ShareListingDialog ..> ClipboardService : uses
-ShareListingDialog ..> WebShareService : uses
-ListingDocumentController ..> GetListingPreviewQuery : sends
-ListingDocumentController ..> OpenGraphTagBuilder : uses
-GetListingPreviewQueryHandler ..> GetListingPreviewQuery : handles
-GetListingPreviewQueryHandler ..> ListingPreview : returns
-GetListingPreviewQueryHandler --> Listing : loads
-OpenGraphTagBuilder ..> ListingPreview : encodes
+ShareListingDialog --> "1" ShareListingData : shares
+Server ..> SharePreviewController : forwards preview fetchers to
+SharePreviewController ..> GetSharePreviewQuery : sends
+GetSharePreviewQueryHandler ..> GetSharePreviewQuery : handles
+GetSharePreviewQueryHandler --> Listing : loads (WherePublic)
+GetSharePreviewQueryHandler ..> AccountSettings : reads the public host
 @enduml
