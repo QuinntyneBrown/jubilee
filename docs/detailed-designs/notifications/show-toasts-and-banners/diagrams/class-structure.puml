@@ -14,75 +14,97 @@ skinparam class {
 title Class structure — Show toasts and banners
 
 class ToastService <<Angular service>> {
-  +{static} MaxVisible: number = 3
-  +{static} AutoDismissMs: number = 8000
-  +toasts: Signal<ToastModel[]>
-  +show(toast: ToastModel): string
-  +dismiss(id: string): void
-  +pause(id: string): void
-  +resume(id: string): void
-  -evictOldestNonError(): void
+  +toasts: Signal<ShownToast[]>
+  +show(spec: ToastSpec): number
+  +dismiss(id: number): void
+  +act(id: number): void
+  +pause(id: number): void
+  +resume(id: number): void
 }
-class ToastModel <<TypeScript>> {
-  +id: string
+interface ToastSpec {
   +tone: ToastTone
   +title: string
-  +text: string
-  +action: ToastAction
-  +autoDismiss(): boolean
+  +text?: string
+  +action?: ToastAction
+  +durationMs?: number
 }
-enum ToastTone {
-  Info
-  Success
-  Warning
-  Danger
+interface ShownToast {
+  +id: number
+  +durationMs: number
+  +paused: boolean
 }
-class ToastAction <<TypeScript>> {
+interface ToastAction {
   +label: string
   +run(): void
 }
-class ToastTimer <<TypeScript>> {
-  +remainingMs: number
-  +start(): void
-  +pause(): void
-  +resume(): void
+enum ToastTone {
+  info
+  success
+  warning
+  danger
 }
-class ToastHost <<Angular component>> {
-  +politeRegion: ElementRef
-  +alertRegion: ElementRef
+class ToastRegion <<jb-toast-region>> {
+  #toasts: ToastService
 }
-class BannerService <<Angular service>> {
-  +banners: Signal<BannerModel[]>
-  +setCondition(condition: BannerCondition, holds: boolean): void
-  +dismiss(id: string): void
-  +forRoute(url: string): BannerModel[]
-}
-class BannerModel <<TypeScript>> {
-  +id: string
-  +condition: BannerCondition
+class Toast <<jb-toast>> {
   +tone: ToastTone
-  +persistent: boolean
-  +title: string
+  +heading: string
   +text: string
-  +actions: ToastAction[]
+  +actionLabel: string
+  +duration: number
+  +paused: boolean
+  +action: output
+  +dismiss: output
+  +hold: output
+  +release: output
 }
-enum BannerCondition {
-  EmailUnconfirmed
-  ListingPaused
-  Offline
+class VerifyEmailBanner <<jb-verify-email-banner>> {
+  +state: VerifyEmailBannerState
+  +email: string
+  +busy: boolean
+  +wait: string
+  +resend: output
+  +changeEmail: output
+  +dismiss: output
 }
-class BannerHost <<Angular component>> {
-  +politeRegion: ElementRef
+enum VerifyEmailBannerState {
+  persistent
+  sent
+  limited
+  bounced
+  expired
+  confirmed
+}
+class ConnectionBanner <<jb-connection-banner>> {
+  +kind: ConnectionBannerKind
+  +detail: string
+  +countdown: number
+  +sent: number
+  +statusUrl: string
+  +retry: output
+  +dismiss: output
+}
+enum ConnectionBannerKind {
+  offline
+  unreachable
+  slow
+  back-online
+}
+class RealtimeService <<Angular service>> {
+  +connected: Signal<boolean>
+  +arrivals: Signal<number>
+  +start(): void
+  +stop(): void
 }
 
-ToastService "1" o-- "0..3" ToastModel : shows
-ToastService "1" *-- "0..3" ToastTimer : runs
-ToastModel --> ToastTone : has
-ToastModel "1" o-- "0..1" ToastAction : carries
-ToastHost ..> ToastService : renders
-BannerService "1" o-- "*" BannerModel : holds
-BannerModel --> BannerCondition : describes
-BannerModel --> ToastTone : has
-BannerModel "1" o-- "0..2" ToastAction : offers
-BannerHost ..> BannerService : renders
+ShownToast --|> ToastSpec
+ToastService "1" o-- "0..3" ShownToast : lists
+ToastSpec --> ToastTone : has
+ToastSpec "1" o-- "0..1" ToastAction : offers
+ToastRegion ..> ToastService : reads and calls
+ToastRegion "1" --> "0..3" Toast : renders
+Toast --> ToastTone : has
+VerifyEmailBanner --> VerifyEmailBannerState : has
+ConnectionBanner --> ConnectionBannerKind : has
+RealtimeService ..> ToastService : show
 @enduml

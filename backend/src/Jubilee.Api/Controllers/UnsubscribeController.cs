@@ -17,7 +17,7 @@ public sealed class UnsubscribeController(ISender sender) : ControllerBase
     [HttpPost("{token}")]
     public async Task<IActionResult> Unsubscribe(string token, CancellationToken cancellationToken)
     {
-        await sender.Send(new UnsubscribeCommand(token), cancellationToken);
-        return Ok(new { unsubscribed = true });
+        var category = await sender.Send(new UnsubscribeCommand(token), cancellationToken);
+        return Ok(new { unsubscribed = true, category });
     }
 }

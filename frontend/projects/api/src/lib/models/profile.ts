@@ -44,6 +44,12 @@ export type PreferenceSetting = 'messages' | 'requests' | 'reminders' | 'new-bus
 
 export type PreferenceFrequency = 'as-it-happens' | 'daily-summary';
 
+/**
+ * What the unsubscribe link of an e-mail turned off (L2-224): one of the switches, or the daily
+ * summary, which turns off "New messages" and "Request updates" together (L2-016 AC8).
+ */
+export type UnsubscribeCategory = PreferenceSetting | 'summary';
+
 export interface NotificationPreferences {
   messages: boolean;
   requests: boolean;

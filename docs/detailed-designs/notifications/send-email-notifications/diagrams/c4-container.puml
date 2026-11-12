@@ -5,21 +5,18 @@ title Containers — Send e-mail notifications
 
 Person(member, "Member", "Receives e-mail and unsubscribes")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "Reports the open conversation over the real-time connection")
-  Container(api, "Jubilee API", "ASP.NET Core", "One-click unsubscribe endpoint and presence tracking")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Decides and batches and sends e-mail and runs reminder and summary jobs")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Preferences and pending e-mail and reminders and outbox")
-  ContainerDb(cache, "Cache", "Redis", "Presence of members in open conversations")
+  Container(web, "Jubilee Web", "Angular single-page application", "Unsubscribe page at /unsubscribe/{token}")
+  Container(api, "Jubilee API", "ASP.NET Core", "Queues e-mail with each event and receives unsubscribe requests")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Sends the outbox and runs reminders and the summary and the note and the tips")
+  ContainerDb(db, "Jubilee database", "SQL Server", "OutboxMessages and Members and JobRuns and Requests")
 }
-System_Ext(email, "E-mail provider", "Delivers e-mail")
+System_Ext(email, "E-mail provider", "Azure Communication Services Email")
 
-Rel(member, web, "Uses", "HTTPS")
-Rel(web, api, "Reports open conversation", "WebSocket or server-sent events")
-Rel(api, cache, "Writes presence", "Redis protocol")
-Rel(api, db, "Updates preferences on unsubscribe", "EF Core")
-Rel(worker, db, "Reads outbox and preferences and writes pending e-mail", "EF Core")
-Rel(worker, cache, "Reads presence", "Redis protocol")
-Rel(worker, email, "Sends e-mail")
-Rel(email, member, "Delivers e-mail")
-Rel(email, api, "Mail client posts one-click unsubscribe", "HTTPS")
+Rel(member, web, "Opens the footer link in", "HTTPS")
+Rel(web, api, "Posts /api/email/unsubscribe/{token}", "JSON/HTTPS")
+Rel(member, api, "Mail client posts the one-click unsubscribe to", "HTTPS")
+Rel(api, db, "Adds outbox rows and updates switches", "EF Core")
+Rel(worker, db, "Reads due rows and held rows and claims job runs", "EF Core")
+Rel(worker, email, "Sends e-mail through", "HTTPS")
+Rel(email, member, "Delivers e-mail to", "SMTP")
 @enduml

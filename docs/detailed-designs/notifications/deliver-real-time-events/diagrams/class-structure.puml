@@ -13,69 +13,67 @@ skinparam class {
 ' --------------------------
 title Class structure — Deliver real-time events
 
-class RealtimeClient <<Angular service>> {
-  +state: Signal<ConnectionState>
-  -lastEventId: string
+class RealtimeService <<Angular service>> {
   -seen: Set<string>
+  +connected: Signal<boolean>
+  +arrivals: Signal<number>
+  +received: Observable<NotificationItem>
   +start(): void
   +stop(): void
-  +on(type: string): Observable<RealtimeEvent>
-  -resume(): void
-  -accept(event: RealtimeEvent): boolean
 }
-enum ConnectionState {
-  Connecting
-  Connected
-  Reconnecting
-  Disconnected
+interface EventsApi {
+  +stream(): Observable<MemberEvent>
 }
-class RealtimeEvent {
-  +string EventId
-  +string Type
-  +DateTimeOffset OccurredAt
-  +string Payload
+class SseEventsApi {
+  +stream(): Observable<MemberEvent>
 }
-enum RealtimeEventType {
-  NotificationCreated
-  MessageCreated
-  RequestUpdated
-  BadgeChanged
+class ConnectionEvent <<MemberEvent>> {
+  +type: 'connection'
+  +connected: boolean
 }
-class EventsHub {
-  +OnConnectedAsync(): Task
-  +Resume(lastEventId: string): Task<ResumeResult>
-  +OnDisconnectedAsync(error: Exception): Task
+class NotificationEvent <<MemberEvent>> {
+  +type: 'notification'
+  +id: string
+  +item: NotificationItem
 }
-class ResumeResult {
-  +IReadOnlyList<RealtimeEvent> Missed
-  +bool Complete
+class CountsEvent <<MemberEvent>> {
+  +type: 'counts'
+  +counts: NavigationSummary
 }
-interface IRealtimePublisher {
-  +PublishAsync(memberId: Guid, type: RealtimeEventType, payload: object): Task
+class EventsController {
+  +{static} EventId(n: Notification): string
+  +Stream(lastEventId: string?): Task
 }
-class RealtimePublisher {
-  +PublishAsync(memberId: Guid, type: RealtimeEventType, payload: object): Task
+class NotificationRules <<static>> {
+  +{static} Visible(db, subject, now): IQueryable<Notification>
+  +{static} Row(n: Notification): NotificationDto
 }
-interface IEventLog {
-  +AppendAsync(memberId: Guid, event: RealtimeEvent): Task<string>
-  +ReadAfterAsync(memberId: Guid, lastEventId: string): Task<ResumeResult>
-}
-class OutboxMessage {
+class Notification {
   +Guid Id
-  +string Type
-  +string Payload
+  +string MemberSubject
+  +string Kind
   +DateTimeOffset CreatedAt
-  +DateTimeOffset? DispatchedAt
+}
+class NavigationSummary <<record>> {
+  +int UnreadConversationCount
+  +int UnreadNotificationCount
+  +int NewRequestCount
+  +bool OwnsListing
+}
+class EventStreamTests <<test>> {
+  20 notifications at the production interval
+  95th percentile under 2 seconds
 }
 
-RealtimeClient --> ConnectionState : has
-RealtimeClient ..> RealtimeEvent : receives
-RealtimeClient ..> EventsHub : connects to
-EventsHub ..> IEventLog : reads missed events
-EventsHub ..> ResumeResult : returns
-ResumeResult "1" o-- "*" RealtimeEvent : lists
-IRealtimePublisher <|.. RealtimePublisher
-RealtimePublisher ..> IEventLog : appends
-RealtimePublisher ..> RealtimeEventType : publishes
-RealtimePublisher ..> OutboxMessage : dispatched from
+SseEventsApi ..|> EventsApi
+RealtimeService ..> EventsApi : subscribes
+SseEventsApi ..> ConnectionEvent : emits
+SseEventsApi ..> NotificationEvent : emits
+SseEventsApi ..> CountsEvent : emits
+SseEventsApi ..> EventsController : GET /api/events
+EventsController ..> NotificationRules : reads past the cursor
+NotificationRules "1" --> "*" Notification : selects
+EventsController ..> NavigationSummary : writes as counts
+CountsEvent --> NavigationSummary : carries
+EventStreamTests ..> EventsController : measures
 @enduml

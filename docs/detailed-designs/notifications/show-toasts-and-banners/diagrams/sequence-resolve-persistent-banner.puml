@@ -16,44 +16,33 @@ skinparam package {
 }
 actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "BannerHost" as host
-  participant "BannerService" as svc
+  participant "App" as app
   participant "SessionService" as session
+  participant "VerifyEmailBanner" as banner
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "SessionController" as controller
-  participant "EventsHub" as hub
+  participant "Session endpoint" as api
 end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetSessionQueryHandler" as handler
-end box
-box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Jubilee database" as db
-end box
-member -> host : Open a signed-in page
-session -> controller : GET /api/session
-controller -> handler : Send GetSessionQuery
-handler -> db : Load member
-db --> handler : Member with e-mail unconfirmed
-handler --> controller : SessionDto
-controller --> session : 200 OK
-session -> svc : setCondition(EmailUnconfirmed, true)
-svc -> host : Publish persistent banner without a dismiss button (L2-067)
-host --> member : "Confirm your e-mail to message businesses." announced politely
-... member confirms the e-mail in another tab ...
-alt page is open with a real-time connection
-  hub -> session : account.email-confirmed
-else tab regains focus
-  session -> controller : GET /api/session
-  controller --> session : 200 OK with e-mail confirmed
-end
-session -> svc : setCondition(EmailUnconfirmed, false)
-svc -> svc : Replace with a dismissible success banner shown once (L2-067)
-svc -> host : Publish success banner
-host --> member : "E-mail confirmed." announced politely without moving focus (L2-067)
+member -> app : Open a signed-in page
+app -> session : Read the member
+session -> api : GET /api/session
+api --> session : Member with emailConfirmed false
+session --> app : Unconfirmed member
+app -> banner : Render with state persistent
+banner --> member : "Confirm your e-mail to message businesses." with "Send it again" and "Change e-mail" and no dismiss button (L2-005, L2-067)
+member -> member : Confirm the e-mail in another tab
+member -> app : Return to the original tab
+session -> session : The window regains focus while unconfirmed
+session -> api : GET /api/session
+api --> session : Member with emailConfirmed true
+session --> app : Confirmed member
+app -> app : Set confirmedBanner because the state changed
+app -> banner : Render with state confirmed
+banner --> member : "E-mail confirmed." announced politely without moving focus (L2-067)
 opt member dismisses the success banner
-  member -> host : Press dismiss
-  host -> svc : dismiss(id)
-  svc --> host : Banner removed
+  member -> banner : Press the dismiss button
+  banner -> app : dismiss
+  app -> app : Clear confirmedBanner
+  app --> member : Banner removed
 end
 @enduml

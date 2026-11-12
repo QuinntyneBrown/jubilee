@@ -37,9 +37,9 @@ public sealed class EventStreamTests : IClassFixture<FastEventsFactory>, IAsyncL
 
     private HttpClient Naomi() => _factory.CreateMemberClient("Naomi Laurent", NaomiId);
 
-    private sealed record Frame(string? Id, string Event, JsonElement Data);
+    internal sealed record Frame(string? Id, string Event, JsonElement Data);
 
-    private sealed class Stream(HttpResponseMessage response, StreamReader reader) : IDisposable
+    internal sealed class Stream(HttpResponseMessage response, StreamReader reader) : IDisposable
     {
         public HttpResponseMessage Response => response;
 
@@ -113,9 +113,9 @@ public sealed class EventStreamTests : IClassFixture<FastEventsFactory>, IAsyncL
         }
     }
 
-    private static async Task<Stream> Open(HttpClient client, string? lastEventId = null)
+    internal static async Task<Stream> Open(HttpClient client, string? lastEventId = null, string path = "/api/events")
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/api/events");
+        var request = new HttpRequestMessage(HttpMethod.Get, path);
         if (lastEventId is not null)
         {
             request.Headers.Add("Last-Event-ID", lastEventId);
@@ -249,5 +249,70 @@ public sealed class EventStreamTests : IClassFixture<FastEventsFactory>, IAsyncL
         Assert.Contains("Second reply.", second!.Data.GetProperty("detail").GetString());
         Assert.Contains("Third reply.", third!.Data.GetProperty("detail").GetString());
         Assert.Null(await again.NextNotification(TimeSpan.FromMilliseconds(300)));
+    }
+
+    // L2-070 AC4: the application opens the stream again itself and names the last event in the address
+    [Fact]
+    public async Task L2_070_AC4_a_stream_opened_again_with_the_last_event_in_the_address_gets_what_was_missed_once()
+    {
+        var conversation = await Ask("Do you ship to Ottawa?");
+        string seen;
+        using (var joanna = await Open(Joanna()))
+        {
+            _factory.Clock.Advance(TimeSpan.FromSeconds(1));
+            await Reply(conversation, "First reply.");
+            seen = (await joanna.NextNotification(TimeSpan.FromSeconds(2)))!.Id!;
+        }
+
+        _factory.Clock.Advance(TimeSpan.FromSeconds(1));
+        await Reply(conversation, "Second reply.");
+
+        using var again = await Open(Joanna(), path: $"/api/events?lastEventId={seen}");
+        var second = await again.NextNotification(TimeSpan.FromSeconds(2));
+        Assert.Contains("Second reply.", second!.Data.GetProperty("detail").GetString());
+        Assert.Null(await again.NextNotification(TimeSpan.FromMilliseconds(300)));
+    }
+}
+
+// L2-070 AC1 measured (ADR 0053): at the polling interval production runs with, how long a notification
+// takes from its save to its frame on an open stream.
+public sealed class EventStreamDeliveryTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
+{
+    private const string JoannaId = "member|joanna";
+
+    private readonly JubileeApiFactory _factory;
+
+    public EventStreamDeliveryTests(JubileeApiFactory factory) => _factory = factory;
+
+    public Task InitializeAsync() => _factory.Reset();
+
+    public Task DisposeAsync() => Task.CompletedTask;
+
+    [Fact]
+    public async Task L2_070_AC1_a_notification_reaches_the_open_page_within_two_seconds_at_the_95th_percentile()
+    {
+        const int Samples = 20;
+        using var stream = await EventStreamTests.Open(_factory.CreateMemberClient("Joanna Adeyemi", JoannaId));
+        var took = new List<TimeSpan>();
+        for (var i = 0; i < Samples; i++)
+        {
+            // Events fall anywhere in the server's polling second, as they do in production.
+            await Task.Delay(TimeSpan.FromMilliseconds(i * 137 % 400));
+            _factory.Clock.Advance(TimeSpan.FromSeconds(1));
+            var now = _factory.Clock.GetUtcNow();
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            await _factory.Arrange(Notification.Create(JoannaId, "request", $"Update {i}", "Detail", "/requests", now));
+
+            var frame = await stream.NextNotification(TimeSpan.FromSeconds(5));
+
+            watch.Stop();
+            Assert.NotNull(frame);
+            Assert.Equal($"Update {i}", frame.Data.GetProperty("title").GetString());
+            took.Add(watch.Elapsed);
+        }
+
+        took.Sort();
+        var p95 = took[(int)Math.Ceiling(Samples * 0.95) - 1];
+        Assert.True(p95 < TimeSpan.FromSeconds(2), $"The 95th percentile was {p95.TotalMilliseconds:F0} ms; the slowest {took[^1].TotalMilliseconds:F0} ms.");
     }
 }

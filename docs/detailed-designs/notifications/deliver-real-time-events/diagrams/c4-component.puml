@@ -4,31 +4,30 @@ LAYOUT_WITH_LEGEND()
 title Components — Deliver real-time events
 
 Container_Boundary(web, "Jubilee Web") {
-  Component(rt, "RealtimeClient", "Angular service", "Connection lifecycle and last event ID and duplicate filter")
-  Component(session, "SessionService", "Angular service", "Starts and stops the connection with the session")
-  Component(stores, "Feature stores", "Signal stores", "MessagesStore and NotificationsStore and BadgeStore and RequestsStore")
+  Component(app, "App", "Angular root component", "Starts the stream for a signed-in member and stops it at sign-out")
+  Component(rt, "RealtimeService", "Angular service", "Only subscriber of the stream; drops event IDs already shown")
+  Component(sse, "SseEventsApi", "EVENTS_API", "EventSource that is opened again when the browser gives up")
+  Component(toasts, "ToastService", "Angular service", "Shows one toast per notification")
+  Component(nav, "NavigationStore", "Signal store", "Badge counts")
+  Component(pages, "Pages", "Angular pages", "Read arrivals and received and connected")
 }
 Container_Boundary(api, "Jubilee API") {
-  Component(auth, "SessionAuthenticationMiddleware", "ASP.NET Core middleware", "Authenticates the session cookie at connect")
-  Component(hub, "EventsHub", "SignalR hub", "Adds each connection to its member group and replays missed events")
-  Component(log, "IEventLog", "Application service", "Per-member ordered event log")
+  Component(events, "EventsController", "ASP.NET Core controller", "Writes the stream from a polling loop")
+  Component(rules, "NotificationRules", "Static rules", "Visible notifications of one member")
+  Component(counts, "GetNavigationSummaryQueryHandler", "MediatR handler", "Navigation summary of the member")
+  Component(handlers, "Command handlers", "MediatR handlers", "Save a state change and its notification")
 }
-Container_Boundary(worker, "Jubilee Worker") {
-  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Reads undispatched outbox rows")
-  Component(pub, "RealtimePublisher", "Infrastructure adapter", "Assigns event IDs and appends and publishes")
-}
-ContainerDb(db, "Jubilee database", "SQL Server", "Outbox")
-ContainerDb(cache, "Cache", "Redis", "Event log and backplane")
+ContainerDb(db, "Jubilee database", "SQL Server", "Notifications")
 
-Rel(session, rt, "Starts and stops")
-Rel(rt, stores, "Dispatches events by type to")
-Rel(rt, auth, "Connects to /api/events", "WebSocket or server-sent events")
-Rel(auth, hub, "Passes authenticated connection to")
-Rel(hub, rt, "Pushes events", "WebSocket or server-sent events")
-Rel(hub, log, "Reads events after the last event ID from")
-Rel(log, cache, "Reads", "Redis protocol")
-Rel(outbox, db, "Reads outbox", "EF Core")
-Rel(outbox, pub, "Publishes through")
-Rel(pub, cache, "Appends to event log and publishes to backplane", "Redis protocol")
-Rel(cache, hub, "Delivers backplane messages to")
+Rel(app, rt, "Calls start and stop")
+Rel(rt, sse, "Subscribes to stream()")
+Rel(sse, events, "Opens GET /api/events", "Server-sent events")
+Rel(rt, toasts, "Calls show")
+Rel(rt, nav, "Applies counts to")
+Rel(pages, rt, "Read signals of")
+Rel(events, rules, "Selects notifications past the cursor through")
+Rel(events, counts, "Sends GetNavigationSummaryQuery")
+Rel(rules, db, "Queries", "EF Core")
+Rel(counts, db, "Counts", "EF Core")
+Rel(handlers, db, "Insert notifications", "EF Core")
 @enduml

@@ -14,42 +14,44 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-
-box "Backend — Jubilee Worker" #D1FADF
-  participant "PromotionalEmailJob" as job
-  participant "OutboxDispatcherJob" as dispatcher
-end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "PromotionalAudienceQuery" as audience
-  participant "PromotionalEmailComposer" as composer
+actor "Member" as member
+box "Backend — Jubilee Worker" #ECFDF3
+  participant "NewBusinessNoteJob" as job
+  participant "SendNewBusinessNotesCommandHandler" as handler
+  participant "ScheduledJobs" as jobs
+  participant "EmailPolicy" as policy
+  participant "OutboxDispatcher" as dispatcher
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-participant "E-mail provider" as email
-job -> audience : List recipients for the category
-audience -> db : Select confirmed, deliverable members with the category on (L2-149 opt-in only)
-db --> audience : Member IDs
-audience --> job : Recipients
-loop each recipient
-  job -> composer : Compose(memberId, category)
-  composer -> composer : Add Jubilee sender identity and mailing address (L2-149)
-  composer -> composer : Add unsubscribe link and List-Unsubscribe headers (L2-068)
-  composer -> composer : Refuse a message missing any of the three
-  composer --> job : EmailMessage
-  job -> db : Write OutboxMessage
-  db --> job : Committed
+participant "E-mail provider" as provider
+job -> handler : Send SendNewBusinessNotesCommand
+handler -> jobs : RunOnceAtAsync("new-business-note", Monday 7:00 a.m. Toronto, work)
+jobs -> db : Insert JobRun (Job, Occurrence)
+alt the occurrence was already claimed
+  jobs --> handler : false
+else claimed
+  jobs -> handler : Run the work
+  alt EmailSettings.CanSendPromotional is false
+    handler -> handler : Queue nothing (L2-149 AC1)
+  else
+    handler -> db : Select members with EmailNewBusinesses on and a confirmed address
+    db --> handler : Opted-in members
+    loop each member
+      handler -> db : Listings first approved in 7 days in the categories the member browsed
+      opt at least one listing
+        handler -> policy : Queue(member, "new-businesses", "New on Jubilee this week", body with the mailing address)
+        policy -> db : Add OutboxMessage when WantsEmail holds, never held for the summary
+      end
+    end
+    handler -> db : Save changes
+  end
+  jobs -> db : Set SucceededAt
 end
-dispatcher -> db : Read the next OutboxMessage
-db --> dispatcher : Pending e-mail
-dispatcher -> db : Recheck that the category is still on for the member
-alt consent was withdrawn since composition
-  db --> dispatcher : Off
-  dispatcher -> db : Mark the message cancelled
-else consent still holds
-  db --> dispatcher : On
-  dispatcher -> email : Send the e-mail
-  email --> dispatcher : Accepted
-  dispatcher -> db : Mark the message sent
-end
+dispatcher -> db : Select due rows at its next pass
+db --> dispatcher : Promotional row
+dispatcher -> dispatcher : Sign the unsubscribe token for member and "new-businesses"
+dispatcher -> provider : Send with the footer link and List-Unsubscribe headers
+provider --> member : E-mail that identifies Jubilee with its mailing address and includes an unsubscribe
 @enduml

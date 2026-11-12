@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Send the daily summary
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as member
+box "Backend — Jubilee Worker" #ECFDF3
+  participant "DailySummaryJob" as job
+  participant "SendDailySummariesCommandHandler" as handler
+  participant "ScheduledJobs" as jobs
+  participant "TorontoClock" as clock
+  participant "OutboxDispatcher" as dispatcher
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+participant "E-mail provider" as provider
+loop every 5 minutes
+  job -> handler : Send SendDailySummariesCommand
+  handler -> clock : At(Today(now), 7:00) in America/Toronto (L2-182 AC3)
+  clock --> handler : Today's occurrence
+  alt before 7:00 a.m. in Toronto
+    handler --> job : null
+  else
+    handler -> jobs : RunOnceAtAsync("daily-summary", occurrence, work)
+    jobs -> db : Insert JobRun (Job, Occurrence)
+    alt the occurrence was already claimed
+      jobs --> handler : false, another instance or an earlier tick ran it (L2-182 AC1)
+    else claimed
+      jobs -> handler : Run the work
+      handler -> db : Select unsent rows with HeldForSummary
+      db --> handler : Held rows
+      loop each member with held rows
+        handler -> handler : Keep the rows whose category is still on, oldest first (L2-016 AC7)
+        handler -> db : Remove the held rows
+        opt at least one line
+          handler -> db : Add OutboxMessage "Your Jubilee summary for {day}" with category summary
+        end
+      end
+      handler -> db : Save the removals and the summaries in one save
+      jobs -> db : Set SucceededAt
+      jobs --> handler : true
+    end
+    handler --> job : Number of summaries queued
+  end
+end
+dispatcher -> db : Select due rows at its next pass
+db --> dispatcher : Summary row
+dispatcher -> provider : Send with the unsubscribe link of category summary
+provider --> member : One e-mail with one line per event and "See what happened"
+@enduml

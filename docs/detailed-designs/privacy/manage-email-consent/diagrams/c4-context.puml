@@ -5,7 +5,7 @@ title System Context — Manage e-mail consent
 
 Person(member, "Member", "Opts in to or out of promotional e-mail")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
-System_Ext(email, "E-mail provider", "Delivers promotional e-mail with unsubscribe headers - vendor TO SUPPLY")
+System_Ext(email, "E-mail provider", "Azure Communication Services Email; delivers promotional e-mail with unsubscribe headers")
 
 Rel(member, jubilee, "Gives or withdraws consent using")
 Rel(jubilee, email, "Sends promotional e-mail to opted-in members via", "HTTPS")

@@ -6,9 +6,7 @@ title System Context — Deliver real-time events
 Person(member, "Member", "Keeps a signed-in page open")
 Person(owner, "Owner", "Keeps the owner workspace open")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
-System_Ext(obs, "Observability platform", "Records delivery latency and connection metrics")
 
-Rel(jubilee, member, "Pushes notification and message and request events to")
-Rel(jubilee, owner, "Pushes notification and message and request events to")
-Rel(jubilee, obs, "Reports publish-to-delivery latency to")
+Rel(jubilee, member, "Sends notification and counts events to the open page of")
+Rel(jubilee, owner, "Sends notification and counts events to the open page of")
 @enduml

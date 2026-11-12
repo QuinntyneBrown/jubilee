@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import {
   Account,
   EmailChangeOutcome,
@@ -10,6 +10,7 @@ import {
   PreferenceFrequency,
   PreferenceSetting,
   ProfileForm,
+  UnsubscribeCategory,
 } from '../models/profile';
 
 /** Contract of the account page: profile, credentials and e-mail preferences (L2-013 to L2-016). */
@@ -22,6 +23,11 @@ export interface ProfileApi {
   getPreferences(): Observable<NotificationPreferences>;
   setSwitch(setting: PreferenceSetting, enabled: boolean): Observable<NotificationPreferences>;
   setFrequency(frequency: PreferenceFrequency): Observable<NotificationPreferences>;
+  /**
+   * Turns off the category of the e-mail the link came from (L2-224). The signed token is the
+   * credential: no session is needed. A link that does not verify is a 404.
+   */
+  unsubscribe(token: string): Observable<UnsubscribeCategory>;
 }
 
 export const PROFILE_API = new InjectionToken<ProfileApi>('PROFILE_API');
@@ -76,5 +82,14 @@ export class HttpProfileApi implements ProfileApi {
       setting: 'frequency',
       frequency,
     });
+  }
+
+  unsubscribe(token: string): Observable<UnsubscribeCategory> {
+    return this.http
+      .post<{ category: UnsubscribeCategory }>(
+        `/api/email/unsubscribe/${encodeURIComponent(token)}`,
+        {},
+      )
+      .pipe(map((answer) => answer.category));
   }
 }

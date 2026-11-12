@@ -14,52 +14,45 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-
-
-box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcherJob" as job
-  participant "DailySummaryJob" as summary
+actor "Member" as member
+box "Backend — Jubilee API" #D1FADF
+  participant "Command handler" as handler
+  participant "EmailPolicy" as policy
 end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "EmailDeliveryPolicy" as policy
-  participant "IEmailSender" as sender
+box "Backend — Jubilee Worker" #ECFDF3
+  participant "OutboxDispatcherJob" as outbox
+  participant "DailySummaryJob" as sumjob
+  participant "SendDailySummariesCommandHandler" as sum
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-participant "E-mail provider" as email
-job -> db : Read undispatched e-mail events
-db --> job : Event with EmailCategory and recipient
-job -> db : Load NotificationPreferences of the recipient
-db --> job : NotificationPreferences
-job -> policy : Decide(preferences and category)
-policy --> job : EmailDelivery
-alt Immediate: Security or MeetingReminders or frequency AsItHappens
-  job -> sender : Send the e-mail (L2-068)
-  sender -> email : Submit message
-  email --> sender : Accepted
-  sender --> job : Sent
-else Summary: category on and frequency DailySummary (L2-016)
-  job -> db : Insert SummaryItem
-  db --> job : Stored
-else Suppressed: category off
-  job -> job : Send nothing. The in-app notification already exists
+participant "E-mail provider" as provider
+handler -> policy : Queue(member, category, subject, body)
+alt security or transactional e-mail
+  handler -> db : Add OutboxMessage without a category, whatever the switches (L2-016 AC4)
+else category off or address bounced
+  policy --> handler : false, no e-mail; the notification is still created (L2-068 AC2)
+else "One daily summary" and category messages or requests
+  policy -> db : Add OutboxMessage with HeldForSummary (L2-016 AC6)
+else every other case, meeting reminders included
+  policy -> db : Add OutboxMessage
 end
-job -> db : Mark the event dispatched
-db --> job : Commit result
-== 07:00 America/Toronto the next morning ==
-summary -> db : Acquire the schedule lock for this run (L2-182)
-db --> summary : Lock held
-summary -> db : Load SummaryItem rows of the previous day grouped by member
-db --> summary : Items per member
-loop Each member with items
-  summary -> sender : Send one summary e-mail
-  sender -> email : Submit message
-  email --> sender : Accepted
-  sender --> summary : Sent
-  summary -> db : Delete the member's sent items
-  db --> summary : Commit result
+loop every 10 seconds
+  outbox -> db : Select due rows, a held row is not due
+  db --> outbox : Rows
+  outbox -> provider : Send each e-mail
+  provider --> member : E-mail
 end
-summary -> db : Record last success
-db --> summary : Commit result
+loop every 5 minutes
+  sumjob -> sum : Send SendDailySummariesCommand
+  opt after 7:00 a.m. America/Toronto and not yet run today (L2-182)
+    sum -> db : Select held rows by member
+    db --> sum : Held rows
+    sum -> db : Remove the held rows and add one summary row per member
+    note right of sum : A row whose category is off since is left out;\na member with no line gets no e-mail (L2-016 AC7)
+  end
+end
+outbox -> provider : Send "Your Jubilee summary for {day}" at the next pass
+provider --> member : At most one summary a day
 @enduml

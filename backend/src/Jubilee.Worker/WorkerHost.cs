@@ -25,6 +25,9 @@ public static class WorkerHost
         builder.Services.AddHostedService<ResponseTimeBadgeJob>();
         builder.Services.AddHostedService<BookingCompletionJob>();
         builder.Services.AddHostedService<MeetingReminderJob>();
+        builder.Services.AddHostedService<DailySummaryJob>();
+        builder.Services.AddHostedService<NewBusinessNoteJob>();
+        builder.Services.AddHostedService<OwnerTipJob>();
         builder.Services.AddHostedService<UnansweredRequestJob>();
         builder.Services.AddHostedService<MaintenanceWatcherJob>();
         builder.Services.AddHostedService<DataExportJob>();
@@ -425,6 +428,120 @@ public sealed class LaunchRetentionJob(IServiceScopeFactory scopes, ILogger<Laun
         }
         catch (OperationCanceledException)
         {
+        }
+    }
+}
+
+/// <summary>
+/// Every five minutes: once it is 7:00 a.m. in Toronto, sends each member who chose "One daily summary"
+/// one e-mail of what was held for them (L2-016 AC6). <see cref="Jubilee.Application.Jobs.ScheduledJobs"/>
+/// lets one instance send a day's summaries and records its success (L2-182 AC1 and AC3).
+/// </summary>
+public sealed class DailySummaryJob(IServiceScopeFactory scopes, ILogger<DailySummaryJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sent = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Notifications.SendDailySummariesCommand(), stoppingToken);
+                    if (sent is { } count)
+                    {
+                        logger.LogInformation("Queued {Count} daily summaries.", count);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The daily summaries could not be sent. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The daily summary job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every ten minutes: once it is Monday 7:00 a.m. in Toronto, sends each member who turned on "New
+/// businesses" one note of the businesses verified that week in the categories they browsed (L2-222).
+/// One instance sends a week's notes and records its success (L2-182 AC1 and AC3).
+/// </summary>
+public sealed class NewBusinessNoteJob(IServiceScopeFactory scopes, ILogger<NewBusinessNoteJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(10));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sent = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Notifications.SendNewBusinessNotesCommand(), stoppingToken);
+                    if (sent is { } count)
+                    {
+                        logger.LogInformation("Queued {Count} weekly notes of new businesses.", count);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The weekly notes of new businesses could not be sent. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The new business note job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every hour: once it is 7:00 a.m. in Toronto on the first day of a month, sends each owner who turned
+/// on "Tips for business owners" the next tip of the series (L2-223). One instance sends a month's tips
+/// and records its success (L2-182 AC1 and AC3).
+/// </summary>
+public sealed class OwnerTipJob(IServiceScopeFactory scopes, ILogger<OwnerTipJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sent = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Notifications.SendOwnerTipsCommand(), stoppingToken);
+                    if (sent is { } count)
+                    {
+                        logger.LogInformation("Queued {Count} tips for business owners.", count);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The tips for business owners could not be sent. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The owner tip job is stopping.");
         }
     }
 }

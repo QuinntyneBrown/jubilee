@@ -1317,6 +1317,9 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<int?>("TermsVersionNumber")
                         .HasColumnType("int");
 
+                    b.Property<int>("TipsSent")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EmailKey")
@@ -1530,6 +1533,9 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset?>("FailedAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("HeldForSummary")
+                        .HasColumnType("bit");
 
                     b.Property<Guid?>("MemberId")
                         .HasColumnType("uniqueidentifier");

@@ -14,8 +14,8 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Member" as actor
-participant "Mail client" as mail
+actor "Member" as member
+participant "Mail client" as client
 box "Frontend — Jubilee Web" #E0F2FE
   participant "UnsubscribePage" as page
 end box
@@ -23,29 +23,40 @@ box "Backend — Jubilee API" #D1FADF
   participant "UnsubscribeController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "SetEmailConsentCommandHandler" as handler
+  participant "UnsubscribeCommandHandler" as handler
+  participant "HmacUnsubscribeLinks" as links
+  participant "Consent" as consent
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-alt one-click unsubscribe from the mail client (RFC 8058)
-  actor -> mail : Press unsubscribe in the mail client
-  mail -> controller : POST /api/email/unsubscribe/{token} with List-Unsubscribe=One-Click
-else unsubscribe link in the e-mail footer
-  actor -> page : Open /unsubscribe/:token without signing in
+alt one-click unsubscribe (RFC 8058)
+  member -> client : Press "Unsubscribe" in the mail client
+  client -> controller : POST /api/email/unsubscribe/{token}, body List-Unsubscribe=One-Click
+else link in the e-mail footer
+  member -> page : Open /unsubscribe/{token} without sign-in
+  page --> member : Loading state
   page -> controller : POST /api/email/unsubscribe/{token}
+  page -> page : Remove the token from the address bar
 end
-controller -> db : Find LinkToken by SHA-256 hash with purpose Unsubscribe
-alt token is unknown
-  db --> controller : No token
-  controller --> page : 404 ProblemDetails
-else token is valid
-  db --> controller : Member and category
-  controller -> handler : Send SetEmailConsentCommand disabled with the method used
-  handler -> db : Turn the category off and append ConsentRecord Withdrawn (L2-149)
-  db --> handler : Committed
-  handler --> controller : Withdrawn
-  controller --> page : 200 category unsubscribed
-  page --> actor : Confirm the unsubscribe
+controller -> handler : Send UnsubscribeCommand
+handler -> links : TryRead(token)
+links -> links : Compare the HMAC-SHA256 signature in constant time
+alt the token does not verify
+  handler --> controller : NotFoundException UNSUBSCRIBE_LINK_INVALID
+  controller --> page : 404 Not Found
+  page --> member : "This link doesn't work", nothing changes (L2-224 AC3)
+else verified
+  links --> handler : Member ID and category
+  handler -> db : Load the member
+  handler -> consent : TrySet(member, category, false, OneClickUnsubscribe, now)
+  opt the switch was on and the category is promotional
+    consent -> db : Add ConsentRecord (withdrawn, OccurredAt) (L2-149 AC3)
+  end
+  handler -> db : Save changes
+  handler --> controller : Category
+  controller --> page : 200 OK { unsubscribed: true, category }
+  page --> member : "You're unsubscribed" and what stops (L2-224 AC1)
+  note over handler, db : A second call finds the switch off:\nnothing changes and no record is added (L2-224 AC5)
 end
 @enduml

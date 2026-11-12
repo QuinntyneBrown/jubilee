@@ -313,6 +313,13 @@ export const routes: Routes = [
     title: 'Confirm your new e-mail · Jubilee',
   },
   {
+    path: 'unsubscribe/:token',
+    loadComponent: () =>
+      import('./pages/unsubscribe/unsubscribe.page').then((m) => m.UnsubscribePage),
+    data: data({ shell: 'bare', page: 'unsubscribe' }),
+    title: 'Unsubscribe · Jubilee',
+  },
+  {
     path: 'forgot-password',
     loadComponent: () =>
       import('./pages/forgot-password/forgot-password.page').then((m) => m.ForgotPasswordPage),

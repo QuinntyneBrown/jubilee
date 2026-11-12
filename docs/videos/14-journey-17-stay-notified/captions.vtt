@@ -1,0 +1,121 @@
+WEBVTT
+
+00:00:00.440 --> 00:00:05.618
+Journey seventeen: stay notified. A member receives events through the
+
+00:00:05.618 --> 00:00:09.169
+notification centre, toasts, banners and e-mail.
+
+00:00:09.169 --> 00:00:13.904
+This run takes the journey from eighty-nine percent to complete.
+
+00:00:14.761 --> 00:00:19.823
+This is the notification centre. One line is new in this run: New in
+
+00:00:19.823 --> 00:00:25.183
+Shops, Flower Creations. When a business is approved for the first time,
+
+00:00:25.183 --> 00:00:30.097
+members who browsed its category in the last ninety days are told.
+
+00:00:30.800 --> 00:00:35.361
+A notification that arrives while the app is open rises as a toast.
+
+00:00:35.361 --> 00:00:40.262
+It leaves after eight seconds, but while the pointer rests on it, or the
+
+00:00:40.262 --> 00:00:42.440
+focus is in it, the timer holds.
+
+00:00:43.142 --> 00:00:48.347
+Marking all as read fails here, and the error is an alert that stays
+
+00:00:48.347 --> 00:00:52.098
+until it is dismissed. At most three toasts show.
+
+00:00:52.098 --> 00:00:56.078
+A fourth pushes out the oldest, and never the error.
+
+00:00:56.778 --> 00:01:01.521
+Now the server refuses the event stream, and the browser gives up on it.
+
+00:01:01.521 --> 00:01:06.066
+The app opens the stream again by itself after five seconds, from the
+
+00:01:06.066 --> 00:01:10.479
+last event it received, so the next notification still arrives, and
+
+00:01:10.479 --> 00:01:11.994
+nothing is shown twice.
+
+00:01:12.834 --> 00:01:17.355
+In notification settings, How often now does what it says.
+
+00:01:17.355 --> 00:01:21.954
+The member chooses one daily summary, and it saves at once.
+
+00:01:22.996 --> 00:01:27.400
+From then on, e-mails about messages and requests are held.
+
+00:01:27.400 --> 00:01:32.776
+At seven in the morning, Toronto time, a job sends one e-mail that lists
+
+00:01:32.776 --> 00:01:38.076
+them in order. Meeting reminders and e-mails about sign-in and security
+
+00:01:38.076 --> 00:01:39.196
+are never held.
+
+00:01:40.054 --> 00:01:43.702
+Two more jobs send the e-mails a member can ask for.
+
+00:01:43.702 --> 00:01:48.754
+On Monday morning, a weekly note lists the businesses that joined in the
+
+00:01:48.754 --> 00:01:53.595
+categories a member browsed. On the first of the month, an owner of a
+
+00:01:53.595 --> 00:01:56.542
+public listing gets the next of four tips.
+
+00:01:56.542 --> 00:01:59.278
+Each carries Jubilee's mailing address.
+
+00:02:00.087 --> 00:02:04.207
+Every notification e-mail ends with an unsubscribe link.
+
+00:02:04.207 --> 00:02:07.150
+It now opens a page, without signing in.
+
+00:02:07.150 --> 00:02:12.448
+The page turns that one category off, and says what stops and what still
+
+00:02:12.448 --> 00:02:14.655
+reaches the member in Jubilee.
+
+00:02:15.359 --> 00:02:20.153
+The link of a daily summary turns off new messages and request updates
+
+00:02:20.153 --> 00:02:24.742
+together, and the page says so. A link that does not verify changes
+
+00:02:24.742 --> 00:02:26.591
+nothing, and says that too.
+
+00:02:27.623 --> 00:02:31.145
+Behind the screen, the event stream is measured.
+
+00:02:31.145 --> 00:02:36.354
+In the API's tests, twenty notifications each reach an open stream, and
+
+00:02:36.354 --> 00:02:40.463
+ninety-five in a hundred must arrive within two seconds.
+
+00:02:41.320 --> 00:02:46.052
+Journey seventeen is complete. Left for the owner: set the mailing
+
+00:02:46.052 --> 00:02:50.425
+address in production, run the migration, measure delivery in
+
+00:02:50.425 --> 00:02:52.648
+production, and run the sweeps.

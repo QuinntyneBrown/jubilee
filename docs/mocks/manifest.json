@@ -526,6 +526,23 @@
       }
     },
     {
+      "id": "unsubscribe",
+      "kind": "page",
+      "title": "Unsubscribe",
+      "route": "/unsubscribe/:token",
+      "states": [
+        "loading",
+        "success",
+        "summary",
+        "invalid",
+        "error"
+      ],
+      "not_applicable": {
+        "default": "The page acts on the link as it opens; what it shows first is loading.",
+        "empty": "The page shows one outcome, never a collection."
+      }
+    },
+    {
       "id": "feedback",
       "kind": "page",
       "title": "Feedback",
@@ -1204,7 +1221,8 @@
         "danger",
         "with-action",
         "stacked",
-        "back-in-stock"
+        "back-in-stock",
+        "new-business"
       ]
     },
     {

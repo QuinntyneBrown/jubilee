@@ -73,11 +73,12 @@ public sealed class HmacUnsubscribeLinks(string key) : IUnsubscribeLinks
 }
 
 /// <summary>Turns one category off from the link in an e-mail. A link that does not verify is a 404.</summary>
-public sealed record UnsubscribeCommand(string Token) : IRequest;
+/// <remarks>The answer is the category the link was for, so the unsubscribe page can say what stops (L2-224).</remarks>
+public sealed record UnsubscribeCommand(string Token) : IRequest<string>;
 
-public sealed class UnsubscribeCommandHandler(IAppDbContext db, IUnsubscribeLinks links, TimeProvider clock) : IRequestHandler<UnsubscribeCommand>
+public sealed class UnsubscribeCommandHandler(IAppDbContext db, IUnsubscribeLinks links, TimeProvider clock) : IRequestHandler<UnsubscribeCommand, string>
 {
-    public async Task Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
     {
         if (!links.TryRead(request.Token, out var memberId, out var category))
         {
@@ -86,12 +87,18 @@ public sealed class UnsubscribeCommandHandler(IAppDbContext db, IUnsubscribeLink
 
         var member = await db.Members.SingleOrDefaultAsync(m => m.Id == memberId, cancellationToken)
             ?? throw new NotFoundException("UNSUBSCRIBE_LINK_INVALID", "This link doesn’t work.");
-        if (!Consent.TrySet(db, member, category, false, ConsentMethod.OneClickUnsubscribe, clock.GetUtcNow()))
+        // The daily summary is ended by turning off the two categories it collects (L2-016 AC8).
+        string[] categories = category == EmailCategories.Summary ? [EmailCategories.Messages, EmailCategories.Requests] : [category];
+        foreach (var one in categories)
         {
-            throw new NotFoundException("UNSUBSCRIBE_LINK_INVALID", "This link doesn’t work.");
+            if (!Consent.TrySet(db, member, one, false, ConsentMethod.OneClickUnsubscribe, clock.GetUtcNow()))
+            {
+                throw new NotFoundException("UNSUBSCRIBE_LINK_INVALID", "This link doesn’t work.");
+            }
         }
 
         await db.SaveChangesAsync(cancellationToken);
+        return category;
     }
 }
 

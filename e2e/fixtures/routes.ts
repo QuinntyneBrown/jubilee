@@ -127,6 +127,11 @@ export type StubName =
   | 'confirm-email-change'
   | 'confirm-email-change-expired'
   | 'confirm-email-change-in-use'
+  | 'unsubscribe'
+  | 'unsubscribe-summary'
+  | 'unsubscribe-invalid'
+  | 'unsubscribe-error'
+  | 'unsubscribe-loading'
   | 'feedback'
   | 'feedback-empty'
   | 'feedback-loading'
@@ -1056,6 +1061,37 @@ export const routes = {
     mock: 'pages/confirm-email-change/in-use.html',
     who: 'visitor',
     stub: 'confirm-email-change-in-use',
+  },
+  // The link in the footer of a notification e-mail (L2-224). It needs no sign-in.
+  'unsubscribe.loading': {
+    app: '/unsubscribe/e2e-token',
+    mock: 'pages/unsubscribe/loading.html',
+    who: 'visitor',
+    stub: 'unsubscribe-loading',
+  },
+  'unsubscribe.success': {
+    app: '/unsubscribe/e2e-token',
+    mock: 'pages/unsubscribe/success.html',
+    who: 'visitor',
+    stub: 'unsubscribe',
+  },
+  'unsubscribe.summary': {
+    app: '/unsubscribe/e2e-token',
+    mock: 'pages/unsubscribe/summary.html',
+    who: 'visitor',
+    stub: 'unsubscribe-summary',
+  },
+  'unsubscribe.invalid': {
+    app: '/unsubscribe/e2e-token',
+    mock: 'pages/unsubscribe/invalid.html',
+    who: 'visitor',
+    stub: 'unsubscribe-invalid',
+  },
+  'unsubscribe.error': {
+    app: '/unsubscribe/e2e-token',
+    mock: 'pages/unsubscribe/error.html',
+    who: 'visitor',
+    stub: 'unsubscribe-error',
   },
   // Member feedback (L2-210 to L2-213). The panel has no address: its screen opens it.
   'browse.feedback-launcher': {

@@ -14,50 +14,45 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Member or Owner" as member
+actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "UnreadBadge" as badge
-  participant "BadgeStore" as badges
-  participant "NotificationsApi" as client
-  participant "RealtimeClient" as rt
+  participant "App" as app
+  participant "NavigationStore" as nav
+  participant "RealtimeService" as rt
+  participant "Badge" as badge
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "NotificationsController" as controller
-  participant "EventsHub" as hub
+  participant "NavigationController" as navctrl
+  participant "EventsController" as events
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetBadgeCountsQueryHandler" as handler
+  participant "GetNavigationSummaryQueryHandler" as counts
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-member -> badge : Open any signed-in page
-badge -> badges : refresh()
-badges -> client : getBadges()
-client -> controller : GET /api/badges
-controller -> controller : Authenticate and apply endpoint policy
-controller -> handler : Send GetBadgeCountsQuery
-handler -> db : Count unread conversations for the caller (L2-065)
-db --> handler : Count
-opt caller owns a listing
-  handler -> db : Count requests with status new for owned listings (L2-065)
-  db --> handler : Count
-end
-handler --> controller : BadgeCounts
-controller --> client : 200 OK
-client --> badges : Counts
-badges --> badge : Label with "99+" above 99 (L2-065)
-badge --> member : Badge announced as "{n} unread"
-opt counts change on another device
-  hub -> rt : badge.changed
-  rt -> badges : applyEvent(event)
-  badges --> badge : New label within 5 seconds (L2-065)
-end
-opt real-time connection is re-established
-  rt -> badges : refresh()
-  badges -> client : getBadges()
-  client -> controller : GET /api/badges
-  controller --> client : 200 OK
-  client --> badges : Counts
+member -> app : Sign in or open a page with a session
+app -> nav : load()
+nav -> navctrl : GET /api/me/navigation
+navctrl -> counts : Send GetNavigationSummaryQuery
+counts -> db : Count unread conversations and unread notifications and new requests
+db --> counts : Counts
+counts --> navctrl : NavigationSummary
+navctrl --> nav : 200 OK
+nav --> badge : Counts
+badge --> member : Show the count or "99+" above 99 (L2-065)
+app -> rt : start()
+rt -> events : GET /api/events
+loop each second while the stream is open
+  events -> counts : Send GetNavigationSummaryQuery
+  counts -> db : Count again
+  db --> counts : Counts
+  counts --> events : NavigationSummary
+  opt the summary differs from the last one sent
+    events --> rt : event: counts
+    rt -> nav : apply(counts)
+    nav --> badge : New counts
+    badge --> member : Follow a change made on another device within 5 seconds (L2-065)
+  end
 end
 @enduml

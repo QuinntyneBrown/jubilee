@@ -1,10 +1,26 @@
 import { expect, test } from '../fixtures/jb-test';
-import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from '../fixtures/notifications';
+import {
+  BACK_IN_STOCK,
+  FakeNotification,
+  NOTIFICATIONS,
+  stubNotifications,
+} from '../fixtures/notifications';
 import { NotificationsPage } from '../pages/notifications.page';
 import { Toasts } from '../pages/toasts';
 
 const CONFIRMED = 'Legacy Financial confirmed your meeting';
 const MESSAGE = 'New message from WaterWorks Plumbing & Drains';
+
+/** A notification that arrives over the stream. */
+const arrival = (title: string): FakeNotification => ({
+  id: crypto.randomUUID(),
+  kind: 'request',
+  title,
+  detail: '',
+  target: '/requests/r2',
+  at: '2026-11-10T14:30:00Z',
+  read: false,
+});
 
 test.describe('stay notified (L2-064 to L2-070)', () => {
   test('L2-064: the list shows what happened, unread first marked, with the count in the bell', async ({
@@ -103,6 +119,58 @@ test.describe('stay notified (L2-064 to L2-070)', () => {
     await toasts.dismiss(toast).click();
     await expect.poll(() => fake.lastEventIds.length).toBeGreaterThan(2);
     await expect(toast).toHaveCount(0);
+  });
+
+  test('L2-070 AC4: when the browser has given up on the stream, the app opens it again after 5 seconds, from the last event', async ({
+    page,
+    jb,
+  }) => {
+    const toasts = new Toasts(page);
+    const fake = await stubNotifications(page, { items: [] });
+    await jb.goto('/notifications');
+    fake.push(arrival('First update'));
+    const first = toasts.withTitle('First update');
+    await expect(first).toBeVisible();
+    await toasts.dismiss(first).click();
+    await page.clock.install();
+
+    // The server refuses the stream: the browser stops asking.
+    fake.stream = 'refused';
+    await expect.poll(() => fake.refusals).toBeGreaterThan(0);
+    const asked = fake.lastEventIds.length;
+    fake.stream = 'ok';
+    fake.push(arrival('Second update'));
+
+    await page.clock.runFor(3_500);
+    expect(fake.refusals).toBe(1);
+    expect(fake.lastEventIds).toHaveLength(asked);
+
+    await page.clock.runFor(2_000);
+    await expect(toasts.withTitle('Second update')).toBeVisible();
+    // It asked for what came after the last event it had, so nothing is shown twice.
+    expect(fake.lastEventIds[asked]).toBe('1001');
+    await expect(first).toHaveCount(0);
+  });
+
+  test('L2-070 AC4: the app opens the stream again at once when the device is online again', async ({
+    page,
+    context,
+    jb,
+  }) => {
+    const toasts = new Toasts(page);
+    const fake = await stubNotifications(page, { items: [] });
+    await jb.goto('/notifications');
+    await expect.poll(() => fake.lastEventIds.length).toBeGreaterThan(0);
+    await page.clock.install();
+    fake.stream = 'refused';
+    await expect.poll(() => fake.refusals).toBeGreaterThan(0);
+
+    await context.setOffline(true);
+    fake.stream = 'ok';
+    fake.push(arrival('While you were offline'));
+    await context.setOffline(false);
+
+    await expect(toasts.withTitle('While you were offline')).toBeVisible({ timeout: 3_000 });
   });
 
   test('L2-036 AC4: a product back in stock is in the list, unread, and opens the product page', async ({

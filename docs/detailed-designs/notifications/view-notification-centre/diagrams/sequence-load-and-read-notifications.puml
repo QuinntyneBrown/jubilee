@@ -17,63 +17,69 @@ skinparam package {
 actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
   participant "NotificationsPage" as page
-  participant "NotificationsStore" as store
-  participant "NotificationsApi" as client
+  participant "HttpNotificationsApi" as client
+  participant "NavigationStore" as nav
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "NotificationsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "ListNotificationsQueryHandler" as list
-  participant "MarkNotificationsReadCommandHandler" as mark
+  participant "MarkNotificationReadCommandHandler" as mark
+  participant "MarkAllNotificationsReadCommandHandler" as markall
   participant "Notification" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 member -> page : Open /notifications
-page -> store : load()
-store -> client : list()
+page -> client : list()
 client -> controller : GET /api/notifications
-controller -> controller : Authenticate and apply endpoint policy
+controller -> controller : Take the subject from the session
 controller -> list : Send ListNotificationsQuery
-list -> db : Select caller's notifications created within 90 days newest first (L2-064)
-db --> list : Rows
+list -> db : Select the caller's newest 100 notifications of the last 90 days (L2-064)
+db --> list : Rows and unread count
 list --> controller : NotificationListDto
 controller --> client : 200 OK
-client --> store : Items and unread count
-alt no notifications
+client --> page : Items and unread count
+alt the load fails
+  page --> member : Show the load-error state with JB-NTF-503 (L2-118)
+else no notifications
   page --> member : Show "No notifications yet." with "Browse businesses"
 else notifications exist
   page --> member : Show "3 unread" and items marked "Unread."
 end
-opt member presses an item
+opt member presses an unread item
   member -> page : Press item
-  page -> store : open(id)
-  store -> client : markRead(id)
+  page -> page : Mark the row read
+  page -> client : markRead(id)
   client -> controller : POST /api/notifications/{id}/read
-  controller -> mark : Send MarkNotificationsReadCommand
-  mark -> db : Load notification owned by the caller (L2-133)
-  db --> mark : Notification
-  mark -> entity : MarkRead(now)
-  entity --> mark : ReadAt set
-  mark -> db : Save changes
-  db --> mark : Commit result
-  mark --> controller : Done
-  controller --> client : 204 No Content
-  page --> member : Navigate to the request or conversation or listing (L2-064)
+  controller -> mark : Send MarkNotificationReadCommand
+  mark -> db : Load the notification by ID and the caller's subject (L2-133)
+  alt another member's notification
+    mark --> controller : NotFoundException NOTIFICATION_NOT_FOUND
+    controller --> client : 404 Not Found
+  else own notification
+    db --> mark : Notification
+    mark -> entity : MarkRead(now)
+    mark -> db : Save changes
+    mark --> controller : UnreadDto
+    controller --> client : 200 OK
+    client --> page : Remaining unread count
+    page -> nav : apply(summary with the new unread count)
+  end
+  page --> member : Navigate to the target (L2-064)
 end
 opt member presses "Mark all as read"
   member -> page : Press "Mark all as read"
-  page -> store : markAllRead()
-  store -> client : markAllRead()
+  page -> client : markAllRead()
   client -> controller : POST /api/notifications/read-all
-  controller -> mark : Send MarkNotificationsReadCommand without an ID
-  mark -> db : Set ReadAt on every unread notification of the caller
-  db --> mark : Commit result
-  mark --> controller : Done
-  controller --> client : 204 No Content
-  client --> store : All read
-  store --> page : Remove unread styling and count (L2-064)
+  controller -> markall : Send MarkAllNotificationsReadCommand
+  markall -> db : Set ReadAt on every unread visible notification of the caller
+  markall --> controller : UnreadDto of 0
+  controller --> client : 200 OK
+  client --> page : All read
+  page -> nav : apply(summary with unread count 0)
+  page --> member : Remove the unread styling and the count (L2-064)
 end
 @enduml

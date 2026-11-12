@@ -39,6 +39,11 @@ export class Toasts {
       .filter({ has: this.page.locator('.toast__title', { hasText: title }) });
   }
 
+  /** The titles of the toasts on show, in the order they are stacked (and tabbed through). */
+  titles(): Promise<string[]> {
+    return this.all.locator('.toast__title').allTextContents();
+  }
+
   action(toast: Locator, label: string): Locator {
     return toast.getByRole('button', { name: label, exact: true });
   }

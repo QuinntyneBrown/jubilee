@@ -53,7 +53,7 @@ function button(link, label) {
   );
 }
 
-function render(subject, text, unsubscribe) {
+function render(subject, text, unsubscribe, address) {
   const paragraphs = text
     .split('\n\n')
     .map((p) => p.replace(signature, '').trim())
@@ -79,18 +79,26 @@ function render(subject, text, unsubscribe) {
   const footer = unsubscribe
     ? `            <p class="jb-mail__muted" style="margin:8px 0 0;font-size:13px;line-height:20px;color:#4a505c;">You get this e-mail because of your notification settings. <a class="jb-mail__link" href="${encode(unsubscribe)}" style="color:#006644;">Unsubscribe from e-mails like this</a>.</p>\n`
     : '';
+  const sender = address
+    ? `            <p class="jb-mail__muted" style="margin:8px 0 0;font-size:13px;line-height:20px;color:#4a505c;">Jubilee, ${encode(address)}</p>\n`
+    : '';
   return layout
     .replace('{{subject}}', encode(subject))
     .replace('{{preheader}}', encode(preheader.replace(/\n/g, ' ')))
     .replace('{{content}}\n', content)
-    .replace('{{footer}}\n', footer);
+    .replace('{{footer}}\n', footer + sender);
 }
 
 /** The dark rendition: what a mail client that honours prefers-color-scheme shows. */
 const dark = (html) => html.replace('@media (prefers-color-scheme: dark)', '@media all');
 
 const end = `\n\n${signature}\n`;
-const unsubscribe = `${base}/api/email/unsubscribe/${token}`;
+// The footer link opens the unsubscribe page (L2-224); the List-Unsubscribe header keeps the API address.
+const unsubscribe = `${base}/unsubscribe/${token}`;
+// Promotional e-mail names Jubilee's mailing address (L2-149 AC1); production sets Email:MailingAddress.
+const address = '1 Example Street, Toronto, ON M5H 0A1';
+/** What EmailLayout adds to the plain-text part of a promotional e-mail. */
+const promotional = (text) => `${text.trimEnd()}\nUnsubscribe: ${unsubscribe}\nJubilee, ${address}\n`;
 const emails = [
   ['confirm-email', 'Confirm your e-mail for Jubilee', `Hi Joanna,\n\nConfirm your e-mail to message businesses and book meetings on Jubilee. Open this link within 24 hours:\n\n${base}/verify-email/${token}\n\nIf you didn't join Jubilee, ignore this e-mail.${end}`],
   ['address-in-use', 'Someone tried to join Jubilee with your e-mail', `Hi Joanna,\n\nSomeone tried to create a Jubilee account with your address. Your account is unchanged. If that was you, sign in at ${base}/sign-in.${end}`],
@@ -112,14 +120,17 @@ const emails = [
   ['new-message', 'New message from Legacy Financial', `Hi Joanna,\n\nLegacy Financial sent you a message on Jubilee.\n\nRead and reply: ${base}/messages/7f3a${end}`, unsubscribe],
   ['meeting-reminder', 'Your meeting starts in 1 hour', `Hi Joanna,\n\nDiscovery meeting with Legacy Financial starts at 10:00 a.m.\n\nDetails: ${base}/requests/2b91${end}`, unsubscribe],
   ['back-in-stock', 'Faith heavyweight tee, charcoal is back in stock', `Hi Joanna,\n\nLuzandre.com has Faith heavyweight tee, charcoal again. You asked us to tell you.\n\nSee it here: ${base}/b/luzandre/p/faith-heavyweight-tee-charcoal\n\nJubilee doesn't take payment. Luzandre.com confirms stock and tells you how to pay.${end}`, unsubscribe],
+  ['daily-summary', 'Your Jubilee summary for Wednesday 11 November', `Hi Naomi,\n\nHere is what happened on Jubilee since your last summary.\n\n• New quote request from Joanna Adeyemi\n• New message from Joanna Adeyemi\n• New order request from Samuel Park\n\nSee what happened: ${base}/notifications${end}`, unsubscribe],
+  ['new-businesses', 'New on Jubilee this week', `Hi Joanna,\n\nThese businesses were verified this week in categories you’ve browsed.\n\nCornerstone Bookkeeping (Financial & insurance)\n${base}/b/cornerstone-bookkeeping\n\nHearthstone Renovations (Home & property)\n${base}/b/hearthstone-renovations\n\nBrowse businesses: ${base}/${end}`, unsubscribe, address],
+  ['owner-tip', 'A tip for your Jubilee listing: show your work with photos', `Hi Naomi,\n\nA member who has never met you sees your listing first. Photos of your work, your shop or your team tell them what you do before they write to you.\n\nAdd photos to Luzandre.com and choose the one that leads.\n\nAdd photos: ${base}/my-business/listing\n\nThis is tip 1 of 4. We send one a month.${end}`, unsubscribe, address],
 ];
 
 mkdirSync(out, { recursive: true });
-for (const [key, subject, text, unsub] of emails) {
-  const html = render(subject, text, unsub);
+for (const [key, subject, text, unsub, sender] of emails) {
+  const html = render(subject, text, unsub, sender);
   writeFileSync(join(out, `${key}.html`), html);
   writeFileSync(join(out, `${key}.dark.html`), dark(html));
-  writeFileSync(join(out, `${key}.txt`), `Subject: ${subject}\n\n${text}`);
+  writeFileSync(join(out, `${key}.txt`), `Subject: ${subject}\n\n${sender ? promotional(text) : text}`);
 }
 
 const card = ([key, subject]) => `

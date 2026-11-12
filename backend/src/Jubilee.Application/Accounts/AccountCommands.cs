@@ -370,7 +370,7 @@ public sealed class GetMemberAccountQueryHandler(IAppDbContext db) : IRequestHan
 
 /// <summary>Sends the e-mails waiting in the outbox; a failure is retried with back-off (L2-179 AC3).</summary>
 public sealed class OutboxDispatcher(
-    IAppDbContext db, IEmailSender sender, TimeProvider clock, AccountSettings settings, Notifications.IUnsubscribeLinks unsubscribe)
+    IAppDbContext db, IEmailSender sender, TimeProvider clock, AccountSettings settings, Notifications.IUnsubscribeLinks unsubscribe, EmailSettings email)
 {
     public async Task<int> DispatchDueAsync(CancellationToken cancellationToken)
     {
@@ -382,10 +382,25 @@ public sealed class OutboxDispatcher(
         {
             try
             {
-                var link = message.Category is { } category && message.MemberId is { } memberId
-                    ? $"{settings.PublicBaseUrl.TrimEnd('/')}/api/email/unsubscribe/{unsubscribe.For(memberId, category)}"
-                    : null;
-                await sender.SendAsync(Emails.EmailLayout.Render(message.ToAddress, message.Subject, message.TextBody, link), cancellationToken);
+                // The header keeps the API address for the one-click POST; the footer link opens the page (L2-224).
+                var token = message.Category is { } category && message.MemberId is { } memberId ? unsubscribe.For(memberId, category) : null;
+                var root = settings.PublicBaseUrl.TrimEnd('/');
+                var promotional = message.Category is { } kind && EmailCategories.IsPromotional(kind);
+                if (promotional && !email.CanSendPromotional)
+                {
+                    // Never without the mailing address (L2-149 AC1): the row waits until one is configured.
+                    continue;
+                }
+
+                await sender.SendAsync(
+                    Emails.EmailLayout.Render(
+                        message.ToAddress,
+                        message.Subject,
+                        message.TextBody,
+                        token is null ? null : $"{root}/api/email/unsubscribe/{token}",
+                        token is null ? null : $"{root}/unsubscribe/{token}",
+                        promotional ? email.MailingAddress!.Trim() : null),
+                    cancellationToken);
                 message.MarkSent(clock.GetUtcNow());
                 sent++;
             }

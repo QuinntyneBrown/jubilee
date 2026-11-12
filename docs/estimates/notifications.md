@@ -2,9 +2,15 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| deliver-real-time-events | 4 days | 90% |
-| send-email-notifications | 5 days | 85% |
-| show-toasts-and-banners | 3 days | 85% |
-| view-notification-centre | 4 days | 95% |
+| deliver-real-time-events | 4 days | 100% |
+| send-email-notifications | 5 days | 100% |
+| show-toasts-and-banners | 3 days | 100% |
+| view-notification-centre | 4 days | 100% |
 
-stay-notified (ADR 0025): the notification centre, mark read, real-time event stream with reconnect, toasts, the confirmed banner, preference-gated e-mail with combining, unsubscribe and meeting reminders are done with tests. The preference screens, the offline banner, the branded mail layout and the Azure Communication Services sender with its unsubscribe headers have landed since, with tests. Deferred: the daily summary (L2-016 AC6, L2-068 AC1), back-in-stock and new-business notifications (L2-064 AC6), and behaviour specs for the toast timing, the alert role and the limit of three (L2-066 AC1 to AC3).
+stay-notified (ADR 0025, ADR 0053, journey 17): the notification centre, mark read, the event stream that the browser reconnects and the app opens again when the browser gives up, toasts with their timing, alert role and limit of three, the banners, preference-gated e-mail with combining, the unsubscribe link and its page, meeting reminders, the daily summary at 7:00 a.m. in Toronto, the "new business" notification with its weekly note, and the tips for business owners are done with tests (`NotificationTests`, `EmailNotificationTests`, `NewBusinessTests`, `OwnerTipTests`, `EventStreamTests`, `EmailLayoutTests`, `notifications.spec.ts`, `toasts.spec.ts`, `unsubscribe.spec.ts`).
+
+## Left in journey 17 (ADR 0053)
+
+- Owner step: set `Email__MailingAddress` on the API and the worker in Azure. Until it is set the weekly note of new businesses and the tips for owners are not sent (L2-149 AC1); the switches are saved and their consent recorded.
+- Owner step: the 2 seconds of L2-070 AC1 are measured by `EventStreamDeliveryTests` inside the API. Over the network between Azure and a phone they can only be read from production monitoring.
+- Outside this journey: push while the app is closed (journey 24), and the retries and dead-letter queue of scheduled jobs (L2-182 AC2, the design "Run background jobs").

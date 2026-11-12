@@ -22,6 +22,9 @@ public sealed class ListingView
 
     public DateTimeOffset ViewedAt { get; private set; }
 
+    /// <summary>The visitor key of a signed-in member. "Browsed" is read from it (L2-222, ADR 0053).</summary>
+    public static string MemberKey(string subject) => $"member:{subject}";
+
     public static ListingView Record(Guid listingId, string visitorKey, DateTimeOffset now) => new()
     {
         Id = Guid.NewGuid(),
