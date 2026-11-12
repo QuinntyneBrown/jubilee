@@ -102,12 +102,19 @@ public sealed record CategoryGroupDto(
     bool HasMore,
     IReadOnlyList<DirectoryRowDto> Businesses);
 
+/// <summary>
+/// "Rooms & places to stay" (L2-192): the live space count and, newest first, the union of the
+/// newest four spaces and the newest four of each term, so the term filter needs no request.
+/// </summary>
+public sealed record RoomsShelfDto(int Count, IReadOnlyList<SpaceCardDto> Spaces);
+
 public sealed record BrowseHomeDto(
     int LiveBusinessCount,
     IReadOnlyList<CategoryLinkDto> Categories,
     IReadOnlyList<BusinessCardDto> Featured,
     IReadOnlyList<ProductCardDto> Products,
-    IReadOnlyList<CategoryGroupDto> Groups);
+    IReadOnlyList<CategoryGroupDto> Groups,
+    RoomsShelfDto Rooms);
 
 /// <summary>A short count shown beside the business count, for example "3 take emergency calls".</summary>
 public sealed record CategoryFactDto(string Offer, int Count);

@@ -37,7 +37,44 @@ public sealed record ListingDetailsDto(
     DateTimeOffset OnJubileeSince,
     string? Replies);
 
-/// <summary>The listing page of one business (L2-033, L2-034).</summary>
+/// <summary>
+/// The rental details on the page of a space (L2-196). Built without the exact address, which the
+/// page never carries, whoever asks (L2-199 AC1).
+/// </summary>
+public sealed record SpacePageDto(
+    string Term,
+    int Rent,
+    string Per,
+    string Available,
+    int MinimumStay,
+    string MinimumStayLabel,
+    string Neighbourhood,
+    string Place,
+    IReadOnlyList<string> Facts,
+    IReadOnlyList<string> Included,
+    string? Household,
+    IReadOnlyList<string> Rules,
+    string CallToAction)
+{
+    public static SpacePageDto? From(Listing listing) => listing.Space is not { } space
+        ? null
+        : new SpacePageDto(
+            WireValues.Of(space.Term),
+            space.Rent,
+            SpaceTerms.Per(space.Term),
+            space.Available,
+            space.MinimumStay,
+            space.MinimumStayLabel,
+            space.Neighbourhood,
+            space.Place,
+            space.Facts,
+            space.Included,
+            space.Household,
+            space.Rules,
+            SpaceTerms.CallToAction(space.Term));
+}
+
+/// <summary>The listing page of one business (L2-033, L2-034) or space (L2-196).</summary>
 public sealed record ListingPageDto(
     string Slug,
     string Kind,
@@ -56,4 +93,7 @@ public sealed record ListingPageDto(
     IReadOnlyList<ServiceRowDto> Services,
     int ProductCount,
     IReadOnlyList<ProductCardDto> Products,
-    IReadOnlyList<BusinessCardDto> Related);
+    IReadOnlyList<BusinessCardDto> Related,
+    SpacePageDto? Space,
+    IReadOnlyList<SpaceCardDto> RelatedSpaces,
+    Guid? OpenRequestId = null);

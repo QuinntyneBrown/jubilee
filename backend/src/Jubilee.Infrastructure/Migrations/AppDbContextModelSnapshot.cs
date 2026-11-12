@@ -1566,6 +1566,12 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
+                    b.Property<DateOnly?>("CheckIn")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("CheckOut")
+                        .HasColumnType("date");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -1618,6 +1624,9 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
 
+                    b.Property<DateOnly?>("MoveIn")
+                        .HasColumnType("date");
+
                     b.Property<DateOnly?>("NeededBy")
                         .HasColumnType("date");
 
@@ -1656,6 +1665,10 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<int?>("ShippingCents")
                         .HasColumnType("int");
 
+                    b.Property<string>("SpaceTerm")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
                     b.Property<DateTimeOffset?>("StartsAt")
                         .HasColumnType("datetimeoffset");
 
@@ -1663,6 +1676,9 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
+
+                    b.Property<int?>("StayMonths")
+                        .HasColumnType("int");
 
                     b.Property<int?>("TotalCents")
                         .HasColumnType("int");

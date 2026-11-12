@@ -69,6 +69,16 @@ public static class SpaceTerms
 }
 
 /// <summary>
+/// When a renter may read a space's exact address (L2-199): their own space request, once the owner
+/// confirmed it, and while it stays confirmed or completed. Computed on each read, never copied.
+/// </summary>
+public static class SpaceAddressRelease
+{
+    public static bool IsReleased(Request request) =>
+        request.Kind == RequestKind.Space && request.Status is RequestStatus.Confirmed or RequestStatus.Completed;
+}
+
+/// <summary>
 /// The rental details of a space (L2-190). Owned by its listing or draft. The exact address is
 /// private: only the owner and the renter whose request the owner accepted ever read it (L2-199).
 /// </summary>

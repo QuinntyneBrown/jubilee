@@ -13,6 +13,10 @@ public sealed record BookMeetingRequest(
 public sealed record RequestQuoteRequest(
     string? ListingSlug, Guid? ServiceId, string? Description, string? NeededBy, string? Budget, string? Phone, string? IdempotencyKey);
 
+/// <summary>The body of a space request. Any price the client sends is not read: the server computes it (L2-197 AC8).</summary>
+public sealed record RequestSpaceRequest(
+    string? ListingSlug, string? CheckIn, string? CheckOut, string? MoveIn, int? StayMonths, string? Note, string? IdempotencyKey);
+
 /// <summary>The body of an order request. It has no price, shipping or total, and unknown fields are refused (L2-133 AC4).</summary>
 [System.Text.Json.Serialization.JsonUnmappedMemberHandling(System.Text.Json.Serialization.JsonUnmappedMemberHandling.Disallow)]
 public sealed record RequestItemRequest(
@@ -99,6 +103,25 @@ public sealed class RequestsController(ISender sender) : ControllerBase
                 request.Quantity,
                 request.DeliveryMethodId,
                 request.ShippingAddress,
+                request.Note,
+                request.IdempotencyKey),
+            cancellationToken);
+        return StatusCode(StatusCodes.Status201Created, sent);
+    }
+
+    [HttpPost("spaces")]
+    [RequiresConfirmedEmail]
+    public async Task<IActionResult> Space([FromBody] RequestSpaceRequest request, CancellationToken cancellationToken)
+    {
+        var sent = await sender.Send(
+            new RequestSpaceCommand(
+                Subject,
+                User.FindFirst("name")?.Value ?? "Member",
+                request.ListingSlug ?? string.Empty,
+                request.CheckIn,
+                request.CheckOut,
+                request.MoveIn,
+                request.StayMonths,
                 request.Note,
                 request.IdempotencyKey),
             cancellationToken);

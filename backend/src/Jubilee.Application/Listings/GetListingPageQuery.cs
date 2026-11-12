@@ -18,6 +18,9 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
     /// <summary>"More in {category}" shows at most this many other businesses (L2-040).</summary>
     public const int RelatedCount = 2;
 
+    /// <summary>"More rooms & rentals" shows at most this many other spaces (L2-196 AC1).</summary>
+    public const int RelatedSpaceCount = 4;
+
     /// <summary>A shop page lists at most this many products; the count covers them all (L2-153 AC3).</summary>
     public const int MaxProducts = 50;
 
@@ -51,7 +54,22 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             $"listing|{slug}",
             ct => BuildPublicAsync(slug, ct),
             cancellationToken);
-        return page with { ViewerRelation = Wire(request.Viewer.SignedIn ? ViewerRelation.Member : ViewerRelation.Visitor) };
+        page = page with { ViewerRelation = Wire(request.Viewer.SignedIn ? ViewerRelation.Member : ViewerRelation.Visitor) };
+
+        // The member's own open space request is theirs alone, so it is added after the cache (L2-197 AC9).
+        if (page.Space is not null && viewer.Subject is { } member)
+        {
+            var listingId = await db.Listings.AsNoTracking().Where(l => l.Slug == slug).Select(l => l.Id).SingleAsync(cancellationToken);
+            var open = await db.Requests.AsNoTracking()
+                .Where(r => r.ListingId == listingId && r.MemberSubject == member && r.Kind == RequestKind.Space
+                    && (r.Status == RequestStatus.New || r.Status == RequestStatus.Confirmed))
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => (Guid?)r.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+            page = page with { OpenRequestId = open };
+        }
+
+        return page;
     }
 
     private async Task<ListingPageDto> BuildPublicAsync(string slug, CancellationToken cancellationToken)
@@ -79,10 +97,14 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             .Take(MaxProducts)
             .ToListAsync(cancellationToken);
 
-        var related = await ListingSortPolicy
-            .Apply(db.Listings.AsNoTracking().WherePublic().Where(l => l.CategorySlug == category.Slug && l.Id != listing.Id), ListingSort.Recommended)
-            .Take(RelatedCount)
-            .ToListAsync(cancellationToken);
+        var others = db.Listings.AsNoTracking().WherePublic().Where(l => l.CategorySlug == category.Slug && l.Id != listing.Id);
+        var isSpace = listing.Kind == ListingKind.Space;
+        var related = isSpace
+            ? []
+            : await ListingSortPolicy.Apply(others, ListingSort.Recommended).Take(RelatedCount).ToListAsync(cancellationToken);
+        var relatedSpaces = isSpace
+            ? await others.OrderByDescending(l => l.ApprovedAt).ThenBy(l => l.SortName).Take(RelatedSpaceCount).ToListAsync(cancellationToken)
+            : [];
 
         return new ListingPageDto(
             listing.Slug,
@@ -109,7 +131,9 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             [.. services.Select(ServiceRowDto.From)],
             productCount,
             [.. products.Select(p => ProductCardDto.From(p, listing))],
-            [.. related.Select(BusinessCardDto.From)]);
+            [.. related.Select(BusinessCardDto.From)],
+            SpacePageDto.From(listing),
+            [.. relatedSpaces.Where(l => l.Space is not null).Select(SpaceCardDto.From)]);
     }
 
     private static string Wire(ViewerRelation relation) => relation.ToString().ToLowerInvariant();

@@ -49,14 +49,15 @@ public static class ListingMother
         DateTimeOffset? approvedAt = null,
         string address = "12 Brunswick Ave, Toronto ON M5S 2L7",
         string? name = null,
-        string? household = null)
+        string? household = null,
+        int? minimumStay = null)
     {
         var listing = Public(slug, Category.RoomsSlug, name, approvedAt, default, default, highlight: null);
         listing.DescribeSpace(SpaceDetails.Create(
             term,
             rent,
             available: "Mar 1",
-            minimumStay: SpaceTerms.MinimumStayChoices(term)[0],
+            minimumStay: minimumStay ?? SpaceTerms.MinimumStayChoices(term)[0],
             neighbourhood,
             address,
             place: "Basement apartment",

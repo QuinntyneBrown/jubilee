@@ -16,6 +16,7 @@ public sealed class GetBrowseHomeQueryHandler(
 {
     public const int FeaturedLimit = 5;
     public const int ShopProductLimit = 5;
+    public const int RoomsShelfLimit = 4;
 
     public Task<BrowseHomeDto> Handle(GetBrowseHomeQuery request, CancellationToken cancellationToken) =>
         cache.GetOrCreateAsync("home", BuildAsync, cancellationToken);
@@ -26,8 +27,28 @@ public sealed class GetBrowseHomeQueryHandler(
         var featured = await featuredSelector.SelectAsync(clock.GetUtcNow(), FeaturedLimit, cancellationToken);
         var products = await ShopProductsAsync(cancellationToken);
         var groups = await grouping.BuildAsync(cancellationToken);
+        var rooms = await RoomsShelfAsync(cancellationToken);
 
-        return new BrowseHomeDto(count, CategoryLinkDto.All, [.. featured.Select(BusinessCardDto.From)], products, groups);
+        return new BrowseHomeDto(count, CategoryLinkDto.All, [.. featured.Select(BusinessCardDto.From)], products, groups, rooms);
+    }
+
+    /// <summary>The newest four spaces overall and of each term (L2-192 AC1, AC3), newest first.</summary>
+    private async Task<RoomsShelfDto> RoomsShelfAsync(CancellationToken cancellationToken)
+    {
+        // The term is inside the JSON column, so the category's public spaces are picked in memory.
+        var spaces = (await db.Listings.AsNoTracking().WherePublic().WhereSpace()
+                .OrderByDescending(l => l.ApprovedAt)
+                .ThenBy(l => l.SortName)
+                .ToListAsync(cancellationToken))
+            .Where(l => l.Space is not null)
+            .ToList();
+
+        var shelf = spaces.Take(RoomsShelfLimit)
+            .Concat(SpaceTerms.All.SelectMany(term => spaces.Where(l => l.Space!.Term == term).Take(RoomsShelfLimit)))
+            .Distinct();
+        var picked = shelf.ToHashSet();
+
+        return new RoomsShelfDto(spaces.Count, [.. spaces.Where(picked.Contains).Select(SpaceCardDto.From)]);
     }
 
     /// <summary>

@@ -5,6 +5,9 @@ public enum RequestKind
     Booking = 0,
     Quote = 1,
     Order = 2,
+
+    /// <summary>A renter asks to rent a space (L2-197, ADR 0040).</summary>
+    Space = 3,
 }
 
 /// <summary>The one lifecycle every request follows (L2-043).</summary>
@@ -68,8 +71,9 @@ public sealed class RequestTransition
 }
 
 /// <summary>
-/// A member's ask of a business: a booking, a quote or an order (L2-043). Jubilee takes no
-/// payment. The booking fields are filled for a booking only.
+/// A member's ask of a business: a booking, a quote or an order (L2-043), or of the owner of a
+/// space: a space request (L2-197). Jubilee takes no payment. The booking fields are filled for a
+/// booking only, the space fields for a space request only.
 /// </summary>
 public sealed class Request
 {
@@ -165,6 +169,24 @@ public sealed class Request
     /// <summary>When the one-hour reminder of a confirmed meeting was sent (L2-069).</summary>
     public DateTimeOffset? RemindedAt { get; private set; }
 
+    /// <summary>A space request: the term of the space when it was asked for.</summary>
+    public SpaceTerm? SpaceTerm { get; private set; }
+
+    /// <summary>A Short stay: the first night.</summary>
+    public DateOnly? CheckIn { get; private set; }
+
+    /// <summary>A Short stay: the day the renter leaves.</summary>
+    public DateOnly? CheckOut { get; private set; }
+
+    /// <summary>A Long term, Room or Roommate request: the day the renter moves in.</summary>
+    public DateOnly? MoveIn { get; private set; }
+
+    /// <summary>A Long term, Room or Roommate request: how many months the renter stays.</summary>
+    public int? StayMonths { get; private set; }
+
+    /// <summary>A Short stay: the nights between check-in and check-out.</summary>
+    public int? Nights => CheckIn is { } from && CheckOut is { } to ? to.DayNumber - from.DayNumber : null;
+
     public IReadOnlyList<RequestTransition> Transitions => _transitions;
 
     public static Request Book(
@@ -226,6 +248,54 @@ public sealed class Request
             Budget = string.IsNullOrWhiteSpace(budget) ? null : budget.Trim(),
             Phone = phone,
         };
+
+    /// <summary>
+    /// A space request. The space's name is kept as the request's title; the rent and, for a Short
+    /// stay, the total come from the stored rent (L2-197 AC8).
+    /// </summary>
+    public static Request AskForSpace(
+        string memberSubject,
+        string memberName,
+        Guid listingId,
+        string spaceName,
+        SpaceDetails space,
+        DateOnly? checkIn,
+        DateOnly? checkOut,
+        DateOnly? moveIn,
+        int? stayMonths,
+        string? note,
+        string idempotencyKey,
+        DateTimeOffset now)
+    {
+        var request = new Request
+        {
+            Id = Guid.NewGuid(),
+            Kind = RequestKind.Space,
+            MemberSubject = memberSubject,
+            MemberName = memberName,
+            ListingId = listingId,
+            Status = RequestStatus.New,
+            CreatedAt = now,
+            IdempotencyKey = idempotencyKey,
+            ServiceName = spaceName,
+            SpaceTerm = space.Term,
+            Note = string.IsNullOrWhiteSpace(note) ? null : note.Trim(),
+            UnitPriceCents = space.Rent * 100,
+        };
+        if (SpaceTerms.IsNightly(space.Term))
+        {
+            request.CheckIn = checkIn;
+            request.CheckOut = checkOut;
+            request.TotalCents = space.Rent * 100 * request.Nights;
+        }
+        else
+        {
+            request.MoveIn = moveIn;
+            request.StayMonths = stayMonths;
+        }
+
+        return request;
+    }
 
     public static Request AskForOrder(
         string memberSubject,

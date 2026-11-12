@@ -95,6 +95,7 @@ internal static class MemberRequestRules
     {
         RequestKind.Booking => $"{Day(r.StartsAt!.Value)} · {(r.Mode == MeetingMode.InPerson ? "In person" : "Video")}",
         RequestKind.Order => IncomingRules.Total(r) is { } total ? $"{r.DeliveryLabel} · {total}" : r.DeliveryLabel,
+        RequestKind.Space => IncomingRules.SpaceTotal(r) is { } total ? $"{IncomingRules.SpaceWhen(r)} · {total}" : IncomingRules.SpaceWhen(r),
         _ => null,
     };
 
@@ -233,7 +234,7 @@ public sealed class GetRequestQueryHandler(IAppDbContext db, TimeProvider clock,
             RequestLabels.Wire(request.Status),
             RequestLabels.ForMember(request.Status),
             Callout(request, listing, owner, now),
-            Details(request),
+            Details(request, listing, owner),
             Timeline(request, listing, now),
             MemberRequestRules.IsOpen(request),
             confirmedBooking ? "Cancel booking" : "Cancel request",
@@ -260,10 +261,13 @@ public sealed class GetRequestQueryHandler(IAppDbContext db, TimeProvider clock,
                     $"{owner} confirmed your meeting",
                     $"{MemberRequestRules.Range(r)} by {how}. The link is in your messages and we’ll remind you an hour before.",
                     null);
+            case RequestStatus.Confirmed when r.Kind == RequestKind.Space:
+                // The address reaches the accepted renter only (L2-199 AC3).
+                return new CalloutDto("success", $"{owner} accepted", $"The address is {listing.Space?.Address}.", null);
             case RequestStatus.Confirmed:
                 return new CalloutDto("success", $"{owner} confirmed your {noun}", $"{owner} will message you about payment and pickup.", null);
             case RequestStatus.Declined:
-                var job = r.Kind switch { RequestKind.Order => "order", RequestKind.Booking => "booking", _ => "job" };
+                var job = r.Kind switch { RequestKind.Order => "order", RequestKind.Booking => "booking", RequestKind.Space => "request", _ => "job" };
                 return new CalloutDto("warning", $"{listing.Name} can’t take this {job}", string.Empty, r.DeclineMessage);
             case RequestStatus.Cancelled:
                 return new CalloutDto("info", "You cancelled this request", $"{listing.Name} has been told. Nothing more will happen with it.", null);
@@ -272,7 +276,7 @@ public sealed class GetRequestQueryHandler(IAppDbContext db, TimeProvider clock,
         }
     }
 
-    private static List<DetailLineDto> Details(Request r)
+    private static List<DetailLineDto> Details(Request r, Listing listing, string owner)
     {
         var lines = new List<DetailLineDto>();
         void Add(string label, string? value)
@@ -289,6 +293,12 @@ public sealed class GetRequestQueryHandler(IAppDbContext db, TimeProvider clock,
                 Add("Service", r.ServiceName);
                 Add("When", MemberRequestRules.Range(r));
                 Add("How", r.Mode == MeetingMode.InPerson ? $"In person, {r.Location}" : "Video call");
+                Add("Your note", r.Note);
+                break;
+            case RequestKind.Space:
+                Add("When", IncomingRules.SpaceWhen(r));
+                Add("Total", IncomingRules.SpaceTotal(r));
+                Add("Address", SpaceAddressRelease.IsReleased(r) ? listing.Space?.Address : $"Shared once {owner} accepts.");
                 Add("Your note", r.Note);
                 break;
             case RequestKind.Quote:
@@ -313,6 +323,8 @@ public sealed class GetRequestQueryHandler(IAppDbContext db, TimeProvider clock,
     /// The progress: what happened, in order, then what comes next (L2-043 AC7). A change the member took
     /// back inside the undo window is left out, as it never happened.
     /// </summary>
+    private static string SpaceStep(Request r) => r.CheckIn is null ? "Move in" : "Check in";
+
     private static List<TimelineStepDto> Timeline(Request r, Listing listing, DateTimeOffset now)
     {
         var steps = new List<TimelineStepDto> { new("You asked", null, r.CreatedAt, "complete") };
@@ -344,11 +356,12 @@ public sealed class GetRequestQueryHandler(IAppDbContext db, TimeProvider clock,
             case RequestStatus.New:
                 steps.Add(new TimelineStepDto($"{listing.Name} replies", "Usually within a day", null, "current"));
                 steps.Add(new TimelineStepDto(
-                    r.Kind switch { RequestKind.Booking => "Meeting", RequestKind.Quote => "You accept and arrange a visit", _ => "Pickup or delivery" },
+                    r.Kind switch { RequestKind.Booking => "Meeting", RequestKind.Quote => "You accept and arrange a visit", RequestKind.Space => SpaceStep(r), _ => "Pickup or delivery" },
                     null, null, "upcoming"));
                 break;
             case RequestStatus.Confirmed:
-                steps.Add(new TimelineStepDto(r.Kind == RequestKind.Booking ? "Meeting" : "Pickup or delivery", null, r.StartsAt, "current"));
+                steps.Add(new TimelineStepDto(
+                    r.Kind switch { RequestKind.Booking => "Meeting", RequestKind.Space => SpaceStep(r), _ => "Pickup or delivery" }, null, r.StartsAt, "current"));
                 steps.Add(new TimelineStepDto("Completed", null, null, "upcoming"));
                 break;
         }

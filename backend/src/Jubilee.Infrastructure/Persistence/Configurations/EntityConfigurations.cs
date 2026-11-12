@@ -450,6 +450,8 @@ public sealed class RequestConfiguration : IEntityTypeConfiguration<Request>
         builder.Property(r => r.Kind).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Mode).HasConversion<string>().HasMaxLength(16);
+        builder.Property(r => r.SpaceTerm).HasConversion<string>().HasMaxLength(16);
+        builder.Ignore(r => r.Nights);
         builder.HasIndex(r => new { r.MemberSubject, r.IdempotencyKey }).IsUnique();
         builder.HasIndex(r => new { r.MemberSubject, r.CreatedAt });
         builder.HasIndex(r => new { r.ListingId, r.CreatedAt });

@@ -96,4 +96,45 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
         Assert.DoesNotContain("Brunswick", raw, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(Address, raw, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public async Task L2_192_AC1_AC3_the_rooms_shelf_holds_the_newest_four_overall_and_the_newest_four_of_each_term()
+    {
+        var spaces = new List<Listing>();
+        for (var i = 1; i <= 6; i++)
+        {
+            spaces.Add(ListingMother.Space($"long-{i}", SpaceTerm.LongTerm, approvedAt: ListingMother.Now.AddHours(-i)));
+        }
+
+        spaces.Add(ListingMother.Space("old-room", SpaceTerm.Room, approvedAt: ListingMother.Now.AddDays(-30)));
+        await _factory.Arrange([.. spaces, ListingMother.Public("plumber")]);
+
+        var rooms = (await _factory.GetJson("/api/directory/home")).GetProperty("rooms");
+
+        Assert.Equal(7, rooms.GetProperty("count").GetInt32());
+        Assert.Equal(["long-1", "long-2", "long-3", "long-4", "old-room"], rooms.GetProperty("spaces").Slugs());
+        Assert.Equal("room", rooms.GetProperty("spaces")[4].GetProperty("term").GetString());
+    }
+
+    [Fact]
+    public async Task L2_192_AC5_without_spaces_the_rooms_shelf_is_empty()
+    {
+        await _factory.Arrange(ListingMother.Public("plumber"));
+
+        var rooms = (await _factory.GetJson("/api/directory/home")).GetProperty("rooms");
+
+        Assert.Equal(0, rooms.GetProperty("count").GetInt32());
+        Assert.Equal(0, rooms.GetProperty("spaces").GetArrayLength());
+    }
+
+    [Fact]
+    public async Task L2_199_AC1_the_browse_home_carries_no_exact_address()
+    {
+        await _factory.Arrange(ListingMother.Space("annex-basement"));
+
+        var raw = await _factory.CreateClient().GetStringAsync("/api/directory/home");
+
+        Assert.Contains("annex-basement", raw, StringComparison.Ordinal);
+        Assert.DoesNotContain("Brunswick", raw, StringComparison.OrdinalIgnoreCase);
+    }
 }
