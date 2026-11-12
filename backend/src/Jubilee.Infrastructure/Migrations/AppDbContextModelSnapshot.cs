@@ -884,8 +884,6 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<int>("Stage")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset?>("StatementLapsedAt")
-                        .HasColumnType("datetimeoffset");
                     b.Property<int>("Stars1")
                         .HasColumnType("int");
 
@@ -900,6 +898,9 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<int>("Stars5")
                         .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("StatementLapsedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Tagline")
                         .IsRequired()
