@@ -1017,6 +1017,19 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .space-card__area .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); flex: none; }
 .space-card__available { font-weight: var(--font-weight-semibold); color: var(--color-success-fg); }
 
+/* Saveable — a business, product or space card with its heart (L2-041, ADR 0054).
+   The heart is a toggle button beside the card's link, over the top right of its picture. */
+.saveable { position: relative; display: grid; min-width: 0; }
+.saveable__heart { position: absolute; z-index: 2; top: var(--space-2); right: var(--space-2); display: grid; place-items: center; width: var(--control-height-md); height: var(--control-height-md); padding: 0; border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-full); background: var(--color-bg-surface); color: var(--color-fg-default); box-shadow: var(--shadow-1); cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard); }
+.saveable__heart .icon { width: var(--icon-size-md); height: var(--icon-size-md); }
+.saveable__heart:hover, .saveable__heart[data-state="hover"] { background: var(--color-bg-subtle-hover); }
+.saveable__heart:active, .saveable__heart[data-state="active"] { transform: scale(0.94); }
+.saveable__heart[aria-pressed="true"] { color: var(--color-danger-solid); border-color: var(--color-danger-border); }
+.saveable__heart[aria-pressed="true"] .icon { fill: currentColor; }
+.saveable__heart[aria-busy="true"] { cursor: progress; }
+.saveable__heart[aria-busy="true"] .icon { opacity: 0.6; }
+@media (prefers-reduced-motion: reduce) { .saveable__heart { transition: none; } .saveable__heart:active { transform: none; } }
+
 /* Space facts: up to four key facts as a ruled grid, two across on a phone, four from 40rem. */
 .space-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--border-width-hairline); margin: 0; padding: 0; list-style: none; overflow: hidden; border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-border-default); }
 @media (min-width: 40rem) { .space-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
