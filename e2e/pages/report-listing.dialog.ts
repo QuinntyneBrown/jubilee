@@ -26,7 +26,8 @@ export class ReportListingDialog {
     this.descriptionError = this.root.locator('#d-detail-error');
     this.send = this.root.getByRole('button', { name: /^Send report/ });
     this.cancel = this.root.getByRole('button', { name: 'Cancel' });
-    this.close = this.root.getByRole('button', { name: 'Close' });
+    // The footer's "Close" of the success state; the header's close button has the same name.
+    this.close = this.root.locator('.dialog__footer').getByRole('button', { name: 'Close' });
     this.thanks = this.root.locator('#dlg-desc');
     this.reasons = this.root.getByRole('radio');
   }
