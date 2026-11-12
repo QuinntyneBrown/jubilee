@@ -20,7 +20,8 @@ parity('admin-bar', {
     },
   ],
   reference: {
-    absent: 'The captured Magic Patterns frames show the app only; the admin application has no frame.',
+    absent:
+      'The captured Magic Patterns frames show the app only; the admin application has no frame.',
     nearestFrame: 'home-1280.png',
   },
 });

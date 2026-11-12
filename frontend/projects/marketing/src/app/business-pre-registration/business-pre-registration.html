@@ -1,0 +1,201 @@
+<section jb-marketing-section id="pre-register" layout="split" aria-labelledby="pre-register-title">
+  <jb-marketing-heading
+    headingId="pre-register-title"
+    text="Be listed"
+    accent="on launch day."
+    lead="Send your business’s details now and the Jubilee team will be in touch before launch to prepare your listing. Sending this form does not list or verify your business: every business is verified before it appears."
+  />
+  @if (view() === 'sent') {
+    <div jb-launch-confirmation heading="Thank you. We have your details.">
+      The Jubilee team will be in touch at {{ sentTo() }} before launch. Your business is not listed
+      or verified yet: every business is verified before it appears.
+    </div>
+  } @else {
+    <form jb-launch-form aria-label="Business pre-registration" (submit)="send($event)">
+      @if (notice(); as notice) {
+        <div slot="notice" jb-alert role="alert" [tone]="notice.tone" [heading]="notice.heading">
+          {{ notice.text }}
+        </div>
+      }
+      @if (summary().length > 0) {
+        <jb-form-summary slot="notice" summaryId="business-summary" [errors]="summary()" />
+      }
+      <div
+        jb-field
+        label="Business name"
+        controlId="business-name"
+        required
+        [error]="errors().businessName"
+      >
+        <input
+          jb-input
+          name="businessName"
+          type="text"
+          required
+          autocomplete="organization"
+          [attr.maxlength]="max.businessName"
+          [ngModel]="businessName()"
+          (ngModelChange)="businessName.set($event)"
+          [readOnly]="sending()"
+        />
+      </div>
+      <div class="form-grid form-grid--2">
+        <div
+          jb-field
+          label="Your name"
+          controlId="business-contact"
+          required
+          [error]="errors().contactName"
+        >
+          <input
+            jb-input
+            name="contactName"
+            type="text"
+            required
+            autocomplete="name"
+            [attr.maxlength]="max.contactName"
+            [ngModel]="contactName()"
+            (ngModelChange)="contactName.set($event)"
+            [readOnly]="sending()"
+          />
+        </div>
+        <div jb-field label="Email" controlId="business-email" required [error]="errors().email">
+          <input
+            jb-input
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="you@example.com"
+            [attr.maxlength]="max.email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            [readOnly]="sending()"
+          />
+        </div>
+      </div>
+      <div class="form-grid form-grid--2">
+        <div jb-field label="Phone" controlId="business-phone" optional [error]="errors().phone">
+          <input
+            jb-input
+            name="phone"
+            type="tel"
+            autocomplete="tel"
+            placeholder="416-555-0100"
+            [ngModel]="phone()"
+            (ngModelChange)="phone.set($event)"
+            [readOnly]="sending()"
+          />
+        </div>
+        <div
+          jb-field
+          label="Category"
+          controlId="business-category"
+          required
+          [error]="errors().category"
+        >
+          <select
+            jb-select
+            name="category"
+            required
+            [ngModel]="category()"
+            (ngModelChange)="category.set($event)"
+            [disabled]="sending()"
+          >
+            <option value="">Choose a category</option>
+            @for (option of categories; track option.slug) {
+              <option [value]="option.slug">{{ option.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="form-grid form-grid--2">
+        <div
+          jb-field
+          label="Area of Toronto"
+          controlId="business-area"
+          required
+          hint="The neighbourhood you work from or serve, for example Leslieville."
+          hintAfter
+          [error]="errors().area"
+        >
+          <input
+            jb-input
+            name="area"
+            type="text"
+            required
+            [attr.maxlength]="max.area"
+            [ngModel]="area()"
+            (ngModelChange)="area.set($event)"
+            [readOnly]="sending()"
+          />
+        </div>
+        <div
+          jb-field
+          label="Website or social link"
+          controlId="business-website"
+          optional
+          [error]="errors().website"
+        >
+          <input
+            jb-input
+            name="website"
+            type="url"
+            autocomplete="url"
+            placeholder="example.com"
+            [attr.maxlength]="max.website"
+            [ngModel]="website()"
+            (ngModelChange)="website.set($event)"
+            [readOnly]="sending()"
+          />
+        </div>
+      </div>
+      <div
+        jb-field
+        label="About your business"
+        controlId="business-about"
+        required
+        hint="One or two sentences: what you offer and who it is for."
+        hintAfter
+        [error]="errors().description"
+      >
+        <textarea
+          jb-textarea
+          name="description"
+          required
+          rows="3"
+          [attr.maxlength]="max.description"
+          [ngModel]="description()"
+          (ngModelChange)="description.set($event)"
+          [readOnly]="sending()"
+        ></textarea>
+      </div>
+      <div>
+        <jb-checkbox
+          controlId="business-consent"
+          name="consent"
+          [checked]="consent()"
+          (checkedChange)="consent.set($event)"
+          [disabled]="sending()"
+          [invalid]="!!errors().consent"
+          [describedBy]="errors().consent ? 'business-consent-error' : null"
+          >Yes, the Jubilee team may contact me about listing this business. I can ask to stop at
+          any time.</jb-checkbox
+        >
+        @if (errors().consent; as text) {
+          <span jb-field-error id="business-consent-error">{{ text }}</span>
+        }
+      </div>
+      @if (challengeSiteKey(); as siteKey) {
+        <jb-bot-challenge [siteKey]="siteKey" (token)="challenge.set($event)" />
+      }
+      <button slot="actions" jb-marketing-button type="submit" [busy]="sending()">
+        Send my details
+      </button>
+      <span slot="note"
+        >We use these details only to prepare your listing and to contact you about it. We never
+        sell data.</span
+      >
+    </form>
+  }
+</section>

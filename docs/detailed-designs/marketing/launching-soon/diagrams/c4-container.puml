@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Launching soon
+
+Person(visitor, "Visitor", "Reads the page and leaves an e-mail address for the launch notice")
+Person(owner, "Owner", "Sends their business's details before launch")
+Person(team, "Jubilee team", "Reads the submissions and answers owners")
+System_Boundary(jubilee, "Jubilee") {
+  Container(mkt, "Jubilee Marketing", "Angular application", "The launching-soon page with the two forms; calls /api/launch on its own origin")
+  Container(host, "Marketing host", "Node.js server.js on jubilee-to-www", "Serves the site's files and forwards /api/launch only (API_PATHS) to API_ORIGIN")
+  Container(api, "Jubilee API", "ASP.NET Core", "LaunchController under /api/launch at app.jubilee.to")
+  Container(worker, "Jubilee Worker", ".NET background service", "LaunchRetentionJob and the outbox dispatcher")
+  Container(cli, "Jubilee CLI", ".NET console application", "jubilee migrate and jubilee launch list")
+  ContainerDb(db, "Jubilee database", "SQL Server", "LaunchSubscribers, BusinessPreRegistrations, OutboxMessages, AuditRecords")
+}
+System_Ext(mail, "Transactional e-mail provider", "Delivers the team's e-mail")
+
+Rel(visitor, mkt, "Signs up for the launch notice in", "HTTPS")
+Rel(owner, mkt, "Pre-registers a business in", "HTTPS")
+Rel(mkt, host, "Calls GET /api/launch, POST /api/launch/notifications and POST /api/launch/businesses on", "JSON/HTTPS, same origin")
+Rel(host, api, "Forwards /api/launch with X-Jubilee-Client-Address and X-Jubilee-Proxy-Key to", "JSON/HTTPS")
+Rel(api, db, "Stores sign-ups and pre-registrations and queues the team's e-mail in", "EF Core")
+Rel(worker, db, "Deletes rows older than 12 months and reads the outbox in", "EF Core")
+Rel(worker, mail, "Sends the team's e-mail through", "HTTPS")
+Rel(cli, db, "Applies the migrations to and lists the submissions from", "EF Core")
+Rel(team, cli, "Runs jubilee launch list with", "Terminal")
+Rel(mail, team, "Delivers \"New business pre-registration\" to", "E-mail")
+@enduml

@@ -1,4 +1,5 @@
 using Jubilee.Application;
+using Jubilee.Application.Launch;
 using Jubilee.Application.Staff;
 using Jubilee.Infrastructure;
 using MediatR;
@@ -12,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Jubilee.Cli;
 
 /// <summary>
-/// <c>jubilee migrate | seed | reset | staff</c>. Configuration comes from <c>appsettings.json</c> beside
+/// <c>jubilee migrate | seed | reset | staff | launch</c>. Configuration comes from <c>appsettings.json</c> beside
 /// the executable, environment variables and <c>--Key=Value</c> arguments, in that order.
 /// </summary>
 public static class JubileeCli
@@ -27,14 +28,16 @@ public static class JubileeCli
           staff grant  --email {address} --role verifier|admin   Give a staff account a role (creates the account).
           staff revoke --email {address} --role verifier|admin   Take a role away and end the account's staff sessions.
           staff list                                             Print each staff account and its roles.
+          launch list --kind notifications|businesses            Print the launch sign-ups or the business pre-registrations as CSV.
         """;
 
     public static async Task<int> RunAsync(string[] args, TextWriter output)
     {
         var command = args.FirstOrDefault()?.ToLowerInvariant();
-        var staff = command == "staff" ? args.ElementAtOrDefault(1)?.ToLowerInvariant() : null;
-        if (command is not ("migrate" or "seed" or "reset" or "staff")
-            || (command == "staff" && staff is not ("grant" or "revoke" or "list")))
+        var staff = command is "staff" or "launch" ? args.ElementAtOrDefault(1)?.ToLowerInvariant() : null;
+        if (command is not ("migrate" or "seed" or "reset" or "staff" or "launch")
+            || (command == "staff" && staff is not ("grant" or "revoke" or "list"))
+            || (command == "launch" && staff is not "list"))
         {
             await output.WriteLineAsync(Usage);
             return 1;
@@ -76,6 +79,8 @@ public static class JubileeCli
                 break;
             case "staff":
                 return await StaffAsync(scope.ServiceProvider.GetRequiredService<ISender>(), staff!, configuration, output);
+            case "launch":
+                return await LaunchAsync(scope.ServiceProvider.GetRequiredService<ISender>(), configuration, output);
             case "reset":
                 await db.Database.EnsureDeletedAsync();
                 await output.WriteLineAsync("Database deleted.");
@@ -104,6 +109,25 @@ public static class JubileeCli
             return 0;
         }
         catch (StaffCommandException refused)
+        {
+            await output.WriteLineAsync(refused.Message);
+            return 1;
+        }
+    }
+
+    /// <summary>The only way the team reads what the launching-soon page collected (L2-218 AC4, ADR 0044).</summary>
+    private static async Task<int> LaunchAsync(ISender sender, IConfiguration configuration, TextWriter output)
+    {
+        try
+        {
+            foreach (var line in await sender.Send(new ListLaunchSubmissionsQuery(configuration["kind"])))
+            {
+                await output.WriteLineAsync(line);
+            }
+
+            return 0;
+        }
+        catch (LaunchCommandException refused)
         {
             await output.WriteLineAsync(refused.Message);
             return 1;

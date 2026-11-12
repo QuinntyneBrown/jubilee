@@ -1,10 +1,5 @@
 import { expect, test } from '../fixtures/jb-test';
-import {
-  legacyMessages,
-  photoMessages,
-  requestCards,
-  stubMessaging,
-} from '../fixtures/messaging';
+import { legacyMessages, photoMessages, requestCards, stubMessaging } from '../fixtures/messaging';
 import { brokenLargeJpeg, largePng, pdfNamedJpeg, smallJpeg } from '../fixtures/photos';
 import { BusinessPage } from '../pages/business.page';
 import { NotFoundPage } from '../pages/not-found.page';
@@ -145,10 +140,7 @@ test.describe('a conversation (L2-057)', () => {
     await expect(conversation.bubbles.nth(1)).toHaveClass(/bubble--me/);
     await expect(conversation.bubbles.nth(1)).toContainText('You: Thank you!');
     await expect(conversation.bubble('Thursday at 10:00').time).toHaveText('9:14 a.m.');
-    await expect(conversation.list.row('Legacy Financial')).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
+    await expect(conversation.list.row('Legacy Financial')).toHaveAttribute('aria-current', 'page');
   });
 
   test('AC6: a conversation that is not yours is not found', async ({ page, jb }) => {
@@ -313,7 +305,12 @@ test.describe('request cards (L2-057 AC4)', () => {
     await expect(card.status).toHaveText('Awaiting reply');
 
     fake.requests[0] = { ...fake.requests[0], status: 'confirmed', statusLabel: 'Confirmed' };
-    fake.notify('request', 'Legacy Financial confirmed your meeting', 'Thu 12 Nov, 10:00 a.m.', '/requests/r-booking');
+    fake.notify(
+      'request',
+      'Legacy Financial confirmed your meeting',
+      'Thu 12 Nov, 10:00 a.m.',
+      '/requests/r-booking',
+    );
 
     await expect(card.status).toHaveText('Confirmed', { timeout: 2000 });
     await expect(conversation.cards).toHaveCount(1);
@@ -329,9 +326,16 @@ test.describe('request cards (L2-057 AC4)', () => {
     await expect(conversation.cards).toHaveCount(0);
 
     fake.requests.push({ ...requestCards()[1], sentAt: '2026-11-10T14:20:00Z' });
-    fake.notify('request', 'Your quote request was sent', 'A plan for giving and RRSPs', '/requests/r-quote');
+    fake.notify(
+      'request',
+      'Your quote request was sent',
+      'A plan for giving and RRSPs',
+      '/requests/r-quote',
+    );
 
-    await expect(conversation.card('A plan for giving').status).toHaveText('Confirmed', { timeout: 2000 });
+    await expect(conversation.card('A plan for giving').status).toHaveText('Confirmed', {
+      timeout: 2000,
+    });
     await expect(conversation.timeline.last()).toContainText('A plan for giving');
   });
 
@@ -412,12 +416,17 @@ test.describe('real-time arrival (L2-057 AC5, L2-070)', () => {
 
     const row = conversation.list.rows.first();
     await expect(row).toContainText('Flower Creations', { timeout: 2000 });
-    await expect(conversation.list.snippet(row)).toContainText('Unread. Your flowers are ready for pickup.');
+    await expect(conversation.list.snippet(row)).toContainText(
+      'Unread. Your flowers are ready for pickup.',
+    );
     await expect(toasts.withTitle('New message from Flower Creations')).toBeVisible();
     await expect(conversation.bubbles).toHaveCount(3);
   });
 
-  test('L2-056, L2-070: the Messages page lists a new message without a reload', async ({ page, jb }) => {
+  test('L2-056, L2-070: the Messages page lists a new message without a reload', async ({
+    page,
+    jb,
+  }) => {
     const messages = new MessagesPage(page);
     await messages.setWidth(1280);
     await jb.signInAs('member');
@@ -512,7 +521,9 @@ test.describe('mute a conversation (L2-061)', () => {
     await conversation.more.click();
     await conversation.menuItem('Mute').click();
 
-    await expect(toasts.withTitle('We couldn’t mute this conversation')).toContainText('Try again.');
+    await expect(toasts.withTitle('We couldn’t mute this conversation')).toContainText(
+      'Try again.',
+    );
     await expect(conversation.muted).toHaveCount(0);
   });
 });
@@ -720,10 +731,15 @@ test.describe('photo attachments (L2-060)', () => {
 
     const mine = conversation.bubble('Here’s the page');
     const theirs = new BubbleRegion(conversation.bubbles.last());
-    await expect(mine.photo).toHaveAttribute('src', /\/api\/attachments\/a-statement\?expires=1&sig=first/);
+    await expect(mine.photo).toHaveAttribute(
+      'src',
+      /\/api\/attachments\/a-statement\?expires=1&sig=first/,
+    );
     await expect(theirs.photo).toHaveAccessibleName('Photo from Trevor');
     await expect(theirs.time).toHaveText('9:26 a.m.');
-    expect(await theirs.photo.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    expect(
+      await theirs.photo.evaluate((img: HTMLImageElement) => img.naturalWidth),
+    ).toBeGreaterThan(0);
     expect(fake.renewals).toEqual([]);
   });
 
@@ -745,7 +761,10 @@ test.describe('photo attachments (L2-060)', () => {
     expect(fake.renewals).toEqual(['a-statement']);
   });
 
-  test('AC8: when no new link can be had the bubble says "Photo unavailable"', async ({ page, jb }) => {
+  test('AC8: when no new link can be had the bubble says "Photo unavailable"', async ({
+    page,
+    jb,
+  }) => {
     const conversation = new ConversationPage(page);
     await conversation.setWidth(1280);
     await jb.signInAs('member');
@@ -762,7 +781,10 @@ test.describe('photo attachments (L2-060)', () => {
     expect(fake.renewals).toEqual(['a-statement']);
   });
 
-  test('AC8: "View photo" opens the photo in a new tab through a new link', async ({ page, jb }) => {
+  test('AC8: "View photo" opens the photo in a new tab through a new link', async ({
+    page,
+    jb,
+  }) => {
     const conversation = new ConversationPage(page);
     await conversation.setWidth(1280);
     await jb.signInAs('member');
@@ -906,10 +928,7 @@ test.describe('report a conversation (L2-063)', () => {
 });
 
 test.describe('send a message (L2-058)', () => {
-  test('AC1: it appears at once as "Sending…" and the composer clears', async ({
-    page,
-    jb,
-  }) => {
+  test('AC1: it appears at once as "Sending…" and the composer clears', async ({ page, jb }) => {
     const conversation = new ConversationPage(page);
     await conversation.setWidth(1280);
     await jb.signInAs('member');
@@ -1073,7 +1092,10 @@ test.describe('message a business (L2-055)', () => {
     expect(fake.starts[0].idempotencyKey).toMatch(/^[\w-]{8,}$/);
   });
 
-  test('AC2, AC5: an empty message is not sent and the field says what to do', async ({ page, jb }) => {
+  test('AC2, AC5: an empty message is not sent and the field says what to do', async ({
+    page,
+    jb,
+  }) => {
     const dialog = new NewMessageDialog(page);
     await new BusinessPage(page).setWidth(1280);
     await jb.signInAs('member');
@@ -1207,7 +1229,10 @@ test.describe('message a business (L2-055)', () => {
 });
 
 test.describe('the unread badge (L2-056)', () => {
-  test('the Messages entry of the top bar counts the unread conversations', async ({ page, jb }) => {
+  test('the Messages entry of the top bar counts the unread conversations', async ({
+    page,
+    jb,
+  }) => {
     const messages = new MessagesPage(page);
     await messages.setWidth(1280);
     await jb.signInAs('member', { unreadConversationCount: 2 });

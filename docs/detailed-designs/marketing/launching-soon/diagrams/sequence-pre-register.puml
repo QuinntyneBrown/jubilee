@@ -1,0 +1,89 @@
+@startuml
+title UML sequence behaviour — Pre-register a business
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Marketing" #E0F2FE
+  participant "BusinessPreRegistration" as form
+  participant "HttpLaunchApi" as client
+end box
+box "Hosting — jubilee-to-www" #F4EBFF
+  participant "server.js" as proxy
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "Rate limiter\nLaunchRateLimit.PreRegistrations" as limiter
+  participant "LaunchController" as controller
+  participant "IBotChallengeVerifier" as bot
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "PreRegisterBusinessCommandHandler" as handler
+  participant "LaunchSettings" as settings
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> form : Press "Send my details"
+form -> form : Check the eight fields and the checkbox (L2-216 AC2, AC3)
+alt Invalid in the page
+  form --> actor : Summary "Fix {n} things to continue" with focus and a message below each field; nothing sent
+else Valid in the page
+  form -> form : Make the button busy and lock the fields (L2-216 AC4)
+  form -> client : Send BusinessPreRegistrationRequest through LAUNCH_API
+  client -> proxy : POST /api/launch/businesses on the page's origin
+  proxy -> limiter : Forward to API_ORIGIN with X-Jubilee-Client-Address and X-Jubilee-Proxy-Key
+  alt More than 5 from the address in the hour
+    limiter --> proxy : 429 rate_limited with Retry-After (L2-218 AC3)
+    proxy --> client : 429
+    client --> form : Rate limited
+    form --> actor : "You’re doing that a lot. Try again in {n} minutes." with every value kept (L2-216 AC7)
+  else Under the limit
+    limiter -> controller : Run the action
+    controller -> controller : Bind the body and refuse unknown fields (L2-218 AC2)
+    controller -> bot : VerifyAsync with the token and the caller's address
+    bot --> controller : Passed or not
+    alt Challenge configured and not passed
+      controller --> proxy : 422 validation_failed with challenge: CHALLENGE_FAILED; nothing checked or stored (L2-218 AC3)
+      proxy --> client : 422
+      client --> form : Challenge failed
+      form --> actor : "We couldn’t check that you’re not a robot. Wait a moment and try again.", values kept, fresh challenge (L2-216 AC8)
+    else Passed or no challenge configured
+      controller -> handler : Send PreRegisterBusinessCommand
+      handler -> handler : Validate and collect one code per field
+      alt Invalid input
+        handler --> controller : ValidationFailedException
+        controller --> proxy : 422 validation_failed with REQUIRED, TOO_LONG, EMAIL_INVALID, PHONE_INVALID, WEBSITE_INVALID, CATEGORY_UNKNOWN or CONSENT_REQUIRED; nothing stored (L2-216 AC3)
+        proxy --> client : 422
+        client --> form : Codes per field
+        form --> actor : Summary and a message below each named field, values kept
+      else Valid
+        handler -> settings : Read TeamEmail
+        settings --> handler : Address or none
+        handler -> db : Save BusinessPreRegistration with ConsentedAt and ConsentMethod.MarketingSiteForm (L2-218 AC1)
+        opt Launch:TeamEmail is set
+          handler -> db : Save an OutboxMessage e-mail "New business pre-registration: {business name}" in the same save (L2-216 AC10)
+        end
+        db --> handler : Commit result
+        handler --> controller : Done
+        controller --> proxy : 202 Accepted with no body; no listing, draft or account created (L2-216 AC9)
+        proxy --> client : 202
+        client --> form : Accepted
+        form --> actor : Confirmation with focus: "Thank you. We have your details." (L2-216 AC5)
+      end
+    end
+  end
+end
+note over form, client : No answer within 10 seconds, an unreachable API or any other error: "We couldn’t send your details." with every value kept (L2-216 AC6).
+note over handler, db : The outbox dispatcher of Jubilee Worker sends the queued e-mail later (L2-179).
+@enduml

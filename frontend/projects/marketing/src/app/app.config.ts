@@ -1,11 +1,16 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { environment } from '../environments/environment';
-import { APP_URL } from './app-url';
+import { HttpLaunchApi, LAUNCH_API } from 'api';
 
-/** Composition root. The site is static: no router, no session and no HTTP client (ADR 0013). */
+/**
+ * Composition root. The site has no router and no session. While Jubilee is launching soon it
+ * sends its two forms to the API on its own origin (ADR 0044) and knows no address of the app: no
+ * element of the page links to it (L2-215 AC6).
+ */
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    { provide: APP_URL, useValue: environment.appUrl },
+    provideHttpClient(),
+    { provide: LAUNCH_API, useClass: HttpLaunchApi },
   ],
 };

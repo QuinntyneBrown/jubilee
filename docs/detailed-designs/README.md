@@ -162,6 +162,7 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 
 | Feature | L2 requirements cited |
 |---|---|
+| [Launching soon](marketing/launching-soon/README.md) | `L2-215`, `L2-216`, `L2-217`, `L2-218`, `L2-183`, `L2-186`, `L2-137`, `L2-148`, `L2-149`, `L2-150` |
 | [Show the marketing site](marketing/show-marketing-site/README.md) | `L2-183`, `L2-184`, `L2-185`, `L2-186` |
 
 ### owner-workspace

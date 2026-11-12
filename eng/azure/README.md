@@ -4,7 +4,7 @@ How Jubilee is hosted, and how to deploy it again. Set up on 11 November 2026.
 
 | Address | Serves | App Service |
 |---|---|---|
-| `https://www.jubilee.to`, `https://jubilee.to` | the marketing site (`frontend/projects/marketing`) | `jubilee-to-www` |
+| `https://www.jubilee.to`, `https://jubilee.to` | the marketing site (`frontend/projects/marketing`), `/api/launch` sent to the app's host | `jubilee-to-www` |
 | `https://app.jubilee.to` | the app (`frontend/projects/jubilee`), the API under `/api`, the worker | `jubilee-to-app` |
 | `https://admin.jubilee.to` | the admin application (`frontend/projects/admin`), `/api` sent to the app's host | `jubilee-to-admin` |
 
@@ -14,7 +14,9 @@ Everything is in the resource group `rg-jubilee-prod`, Canada Central.
 
 - `jubilee-plan`: one Linux App Service plan, B1. The three web apps run on it.
 - `jubilee-to-www`: Node 22. Start-up command `node server.js`. `server.js` serves the built
-  marketing page; it answers byte ranges so the pitch film can be seeked.
+  marketing page; it answers byte ranges so the pitch film can be seeked. While Jubilee is
+  launching soon it also sends the page's two forms to the API (see "The launching-soon forms"
+  below).
 - `jubilee-to-app`: .NET 10. Start-up command `bash /home/site/wwwroot/start.sh`, which runs three
   processes in the one container:
   - the API (`Jubilee.Api`) on `127.0.0.1:5080`, not reachable from outside;
@@ -55,6 +57,42 @@ Turnstile). It needs a Turnstile widget for `app.jubilee.to` and two settings: `
 (public; the join form reads it from `GET /api/session` and shows the challenge) and
 `BotChallenge__SecretKey` (the API verifies the token with it). Set both or neither: with only the
 site key the form sends a token nobody checks, and with only the secret every join is refused.
+
+## The launching-soon forms
+
+While Jubilee is launching soon the marketing page sends two forms, the launch notification and
+the business pre-registration, to `/api/launch` on its own origin (ADR 0044). `server.js` on
+`jubilee-to-www` forwards that prefix, and nothing else of `/api`, to the app's host, as the admin
+host forwards its calls. Until the settings below are made the page shows, and its forms say they
+could not be sent. None of this is done by the workflows, and nothing here was run yet.
+
+1. **Migrate.** Run the Deploy workflow with migrations, or `bash eng/azure/deploy.sh --migrate`:
+   `AddLaunchSubscribers` and `AddBusinessPreRegistrations` add the two tables.
+2. **The settings of `jubilee-to-www`:**
+
+   | Setting | Value |
+   |---|---|
+   | `API_ORIGIN` | `https://app.jubilee.to` |
+   | `API_PATHS` | `/api/launch` (any other `/api` path answers 404 on this host) |
+   | `PROXY_KEY` | the key of `StaffAccess__ProxyKey` on `jubilee-to-app`, so the API counts the limits of five an hour per visitor's address, not per host |
+
+   The key only lets a proxy state the caller's address; the staff endpoints still answer only the
+   allowed networks, and this host never forwards them. Rotating the key now means setting three
+   App Services at once.
+3. **Optional: the team's address.** `Launch__TeamEmail` on `jubilee-to-app` is where each business
+   pre-registration is e-mailed. Without it nothing is sent and the team reads the
+   pre-registrations with the CLI only.
+4. **Reading the submissions.** In Cloud Shell, with the connection string as in `deploy.sh`:
+   `dotnet run --project backend/src/Jubilee.Cli -- launch list --kind notifications` (or
+   `--kind businesses`) prints CSV; each run is written to the audit log. The rows are deleted 12
+   months after they were sent.
+5. **The bot challenge.** When the Turnstile keys are set (above), the widget must also list
+   `jubilee.to` and `www.jubilee.to`; the page then loads Cloudflare's script for the challenge.
+6. **Check.** `curl -s https://www.jubilee.to/api/launch` answers `{}` (or the site key), and
+   `curl -s -o /dev/null -w '%{http_code}' https://www.jubilee.to/api/session` answers `404`.
+
+At launch, revert the marketing site's commits of ADR 0044 and remove `API_PATHS`, `API_ORIGIN`
+and `PROXY_KEY` from `jubilee-to-www`.
 
 ## The admin application
 

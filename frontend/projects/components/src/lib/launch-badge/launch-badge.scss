@@ -1,0 +1,24 @@
+// Block: mkt-badge, the label that says Jubilee is not open yet. The host is the paragraph.
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3) var(--space-1) 0.625rem;
+  background: color-mix(in srgb, var(--color-accent) 25%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg-default) 10%, transparent);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-fg-default);
+}
+
+// Decoration: the words carry the state.
+.mkt-badge__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg-default) 25%, transparent);
+}

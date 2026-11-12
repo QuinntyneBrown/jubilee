@@ -748,12 +748,24 @@
       "route": "/ (marketing site)",
       "states": [
         "default",
-        "playing"
+        "playing",
+        "business-invalid",
+        "business-busy",
+        "business-success",
+        "business-error",
+        "business-rate-limited",
+        "business-challenge-failed",
+        "notify-invalid",
+        "notify-busy",
+        "notify-success",
+        "notify-error",
+        "notify-rate-limited",
+        "notify-challenge-failed"
       ],
       "not_applicable": {
-        "loading": "The marketing page is static: its text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile.",
-        "empty": "The marketing page is static: its text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile.",
-        "error": "The marketing page is static: its text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile."
+        "loading": "The marketing page's text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile. A form that cannot be sent has its own states, business-error and notify-error.",
+        "empty": "The marketing page's text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile. A form that cannot be sent has its own states, business-error and notify-error.",
+        "error": "The marketing page's text and listings are part of the page, so there is nothing to wait for, nothing that can be empty and no load that can fail. A photo that does not load leaves its tinted tile. A form that cannot be sent has its own states, business-error and notify-error."
       }
     },
     {

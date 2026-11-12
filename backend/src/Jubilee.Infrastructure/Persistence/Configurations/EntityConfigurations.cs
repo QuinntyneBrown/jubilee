@@ -724,6 +724,42 @@ public sealed class StaffMemberConfiguration : IEntityTypeConfiguration<StaffMem
     }
 }
 
+public sealed class LaunchSubscriberConfiguration : IEntityTypeConfiguration<LaunchSubscriber>
+{
+    public void Configure(EntityTypeBuilder<LaunchSubscriber> builder)
+    {
+        builder.ToTable("LaunchSubscribers");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.Email).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.Property(s => s.EmailKey).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.HasIndex(s => s.EmailKey).IsUnique();
+        builder.Property(s => s.FirstName).HasMaxLength(LaunchSubscriber.MaxFirstNameLength);
+        builder.HasIndex(s => s.CreatedAt);
+    }
+}
+
+public sealed class BusinessPreRegistrationConfiguration : IEntityTypeConfiguration<BusinessPreRegistration>
+{
+    public void Configure(EntityTypeBuilder<BusinessPreRegistration> builder)
+    {
+        builder.ToTable("BusinessPreRegistrations");
+        builder.HasKey(r => r.Id);
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.BusinessName).HasMaxLength(BusinessPreRegistration.MaxBusinessNameLength).IsRequired();
+        builder.Property(r => r.ContactName).HasMaxLength(BusinessPreRegistration.MaxContactNameLength).IsRequired();
+        builder.Property(r => r.Email).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.Property(r => r.EmailKey).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.HasIndex(r => r.EmailKey);
+        builder.Property(r => r.Phone).HasMaxLength(10);
+        builder.Property(r => r.CategorySlug).HasMaxLength(40).IsRequired();
+        builder.Property(r => r.Area).HasMaxLength(BusinessPreRegistration.MaxAreaLength).IsRequired();
+        builder.Property(r => r.Website).HasMaxLength(BusinessPreRegistration.MaxWebsiteLength + 8);
+        builder.Property(r => r.Description).HasMaxLength(BusinessPreRegistration.MaxDescriptionLength).IsRequired();
+        builder.HasIndex(r => r.CreatedAt);
+    }
+}
+
 public sealed class SignInFailureConfiguration : IEntityTypeConfiguration<SignInFailure>
 {
     public void Configure(EntityTypeBuilder<SignInFailure> builder)

@@ -26,7 +26,7 @@ something else: a new record supersedes it and both say so.
 | [0020](0020-verification-decisions.md) | Verification: the team, decisions, stages, overdue, checklist, retention and audit | Accepted, partly superseded by 0040, amended by 0041 |
 | [0013](0013-server-side-sessions.md) | Server-side sessions in the database, sign-in throttling, drafts and the sign-in prompt | Accepted |
 | [0008](0008-frontend-file-per-type.md) | Frontend: one file per type, no single-file components (`templateUrl`, never `template`) | Accepted |
-| [0013](0013-marketing-site-application.md) | Marketing site: a second, static Angular application with editorial content and one `APP_URL` | Accepted |
+| [0013](0013-marketing-site-application.md) | Marketing site: a second, static Angular application with editorial content and one `APP_URL` | Accepted, amended by 0044 |
 | [0035](0035-presentation-in-the-components-library.md) | Prefer best practice; presentation only in `components`, one encapsulated `.scss` per component, BEM names | Accepted |
 | [0036](0036-component-parity-specs.md) | Component parity specs: `npm run parity`, against the mocks and the Magic Patterns reference, in CI | Accepted |
 | [0037](0037-google-sign-in-setup.md) | Google sign-in setup: one OAuth client, configured per environment | Accepted |
@@ -38,6 +38,7 @@ something else: a new record supersedes it and both say so.
 | [0042](0042-rooms-and-rentals.md) | Rooms and rentals: a space is a listing kind with owned rental details, a space request is a request kind, the exact address released only to the accepted renter | Accepted |
 | [0041](0041-remove-church-reference-and-add-home-church-address.md) | The church reference is removed: submit goes straight to Ready to review, two stages and the reference data go; an optional home church address is added | Accepted |
 | [0043](0043-member-feedback.md) | Member feedback: one feedback record of four kinds, a corner dialog for the panel, check-ins addressed by id, statuses and replies shown while writing them is deferred | Accepted |
+| [0044](0044-launching-soon.md) | Launching soon: the marketing site sends two forms to `/api/launch` on its own origin, links nowhere outside itself, `APP_URL` removed, submissions read with the CLI, the way back is a revert | Accepted |
 
 ## Format
 

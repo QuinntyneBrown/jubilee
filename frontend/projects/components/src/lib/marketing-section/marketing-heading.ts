@@ -9,7 +9,8 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@an
  *                           lead="The recommendations you already ask your church for." />
  *
  * `size` is the type: `display` for the page's one `h1`, `section`, `film` (centred) and
- * `closing` (centred and larger). `[slot=actions]` are the links under the lead; with `split`,
+ * `closing` (centred and larger). `[slot=eyebrow]` is a label above the heading (a
+ * `jb-launch-badge`); `[slot=actions]` are the links under the lead; with `split`,
  * `[slot=aside]` is a link that sits at the far end of the heading from the tablet layout.
  * It reads --jb-mkt-accent; an ink section gives it the accent and lead colours for ink.
  */

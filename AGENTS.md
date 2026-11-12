@@ -147,7 +147,8 @@ adding coverage; `pwsh eng/Test-Backend.ps1` runs the suite as CI does.
 ## Frontend architecture
 
 Workspace has five projects under `frontend/projects/`: `jubilee` (the app), `marketing` (the
-public marketing site: one static page, no router, session or API; ADR 0013), `admin` (the admin
+public marketing site: one page, no router or session; ADR 0013; while Jubilee is launching soon
+it sends two forms to `/api/launch` and links nowhere outside itself, ADR 0044), `admin` (the admin
 application at `admin.jubilee.to`: staff sign-in and the verification team's screens, with a staff
 session of its own; ADR 0040), `api` (service contracts, implementations, view models, pure
 helpers) and `components` (`jb-*` UI atoms, the design system).

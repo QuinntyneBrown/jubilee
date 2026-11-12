@@ -1,0 +1,51 @@
+// Block: mkt-form, the panel of a launch form. The host is the form.
+:host {
+  display: grid;
+  align-content: start;
+  gap: var(--space-5);
+  min-width: 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  padding: var(--space-5);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg-default) 10%, transparent);
+}
+
+:host(.mkt-form--paper) {
+  background: var(--jb-mkt-paper);
+}
+
+@media (min-width: 40rem) {
+  :host {
+    padding: var(--space-8);
+  }
+}
+
+.mkt-form__notice,
+.mkt-form__fields {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.mkt-form__notice {
+  gap: var(--space-4);
+}
+
+.mkt-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.mkt-form__note {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-fg-subtle);
+}
+
+.mkt-form__notice:empty,
+.mkt-form__actions:empty,
+.mkt-form__note:empty {
+  display: none;
+}

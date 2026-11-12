@@ -14,12 +14,13 @@ export interface PhotoBusinessCardView {
 
 /**
  * The business card with a photo, as the marketing site draws a business:
- * `<a jb-photo-business-card [business]="business" href="…"></a>`. `featured` is the large
+ * `<a jb-photo-business-card [business]="business" href="…"></a>`, or a `div` where the card
+ * leads nowhere (a preview of a business nobody can open yet). `featured` is the large
  * card that leads a `jb-photo-card-grid`. Every business shown is verified, and the card says so
  * in words beside the check.
  */
 @Component({
-  selector: 'a[jb-photo-business-card]',
+  selector: 'a[jb-photo-business-card], div[jb-photo-business-card]',
   imports: [Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'mkt-card', '[class.mkt-card--featured]': 'featured()' },

@@ -2158,6 +2158,10 @@
     "status": 204,
     "body": null
   },
+  "GET /api/launch": {
+    "status": 200,
+    "body": {}
+  },
   "GET /api/listings/annex-basement-apartment": {
     "status": 200,
     "body": {
@@ -3240,6 +3244,14 @@
       "signedIn": false,
       "googleSignIn": true
     }
+  },
+  "POST /api/launch/businesses": {
+    "status": 202,
+    "body": null
+  },
+  "POST /api/launch/notifications": {
+    "status": 202,
+    "body": null
   },
   "POST /api/listings/annex-basement-apartment/views": {
     "status": 204,

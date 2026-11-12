@@ -188,10 +188,7 @@ test.describe('verify a listing: the review (L2-100)', () => {
     await review.check(/Tagline and description/).uncheck();
 
     await expect(review.check(/Tagline and description/)).not.toBeChecked();
-    expect(fake.checklists.at(-1)?.ticked).toEqual([
-      'photos',
-      'category',
-    ]);
+    expect(fake.checklists.at(-1)?.ticked).toEqual(['photos', 'category']);
   });
 
   test('AC5: a listing that cannot be decided on yet says why and cannot be approved', async ({

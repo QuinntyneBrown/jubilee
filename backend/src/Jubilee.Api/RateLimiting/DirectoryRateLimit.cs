@@ -20,6 +20,19 @@ public sealed class RateLimitOptions
     public int JoinsPerHour { get; set; } = 5;
 
     public int ConfirmationResendsPerHour { get; set; } = 5;
+
+    /// <summary>Launch notification sign-ups allowed per client IP address per hour (L2-137 AC1).</summary>
+    public int LaunchSignUpsPerHour { get; set; } = 5;
+
+    /// <summary>Business pre-registrations allowed per client IP address per hour (L2-137 AC1).</summary>
+    public int LaunchPreRegistrationsPerHour { get; set; } = 5;
+}
+
+/// <summary>The forms of the launching-soon marketing page: 5 an hour each per IP address (L2-218 AC3).</summary>
+public static class LaunchRateLimit
+{
+    public const string SignUps = "launch-sign-ups";
+    public const string PreRegistrations = "launch-pre-registrations";
 }
 
 /// <summary>Account limits per hour: 5 joins per IP address, 5 confirmation resends per member (L2-137 AC1).</summary>
@@ -89,6 +102,28 @@ public static class DirectoryRateLimit
                 return RateLimitPartition.GetFixedWindowLimiter($"resend:{member}", _ => new FixedWindowRateLimiterOptions
                 {
                     PermitLimit = Math.Max(1, limit.ConfirmationResendsPerHour),
+                    Window = TimeSpan.FromHours(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.AddPolicy(LaunchRateLimit.SignUps, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter($"launch-sign-up:{client}", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.LaunchSignUpsPerHour),
+                    Window = TimeSpan.FromHours(1),
+                    QueueLimit = 0,
+                });
+            });
+            limiter.AddPolicy(LaunchRateLimit.PreRegistrations, context =>
+            {
+                var limit = context.RequestServices.GetRequiredService<IOptions<RateLimitOptions>>().Value;
+                var client = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                return RateLimitPartition.GetFixedWindowLimiter($"launch-pre-registration:{client}", _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = Math.Max(1, limit.LaunchPreRegistrationsPerHour),
                     Window = TimeSpan.FromHours(1),
                     QueueLimit = 0,
                 });

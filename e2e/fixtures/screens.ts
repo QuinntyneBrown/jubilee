@@ -51,7 +51,7 @@ import { MyBusinessPage } from '../pages/my-business.page';
 import { RequestDetailPage } from '../pages/request-detail.page';
 import { RequestsPage } from '../pages/requests.page';
 import { JoinErrorScreen, JoinPage, JoinSuccessScreen } from '../pages/join.page';
-import { MarketingHomePage } from '../pages/marketing-home.page';
+import { LaunchFormScreen, MarketingHomePage } from '../pages/marketing-home.page';
 import {
   ConversationMenuScreen,
   ConversationPage,
@@ -76,6 +76,54 @@ export const screens: {
 }[] = [
   { key: 'welcome', screen: (page) => new WelcomePage(page) },
   { key: 'marketing-home', screen: (page) => new MarketingHomePage(page) },
+  {
+    key: 'marketing-home.business-invalid',
+    screen: (page) => new LaunchFormScreen(page, 'business', false),
+  },
+  {
+    key: 'marketing-home.business-busy',
+    screen: (page) => new LaunchFormScreen(page, 'business', true),
+  },
+  {
+    key: 'marketing-home.business-success',
+    screen: (page) => new LaunchFormScreen(page, 'business', true),
+  },
+  {
+    key: 'marketing-home.business-error',
+    screen: (page) => new LaunchFormScreen(page, 'business', true),
+  },
+  {
+    key: 'marketing-home.business-rate-limited',
+    screen: (page) => new LaunchFormScreen(page, 'business', true),
+  },
+  {
+    key: 'marketing-home.business-challenge-failed',
+    screen: (page) => new LaunchFormScreen(page, 'business', true),
+  },
+  {
+    key: 'marketing-home.notify-invalid',
+    screen: (page) => new LaunchFormScreen(page, 'notify', false),
+  },
+  {
+    key: 'marketing-home.notify-busy',
+    screen: (page) => new LaunchFormScreen(page, 'notify', true),
+  },
+  {
+    key: 'marketing-home.notify-success',
+    screen: (page) => new LaunchFormScreen(page, 'notify', true),
+  },
+  {
+    key: 'marketing-home.notify-error',
+    screen: (page) => new LaunchFormScreen(page, 'notify', true),
+  },
+  {
+    key: 'marketing-home.notify-rate-limited',
+    screen: (page) => new LaunchFormScreen(page, 'notify', true),
+  },
+  {
+    key: 'marketing-home.notify-challenge-failed',
+    screen: (page) => new LaunchFormScreen(page, 'notify', true),
+  },
   { key: 'requests', screen: (page) => new RequestsPage(page) },
   { key: 'requests.empty', screen: (page) => new RequestsPage(page) },
   { key: 'requests.error', screen: (page) => new RequestsPage(page) },

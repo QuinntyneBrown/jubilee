@@ -1,7 +1,8 @@
 import { expect, test } from '../fixtures/jb-test';
 import { MarketingHomePage } from '../pages/marketing-home.page';
 
-// The marketing site (L1-026, ADR 0013): a static page, so no recorded API answers are involved.
+// The marketing site (L1-026, ADR 0013) in its launching-soon state (L1-030, ADR 0044). Its one call
+// to the API, GET /api/launch, is answered from the recording.
 
 test.describe('marketing home page (L2-183)', () => {
   test('AC1: the page shows its sections in order, from the top bar to the footer', async ({
@@ -19,15 +20,16 @@ test.describe('marketing home page (L2-183)', () => {
       'Inside the app',
       'For businesses',
     ]);
-    await expect(home.openJubilee).toBeVisible();
+    await expect(home.launchingSoon).toBeVisible();
     // And the opening
     await expect(home.heading).toHaveText('Toronto’s Christian businesses, in one place.');
+    await expect(home.badge).toHaveText('Launching soon');
     await expect(home.lead).toHaveText(
-      'Jubilee is where Toronto’s Christian community finds shops, advisors and trades it can trust. Every business is verified before it appears, so you can shop, hire and recommend with confidence.',
+      'Jubilee is where Toronto’s Christian community will find shops, advisors and trades it can trust. Every business is verified before it appears. We are launching soon.',
     );
-    await expect(home.startBrowsing).toBeVisible();
+    await expect(home.tellMe).toBeVisible();
     await expect(home.watchTheFilm).toBeVisible();
-    await expect(home.note).toHaveText('Free for members · Every business verified');
+    await expect(home.note).toHaveText('Not open yet · Free for members at launch');
     // And every section heading, in order (AC7: each reads as one sentence)
     await expect(home.headings).toHaveText([
       'See Jubilee in action.',
@@ -36,21 +38,22 @@ test.describe('marketing home page (L2-183)', () => {
       'From need to handshake.',
       'Shops and services, side by side.',
       'Run a Christian-owned business? Be found.',
-      'Your community is open for business.',
+      'Be listed on launch day.',
+      'Jubilee is launching soon.',
     ]);
     // And the footer
     await expect(home.footer).toContainText('Toronto’s Christian marketplace · jubilee.to');
     await expect.poll(() => home.dataPage()).toBe('marketing-home');
   });
 
-  test('AC2: the opening shows a glimpse of the app with four verified businesses', async ({
+  test('AC2: the opening shows a preview of the app with four businesses, no count and no reply time', async ({
     page,
     jb,
   }) => {
     const home = new MarketingHomePage(page);
     await jb.open('marketing-home');
     await expect(home.glimpseSearch).toHaveText('Home repairs near Leslieville');
-    await expect(home.glimpseCaption).toHaveText('Home & property · 11 verified');
+    await expect(home.glimpseCaption).toHaveText('Home & property · a preview');
     // Each name carries the Verified mark as text for assistive technology, not as colour alone
     await expect(home.glimpseNames).toHaveText([
       'WaterWorks Plumbing & Drains Verified',
@@ -66,7 +69,7 @@ test.describe('marketing home page (L2-183)', () => {
     ]);
     await expect(home.glimpseNotes).toHaveText([
       'Verified by the Jubilee team',
-      'WaterWorks replied in 12 min',
+      'Message a business directly',
     ]);
   });
 
@@ -84,6 +87,7 @@ test.describe('marketing home page (L2-183)', () => {
       'Keep your money in the community. Every purchase supports a family that shares your faith and your city, and helps them build something lasting.',
       'Find it in seconds, not Sundays. A plumber, a lawyer, a study Bible. Look in one place instead of asking around after service.',
     ]);
+    await expect(home.how).toContainText('This is how Jubilee will work once it is open.');
     await expect(home.steps).toHaveText([
       'Step 1Look up what you need Browse shops and services by category, or just search for the job in your own words.',
       'Step 2Reach out directly Message, call or book the business yourself. No middleman, no fees on top.',
@@ -97,7 +101,7 @@ test.describe('marketing home page (L2-183)', () => {
       'A page that sells for youShow your products or services, prices and story. Update it whenever you like.',
       'Free to joinNo listing fees and no cut of your sales. Just honest business, done well.',
     ]);
-    await expect(home.listYourBusiness).toBeVisible();
+    await expect(home.sendDetails).toBeVisible();
   });
 
   test('AC8: the page states the mission word for word', async ({ page, jb }) => {
@@ -112,13 +116,16 @@ test.describe('marketing home page (L2-183)', () => {
     );
   });
 
-  test('AC5: five business cards, Legacy Financial first and featured', async ({ page, jb }) => {
+  test('AC5: five business cards, Legacy Financial first and featured, none of them a link', async ({
+    page,
+    jb,
+  }) => {
     const home = new MarketingHomePage(page);
     await jb.open('marketing-home');
     await expect(home.inside).toContainText(
-      'From a Sunday altar bouquet to a retirement plan, the people behind every page share your values.',
+      'From a Sunday altar bouquet to a retirement plan, the people behind every page share your values. Here is a preview of the businesses you will find.',
     );
-    await expect(home.seeAll).toHaveText('See all 47 businesses');
+    await expect(home.inside.getByRole('link')).toHaveCount(0);
     await expect(home.cardNames).toHaveText([
       'Legacy Financial',
       'Flower Creations',
@@ -209,35 +216,95 @@ test.describe('pitch film player (L2-184)', () => {
   });
 });
 
-test.describe('from the marketing site to the app (L2-185)', () => {
-  // AC4: one configured address; the development build points at the app on :4200.
-  const app = 'http://localhost:4200';
-
-  test('AC1: the browse actions and the cards open the app at its browse home', async ({
+test.describe('launching-soon marketing page (L2-215)', () => {
+  test('AC2 and AC3: "Launching soon" and "Tell me when it launches" move to the launch notification, clear of the top bar', async ({
     page,
     jb,
   }) => {
     const home = new MarketingHomePage(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
     await jb.open('marketing-home');
-    await expect(home.openJubilee).toHaveAttribute('href', `${app}/`);
-    await expect(home.startBrowsing).toHaveAttribute('href', `${app}/`);
-    await expect(home.seeAll).toHaveAttribute('href', `${app}/`);
-    await expect(home.closingStartBrowsing).toHaveAttribute('href', `${app}/`);
-    await expect(home.cards).toHaveCount(5);
-    for (const card of await home.cards.all()) {
-      await expect(card).toHaveAttribute('href', `${app}/`);
+    for (const link of [home.launchingSoon, home.tellMe]) {
+      // When the visitor follows the link
+      await home.lockup.click();
+      await link.click();
+      // Then the page stands at "Jubilee is launching soon."
+      await expect(page).toHaveURL(/#notify$/);
+      await expect(home.notify.getByRole('heading', { level: 2 })).toBeInViewport();
+      await expect
+        .poll(async () => (await home.topOf(home.notify)) - (await home.topBarHeight()))
+        .toBeGreaterThanOrEqual(-1);
     }
   });
 
-  test('AC2: "List your business free" opens joining with a return to listing', async ({
+  test('AC3: "Send your business’s details" moves to "Be listed on launch day."', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await jb.open('marketing-home');
+    await home.sendDetails.click();
+    await expect(page).toHaveURL(/#pre-register$/);
+    await expect(home.preRegister.getByRole('heading', { level: 2 })).toBeInViewport();
+    await expect
+      .poll(async () => (await home.topOf(home.preRegister)) - (await home.topBarHeight()))
+      .toBeGreaterThanOrEqual(-1);
+  });
+
+  test('AC4: the two launch sections say what each form is for', async ({ page, jb }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    await expect(home.preRegister).toContainText(
+      'Send your business’s details now and the Jubilee team will be in touch before launch to prepare your listing. Sending this form does not list or verify your business: every business is verified before it appears.',
+    );
+    await expect(home.notify).toContainText(
+      'Leave your e-mail address and we will tell you the day Jubilee opens. One e-mail, and nothing else.',
+    );
+  });
+
+  test('AC5: nothing on the page says that anyone can browse, message or book today', async ({
     page,
     jb,
   }) => {
     const home = new MarketingHomePage(page);
     await jb.open('marketing-home');
-    await expect(home.listYourBusiness).toHaveAttribute('href', `${app}/join?returnUrl=%2Flist`);
+    await home.ready();
+    const words = await home.words();
+    for (const claim of [
+      'Start browsing',
+      'Open Jubilee',
+      'See all',
+      '47',
+      '11 verified',
+      'replied in',
+      'open for business',
+      'List your business free',
+    ]) {
+      expect(words, `the page says "${claim}"`).not.toContain(claim);
+    }
   });
 
+  test('AC6: no link on the page points to the app; every link moves within the page', async ({
+    page,
+    jb,
+  }) => {
+    const home = new MarketingHomePage(page);
+    await jb.open('marketing-home');
+    await home.ready();
+    const addresses = await home.linkAddresses();
+    expect(addresses.length).toBeGreaterThan(5);
+    for (const address of addresses) {
+      // Not the app, in production or in development
+      expect(address).not.toContain('app.jubilee.to');
+      expect(address).not.toContain('localhost:4200');
+      // And nowhere but this page
+      expect(address).toMatch(/^http:\/\/localhost:4201\/#[a-z-]+$/);
+    }
+  });
+});
+
+test.describe('in-page links (L2-185 AC3; AC1, AC2 and AC4 are suspended until launch)', () => {
   test('AC3: a top bar link moves to its section, clear of the sticky top bar', async ({
     page,
     jb,
@@ -264,16 +331,20 @@ test.describe('from the marketing site to the app (L2-185)', () => {
 });
 
 test.describe('marketing site delivery (L2-186)', () => {
-  test('AC1: the page never calls the Jubilee API', async ({ page, jb }) => {
+  test('AC1: rendering the page calls nothing of the Jubilee API but its forms’ settings', async ({
+    page,
+    jb,
+  }) => {
     const home = new MarketingHomePage(page);
     home.watchRequests();
     await jb.open('marketing-home');
     await home.ready();
-    expect(home.apiRequests()).toEqual([]);
+    // Both forms read the settings; the page asks for them once (L2-218 AC5)
+    expect(home.apiRequests()).toEqual(['http://localhost:4201/api/launch']);
   });
 
   for (const width of [360, 576, 768, 992]) {
-    test(`AC2: at ${width} px nothing overflows and the top bar keeps the lockup and "Open Jubilee"`, async ({
+    test(`AC2: at ${width} px nothing overflows and the top bar keeps the lockup and "Launching soon"`, async ({
       page,
       jb,
     }) => {
@@ -283,7 +354,7 @@ test.describe('marketing site delivery (L2-186)', () => {
       await home.ready();
       expect(await home.horizontalOverflow()).toBe(0);
       await expect(home.lockup).toBeVisible();
-      await expect(home.openJubilee).toBeVisible();
+      await expect(home.launchingSoon).toBeVisible();
       await expect(home.sectionLinks.first()).toBeHidden();
       // The opening stacks its text above the glimpse of the app
       expect(await home.topOf(home.glimpse)).toBeGreaterThan(await home.topOf(home.note));
@@ -339,8 +410,8 @@ test.describe('marketing site delivery (L2-186)', () => {
       'How it works',
       'Inside the app',
       'For businesses',
-      'Open Jubilee',
-      'Start browsing',
+      'Launching soon',
+      'Tell me when it launches',
       'Watch the film',
       'Play the Jubilee film',
     ]);

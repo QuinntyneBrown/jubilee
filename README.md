@@ -142,11 +142,20 @@ e-mail as it should look is in [`docs/mocks/emails/`](docs/mocks/emails/index.ht
 
 ### Marketing site
 
-The marketing site is a second application in the same workspace and needs no API. It copies the
+The marketing site is a second application in the same workspace. Until Jubilee opens it is in
+its launching-soon state (ADR 0044): it links nowhere outside itself and sends its two forms to
+`/api/launch`, which `ng serve` passes to the local API on port 5080 (`pwsh eng/Start-E2eApi.ps1`);
+without the API the page still renders and the forms say they could not be sent. It copies the
 pitch film from `docs/videos/` and serves on `http://localhost:4201`:
 
 ```shell
 npm run start:marketing --prefix frontend
+```
+
+The team reads what the forms collected with the CLI; each run is audited:
+
+```shell
+dotnet run --project backend/src/Jubilee.Cli -- launch list --kind notifications
 ```
 
 ### Admin application

@@ -1,0 +1,86 @@
+<section
+  jb-marketing-section
+  id="notify"
+  layout="split"
+  tone="surface"
+  aria-labelledby="notify-title"
+>
+  <jb-marketing-heading
+    headingId="notify-title"
+    text="Jubilee is"
+    accent="launching soon."
+    lead="Leave your e-mail address and we will tell you the day Jubilee opens. One e-mail, and nothing else."
+  />
+  @if (view() === 'sent') {
+    <div jb-launch-confirmation tone="paper" heading="You’re on the list.">
+      We’ll e-mail {{ sentTo() }} the day Jubilee launches, and not before.
+    </div>
+  } @else {
+    <form jb-launch-form tone="paper" aria-label="Launch notification" (submit)="send($event)">
+      @if (notice(); as notice) {
+        <div slot="notice" jb-alert role="alert" [tone]="notice.tone" [heading]="notice.heading">
+          {{ notice.text }}
+        </div>
+      }
+      @if (summary().length > 0) {
+        <jb-form-summary slot="notice" summaryId="notify-summary" [errors]="summary()" />
+      }
+      <div class="form-grid form-grid--2">
+        <div jb-field label="Email" controlId="notify-email" required [error]="errors().email">
+          <input
+            jb-input
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="you@example.com"
+            [attr.maxlength]="max.email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            [readOnly]="sending()"
+          />
+        </div>
+        <div
+          jb-field
+          label="First name"
+          controlId="notify-first-name"
+          optional
+          [error]="errors().firstName"
+        >
+          <input
+            jb-input
+            name="firstName"
+            type="text"
+            autocomplete="given-name"
+            [attr.maxlength]="max.firstName"
+            [ngModel]="firstName()"
+            (ngModelChange)="firstName.set($event)"
+            [readOnly]="sending()"
+          />
+        </div>
+      </div>
+      <div>
+        <jb-checkbox
+          controlId="notify-consent"
+          name="consent"
+          [checked]="consent()"
+          (checkedChange)="consent.set($event)"
+          [disabled]="sending()"
+          [invalid]="!!errors().consent"
+          [describedBy]="errors().consent ? 'notify-consent-error' : null"
+          >Yes, e-mail me when Jubilee launches. I can unsubscribe at any time.</jb-checkbox
+        >
+        @if (errors().consent; as text) {
+          <span jb-field-error id="notify-consent-error">{{ text }}</span>
+        }
+      </div>
+      @if (challengeSiteKey(); as siteKey) {
+        <jb-bot-challenge [siteKey]="siteKey" (token)="challenge.set($event)" />
+      }
+      <button slot="actions" jb-marketing-button type="submit" [busy]="sending()">
+        Tell me when it launches
+      </button>
+      <span slot="note">We use your address for the launch notice only. We never sell data.</span>
+    </form>
+  }
+</section>

@@ -35,7 +35,10 @@ test.describe('stay notified (L2-064 to L2-070)', () => {
     expect(fake.allRead).toBe(1);
   });
 
-  test('L2-064: opening a notification marks it read and goes to its page', async ({ page, jb }) => {
+  test('L2-064: opening a notification marks it read and goes to its page', async ({
+    page,
+    jb,
+  }) => {
     const centre = new NotificationsPage(page);
     const fake = await stubNotifications(page);
     await page.route('**/api/requests/r1', (route) => route.fulfill({ status: 404, json: {} }));

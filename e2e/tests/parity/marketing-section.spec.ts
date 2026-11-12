@@ -29,7 +29,7 @@ parity('marketing-section', {
     on('section-split', (screen) => screen.why, [1280]),
     on('section-surface', (screen) => screen.how, [1280]),
     on('section-ink', (screen) => screen.forBusinesses, [1280]),
-    on('section-closing', (screen) => screen.closing),
+    on('heading-launch', (screen) => screen.preRegisterHeading),
   ],
   reference: {
     absent: 'The captured Magic Patterns frames are of the app; none shows the marketing site.',

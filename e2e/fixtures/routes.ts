@@ -41,6 +41,14 @@ export type StubName =
   | 'google-sign-in-off'
   | 'sign-in-failing'
   | 'sign-in-pending'
+  | 'launch-notify-pending'
+  | 'launch-notify-failing'
+  | 'launch-notify-limited'
+  | 'launch-notify-challenge'
+  | 'launch-business-pending'
+  | 'launch-business-failing'
+  | 'launch-business-limited'
+  | 'launch-business-challenge'
   | 'join-created'
   | 'join-failing'
   | 'join-pending'
@@ -1281,6 +1289,86 @@ export const routes = {
     mock: 'pages/marketing-home/playing.html',
     who: 'visitor',
     site: 'marketing',
+  },
+  'marketing-home.business-invalid': {
+    app: '/',
+    mock: 'pages/marketing-home/business-invalid.html',
+    who: 'visitor',
+    site: 'marketing',
+  },
+  'marketing-home.business-busy': {
+    app: '/',
+    mock: 'pages/marketing-home/business-busy.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-business-pending',
+  },
+  'marketing-home.business-success': {
+    app: '/',
+    mock: 'pages/marketing-home/business-success.html',
+    who: 'visitor',
+    site: 'marketing',
+  },
+  'marketing-home.business-error': {
+    app: '/',
+    mock: 'pages/marketing-home/business-error.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-business-failing',
+  },
+  'marketing-home.business-rate-limited': {
+    app: '/',
+    mock: 'pages/marketing-home/business-rate-limited.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-business-limited',
+  },
+  'marketing-home.business-challenge-failed': {
+    app: '/',
+    mock: 'pages/marketing-home/business-challenge-failed.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-business-challenge',
+  },
+  'marketing-home.notify-invalid': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-invalid.html',
+    who: 'visitor',
+    site: 'marketing',
+  },
+  'marketing-home.notify-busy': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-busy.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-notify-pending',
+  },
+  'marketing-home.notify-success': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-success.html',
+    who: 'visitor',
+    site: 'marketing',
+  },
+  'marketing-home.notify-error': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-error.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-notify-failing',
+  },
+  'marketing-home.notify-rate-limited': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-rate-limited.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-notify-limited',
+  },
+  'marketing-home.notify-challenge-failed': {
+    app: '/',
+    mock: 'pages/marketing-home/notify-challenge-failed.html',
+    who: 'visitor',
+    site: 'marketing',
+    stub: 'launch-notify-challenge',
   },
 } as const satisfies Record<string, ScreenRoute>;
 

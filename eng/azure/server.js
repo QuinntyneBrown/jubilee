@@ -1,6 +1,7 @@
 // Serves a built Angular application on Azure App Service (Linux) with nothing but Node's
 // standard library. Used by eng/azure/deploy.sh for the three sites:
-//   - the marketing site: static files only;
+//   - the marketing site: static files, and only /api/launch (API_PATHS) sent to https://app.jubilee.to
+//     (API_ORIGIN) with the caller's address, proved by PROXY_KEY, as for the admin host. ADR 0044;
 //   - the app: static files, and /api sent to the Jubilee API running beside it (API_ORIGIN);
 //   - the admin application: static files, and /api sent to https://app.jubilee.to (API_ORIGIN) with
 //     the caller's address in X-Jubilee-Client-Address, proved by X-Jubilee-Proxy-Key (PROXY_KEY).
@@ -18,6 +19,16 @@ const root = path.resolve(process.env.STATIC_ROOT || path.join(__dirname, 'publi
 const port = Number(process.env.PORT || 8080);
 const api = process.env.API_ORIGIN ? new URL(process.env.API_ORIGIN) : null;
 const proxyKey = process.env.PROXY_KEY || '';
+// The paths this host sends to the API: all of /api unless API_PATHS names fewer (ADR 0044). Any
+// other /api path answers 404 here, so a public host never forwards a staff path.
+const apiPaths = (process.env.API_PATHS || '/api')
+  .split(',')
+  .map((entry) => entry.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
+function forwarded(urlPath) {
+  return apiPaths.some((prefix) => urlPath === prefix || urlPath.startsWith(prefix + '/'));
+}
 
 const types = {
   '.html': 'text/html; charset=utf-8',
@@ -216,12 +227,15 @@ function serve(req, res) {
 
 const server = http.createServer((req, res) => {
   const urlPath = (req.url || '/').split('?')[0];
-  if (api && (urlPath === '/api' || urlPath.startsWith('/api/'))) {
-    return proxy(req, res);
+  if (urlPath === '/api' || urlPath.startsWith('/api/')) {
+    // Without an API, or outside API_PATHS, an /api path is never answered with the page.
+    return api && forwarded(urlPath) ? proxy(req, res) : plain(req, res, 404, 'Not found.');
   }
   return serve(req, res);
 });
 // /api/events is a long-lived stream; never cut a request short.
 server.requestTimeout = 0;
 server.timeout = 0;
-server.listen(port, () => console.log(`Serving ${root} on ${port}${api ? `, /api -> ${api.origin}` : ''}`));
+server.listen(port, () =>
+  console.log(`Serving ${root} on ${port}${api ? `, ${apiPaths.join(', ')} -> ${api.origin}` : ''}`),
+);

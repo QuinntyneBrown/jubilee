@@ -1,0 +1,120 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Launching soon (frontend)
+
+package "api library" {
+  interface LaunchApi {
+    GET /api/launch: LaunchFormSettings
+    POST /api/launch/notifications: 202
+    POST /api/launch/businesses: 202
+  }
+  class HttpLaunchApi {
+    relative addresses on the page's origin
+  }
+  class LAUNCH_API <<InjectionToken>>
+  class LaunchFormSettings <<model>> {
+    +botChallengeSiteKey?: string
+  }
+  class LaunchNotificationRequest <<model>> {
+    e-mail, first name (optional)
+    consent, challenge token (optional)
+  }
+  class BusinessPreRegistrationRequest <<model>> {
+    business name, contact name, e-mail
+    phone (optional), category, area
+    website (optional), description
+    consent, challenge token (optional)
+  }
+}
+
+package "components library" {
+  class LaunchBadge <<new>> {
+    selector p[jb-launch-badge]
+    block mkt-badge
+  }
+  class LaunchForm <<new>> {
+    selector form[jb-launch-form]
+    block mkt-form
+  }
+  class LaunchConfirmation <<new>> {
+    selector div[jb-launch-confirmation]
+    block mkt-confirmation
+    takes focus when shown
+  }
+  class MarketingButton <<changed>> {
+    selector a[jb-marketing-button]
+    selector button[jb-marketing-button]
+    +busy
+  }
+  class MarketingHeading <<changed>> {
+    eyebrow slot
+  }
+  class PhotoBusinessCard <<changed>> {
+    an a when a link, a div when not
+  }
+  class "Existing form components" as Existing {
+    jb-field, jb-input, jb-select
+    jb-textarea, jb-checkbox, jb-alert
+    jb-form-summary, jb-bot-challenge
+  }
+}
+
+package "marketing application" {
+  class App {
+    selector jb-root
+    top bar action "Launching soon" to #notify
+    anchors #pre-register and #notify
+  }
+  class BusinessPreRegistration {
+    selector jb-business-pre-registration
+    section #pre-register
+    "Be listed on launch day."
+  }
+  class LaunchNotification {
+    selector jb-launch-notification
+    section #notify
+    "Jubilee is launching soon."
+  }
+  class "app.config.ts" as AppConfig <<composition root>> {
+    provideHttpClient()
+    LAUNCH_API as HttpLaunchApi
+  }
+}
+
+HttpLaunchApi ..|> LaunchApi
+LAUNCH_API ..> LaunchApi : names
+LaunchApi ..> LaunchFormSettings : answers
+LaunchApi ..> LaunchNotificationRequest : takes
+LaunchApi ..> BusinessPreRegistrationRequest : takes
+
+AppConfig ..> LAUNCH_API : provides
+AppConfig ..> HttpLaunchApi : with
+App *-- BusinessPreRegistration
+App *-- LaunchNotification
+App ..> LaunchBadge : composes
+App ..> MarketingHeading : composes
+App ..> MarketingButton : composes
+App ..> PhotoBusinessCard : composes
+
+BusinessPreRegistration ..> LAUNCH_API : injects
+LaunchNotification ..> LAUNCH_API : injects
+BusinessPreRegistration ..> LaunchForm : composes
+BusinessPreRegistration ..> LaunchConfirmation : composes
+BusinessPreRegistration ..> MarketingButton : composes
+BusinessPreRegistration ..> Existing : composes
+LaunchNotification ..> LaunchForm : composes
+LaunchNotification ..> LaunchConfirmation : composes
+LaunchNotification ..> MarketingButton : composes
+LaunchNotification ..> Existing : composes
+@enduml

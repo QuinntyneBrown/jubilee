@@ -50,3 +50,5 @@ export * from './lib/helpers/load-state';
 export * from './lib/helpers/message-time';
 export * from './lib/api/feedback-api';
 export * from './lib/models/feedback';
+export * from './lib/api/launch-api';
+export * from './lib/models/launch';

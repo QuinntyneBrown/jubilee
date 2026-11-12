@@ -5,17 +5,12 @@
     headingId="inside-title"
     text="Shops and services,"
     accent="side by side."
-    lead="From a Sunday altar bouquet to a retirement plan, the people behind every page share your values."
-  >
-    <a slot="aside" jb-marketing-link [href]="browseUrl">
-      See all {{ count }} businesses
-      <svg jb-icon name="arrow-up-right"></svg>
-    </a>
-  </jb-marketing-heading>
+    lead="From a Sunday altar bouquet to a retirement plan, the people behind every page share your values. Here is a preview of the businesses you will find."
+  />
   <ul jb-photo-card-grid>
     @for (business of cards; track business.name; let first = $first) {
       <li jb-photo-card-grid-item [lead]="first">
-        <a jb-photo-business-card [business]="business" [featured]="first" [href]="browseUrl"></a>
+        <div jb-photo-business-card [business]="business" [featured]="first"></div>
       </li>
     }
   </ul>

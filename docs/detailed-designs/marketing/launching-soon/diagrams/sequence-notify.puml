@@ -1,0 +1,88 @@
+@startuml
+title UML sequence behaviour — Sign up for the launch notice
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Jubilee Marketing" #E0F2FE
+  participant "LaunchNotification" as form
+  participant "HttpLaunchApi" as client
+end box
+box "Hosting — jubilee-to-www" #F4EBFF
+  participant "server.js" as proxy
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "Rate limiter\nLaunchRateLimit.SignUps" as limiter
+  participant "LaunchController" as controller
+  participant "IBotChallengeVerifier" as bot
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SignUpForLaunchCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> form : Press "Tell me when it launches"
+form -> form : Check the e-mail address and the checkbox (L2-217 AC2)
+alt Invalid in the page
+  form --> actor : Summary with focus and a message below each field; nothing sent
+else Valid in the page
+  form -> form : Make the button busy and lock the fields (L2-217 AC3)
+  form -> client : Send LaunchNotificationRequest through LAUNCH_API
+  client -> proxy : POST /api/launch/notifications on the page's origin
+  proxy -> limiter : Forward to API_ORIGIN with X-Jubilee-Client-Address and X-Jubilee-Proxy-Key
+  alt More than 5 from the address in the hour
+    limiter --> proxy : 429 rate_limited with Retry-After (L2-218 AC3)
+    proxy --> client : 429
+    client --> form : Rate limited
+    form --> actor : "You’re doing that a lot. Try again in {n} minutes." with every value kept (L2-217 AC7)
+  else Under the limit
+    limiter -> controller : Run the action
+    controller -> controller : Bind the body and refuse unknown fields (L2-218 AC2)
+    controller -> bot : VerifyAsync with the token and the caller's address
+    bot --> controller : Passed or not
+    alt Challenge configured and not passed
+      controller --> proxy : 422 validation_failed with challenge: CHALLENGE_FAILED; nothing checked or stored (L2-218 AC3)
+      proxy --> client : 422
+      client --> form : Challenge failed
+      form --> actor : "We couldn’t check that you’re not a robot. Wait a moment and try again.", values kept, fresh challenge (L2-137 AC2)
+    else Passed or no challenge configured
+      controller -> handler : Send SignUpForLaunchCommand
+      handler -> handler : Validate and collect one code per field
+      alt Invalid input
+        handler --> controller : ValidationFailedException
+        controller --> proxy : 422 validation_failed with REQUIRED, EMAIL_INVALID, TOO_LONG or CONSENT_REQUIRED; nothing stored (L2-218 AC1)
+        proxy --> client : 422
+        client --> form : Codes per field
+        form --> actor : Summary and a message below each named field, values kept
+      else Valid
+        handler -> db : Find LaunchSubscriber by EmailKey
+        db --> handler : LaunchSubscriber or none
+        alt Address already signed up
+          handler -> handler : Change nothing (L2-217 AC5)
+        else New address
+          handler -> db : Save LaunchSubscriber with ConsentedAt and ConsentMethod.MarketingSiteForm (L2-218 AC1)
+          db --> handler : Commit result
+        end
+        handler --> controller : Done, the same for both
+        controller --> proxy : 202 Accepted with no body (L2-217 AC8)
+        proxy --> client : 202
+        client --> form : Accepted
+        form --> actor : Confirmation with focus: "You’re on the list." (L2-217 AC4)
+      end
+    end
+  end
+end
+note over form, client : No answer within 10 seconds, an unreachable API or any other error: "We couldn’t add you to the list." with every value kept (L2-217 AC6).
+@enduml

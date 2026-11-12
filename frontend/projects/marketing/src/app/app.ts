@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   AppGlimpse,
   FloatingNote,
   Icon,
+  LaunchBadge,
   Lockup,
   MarketingButton,
   MarketingFooter,
@@ -14,14 +15,18 @@ import {
   SkipLink,
   VideoPlayer,
 } from 'components';
-import { APP_URL } from './app-url';
 import { Benefits } from './benefits/benefits';
+import { BusinessPreRegistration } from './business-pre-registration/business-pre-registration';
 import { ForBusinesses } from './for-businesses/for-businesses';
 import { FILM, GLIMPSE, MISSION } from './content';
 import { HowItWorks } from './how-it-works/how-it-works';
 import { InsideTheApp } from './inside-the-app/inside-the-app';
+import { LaunchNotification } from './launch-notification/launch-notification';
 
-/** The marketing site's one page (L2-183), section for section as the design reference has it. */
+/**
+ * The marketing site's one page (L2-183) in its launching-soon state (L2-215): it says Jubilee is
+ * not open yet, holds the two forms and links nowhere outside itself.
+ */
 @Component({
   selector: 'jb-root',
   imports: [
@@ -41,13 +46,14 @@ import { InsideTheApp } from './inside-the-app/inside-the-app';
     HowItWorks,
     InsideTheApp,
     ForBusinesses,
+    LaunchBadge,
+    BusinessPreRegistration,
+    LaunchNotification,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
 })
 export class App {
-  /** The app's browse home (L2-185 AC1). */
-  protected readonly browseUrl = inject(APP_URL) + '/';
   protected readonly sections: readonly MarketingNavLink[] = [
     { label: 'Why Jubilee', href: '#why' },
     { label: 'How it works', href: '#how' },
