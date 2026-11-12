@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { Icon } from '../icon/icon';
 import { formatRent } from '../space-card/space-terms';
 
-/** The request a member has open on a space: who it went to and what happens next (L2-197). */
+/** The request a member has open on a space: who it went to and what happens next (L2-205). */
 export interface BookingSent {
   heading: string;
   text: string;
 }
 
 /**
- * The rent, the minimum stay and the one thing to do on the page of a space (L2-197 AC1). The
+ * The rent, the minimum stay and the one thing to do on the page of a space (L2-205 AC1). The
  * call to action is projected with `slot="action"`; it is hidden under 48rem, where the
  * `jb-booking-bar` carries it. The other actions (message, save) are projected as they are:
  *

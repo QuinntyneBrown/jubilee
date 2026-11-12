@@ -97,7 +97,7 @@ export class SearchPage {
     const kind = this.store.tab();
     return state.value.hits.filter((hit) => hit.kind === kind);
   });
-  /** Spaces are listed as space cards (L2-195 AC1); every other hit is a row. */
+  /** Spaces are listed as space cards (L2-203 AC1); every other hit is a row. */
   protected readonly spaces = computed(() => this.shown().flatMap((hit) => hit.space ?? []));
   protected readonly rows = computed(() => this.shown().filter((hit) => !hit.space));
 

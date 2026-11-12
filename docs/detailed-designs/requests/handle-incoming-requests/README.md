@@ -83,7 +83,7 @@ Confirm and decline use the existing endpoints. A new space request reaches the
 owner as a notification and a queued e-mail; its handler pushes no real-time
 event. The
 wording, the confirm dialog and the address release are the feature
-[Request a space](../request-space/README.md) (ADR 0040).
+[Request a space](../request-space/README.md) (ADR 0041).
 
 ## Requirements
 
@@ -98,7 +98,7 @@ requirement, cited by identifier.
 | `L2-133` | `L1-019` | The server shall return HTTP 403 when an owner API is called for a listing the caller does not own. |
 | `L2-070` | `L1-010` | A notification, message or request event shall reach an open signed-in page within 2 seconds at the 95th percentile over a persistent connection. |
 | `L2-182` | `L1-025` | Each scheduled job shall be idempotent, shall run at most once per schedule across instances, and shall record its last success. |
-| `L2-198` | `L1-027` | A space request shall be listed in Incoming requests with the call to action and the space, "Space · {customer} · {time}" and its dates or move-in, confirmed through a dialog that warns the address is shared, declined as any request, and shown to the member with the type "Space". |
+| `L2-206` | `L1-028` | A space request shall be listed in Incoming requests with the call to action and the space, "Space · {customer} · {time}" and its dates or move-in, confirmed through a dialog that warns the address is shared, declined as any request, and shown to the member with the type "Space". |
 
 ## Diagrams
 

@@ -3,8 +3,8 @@ import { AdminVerificationPage } from '../../pages/admin-verification.page';
 import { EditListingPage } from '../../pages/edit-listing.page';
 import { ListBusinessPage } from '../../pages/list-business.page';
 
-// jb-space-card-preview: how renters will see a space while it waits for verification (L2-189 AC3,
-// L2-191 AC3), and as its owner edits it (L2-200).
+// jb-space-card-preview: how renters will see a space while it waits for verification (L2-197 AC3,
+// L2-199 AC3), and as its owner edits it (L2-208).
 parity('space-card-preview', {
   cases: [
     {
@@ -35,7 +35,7 @@ parity('space-card-preview', {
         frame: 'list-a-space-1280.png',
         clip: { x: 863, y: 135, width: 320, height: 352 },
         knownDifference:
-          'The reference shows the space with a photo, its own title and "From Mar 1", and marks nothing as pending; the app draws the tinted tile by term until the owner adds photos from My business, and marks the card "Pending verification" until it is approved (L2-189 AC3).',
+          'The reference shows the space with a photo, its own title and "From Mar 1", and marks nothing as pending; the app draws the tinted tile by term until the owner adds photos from My business, and marks the card "Pending verification" until it is approved (L2-197 AC3).',
       },
     ],
   },

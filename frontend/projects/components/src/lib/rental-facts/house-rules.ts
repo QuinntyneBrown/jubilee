@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-/** The house rules of a space, one a line (L2-196 AC1): `<ul jb-house-rules [rules]="…"></ul>`. */
+/** The house rules of a space, one a line (L2-204 AC1): `<ul jb-house-rules [rules]="…"></ul>`. */
 @Component({
   selector: 'ul[jb-house-rules]',
   changeDetection: ChangeDetectionStrategy.OnPush,

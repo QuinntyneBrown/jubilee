@@ -74,7 +74,7 @@ public sealed class ListingDraft
 
     public bool Agreed { get; private set; }
 
-    /// <summary>The rental details of a space draft (L2-190); null for a business.</summary>
+    /// <summary>The rental details of a space draft (L2-198); null for a business.</summary>
     public SpaceDetails? Space { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }

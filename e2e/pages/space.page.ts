@@ -3,7 +3,7 @@ import type { Region, Screen } from '../fixtures/visual';
 import { SpaceCard } from './space-card';
 import { ShellPage } from './shell.page';
 
-/** The booking card of a space: the rent, the minimum stay and the one thing to do (L2-197 AC1). */
+/** The booking card of a space: the rent, the minimum stay and the one thing to do (L2-205 AC1). */
 export class BookingCard {
   readonly price: Locator;
   readonly minimum: Locator;
@@ -11,7 +11,7 @@ export class BookingCard {
   readonly messageHost: Locator;
   readonly save: Locator;
   readonly note: Locator;
-  /** "Sent to {host}" once the member has an open request (L2-197 AC9). */
+  /** "Sent to {host}" once the member has an open request (L2-205 AC9). */
   readonly sent: Locator;
 
   constructor(readonly root: Locator) {
@@ -25,7 +25,7 @@ export class BookingCard {
   }
 }
 
-/** The page of a space at /b/:slug (L2-196). */
+/** The page of a space at /b/:slug (L2-204). */
 export class SpacePage extends ShellPage implements Screen {
   readonly backLink: Locator;
   readonly mediaTile: Locator;

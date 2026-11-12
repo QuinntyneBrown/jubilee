@@ -183,14 +183,14 @@ export class BusinessPage {
   });
 
   /** What the page calls the listing: a shop, a space or a business. Known before it loads when
-   * the listing was reached from a list (L2-034 AC4, L2-196 AC5). */
+   * the listing was reached from a list (L2-034 AC4, L2-204 AC5). */
   protected readonly thing = computed(() => {
     const state = this.state();
     const kind = state.status === 'loaded' ? state.value.kind : this.hints.kindOf(this.slugValue());
     return kind === 'shop' ? 'shop' : kind === 'space' ? 'space' : 'business';
   });
 
-  /** The rows under the facts of a space (L2-196 AC1): when, how long, where and the rent. */
+  /** The rows under the facts of a space (L2-204 AC1): when, how long, where and the rent. */
   protected readonly spaceRows = computed<DetailRow[]>(() => {
     const state = this.state();
     const space = state.status === 'loaded' ? state.value.space : null;
@@ -205,7 +205,7 @@ export class BusinessPage {
     return rows.filter((r): r is DetailRow => r !== null);
   });
 
-  /** The member's open request on the space: the card says it went (L2-197). */
+  /** The member's open request on the space: the card says it went (L2-205). */
   protected readonly sent = computed<BookingSent | null>(() => {
     const state = this.state();
     if (state.status !== 'loaded' || !state.value.openRequestId) return null;
@@ -411,7 +411,7 @@ export class BusinessPage {
   }
 
   /**
-   * The call to action of a space (L2-197): a member asks for it in a dialog by its term; a
+   * The call to action of a space (L2-205): a member asks for it in a dialog by its term; a
    * visitor is asked to join or sign in first and comes back to the same dialog (AC2). A sent
    * request turns the booking card into "Sent to …" (AC9).
    */

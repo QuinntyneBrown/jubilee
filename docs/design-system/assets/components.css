@@ -827,7 +827,7 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 @media (max-width: 39.99rem) { .detail-head__actions .btn--primary { flex-basis: 100%; } }
 .empty__text, .alert__body, .toast__text { overflow-wrap: anywhere; }
 
-/* ---------- Rooms and rentals (L1-027, ADR 0040) ---------------------------------------------------- */
+/* ---------- Rooms and rentals (L1-028, ADR 0041) ---------------------------------------------------- */
 /* Space card: a room or rental in a grid. Rent, term and where come first; that is what renters scan for. */
 .space-card { display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none; border-radius: var(--radius-lg); }
 .space-card__media { position: relative; }

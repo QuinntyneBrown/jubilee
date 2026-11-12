@@ -108,7 +108,7 @@ export class CategoryPage {
     return CATEGORIES.find((category) => category.slug === slug) ?? null;
   });
 
-  /** Rooms & rentals lists spaces, not businesses (L2-193). */
+  /** Rooms & rentals lists spaces, not businesses (L2-201). */
   protected readonly rooms = computed(() => this.slug().get('category') === 'rooms-rentals');
 
   protected readonly filterCount = computed(

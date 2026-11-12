@@ -39,7 +39,7 @@ else Valid
   client -> controller : POST /api/listing-drafts/{id}/submit
   controller -> controller : Authenticate, confirmed member, owns the draft (L2-133)
   controller -> handler : Send SubmitListingCommand
-  handler -> validator : ValidateSpace(input.Space) and check agreed (L2-190, L2-191)
+  handler -> validator : ValidateSpace(input.Space) and check agreed (L2-198, L2-199)
   alt Invalid
     validator --> handler : space.rent REQUIRED or TOO_HIGH, space.available, space.neighbourhood,
 space.address, space.household REQUIRED, agreed REQUIRED
@@ -50,7 +50,7 @@ space.address, space.household REQUIRED, agreed REQUIRED
   else Valid
     handler -> validator : SpaceFrom(input.Space)
 validator --> handler : SpaceDetails with facts and rules trimmed
-    handler -> listing : Create with Kind Space, category forced to rooms-rentals (L2-188)
+    handler -> listing : Create with Kind Space, category forced to rooms-rentals (L2-196)
     handler -> db : Save listing waiting on its reference, queue the reference e-mail (L2-078)
     db --> handler : Commit result
     handler --> controller : SubmittedListingDto

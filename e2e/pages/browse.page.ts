@@ -70,7 +70,7 @@ export class BrowsePage extends ShellPage implements Screen {
   /** The row of product cards that scrolls sideways. */
   readonly scroller: Locator;
   readonly allShops: Locator;
-  /** "Rooms & places to stay" (L2-192). */
+  /** "Rooms & places to stay" (L2-200). */
   readonly rooms: Locator;
   readonly roomsAll: Locator;
   readonly roomsFilter: TermFilter;

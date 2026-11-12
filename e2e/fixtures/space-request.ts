@@ -1,6 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 
-// A stand-in for the space request endpoint (L2-197). The requests the app makes are kept so a
+// A stand-in for the space request endpoint (L2-205). The requests the app makes are kept so a
 // test can prove what it sent, and that it sent no price (ADR 0009).
 
 export type SpaceRequestDelivery = 'ok' | 'fail' | 'invalid' | 'already';

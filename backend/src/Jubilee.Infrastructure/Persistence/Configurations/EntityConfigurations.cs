@@ -36,7 +36,7 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.MadeToOrder).HasMaxLength(200);
         builder.HasIndex(l => new { l.CategorySlug, l.Stage });
 
-        // A space's rental details are one JSON column; a business has none (ADR 0040).
+        // A space's rental details are one JSON column; a business has none (ADR 0041).
         builder.OwnsOne(l => l.Space, s =>
         {
             s.ToJson("Space");
@@ -510,7 +510,7 @@ public sealed class ListingDraftConfiguration : IEntityTypeConfiguration<Listing
         builder.HasMany(d => d.Items).WithOne().HasForeignKey(i => i.ListingDraftId).OnDelete(DeleteBehavior.Cascade);
         builder.Navigation(d => d.Items).UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        // A space draft keeps its rental details as one JSON column, like its listing (ADR 0040).
+        // A space draft keeps its rental details as one JSON column, like its listing (ADR 0041).
         builder.OwnsOne(d => d.Space, s =>
         {
             s.ToJson("Space");

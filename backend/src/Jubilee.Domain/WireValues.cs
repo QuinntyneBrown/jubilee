@@ -61,7 +61,7 @@ public static class WireValues
         (SpaceTerm.Roommate, "roommate"),
     ];
 
-    /// <summary>"short-stay", "long-term", "room" or "roommate" (L2-188 AC1).</summary>
+    /// <summary>"short-stay", "long-term", "room" or "roommate" (L2-196 AC1).</summary>
     public static string Of(SpaceTerm value) => TermPairs.Single(p => p.Value == value).Wire;
 
     /// <summary>The term of a wire value; null for anything else.</summary>

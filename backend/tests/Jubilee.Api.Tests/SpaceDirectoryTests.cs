@@ -5,7 +5,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-/// <summary>Spaces in "Rooms & rentals": the category, the term filter and the space card (L2-188, L2-193, L2-194, L2-199).</summary>
+/// <summary>Spaces in "Rooms & rentals": the category, the term filter and the space card (L2-196, L2-201, L2-202, L2-207).</summary>
 public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private const string Url = "/api/categories/rooms-rentals/listings";

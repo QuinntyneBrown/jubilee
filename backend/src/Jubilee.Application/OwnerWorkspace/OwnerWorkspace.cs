@@ -304,7 +304,7 @@ public sealed class SaveListingCommandHandler(IAppDbContext db, TimeProvider clo
         var isSpace = listing.Kind == ListingKind.Space;
         if (isSpace)
         {
-            // A space stays in Rooms & rentals and has no hours; its own fields are checked as when it was listed (L2-200).
+            // A space stays in Rooms & rentals and has no hours; its own fields are checked as when it was listed (L2-208).
             if (request.CategorySlug != Category.RoomsSlug)
             {
                 errors["category"] = "CATEGORY_LOCKED";

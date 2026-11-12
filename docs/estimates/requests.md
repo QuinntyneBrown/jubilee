@@ -22,4 +22,4 @@ track-requests, cancel-request (ADR 0022): the member's list and detail with the
 
 request-item: the order request (delivery methods, free shipping, server-computed amounts, stock check at send, owner e-mail, idempotency) and its dialog on the product page are done with tests. Deferred: the order card in the conversation and the in-app notification (stay-notified, journey 17), stock reduction on confirm (L2-052, journey 13), tax (shown as "+ tax", never calculated; ADR 0017).
 
-request-space (ADR 0040): the request dialog by term with its checks, the owner's confirm and decline, and the exact address released only to the accepted member are done with tests. Excludes deferred work (see ADR 0040): payment, leases, calendars and double booking.
+request-space (ADR 0041): the request dialog by term with its checks, the owner's confirm and decline, and the exact address released only to the accepted member are done with tests. Excludes deferred work (see ADR 0041): payment, leases, calendars and double booking.

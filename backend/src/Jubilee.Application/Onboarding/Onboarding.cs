@@ -51,7 +51,7 @@ public sealed record ListingDraftDto(
     };
 }
 
-/// <summary>A space draft's rental details as its owner typed them, address included (L2-190 AC10).</summary>
+/// <summary>A space draft's rental details as its owner typed them, address included (L2-198 AC10).</summary>
 public sealed record SpaceDraftDto(
     string Term,
     int? Rent,
@@ -79,7 +79,7 @@ public sealed record SpaceDraftDto(
         space.Rules);
 }
 
-/// <summary>The space fields of the form (L2-190).</summary>
+/// <summary>The space fields of the form (L2-198).</summary>
 public sealed record SpaceInput(
     string? Term,
     int? Rent,
@@ -123,7 +123,7 @@ public static class Drafts
         _ => ListingKind.Shop,
     };
 
-    /// <summary>The term chosen, or Short stay, the first choice, when none was (L2-189 AC2).</summary>
+    /// <summary>The term chosen, or Short stay, the first choice, when none was (L2-197 AC2).</summary>
     public static SpaceTerm TermOf(SpaceInput? space) => WireValues.ParseTerm(space?.Term) ?? SpaceTerm.ShortStay;
 
     public static SpaceDetails? SpaceOf(DraftInput input)
@@ -140,7 +140,7 @@ public static class Drafts
         TermOf(space), space?.Rent ?? 0, space?.Available, space?.MinimumStay ?? 0, space?.Neighbourhood, space?.Address,
         space?.Place, space?.Facts, space?.Included, space?.Household, space?.Rules);
 
-    /// <summary>The space fields every term needs, and the household a Room or Roommate needs (L2-190 AC6 to AC8).</summary>
+    /// <summary>The space fields every term needs, and the household a Room or Roommate needs (L2-198 AC6 to AC8).</summary>
     public static void ValidateSpace(SpaceInput? space, Dictionary<string, string> errors)
     {
         if (space?.Rent is not { } rent || rent <= 0)
@@ -311,7 +311,7 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
 
         if (Drafts.KindOf(input.Kind) == ListingKind.Space)
         {
-            // A space always sits in Rooms & rentals, so it has no category to choose (L2-189 AC3).
+            // A space always sits in Rooms & rentals, so it has no category to choose (L2-197 AC3).
             Drafts.ValidateSpace(input.Space, errors);
         }
         else if (input.CategorySlug is null || Category.Find(input.CategorySlug) is null)
@@ -371,7 +371,7 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
         listing.SetKind(Drafts.KindOf(input.Kind));
         listing.AssignOwner(command.Subject);
 
-        // The public place of a space is its neighbourhood; the exact address stays in its details (L2-199).
+        // The public place of a space is its neighbourhood; the exact address stays in its details (L2-207).
         listing.Describe(new ListingProfile(command.Name, [], null, space?.Neighbourhood ?? input.Place?.Trim(), null, null, null, null));
         listing.SetHighlight(input.Highlight);
         listing.MoveTo(ListingStage.PendingReference);

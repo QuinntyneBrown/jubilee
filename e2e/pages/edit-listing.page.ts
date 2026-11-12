@@ -32,7 +32,7 @@ export class EditListingPage extends ShellPage implements Screen {
   readonly reference: Locator;
   readonly tryAgain: Locator;
   readonly loading: Locator;
-  /** A space's own fields (L2-200). */
+  /** A space's own fields (L2-208). */
   readonly space: SpaceFields;
   readonly spacePreview: Locator;
 

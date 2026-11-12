@@ -205,10 +205,10 @@ public sealed class Listing
         return reworded;
     }
 
-    /// <summary>The rental details of a space; null for a business (L2-190).</summary>
+    /// <summary>The rental details of a space; null for a business (L2-198).</summary>
     public SpaceDetails? Space { get; private set; }
 
-    /// <summary>Replaces the rental details of a space (L2-190, L2-200).</summary>
+    /// <summary>Replaces the rental details of a space (L2-198, L2-208).</summary>
     public void DescribeSpace(SpaceDetails details)
     {
         if (Kind != ListingKind.Space)

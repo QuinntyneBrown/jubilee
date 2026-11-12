@@ -1,7 +1,7 @@
 import { parity } from '../../fixtures/parity';
 import { SpacePage } from '../../pages/space.page';
 
-// jb-household: "Who lives here" on a Room or Roommate space (L2-196 AC2).
+// jb-household: "Who lives here" on a Room or Roommate space (L2-204 AC2).
 parity('household', {
   cases: [
     {
@@ -19,7 +19,7 @@ parity('household', {
         frame: 'space-room-1280.png',
         clip: { x: 887, y: 640, width: 362, height: 254 },
         knownDifference:
-          'The reference lists each member of the household with an initial; Jubilee shows the household as the owner wrote it, one text (L2-190), so there are no people to list.',
+          'The reference lists each member of the household with an initial; Jubilee shows the household as the owner wrote it, one text (L2-198), so there are no people to list.',
       },
     ],
   },

@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Jubilee.Api.Tests;
 
 /// <summary>
-/// A member requests a space (L2-197), the owner answers it (L2-198), and the exact address reaches
-/// only the renter whose request the owner accepted (L2-199).
+/// A member requests a space (L2-205), the owner answers it (L2-206), and the exact address reaches
+/// only the renter whose request the owner accepted (L2-207).
 /// </summary>
 public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
@@ -57,7 +57,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
             checkIn = Day(Today.AddDays(fromDays)),
             checkOut = Day(Today.AddDays(fromDays + nights)),
             note = "Visiting family for the weekend.",
-            totalCents = 1, // A price from the client is ignored (L2-197 AC8).
+            totalCents = 1, // A price from the client is ignored (L2-205 AC8).
             idempotencyKey = Guid.NewGuid().ToString(),
         });
 

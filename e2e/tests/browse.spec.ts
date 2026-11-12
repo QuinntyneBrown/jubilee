@@ -38,7 +38,7 @@ test.describe('browse home for a member (L2-021)', () => {
       '47 verified businesses — shops, advisors, trades and more.',
     );
 
-    // Category chips: "All" plus the eleven categories, "Rooms & rentals" second (L2-188)
+    // Category chips: "All" plus the eleven categories, "Rooms & rentals" second (L2-196)
     await expect(browse.categoryChips).toHaveText(['All', ...chipCategories.map((c) => c.name)]);
     await expect(browse.categoryChips.first()).toHaveAttribute('aria-current', 'page');
     await expect(browse.categoryChips.nth(5)).toHaveAttribute('href', '/c/home-property');

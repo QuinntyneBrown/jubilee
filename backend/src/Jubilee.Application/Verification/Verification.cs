@@ -235,7 +235,7 @@ public sealed record VerificationReviewDto(
     string? CannotDecideBecause,
     ReviewSpace? Space = null);
 
-/// <summary>What the verification team reads of a space: every field but its exact address (L2-191 AC3).</summary>
+/// <summary>What the verification team reads of a space: every field but its exact address (L2-199 AC3).</summary>
 public sealed record ReviewSpace(
     string Term,
     int Rent,

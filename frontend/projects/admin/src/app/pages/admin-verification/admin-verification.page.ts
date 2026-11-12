@@ -52,7 +52,7 @@ const ANSWERS: Record<string, { label: string; tone: BadgeTone }> = {
   'doesnt-know': { label: 'Doesn’t know them', tone: 'danger' },
 };
 
-/** A space's term as the owner chose it (L2-188). */
+/** A space's term as the owner chose it (L2-196). */
 const TERM_NAMES: Record<ReviewSpace['term'], string> = {
   'short-stay': 'Short stay',
   'long-term': 'Long term',
@@ -133,7 +133,7 @@ export class AdminVerificationPage implements OnInit {
     const answer = this.review()?.reference.answer;
     return answer ? ANSWERS[answer] : null;
   });
-  /** A space's rows, in the order the owner filled them in (L2-191 AC3). */
+  /** A space's rows, in the order the owner filled them in (L2-199 AC3). */
   protected readonly spaceRows = computed(() => {
     const space = this.review()?.space;
     if (!space) return null;

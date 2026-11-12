@@ -3,8 +3,8 @@ import { BrowsePage } from '../../pages/browse.page';
 import { CategoryPage } from '../../pages/category.page';
 import { SearchPage } from '../../pages/search.page';
 
-// jb-space-card: on the rooms shelf of Browse, in the Rooms & rentals category (L2-194) and in
-// search (L2-195).
+// jb-space-card: on the rooms shelf of Browse, in the Rooms & rentals category (L2-202) and in
+// search (L2-203).
 parity('space-card', {
   cases: [
     {

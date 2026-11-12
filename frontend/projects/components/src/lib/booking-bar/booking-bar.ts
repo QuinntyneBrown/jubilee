@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { formatRent } from '../space-card/space-terms';
 
 /**
- * The rent and the call to action of a space, fixed above the tab bar under 48rem (L2-196 AC4):
+ * The rent and the call to action of a space, fixed above the tab bar under 48rem (L2-204 AC4):
  *
  *     <jb-booking-bar [rent]="120" per="night">
  *       <a jb-button variant="primary" size="lg" …>Request to book</a>

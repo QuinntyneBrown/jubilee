@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-/** The dialog a member asks for a space in (L2-197 AC3–AC7). */
+/** The dialog a member asks for a space in (L2-205 AC3–AC7). */
 export class RequestSpaceDialog {
   readonly root: Locator;
   readonly title: Locator;

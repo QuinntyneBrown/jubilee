@@ -12,8 +12,8 @@ const ROOMMATE_HOME = {
   explanation: null,
 };
 
-test.describe('spaces in search (L2-195)', () => {
-  test('L2-195 AC1: spaces that match are listed under Businesses as space cards, and counted', async ({
+test.describe('spaces in search (L2-203)', () => {
+  test('L2-203 AC1: spaces that match are listed under Businesses as space cards, and counted', async ({
     page,
     jb,
   }) => {
@@ -41,7 +41,7 @@ test.describe('spaces in search (L2-195)', () => {
     await expect(search.rows).toHaveCount(0);
   });
 
-  test('L2-195 AC1: a business that matches stays a row beside the space cards', async ({
+  test('L2-203 AC1: a business that matches stays a row beside the space cards', async ({
     page,
     jb,
   }) => {

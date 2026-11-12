@@ -4,7 +4,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-/// <summary>Spaces in search (L2-195): found by their words and neighbourhood, never by their address.</summary>
+/// <summary>Spaces in search (L2-203): found by their words and neighbourhood, never by their address.</summary>
 public sealed class SpaceSearchTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private readonly JubileeApiFactory _factory;

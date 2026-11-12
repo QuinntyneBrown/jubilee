@@ -1,7 +1,7 @@
 import { parity } from '../../fixtures/parity';
 import { SpacePage } from '../../pages/space.page';
 
-// jb-house-rules: the house rules of a space, one a line (L2-196 AC1).
+// jb-house-rules: the house rules of a space, one a line (L2-204 AC1).
 parity('house-rules', {
   cases: [
     {

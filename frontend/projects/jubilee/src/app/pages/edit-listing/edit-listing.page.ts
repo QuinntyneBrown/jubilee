@@ -71,7 +71,7 @@ type Saving = 'idle' | 'saving';
 
 /**
  * The listing editor at /my-business/listing (L2-087, L2-088): the words, the photos and the live
- * preview. A space edits its own fields instead of the category, hours and website (L2-200).
+ * preview. A space edits its own fields instead of the category, hours and website (L2-208).
  */
 @Component({
   selector: 'jb-edit-listing-page',
@@ -131,7 +131,7 @@ export class EditListingPage implements OnInit {
   protected readonly photoError = signal<string | null>(null);
   protected readonly photoBusy = signal(false);
 
-  // A space (L2-200): the fields List a space asks, held by the form they share.
+  // A space (L2-208): the fields List a space asks, held by the form they share.
   private readonly space = new SpaceForm();
   protected readonly termChoices = TERM_CHOICES;
   protected readonly places = PLACES;
@@ -177,7 +177,7 @@ export class EditListingPage implements OnInit {
     categorySlug: this.draft().category || 'shops',
     verified: this.editor()?.stage === 'live',
   }));
-  /** How renters see the space as the owner edits it (L2-200, L2-189 AC3). */
+  /** How renters see the space as the owner edits it (L2-208, L2-197 AC3). */
   protected readonly spacePreview = computed(() => this.space.preview(this.draft().name));
 
   ngOnInit(): void {
@@ -302,7 +302,7 @@ export class EditListingPage implements OnInit {
       });
     }
     if (space) {
-      // A space is checked as when it was listed (L2-200 AC2), and has no hours or website.
+      // A space is checked as when it was listed (L2-208 AC2), and has no hours or website.
       const codes = this.space.check();
       for (const field of Object.keys(codes) as SpaceField[]) {
         const message = spaceMessage(field, codes[field] ?? '');

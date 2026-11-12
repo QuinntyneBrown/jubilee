@@ -5,14 +5,14 @@ import { ConfirmRequestDialog } from '../pages/confirm-request.dialog';
 import { IncomingRequestsPage } from '../pages/incoming-requests.page';
 import { RequestDetailPage } from '../pages/request-detail.page';
 
-// The owner answers a space request (L2-198) and the member reads it, with the exact address
-// only once it is accepted (L2-199). The server composes the words; these specs prove the app
+// The owner answers a space request (L2-206) and the member reads it, with the exact address
+// only once it is accepted (L2-207). The server composes the words; these specs prove the app
 // shows them as a space request.
 
 const SPACE = '7a1e0000-0000-4000-8000-0000000000aa';
 
-test.describe('space requests (L2-198, L2-199)', () => {
-  test('L2-198 AC1, AC2: a space request is listed with its dates, and Confirm warns that the address goes', async ({
+test.describe('space requests (L2-206, L2-207)', () => {
+  test('L2-206 AC1, AC2: a space request is listed with its dates, and Confirm warns that the address goes', async ({
     page,
     jb,
   }) => {
@@ -51,7 +51,7 @@ test.describe('space requests (L2-198, L2-199)', () => {
     await expect(dialog.confirm).toHaveText('Confirm request');
   });
 
-  test('L2-198 AC4, L2-199 AC3: an accepted space request reads "Space" and carries the address', async ({
+  test('L2-206 AC4, L2-207 AC3: an accepted space request reads "Space" and carries the address', async ({
     page,
     jb,
   }) => {

@@ -1,6 +1,6 @@
 import type { Locator } from '@playwright/test';
 
-/** One space card (`a.space-card`): a room or rental in a grid (L2-194). */
+/** One space card (`a.space-card`): a room or rental in a grid (L2-202). */
 export class SpaceCard {
   readonly badge: Locator;
   readonly price: Locator;
@@ -23,7 +23,7 @@ export class SpaceCard {
   }
 }
 
-/** The term filter of rooms and rentals: "Any length" and the four terms, as toggles (L2-192 AC2). */
+/** The term filter of rooms and rentals: "Any length" and the four terms, as toggles (L2-200 AC2). */
 export class TermFilter {
   readonly chips: Locator;
 

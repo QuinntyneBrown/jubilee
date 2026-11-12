@@ -39,7 +39,7 @@ export class ListBusinessPage extends ShellPage implements Screen {
   readonly doneText: Locator;
   readonly timeline: Locator;
   readonly goToMyBusiness: Locator;
-  /** The fields of a space (L2-189, L2-190). */
+  /** The fields of a space (L2-197, L2-198). */
   readonly space: SpaceFields;
 
   constructor(page: Page) {
@@ -101,7 +101,7 @@ export class ListBusinessPage extends ShellPage implements Screen {
   }
 }
 
-/** The space form of List your business (L2-189 to L2-191). */
+/** The space form of List your business (L2-197 to L2-199). */
 export class SpaceFields {
   readonly offer: Locator;
   readonly nameLabel: Locator;

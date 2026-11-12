@@ -93,7 +93,7 @@ neighbourhood, the space and its key facts, with the match explanations "in
 neighbourhood", "in the space" and "in key facts"; never on its exact address. A space hit keeps the kind `business`, so it is
 counted and listed under "Businesses", and carries `SearchHit.Space`
 (`SpaceCardDto`) so the page renders it as a space card. The rule is part of
-the feature [Browse spaces](../browse-spaces/README.md) (ADR 0040).
+the feature [Browse spaces](../browse-spaces/README.md) (ADR 0041).
 
 ## Requirements
 
@@ -110,7 +110,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API endpoint, and shall answer a request for another member's object with 404. |
 | `L2-181` | `L1-025` | When the search index is unavailable, the application shall fall back to a database name search and shall show results without match explanations. |
-| `L2-195` | `L1-027` | Search shall match live spaces by title, line, neighbourhood, the space and key facts, list them under "Businesses" as space cards, and never search or return the exact address. |
+| `L2-203` | `L1-028` | Search shall match live spaces by title, line, neighbourhood, the space and key facts, list them under "Businesses" as space cards, and never search or return the exact address. |
 
 ## Diagrams
 

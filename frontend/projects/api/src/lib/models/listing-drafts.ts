@@ -14,8 +14,8 @@ export interface DraftItem {
 }
 
 /**
- * The rental fields of a space (L2-190). The exact address goes only to the owner and, once
- * they accept, to that renter (L2-199).
+ * The rental fields of a space (L2-198). The exact address goes only to the owner and, once
+ * they accept, to that renter (L2-207).
  */
 export interface SpaceDraft {
   term: SpaceTerm;

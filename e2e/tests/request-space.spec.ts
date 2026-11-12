@@ -4,10 +4,10 @@ import { RequestSpaceDialog } from '../pages/request-space.dialog';
 import { SignInRequiredDialog } from '../pages/sign-in-required.dialog';
 import { SpacePage } from '../pages/space.page';
 
-// Asking for a space (L2-197): the dialog by term, its checks, the answer, and the page once a
+// Asking for a space (L2-205): the dialog by term, its checks, the answer, and the page once a
 // request is open. The device's today is the mocks' today, 10 November 2026.
 
-test.describe('request a space (L2-197)', () => {
+test.describe('request a space (L2-205)', () => {
   test('AC2: a visitor pressing the call to action is asked to join first', async ({
     page,
     jb,

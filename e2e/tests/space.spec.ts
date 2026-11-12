@@ -1,10 +1,10 @@
 import { expect, test } from '../fixtures/jb-test';
 import { SpacePage } from '../pages/space.page';
 
-// The page of a space (L2-196) and its booking card (L2-197 AC1, AC2), against the recorded
+// The page of a space (L2-204) and its booking card (L2-205 AC1, AC2), against the recorded
 // answers of the seeded API (ADR 0009).
 
-test.describe('space page (L2-196)', () => {
+test.describe('space page (L2-204)', () => {
   test('AC1: the guest suite shows its head, booking card, the space, its rows, inclusions, rules, host and more spaces', async ({
     page,
     jb,
@@ -44,7 +44,7 @@ test.describe('space page (L2-196)', () => {
     await expect(space.reportLink).toBeVisible();
   });
 
-  test('L2-197 AC1: the booking card has the rent, the minimum stay, the call to action, message, save and the payment line', async ({
+  test('L2-205 AC1: the booking card has the rent, the minimum stay, the call to action, message, save and the payment line', async ({
     page,
     jb,
   }) => {
@@ -61,7 +61,7 @@ test.describe('space page (L2-196)', () => {
     await expect(card.note).toHaveText('You won’t pay anything until the host accepts.');
   });
 
-  test('L2-197 AC1: the call to action fits the term', async ({ page, jb }) => {
+  test('L2-205 AC1: the call to action fits the term', async ({ page, jb }) => {
     const space = new SpacePage(page);
     await space.setWidth(1280);
 

@@ -123,7 +123,7 @@ export class CategoryStore {
     this.navigate({ offers: filters.offers, areas: filters.areas, sort, page: 1, term: null });
   }
 
-  /** Rooms & rentals: lists one term, or every term with null; back to page 1 (L2-193 AC2). */
+  /** Rooms & rentals: lists one term, or every term with null; back to page 1 (L2-201 AC2). */
   chooseTerm(term: SpaceTerm | null): void {
     this.navigate({ ...this.currentQuery(), term, page: 1 });
   }

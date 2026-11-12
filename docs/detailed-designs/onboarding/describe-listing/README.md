@@ -95,7 +95,7 @@ which becomes the second of eleven categories. For a space the form hides
 `Space`, and the body of the existing draft endpoints gains a nested `space`
 object. The space form,
 preview and agreement line are the feature
-[Describe a space](../describe-space/README.md) (ADR 0040).
+[Describe a space](../describe-space/README.md) (ADR 0041).
 
 ## Requirements
 
@@ -111,7 +111,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-005` | `L1-001` | Until the e-mail is confirmed, a member shall be able to browse, search and save but shall not message, book, request or list a business. |
 | `L2-126` | `L1-018` | A page form submitted with errors shall show the summary "Fix {n} thing(s) to continue", mark each invalid field, keep typed values, and apply the same rules and message codes on the server. |
 | `L2-133` | `L1-019` | Each API endpoint shall check the caller's role and ownership of the specific object before doing anything. |
-| `L2-189` | `L1-027` | `/list` shall offer "A space" beside "Products" and "Services", relabel the form for a space, preview the space card under "How renters see it", and restore a space saved as a draft. |
+| `L2-197` | `L1-028` | `/list` shall offer "A space" beside "Products" and "Services", relabel the form for a space, preview the space card under "How renters see it", and restore a space saved as a draft. |
 
 ## Diagrams
 

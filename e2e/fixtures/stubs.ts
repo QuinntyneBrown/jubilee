@@ -65,7 +65,7 @@ export function noResults(
   };
 }
 
-/** A space as search returns it (L2-195): its card, never its address. */
+/** A space as search returns it (L2-203): its card, never its address. */
 function spaceHit(space: {
   slug: string;
   name: string;
@@ -87,7 +87,7 @@ function spaceHit(space: {
   };
 }
 
-/** "room" finds the room in Leslieville and the roommate in East York, as the mock shows (L2-195). */
+/** "room" finds the room in Leslieville and the roommate in East York, as the mock shows (L2-203). */
 export const spaceResults = (
   others: unknown[] = [],
 ): { query: string; businessCount: number; hits: unknown[] } & Record<string, unknown> => ({
@@ -275,7 +275,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     case 'space-error':
       return page.route(roncesvalles, (route) => route.fulfill(unavailable('JB-BIZ-503')));
     case 'space-requested':
-      // The member has an open request for the suite (L2-197 AC9).
+      // The member has an open request for the suite (L2-205 AC9).
       return patchListing(page, roncesvalles, (listing) => ({ ...listing, openRequestId: 'r-space' }));
     case 'business-loading':
       return page.route(legacyFinancial, pending);

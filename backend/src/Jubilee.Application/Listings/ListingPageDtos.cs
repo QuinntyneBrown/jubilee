@@ -38,8 +38,8 @@ public sealed record ListingDetailsDto(
     string? Replies);
 
 /// <summary>
-/// The rental details on the page of a space (L2-196). Built without the exact address, which the
-/// page never carries, whoever asks (L2-199 AC1).
+/// The rental details on the page of a space (L2-204). Built without the exact address, which the
+/// page never carries, whoever asks (L2-207 AC1).
 /// </summary>
 public sealed record SpacePageDto(
     string Term,
@@ -74,7 +74,7 @@ public sealed record SpacePageDto(
             SpaceTerms.CallToAction(space.Term));
 }
 
-/// <summary>The listing page of one business (L2-033, L2-034) or space (L2-196).</summary>
+/// <summary>The listing page of one business (L2-033, L2-034) or space (L2-204).</summary>
 public sealed record ListingPageDto(
     string Slug,
     string Kind,

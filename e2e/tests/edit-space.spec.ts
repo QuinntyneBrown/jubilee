@@ -4,8 +4,8 @@ import { EditListingPage } from '../pages/edit-listing.page';
 
 const EDITOR = '/my-business/listing';
 
-test.describe('edit a space (L2-200)', () => {
-  test('L2-200 AC1: the owner of a space edits its own fields, filled with what is stored', async ({
+test.describe('edit a space (L2-208)', () => {
+  test('L2-208 AC1: the owner of a space edits its own fields, filled with what is stored', async ({
     page,
     jb,
   }) => {
@@ -45,7 +45,7 @@ test.describe('edit a space (L2-200)', () => {
     await expect(editor.space.previewPending).toHaveCount(0);
   });
 
-  test('L2-200 AC2: valid changes are saved and live at once', async ({ page, jb }) => {
+  test('L2-208 AC2: valid changes are saved and live at once', async ({ page, jb }) => {
     // Given the owner of the guest suite in the editor
     const editor = new EditListingPage(page);
     await editor.setWidth(1280);
@@ -81,7 +81,7 @@ test.describe('edit a space (L2-200)', () => {
     await expect(editor.space.price).toHaveValue('140');
   });
 
-  test('L2-200 AC2: the space fields are checked as when it was listed, and nothing is sent', async ({
+  test('L2-208 AC2: the space fields are checked as when it was listed, and nothing is sent', async ({
     page,
     jb,
   }) => {
@@ -107,7 +107,7 @@ test.describe('edit a space (L2-200)', () => {
     expect(fake.saves).toEqual([]);
   });
 
-  test('L2-200 AC3: a change of term changes the price unit and the card, and is saved', async ({
+  test('L2-208 AC3: a change of term changes the price unit and the card, and is saved', async ({
     page,
     jb,
   }) => {

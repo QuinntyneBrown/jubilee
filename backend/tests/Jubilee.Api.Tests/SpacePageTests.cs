@@ -5,7 +5,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-/// <summary>The page of a space at <c>/b/:slug</c> (L2-196) and its call to action (L2-197 AC1).</summary>
+/// <summary>The page of a space at <c>/b/:slug</c> (L2-204) and its call to action (L2-205 AC1).</summary>
 public class SpacePageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private const string Owner = "member|paul";

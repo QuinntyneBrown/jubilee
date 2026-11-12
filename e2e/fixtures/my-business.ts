@@ -46,7 +46,7 @@ export interface FakeBusiness {
     hours: string;
     website: string;
     highlight: string;
-    /** A space's own fields (L2-200); absent for a business. */
+    /** A space's own fields (L2-208); absent for a business. */
     space?: Record<string, unknown> | null;
   };
   saves: Record<string, unknown>[];
@@ -75,7 +75,7 @@ const PNG = Buffer.from(
   'base64',
 );
 
-/** The guest suite of the design reference, as its owner's editor opens it (L2-200). */
+/** The guest suite of the design reference, as its owner's editor opens it (L2-208). */
 export const SUITE: FakeBusiness['listing'] = {
   name: 'Guest suite near Roncesvalles',
   tagline: 'Private suite for visiting family, conferences or a weekend away',

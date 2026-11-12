@@ -3,7 +3,7 @@ import type { Page, Route } from '@playwright/test';
 // A stand-in for the listing-draft endpoints (L2-071 to L2-079). The requests the app makes are
 // kept so a test can prove what it sent (ADR 0009).
 
-/** The rental fields of a space draft (L2-190). */
+/** The rental fields of a space draft (L2-198). */
 export interface FakeSpaceDraft {
   term: 'short-stay' | 'long-term' | 'room' | 'roommate';
   rent: number | null;

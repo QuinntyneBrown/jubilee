@@ -2,10 +2,10 @@ import { computed, signal } from '@angular/core';
 import { SpaceDraft, SpaceTerm } from 'api';
 import { SpaceCardView } from 'components';
 
-/** A space's own fields that can be wrong (L2-190). */
+/** A space's own fields that can be wrong (L2-198). */
 export type SpaceField = 'rent' | 'available' | 'neighbourhood' | 'address' | 'household';
 
-/** The server names a space's fields `space.rent` and so on (L2-190). */
+/** The server names a space's fields `space.rent` and so on (L2-198). */
 export const SPACE_FIELDS: Readonly<Record<string, SpaceField>> = {
   'space.rent': 'rent',
   'space.available': 'available',
@@ -14,7 +14,7 @@ export const SPACE_FIELDS: Readonly<Record<string, SpaceField>> = {
   'space.household': 'household',
 };
 
-/** The four terms as the form offers them (L2-190 AC1). */
+/** The four terms as the form offers them (L2-198 AC1). */
 export const TERM_CHOICES: readonly { value: SpaceTerm; label: string; text: string }[] = [
   {
     value: 'short-stay',
@@ -30,7 +30,7 @@ export const TERM_CHOICES: readonly { value: SpaceTerm; label: string; text: str
   { value: 'roommate', label: 'Roommates', text: 'Share a place you rent with someone new.' },
 ];
 
-/** The minimum stays a term offers (L2-190 AC2): nights for a Short stay, months otherwise. */
+/** The minimum stays a term offers (L2-198 AC2): nights for a Short stay, months otherwise. */
 const NIGHTS = [
   { value: '1', label: '1 night' },
   { value: '2', label: '2 nights' },
@@ -44,7 +44,7 @@ const MONTHS = [
   { value: '12', label: '12-month lease' },
 ];
 
-/** "The space" (L2-190 AC3). */
+/** "The space" (L2-198 AC3). */
 export const PLACES = [
   'Private room',
   'Basement apartment',
@@ -54,7 +54,7 @@ export const PLACES = [
   'Event hall',
 ];
 
-/** "What’s included" (L2-190 AC3). */
+/** "What’s included" (L2-198 AC3). */
 export const INCLUSIONS = [
   'Utilities',
   'Wi-Fi',
@@ -68,7 +68,7 @@ export const INCLUSIONS = [
 
 const MAX_RENT = 50_000;
 
-/** What a space field says is wrong with it (L2-190 AC6). */
+/** What a space field says is wrong with it (L2-198 AC6). */
 export function spaceMessage(field: SpaceField, code: string): string {
   switch (field) {
     case 'rent':
@@ -87,8 +87,8 @@ export function spaceMessage(field: SpaceField, code: string): string {
 }
 
 /**
- * The space part of a listing form, shared by List a space (L2-189, L2-190) and the editor
- * (L2-200): its fields as the owner types them, the rules between them, the checks and what is sent.
+ * The space part of a listing form, shared by List a space (L2-197, L2-198) and the editor
+ * (L2-208): its fields as the owner types them, the rules between them, the checks and what is sent.
  */
 export class SpaceForm {
   readonly term = signal<SpaceTerm>('long-term');
@@ -105,7 +105,7 @@ export class SpaceForm {
 
   readonly nightly = computed(() => this.term() === 'short-stay');
   readonly minimumChoices = computed(() => (this.nightly() ? NIGHTS : MONTHS));
-  /** A Room or a Roommate says who lives there (L2-190 AC4). */
+  /** A Room or a Roommate says who lives there (L2-198 AC4). */
   readonly householdLabel = computed(() =>
     this.term() === 'room'
       ? 'Who lives in the home'
@@ -131,7 +131,7 @@ export class SpaceForm {
 
   /**
    * A change of term keeps what was typed; only a minimum stay the new term lacks resets
-   * (L2-190 AC5). Says whether the term changed.
+   * (L2-198 AC5). Says whether the term changed.
    */
   setTerm(term: SpaceTerm): boolean {
     if (term === this.term()) return false;
@@ -165,7 +165,7 @@ export class SpaceForm {
     };
   }
 
-  /** What is wrong with the space fields, as the API's codes (L2-190 AC6). */
+  /** What is wrong with the space fields, as the API's codes (L2-198 AC6). */
   check(): Partial<Record<SpaceField, string>> {
     const codes: Partial<Record<SpaceField, string>> = {};
     const rent = wholeDollars(this.rent());
@@ -178,7 +178,7 @@ export class SpaceForm {
     return codes;
   }
 
-  /** How renters will see the space while it is written (L2-189 AC3). */
+  /** How renters will see the space while it is written (L2-197 AC3). */
   preview(name: string): SpaceCardView {
     return {
       name: name.trim() || 'Your listing title',

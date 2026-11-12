@@ -3,7 +3,7 @@
 <nav jb-breadcrumb [items]="[{ label: 'Browse', link: '/' }, { label: name }]"></nav>
 <jb-page-header #heading focusable [heading]="name" [subtitle]="subtitle()"> </jb-page-header>
 @if (rooms()) {
-  <!-- Rooms & rentals lists spaces, filtered by term; no business filters or sort (L2-193). -->
+  <!-- Rooms & rentals lists spaces, filtered by term; no business filters or sort (L2-201). -->
   @switch (state.status) {
     @case ('error') {
       <div jb-empty-state icon="alert" heading="We couldn’t load this category" [error]="true">

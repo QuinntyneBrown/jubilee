@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Jubilee.Application.Directory;
 
 /// <summary>One page of a category for a category query: filters, sort order and page number.</summary>
-/// <remarks><paramref name="Term"/> narrows "Rooms & rentals" to one term (L2-193 AC2); other categories ignore it.</remarks>
+/// <remarks><paramref name="Term"/> narrows "Rooms & rentals" to one term (L2-201 AC2); other categories ignore it.</remarks>
 public sealed record GetCategoryListingsQuery(string Slug, CategoryFilterSet Filters, ListingSort Sort, int Page, SpaceTerm? Term = null)
     : IRequest<CategoryPageResult>
 {
@@ -87,7 +87,7 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
             Spaces: []);
     }
 
-    /// <summary>"Rooms & rentals": space cards, newest first, narrowed by term; no business filters or sort (L2-193).</summary>
+    /// <summary>"Rooms & rentals": space cards, newest first, narrowed by term; no business filters or sort (L2-201).</summary>
     private async Task<CategoryPageResult> BuildSpacesAsync(
         Category category, GetCategoryListingsQuery request, CancellationToken cancellationToken)
     {

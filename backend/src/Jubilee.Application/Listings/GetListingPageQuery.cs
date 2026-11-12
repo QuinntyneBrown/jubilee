@@ -18,7 +18,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
     /// <summary>"More in {category}" shows at most this many other businesses (L2-040).</summary>
     public const int RelatedCount = 2;
 
-    /// <summary>"More rooms & rentals" shows at most this many other spaces (L2-196 AC1).</summary>
+    /// <summary>"More rooms & rentals" shows at most this many other spaces (L2-204 AC1).</summary>
     public const int RelatedSpaceCount = 4;
 
     /// <summary>A shop page lists at most this many products; the count covers them all (L2-153 AC3).</summary>
@@ -56,7 +56,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             cancellationToken);
         page = page with { ViewerRelation = Wire(request.Viewer.SignedIn ? ViewerRelation.Member : ViewerRelation.Visitor) };
 
-        // The member's own open space request is theirs alone, so it is added after the cache (L2-197 AC9).
+        // The member's own open space request is theirs alone, so it is added after the cache (L2-205 AC9).
         if (page.Space is not null && viewer.Subject is { } member)
         {
             var listingId = await db.Listings.AsNoTracking().Where(l => l.Slug == slug).Select(l => l.Id).SingleAsync(cancellationToken);

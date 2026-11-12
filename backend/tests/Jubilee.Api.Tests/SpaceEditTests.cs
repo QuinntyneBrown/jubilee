@@ -7,7 +7,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-/// <summary>The owner edits a live space from My business (L2-200).</summary>
+/// <summary>The owner edits a live space from My business (L2-208).</summary>
 public sealed class SpaceEditTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private const string Owner = "member|grace";

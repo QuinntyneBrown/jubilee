@@ -79,7 +79,7 @@ line: the exact address when `SpaceAddressRelease.IsReleased(request)` holds
 (kind `Space`, status `Confirmed` or `Completed`; the query loads only the
 member's own request), with the callout "{owner} accepted" and "The address is
 {exact address}."; otherwise "Shared once {owner first name} accepts." A space request completes only when the owner marks
-it fulfilled. See [Request a space](../request-space/README.md) (ADR 0040).
+it fulfilled. See [Request a space](../request-space/README.md) (ADR 0041).
 
 ## Requirements
 
@@ -95,8 +95,8 @@ requirement, cited by identifier.
 | `L2-118` | `L1-016` | Each load-error state shall show a reference the user can quote to support. |
 | `L2-070` | `L1-010` | A notification, message or request event shall reach an open signed-in page within 2 seconds at the 95th percentile over a persistent connection. |
 | `L2-182` | `L1-025` | Each scheduled job shall be idempotent, shall run at most once per schedule across instances, and shall record its last success. |
-| `L2-198` | `L1-027` | A space request shall be listed in Incoming requests with the call to action and the space, "Space · {customer} · {time}" and its dates or move-in, confirmed through a dialog that warns the address is shared, declined as any request, and shown to the member with the type "Space". |
-| `L2-199` | `L1-027` | The exact address shall reach only the member whose space request is `confirmed` or `completed`, and the owner shall see and change it on Edit listing. |
+| `L2-206` | `L1-028` | A space request shall be listed in Incoming requests with the call to action and the space, "Space · {customer} · {time}" and its dates or move-in, confirmed through a dialog that warns the address is shared, declined as any request, and shown to the member with the type "Space". |
+| `L2-207` | `L1-028` | The exact address shall reach only the member whose space request is `confirmed` or `completed`, and the owner shall see and change it on Edit listing. |
 
 ## Diagrams
 

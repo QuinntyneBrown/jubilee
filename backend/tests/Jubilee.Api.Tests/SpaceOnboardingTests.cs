@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-/// <summary>Listing a space (L2-189 to L2-191): its draft, its fields and their validation, submission and review.</summary>
+/// <summary>Listing a space (L2-197 to L2-199): its draft, its fields and their validation, submission and review.</summary>
 public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private const string Address = "27 Curzon St, Toronto ON M4M 3B4";

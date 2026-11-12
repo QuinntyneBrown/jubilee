@@ -34,7 +34,7 @@ end box
 actor -> page : Choose "A space" or open /list?kind=space
 page -> rules : Labels for Long term (default)
 rules --> page : "Price per month", "Move-in date", "Minimum stay"
-page --> actor : "List a space", "Listing title", space fields, no Category (L2-189)
+page --> actor : "List a space", "Listing title", space fields, no Category (L2-197)
 actor -> page : Type the title, line and space fields
 page -> preview : Form values
 preview --> actor : "How renters see it" space card, "Pending verification" (L2-076)
@@ -42,18 +42,18 @@ opt Member chooses another term
   actor -> page : Choose "Short stay"
   page -> rules : Labels for Short stay
   rules --> page : "Price per night", "Available", "Minimum nights"
-  page --> actor : Same values; only labels, choices and household change (L2-190)
+  page --> actor : Same values; only labels, choices and household change (L2-198)
 end
 actor -> page : Press "Save draft"
 page -> client : save(kind space, space)
 client -> controller : PUT /api/listing-drafts/{id}
 controller -> controller : Authenticate and check the caller owns the draft (L2-133)
 controller -> handler : Send SaveListingDraftCommand
-handler -> draft : Save kind Space in rooms-rentals with SpaceDetails, no validation (L2-190)
+handler -> draft : Save kind Space in rooms-rentals with SpaceDetails, no validation (L2-198)
 handler -> db : Save
 db --> handler : Commit result
 handler --> controller : ListingDraftDto with space
 controller --> client : 200 OK
 client --> page : Saved
-page --> actor : Draft saved; reopening restores the term and fields (L2-189)
+page --> actor : Draft saved; reopening restores the term and fields (L2-197)
 @enduml

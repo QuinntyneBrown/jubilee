@@ -31,8 +31,8 @@ public sealed record BusinessCardDto(
 }
 
 /// <summary>
-/// The card of one space (L2-194). Built without the exact address, which no public list carries
-/// (L2-199 AC1).
+/// The card of one space (L2-202). Built without the exact address, which no public list carries
+/// (L2-207 AC1).
 /// </summary>
 public sealed record SpaceCardDto(
     string Slug,
@@ -103,7 +103,7 @@ public sealed record CategoryGroupDto(
     IReadOnlyList<DirectoryRowDto> Businesses);
 
 /// <summary>
-/// "Rooms & places to stay" (L2-192): the live space count and, newest first, the union of the
+/// "Rooms & places to stay" (L2-200): the live space count and, newest first, the union of the
 /// newest four spaces and the newest four of each term, so the term filter needs no request.
 /// </summary>
 public sealed record RoomsShelfDto(int Count, IReadOnlyList<SpaceCardDto> Spaces);

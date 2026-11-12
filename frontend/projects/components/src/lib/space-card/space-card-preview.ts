@@ -12,7 +12,7 @@ import { SpaceCardView } from './space-card';
 import { availability, formatRent, TERM_BADGES, TERM_TILES } from './space-terms';
 
 /**
- * How renters will see a space that is not live yet (L2-189 AC3): the space card, with nothing
+ * How renters will see a space that is not live yet (L2-197 AC3): the space card, with nothing
  * to follow, marked "Pending verification" until it is `verified`.
  *
  *     <div jb-space-card-preview [space]="preview()"></div>

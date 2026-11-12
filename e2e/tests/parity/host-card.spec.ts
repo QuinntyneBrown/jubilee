@@ -1,7 +1,7 @@
 import { parity } from '../../fixtures/parity';
 import { SpacePage } from '../../pages/space.page';
 
-// jb-host-card: who is renting the space, verified with a church reference (L2-196 AC1).
+// jb-host-card: who is renting the space, verified with a church reference (L2-204 AC1).
 parity('host-card', {
   cases: [
     {

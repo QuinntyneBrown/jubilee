@@ -28,7 +28,7 @@ export interface FakeAdmin {
   listing: Record<string, unknown>;
 }
 
-/** A space under review (L2-191 AC3): the fields that replace the business of the default review. */
+/** A space under review (L2-199 AC3): the fields that replace the business of the default review. */
 export const SPACE_REVIEW = {
   name: 'Bright basement apartment in the Annex',
   tagline: 'Quiet one-bedroom with its own entrance, near the subway',

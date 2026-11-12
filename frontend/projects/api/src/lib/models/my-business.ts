@@ -114,7 +114,7 @@ export interface ListingEditor {
   categories: CategoryOption[];
   photos: ListingPhoto[];
   recheckRequested: boolean;
-  /** A space's own fields, with its exact address for its owner (L2-200); absent for a business. */
+  /** A space's own fields, with its exact address for its owner (L2-208); absent for a business. */
   space?: SpaceDraft | null;
 }
 
@@ -129,7 +129,7 @@ export interface ListingChanges {
   hours: string;
   website: string;
   highlight: string;
-  /** A space's own fields (L2-200); omitted for a business. */
+  /** A space's own fields (L2-208); omitted for a business. */
   space?: SpaceDraft;
 }
 

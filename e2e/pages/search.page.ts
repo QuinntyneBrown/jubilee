@@ -11,7 +11,7 @@ export class SearchPage extends ShellPage implements Screen {
   readonly tabButtons: Locator;
   readonly panel: Locator;
   readonly rows: Locator;
-  /** Spaces among the results, as space cards (L2-195). */
+  /** Spaces among the results, as space cards (L2-203). */
   readonly spaceCards: Locator;
   readonly marks: Locator;
   readonly emptyState: Locator;

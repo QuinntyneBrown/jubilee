@@ -225,7 +225,7 @@ export class ListBusinessPage {
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
 
-  // A space (L2-189, L2-190), its fields held by the form the editor shares (L2-200).
+  // A space (L2-197, L2-198), its fields held by the form the editor shares (L2-208).
   private readonly space = new SpaceForm();
   protected readonly termChoices = TERM_CHOICES;
   protected readonly places = PLACES;
@@ -261,7 +261,7 @@ export class ListBusinessPage {
   protected readonly nightly = this.space.nightly;
   protected readonly minimumChoices = this.space.minimumChoices;
   protected readonly householdLabel = this.space.householdLabel;
-  /** How renters will see the space while it is written (L2-189 AC3). */
+  /** How renters will see the space while it is written (L2-197 AC3). */
   protected readonly spacePreview = computed(() => this.space.preview(this.name()));
   protected readonly placeLabel = computed(() =>
     this.isServices() ? 'Area you serve' : 'Store address',
@@ -282,7 +282,7 @@ export class ListBusinessPage {
     this.loading.set(true);
     this.loadFailed.set(false);
     const wanted = this.route.snapshot.queryParamMap.get('draft');
-    // /list?kind=space opens the space form (L2-189 AC2); a saved draft has the last word.
+    // /list?kind=space opens the space form (L2-197 AC2); a saved draft has the last word.
     if (this.route.snapshot.queryParamMap.get('kind') === 'space') this.kind.set('space');
     const source: Observable<ListingDraft | null> =
       wanted === 'new' ? of(null) : wanted ? this.api.get(wanted) : this.api.current();

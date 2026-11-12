@@ -51,7 +51,7 @@ export interface RequestSpaceData {
 type View = 'form' | 'busy' | 'success' | 'failed';
 type FieldName = 'checkIn' | 'checkOut' | 'moveIn' | 'stayMonths' | 'note';
 
-/** The lengths of stay a monthly term offers (L2-197 AC4), in months. */
+/** The lengths of stay a monthly term offers (L2-205 AC4), in months. */
 export const STAY_CHOICES: readonly { months: number; value: string; label: string }[] = [
   { months: 1, value: '1', label: 'Month to month' },
   { months: 4, value: '4', label: '4 months' },
@@ -61,7 +61,7 @@ export const STAY_CHOICES: readonly { months: number; value: string; label: stri
   { months: 18, value: '18', label: '18 months' },
 ];
 
-/** A date can be asked for this far ahead at most (L2-197 AC5). */
+/** A date can be asked for this far ahead at most (L2-205 AC5). */
 const MAX_DAYS_AHEAD = 365;
 const MAX_NOTE = 1000;
 const DAY_MS = 86_400_000;
@@ -69,7 +69,7 @@ const DAY_MS = 86_400_000;
 const SUBMIT_TIMEOUT_MS = 10_000;
 
 /**
- * RequestSpaceDialog (L2-197): a Short stay asks for its check-in and check-out and totals the
+ * RequestSpaceDialog (L2-205): a Short stay asks for its check-in and check-out and totals the
  * stay; any other term asks for the move-in and how long. Nothing is charged, and no price is
  * sent: the server computes it (AC8). A retry reuses the idempotency key (L2-132); each message
  * sits under its field and focus goes to the first invalid one (L2-126).
@@ -186,7 +186,7 @@ export class RequestSpaceDialog implements OnInit {
       });
   }
 
-  /** The browser's rules; the server repeats them (L2-197 AC5, AC6). */
+  /** The browser's rules; the server repeats them (L2-205 AC5, AC6). */
   private check(): Partial<Record<FieldName, string>> {
     const found: Partial<Record<FieldName, string>> = {};
     const day = (field: FieldName, value: string): void => {

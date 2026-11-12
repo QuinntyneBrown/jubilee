@@ -161,7 +161,7 @@ internal static class DemoCatalogue
             ]),
     };
 
-    /// <summary>A space in "Rooms & rentals" (L2-188): its host, what the host says, and its rental details.</summary>
+    /// <summary>A space in "Rooms & rentals" (L2-196): its host, what the host says, and its rental details.</summary>
     internal sealed record DemoSpace(string Slug, string Name, string Tagline, string Host, string About, Func<SpaceDetails> Details);
 
     /// <summary>The live spaces of the design's sample data, one or more per term, newest first.</summary>

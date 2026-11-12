@@ -36,4 +36,4 @@
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
 4. operations, performance, admin: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)
 5. Polish the remaining 70–90% designs: browse home sign-in prompt, church-reference outcome, offline and notification details
-6. Deferred: hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0040)
+6. Deferred: hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0041)

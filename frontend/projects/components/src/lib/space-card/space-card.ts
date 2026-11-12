@@ -3,7 +3,7 @@ import { Icon } from '../icon/icon';
 import { MediaTile } from '../media-tile/media-tile';
 import { availability, formatRent, SpaceTermValue, TERM_BADGES, TERM_TILES } from './space-terms';
 
-/** What a space card shows (L2-194). It never holds an exact address. */
+/** What a space card shows (L2-202). It never holds an exact address. */
 export interface SpaceCardView {
   name: string;
   term: SpaceTermValue;
@@ -20,7 +20,7 @@ let nextId = 0;
 /**
  * A room or rental in a grid: `<a jb-space-card [space]="s" [routerLink]="['/b', s.slug]"></a>`.
  * The rent, the term and where come first. Its accessible name is the title; the term, the rent
- * and the neighbourhood are its description, in words (L2-194 AC3).
+ * and the neighbourhood are its description, in words (L2-202 AC3).
  */
 @Component({
   selector: 'a[jb-space-card]',

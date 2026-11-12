@@ -1,7 +1,7 @@
 import { parity } from '../../fixtures/parity';
 import { SpacePage } from '../../pages/space.page';
 
-// jb-space-facts: up to four key facts of a space as a ruled grid (L2-196 AC1).
+// jb-space-facts: up to four key facts of a space as a ruled grid (L2-204 AC1).
 parity('space-facts', {
   cases: [
     {

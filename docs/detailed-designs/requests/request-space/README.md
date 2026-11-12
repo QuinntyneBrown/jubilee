@@ -36,7 +36,7 @@ listing, and is shown to a member only while that member's space request is
 
 The feature is a vertical slice from `RequestSpaceDialog` in `Jubilee Web` to
 the `Jubilee database`, with notifications dispatched by `Jubilee Worker`. The
-model is fixed by ADR 0040.
+model is fixed by ADR 0041.
 
 - **`RequestSpaceDialog`** (`dialogs/request-space/`) — CDK dialog opened by
   the booking card's call to action, composed of `jb-dialog`, `jb-field`,
@@ -75,14 +75,14 @@ model is fixed by ADR 0040.
   - loads the public listing by slug and answers 404 when it is not a public
     space;
   - refuses the caller's own space with HTTP 409 and code `OWN_LISTING`
-    (`L2-197` AC10);
+    (`L2-205` AC10);
   - refuses a second open (`New` or `Confirmed`) request of the same member
-    for the same space with HTTP 409 and code `ALREADY_REQUESTED` (`L2-197`
+    for the same space with HTTP 409 and code `ALREADY_REQUESTED` (`L2-205`
     AC9);
   - validates the fields itself, in `America/Toronto` dates, and answers HTTP
     422 with `errors` {field: code} (table below);
   - computes the nights or months, and for a Short stay the total, from the
-    stored rent (`L2-197` AC8), and creates the request with
+    stored rent (`L2-205` AC8), and creates the request with
     `Request.AskForSpace`;
   - tells the owner with an in-app notification ("New space request from
     {customer}") and a queued e-mail (`EmailPolicy.Queue`) that says the exact
@@ -122,7 +122,7 @@ model is fixed by ADR 0040.
   The owner's row reads "Space · {customer} · {time}" with the detail
   `SpaceWhen` and `SpaceTotal` joined by " · ".
 - **Owner side** — `ListIncomingRequestsQueryHandler` lists space requests
-  with the wording above and "Decline" and "Confirm" (`L2-198` AC1).
+  with the wording above and "Decline" and "Confirm" (`L2-206` AC1).
   `ConfirmRequestDialog` for a space reads "Confirm {customer}'s request?"
   with "Only confirm if the space is free then. {Customer} gets your exact
   address when you confirm.", lists Customer, When and (Short stay) Total, and
@@ -148,7 +148,7 @@ model is fixed by ADR 0040.
 
   The rule runs on every read, so an address changed later reaches the
   accepted renter only, and a cancelled request stops showing it. Nothing is
-  copied onto the request (`L2-199`).
+  copied onto the request (`L2-207`).
 - **Notifications and e-mail** — the owner's notification and e-mail, and the
   member's confirmed and declined notifications, use the space wording. None
   carries the exact address; the member reads it on the request detail.
@@ -160,21 +160,21 @@ differ or leave a gap.
 
 - **Dates in a dialog** — the design draws the dates inside the booking card;
   AGENTS.md forbids inline forms in pages, so they are in `dialogs/request-space`
-  (ADR 0040).
+  (ADR 0041).
 - **Endpoint shape** — space requests post to `POST /api/requests/spaces` on
   the existing `RequestsController`, like bookings, quotes and orders, and name
   the space by `listingSlug` in the body.
 - **Own space** — refused with HTTP 409 `OWN_LISTING`, the status and code the
-  other request kinds already use for an owner's own listing, where `L2-197`
+  other request kinds already use for an owner's own listing, where `L2-205`
   AC10 says HTTP 403. `<TO SUPPLY>`: align the requirement or the code.
 - **A second open request** — the page hides the call to action while a request
   is open, and the server also refuses a second open request with HTTP 409
-  `ALREADY_REQUESTED`, so two tabs cannot send two (`L2-197` AC9).
+  `ALREADY_REQUESTED`, so two tabs cannot send two (`L2-205` AC9).
 - **Completion** — a space request has no end time that a job could use, so it
   completes only when the owner marks it fulfilled.
 - **Hourly rent** — deferred; a Short stay is counted in nights.
 - **No calendar checks** — overlapping requests for the same dates are not
-  detected; the owner confirms only if the space is free (ADR 0040).
+  detected; the owner confirms only if the space is free (ADR 0041).
 
 ## Requirements
 
@@ -183,9 +183,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-197` | `L1-027` | A member shall send the space request of the term from a dialog with the term's dates and an optional note, validated against today, the next year and the minimum stay; the server shall compute nights, months and the Short stay total from the stored rent, refuse the owner's own space with 403 and a second open request of the same member with 409 `ALREADY_REQUESTED`, and the request shall be `new`, notify the owner and appear in the member's requests. |
-| `L2-198` | `L1-027` | A space request shall be listed in Incoming requests with the call to action and the space, "Space · {customer} · {time}" and its dates or move-in, confirmed through a dialog that warns the address is shared, declined as any request, and shown to the member with the type "Space", When and the Short stay Total. |
-| `L2-199` | `L1-027` | The exact address shall reach only the member whose space request is `confirmed` or `completed`; every public endpoint, every other member and the verification team shall never receive it, and the owner shall see and change it on Edit listing. |
+| `L2-205` | `L1-028` | A member shall send the space request of the term from a dialog with the term's dates and an optional note, validated against today, the next year and the minimum stay; the server shall compute nights, months and the Short stay total from the stored rent, refuse the owner's own space with 403 and a second open request of the same member with 409 `ALREADY_REQUESTED`, and the request shall be `new`, notify the owner and appear in the member's requests. |
+| `L2-206` | `L1-028` | A space request shall be listed in Incoming requests with the call to action and the space, "Space · {customer} · {time}" and its dates or move-in, confirmed through a dialog that warns the address is shared, declined as any request, and shown to the member with the type "Space", When and the Short stay Total. |
+| `L2-207` | `L1-028` | The exact address shall reach only the member whose space request is `confirmed` or `completed`; every public endpoint, every other member and the verification team shall never receive it, and the owner shall see and change it on Edit listing. |
 | `L2-043` | `L1-007` | Each booking, quote, order and space request shall follow one lifecycle shared by the member's and the owner's views. |
 | `L2-052` | `L1-008` | The owner shall confirm a request through a confirmation dialog, with an undo for a short time. |
 | `L2-053` | `L1-008` | The owner shall decline a request with an optional reason and message. |
