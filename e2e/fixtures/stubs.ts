@@ -2,13 +2,7 @@ import type { Page, Route } from '@playwright/test';
 import { categories } from './categories';
 import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './mock-data';
 import { fulfil, recordedAnswer } from './mock-api';
-import {
-  legacyMessages,
-  ownerRows,
-  photoMessages,
-  requestCards,
-  stubMessaging,
-} from './messaging';
+import { legacyMessages, ownerRows, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
 import { SPACE_REVIEW, stubAdmin } from './admin';
 import { daniel, stubStaff } from './staff';

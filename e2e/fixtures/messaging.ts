@@ -88,7 +88,14 @@ export const manyRows = (count: number): FakeRow[] => [
   ...Array.from({ length: count - 4 }, (_, index) => {
     const number = String(index + 1).padStart(2, '0');
     const at = new Date(Date.parse('2026-10-20T15:00:00Z') - index * 3_600_000).toISOString();
-    return row(`c-${number}`, `Business ${number}`, `business-${number}`, 'See you soon.', at, false);
+    return row(
+      `c-${number}`,
+      `Business ${number}`,
+      `business-${number}`,
+      'See you soon.',
+      at,
+      false,
+    );
   }),
 ];
 
@@ -98,7 +105,13 @@ export const manyRows = (count: number): FakeRow[] => [
  */
 export const ownerRows = (): FakeRow[] => {
   const [legacy, , books] = inboxRows();
-  const withLuzandre = (id: string, member: string, preview: string, at: string, unread: boolean) => ({
+  const withLuzandre = (
+    id: string,
+    member: string,
+    preview: string,
+    at: string,
+    unread: boolean,
+  ) => ({
     ...row(id, member, 'luzandre-com', preview, at, unread),
     businessName: 'Luzandre.com',
   });

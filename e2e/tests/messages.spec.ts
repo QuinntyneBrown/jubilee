@@ -470,7 +470,9 @@ test.describe('a conversation (L2-057)', () => {
     await expect(stillReading).toContainText('Later message 1');
     await expect(stillReading).toBeInViewport();
     // Fifty messages were added above it, and it has not moved on the screen.
-    await expect.poll(() => conversation.screenTop(stillReading)).toBeGreaterThanOrEqual(before - 2);
+    await expect
+      .poll(() => conversation.screenTop(stillReading))
+      .toBeGreaterThanOrEqual(before - 2);
     await expect.poll(() => conversation.screenTop(stillReading)).toBeLessThanOrEqual(before + 2);
     await expect(conversation.bubbles.first()).toContainText('Earlier message 1');
     await expect(conversation.bubbles.first()).not.toBeInViewport();
