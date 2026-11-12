@@ -24,6 +24,7 @@ import {
   InlineStatus,
   Card,
   Row,
+  RowActions,
   RowMeta,
   RowTitle,
   Rows,
@@ -38,6 +39,8 @@ import {
 } from '../../dialogs/change-password/change-password.dialog';
 import { DeleteAccountDialog } from '../../dialogs/delete-account/delete-account.dialog';
 import { LeaveUnsavedDialog } from '../../dialogs/leave-unsaved/leave-unsaved.dialog';
+import { SignOutDialog } from '../../dialogs/sign-out/sign-out.dialog';
+import { SignOutOthersDialog } from '../../dialogs/sign-out-others/sign-out-others.dialog';
 import { HasUnsavedChanges } from '../../guards/unsaved-changes.guard';
 import { LoadState, errorReference } from 'api';
 import { clockTime, dayLabel, fullDate, monthYear } from 'api';
@@ -90,6 +93,7 @@ const MESSAGES: Record<string, string> = {
     Card,
     Row,
     RowMeta,
+    RowActions,
     RowTitle,
     Rows,
     PageHeader,
@@ -118,6 +122,13 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
   protected readonly homeChurchAddress = signal('');
   protected readonly pronouns = signal('');
   protected readonly saving = signal(false);
+  protected readonly otherSessions = this.session.otherSessionCount;
+  /** Where the member is signed in, counted by the server (L2-011 AC4, AC6). */
+  protected readonly signedInOn = computed(() => {
+    const others = this.otherSessions();
+    if (others === 0) return 'Signed in on this phone only';
+    return `Signed in on this phone and ${others} other device${others === 1 ? '' : 's'}`;
+  });
   protected readonly problems = signal<Problem[]>([]);
   protected readonly failed = signal(false);
   protected readonly savedNow = signal<string | null>(null);
@@ -331,6 +342,33 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
       backdropClass: 'backdrop',
       restoreFocus: opener,
     });
+  }
+
+  /** "Sign out" on the account page asks first, like the account menu (L2-011 AC1). */
+  protected signOut(opener: HTMLElement): void {
+    this.dialog.open(SignOutDialog, {
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+      restoreFocus: opener,
+    });
+  }
+
+  /** "Sign out of other devices" (L2-011 AC4, AC5): asks, ends them, and says so. */
+  protected signOutOthers(opener: HTMLElement): void {
+    this.dialog
+      .open<boolean>(SignOutOthersDialog, {
+        ariaLabelledBy: 'dlg-title',
+        ariaDescribedBy: 'dlg-desc',
+        ariaModal: true,
+        backdropClass: 'backdrop',
+        restoreFocus: opener,
+      })
+      .closed.subscribe((ended) => {
+        if (ended)
+          this.toasts.show({ tone: 'success', title: 'Your other devices were signed out' });
+      });
   }
 
   protected changePassword(opener: HTMLElement): void {

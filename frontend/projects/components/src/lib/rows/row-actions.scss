@@ -9,6 +9,8 @@
 @media (max-width: 39.99rem) {
   :host-context(.row--stack) {
     flex-basis: 100%;
+    // Two long actions each take a line of their own.
+    flex-wrap: wrap;
     --jb-btn-flex: 1;
   }
 }

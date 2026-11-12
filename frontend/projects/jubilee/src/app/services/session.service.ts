@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Member, SESSION_API, SessionDto, SignInRequest } from 'api';
-import { catchError, map, of, tap, Observable } from 'rxjs';
+import { catchError, map, of, switchMap, tap, Observable } from 'rxjs';
 
 export type SessionState =
   { status: 'resolving' } | { status: 'visitor' } | { status: 'member'; member: Member };
@@ -30,6 +30,7 @@ export class SessionService {
   private readonly current = signal<SessionState>({ status: 'resolving' });
   private readonly google = signal(false);
   private readonly challengeKey = signal<string | null>(null);
+  private readonly others = signal(0);
 
   readonly state = this.current.asReadonly();
   readonly member = computed(() => {
@@ -46,6 +47,8 @@ export class SessionService {
   readonly googleSignIn = this.google.asReadonly();
   /** The site key of the bot challenge; null when the join form has none (L2-137 AC2). */
   readonly botChallengeSiteKey = this.challengeKey.asReadonly();
+  /** How many other sessions the member has, as the server last reported it (L2-011 AC4). */
+  readonly otherSessionCount = this.others.asReadonly();
 
   constructor() {
     // Confirming the address in another tab clears the banner when this tab is focused (L2-005 AC4).
@@ -61,6 +64,7 @@ export class SessionService {
       tap((dto) => {
         this.google.set(dto.googleSignIn === true);
         this.challengeKey.set((!dto.signedIn && dto.botChallengeSiteKey) || null);
+        this.others.set((dto.signedIn && dto.otherSessionCount) || 0);
       }),
       map(toState),
       catchError(() => of<SessionState>({ status: 'visitor' })),
@@ -71,6 +75,7 @@ export class SessionService {
   /** Signs in (L2-006). Errors reach the caller: the page words them. */
   signIn(request: SignInRequest): Observable<SessionState> {
     return this.api.signIn(request).pipe(
+      tap((dto) => this.others.set((dto.signedIn && dto.otherSessionCount) || 0)),
       map(toState),
       tap((state) => this.current.set(state)),
     );
@@ -79,6 +84,17 @@ export class SessionService {
   /** Signs out of this session only (L2-011 AC2). */
   signOut(): Observable<void> {
     return this.api.signOut().pipe(tap(() => this.current.set({ status: 'visitor' })));
+  }
+
+  /**
+   * Ends every other session of the member (L2-011 AC5), then reads the session again: the count
+   * shown afterwards is the server's, never assumed.
+   */
+  signOutOthers(): Observable<void> {
+    return this.api.signOutOthers().pipe(
+      switchMap(() => this.resolve()),
+      map(() => undefined),
+    );
   }
 
   /** The server ended the session (L2-116): the app no longer treats the user as a member. */

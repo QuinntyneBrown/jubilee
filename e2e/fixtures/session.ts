@@ -92,7 +92,10 @@ export async function stubSession(
 }
 
 /** Answers every call that matches with 401 `SESSION_EXPIRED`, as the API does once a session has ended (L2-116). */
-export async function refuseAsExpired(page: Page, url: string | RegExp): Promise<{ count: number }> {
+export async function refuseAsExpired(
+  page: Page,
+  url: string | RegExp,
+): Promise<{ count: number }> {
   const seen = { count: 0 };
   await page.route(url, (route) => {
     seen.count++;

@@ -27,6 +27,12 @@ export class AccountPage extends ShellPage implements Screen {
   readonly changeEmail: Locator;
   readonly passwordRow: Locator;
   readonly changePassword: Locator;
+  /** The "Sign out" row of "Sign-in and security" (L2-011 AC4). */
+  readonly signOutRow: Locator;
+  /** What the row says about where the member is signed in. */
+  readonly signedInOn: Locator;
+  readonly signOutOthers: Locator;
+  readonly signOut: Locator;
   readonly errorState: Locator;
   readonly tryAgain: Locator;
   readonly sectionTabs: Locator;
@@ -65,6 +71,12 @@ export class AccountPage extends ShellPage implements Screen {
     this.changePassword = this.main.getByRole('button', {
       name: /^(Change password|Set a password)$/,
     });
+    this.signOutRow = this.main
+      .locator('li.row')
+      .filter({ has: page.locator('.row__title', { hasText: /^Sign out$/ }) });
+    this.signedInOn = this.signOutRow.locator('.row__meta');
+    this.signOutOthers = this.signOutRow.getByRole('button', { name: 'Sign out of other devices' });
+    this.signOut = this.signOutRow.getByRole('button', { name: 'Sign out', exact: true });
     this.errorState = this.main.getByRole('alert').filter({ hasText: 'JB-ACC-503' });
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.sectionTabs = this.main.getByRole('navigation', { name: 'Account sections' });
@@ -86,5 +98,20 @@ export class AccountPage extends ShellPage implements Screen {
 
   regions(): Region[] {
     return [...this.chromeRegions(), { name: 'main', locator: this.main }];
+  }
+}
+
+/** The account after the other devices were signed out; the state has no address, so the screen signs them out. */
+export class AccountOthersSignedOutScreen extends AccountPage {
+  override async ready(): Promise<void> {
+    await super.ready();
+    // The mock is drawn in the state already.
+    if ((await this.signedInOn.textContent())?.includes('only')) return;
+    await this.signOutOthers.click();
+    await this.page
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Sign out of other devices' })
+      .click();
+    await this.page.locator('.toast').waitFor();
   }
 }

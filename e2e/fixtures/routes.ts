@@ -41,6 +41,11 @@ export type StubName =
   | 'search-start'
   | 'search-spaces'
   | 'google-sign-in-off'
+  | 'profile-this-device-only'
+  | 'profile-other-devices'
+  | 'profile-other-devices-pending'
+  | 'profile-other-devices-failing'
+  | 'message-draft-restored'
   | 'sign-in-failing'
   | 'sign-in-pending'
   | 'launch-notify-pending'
@@ -388,6 +393,12 @@ export const routes = {
     app: '/b/legacy-financial/message',
     mock: 'dialogs/new-message/default.html',
     who: 'member',
+  },
+  'new-message.restored': {
+    app: '/b/legacy-financial/message',
+    mock: 'dialogs/new-message/restored.html',
+    who: 'member',
+    stub: 'message-draft-restored',
   },
   'book-meeting': {
     app: '/b/legacy-financial/book',
@@ -907,6 +918,36 @@ export const routes = {
     stub: 'reset-password-error',
   },
   account: { app: '/account', mock: 'pages/account/default.html', who: 'member', stub: 'profile' },
+  'account.this-device-only': {
+    app: '/account',
+    mock: 'pages/account/this-device-only.html',
+    who: 'member',
+    stub: 'profile-this-device-only',
+  },
+  'account.others-signed-out': {
+    app: '/account',
+    mock: 'pages/account/others-signed-out.html',
+    who: 'member',
+    stub: 'profile-other-devices',
+  },
+  'sign-out-others': {
+    app: '/account',
+    mock: 'dialogs/sign-out-others/default.html',
+    who: 'member',
+    stub: 'profile-other-devices',
+  },
+  'sign-out-others.busy': {
+    app: '/account',
+    mock: 'dialogs/sign-out-others/busy.html',
+    who: 'member',
+    stub: 'profile-other-devices-pending',
+  },
+  'sign-out-others.failed': {
+    app: '/account',
+    mock: 'dialogs/sign-out-others/failed.html',
+    who: 'member',
+    stub: 'profile-other-devices-failing',
+  },
   'account.data-requested': {
     app: '/account',
     mock: 'pages/account/data-requested.html',

@@ -210,6 +210,33 @@
               {{ account.hasPassword ? 'Change password' : 'Set a password' }}
             </button>
           </li>
+          <li jb-row stack>
+            <div jb-row-title>Sign out</div>
+            <div jb-row-meta>{{ signedInOn() }}</div>
+
+            <div slot="trailing" jb-row-actions>
+              @if (otherSessions() > 0) {
+                <button
+                  #signOutOthersButton
+                  jb-button
+                  size="sm"
+                  type="button"
+                  (click)="signOutOthers(signOutOthersButton.element)"
+                >
+                  Sign out of other devices
+                </button>
+              }
+              <button
+                #signOutButton
+                jb-button
+                size="sm"
+                type="button"
+                (click)="signOut(signOutButton.element)"
+              >
+                <svg jb-icon name="sign-out"></svg>Sign out
+              </button>
+            </div>
+          </li>
         </ul>
       </section>
       <section
