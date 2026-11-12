@@ -76,15 +76,16 @@ until one exists.
   in their handlers. Each has its own fixed window of 5 an hour per address
   (`RateLimits:LaunchSignUpsPerHour`, `RateLimits:LaunchPreRegistrationsPerHour`). They carry no
   session cookie, so the anti-CSRF token does not apply to them (0013, server-side sessions).
-- **Two entities, two tables, one migration.** `LaunchSubscriber` (`LaunchSubscribers`: id, e-mail,
+- **Two entities, two tables, a migration each.** `LaunchSubscriber` (`LaunchSubscribers`: id, e-mail,
   its lower-cased key with a unique index, optional first name, the consent time and method, the
   time it was created) and `BusinessPreRegistration` (`BusinessPreRegistrations`: id, business name,
   contact name, e-mail and its key, optional phone, category slug, area, optional website,
   description, the consent time and method, the time it was created). Consent is stored on the row
   it belongs to: `ConsentRecord` is tied to a member, and these people have no account. The method
   is the new `ConsentMethod.MarketingSiteForm`. A repeat sign-up finds the key and changes nothing.
-  A pre-registration is stored every time: one owner may have two businesses. The migration is
-  `AddLaunchSignUps`; `jubilee migrate` applies it, never the API.
+  A pre-registration is stored every time: one owner may have two businesses. The migrations are
+  `AddLaunchSubscribers` and `AddBusinessPreRegistrations`, one with each slice; `jubilee migrate`
+  applies them, never the API.
 - **The team reads the submissions with the CLI, and hears of a business by e-mail.**
   `jubilee launch list --kind notifications|businesses` prints comma-separated values with a header
   row and writes an audit record (`launch.list`, the kind and the count). When `Launch:TeamEmail`

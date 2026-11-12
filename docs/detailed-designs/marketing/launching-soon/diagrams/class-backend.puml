@@ -1,0 +1,147 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Launching soon (backend)
+
+enum ConsentMethod {
+  .. existing values ..
+  MarketingSiteForm
+}
+
+class LaunchSubscriber {
+  +Guid Id
+  +string Email
+  +string EmailKey <<unique>>
+  +string? FirstName
+  +DateTimeOffset ConsentedAt
+  +ConsentMethod ConsentMethod
+  +DateTimeOffset CreatedAt
+}
+
+class BusinessPreRegistration {
+  +Guid Id
+  +string BusinessName
+  +string ContactName
+  +string Email
+  +string EmailKey
+  +string? Phone
+  +string CategorySlug
+  +string Area
+  +string? Website
+  +string Description
+  +DateTimeOffset ConsentedAt
+  +ConsentMethod ConsentMethod
+  +DateTimeOffset CreatedAt
+}
+
+class LaunchSettings {
+  +string? TeamEmail
+}
+
+class SignUpForLaunchCommand
+class SignUpForLaunchCommandHandler {
+  validates e-mail, first name and consent
+  finds LaunchSubscriber by EmailKey
+  stores one row for a new key
+}
+class PreRegisterBusinessCommand
+class PreRegisterBusinessCommandHandler {
+  validates the eight fields and consent
+  stores a row every time
+  queues the team's e-mail when TeamEmail is set
+}
+class ListLaunchSubmissionsQuery {
+  kind: notifications or businesses
+}
+class ListLaunchSubmissionsQueryHandler {
+  answers CSV lines with a header row
+  writes AuditRecord launch.list
+}
+class PurgeLaunchDataCommand
+class PurgeLaunchDataCommandHandler {
+  deletes rows older than 12 months
+  answers the two counts
+}
+
+class ValidationFailedException {
+  one code per field
+}
+
+interface IAppDbContext {
+  +DbSet<LaunchSubscriber> LaunchSubscribers
+  +DbSet<BusinessPreRegistration> BusinessPreRegistrations
+  .. existing sets ..
+  OutboxMessages, AuditRecords
+}
+class AppDbContext
+class OutboxMessage
+class AuditRecord
+
+interface IBotChallengeVerifier {
+  +VerifyAsync(token: string?, remoteIp: string?, cancellationToken): Task<bool>
+}
+
+class LaunchRateLimit <<static>> {
+  +{static} string SignUps
+  +{static} string PreRegistrations
+  5 per address per hour each
+}
+
+class LaunchController {
+  [Route("api/launch")], [AllowAnonymous]
+  --
+  GET /api/launch: 200 { botChallengeSiteKey? }
+  POST /api/launch/notifications: 202
+  POST /api/launch/businesses: 202
+}
+
+class LaunchRetentionJob {
+  runs once a day
+  logs counts only
+}
+
+class "jubilee launch list" as LaunchListCommand <<Cli>> {
+  --kind notifications|businesses
+}
+
+LaunchSubscriber --> "1" ConsentMethod
+BusinessPreRegistration --> "1" ConsentMethod
+AppDbContext ..|> IAppDbContext
+IAppDbContext o-- "0..*" LaunchSubscriber
+IAppDbContext o-- "0..*" BusinessPreRegistration
+
+LaunchController ..> IBotChallengeVerifier : verifies the challenge first with
+LaunchController ..> LaunchRateLimit : limited by
+LaunchController ..> SignUpForLaunchCommand : sends
+LaunchController ..> PreRegisterBusinessCommand : sends
+
+SignUpForLaunchCommandHandler ..> SignUpForLaunchCommand : handles
+PreRegisterBusinessCommandHandler ..> PreRegisterBusinessCommand : handles
+ListLaunchSubmissionsQueryHandler ..> ListLaunchSubmissionsQuery : handles
+PurgeLaunchDataCommandHandler ..> PurgeLaunchDataCommand : handles
+
+SignUpForLaunchCommandHandler ..> LaunchSubscriber : creates
+SignUpForLaunchCommandHandler ..> ValidationFailedException : throws
+PreRegisterBusinessCommandHandler ..> BusinessPreRegistration : creates
+PreRegisterBusinessCommandHandler ..> ValidationFailedException : throws
+PreRegisterBusinessCommandHandler ..> LaunchSettings : reads
+PreRegisterBusinessCommandHandler ..> OutboxMessage : queues an e-mail as
+ListLaunchSubmissionsQueryHandler ..> AuditRecord : writes
+SignUpForLaunchCommandHandler ..> IAppDbContext
+PreRegisterBusinessCommandHandler ..> IAppDbContext
+ListLaunchSubmissionsQueryHandler ..> IAppDbContext
+PurgeLaunchDataCommandHandler ..> IAppDbContext
+
+LaunchRetentionJob ..> PurgeLaunchDataCommand : sends daily
+LaunchListCommand ..> ListLaunchSubmissionsQuery : sends
+@enduml

@@ -13,8 +13,13 @@ visitor can jump to.
 
 `Jubilee Marketing` is a second Angular application in the frontend workspace
 (`frontend/projects/marketing`). It shares the design tokens and the bundled Archivo font with
-`Jubilee Web` through the `components` library, and nothing else: it has no router, no session
-and no API client (ADR 0013).
+`Jubilee Web` through the `components` library, and nothing else: it has no router and no session (ADR 0013).
+
+While Jubilee is launching soon (`L1-030`), the page is in its launching-soon state, described in
+[`../launching-soon/README.md`](../launching-soon/README.md): it holds two forms, has an API
+client for `/api/launch` on its own origin and links nowhere outside itself (ADR 0044, which
+amends ADR 0013). `L2-185` is suspended until launch, except its criterion 3. What this design
+says of links to the app describes the launched state, which returns at launch.
 
 ## Description
 
@@ -43,9 +48,11 @@ and no API client (ADR 0013).
   count of businesses. They are editorial content taken from the design reference, not read
   from the directory.
 - **`APP_URL`** — injection token for the address of `Jubilee Web`; every link to the app is
-  built from it (L2-185 AC4). It is provided once in `app.config.ts` from `environment.ts`.
+  built from it (L2-185 AC4). It is removed, with `app-url.ts` and the environment files, until
+  launch: the launching-soon page has no link to the app (ADR 0044).
 
-Nothing is loaded from another host. `npm run media:sync` copies the photos from
+Nothing is loaded from another host, except the bot challenge's script when a site key is
+configured (ADR 0044). `npm run media:sync` copies the photos from
 `docs/assets/photos/` into `photos/` and the film from
 `docs/videos/01-jubilee-pitch/01-jubilee-pitch.mp4` to `media/jubilee-pitch.mp4`; Inter is
 bundled beside Archivo (`docs/design-system/assets/fonts/Inter.woff2`, copied to
@@ -59,15 +66,17 @@ level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-183` | `L1-026` | The marketing home page shall show the top bar, the opening with a glimpse of the app, the film section, the mission statement of L0-001, the benefits, the steps, five business cards, the section for businesses, the closing and the footer, with the copy of the design reference. |
+| `L2-183` | `L1-026` | The marketing home page shall show the top bar with "Launching soon", the opening with the label "Launching soon" and a preview of the app that states no count and no reply time, the film section, the mission statement of L0-001, the benefits, the steps, five business cards that are not links, the section for businesses, "Be listed on launch day.", "Jubilee is launching soon." and the footer. |
 | `L2-184` | `L1-026` | The film section shall show a still with a play button and the film's length until the visitor presses play, shall play the film with the browser's controls, and shall let the visitor jump to one of three chapters. |
-| `L2-185` | `L1-026` | Every action that leaves the marketing site shall open the app at one configured address: the browse home, or joining with a return to listing a business. Top bar links shall move within the page. |
-| `L2-186` | `L1-026`, `L1-022`, `L1-023` | The marketing site shall be its own application without sign-in or API calls, in the light theme, usable from 360 px to 1280 px and by keyboard, and shall respect reduced motion. |
+| `L2-185` | `L1-026` | Suspended while Jubilee is launching soon (`L1-030`, ADR 0044), except that top bar links shall move within the page. At launch: every action that leaves the marketing site shall open the app at one configured address: the browse home, or joining with a return to listing a business. |
+| `L2-186` | `L1-026`, `L1-022`, `L1-023` | The marketing site shall be its own application with no sign-in; rendering it shall call nothing but `GET /api/launch` on its own origin, and while Jubilee is launching soon it shall also send the two forms to the Jubilee API on its own origin and call nothing else; it shall use the light theme, be usable from 360 px to 1280 px and by keyboard, and respect reduced motion. |
 
 ## Diagrams
 
 PlantUML source: [`diagrams/c4-container.puml`](diagrams/c4-container.puml) (not rendered: no
 PlantUML on the machine that wrote this design).
 
-`Jubilee Marketing` is a static site in the visitor's browser. It links to `Jubilee Web` and
-serves its photos, fonts and film from its own origin. It never calls `Jubilee API`.
+In its launched state `Jubilee Marketing` links to `Jubilee Web` and serves its photos, fonts
+and film from its own origin. While Jubilee is launching soon it has no link to `Jubilee Web` and
+calls `/api/launch` on its own origin; that container view is in
+[`../launching-soon/README.md`](../launching-soon/README.md).
