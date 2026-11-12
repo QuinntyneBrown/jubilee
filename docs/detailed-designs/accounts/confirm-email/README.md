@@ -44,7 +44,7 @@ dialog to the `Jubilee database`.
   a `button` and raises the output `changeEmail`; "Send it again" raises
   `resend`. The `limited` state has the warning tone, shows "You’re doing that
   a lot. Try again in {n} minutes." and offers no "Send it again"; it is not
-  remembered across a reload (ADR 0047). The bounced state has the danger tone
+  remembered across a reload (ADR 0048). The bounced state has the danger tone
   and shows "We couldn’t deliver e-mail to {address}. Check the address for a
   typo." with "Change e-mail". The confirmed state shows "E-mail confirmed.
   You can now message businesses and book meetings." and can be dismissed.
@@ -57,7 +57,7 @@ dialog to the `Jubilee database`.
 - **`ChangeUnconfirmedEmailDialog`** (`jb-change-unconfirmed-email-dialog`) —
   CDK dialog titled "Use another e-mail", in
   `frontend/projects/jubilee/src/app/dialogs/change-unconfirmed-email/`. It
-  asks for "New e-mail" and no password (ADR 0047). An empty field shows
+  asks for "New e-mail" and no password (ADR 0048). An empty field shows
   "Enter the e-mail you want to use."; a malformed address, found in the
   browser or answered `422` with `EMAIL_INVALID`, shows "Enter a full e-mail
   address, like name@example.com." While the address is being sent the button
@@ -144,7 +144,7 @@ dialog to the `Jubilee database`.
   named `token` is written as `[redacted]`; on an unmatched route any path
   segment of 40 characters or more is. The confirmation token travels in the
   request body, and request bodies, query strings and the session cookie are
-  never logged (`L2-140`, ADR 0047).
+  never logged (`L2-140`, ADR 0048).
 - **Session cookie** — the authenticated endpoints of the slice read the
   member from the cookie `__Host-jubilee.session` (`Secure`, `HttpOnly`,
   `SameSite=Lax`, `Path=/`), named and configured by `MemberSessionCookie`;
