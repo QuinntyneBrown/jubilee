@@ -261,6 +261,24 @@ public sealed class Listing
 
     public void SetMeetingDays(int days) => MeetingDays = days;
 
+    /// <summary>The time of day in Toronto from which meetings are offered; null until the owner saves meeting hours (L2-220).</summary>
+    public TimeOnly? MeetingOpensAt { get; private set; }
+
+    /// <summary>The time of day in Toronto by which a meeting ends; null until the owner saves meeting hours.</summary>
+    public TimeOnly? MeetingClosesAt { get; private set; }
+
+    /// <summary>How often a time is offered, in minutes; null until the owner saves meeting hours.</summary>
+    public int? MeetingSlotMinutes { get; private set; }
+
+    /// <summary>The owner says when meetings can be booked (L2-220). Requests already sent are not touched.</summary>
+    public void SetMeetingHours(int days, TimeOnly opensAt, TimeOnly closesAt, int slotMinutes)
+    {
+        MeetingDays = days;
+        MeetingOpensAt = opensAt;
+        MeetingClosesAt = closesAt;
+        MeetingSlotMinutes = slotMinutes;
+    }
+
     /// <summary>At or above this item amount a shop ships free; null when it never does (L2-046 AC4).</summary>
     public int? FreeShippingOverCents { get; private set; }
 

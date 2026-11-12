@@ -63,10 +63,31 @@ public static class BookingAvailability
         return day >= today && day <= today.AddDays(MaxDaysAhead) && listing.MeetsOn(day.DayOfWeek);
     }
 
-    public static IReadOnlyList<string> SlotsFor(Listing listing, DateOnly day, DateTimeOffset now) =>
+    /// <summary>
+    /// The start times of a day for a meeting of <paramref name="length"/>. An owner who saved meeting hours (L2-220)
+    /// offers one every slot length from the opening time, while the meeting ends by the closing time; otherwise the
+    /// default times stand. Today offers only the times still ahead.
+    /// </summary>
+    public static IReadOnlyList<string> SlotsFor(Listing listing, TimeSpan length, DateOnly day, DateTimeOffset now) =>
         !IsOffered(listing, day, now)
             ? []
-            : [.. DefaultSlots.Where(slot => TorontoClock.At(day, TimeOnly.Parse(slot, CultureInfo.InvariantCulture)) > now)];
+            : [.. StartsOf(listing, length).Where(slot => TorontoClock.At(day, slot) > now).Select(slot => slot.ToString("HH:mm", CultureInfo.InvariantCulture))];
+
+    private static IEnumerable<TimeOnly> StartsOf(Listing listing, TimeSpan length)
+    {
+        if (listing is not { MeetingOpensAt: { } opens, MeetingClosesAt: { } closes, MeetingSlotMinutes: { } every and > 0 })
+        {
+            return DefaultSlots.Select(slot => TimeOnly.Parse(slot, CultureInfo.InvariantCulture));
+        }
+
+        var starts = new List<TimeOnly>();
+        for (var start = opens.ToTimeSpan(); start + length <= closes.ToTimeSpan(); start += TimeSpan.FromMinutes(every))
+        {
+            starts.Add(TimeOnly.FromTimeSpan(start));
+        }
+
+        return starts;
+    }
 
     /// <summary>The length of a meeting for a service whose detail says, for example, "60 min".</summary>
     public static TimeSpan LengthOf(Service service) =>
@@ -143,14 +164,15 @@ public sealed class GetAvailabilityQueryHandler(IAppDbContext db, TimeProvider c
     public async Task<AvailabilityDto> Handle(GetAvailabilityQuery request, CancellationToken cancellationToken)
     {
         var listing = await Bookable.PublicListing(db, request.Slug, cancellationToken);
-        await Bookable.BookableService(db, listing, request.ServiceId, cancellationToken);
+        var service = await Bookable.BookableService(db, listing, request.ServiceId, cancellationToken);
         if (!BookingAvailability.TryParseDay(request.Day, out var day))
         {
             return new AvailabilityDto(request.Day ?? string.Empty, false, []);
         }
 
         var now = clock.GetUtcNow();
-        return new AvailabilityDto(request.Day!, BookingAvailability.IsOffered(listing, day, now), BookingAvailability.SlotsFor(listing, day, now));
+        return new AvailabilityDto(request.Day!, BookingAvailability.IsOffered(listing, day, now),
+            BookingAvailability.SlotsFor(listing, BookingAvailability.LengthOf(service), day, now));
     }
 }
 
@@ -207,7 +229,7 @@ public sealed class BookMeetingCommandHandler(IAppDbContext db, TimeProvider clo
         }
 
         var time = command.Time!.Trim();
-        if (!BookingAvailability.SlotsFor(listing, day, now).Contains(time))
+        if (!BookingAvailability.SlotsFor(listing, BookingAvailability.LengthOf(service), day, now).Contains(time))
         {
             throw new ValidationFailedException(new Dictionary<string, string> { ["time"] = "TIME_UNAVAILABLE" });
         }

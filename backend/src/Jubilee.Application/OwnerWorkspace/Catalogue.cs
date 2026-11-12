@@ -48,7 +48,8 @@ public sealed record OwnerServiceRowDto(
     bool OffersInPerson,
     string? InPersonPlace);
 
-public sealed record ServicesDto(string Business, string Slug, string Subtitle, bool Live, int Total, int Max, IReadOnlyList<OwnerServiceRowDto> Rows);
+public sealed record ServicesDto(
+    string Business, string Slug, string Subtitle, bool Live, int Total, int Max, IReadOnlyList<OwnerServiceRowDto> Rows, MeetingHoursDto MeetingHours);
 
 /// <summary>What deleting an item removed, for the toast and the record (L2-092, L2-095).</summary>
 public sealed record DeletedItemDto(Guid Id, string Name, int PastRequests);
@@ -349,7 +350,8 @@ public sealed class ListServicesQueryHandler(IAppDbContext db, TimeProvider cloc
         var listing = await Workspace.Owned(db, request.Subject, cancellationToken);
         var services = (await db.Services.AsNoTracking().Where(s => s.ListingId == listing.Id).ToListAsync(cancellationToken))
             .OrderBy(s => s.Position).ToList();
-        return new ServicesDto(listing.Name, listing.Slug, await Workspace.SubtitleOf(db, listing, clock.GetUtcNow(), cancellationToken), listing.IsPublic(), services.Count, Service.MaxPerListing, [.. services.Select(CatalogueRules.Row)]);
+        return new ServicesDto(listing.Name, listing.Slug, await Workspace.SubtitleOf(db, listing, clock.GetUtcNow(), cancellationToken), listing.IsPublic(), services.Count, Service.MaxPerListing, [.. services.Select(CatalogueRules.Row)],
+            MeetingHoursRules.Of(listing));
     }
 }
 
