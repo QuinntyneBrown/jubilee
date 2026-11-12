@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
  * Labels and their values, side by side and one under the other on a phone:
@@ -11,8 +11,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 @Component({
   selector: 'dl[jb-description-list]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'dl' },
+  host: { class: 'dl', '[class.dl--rows]': 'rows()' },
   templateUrl: './description-list.html',
   styleUrl: './description-list.scss',
 })
-export class DescriptionList {}
+export class DescriptionList {
+  /** Ruled rows, the label left and the value right, two columns from 40rem (the facts of a space). */
+  readonly rows = input(false, { transform: booleanAttribute });
+}

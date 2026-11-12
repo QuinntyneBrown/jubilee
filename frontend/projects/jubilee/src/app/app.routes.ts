@@ -19,14 +19,14 @@ export interface JbRouteData {
 const data = (value: JbRouteData): JbRouteData => value;
 
 /**
- * The listing page, and the same page with a dialog open: /b/:slug/message, /book, /quote, /share or /report. One
+ * The listing page, and the same page with a dialog open: /b/:slug/message, /book, /quote, /request (a space), /share or /report. One
  * route serves all three so that opening a dialog does not load the page, or count a view, again.
  */
 export function businessMatcher(segments: UrlSegment[]): UrlMatchResult | null {
   if (segments[0]?.path !== 'b' || !segments[1]) return null;
   const dialog =
     segments.length === 3 &&
-    ['message', 'book', 'quote', 'share', 'report'].includes(segments[2].path);
+    ['message', 'book', 'quote', 'request', 'share', 'report'].includes(segments[2].path);
   if (segments.length !== 2 && !dialog) return null;
   return { consumed: segments, posParams: { slug: segments[1] } };
 }

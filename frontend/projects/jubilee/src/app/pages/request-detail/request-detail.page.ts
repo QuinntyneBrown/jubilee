@@ -44,7 +44,12 @@ const POLL_MS = 5000;
 /** How long a member can take back a cancel (L2-049 AC3). */
 const UNDO_MS = 8000;
 
-const NOUN = { booking: 'booking', quote: 'quote request', order: 'order' } as const;
+const NOUN = {
+  booking: 'booking',
+  quote: 'quote request',
+  order: 'order',
+  space: 'request',
+} as const;
 
 /** One request at /requests/:id (L2-048): its status, details, progress and next steps. */
 @Component({

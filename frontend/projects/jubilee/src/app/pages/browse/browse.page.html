@@ -22,7 +22,7 @@
     jb-search-field
     slot="search"
     label="Search businesses and products"
-    placeholder="Plumber, lawyer, Bibles…"
+    placeholder="Plumber, lawyer, room to rent…"
     [disabled]="offline()"
     [disabledReason]="needsConnection"
     (searched)="search($event)"
@@ -99,6 +99,32 @@
                 </li>
               }
             </ul>
+          </section>
+        }
+        @if (directory.rooms.count > 0) {
+          <section
+            jb-section
+            heading="Rooms & places to stay"
+            headingId="rooms"
+            [actionLabel]="'All ' + (directory.rooms.count | jbCount)"
+            actionHint=" rooms and rentals"
+            [actionLink]="['/c', 'rooms-rentals']"
+          >
+            <jb-term-filter [term]="shelfTerm()" (termChange)="shelfTerm.set($event)" />
+            @let spaces = shelf(directory.rooms.spaces);
+            @if (spaces.length) {
+              <ul jb-card-grid>
+                @for (space of spaces; track space.slug) {
+                  <li>
+                    <a jb-space-card [space]="space" [routerLink]="['/b', space.slug]"></a>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <div jb-empty-state compact status icon="key">
+                Nothing listed for this yet. New rooms and rentals are added every week.
+              </div>
+            }
           </section>
         }
         @if (directory.products.length) {

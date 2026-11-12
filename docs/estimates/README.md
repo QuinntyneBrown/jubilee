@@ -1,23 +1,23 @@
 # Estimates
 
-- Overall effort: 370 days
-- Complete: 61%
+- Overall effort: 389 days
+- Complete: 63%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
-| [directory](directory.md) | 17 days | 85% |
+| [directory](directory.md) | 22 days | 89% |
 | [trust-content](trust-content.md) | 11 days | 74% |
 | [responsive-design](responsive-design.md) | 6 days | 40% |
 | [design-system](design-system.md) | 6 days | 30% |
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 56% |
-| [listings](listings.md) | 16 days | 41% |
+| [listings](listings.md) | 20 days | 53% |
 | [accounts](accounts.md) | 50 days | 84% |
 | [security](security.md) | 34 days | 31% |
 | [messaging](messaging.md) | 17 days | 94% |
-| [requests](requests.md) | 34 days | 85% |
+| [requests](requests.md) | 39 days | 87% |
 | [notifications](notifications.md) | 16 days | 86% |
-| [onboarding](onboarding.md) | 12 days | 87% |
+| [onboarding](onboarding.md) | 17 days | 91% |
 | [admin](admin.md) | 7 days | 90% |
 | [verification](verification.md) | 20 days | 81% |
 | [owner-workspace](owner-workspace.md) | 20 days | 90% |
@@ -35,3 +35,4 @@
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
 4. operations, performance, admin: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)
 5. Polish the remaining 70–90% designs: browse home sign-in prompt, offline and notification details
+6. Deferred: hourly rent, the sign-up intents, and payment, leases, calendars and double booking for spaces (ADR 0042)

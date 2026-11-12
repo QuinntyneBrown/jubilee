@@ -1,4 +1,4 @@
-import { categories } from '../fixtures/categories';
+import { categories, chipCategories } from '../fixtures/categories';
 import { expect, test } from '../fixtures/jb-test';
 import { browseHomeFromMock } from '../fixtures/mock-data';
 import { stubBrowseHome } from '../fixtures/stubs';
@@ -38,10 +38,10 @@ test.describe('browse home for a member (L2-021)', () => {
       '47 verified businesses — shops, advisors, trades and more.',
     );
 
-    // Category chips: "All" plus the ten categories
-    await expect(browse.categoryChips).toHaveText(['All', ...categories.map((c) => c.name)]);
+    // Category chips: "All" plus the eleven categories, "Rooms & rentals" second (L2-197)
+    await expect(browse.categoryChips).toHaveText(['All', ...chipCategories.map((c) => c.name)]);
     await expect(browse.categoryChips.first()).toHaveAttribute('aria-current', 'page');
-    await expect(browse.categoryChips.nth(4)).toHaveAttribute('href', '/c/home-property');
+    await expect(browse.categoryChips.nth(5)).toHaveAttribute('href', '/c/home-property');
 
     // "Featured this week": up to five businesses, in slot order (L2-106)
     await expect(browse.featuredCards).toHaveCount(5);
@@ -139,7 +139,7 @@ test.describe('browse home for a member (L2-021)', () => {
     await expect(browse.subline).toHaveText('Loading the directory…');
     await expect(browse.loadingStatus).toHaveText('Loading the directory…');
     await expect(browse.skeletons.first()).toBeVisible();
-    await expect(browse.categoryChips).toHaveCount(11);
+    await expect(browse.categoryChips).toHaveCount(12);
   });
 });
 

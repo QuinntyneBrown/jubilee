@@ -648,10 +648,11 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 /* ---------- Forms: choice cards, grids, item lists ----------------------------------- */
 .form-grid { display: grid; gap: var(--space-4); }
 .form-grid > * { min-width: 0; }
-@media (min-width: 40rem) { .form-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 40rem) { .form-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .form-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .form { display: flex; flex-direction: column; gap: var(--space-6); }
 .choice-cards { display: grid; gap: var(--space-3); }
 @media (min-width: 40rem) { .choice-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 48rem) { .choice-cards--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .choice-card { position: relative; display: flex; gap: var(--space-3); padding: var(--space-4); border: var(--border-width-hairline) solid var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-bg-surface); cursor: pointer; }
 .choice-card input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
 .choice-card:hover, .choice-card[data-state="hover"] { border-color: var(--color-fg-muted); }
@@ -829,3 +830,77 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .dialog__panel :focus-visible { outline-offset: var(--focus-ring-offset); }
 @media (max-width: 39.99rem) { .detail-head__actions .btn--primary { flex-basis: 100%; } }
 .empty__text, .alert__body, .toast__text { overflow-wrap: anywhere; }
+
+/* ---------- Rooms and rentals (L1-028, ADR 0042) ---------------------------------------------------- */
+/* Space card: a room or rental in a grid. Rent, term and where come first; that is what renters scan for. */
+.space-card { display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none; border-radius: var(--radius-lg); }
+.space-card__media { position: relative; }
+.space-card__media > .media { transition: box-shadow var(--duration-fast) var(--ease-standard); }
+.space-card:hover .space-card__media > .media, .space-card[data-state="hover"] .space-card__media > .media { box-shadow: var(--shadow-2); }
+.space-card:hover .space-card__title, .space-card[data-state="hover"] .space-card__title { text-decoration: underline; }
+.space-card__badge { position: absolute; top: var(--space-3); left: var(--space-3); padding: var(--space-0-5) var(--space-2); border-radius: var(--radius-full); background: var(--color-bg-surface); color: var(--color-fg-default); font: var(--text-caption); font-weight: var(--font-weight-semibold); box-shadow: var(--shadow-1); }
+.space-card__price { display: flex; align-items: baseline; gap: var(--space-1); margin-top: var(--space-3); font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); font-size: var(--font-size-lg); letter-spacing: var(--letter-spacing-tight); line-height: var(--line-height-tight); font-variant-numeric: tabular-nums; }
+@media (min-width: 40rem) { .space-card__price { font-size: var(--font-size-xl); } }
+.space-card__unit { font: var(--text-body-sm); color: var(--color-fg-muted); }
+.space-card__title { margin-top: var(--space-0-5); font: var(--text-label); font-size: var(--font-size-md); font-weight: var(--font-weight-medium); line-height: var(--line-height-snug); overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.space-card__facts { margin-top: var(--space-1); font: var(--text-body-sm); color: var(--color-fg-default); }
+.space-card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-0-5) var(--space-2); margin-top: auto; padding-top: var(--space-2); font: var(--text-body-sm); }
+.space-card__area { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--color-fg-muted); }
+.space-card__area .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); flex: none; }
+.space-card__available { font-weight: var(--font-weight-semibold); color: var(--color-success-fg); }
+
+/* Space facts: up to four key facts as a ruled grid, two across on a phone, four from 40rem. */
+.space-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--border-width-hairline); margin: 0; padding: 0; list-style: none; overflow: hidden; border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-border-default); }
+@media (min-width: 40rem) { .space-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.space-facts__item { padding: var(--space-3) var(--space-4); background: var(--color-bg-canvas); font-weight: var(--font-weight-medium); overflow-wrap: anywhere; }
+
+/* Rental facts: the description list as ruled key/value rows, two columns from 40rem. */
+.dl--rows { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 var(--space-8); }
+@media (min-width: 40rem) { .dl--rows { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.dl--rows > div { display: flex; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-2); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
+.dl--rows dt { font: var(--text-body); color: var(--color-fg-muted); }
+.dl--rows dd { margin: 0; text-align: right; font-weight: var(--font-weight-medium); }
+
+/* What's included: each item with a check. */
+.included-list { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.included-list__item { display: flex; align-items: flex-start; gap: var(--space-2); }
+.included-list__item .icon { width: var(--icon-size-md); height: var(--icon-size-md); flex: none; color: var(--color-success-icon); }
+
+/* House rules: one rule a line, each set off by a rule on its left. */
+.house-rules { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.house-rules__item { padding-left: var(--space-3); border-left: var(--border-width-thick) solid var(--color-border-strong); }
+
+/* Who lives here: the household of a Room or Roommate space, as the owner wrote it. */
+.household { display: flex; flex-direction: column; gap: var(--space-3); }
+.household__title { font: var(--text-h3); }
+.household__text { padding-block: var(--space-3); border-block: var(--border-width-hairline) solid var(--color-border-default); }
+
+/* Host card: who is renting to you. */
+.host-card { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-5); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-xl); background: var(--color-bg-surface); }
+.host-card__label { font: var(--text-body-sm); color: var(--color-fg-muted); }
+.host-card__name { font: var(--text-h4); font-size: var(--font-size-lg); }
+.host-card__verified { display: inline-flex; align-items: center; gap: var(--space-1); font: var(--text-caption); color: var(--color-fg-muted); }
+.host-card__verified .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
+.host-card__about { margin-top: var(--space-2); }
+
+/* Booking card: the rent, the minimum stay and the one thing to do. The request itself is a dialog. */
+.booking-card { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-5); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-xl); background: var(--color-bg-surface); }
+.booking-card__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-2); font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tight); line-height: var(--line-height-tight); font-variant-numeric: tabular-nums; }
+.booking-card__unit { font: var(--text-body); color: var(--color-fg-muted); }
+.booking-card__minimum { margin-left: auto; font: var(--text-body-sm); color: var(--color-fg-muted); }
+.booking-card__actions { display: flex; gap: var(--space-2); align-items: center; }
+.booking-card__actions > .btn:not(.btn--icon) { flex: 1; }
+@media (max-width: 47.99rem) { .booking-card__actions > .btn--primary { display: none; } } /* the booking bar carries it on a phone */
+.booking-card__note { max-width: none; font: var(--text-caption); color: var(--color-fg-muted); text-align: center; }
+.booking-card__sent { display: flex; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-success-bg); color: var(--color-success-fg); }
+.booking-card__sent .icon { width: var(--icon-size-md); height: var(--icon-size-md); flex: none; color: var(--color-success-icon); }
+.booking-card__sent strong { display: block; color: var(--color-fg-default); }
+
+/* Booking bar: the rent and the call to action, fixed above the tab bar under 48rem. */
+.booking-bar { position: fixed; inset: auto 0 calc(var(--layout-tabbar-height) + env(safe-area-inset-bottom)) 0; z-index: var(--z-sticky); display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--layout-margin); border-top: var(--border-width-hairline) solid var(--color-border-default); background: var(--color-bg-surface); }
+.booking-bar__price { min-width: 0; font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); font-size: var(--font-size-xl); line-height: var(--line-height-tight); font-variant-numeric: tabular-nums; }
+.booking-bar__unit { font: var(--text-body-sm); color: var(--color-fg-muted); }
+.booking-bar > .btn { margin-left: auto; }
+.booking-bar--static { position: static; }
+@media (min-width: 48rem) { .booking-bar { display: none; } }
+@media (max-width: 47.99rem) { body:has(.tabbar):has(.booking-bar) { padding-bottom: calc(var(--layout-tabbar-height) + var(--control-height-lg) + var(--space-6) + env(safe-area-inset-bottom)); } }

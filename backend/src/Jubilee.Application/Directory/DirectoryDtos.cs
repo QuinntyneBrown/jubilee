@@ -30,6 +30,37 @@ public sealed record BusinessCardDto(
         CoverPhoto: null); // Photo upload arrives with the listing form; cards show the category tile.
 }
 
+/// <summary>
+/// The card of one space (L2-203). Built without the exact address, which no public list carries
+/// (L2-208 AC1).
+/// </summary>
+public sealed record SpaceCardDto(
+    string Slug,
+    string Name,
+    string Term,
+    int Rent,
+    string Per,
+    IReadOnlyList<string> Facts,
+    string Neighbourhood,
+    string Available,
+    string? CoverPhoto)
+{
+    public static SpaceCardDto From(Listing listing)
+    {
+        var space = listing.Space ?? throw new InvalidOperationException($"'{listing.Slug}' is not a space.");
+        return new SpaceCardDto(
+            listing.Slug,
+            listing.Name,
+            WireValues.Of(space.Term),
+            space.Rent,
+            SpaceTerms.Per(space.Term),
+            [.. space.Facts.Take(2)],
+            space.Neighbourhood,
+            space.Available,
+            CoverPhoto: null);
+    }
+}
+
 public sealed record WelcomeDto(
     int LiveBusinessCount,
     IReadOnlyList<CategoryLinkDto> Categories,
@@ -71,12 +102,19 @@ public sealed record CategoryGroupDto(
     bool HasMore,
     IReadOnlyList<DirectoryRowDto> Businesses);
 
+/// <summary>
+/// "Rooms & places to stay" (L2-201): the live space count and, newest first, the union of the
+/// newest four spaces and the newest four of each term, so the term filter needs no request.
+/// </summary>
+public sealed record RoomsShelfDto(int Count, IReadOnlyList<SpaceCardDto> Spaces);
+
 public sealed record BrowseHomeDto(
     int LiveBusinessCount,
     IReadOnlyList<CategoryLinkDto> Categories,
     IReadOnlyList<BusinessCardDto> Featured,
     IReadOnlyList<ProductCardDto> Products,
-    IReadOnlyList<CategoryGroupDto> Groups);
+    IReadOnlyList<CategoryGroupDto> Groups,
+    RoomsShelfDto Rooms);
 
 /// <summary>A short count shown beside the business count, for example "3 take emergency calls".</summary>
 public sealed record CategoryFactDto(string Offer, int Count);
@@ -103,6 +141,8 @@ public sealed record CategoryPageResult(
     int PageSize,
     int PageCount,
     IReadOnlyList<BusinessCardDto> Businesses,
-    IReadOnlyList<FilterSuggestion> Suggestions);
+    IReadOnlyList<FilterSuggestion> Suggestions,
+    string? Term,
+    IReadOnlyList<SpaceCardDto> Spaces);
 
 public sealed record CategoryCountDto(int Count);

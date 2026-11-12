@@ -63,5 +63,6 @@ export class DirectoryStore {
     }
     for (const group of value.groups) this.hints.rememberCategory(group.businesses, group.slug);
     this.hints.rememberProducts(value.products);
+    this.hints.rememberSpaces(value.rooms.spaces);
   }
 }

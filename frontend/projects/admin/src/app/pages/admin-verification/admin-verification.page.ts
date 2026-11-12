@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ADMIN_API, DecisionResult, VerificationReview } from 'api';
+import { ADMIN_API, DecisionResult, ReviewSpace, VerificationReview } from 'api';
 import {
   EmptyState,
   Icon,
@@ -25,6 +25,9 @@ import {
   DescriptionList,
   DescriptionItem,
   BusinessCardPreview,
+  SpaceCardPreview,
+  SpaceCardView,
+  formatRent,
 } from 'components';
 import {
   ApproveListingDialog,
@@ -41,6 +44,14 @@ import {
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { dayHeading, clockTime } from 'api';
+
+/** A space's term as the owner chose it (L2-197). */
+const TERM_NAMES: Record<ReviewSpace['term'], string> = {
+  'short-stay': 'Short stay',
+  'long-term': 'Long term',
+  room: 'Room',
+  roommate: 'Roommate',
+};
 
 /**
  * The review of one submitted listing at /verifications/:id (L2-100 to L2-104): the owner,
@@ -64,6 +75,7 @@ import { dayHeading, clockTime } from 'api';
     DescriptionList,
     DescriptionItem,
     BusinessCardPreview,
+    SpaceCardPreview,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -102,6 +114,38 @@ export class AdminVerificationPage implements OnInit {
   protected readonly unticked = computed(
     () => (this.review()?.checklist.length ?? 0) - this.ticked().length,
   );
+  /** A space's rows, in the order the owner filled them in (L2-200 AC3). */
+  protected readonly spaceRows = computed(() => {
+    const space = this.review()?.space;
+    if (!space) return null;
+    const rows: { term: string; value: string }[] = [
+      { term: 'Term', value: TERM_NAMES[space.term] },
+      { term: 'Rent', value: `${formatRent(space.rent)} per ${space.per}` },
+      { term: 'Available', value: space.available },
+      { term: 'Minimum stay', value: space.minimumStayLabel },
+      { term: 'Neighbourhood', value: space.neighbourhood },
+      { term: 'The space', value: space.place },
+      { term: 'Key facts', value: space.facts.join(' · ') },
+      { term: 'What’s included', value: space.included.join(' · ') },
+    ];
+    if (space.household) rows.push({ term: 'Household', value: space.household });
+    rows.push({ term: 'House rules', value: space.rules.join(' · ') });
+    return rows.filter((row) => row.value !== '');
+  });
+  protected readonly spacePreview = computed<SpaceCardView | null>(() => {
+    const review = this.review();
+    const space = review?.space;
+    if (!review || !space) return null;
+    return {
+      name: review.name,
+      term: space.term,
+      rent: space.rent,
+      per: space.per,
+      facts: space.facts,
+      neighbourhood: space.neighbourhood,
+      available: space.available,
+    };
+  });
 
   ngOnInit(): void {
     this.load();

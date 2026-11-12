@@ -1,0 +1,10 @@
+<div jb-chip-row plain role="group" aria-label="Length of stay">
+  <button jb-chip type="button" [selected]="term() === null" (click)="termChange.emit(null)">
+    Any length
+  </button>
+  @for (value of terms; track value) {
+    <button jb-chip type="button" [selected]="term() === value" (click)="termChange.emit(value)">
+      {{ labels[value] }}
+    </button>
+  }
+</div>

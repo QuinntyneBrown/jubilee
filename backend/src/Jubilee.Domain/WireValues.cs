@@ -44,7 +44,27 @@ public static class WireValues
         _ => value.ToString().ToLowerInvariant(),
     };
 
-    public static string Of(ListingKind value) => value == ListingKind.Shop ? "shop" : "services";
+    public static string Of(ListingKind value) => value switch
+    {
+        ListingKind.Shop => "shop",
+        ListingKind.Space => "space",
+        _ => "services",
+    };
+
+    private static readonly (SpaceTerm Value, string Wire)[] TermPairs =
+    [
+        (SpaceTerm.ShortStay, "short-stay"),
+        (SpaceTerm.LongTerm, "long-term"),
+        (SpaceTerm.Room, "room"),
+        (SpaceTerm.Roommate, "roommate"),
+    ];
+
+    /// <summary>"short-stay", "long-term", "room" or "roommate" (L2-197 AC1).</summary>
+    public static string Of(SpaceTerm value) => TermPairs.Single(p => p.Value == value).Wire;
+
+    /// <summary>The term of a wire value; null for anything else.</summary>
+    public static SpaceTerm? ParseTerm(string? wire) =>
+        TermPairs.Where(p => p.Wire == wire).Select(p => (SpaceTerm?)p.Value).FirstOrDefault();
 
     public static string Of(ServiceAction value) => value.ToString().ToLowerInvariant();
 

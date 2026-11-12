@@ -29,17 +29,18 @@ public class WelcomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task L2_020_AC2_welcome_lists_the_ten_categories_in_fixed_order()
+    public async Task L2_020_AC2_welcome_lists_the_eleven_categories_in_fixed_order()
     {
         var json = await _factory.GetJson("/api/directory/welcome");
 
         var categories = json.GetProperty("categories").EnumerateArray()
             .Select(c => (c.GetProperty("slug").GetString(), c.GetProperty("name").GetString()))
             .ToArray();
-        Assert.Equal(10, categories.Length);
+        Assert.Equal(11, categories.Length);
         Assert.Equal(("shops", "Shops"), categories[0]);
-        Assert.Equal(("financial-insurance", "Financial & insurance"), categories[1]);
-        Assert.Equal(("community", "Community"), categories[9]);
+        Assert.Equal(("rooms-rentals", "Rooms & rentals"), categories[1]);
+        Assert.Equal(("financial-insurance", "Financial & insurance"), categories[2]);
+        Assert.Equal(("community", "Community"), categories[10]);
     }
 
     [Fact]

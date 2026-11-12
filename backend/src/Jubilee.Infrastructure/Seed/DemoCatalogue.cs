@@ -161,6 +161,74 @@ internal static class DemoCatalogue
             ]),
     };
 
+    /// <summary>A space in "Rooms & rentals" (L2-197): its host, what the host says, and its rental details.</summary>
+    internal sealed record DemoSpace(string Slug, string Name, string Tagline, string Host, string About, Func<SpaceDetails> Details);
+
+    /// <summary>The live spaces of the design's sample data, one or more per term, newest first.</summary>
+    internal static readonly DemoSpace[] Spaces =
+    [
+        new(
+            "roncesvalles-guest-suite",
+            "Guest suite near Roncesvalles",
+            "Private suite for visiting family, conferences or a weekend away",
+            "Paul & Marta Kowalski",
+            "Ten minutes’ walk to High Park and the Queen streetcar. Members of our church get a quiet, clean place to land.",
+            () => SpaceDetails.Create(
+                SpaceTerm.ShortStay, 120, "Most weekends", 2, "Roncesvalles", "48 Galley Ave, Toronto ON M6R 1G9", "Guest suite",
+                ["Queen bed", "Private bath", "Sleeps 2", "Self check-in"],
+                ["Wi-Fi", "Furnished", "Parking", "Private bath"],
+                null,
+                ["Check-in after 3 pm", "No parties", "No smoking"])),
+        new(
+            "leslieville-family-room",
+            "Furnished room in a family home, Leslieville",
+            "Quiet room with a desk, shared bath, home-cooked Sunday dinners",
+            "Ruth Mensah",
+            "Our eldest left for university and her room is free. Ideal for a student or young professional new to the city.",
+            () => SpaceDetails.Create(
+                SpaceTerm.Room, 950, "Now", 4, "Leslieville", "27 Curzon St, Toronto ON M4M 3B4", "Private room",
+                ["Double bed", "Shared bath", "Furnished", "Desk"],
+                ["Utilities", "Wi-Fi", "Laundry", "Furnished", "Kitchen use"],
+                "Ruth and Kwame with our daughter Abena (14) and a very calm cat. We eat together on Sundays and you’re always welcome.",
+                ["No overnight guests", "No smoking or alcohol", "Share the chore rota"])),
+        new(
+            "annex-basement-apartment",
+            "Bright basement apartment in the Annex",
+            "Separate entrance, garden walkout, five minutes to Bathurst station",
+            "Grace & Daniel Okafor",
+            "We live upstairs with our two kids and attend Trinity Annex. We’d love a tenant who’ll stay a while.",
+            () => SpaceDetails.Create(
+                SpaceTerm.LongTerm, 1850, "Dec 1", 12, "The Annex", "112 Brunswick Ave, Toronto ON M5S 2L7", "Basement apartment",
+                ["1 bedroom", "1 bath", "650 sq ft", "Separate entrance"],
+                ["Utilities", "Wi-Fi", "Laundry", "Private bath"],
+                null,
+                ["No smoking", "Quiet after 10 pm", "One small pet considered"])),
+        new(
+            "east-york-roommate",
+            "Roommate wanted: 3-bedroom house in East York",
+            "Two housemates looking for a third: big kitchen, backyard, near Pape",
+            "Hannah Lee",
+            "We’re both at Sanctuary Toronto and pray together most Wednesdays. Looking for someone tidy and friendly.",
+            () => SpaceDetails.Create(
+                SpaceTerm.Roommate, 1100, "Jan 1", 6, "East York", "9 Cosburn Ave, Toronto ON M4K 2E8", "Private room",
+                ["Unfurnished room", "Shared bath (2)", "Backyard", "Parking spot"],
+                ["Wi-Fi", "Laundry", "Parking", "Kitchen use"],
+                "Two women in our late 20s, a nurse and a grad student. Looking for a third who’s tidy, friendly and up for a weekly house dinner.",
+                ["Weekly house dinner", "Clean as you go", "No smoking"])),
+        new(
+            "scarborough-furnished-condo",
+            "Furnished 2-bed condo near Scarborough Town Centre",
+            "Move-in ready while we serve overseas — gym, parking, steps to transit",
+            "Samuel & Joy Tan",
+            "We’re on a mission posting in Kenya and want our home cared for by someone from the community.",
+            () => SpaceDetails.Create(
+                SpaceTerm.LongTerm, 2400, "Feb 1", 6, "Scarborough", "300 Borough Dr, Unit 1204, Toronto ON M1P 4P5", "Condo",
+                ["2 bedrooms", "2 baths", "Furnished", "1 parking"],
+                ["Utilities", "Furnished", "Parking"],
+                null,
+                ["No smoking", "No pets (building rule)", "Tenant insurance required"])),
+    ];
+
     /// <summary>"Featured this week", positions 1 to 5.</summary>
     internal static readonly string[] FeaturedSlugs =
     [
@@ -179,6 +247,7 @@ internal static class DemoCatalogue
     {
         ["legacy-financial"] = "demo|trevor-chew",
         ["luzandre"] = "demo|naomi-laurent",
+        ["roncesvalles-guest-suite"] = "demo|paul-kowalski",
     };
 
     /// <summary>What the product page of a demo product tells members, by product slug.</summary>

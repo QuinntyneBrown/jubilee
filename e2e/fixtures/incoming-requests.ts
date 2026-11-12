@@ -7,7 +7,7 @@ export type Outcome = 'ok' | 'fails';
 
 export interface FakeRow {
   id: string;
-  kind: 'order' | 'booking' | 'quote';
+  kind: 'order' | 'booking' | 'quote' | 'space';
   kindLabel: string;
   customerName: string;
   customerInitials: string;

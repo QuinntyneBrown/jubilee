@@ -1,0 +1,43 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse spaces
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(browse, "BrowsePage", "Angular page", "Rooms & places to stay shelf filtered in the browser")
+  Component(category, "CategoryPage", "Angular page", "Rooms & rentals with term in the URL")
+  Component(search, "SearchPage", "Angular page", "Renders space hits as space cards")
+  Component(card, "jb-space-card", "Library component", "Badge, rent, title, two facts, neighbourhood, availability")
+  Component(filter, "jb-term-filter", "Library component", "Any length plus four terms with aria-pressed")
+  Component(client, "DirectoryApi and SearchApi", "Typed HTTP clients", "Call the directory and search endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(dirctrl, "DirectoryController and CategoriesController", "ASP.NET Core controllers", "Anonymous directory reads")
+  Component(searchctrl, "SearchController", "ASP.NET Core controller", "Anonymous search")
+  Component(home, "GetBrowseHomeQueryHandler", "MediatR handler", "Builds RoomsShelfDto")
+  Component(cat, "GetCategoryListingsQueryHandler", "MediatR handler", "Filters by term and pages spaces")
+  Component(find, "SearchDirectoryQueryHandler", "MediatR handler", "Matches public space text")
+  Component(dto, "SpaceCardDto", "DTO", "Projection without the address")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings")
+
+Rel(browse, card, "Renders")
+Rel(browse, filter, "Renders")
+Rel(category, card, "Renders")
+Rel(category, filter, "Renders")
+Rel(search, card, "Renders")
+Rel(browse, client, "Loads the home")
+Rel(category, client, "Loads the category with term")
+Rel(search, client, "Searches")
+Rel(client, dirctrl, "GET /api/directory/home, GET /api/categories/rooms-rentals/listings", "JSON/HTTPS")
+Rel(client, searchctrl, "GET /api/search?q=", "JSON/HTTPS")
+Rel(dirctrl, home, "Sends GetBrowseHomeQuery")
+Rel(dirctrl, cat, "Sends GetCategoryListingsQuery")
+Rel(searchctrl, find, "Sends SearchDirectoryQuery")
+Rel(home, dto, "Projects to")
+Rel(cat, dto, "Projects to")
+Rel(find, dto, "Projects to")
+Rel(home, db, "Reads", "EF Core")
+Rel(cat, db, "Reads", "EF Core")
+Rel(find, db, "Reads", "EF Core")
+@enduml

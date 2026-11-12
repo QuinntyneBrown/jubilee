@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Filter the rooms shelf on the browse home
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BrowsePage" as page
+  participant "jb-term-filter" as filter
+  participant "DirectoryApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "DirectoryController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetBrowseHomeQueryHandler" as handler
+  participant "IDirectoryReadCache" as cache
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /
+page -> client : getHome()
+client -> controller : GET /api/directory/home
+controller -> handler : Send GetBrowseHomeQuery
+handler -> cache : Get browse home
+alt Cached
+  cache --> handler : BrowseHomeDto
+else Not cached
+  handler -> db : Public spaces newest first by ApprovedAt (L2-028)
+  db --> handler : Listings with SpaceDetails
+  handler -> handler : Count, newest 4 overall plus newest 4 per term
+  handler -> handler : SpaceCardDto.From each, no address (L2-208)
+  handler -> handler : Groups without spaces (L2-201)
+  handler -> cache : Store for 60 s (L2-156)
+end
+handler --> controller : BrowseHomeDto with Rooms {count, spaces}
+controller --> client : 200 OK
+client --> page : Browse home
+alt rooms.count is 0
+  page --> actor : No shelf (L2-201)
+else Rooms present
+  page --> actor : "Rooms & places to stay", "All {n}", "Any length" pressed, newest four cards
+  actor -> filter : Press "Rooms"
+  filter --> page : term room
+  page -> page : Pick the newest four spaces with term room, no request (L2-201)
+  alt None
+    page --> actor : "Nothing listed for this yet. New rooms and rentals are added every week."
+  else Some
+    page --> actor : Up to four Room cards, "Rooms" pressed
+  end
+end
+@enduml

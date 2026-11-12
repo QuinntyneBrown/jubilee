@@ -16,6 +16,11 @@ export type StubName =
   | 'category-error'
   | 'category-long'
   | 'category-not-found'
+  | 'browse-rooms-empty'
+  | 'space-loading'
+  | 'space-error'
+  | 'space-requested'
+  | 'rooms-empty'
   | 'business-loading'
   | 'business-error'
   | 'business-empty'
@@ -32,6 +37,7 @@ export type StubName =
   | 'search-error'
   | 'search-no-results'
   | 'search-start'
+  | 'search-spaces'
   | 'google-sign-in-off'
   | 'sign-in-failing'
   | 'sign-in-pending'
@@ -80,6 +86,7 @@ export type StubName =
   | 'order'
   | 'listing-draft'
   | 'editor-error'
+  | 'editor-space'
   | 'notifications'
   | 'notifications-read'
   | 'notifications-empty'
@@ -110,6 +117,7 @@ export type StubName =
   | 'admin-review-approved'
   | 'admin-review-changes-requested'
   | 'admin-review-error'
+  | 'admin-review-space'
   | 'moderation-reports'
   | 'moderation-reports-empty'
   | 'moderation-reports-error'
@@ -374,6 +382,16 @@ export const routes = {
     mock: 'dialogs/request-quote/default.html',
     who: 'member',
   },
+  'request-space.short-stay': {
+    app: '/b/roncesvalles-guest-suite/request',
+    mock: 'dialogs/request-space/short-stay.html',
+    who: 'member',
+  },
+  'request-space.long-term': {
+    app: '/b/annex-basement-apartment/request',
+    mock: 'dialogs/request-space/long-term.html',
+    who: 'member',
+  },
   'order-request': {
     app: '/b/luzandre/p/faith-heavyweight-tee-charcoal/request?option=M&quantity=1',
     mock: 'dialogs/order-request/default.html',
@@ -383,6 +401,12 @@ export const routes = {
   'list-business': {
     app: '/list',
     mock: 'pages/list-business/default.html',
+    who: 'member',
+    stub: 'listing-draft',
+  },
+  'list-business.space': {
+    app: '/list?kind=space',
+    mock: 'pages/list-business/space.html',
     who: 'member',
     stub: 'listing-draft',
   },
@@ -427,7 +451,43 @@ export const routes = {
     stub: 'browse-error',
   },
   'browse.edge': { app: '/', mock: 'pages/browse/edge.html', who: 'member', stub: 'browse-edge' },
+  // The member chooses "Rooms" on the term filter of "Rooms & places to stay".
+  'browse.rooms-term': {
+    app: '/',
+    mock: 'pages/browse/rooms-term.html',
+    who: 'member',
+  },
+  // No roommate is listed, and the member chooses "Roommates".
+  'browse.rooms-empty': {
+    app: '/',
+    mock: 'pages/browse/rooms-empty.html',
+    who: 'member',
+    stub: 'browse-rooms-empty',
+  },
   category: { app: '/c/home-property', mock: 'pages/category/default.html', who: 'member' },
+  'category.rooms-rentals': {
+    app: '/c/rooms-rentals',
+    mock: 'pages/category/rooms-rentals.html',
+    who: 'member',
+  },
+  'category.rooms-rentals-empty': {
+    app: '/c/rooms-rentals?term=roommate',
+    mock: 'pages/category/rooms-rentals-empty.html',
+    who: 'member',
+    stub: 'rooms-empty',
+  },
+  'category.rooms-rentals-loading': {
+    app: '/c/rooms-rentals',
+    mock: 'pages/category/rooms-rentals-loading.html',
+    who: 'member',
+    stub: 'category-loading',
+  },
+  'category.rooms-rentals-error': {
+    app: '/c/rooms-rentals',
+    mock: 'pages/category/rooms-rentals-error.html',
+    who: 'member',
+    stub: 'category-error',
+  },
   'category.loading': {
     app: '/c/home-property',
     mock: 'pages/category/loading.html',
@@ -496,6 +556,52 @@ export const routes = {
     mock: 'pages/business/owner.html',
     who: 'member',
     stub: 'business-owner',
+  },
+  'space.short-stay': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/short-stay.html',
+    who: 'member',
+  },
+  'space.long-term': {
+    app: '/b/annex-basement-apartment',
+    mock: 'pages/space/long-term.html',
+    who: 'member',
+  },
+  'space.room': {
+    app: '/b/leslieville-family-room',
+    mock: 'pages/space/room.html',
+    who: 'member',
+  },
+  'space.roommate': {
+    app: '/b/east-york-roommate',
+    mock: 'pages/space/roommate.html',
+    who: 'member',
+  },
+  'space.requested': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/requested.html',
+    who: 'member',
+    stub: 'space-requested',
+  },
+  'space.signed-out': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/signed-out.html',
+    who: 'visitor',
+  },
+  // Opened from the Rooms & rentals category, so the page knows it is loading a space.
+  'space.loading': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/loading.html',
+    who: 'member',
+    stub: 'space-loading',
+    via: '/c/rooms-rentals',
+  },
+  'space.error': {
+    app: '/b/roncesvalles-guest-suite',
+    mock: 'pages/space/error.html',
+    who: 'member',
+    stub: 'space-error',
+    via: '/c/rooms-rentals',
   },
   shop: { app: '/b/luzandre', mock: 'pages/shop/default.html', who: 'member' },
   'shop.loading': {
@@ -572,6 +678,12 @@ export const routes = {
     mock: 'pages/search/error.html',
     who: 'member',
     stub: 'search-error',
+  },
+  'search.spaces': {
+    app: '/search?q=room',
+    mock: 'pages/search/spaces.html',
+    who: 'visitor',
+    stub: 'search-spaces',
   },
   'search.no-results': {
     app: '/search?q=plumbre',
@@ -692,6 +804,12 @@ export const routes = {
     mock: 'pages/edit-listing/default.html',
     who: 'member',
     stub: 'editor',
+  },
+  'edit-listing.space': {
+    app: '/my-business/listing',
+    mock: 'pages/edit-listing/space.html',
+    who: 'member',
+    stub: 'editor-space',
   },
   'edit-listing.error': {
     app: '/my-business/listing',
@@ -898,6 +1016,13 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'admin-review-changes-requested',
+  },
+  'admin-verification.space': {
+    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-verification/space.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-review-space',
   },
   'admin-verification.error': {
     app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',

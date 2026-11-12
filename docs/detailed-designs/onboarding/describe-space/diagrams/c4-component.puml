@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Describe a space
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "ListBusinessPage", "Angular page", "Third card A space; relabels the form; holds the space in SpaceForm")
+  Component(preview, "jb-space-card-preview", "Angular component", "How renters see it, marked Pending verification")
+  Component(rules, "SpaceForm", "Class", "The space fields, term rules, checks and body; shared with the listing editor")
+  Component(client, "ListingDraftsApi", "Typed HTTP client", "Calls /api/listing-drafts")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingDraftsController", "ASP.NET Core controller", "Authenticates and passes the space object as DraftInput.Space")
+  Component(save, "SaveListingDraftCommandHandler", "MediatR handler", "Stores space fields without validation")
+  Component(submit, "SubmitListingCommandHandler", "MediatR handler", "Validates, forces rooms-rentals and creates the Listing of kind Space")
+  Component(validator, "Drafts.ValidateSpace and Drafts.SpaceFrom", "Static rules", "space.rent, space.available, space.neighbourhood, space.address, space.household")
+  Component(terms, "SpaceTerms", "Domain rules", "One place for every term rule")
+  Component(draft, "ListingDraft", "Domain entity", "Owns SpaceDetails while drafting")
+  Component(listing, "Listing", "Domain entity", "Owns SpaceDetails once submitted")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "ListingDrafts and Listings")
+
+Rel(page, rules, "Reads labels and choices")
+Rel(page, preview, "Renders beside or below the form")
+Rel(page, client, "Saves and submits")
+Rel(client, ctrl, "POST and PUT /api/listing-drafts, POST /{id}/submit", "JSON/HTTPS")
+Rel(ctrl, save, "Sends SaveListingDraftCommand")
+Rel(ctrl, submit, "Sends SubmitListingCommand")
+Rel(save, draft, "Saves space fields on")
+Rel(submit, validator, "Validates with")
+Rel(validator, terms, "Reads MaxRent and AsksForHousehold from")
+Rel(submit, listing, "Creates in rooms-rentals")
+Rel(save, db, "Persists", "EF Core")
+Rel(submit, db, "Persists", "EF Core")
+@enduml

@@ -35,6 +35,7 @@ something else: a new record supersedes it and both say so.
 | [0038](0038-e-mail-delivery.md) | E-mail delivery: Azure Communication Services Email, one HTML layout rendered from the text | Accepted, amended by 0041 |
 | [0039](0039-finish-messaging-decisions.md) | Finish messaging: the conversation menu, photos shrunk on the device and renewed links, real-time arrival over the event stream, request cards, the away period | Accepted |
 | [0040](0040-separate-admin-application.md) | The admin application: a third Angular application, staff sessions through Entra ID with a proved second factor, a network allow-list at the API and the admin host | Accepted |
+| [0042](0042-rooms-and-rentals.md) | Rooms and rentals: a space is a listing kind with owned rental details, a space request is a request kind, the exact address released only to the accepted renter | Accepted |
 | [0041](0041-remove-church-reference-and-add-home-church-address.md) | The church reference is removed: submit goes straight to Ready to review, two stages and the reference data go; an optional home church address is added | Accepted |
 
 ## Format

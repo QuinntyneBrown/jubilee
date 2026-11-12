@@ -17,10 +17,16 @@ import {
   ListingDraft,
   ListingDraftBody,
   OfferKind,
+  SpaceTerm,
   SubmittedListing,
 } from 'api';
 import { FormsModule } from '@angular/forms';
 import {
+  Chip,
+  SpaceCardPreview,
+  Textarea,
+  InputGroup,
+  InputAddon,
   Icon,
   MediaTile,
   categoryTile,
@@ -50,48 +56,92 @@ import {
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
 import { clockTime, newKey } from 'api';
+import {
+  INCLUSIONS,
+  PLACES,
+  SPACE_FIELDS,
+  SpaceForm,
+  TERM_CHOICES,
+  spaceMessage,
+} from '../../services/space-form';
 
-type FieldName = 'name' | 'tagline' | 'categorySlug' | 'agreed';
+type FieldName =
+  | 'name'
+  | 'tagline'
+  | 'categorySlug'
+  | 'rent'
+  | 'available'
+  | 'neighbourhood'
+  | 'address'
+  | 'household'
+  | 'agreed';
 
 /** The element each field's summary link and first-invalid focus go to. */
 const FIELD_ID: Record<FieldName, string> = {
   name: 'name',
   tagline: 'tagline',
   categorySlug: 'cat',
+  rent: 'price',
+  available: 'avail',
+  neighbourhood: 'area',
+  address: 'address',
+  household: 'household',
   agreed: 'agree',
 };
 
-const FIELD_ORDER: FieldName[] = ['name', 'tagline', 'categorySlug', 'agreed'];
+const FIELD_ORDER: FieldName[] = [
+  'name',
+  'tagline',
+  'categorySlug',
+  'rent',
+  'available',
+  'neighbourhood',
+  'address',
+  'household',
+  'agreed',
+];
 const AUTOSAVE_MS = 10_000;
 const TAGLINE_MAX = 90;
 
 /** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
-export function messageFor(field: FieldName, code: string): string {
+export function messageFor(field: FieldName, code: string, space = false): string {
   if (code.startsWith('TOO_LONG')) {
     const n = code.split(':')[1] ?? '';
     return `Shorten this to ${TAGLINE_MAX} characters. It has ${n}.`;
   }
   switch (field) {
     case 'name':
-      return 'Enter your business name as customers know it.';
+      return space
+        ? 'Enter a title that says what it is and where.'
+        : 'Enter your business name as customers know it.';
     case 'tagline':
-      return 'Enter one line on what you do.';
+      return space ? 'Enter one line renters should know.' : 'Enter one line on what you do.';
+    case 'rent':
+    case 'available':
+    case 'neighbourhood':
+    case 'address':
+    case 'household':
+      return spaceMessage(field, code);
     case 'categorySlug':
       return 'Choose a category.';
     case 'agreed':
-      return 'Agree to the statement of faith to submit your listing.';
+      return space
+        ? 'Agree to the statement of faith and the rental terms to submit your space.'
+        : 'Agree to the statement of faith to submit your listing.';
   }
 }
 
 /** The summary's shorter wording ("Enter your business name"). */
-function summaryFor(field: FieldName, code: string): string {
-  if (code.startsWith('TOO_LONG')) return messageFor(field, code);
-  const text = messageFor(field, code);
+function summaryFor(field: FieldName, code: string, space: boolean): string {
+  if (code.startsWith('TOO_LONG')) return messageFor(field, code, space);
+  const text = messageFor(field, code, space);
   switch (field) {
     case 'name':
-      return 'Enter your business name';
+      return space ? 'Enter a listing title' : 'Enter your business name';
     case 'agreed':
-      return 'Agree to the statement of faith';
+      return space
+        ? 'Agree to the statement of faith and the rental terms'
+        : 'Agree to the statement of faith';
     default:
       return text.replace(/\.$/, '');
   }
@@ -129,6 +179,11 @@ function summaryFor(field: FieldName, code: string): string {
     Price,
     EmptyState,
     BusinessCardPreview,
+    Chip,
+    SpaceCardPreview,
+    Textarea,
+    InputGroup,
+    InputAddon,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './list-business.page.html',
@@ -154,12 +209,29 @@ export class ListBusinessPage {
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
 
+  // A space (L2-198, L2-199), its fields held by the form the editor shares (L2-209).
+  private readonly space = new SpaceForm();
+  protected readonly termChoices = TERM_CHOICES;
+  protected readonly places = PLACES;
+  protected readonly inclusions = INCLUSIONS;
+  protected readonly term = this.space.term;
+  protected readonly rent = this.space.rent;
+  protected readonly available = this.space.available;
+  protected readonly minimumStay = this.space.minimumStay;
+  protected readonly neighbourhood = this.space.neighbourhood;
+  protected readonly address = this.space.address;
+  protected readonly spacePlace = this.space.place;
+  protected readonly facts = this.space.facts;
+  protected readonly included = this.space.included;
+  protected readonly household = this.space.household;
+  protected readonly rules = this.space.rules;
+
   protected readonly errors = signal<Partial<Record<FieldName, string>>>({});
   protected readonly summary = computed(() =>
     FIELD_ORDER.filter((f) => this.errors()[f]).map((f) => ({
       field: f,
       id: FIELD_ID[f],
-      text: summaryFor(f, this.codes[f] ?? ''),
+      text: summaryFor(f, this.codes[f] ?? '', this.isSpace()),
     })),
   );
   protected readonly failed = signal('');
@@ -169,6 +241,12 @@ export class ListBusinessPage {
 
   protected readonly tile = computed(() => categoryTile(this.categorySlug()));
   protected readonly isServices = computed(() => this.kind() === 'services');
+  protected readonly isSpace = computed(() => this.kind() === 'space');
+  protected readonly nightly = this.space.nightly;
+  protected readonly minimumChoices = this.space.minimumChoices;
+  protected readonly householdLabel = this.space.householdLabel;
+  /** How renters will see the space while it is written (L2-198 AC3). */
+  protected readonly spacePreview = computed(() => this.space.preview(this.name()));
   protected readonly placeLabel = computed(() =>
     this.isServices() ? 'Area you serve' : 'Store address',
   );
@@ -188,6 +266,8 @@ export class ListBusinessPage {
     this.loading.set(true);
     this.loadFailed.set(false);
     const wanted = this.route.snapshot.queryParamMap.get('draft');
+    // /list?kind=space opens the space form (L2-198 AC2); a saved draft has the last word.
+    if (this.route.snapshot.queryParamMap.get('kind') === 'space') this.kind.set('space');
     const source: Observable<ListingDraft | null> =
       wanted === 'new' ? of(null) : wanted ? this.api.get(wanted) : this.api.current();
     source.subscribe({
@@ -211,6 +291,19 @@ export class ListBusinessPage {
     this.place.set(draft.place ?? '');
     this.agreed.set(draft.agreed);
     this.items.set(draft.items);
+    if (draft.space) this.space.apply(draft.space);
+  }
+
+  /** A change of term keeps what was typed; only a minimum stay the new term lacks resets (AC5). */
+  protected setTerm(term: SpaceTerm): void {
+    if (!this.space.setTerm(term)) return;
+    this.clear('household');
+    this.touched();
+  }
+
+  protected toggleIncluded(item: string): void {
+    this.space.toggleIncluded(item);
+    this.touched();
   }
 
   protected setKind(kind: OfferKind): void {
@@ -237,11 +330,12 @@ export class ListBusinessPage {
       kind: this.kind(),
       name: this.name().trim(),
       tagline: this.tagline().trim(),
-      categorySlug: this.categorySlug() || null,
+      categorySlug: this.isSpace() ? null : this.categorySlug() || null,
       highlight: null,
-      place: this.place().trim() || null,
+      place: this.isSpace() ? null : this.place().trim() || null,
       agreed: this.agreed(),
-      items: this.items(),
+      items: this.isSpace() ? [] : this.items(),
+      space: this.isSpace() ? this.space.body() : null,
       idempotencyKey: null,
     };
   }
@@ -292,7 +386,8 @@ export class ListBusinessPage {
     const tagline = this.tagline().trim();
     if (!tagline) codes.tagline = 'REQUIRED';
     else if (tagline.length > TAGLINE_MAX) codes.tagline = `TOO_LONG:${tagline.length}`;
-    if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
+    if (this.isSpace()) Object.assign(codes, this.space.check());
+    else if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
     if (!this.agreed()) codes.agreed = 'REQUIRED';
     return codes;
   }
@@ -302,7 +397,7 @@ export class ListBusinessPage {
     const errors: Partial<Record<FieldName, string>> = {};
     for (const field of FIELD_ORDER) {
       const code = codes[field];
-      if (code) errors[field] = messageFor(field, code);
+      if (code) errors[field] = messageFor(field, code, this.isSpace());
     }
     this.errors.set(errors);
     if (Object.keys(errors).length) {
@@ -335,7 +430,7 @@ export class ListBusinessPage {
         error: (error) => {
           this.busy.set(false);
           if (error instanceof HttpErrorResponse && error.status === 422 && error.error?.errors) {
-            this.show(error.error.errors as Partial<Record<FieldName, string>>);
+            this.show(fieldCodes(error.error.errors as Record<string, string>));
             return;
           }
           this.failed.set(this.problemText(error));
@@ -354,4 +449,14 @@ export class ListBusinessPage {
     if (!this.errors()[field]) return;
     this.errors.update((e) => ({ ...e, [field]: undefined }));
   }
+}
+
+/** The server's codes by the form's field names: `space.rent` is the rent field. */
+function fieldCodes(errors: Record<string, string>): Partial<Record<FieldName, string>> {
+  const codes: Partial<Record<FieldName, string>> = {};
+  for (const [key, code] of Object.entries(errors)) {
+    const field = (SPACE_FIELDS[key] ?? key) as FieldName;
+    if (field in FIELD_ID) codes[field] = code;
+  }
+  return codes;
 }

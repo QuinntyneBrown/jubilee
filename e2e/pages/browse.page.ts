@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { BusinessCard } from './business-card';
+import { SpaceCard, TermFilter } from './space-card';
 import { ShellPage } from './shell.page';
 
 /** One product card of "From the shops". */
@@ -69,6 +70,12 @@ export class BrowsePage extends ShellPage implements Screen {
   /** The row of product cards that scrolls sideways. */
   readonly scroller: Locator;
   readonly allShops: Locator;
+  /** "Rooms & places to stay" (L2-201). */
+  readonly rooms: Locator;
+  readonly roomsAll: Locator;
+  readonly roomsFilter: TermFilter;
+  readonly spaceCards: Locator;
+  readonly roomsEmpty: Locator;
   readonly directory: Locator;
   readonly directoryHeading: Locator;
   readonly groups: Locator;
@@ -105,6 +112,11 @@ export class BrowsePage extends ShellPage implements Screen {
     this.productCards = this.shops.locator('a.product-card');
     this.scroller = this.shops.locator('ul.scroller');
     this.allShops = this.shops.getByRole('link', { name: 'All shops' });
+    this.rooms = this.main.getByRole('region', { name: 'Rooms & places to stay' });
+    this.roomsAll = this.rooms.locator('.section-head a');
+    this.roomsFilter = new TermFilter(this.rooms.getByRole('group', { name: 'Length of stay' }));
+    this.spaceCards = this.rooms.locator('a.space-card');
+    this.roomsEmpty = this.rooms.locator('.empty');
     this.directory = this.main.locator('section.section:has(.dir-groups)');
     this.directoryHeading = this.directory.getByRole('heading', { level: 2 });
     this.groups = this.directory.locator('section.dir-group');
@@ -119,8 +131,17 @@ export class BrowsePage extends ShellPage implements Screen {
     this.tryAgain = this.errorState.getByRole('button', { name: 'Try again' });
   }
 
+  /** The category chip of the hero, by its name. */
+  categoryChip(name: string): Locator {
+    return this.categoryChips.filter({ hasText: new RegExp(`^${name}$`) });
+  }
+
   featuredCard(index: number): BusinessCard {
     return new BusinessCard(this.featuredCards.nth(index));
+  }
+
+  spaceCard(index: number): SpaceCard {
+    return new SpaceCard(this.spaceCards.nth(index));
   }
 
   productCard(index: number): ProductCard {

@@ -140,6 +140,8 @@ export function browseHomeFromMock(state: 'default' | 'edge') {
     featured: businessCards(between(html, 'id="feat"', '</section>')),
     products,
     groups,
+    // The edge mock draws no rooms shelf: it has no live space.
+    rooms: { count: 0, spaces: [] },
   };
 }
 
@@ -160,6 +162,8 @@ export function categoryPageFromMock(state: 'long') {
     pageCount: Math.ceil(totalCount / pageSize),
     businesses: businessCards(between(html, '<ul class="card-grid">', '</ul>')),
     suggestions: [],
+    term: null,
+    spaces: [],
   };
 }
 

@@ -1,4 +1,4 @@
-import { categories } from '../fixtures/categories';
+import { chipCategories as categories } from '../fixtures/categories';
 import { expect, test } from '../fixtures/jb-test';
 import { WelcomePage } from '../pages/welcome.page';
 
@@ -24,14 +24,14 @@ test.describe('welcome page (L2-020)', () => {
     await expect.poll(() => welcome.dataPage()).toBe('welcome');
   });
 
-  test('AC2: it lists the ten categories, the three steps, the featured four and the owner panel', async ({
+  test('AC2: it lists the eleven categories, the three steps, the featured four and the owner panel', async ({
     page,
     jb,
   }) => {
     const welcome = new WelcomePage(page);
     await jb.open('welcome');
 
-    // All ten categories as links, in the fixed order
+    // All eleven categories as links, in the fixed order (L2-020)
     await expect(welcome.categoryLinks).toHaveText(categories.map((c) => c.name));
     for (const [index, category] of categories.entries()) {
       await expect(welcome.categoryLinks.nth(index)).toHaveAttribute('href', `/c/${category.slug}`);
@@ -90,7 +90,7 @@ test.describe('welcome page (L2-020)', () => {
     await expect(welcome.countLine).toHaveText(
       'Shops, advisors, trades and more. Free to join, free to list.',
     );
-    await expect(welcome.categoryLinks).toHaveCount(10);
+    await expect(welcome.categoryLinks).toHaveCount(11);
     await expect(welcome.featured).toHaveCount(0);
     await expect(welcome.listYourBusiness).toBeVisible();
   });

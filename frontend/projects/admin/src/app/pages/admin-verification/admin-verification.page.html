@@ -116,6 +116,18 @@
             </div>
           </dl>
         </section>
+        @if (spaceRows(); as rows) {
+          <section jb-card heading="The space" headingId="spc">
+            <dl jb-description-list style="margin-top: var(--space-4)">
+              @for (row of rows; track row.term) {
+                <div jb-description-item [term]="row.term" [value]="row.value"></div>
+              }
+            </dl>
+            <p class="text-caption" style="margin-top: var(--space-3)">
+              The exact address is never shown here; only the renter the owner accepts receives it.
+            </p>
+          </section>
+        }
         <section jb-card heading="Checklist" headingId="chk">
           @if (r.flags.length > 0) {
             <p class="text-caption" style="margin-top: var(--space-2)">
@@ -148,9 +160,11 @@
           class="text-caption"
           style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3)"
         >
-          How members see you
+          {{ r.space ? 'How renters see it' : 'How members see you' }}
         </h2>
-        @if (tile(); as t) {
+        @if (spacePreview(); as space) {
+          <div jb-space-card-preview [space]="space" [verified]="r.stage === 'live'"></div>
+        } @else if (tile(); as t) {
           <div
             jb-business-card-preview
             [name]="r.name"

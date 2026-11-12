@@ -1,6 +1,6 @@
 <jb-dialog
   heading="Confirm {{ firstName }}’s {{ noun }}?"
-  description="Only confirm if you can fulfil “{{ request.title }}”."
+  [description]="description"
   icon="check"
   [busy]="busy()"
   (closed)="close()"
@@ -19,7 +19,9 @@
     <div jb-card variant="well">
       <dl jb-description-list>
         <div jb-description-item term="Customer" [value]="request.customerName"></div>
-        <div jb-description-item [term]="request.kindLabel" [value]="request.title"></div>
+        @if (!isSpace) {
+          <div jb-description-item [term]="request.kindLabel" [value]="request.title"></div>
+        }
         @if (request.when) {
           <div jb-description-item [term]="whenLabel" [value]="request.when"></div>
         }
@@ -30,10 +32,12 @@
         }
       </dl>
     </div>
-    <p class="text-muted">
-      {{ firstName }} is told you’ve confirmed and that you’ll message them about payment and
-      pickup.
-    </p>
+    @if (!isSpace) {
+      <p class="text-muted">
+        {{ firstName }} is told you’ve confirmed and that you’ll message them about payment and
+        pickup.
+      </p>
+    }
   </div>
   <div jb-dialog-footer>
     <button jb-button type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">

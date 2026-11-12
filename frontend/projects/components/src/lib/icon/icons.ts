@@ -30,6 +30,7 @@ export const ICONS = {
   'arrow-up': [path('M12 19V5m0 0-6 6m6-6 6 6')],
   'arrow-up-right': [path('M7 7h10v10M7 17 17 7')],
   bag: [path('M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2')],
+  bed: [path('M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-8v6'), circle(6.5, 11.5, 1.5)],
   eye: [path('M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z'), circle(12, 12, 3)],
   'eye-off': [
     path(
@@ -56,11 +57,13 @@ export const ICONS = {
   home: [path('M3 12 12 3l9 9M5 10v10h14V10')],
   image: [rect(3, 5, 18, 14, 2), circle(9, 10, 1.5), path('m4 18 5-5 4 4 3-3 4 4')],
   info: [circle(12, 12, 9), path('M12 11v5M12 8h.01')],
+  key: [circle(8, 15, 4), path('M11 12l9-9M17 6l3 3M14 9l2 2')],
   lock: [rect(5, 11, 14, 9, 2), path('M8 11V8a4 4 0 0 1 8 0v3')],
   message: [path('M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z')],
   more: [circle(12, 5, 1.5), circle(12, 12, 1.5), circle(12, 19, 1.5)],
   mug: [path('M5 8h11v7a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4zM16 10h2a2 2 0 0 1 0 5h-2M8 4v1M12 4v1')],
   mail: [rect(3, 5, 18, 14, 2), path('m3 7 9 6 9-6')],
+  pin: [path('M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.800-7 11-7 11z'), circle(12, 10, 2.5)],
   play: [path('M6 3 20 12 6 21Z')],
   plus: [path('M12 5v14M5 12h14')],
   refresh: [path('M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4')],

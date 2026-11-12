@@ -70,6 +70,9 @@ public sealed class ListingDraft
 
     public bool Agreed { get; private set; }
 
+    /// <summary>The rental details of a space draft (L2-199); null for a business.</summary>
+    public SpaceDetails? Space { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     public DateTimeOffset UpdatedAt { get; private set; }
@@ -97,9 +100,11 @@ public sealed class ListingDraft
         string? place,
         bool agreed,
         IEnumerable<DraftItem> items,
-        DateTimeOffset now)
+        DateTimeOffset now,
+        SpaceDetails? space = null)
     {
         Kind = kind;
+        Space = kind == ListingKind.Space ? space : null;
         Name = Cut(name, MaxNameLength) ?? string.Empty;
         Tagline = Cut(tagline, MaxTaglineLength) ?? string.Empty;
         CategorySlug = Cut(categorySlug, 60);

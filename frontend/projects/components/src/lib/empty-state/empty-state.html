@@ -3,12 +3,14 @@
 } @else if (icon(); as name) {
   <div class="empty__icon" aria-hidden="true"><svg jb-icon size="lg" [name]="name"></svg></div>
 }
-@if (level() === 1) {
-  <h1 class="empty__title">{{ heading() }}</h1>
-} @else if (level() === 2) {
-  <h2 class="empty__title">{{ heading() }}</h2>
-} @else {
-  <h3 class="empty__title">{{ heading() }}</h3>
+@if (heading(); as heading) {
+  @if (level() === 1) {
+    <h1 class="empty__title">{{ heading }}</h1>
+  } @else if (level() === 2) {
+    <h2 class="empty__title">{{ heading }}</h2>
+  } @else {
+    <h3 class="empty__title">{{ heading }}</h3>
+  }
 }
 <p class="empty__text"><ng-content /></p>
 @if (!loading()) {

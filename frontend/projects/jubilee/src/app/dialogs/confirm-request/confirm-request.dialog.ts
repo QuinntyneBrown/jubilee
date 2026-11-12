@@ -22,10 +22,19 @@ type View = 'form' | 'busy' | 'failed' | 'conflict';
 
 /** What the customer asked for, in the words of a sentence. */
 export function requestNoun(kind: IncomingRequestRow['kind']): string {
-  return kind === 'order' ? 'order' : kind === 'booking' ? 'booking' : 'quote request';
+  return kind === 'order'
+    ? 'order'
+    : kind === 'booking'
+      ? 'booking'
+      : kind === 'space'
+        ? 'request'
+        : 'quote request';
 }
 
-/** ConfirmRequestDialog (L2-052): the owner confirms an order, a booking or a quote request. */
+/**
+ * ConfirmRequestDialog (L2-052): the owner confirms an order, a booking, a quote request or a
+ * space request. Confirming a space gives the member its exact address (L2-207 AC2).
+ */
 @Component({
   selector: 'jb-confirm-request-dialog',
   imports: [
@@ -53,7 +62,12 @@ export class ConfirmRequestDialog {
   protected readonly busy = computed(() => this.view() === 'busy');
   protected readonly firstName = this.request.customerName.split(' ')[0];
   protected readonly noun = requestNoun(this.request.kind);
-  protected readonly whenLabel = this.request.kind === 'booking' ? 'When' : 'Needed by';
+  protected readonly isSpace = this.request.kind === 'space';
+  protected readonly whenLabel =
+    this.request.kind === 'booking' || this.isSpace ? 'When' : 'Needed by';
+  protected readonly description = this.isSpace
+    ? `Only confirm if the space is free then. ${this.firstName} gets your exact address when you confirm.`
+    : `Only confirm if you can fulfil “${this.request.title}”.`;
 
   protected confirm(): void {
     if (this.busy()) return;

@@ -6,7 +6,12 @@
       <h2 [attr.id]="headingId()">{{ heading }}</h2>
     }
     @if (actionLabel(); as label) {
-      <a [routerLink]="actionLink()">{{ label }}</a>
+      <a [routerLink]="actionLink()"
+        >{{ label }}
+        @if (actionHint(); as hint) {
+          <span class="visually-hidden">{{ hint }}</span>
+        }
+      </a>
     }
     <ng-content select="[slot=action]" />
   </div>

@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Request a space
+
+Person(member, "Member", "Renter")
+Person(owner, "Owner", "Host")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "RequestSpaceDialog, Incoming requests, request detail")
+  Container(api, "Jubilee API", "ASP.NET Core", "/api/requests/spaces, /api/requests/{id}, /api/my-business/requests")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Sends queued e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Requests with space fields, Listings with the Space JSON column")
+}
+System_Ext(email, "E-mail provider", "Delivers e-mail")
+Rel(member, web, "Sends and tracks the request", "HTTPS")
+Rel(owner, web, "Confirms or declines", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Reads queued e-mail", "EF Core")
+Rel(worker, email, "Sends", "HTTPS")
+@enduml

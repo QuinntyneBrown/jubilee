@@ -1,0 +1,142 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Request a space
+
+enum RequestKind {
+  Booking
+  Quote
+  Order
+  Space
+}
+
+enum RequestStatus {
+  New
+  Confirmed
+  Declined
+  Cancelled
+  Completed
+}
+
+enum SpaceTerm {
+  ShortStay
+  LongTerm
+  Room
+  Roommate
+}
+
+class Request {
+  +Guid Id
+  +RequestKind Kind
+  +string MemberSubject
+  +Guid ListingId
+  +RequestStatus Status
+  +string IdempotencyKey
+  +string? ServiceName
+  +SpaceTerm? SpaceTerm
+  +DateOnly? CheckIn
+  +DateOnly? CheckOut
+  +DateOnly? MoveIn
+  +int? StayMonths
+  +int? Nights
+  +int? UnitPriceCents
+  +int? TotalCents
+  +string? Note
+  +{static} AskForSpace(...): Request
+  +Confirm(actor, now): void
+  +Decline(actor, now): void
+  +Cancel(actor, now): void
+  +Complete(actor, now): void
+}
+
+class SpaceAddressRelease <<static>> {
+  +IsReleased(request: Request): bool
+}
+
+class RequestSpaceRequest <<record>> {
+  +string? ListingSlug
+  +string? CheckIn
+  +string? CheckOut
+  +string? MoveIn
+  +int? StayMonths
+  +string? Note
+  +string? IdempotencyKey
+}
+
+class RequestSpaceCommand <<record>> {
+  +string Subject
+  +string Name
+  +string ListingSlug
+  +string? CheckIn
+  +string? CheckOut
+  +string? MoveIn
+  +int? StayMonths
+  +string? Note
+  +string? IdempotencyKey
+}
+
+class RequestSpaceCommandHandler {
+  +int MaxDaysAhead = 365
+  +Handle(command): BookedRequestDto
+}
+
+class BookedRequestDto <<record>> {
+  +Guid Id
+  +string Status
+  +string StatusLabel
+}
+
+class IncomingRules <<static>> {
+  +KindLabel(kind): string
+  +Title(request): string
+  +SpaceWhen(request): string
+  +SpaceTotal(request): string?
+}
+
+class MemberRequestDetailDto <<record>> {
+  +Guid Id
+  +string Kind
+  +string Title
+  +string Status
+  +CalloutDto Callout
+  +IReadOnlyList<DetailLineDto> Details
+}
+
+class SpaceDetails <<owned type, JSON column Space>> {
+  +SpaceTerm Term
+  +int Rent
+  +int MinimumStay
+  +string Neighbourhood
+  +string Address
+}
+
+class Listing {
+  +Guid Id
+  +string? OwnerId
+  +SpaceDetails? Space
+}
+
+Request --> RequestKind
+Request --> RequestStatus
+Request --> SpaceTerm
+Request "*" --> "1" Listing : asks for
+Listing *-- "0..1" SpaceDetails
+RequestSpaceRequest ..> RequestSpaceCommand : mapped by RequestsController
+RequestSpaceCommandHandler ..> RequestSpaceCommand : handles
+RequestSpaceCommandHandler ..> Request : creates with AskForSpace
+RequestSpaceCommandHandler ..> SpaceDetails : reads rent and minimum stay
+RequestSpaceCommandHandler ..> BookedRequestDto : returns
+SpaceAddressRelease ..> Request : reads Kind and Status
+IncomingRules ..> Request : words
+MemberRequestDetailDto ..> SpaceDetails : Address line only when released
+@enduml

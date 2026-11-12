@@ -1,0 +1,62 @@
+@startuml
+title UML sequence behaviour — Owner confirms and the address is released
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as owner
+actor "Member" as member
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ConfirmRequestDialog" as confirm
+  participant "RequestDetailPage" as detail
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "IncomingRequestsController" as incoming
+  participant "RequestsController" as requests
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ConfirmRequestCommandHandler" as confirmh
+  participant "GetRequestQueryHandler" as get
+  participant "SpaceAddressRelease" as release
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+member -> detail : Open /requests/:id while New
+detail -> requests : GET /api/requests/{id}
+requests -> get : Send GetRequestQuery
+get -> db : Load the member's request (404 for another member, L2-133)
+get -> release : IsReleased(request)
+release --> get : false, status New
+get --> requests : Details "Address: Shared once {owner first name} accepts.", no address (L2-208)
+requests --> detail : 200 OK
+owner -> confirm : Press "Confirm" on the space request
+confirm --> owner : "Only confirm if the space is free then. {Customer} gets your exact address when you confirm." (L2-207)
+owner -> confirm : "Confirm request"
+confirm -> incoming : POST /api/my-business/requests/{id}/confirm
+incoming -> confirmh : Send ConfirmRequestCommand (owner check, L2-133)
+confirmh -> db : New to Confirmed, member notification without address (L2-052)
+member -> detail : Open /requests/:id again
+detail -> requests : GET /api/requests/{id}
+requests -> get : Send GetRequestQuery
+get -> release : IsReleased(request)
+release --> get : true, kind Space and status Confirmed
+get -> db : Read SpaceDetails.Address of the listing now
+get --> requests : Details "Address: {exact address}", callout "{owner} accepted" / "The address is {exact address}." (L2-208)
+requests --> detail : 200 OK
+detail --> member : Address shown
+note over release
+  Another member cannot load the request (404); after a cancel or
+  decline IsReleased is false and no address is in the response.
+end note
+@enduml

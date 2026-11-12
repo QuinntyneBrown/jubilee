@@ -5,6 +5,9 @@ public enum ListingKind
 {
     Services = 0,
     Shop = 1,
+
+    /// <summary>A room, suite, apartment, house or hall to rent, in "Rooms & rentals" (L2-197).</summary>
+    Space = 2,
 }
 
 /// <summary>

@@ -1,0 +1,109 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Browse spaces
+
+class SpaceCardDto <<record>> {
+  +string Slug
+  +string Name
+  +string Term
+  +int Rent
+  +string Per
+  +IReadOnlyList<string> Facts
+  +string Neighbourhood
+  +string Available
+  +string? CoverPhoto
+  +{static} From(listing: Listing): SpaceCardDto
+}
+
+class RoomsShelfDto <<record>> {
+  +int Count
+  +IReadOnlyList<SpaceCardDto> Spaces
+}
+
+class BrowseHomeDto <<record>> {
+  +int LiveBusinessCount
+  +IReadOnlyList<CategoryLinkDto> Categories
+  +IReadOnlyList<BusinessCardDto> Featured
+  +IReadOnlyList<ProductCardDto> Products
+  +IReadOnlyList<CategoryGroupDto> Groups
+  +RoomsShelfDto Rooms
+}
+
+class CategoryPageResult <<record>> {
+  +CategoryLinkDto Category
+  +int TotalCount
+  +int MatchCount
+  +string? Term
+  +int Page
+  +int PageCount
+  +IReadOnlyList<BusinessCardDto> Businesses
+  +IReadOnlyList<SpaceCardDto> Spaces
+}
+
+class GetCategoryListingsQuery <<record>> {
+  +string Slug
+  +CategoryFilterSet Filters
+  +ListingSort Sort
+  +int Page
+  +SpaceTerm? Term
+  +{static} FromUntrusted(slug, offers, areas, sort, page, term): GetCategoryListingsQuery
+}
+
+class SearchHit <<record>> {
+  +string Kind
+  +string Name
+  +string Slug
+  +string CategorySlug
+  +MatchExplanation? Explanation
+  +SpaceCardDto? Space
+}
+
+class Listing {
+  +string Slug
+  +string Name
+  +string Tagline
+  +ListingKind Kind
+  +DateTimeOffset? ApprovedAt
+  +SpaceDetails? Space
+}
+
+class SpaceDetails <<owned type, JSON column Space>> {
+  +SpaceTerm Term
+  +int Rent
+  +string Available
+  +string Neighbourhood
+  +string Place
+  +List<string> Facts
+  +string Address
+}
+
+class SpaceTerms <<static>> {
+  +All: IReadOnlyList<SpaceTerm>
+  +Per(term): string
+}
+
+class WireValues <<static>> {
+  +ParseTerm(wire: string?): SpaceTerm?
+  +Of(term: SpaceTerm): string
+}
+
+BrowseHomeDto *-- "0..1" RoomsShelfDto
+RoomsShelfDto *-- "0..20" SpaceCardDto
+CategoryPageResult *-- "0..16" SpaceCardDto
+SearchHit *-- "0..1" SpaceCardDto
+GetCategoryListingsQuery ..> WireValues : parses term with
+Listing *-- "0..1" SpaceDetails
+SpaceCardDto ..> Listing : projects, never Address
+SpaceCardDto ..> SpaceTerms : reads Per
+@enduml

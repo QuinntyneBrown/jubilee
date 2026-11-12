@@ -24,16 +24,19 @@ import { Spinner } from '../spinner/spinner';
     class: 'empty',
     '[class.empty--error]': 'error()',
     '[class.empty--compact]': 'compact()',
-    '[attr.role]': 'error() ? "alert" : loading() ? "status" : null',
+    '[attr.role]': 'error() ? "alert" : loading() || status() ? "status" : null',
   },
   templateUrl: './empty-state.html',
   styleUrl: './empty-state.scss',
 })
 export class EmptyState {
   readonly icon = input<IconName | null>(null);
-  readonly heading = input.required<string>();
+  /** The title; a compact block that only says why a list is empty has none. */
+  readonly heading = input<string | null>(null);
   readonly level = input<1 | 2 | 3>(2);
   readonly compact = input(false, { transform: booleanAttribute });
   readonly error = input(false, { transform: booleanAttribute });
   readonly loading = input(false, { transform: booleanAttribute });
+  /** Announces the block as a status: it replaced a list the member just filtered. */
+  readonly status = input(false, { transform: booleanAttribute });
 }

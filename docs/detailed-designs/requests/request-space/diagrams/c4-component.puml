@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Request a space
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "RequestSpaceDialog", "CDK dialog", "Term dates, Short stay total, note, sent state")
+  Component(confirm, "ConfirmRequestDialog", "CDK dialog", "Warns that the address is shared on confirm")
+  Component(detail, "RequestDetailPage", "Angular page", "Details with Address or Shared once accepted")
+  Component(client, "RequestsApi and IncomingRequestsApi", "Typed HTTP clients", "Request, confirm and read")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(requests, "RequestsController", "ASP.NET Core controller", "POST /api/requests/spaces and GET /api/requests/{id}")
+  Component(incoming, "IncomingRequestsController", "ASP.NET Core controller", "Confirm and decline")
+  Component(ask, "RequestSpaceCommandHandler", "MediatR handler", "Checks, validates, computes the total, creates the request, tells the owner")
+  Component(rules, "IncomingRules", "Static wording", "KindLabel, Title, SpaceWhen, SpaceTotal")
+  Component(confirmh, "ConfirmRequestCommandHandler", "MediatR handler", "New to Confirmed")
+  Component(get, "GetRequestQueryHandler", "MediatR handler", "Builds MemberRequestDetailDto")
+  Component(release, "SpaceAddressRelease", "Domain rule", "Kind Space and status Confirmed or Completed")
+  Component(entity, "Request", "Domain entity", "AskForSpace and the shared lifecycle")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Requests, Listings, notifications and queued e-mail")
+
+Rel(dialog, client, "requestSpace")
+Rel(confirm, client, "confirm")
+Rel(detail, client, "get")
+Rel(client, requests, "POST /api/requests/spaces, GET /api/requests/{id}", "JSON/HTTPS")
+Rel(client, incoming, "POST /api/my-business/requests/{id}/confirm", "JSON/HTTPS")
+Rel(requests, ask, "Sends RequestSpaceCommand")
+Rel(ask, entity, "Creates with AskForSpace")
+Rel(ask, rules, "Words the notification and e-mail with")
+Rel(incoming, confirmh, "Sends ConfirmRequestCommand")
+Rel(confirmh, entity, "Confirm")
+Rel(requests, get, "Sends GetRequestQuery")
+Rel(get, rules, "Words When and Total with")
+Rel(get, release, "Asks IsReleased")
+Rel(ask, db, "Persists", "EF Core")
+Rel(get, db, "Reads the request and the listing", "EF Core")
+@enduml

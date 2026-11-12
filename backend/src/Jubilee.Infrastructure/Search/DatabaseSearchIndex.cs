@@ -1,4 +1,5 @@
 using Jubilee.Application.Abstractions;
+using Jubilee.Application.Directory;
 using Jubilee.Application.Search;
 using Jubilee.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,26 @@ public sealed class DatabaseSearchIndex(IAppDbContext db) : ISearchIndex
                 fields.Add(("description", listing.About));
             }
 
+            // A space is found by its neighbourhood, the space and its key facts; never by its address (L2-204).
+            if (listing.Space is { } space)
+            {
+                if (Matches(stems, space.Neighbourhood))
+                {
+                    fields.Add(("neighbourhood", space.Neighbourhood));
+                }
+
+                if (Matches(stems, space.Place))
+                {
+                    fields.Add(("the space", space.Place));
+                }
+
+                var fact = space.Facts.FirstOrDefault(f => Matches(stems, f));
+                if (fact is not null)
+                {
+                    fields.Add(("key facts", fact));
+                }
+            }
+
             if (matchedServices.Count > 0)
             {
                 fields.Add((Count(matchedServices.Count, "service"), matchedServices[0].Name));
@@ -62,7 +83,8 @@ public sealed class DatabaseSearchIndex(IAppDbContext db) : ISearchIndex
             {
                 businessHits.Add(new SearchHit(
                     SearchResultKind.Business, listing.Name, listing.Slug, null, listing.Name, listing.CategorySlug,
-                    Explain(stems, fields.Select(f => f.Source), fields.Select(f => f.Label))));
+                    Explain(stems, fields.Select(f => f.Source), fields.Select(f => f.Label)),
+                    listing.Space is null ? null : SpaceCardDto.From(listing)));
             }
 
             serviceHits.AddRange(matchedServices.Select(s => new SearchHit(

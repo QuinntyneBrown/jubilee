@@ -1,0 +1,4 @@
+// Block: space-card, as a preview. The host is the card; it is not a link.
+@use './space-card-base' as base;
+
+@include base.card;

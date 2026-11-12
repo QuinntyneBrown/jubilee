@@ -20,6 +20,9 @@ export class AdminVerificationPage extends AdminShellPage implements Screen {
   readonly reference: Locator;
   readonly tryAgain: Locator;
   readonly preview: Locator;
+  readonly space: Locator;
+  readonly spacePreview: Locator;
+  readonly previewHeading: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -38,6 +41,17 @@ export class AdminVerificationPage extends AdminShellPage implements Screen {
     this.reference = this.main.locator('code');
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.preview = this.main.locator('aside .biz-card');
+    this.space = this.main.locator('section[aria-labelledby="spc"]');
+    this.spacePreview = this.main.locator('aside .space-card');
+    this.previewHeading = this.main.locator('aside h2');
+  }
+
+  /** The value of one row of the space card, by its term. */
+  spaceRow(term: string): Locator {
+    return this.space
+      .locator('.dl__item')
+      .filter({ has: this.page.getByText(term, { exact: true }) })
+      .locator('dd');
   }
 
   check(label: string | RegExp): Locator {

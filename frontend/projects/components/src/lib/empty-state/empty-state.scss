@@ -41,6 +41,10 @@
   overflow-wrap: anywhere;
 }
 
+.empty__actions:empty {
+  display: none;
+}
+
 .empty__actions {
   display: flex;
   gap: var(--space-3);

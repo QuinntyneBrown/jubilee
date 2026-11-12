@@ -74,9 +74,10 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Browse a category](directory/browse-category/README.md) | `L2-023`, `L2-024`, `L2-025`, `L2-026`, `L2-028`, `L2-113`, `L2-118` |
-| [Browse home](directory/browse-home/README.md) | `L2-021`, `L2-022`, `L2-027`, `L2-028`, `L2-012`, `L2-106`, `L2-118`, `L2-156` |
-| [Search the directory](directory/search-directory/README.md) | `L2-029`, `L2-030`, `L2-031`, `L2-032`, `L2-028`, `L2-118`, `L2-133`, `L2-181` |
+| [Browse a category](directory/browse-category/README.md) | `L2-023`, `L2-024`, `L2-025`, `L2-026`, `L2-028`, `L2-113`, `L2-118`, `L2-202` |
+| [Browse home](directory/browse-home/README.md) | `L2-021`, `L2-022`, `L2-027`, `L2-028`, `L2-012`, `L2-106`, `L2-118`, `L2-156`, `L2-201` |
+| [Browse spaces](directory/browse-spaces/README.md) | `L2-197`, `L2-201`, `L2-202`, `L2-203`, `L2-204`, `L2-208`, `L2-026`, `L2-028`, `L2-118`, `L2-156` |
+| [Search the directory](directory/search-directory/README.md) | `L2-029`, `L2-030`, `L2-031`, `L2-032`, `L2-028`, `L2-118`, `L2-133`, `L2-181`, `L2-204` |
 | [View welcome page](directory/view-welcome-page/README.md) | `L2-020`, `L2-028`, `L2-027`, `L2-106` |
 
 ### interaction-states
@@ -96,8 +97,9 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Report a listing](listings/report-listing/README.md) | `L2-039`, `L2-126`, `L2-128`, `L2-132`, `L2-133` |
 | [Save a listing](listings/save-listing/README.md) | `L2-041`, `L2-042`, `L2-005`, `L2-012`, `L2-118`, `L2-133` |
 | [Share a listing](listings/share-listing/README.md) | `L2-038`, `L2-028`, `L2-130` |
-| [View a business page](listings/view-business-page/README.md) | `L2-033`, `L2-034`, `L2-037`, `L2-040`, `L2-028`, `L2-118`, `L2-133` |
+| [View a business page](listings/view-business-page/README.md) | `L2-033`, `L2-034`, `L2-037`, `L2-040`, `L2-028`, `L2-118`, `L2-133`, `L2-205` |
 | [View a product](listings/view-product/README.md) | `L2-035`, `L2-036`, `L2-028`, `L2-118` |
+| [View a space](listings/view-space/README.md) | `L2-205`, `L2-206`, `L2-208`, `L2-012`, `L2-028`, `L2-037`, `L2-118` |
 
 ### messaging
 
@@ -129,7 +131,8 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Describe a listing](onboarding/describe-listing/README.md) | `L2-071`, `L2-072`, `L2-073`, `L2-076`, `L2-005`, `L2-126`, `L2-133` |
+| [Describe a listing](onboarding/describe-listing/README.md) | `L2-071`, `L2-072`, `L2-073`, `L2-076`, `L2-005`, `L2-126`, `L2-133`, `L2-198` |
+| [Describe a space](onboarding/describe-space/README.md) | `L2-197`, `L2-198`, `L2-199`, `L2-200`, `L2-076`, `L2-077`, `L2-126`, `L2-133` |
 | [Save a draft](onboarding/save-draft/README.md) | `L2-077`, `L2-118`, `L2-133`, `L2-182` |
 | [Submit for verification](onboarding/submit-for-verification/README.md) | `L2-078`, `L2-079`, `L2-005`, `L2-126`, `L2-127`, `L2-132` |
 
@@ -155,7 +158,7 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 
 | Feature | L2 requirements cited |
 |---|---|
-| [Edit a listing](owner-workspace/edit-listing/README.md) | `L2-087`, `L2-088`, `L2-126`, `L2-127`, `L2-133`, `L2-138` |
+| [Edit a listing](owner-workspace/edit-listing/README.md) | `L2-087`, `L2-088`, `L2-126`, `L2-127`, `L2-133`, `L2-138`, `L2-209`, `L2-208` |
 | [Manage products](owner-workspace/manage-products/README.md) | `L2-089`, `L2-090`, `L2-091`, `L2-092`, `L2-132`, `L2-133`, `L2-128`, `L2-129` |
 | [Manage services](owner-workspace/manage-services/README.md) | `L2-093`, `L2-094`, `L2-095`, `L2-090`, `L2-132`, `L2-133`, `L2-129` |
 | [Pause and resume a listing](owner-workspace/pause-listing/README.md) | `L2-096`, `L2-028`, `L2-067`, `L2-129`, `L2-133` |
@@ -184,10 +187,11 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Cancel a request](requests/cancel-request/README.md) | `L2-049`, `L2-043`, `L2-129`, `L2-128`, `L2-133` |
 | [Confirm a request](requests/confirm-request/README.md) | `L2-052`, `L2-043`, `L2-129`, `L2-128`, `L2-133` |
 | [Decline a request](requests/decline-request/README.md) | `L2-053`, `L2-043`, `L2-129`, `L2-128`, `L2-133` |
-| [Handle incoming requests](requests/handle-incoming-requests/README.md) | `L2-051`, `L2-054`, `L2-043`, `L2-133`, `L2-070`, `L2-182` |
+| [Handle incoming requests](requests/handle-incoming-requests/README.md) | `L2-051`, `L2-054`, `L2-043`, `L2-133`, `L2-070`, `L2-182`, `L2-207` |
 | [Request an item](requests/request-item/README.md) | `L2-046`, `L2-043`, `L2-005`, `L2-132`, `L2-133` |
 | [Request a quote](requests/request-quote/README.md) | `L2-045`, `L2-043`, `L2-005`, `L2-126`, `L2-132` |
-| [Track requests](requests/track-requests/README.md) | `L2-043`, `L2-047`, `L2-048`, `L2-133`, `L2-118`, `L2-070`, `L2-182` |
+| [Request a space](requests/request-space/README.md) | `L2-206`, `L2-207`, `L2-208`, `L2-043`, `L2-052`, `L2-053`, `L2-005`, `L2-132`, `L2-133` |
+| [Track requests](requests/track-requests/README.md) | `L2-043`, `L2-047`, `L2-048`, `L2-133`, `L2-118`, `L2-070`, `L2-182`, `L2-207`, `L2-208` |
 
 ### responsive-design
 

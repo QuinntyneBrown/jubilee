@@ -1,4 +1,4 @@
-import { AreaServed, CategoryQuery, ListingSort, OfferFilter } from './directory';
+import { AreaServed, CategoryQuery, ListingSort, OfferFilter, SpaceTerm } from './directory';
 
 /** The allowed filter values with the words the page shows for them. */
 export const OFFERS: readonly { value: OfferFilter; label: string }[] = [
@@ -21,7 +21,21 @@ export const SORTS: readonly { value: ListingSort; label: string }[] = [
   { value: 'name', label: 'Name A–Z' },
 ];
 
-export const DEFAULT_QUERY: CategoryQuery = { offers: [], areas: [], sort: 'recommended', page: 1 };
+/** The terms a space is rented on, in their fixed order (L2-197). */
+export const SPACE_TERM_VALUES: readonly SpaceTerm[] = [
+  'short-stay',
+  'long-term',
+  'room',
+  'roommate',
+];
+
+export const DEFAULT_QUERY: CategoryQuery = {
+  offers: [],
+  areas: [],
+  sort: 'recommended',
+  page: 1,
+  term: null,
+};
 
 function list<T extends string>(raw: string | null, allowed: readonly { value: T }[]): T[] {
   const values = (raw ?? '').split(',').map((value) => value.trim().toLowerCase());
@@ -36,11 +50,14 @@ function list<T extends string>(raw: string | null, allowed: readonly { value: T
 export function parseCategoryQuery(params: { get(name: string): string | null }): CategoryQuery {
   const sort = params.get('sort');
   const page = Number(params.get('page'));
+  const term = params.get('term')?.trim().toLowerCase() ?? null;
   return {
     offers: list(params.get('offers'), OFFERS),
     areas: list(params.get('areas'), AREAS),
     sort: SORTS.some((s) => s.value === sort) ? (sort as ListingSort) : 'recommended',
     page: Number.isInteger(page) && page > 1 ? page : 1,
+    // An unknown term is ignored (L2-202 AC2).
+    term: SPACE_TERM_VALUES.find((value) => value === term) ?? null,
   };
 }
 
@@ -51,5 +68,6 @@ export function categoryQueryParams(query: CategoryQuery): Record<string, string
   if (query.areas.length) params['areas'] = query.areas.join(',');
   if (query.sort !== 'recommended') params['sort'] = query.sort;
   if (query.page > 1) params['page'] = `${query.page}`;
+  if (query.term) params['term'] = query.term;
   return params;
 }

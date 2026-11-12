@@ -1,0 +1,144 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Describe a space
+
+enum ListingKind {
+  Services
+  Shop
+  Space
+}
+
+enum SpaceTerm {
+  ShortStay
+  LongTerm
+  Room
+  Roommate
+}
+
+class SpaceDetails <<owned type, JSON column Space>> {
+  +SpaceTerm Term
+  +int Rent
+  +string Available
+  +int MinimumStay
+  +string Neighbourhood
+  +string Address
+  +string Place
+  +List<string> Facts
+  +List<string> Included
+  +string? Household
+  +List<string> Rules
+  +string MinimumStayLabel
+  +{static} Create(...): SpaceDetails
+}
+
+class SpaceTerms <<static>> {
+  +int MaxRent = 50000
+  +int MaxFacts = 4
+  +int MaxRules = 8
+  +int MaxLineLength = 60
+  +All: IReadOnlyList<SpaceTerm>
+  +Places: IReadOnlyList<string>
+  +Inclusions: IReadOnlyList<string>
+  +StayChoices: IReadOnlyList<int>
+  +IsNightly(term): bool
+  +Per(term): string
+  +MinimumStayChoices(term): IReadOnlyList<int>
+  +MinimumStayLabel(term, count): string
+  +AsksForHousehold(term): bool
+  +CallToAction(term): string
+}
+
+class ListingDraft {
+  +Guid Id
+  +string OwnerSubject
+  +ListingKind Kind
+  +string Name
+  +string Tagline
+  +string? CategorySlug
+  +bool Agreed
+  +SpaceDetails? Space
+  +Save(...): void
+}
+
+class Listing {
+  +Guid Id
+  +string Slug
+  +ListingKind Kind
+  +string CategorySlug
+  +ListingStage Stage
+  +SpaceDetails? Space
+  +DescribeSpace(space: SpaceDetails): void
+}
+
+class Category <<record>> {
+  +string Slug
+  +string Name
+  +{static} All: IReadOnlyList<Category>
+  +{static} RoomsSlug = "rooms-rentals"
+}
+
+class DraftInput <<record>> {
+  +string? Kind
+  +string? Name
+  +string? Tagline
+  +SpaceInput? Space
+}
+
+class SpaceInput <<record>> {
+  +string? Term
+  +int? Rent
+  +string? Available
+  +int? MinimumStay
+  +string? Neighbourhood
+  +string? Address
+  +string? Place
+  +IReadOnlyList<string>? Facts
+  +IReadOnlyList<string>? Included
+  +string? Household
+  +IReadOnlyList<string>? Rules
+}
+
+class SpaceDraftDto <<record>> {
+  +string Term
+  +int? Rent
+  +string Available
+  +int MinimumStay
+  +string Neighbourhood
+  +string Address
+  +string Place
+  +IReadOnlyList<string> Facts
+  +IReadOnlyList<string> Included
+  +string? Household
+  +IReadOnlyList<string> Rules
+}
+
+class Drafts <<static>> {
+  +ValidateSpace(space: SpaceInput?, errors: Dictionary<string,string>): void
+  +SpaceFrom(space: SpaceInput?): SpaceDetails
+  +TermOf(space: SpaceInput?): SpaceTerm
+}
+
+ListingDraft --> ListingKind : has
+Listing --> ListingKind : has
+ListingDraft *-- "0..1" SpaceDetails : owns
+Listing *-- "0..1" SpaceDetails : owns
+SpaceDetails --> SpaceTerm : has
+SpaceTerms ..> SpaceTerm : rules for
+Listing "*" --> "1" Category : filed under
+DraftInput *-- "0..1" SpaceInput
+Drafts ..> SpaceInput : validates
+Drafts ..> SpaceTerms : reads
+Drafts ..> SpaceDetails : produces
+SpaceDraftDto ..> SpaceDetails : projects for the owner, with Address
+@enduml

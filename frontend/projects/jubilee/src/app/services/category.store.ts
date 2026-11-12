@@ -9,6 +9,7 @@ import {
   DIRECTORY_API,
   ListingSort,
   OfferFilter,
+  SpaceTerm,
   categoryQueryParams,
   parseCategoryQuery,
 } from 'api';
@@ -57,7 +58,7 @@ export class CategoryStore {
     // A query string that says the same thing another way (a page below 1, a value outside
     // the allowed set) is rewritten to the one form that is shared and cached.
     const canonical = categoryQueryParams(query);
-    const differs = ['offers', 'areas', 'sort', 'page'].some(
+    const differs = ['offers', 'areas', 'sort', 'page', 'term'].some(
       (name) => (params.get(name) ?? undefined) !== canonical[name],
     );
     if (differs) return this.navigate(query, true);
@@ -76,6 +77,7 @@ export class CategoryStore {
       next: (value) => {
         this.updating.set(false);
         this.hints.rememberCategory(value.businesses, value.category.slug);
+        this.hints.rememberSpaces(value.spaces);
         this.currentState.set({ status: 'loaded', value });
         // The server replaces an out-of-range page with the nearest valid one (L2-026).
         if (value.page !== query.page) this.navigate({ ...query, page: value.page }, true);
@@ -118,7 +120,12 @@ export class CategoryStore {
 
   /** Applies a set of filters, and optionally a sort order; both return to page 1. */
   applyFilters(filters: CategoryFilters, sort: ListingSort = this.currentQuery().sort): void {
-    this.navigate({ offers: filters.offers, areas: filters.areas, sort, page: 1 });
+    this.navigate({ offers: filters.offers, areas: filters.areas, sort, page: 1, term: null });
+  }
+
+  /** Rooms & rentals: lists one term, or every term with null; back to page 1 (L2-202 AC2). */
+  chooseTerm(term: SpaceTerm | null): void {
+    this.navigate({ ...this.currentQuery(), term, page: 1 });
   }
 
   sortBy(sort: ListingSort): void {

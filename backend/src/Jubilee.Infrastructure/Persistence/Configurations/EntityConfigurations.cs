@@ -35,6 +35,13 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.Delivery).HasMaxLength(200);
         builder.Property(l => l.MadeToOrder).HasMaxLength(200);
         builder.HasIndex(l => new { l.CategorySlug, l.Stage });
+
+        // A space's rental details are one JSON column; a business has none (ADR 0042).
+        builder.OwnsOne(l => l.Space, s =>
+        {
+            s.ToJson("Space");
+            s.Ignore(x => x.MinimumStayLabel);
+        });
     }
 }
 
@@ -444,6 +451,8 @@ public sealed class RequestConfiguration : IEntityTypeConfiguration<Request>
         builder.Property(r => r.Kind).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Status).HasConversion<string>().HasMaxLength(16);
         builder.Property(r => r.Mode).HasConversion<string>().HasMaxLength(16);
+        builder.Property(r => r.SpaceTerm).HasConversion<string>().HasMaxLength(16);
+        builder.Ignore(r => r.Nights);
         builder.HasIndex(r => new { r.MemberSubject, r.IdempotencyKey }).IsUnique();
         builder.HasIndex(r => new { r.MemberSubject, r.CreatedAt });
         builder.HasIndex(r => new { r.ListingId, r.CreatedAt });
@@ -499,6 +508,13 @@ public sealed class ListingDraftConfiguration : IEntityTypeConfiguration<Listing
         builder.HasIndex(d => d.UpdatedAt);
         builder.HasMany(d => d.Items).WithOne().HasForeignKey(i => i.ListingDraftId).OnDelete(DeleteBehavior.Cascade);
         builder.Navigation(d => d.Items).UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        // A space draft keeps its rental details as one JSON column, like its listing (ADR 0042).
+        builder.OwnsOne(d => d.Space, s =>
+        {
+            s.ToJson("Space");
+            s.Ignore(x => x.MinimumStayLabel);
+        });
     }
 }
 

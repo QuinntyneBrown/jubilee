@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-/** The confirm dialog (L2-052): the owner confirms an order, a booking or a quote request. */
+/** The confirm dialog (L2-052): the owner confirms an order, a booking, a quote or a space request. */
 export class ConfirmRequestDialog {
   readonly root: Locator;
   readonly title: Locator;
@@ -19,7 +19,7 @@ export class ConfirmRequestDialog {
     this.alert = this.root.getByRole('alert');
     this.notYet = this.root.getByRole('button', { name: 'Not yet' });
     this.confirm = this.root.getByRole('button', {
-      name: /^Confirm (order|booking|quote request)$/,
+      name: /^Confirm (order|booking|quote request|request)$/,
     });
     this.tryAgain = this.root.getByRole('button', { name: 'Try again' });
   }

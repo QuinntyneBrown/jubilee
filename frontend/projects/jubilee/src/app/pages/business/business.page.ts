@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { LISTINGS_API, ListingPage, ReplyTimeBand } from 'api';
+import { LISTINGS_API, ListingPage, ReplyTimeBand, SpaceDetails } from 'api';
 import {
   BusinessCard,
   CountPipe,
@@ -40,6 +40,19 @@ import {
   DescriptionItem,
   CardGrid,
   CardGridSkeleton,
+  BookingBar,
+  BookingCard,
+  BookingSent,
+  DetailHeadKicker,
+  HostCard,
+  HouseRules,
+  Household,
+  IncludedList,
+  SpaceCard,
+  SpaceFacts,
+  TERM_TILES,
+  availability,
+  formatRent,
 } from 'components';
 import { Subscription } from 'rxjs';
 import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
@@ -48,6 +61,10 @@ import {
   ReportListingDialog,
 } from '../../dialogs/report-listing/report-listing.dialog';
 import { RequestQuoteDialog } from '../../dialogs/request-quote/request-quote.dialog';
+import {
+  RequestSpaceData,
+  RequestSpaceDialog,
+} from '../../dialogs/request-space/request-space.dialog';
 import {
   ShareListingData,
   ShareListingDialog,
@@ -123,6 +140,15 @@ interface DetailRow {
     DescriptionItem,
     CardGrid,
     CardGridSkeleton,
+    BookingBar,
+    BookingCard,
+    DetailHeadKicker,
+    HostCard,
+    HouseRules,
+    Household,
+    IncludedList,
+    SpaceCard,
+    SpaceFacts,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
@@ -139,10 +165,8 @@ export class BusinessPage {
   private readonly dialog = inject(Dialog);
   private readonly savedStore = inject(SavedStore);
   private slug = '';
-  /** Which dialog the address asks for: /b/:slug/message or /b/:slug/book. */
-  private readonly composing = signal<'message' | 'book' | 'quote' | 'share' | 'report' | null>(
-    null,
-  );
+  /** Which dialog the address asks for: /b/:slug/message, /book, /request (a space) and so on. */
+  private readonly composing = signal<Composing | null>(null);
   private composeRef?: { close: () => void };
 
   protected readonly state = signal<LoadState<ListingPage>>({ status: 'loading' });
@@ -158,12 +182,38 @@ export class BusinessPage {
     );
   });
 
-  /** What the page calls the listing: a shop, or a business. Known before it loads when the
-   * listing was reached from a list (L2-034 AC4). */
+  /** What the page calls the listing: a shop, a space or a business. Known before it loads when
+   * the listing was reached from a list (L2-034 AC4, L2-205 AC5). */
   protected readonly thing = computed(() => {
     const state = this.state();
     const kind = state.status === 'loaded' ? state.value.kind : this.hints.kindOf(this.slugValue());
-    return kind === 'shop' ? 'shop' : 'business';
+    return kind === 'shop' ? 'shop' : kind === 'space' ? 'space' : 'business';
+  });
+
+  /** The rows under the facts of a space (L2-205 AC1): when, how long, where and the rent. */
+  protected readonly spaceRows = computed<DetailRow[]>(() => {
+    const state = this.state();
+    const space = state.status === 'loaded' ? state.value.space : null;
+    if (!space) return [];
+    const available = availability(space.term, space.available);
+    const rows: (DetailRow | null)[] = [
+      row('Available', available === 'Available now' ? 'Now' : available),
+      row('Minimum stay', space.minimumStayLabel),
+      row('Neighbourhood', space.neighbourhood),
+      row('Rent', `${formatRent(space.rent)} per ${space.per}`),
+    ];
+    return rows.filter((r): r is DetailRow => r !== null);
+  });
+
+  /** The member's open request on the space: the card says it went (L2-206). */
+  protected readonly sent = computed<BookingSent | null>(() => {
+    const state = this.state();
+    if (state.status !== 'loaded' || !state.value.openRequestId) return null;
+    const listing = state.value;
+    return {
+      heading: `Sent to ${hostFirstName(listing)}`,
+      text: `You’ll hear back in Messages, ${replies(listing)}. The exact address is shared once they accept.`,
+    };
   });
 
   protected readonly tile = computed(() => {
@@ -195,9 +245,8 @@ export class BusinessPage {
     });
     const urls = this.route.url.subscribe((segments) =>
       this.composing.set(
-        segments.length === 3 &&
-          ['message', 'book', 'quote', 'share', 'report'].includes(segments[2].path)
-          ? (segments[2].path as 'message' | 'book' | 'quote' | 'share' | 'report')
+        segments.length === 3 && (COMPOSING as readonly string[]).includes(segments[2].path)
+          ? (segments[2].path as Composing)
           : null,
       ),
     );
@@ -208,6 +257,7 @@ export class BusinessPage {
         if (composing && state.status === 'loaded' && !this.composeRef) {
           if (composing === 'book' || composing === 'quote')
             this.openRequest(state.value, composing);
+          else if (composing === 'request') this.openSpaceRequest(state.value);
           else if (composing === 'share') this.openShare(state.value);
           else if (composing === 'report') this.openReport(state.value);
           else this.compose(state.value);
@@ -360,6 +410,60 @@ export class BusinessPage {
     ref.closed.subscribe(leave);
   }
 
+  /**
+   * The call to action of a space (L2-206): a member asks for it in a dialog by its term; a
+   * visitor is asked to join or sign in first and comes back to the same dialog (AC2). A sent
+   * request turns the booking card into "Sent to …" (AC9).
+   */
+  private openSpaceRequest(listing: ListingPage): void {
+    const space = listing.space;
+    if (!space || listing.openRequestId || listing.viewerRelation === 'owner') {
+      this.leaveDialog();
+      return;
+    }
+    if (!this.session.member()) {
+      const ref = this.dialog.open<void, SignInRequiredData>(SignInRequiredDialog, {
+        data: { title: `Join to request ${listing.name}`, returnUrl: `/b/${this.slug}/request` },
+        ariaLabelledBy: 'dlg-title',
+        ariaDescribedBy: 'dlg-desc',
+        ariaModal: true,
+        backdropClass: 'backdrop',
+      });
+      this.composeRef = ref;
+      ref.closed.subscribe(() => this.leaveDialog());
+      return;
+    }
+    const ref = this.dialog.open<string, RequestSpaceData>(RequestSpaceDialog, {
+      data: {
+        slug: listing.slug,
+        name: listing.name,
+        neighbourhood: space.neighbourhood,
+        term: space.term,
+        rent: space.rent,
+        minimumStay: space.minimumStay,
+        minimumStayLabel: space.minimumStayLabel,
+        callToAction: space.callToAction,
+        hostFirstName: hostFirstName(listing),
+        replies: replies(listing),
+      },
+      ariaLabelledBy: 'dlg-title',
+      ariaDescribedBy: 'dlg-desc',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+    });
+    this.composeRef = ref;
+    ref.closed.subscribe((requestId) => {
+      if (requestId) {
+        this.state.update((state) =>
+          state.status === 'loaded'
+            ? { status: 'loaded', value: { ...state.value, openRequestId: requestId } }
+            : state,
+        );
+      }
+      this.leaveDialog();
+    });
+  }
+
   /** "Share" (L2-038): anyone, signed in or not, gets the listing's link. */
   private openShare(listing: ListingPage): void {
     const ref = this.dialog.open<void, ShareListingData>(ShareListingDialog, {
@@ -420,10 +524,30 @@ export class BusinessPage {
     this.savedStore.toggle({ kind: 'business', slug: listing.slug, name: listing.name });
   }
 
+  /** The tile that stands for a space's photo, by its term. */
+  protected spaceTile(space: SpaceDetails): (typeof TERM_TILES)[keyof typeof TERM_TILES] {
+    return TERM_TILES[space.term];
+  }
+
   /** The route of an action of a later journey on this listing (ADR 0007). */
   protected link(action: string): string[] {
     return ['/b', this.slug, action];
   }
+}
+
+const COMPOSING = ['message', 'book', 'quote', 'request', 'share', 'report'] as const;
+type Composing = (typeof COMPOSING)[number];
+
+/** "Paul" of "Paul & Marta Kowalski": who a member writes to about a space. */
+function hostFirstName(listing: ListingPage): string {
+  return listing.ownerName?.split(/[ ,&]/)[0].trim() || listing.name;
+}
+
+/** "usually within a day": how soon the host answers, a day when there is too little to say. */
+function replies(listing: ListingPage): string {
+  return listing.details.replies
+    ? WHO_REPLIES[listing.details.replies].replace('replies ', '')
+    : 'usually within a day';
 }
 
 function row(term: string, value: string | null): DetailRow | null {

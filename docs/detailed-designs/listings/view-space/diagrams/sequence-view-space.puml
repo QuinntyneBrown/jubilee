@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Open a space page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "jb-space-booking-card" as card
+  participant "ListingsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetListingPageQueryHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /b/:slug
+page -> client : get(slug)
+client -> controller : GET /api/listings/{slug}
+controller -> handler : Send GetListingPageQuery(slug, viewer)
+handler -> db : Load the public listing with SpaceDetails (L2-028)
+alt Unknown or not public
+  handler --> controller : Not found
+  controller --> client : 404
+  page --> actor : Not-found page (L2-028)
+else Public space
+  handler -> handler : SpacePageDto.From, no address (L2-205, L2-208)
+  handler -> db : Four newest other public spaces as RelatedSpaces
+  note right of handler : The public page above is cached in IDirectoryReadCache
+  handler -> db : After the cache read: the member's New or Confirmed space request
+  db --> handler : Request id or none
+  handler --> controller : ListingPageDto with Space, RelatedSpaces and OpenRequestId
+  controller --> client : 200 OK
+  client --> page : Listing page
+  page -> card : rent, unit, minimum stay, call to action, sent
+  alt OpenRequestId present
+    card --> actor : "Sent to {host first name}" in place of the call to action (L2-206)
+  else No open request
+    card --> actor : "Request to book", "Request a viewing" or "Meet the household"
+    actor -> card : Press the call to action
+    alt Visitor
+      card --> actor : Sign-in prompt (L2-012)
+    else Member
+      card --> page : requested
+      page --> actor : Open RequestSpaceDialog (requests/request-space)
+    end
+  end
+end
+@enduml

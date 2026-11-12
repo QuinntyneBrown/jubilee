@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
+import { SpaceFields } from './list-business.page';
 import { ShellPage } from './shell.page';
 
 /** `/my-business/listing`: the listing editor (L2-087, L2-088). */
@@ -31,6 +32,9 @@ export class EditListingPage extends ShellPage implements Screen {
   readonly reference: Locator;
   readonly tryAgain: Locator;
   readonly loading: Locator;
+  /** A space's own fields (L2-209). */
+  readonly space: SpaceFields;
+  readonly spacePreview: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -63,6 +67,8 @@ export class EditListingPage extends ShellPage implements Screen {
     this.reference = this.main.locator('code');
     this.tryAgain = this.main.getByRole('button', { name: 'Try again' });
     this.loading = this.main.getByRole('status');
+    this.space = new SpaceFields(page, this.main);
+    this.spacePreview = this.main.locator('aside[aria-labelledby="pv"] .space-card');
   }
 
   section(name: string): Locator {

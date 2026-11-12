@@ -1,0 +1,123 @@
+@let found = problems();
+<jb-dialog
+  [heading]="view() === 'success' ? 'Sent to ' + data.hostFirstName : data.callToAction"
+  [icon]="view() === 'success' ? 'check' : 'calendar'"
+  [tone]="view() === 'success' ? 'success' : 'info'"
+  [description]="view() === 'success' ? sentText() : data.name + ' · ' + data.neighbourhood"
+  [busy]="busy()"
+  (closed)="close()"
+  (outsideClick)="close()"
+>
+  @if (view() === 'success') {
+    <div jb-dialog-footer>
+      <button jb-button type="button" (click)="close()">Close</button>
+      <a
+        jb-button
+        variant="primary"
+        [routerLink]="['/requests', booked()?.id]"
+        cdkFocusInitial
+        (click)="close()"
+        >View request</a
+      >
+    </div>
+  } @else {
+    <form jb-dialog-body class="stack" id="space-form" novalidate (ngSubmit)="send()">
+      @if (view() === 'failed') {
+        <div jb-alert tone="danger" [heading]="failure().title" role="alert">
+          <div>{{ failure().text }}</div>
+        </div>
+      }
+      @if (nightly) {
+        <div class="form-grid form-grid--2">
+          <div jb-field label="Check in" controlId="d-in" required [error]="found.checkIn">
+            <input
+              jb-input
+              name="checkIn"
+              type="date"
+              required
+              [min]="today"
+              [max]="lastDay"
+              [readOnly]="busy()"
+              [ngModel]="checkIn()"
+              (ngModelChange)="checkIn.set($event)"
+            />
+          </div>
+          <div jb-field label="Check out" controlId="d-out" required [error]="found.checkOut">
+            <input
+              jb-input
+              name="checkOut"
+              type="date"
+              required
+              [min]="today"
+              [max]="lastDay"
+              [readOnly]="busy()"
+              [ngModel]="checkOut()"
+              (ngModelChange)="checkOut.set($event)"
+            />
+          </div>
+        </div>
+      } @else {
+        <div class="form-grid form-grid--2">
+          <div jb-field label="Move in" controlId="d-move" required [error]="found.moveIn">
+            <input
+              jb-input
+              name="moveIn"
+              type="date"
+              required
+              [min]="today"
+              [max]="lastDay"
+              [readOnly]="busy()"
+              [ngModel]="moveIn()"
+              (ngModelChange)="moveIn.set($event)"
+            />
+          </div>
+          <div jb-field label="Staying" controlId="d-stay" [error]="found.stayMonths">
+            <select
+              jb-select
+              name="stayMonths"
+              [disabled]="busy()"
+              [ngModel]="stayMonths()"
+              (ngModelChange)="stayMonths.set($event)"
+            >
+              @for (choice of stayChoices; track choice.months) {
+                <option [value]="choice.value">{{ choice.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      }
+      <div
+        jb-field
+        [label]="'A note to ' + data.hostFirstName"
+        controlId="d-note"
+        optional
+        [error]="found.note"
+      >
+        <textarea
+          jb-textarea
+          name="note"
+          rows="3"
+          maxlength="1000"
+          [readOnly]="busy()"
+          [ngModel]="note()"
+          (ngModelChange)="note.set($event)"
+        ></textarea>
+      </div>
+      @if (amounts(); as amounts) {
+        <div jb-card variant="well">
+          <dl jb-description-list rows>
+            <div jb-description-item [term]="amounts.line" [value]="amounts.total"></div>
+            <div jb-description-item term="Total" [value]="amounts.total"></div>
+          </dl>
+        </div>
+      }
+      <p class="text-caption">You won’t pay anything until the host accepts.</p>
+    </form>
+    <div jb-dialog-footer>
+      <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+      <button jb-button variant="primary" type="submit" form="space-form" [busy]="busy()">
+        Send request
+      </button>
+    </div>
+  }
+</jb-dialog>

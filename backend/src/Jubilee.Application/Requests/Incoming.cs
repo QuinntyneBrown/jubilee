@@ -52,6 +52,7 @@ internal static class IncomingRules
     {
         RequestKind.Order => "Order",
         RequestKind.Booking => "Booking",
+        RequestKind.Space => "Space",
         _ => "Quote",
     };
 
@@ -60,6 +61,7 @@ internal static class IncomingRules
     {
         RequestKind.Order => "order",
         RequestKind.Booking => "booking",
+        RequestKind.Space => "space request",
         _ => "quote request",
     };
 
@@ -77,18 +79,43 @@ internal static class IncomingRules
     {
         RequestKind.Order => $"{r.ServiceName} × {r.Quantity}",
         RequestKind.Booking => r.ServiceName ?? "Booking",
+        RequestKind.Space => $"{SpaceTerms.CallToAction(r.SpaceTerm ?? SpaceTerm.LongTerm)} · {r.ServiceName}",
         _ => r.ServiceName ?? "Quote request",
     };
 
     /// <summary>An order's total as the owner reads it: "$528.00 + tax" (L2-052 AC1).</summary>
-    public static string? Total(Request r) =>
-        r.TotalCents is { } cents ? $"${(cents / 100m).ToString("N2", CultureInfo.InvariantCulture)} + tax" : null;
+    public static string? Total(Request r) => r.Kind == RequestKind.Space
+        ? SpaceTotal(r)
+        : r.TotalCents is { } cents ? $"${(cents / 100m).ToString("N2", CultureInfo.InvariantCulture)} + tax" : null;
+
+    /// <summary>A Short stay's total in whole dollars, "$240"; null for a monthly term (L2-206 AC3).</summary>
+    public static string? SpaceTotal(Request r) =>
+        r is { Kind: RequestKind.Space, TotalCents: { } cents } ? $"${(cents / 100).ToString("N0", CultureInfo.InvariantCulture)}" : null;
+
+    /// <summary>"Fri 13 Mar – Sun 15 Mar · 2 nights" or "Move in Sun 1 Mar · 12 months" (L2-207 AC1).</summary>
+    public static string SpaceWhen(Request r)
+    {
+        static string Day(DateOnly day) => day.ToString("ddd d MMM", CultureInfo.InvariantCulture);
+        if (r is { CheckIn: { } from, CheckOut: { } to, Nights: { } nights })
+        {
+            return $"{Day(from)} – {Day(to)} · {nights} {(nights == 1 ? "night" : "nights")}";
+        }
+
+        var months = r.StayMonths switch
+        {
+            null => null,
+            1 => "Month to month",
+            { } n => $"{n} months",
+        };
+        return r.MoveIn is { } moveIn ? $"Move in {Day(moveIn)}{(months is null ? string.Empty : $" · {months}")}" : months ?? string.Empty;
+    }
 
     /// <summary>A booking's time, or the date a quote is needed by.</summary>
     public static string? When(Request r) => r.Kind switch
     {
         RequestKind.Booking => TorontoClock.Local(r.StartsAt!.Value).ToString("ddd d MMM, HH:mm", CultureInfo.InvariantCulture),
         RequestKind.Quote when r.NeededBy is { } by => by.ToString("ddd d MMM", CultureInfo.InvariantCulture),
+        RequestKind.Space => SpaceWhen(r),
         _ => null,
     };
 
@@ -100,6 +127,11 @@ internal static class IncomingRules
             case RequestKind.Order:
                 parts.Add(r.Note ?? string.Empty);
                 parts.Add(r.DeliveryLabel ?? string.Empty);
+                break;
+            case RequestKind.Space:
+                parts.Add(SpaceWhen(r));
+                parts.Add(SpaceTotal(r) ?? string.Empty);
+                parts.Add(r.Note ?? string.Empty);
                 break;
             case RequestKind.Booking:
                 var when = TorontoClock.Local(r.StartsAt!.Value).ToString("ddd d MMM, HH:mm", CultureInfo.InvariantCulture);

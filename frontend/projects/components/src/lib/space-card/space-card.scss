@@ -1,0 +1,15 @@
+// Block: space-card, a room or rental in a grid. The host is the link.
+@use './space-card-base' as base;
+
+@include base.card;
+
+// The frame takes the card's shadow under the pointer (the media tile's --jb-media-shadow knob).
+:host(:hover) .space-card__media,
+:host([data-state='hover']) .space-card__media {
+  --jb-media-shadow: var(--shadow-2);
+}
+
+:host(:hover) .space-card__title,
+:host([data-state='hover']) .space-card__title {
+  text-decoration: underline;
+}

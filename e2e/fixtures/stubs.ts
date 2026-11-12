@@ -4,7 +4,7 @@ import { browseHomeFromMock, categoryPageFromMock, listingFromMock } from './moc
 import { fulfil, recordedAnswer } from './mock-api';
 import { legacyMessages, photoMessages, requestCards, stubMessaging } from './messaging';
 import { stubAccountData } from './account-data';
-import { stubAdmin } from './admin';
+import { SPACE_REVIEW, stubAdmin } from './admin';
 import { daniel, stubStaff } from './staff';
 import { stubModeration } from './moderation';
 import { stubIncoming } from './incoming-requests';
@@ -13,7 +13,7 @@ import { stubProfile } from './profile';
 import { stubSaved } from './saved';
 import { stubPasswordReset } from './password-reset';
 import { NOTIFICATIONS, stubNotifications } from './notifications';
-import { stubMyBusiness } from './my-business';
+import { SUITE, stubMyBusiness } from './my-business';
 import { DRAIN, stubMemberRequests } from './member-requests';
 import { stubListingDrafts } from './listing-drafts';
 import { stubOrder } from './order';
@@ -23,6 +23,7 @@ const home = '**/api/directory/home';
 const categoryListings = '**/api/categories/*/listings?*';
 const legacyFinancial = '**/api/listings/legacy-financial';
 const luzandre = '**/api/listings/luzandre';
+const roncesvalles = '**/api/listings/roncesvalles-guest-suite';
 const tee = '**/api/listings/luzandre/products/faith-heavyweight-tee-charcoal';
 
 /** The ProblemDetails the API sends when a directory read cannot be served (L2-118). */
@@ -62,6 +63,61 @@ export function noResults(
     suggestion,
   };
 }
+
+/** A space as search returns it (L2-204): its card, never its address. */
+function spaceHit(space: {
+  slug: string;
+  name: string;
+  term: string;
+  rent: number;
+  facts: string[];
+  neighbourhood: string;
+  available: string;
+}) {
+  return {
+    kind: 'business',
+    name: space.name,
+    slug: space.slug,
+    productSlug: null,
+    businessName: space.name,
+    categorySlug: 'rooms-rentals',
+    explanation: null,
+    space: { ...space, per: 'month', coverPhoto: null },
+  };
+}
+
+/** "room" finds the room in Leslieville and the roommate in East York, as the mock shows (L2-204). */
+export const spaceResults = (
+  others: unknown[] = [],
+): { query: string; businessCount: number; hits: unknown[] } & Record<string, unknown> => ({
+  query: 'room',
+  businessCount: 2 + others.length,
+  serviceCount: 0,
+  productCount: 0,
+  hasMatchExplanations: false,
+  hits: [
+    spaceHit({
+      slug: 'furnished-room-leslieville',
+      name: 'Furnished room in a family home, Leslieville',
+      term: 'room',
+      rent: 950,
+      facts: ['Double bed', 'Shared bath'],
+      neighbourhood: 'Leslieville',
+      available: 'Now',
+    }),
+    spaceHit({
+      slug: 'roommate-east-york',
+      name: 'Roommate wanted: 3-bedroom house in East York',
+      term: 'roommate',
+      rent: 1100,
+      facts: ['Unfurnished room', 'Shared bath (2)'],
+      neighbourhood: 'East York',
+      available: 'Jan 1',
+    }),
+    ...others,
+  ],
+  suggestion: null,
+});
 
 /** The empty search page of a member with a history, as the mocks show it. */
 export const memberSearchStart = {
@@ -152,13 +208,48 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
     case 'browse-empty':
       return page.route(home, (route) =>
         route.fulfill({
-          json: { liveBusinessCount: 0, categories, featured: [], products: [], groups: [] },
+          json: {
+            liveBusinessCount: 0,
+            categories,
+            featured: [],
+            products: [],
+            groups: [],
+            rooms: { count: 0, spaces: [] },
+          },
         }),
       );
     case 'browse-error':
       return page.route(home, (route) => route.fulfill(unavailable('JB-DIR-503')));
     case 'browse-edge':
       return page.route(home, (route) => route.fulfill({ json: browseHomeFromMock('edge') }));
+    case 'browse-rooms-empty':
+      // No roommate is listed: the shelf has four spaces and nothing for "Roommates".
+      return page.route(home, async (route) => {
+        const answer = await recordedAnswer(route);
+        const body = answer.body as { rooms: { count: number; spaces: { term: string }[] } };
+        const spaces = body.rooms.spaces.filter((space) => space.term !== 'roommate');
+        await fulfil(route, { ...answer, body: { ...body, rooms: { count: 4, spaces } } });
+      });
+    case 'rooms-empty':
+      return page.route(categoryListings, (route) =>
+        route.fulfill({
+          json: {
+            category: { slug: 'rooms-rentals', name: 'Rooms & rentals' },
+            totalCount: 4,
+            matchCount: 0,
+            fact: null,
+            filters: { offers: [], areas: [] },
+            sort: 'newest',
+            page: 1,
+            pageSize: 16,
+            pageCount: 1,
+            businesses: [],
+            suggestions: [],
+            term: 'roommate',
+            spaces: [],
+          },
+        }),
+      );
     case 'category-loading':
       return page.route(categoryListings, pending);
     case 'category-empty':
@@ -175,6 +266,7 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
             pageSize: 16,
             pageCount: 1,
             businesses: [],
+            spaces: [],
             suggestions: [],
           },
         }),
@@ -185,6 +277,16 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return page.route(categoryListings, (route) =>
         route.fulfill({ json: categoryPageFromMock('long') }),
       );
+    case 'space-loading':
+      return page.route(roncesvalles, pending);
+    case 'space-error':
+      return page.route(roncesvalles, (route) => route.fulfill(unavailable('JB-BIZ-503')));
+    case 'space-requested':
+      // The member has an open request for the suite (L2-206 AC9).
+      return patchListing(page, roncesvalles, (listing) => ({
+        ...listing,
+        openRequestId: 'r-space',
+      }));
     case 'business-loading':
       return page.route(legacyFinancial, pending);
     case 'business-error':
@@ -244,6 +346,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         page,
         noResults('plumbre', { closeTerm: 'plumber', categorySlug: 'home-property' }),
       );
+    case 'search-spaces':
+      return stubSearch(page, spaceResults());
     case 'search-start':
       return stubSearchStart(page, memberSearchStart);
     case 'member-requests':
@@ -295,6 +399,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubOrder(page);
     case 'editor':
       return stubMyBusiness(page);
+    case 'editor-space':
+      return stubMyBusiness(page, { listing: SUITE });
     case 'editor-error':
       return stubMyBusiness(page, { editor: 'fails' });
     case 'profile':
@@ -356,6 +462,8 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return stubAdmin(page, { stage: 'live' });
     case 'admin-review-changes-requested':
       return stubAdmin(page, { stage: 'changes-requested' });
+    case 'admin-review-space':
+      return stubAdmin(page, { listing: SPACE_REVIEW });
     case 'admin-review-error':
       return stubAdmin(page, { review: 'fails' });
     case 'moderation-reports':

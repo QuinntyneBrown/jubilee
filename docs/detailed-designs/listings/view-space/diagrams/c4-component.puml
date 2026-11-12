@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View a space
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "BusinessPage", "Angular page", "Chooses the space layout when kind is space")
+  Component(card, "jb-space-booking-card", "Library component", "Rent, minimum stay, call to action, Message host, save, sent state")
+  Component(bar, "jb-space-booking-bar", "Library component", "Bottom bar under 768 px")
+  Component(related, "jb-space-card", "Library component", "More rooms and rentals")
+  Component(prompt, "SignInPromptService", "Angular service", "Sign-in prompt for a visitor")
+  Component(client, "ListingsApi", "Typed HTTP client", "GET /api/listings/{slug}")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ListingsController", "ASP.NET Core controller", "Anonymous read with an optional viewer")
+  Component(handler, "GetListingPageQueryHandler", "MediatR handler", "Builds ListingPageDto with Space and RelatedSpaces; adds OpenRequestId after the cache")
+  Component(dto, "SpacePageDto", "DTO", "Space fields and call to action without the address")
+  Component(terms, "SpaceTerms", "Domain rules", "Price unit, minimum-stay label, call to action")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings and Requests")
+
+Rel(page, card, "Renders")
+Rel(page, bar, "Renders under 768 px")
+Rel(page, related, "Renders up to four")
+Rel(page, prompt, "Opens for a visitor")
+Rel(page, client, "Loads")
+Rel(client, ctrl, "GET /api/listings/{slug}", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends GetListingPageQuery")
+Rel(handler, dto, "Projects to")
+Rel(dto, terms, "Reads labels from")
+Rel(handler, db, "Reads", "EF Core")
+@enduml

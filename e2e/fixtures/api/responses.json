@@ -82,7 +82,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls&sort=name&page=1": {
@@ -135,7 +137,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls&sort=newest&page=1": {
@@ -188,7 +192,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls&sort=recommended&page=1": {
@@ -241,7 +247,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls,open-saturdays&areas=etobicoke&sort=recommended&page=1": {
@@ -285,7 +293,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls,open-saturdays&areas=scarborough&sort=recommended&page=1": {
@@ -332,7 +342,9 @@
           },
           "count": 3
         }
-      ]
+      ],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=emergency-calls,open-saturdays&sort=recommended&page=1": {
@@ -385,7 +397,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=free-quote&areas=east-york&sort=name&page=1": {
@@ -447,7 +461,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=free-quote&areas=east-york&sort=recommended&page=1": {
@@ -509,7 +525,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=free-quote&sort=newest&page=1": {
@@ -607,7 +625,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?offers=open-saturdays&areas=scarborough&sort=recommended&page=1": {
@@ -647,7 +667,9 @@
           },
           "count": 2
         }
-      ]
+      ],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?sort=name&page=1": {
@@ -763,7 +785,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?sort=newest&page=1": {
@@ -879,7 +903,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?sort=recommended&page=1": {
@@ -995,7 +1021,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/home-property/listings?sort=recommended&page=9": {
@@ -1111,7 +1139,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/learning/listings?sort=name&page=1": {
@@ -1152,7 +1182,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/learning/listings?sort=recommended&page=1": {
@@ -1193,7 +1225,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/categories/plumbers/listings?sort=recommended&page=1": {
@@ -1202,8 +1236,135 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "13b0d26061404577ae4706ace5e167b5",
+      "correlationId": "2d1d6fb2c1bd4a698e5453b2f6c5f41f",
       "code": "category_not_found"
+    }
+  },
+  "GET /api/categories/rooms-rentals/listings?sort=recommended&page=1": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "rooms-rentals",
+        "name": "Rooms & rentals"
+      },
+      "totalCount": 5,
+      "matchCount": 5,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "newest",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [],
+      "suggestions": [],
+      "term": null,
+      "spaces": [
+        {
+          "slug": "roncesvalles-guest-suite",
+          "name": "Guest suite near Roncesvalles",
+          "term": "short-stay",
+          "rent": 120,
+          "per": "night",
+          "facts": ["Queen bed", "Private bath"],
+          "neighbourhood": "Roncesvalles",
+          "available": "Most weekends",
+          "coverPhoto": null
+        },
+        {
+          "slug": "leslieville-family-room",
+          "name": "Furnished room in a family home, Leslieville",
+          "term": "room",
+          "rent": 950,
+          "per": "month",
+          "facts": ["Double bed", "Shared bath"],
+          "neighbourhood": "Leslieville",
+          "available": "Now",
+          "coverPhoto": null
+        },
+        {
+          "slug": "annex-basement-apartment",
+          "name": "Bright basement apartment in the Annex",
+          "term": "long-term",
+          "rent": 1850,
+          "per": "month",
+          "facts": ["1 bedroom", "1 bath"],
+          "neighbourhood": "The Annex",
+          "available": "Dec 1",
+          "coverPhoto": null
+        },
+        {
+          "slug": "east-york-roommate",
+          "name": "Roommate wanted: 3-bedroom house in East York",
+          "term": "roommate",
+          "rent": 1100,
+          "per": "month",
+          "facts": ["Unfurnished room", "Shared bath (2)"],
+          "neighbourhood": "East York",
+          "available": "Jan 1",
+          "coverPhoto": null
+        },
+        {
+          "slug": "scarborough-furnished-condo",
+          "name": "Furnished 2-bed condo near Scarborough Town Centre",
+          "term": "long-term",
+          "rent": 2400,
+          "per": "month",
+          "facts": ["2 bedrooms", "2 baths"],
+          "neighbourhood": "Scarborough",
+          "available": "Feb 1",
+          "coverPhoto": null
+        }
+      ]
+    }
+  },
+  "GET /api/categories/rooms-rentals/listings?sort=recommended&page=1&term=long-term": {
+    "status": 200,
+    "body": {
+      "category": {
+        "slug": "rooms-rentals",
+        "name": "Rooms & rentals"
+      },
+      "totalCount": 5,
+      "matchCount": 2,
+      "fact": null,
+      "filters": {
+        "offers": [],
+        "areas": []
+      },
+      "sort": "newest",
+      "page": 1,
+      "pageSize": 16,
+      "pageCount": 1,
+      "businesses": [],
+      "suggestions": [],
+      "term": "long-term",
+      "spaces": [
+        {
+          "slug": "annex-basement-apartment",
+          "name": "Bright basement apartment in the Annex",
+          "term": "long-term",
+          "rent": 1850,
+          "per": "month",
+          "facts": ["1 bedroom", "1 bath"],
+          "neighbourhood": "The Annex",
+          "available": "Dec 1",
+          "coverPhoto": null
+        },
+        {
+          "slug": "scarborough-furnished-condo",
+          "name": "Furnished 2-bed condo near Scarborough Town Centre",
+          "term": "long-term",
+          "rent": 2400,
+          "per": "month",
+          "facts": ["2 bedrooms", "2 baths"],
+          "neighbourhood": "Scarborough",
+          "available": "Feb 1",
+          "coverPhoto": null
+        }
+      ]
     }
   },
   "GET /api/categories/shops/listings?sort=recommended&page=1": {
@@ -1253,7 +1414,9 @@
           "coverPhoto": null
         }
       ],
-      "suggestions": []
+      "suggestions": [],
+      "term": null,
+      "spaces": []
     }
   },
   "GET /api/content/help": {
@@ -1387,6 +1550,10 @@
         {
           "slug": "shops",
           "name": "Shops"
+        },
+        {
+          "slug": "rooms-rentals",
+          "name": "Rooms & rentals"
         },
         {
           "slug": "financial-insurance",
@@ -1825,7 +1992,67 @@
             }
           ]
         }
-      ]
+      ],
+      "rooms": {
+        "count": 5,
+        "spaces": [
+          {
+            "slug": "roncesvalles-guest-suite",
+            "name": "Guest suite near Roncesvalles",
+            "term": "short-stay",
+            "rent": 120,
+            "per": "night",
+            "facts": ["Queen bed", "Private bath"],
+            "neighbourhood": "Roncesvalles",
+            "available": "Most weekends",
+            "coverPhoto": null
+          },
+          {
+            "slug": "leslieville-family-room",
+            "name": "Furnished room in a family home, Leslieville",
+            "term": "room",
+            "rent": 950,
+            "per": "month",
+            "facts": ["Double bed", "Shared bath"],
+            "neighbourhood": "Leslieville",
+            "available": "Now",
+            "coverPhoto": null
+          },
+          {
+            "slug": "annex-basement-apartment",
+            "name": "Bright basement apartment in the Annex",
+            "term": "long-term",
+            "rent": 1850,
+            "per": "month",
+            "facts": ["1 bedroom", "1 bath"],
+            "neighbourhood": "The Annex",
+            "available": "Dec 1",
+            "coverPhoto": null
+          },
+          {
+            "slug": "east-york-roommate",
+            "name": "Roommate wanted: 3-bedroom house in East York",
+            "term": "roommate",
+            "rent": 1100,
+            "per": "month",
+            "facts": ["Unfurnished room", "Shared bath (2)"],
+            "neighbourhood": "East York",
+            "available": "Jan 1",
+            "coverPhoto": null
+          },
+          {
+            "slug": "scarborough-furnished-condo",
+            "name": "Furnished 2-bed condo near Scarborough Town Centre",
+            "term": "long-term",
+            "rent": 2400,
+            "per": "month",
+            "facts": ["2 bedrooms", "2 baths"],
+            "neighbourhood": "Scarborough",
+            "available": "Feb 1",
+            "coverPhoto": null
+          }
+        ]
+      }
     }
   },
   "GET /api/directory/welcome": {
@@ -1836,6 +2063,10 @@
         {
           "slug": "shops",
           "name": "Shops"
+        },
+        {
+          "slug": "rooms-rentals",
+          "name": "Rooms & rentals"
         },
         {
           "slug": "financial-insurance",
@@ -1919,7 +2150,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "d4f0a04c7c56426b82dd49b941202b96",
+      "correlationId": "7d66552f8f1646db972728fa72250e0b",
       "code": "sign_in_required"
     }
   },
@@ -1927,13 +2158,109 @@
     "status": 204,
     "body": null
   },
+  "GET /api/listings/annex-basement-apartment": {
+    "status": 200,
+    "body": {
+      "slug": "annex-basement-apartment",
+      "kind": "space",
+      "name": "Bright basement apartment in the Annex",
+      "category": {
+        "slug": "rooms-rentals",
+        "name": "Rooms & rentals"
+      },
+      "verified": true,
+      "stage": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Grace & Daniel Okafor",
+      "tagline": "Separate entrance, garden walkout, five minutes to Bathurst station",
+      "credentials": [],
+      "highlight": null,
+      "about": "We live upstairs with our two kids and attend Trinity Annex. We’d love a tenant who’ll stay a while.",
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-10-28T23:23:08.5992339+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [],
+      "space": {
+        "term": "long-term",
+        "rent": 1850,
+        "per": "month",
+        "available": "Dec 1",
+        "minimumStay": 12,
+        "minimumStayLabel": "12-month lease",
+        "neighbourhood": "The Annex",
+        "place": "Basement apartment",
+        "facts": ["1 bedroom", "1 bath", "650 sq ft", "Separate entrance"],
+        "included": ["Utilities", "Wi-Fi", "Laundry", "Private bath"],
+        "household": null,
+        "rules": ["No smoking", "Quiet after 10 pm", "One small pet considered"],
+        "callToAction": "Request a viewing"
+      },
+      "relatedSpaces": [
+        {
+          "slug": "roncesvalles-guest-suite",
+          "name": "Guest suite near Roncesvalles",
+          "term": "short-stay",
+          "rent": 120,
+          "per": "night",
+          "facts": ["Queen bed", "Private bath"],
+          "neighbourhood": "Roncesvalles",
+          "available": "Most weekends",
+          "coverPhoto": null
+        },
+        {
+          "slug": "leslieville-family-room",
+          "name": "Furnished room in a family home, Leslieville",
+          "term": "room",
+          "rent": 950,
+          "per": "month",
+          "facts": ["Double bed", "Shared bath"],
+          "neighbourhood": "Leslieville",
+          "available": "Now",
+          "coverPhoto": null
+        },
+        {
+          "slug": "east-york-roommate",
+          "name": "Roommate wanted: 3-bedroom house in East York",
+          "term": "roommate",
+          "rent": 1100,
+          "per": "month",
+          "facts": ["Unfurnished room", "Shared bath (2)"],
+          "neighbourhood": "East York",
+          "available": "Jan 1",
+          "coverPhoto": null
+        },
+        {
+          "slug": "scarborough-furnished-condo",
+          "name": "Furnished 2-bed condo near Scarborough Town Centre",
+          "term": "long-term",
+          "rent": 2400,
+          "per": "month",
+          "facts": ["2 bedrooms", "2 baths"],
+          "neighbourhood": "Scarborough",
+          "available": "Feb 1",
+          "coverPhoto": null
+        }
+      ],
+      "openRequestId": null
+    }
+  },
   "GET /api/listings/bethel-gift-baskets": {
     "status": 404,
     "body": {
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "aa464e63202f46709c037517ebb73424",
+      "correlationId": "84a83ade4e424ba5a1a21bdf51715cf1",
       "code": "listing_not_found"
     }
   },
@@ -1962,7 +2289,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-24T00:52:02.1393662+00:00",
+        "onJubileeSince": "2026-10-24T02:23:08.5992339+00:00",
         "replies": null
       },
       "services": [],
@@ -1987,7 +2314,106 @@
           "verified": true,
           "coverPhoto": null
         }
-      ]
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null
+    }
+  },
+  "GET /api/listings/east-york-roommate": {
+    "status": 200,
+    "body": {
+      "slug": "east-york-roommate",
+      "kind": "space",
+      "name": "Roommate wanted: 3-bedroom house in East York",
+      "category": {
+        "slug": "rooms-rentals",
+        "name": "Rooms & rentals"
+      },
+      "verified": true,
+      "stage": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Hannah Lee",
+      "tagline": "Two housemates looking for a third: big kitchen, backyard, near Pape",
+      "credentials": [],
+      "highlight": null,
+      "about": "We’re both at Sanctuary Toronto and pray together most Wednesdays. Looking for someone tidy and friendly.",
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-10-28T22:23:08.5992339+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [],
+      "space": {
+        "term": "roommate",
+        "rent": 1100,
+        "per": "month",
+        "available": "Jan 1",
+        "minimumStay": 6,
+        "minimumStayLabel": "6 months",
+        "neighbourhood": "East York",
+        "place": "Private room",
+        "facts": ["Unfurnished room", "Shared bath (2)", "Backyard", "Parking spot"],
+        "included": ["Wi-Fi", "Laundry", "Parking", "Kitchen use"],
+        "household": "Two women in our late 20s, a nurse and a grad student. Looking for a third who’s tidy, friendly and up for a weekly house dinner.",
+        "rules": ["Weekly house dinner", "Clean as you go", "No smoking"],
+        "callToAction": "Meet the household"
+      },
+      "relatedSpaces": [
+        {
+          "slug": "roncesvalles-guest-suite",
+          "name": "Guest suite near Roncesvalles",
+          "term": "short-stay",
+          "rent": 120,
+          "per": "night",
+          "facts": ["Queen bed", "Private bath"],
+          "neighbourhood": "Roncesvalles",
+          "available": "Most weekends",
+          "coverPhoto": null
+        },
+        {
+          "slug": "leslieville-family-room",
+          "name": "Furnished room in a family home, Leslieville",
+          "term": "room",
+          "rent": 950,
+          "per": "month",
+          "facts": ["Double bed", "Shared bath"],
+          "neighbourhood": "Leslieville",
+          "available": "Now",
+          "coverPhoto": null
+        },
+        {
+          "slug": "annex-basement-apartment",
+          "name": "Bright basement apartment in the Annex",
+          "term": "long-term",
+          "rent": 1850,
+          "per": "month",
+          "facts": ["1 bedroom", "1 bath"],
+          "neighbourhood": "The Annex",
+          "available": "Dec 1",
+          "coverPhoto": null
+        },
+        {
+          "slug": "scarborough-furnished-condo",
+          "name": "Furnished 2-bed condo near Scarborough Town Centre",
+          "term": "long-term",
+          "rent": 2400,
+          "per": "month",
+          "facts": ["2 bedrooms", "2 baths"],
+          "neighbourhood": "Scarborough",
+          "available": "Feb 1",
+          "coverPhoto": null
+        }
+      ],
+      "openRequestId": null
     }
   },
   "GET /api/listings/legacy-financial": {
@@ -2020,7 +2446,7 @@
       },
       "services": [
         {
-          "id": "02370bff-500c-41e5-b215-970ae1f4a7ac",
+          "id": "8c4b9276-72df-412f-9e21-290e64415a2d",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -2028,7 +2454,7 @@
           "action": "book"
         },
         {
-          "id": "d187de20-6af9-4128-9c57-c118bda4d811",
+          "id": "19be9be5-d7b5-43be-988a-b5bb3fdc43ec",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -2036,7 +2462,7 @@
           "action": "book"
         },
         {
-          "id": "061af75e-9ec1-461e-be01-b07589995b61",
+          "id": "5e54f851-de20-49d5-ba09-a7441b57e80e",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -2044,7 +2470,7 @@
           "action": "book"
         },
         {
-          "id": "a497c2f7-3cd7-4216-b9c0-2390474ed446",
+          "id": "561ff23c-d1f2-4c30-99d5-ac48e66d00ac",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -2073,7 +2499,106 @@
           "verified": true,
           "coverPhoto": null
         }
-      ]
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null
+    }
+  },
+  "GET /api/listings/leslieville-family-room": {
+    "status": 200,
+    "body": {
+      "slug": "leslieville-family-room",
+      "kind": "space",
+      "name": "Furnished room in a family home, Leslieville",
+      "category": {
+        "slug": "rooms-rentals",
+        "name": "Rooms & rentals"
+      },
+      "verified": true,
+      "stage": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Ruth Mensah",
+      "tagline": "Quiet room with a desk, shared bath, home-cooked Sunday dinners",
+      "credentials": [],
+      "highlight": null,
+      "about": "Our eldest left for university and her room is free. Ideal for a student or young professional new to the city.",
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-10-29T00:23:08.5992339+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [],
+      "space": {
+        "term": "room",
+        "rent": 950,
+        "per": "month",
+        "available": "Now",
+        "minimumStay": 4,
+        "minimumStayLabel": "4 months",
+        "neighbourhood": "Leslieville",
+        "place": "Private room",
+        "facts": ["Double bed", "Shared bath", "Furnished", "Desk"],
+        "included": ["Utilities", "Wi-Fi", "Laundry", "Furnished", "Kitchen use"],
+        "household": "Ruth and Kwame with our daughter Abena (14) and a very calm cat. We eat together on Sundays and you’re always welcome.",
+        "rules": ["No overnight guests", "No smoking or alcohol", "Share the chore rota"],
+        "callToAction": "Request a viewing"
+      },
+      "relatedSpaces": [
+        {
+          "slug": "roncesvalles-guest-suite",
+          "name": "Guest suite near Roncesvalles",
+          "term": "short-stay",
+          "rent": 120,
+          "per": "night",
+          "facts": ["Queen bed", "Private bath"],
+          "neighbourhood": "Roncesvalles",
+          "available": "Most weekends",
+          "coverPhoto": null
+        },
+        {
+          "slug": "annex-basement-apartment",
+          "name": "Bright basement apartment in the Annex",
+          "term": "long-term",
+          "rent": 1850,
+          "per": "month",
+          "facts": ["1 bedroom", "1 bath"],
+          "neighbourhood": "The Annex",
+          "available": "Dec 1",
+          "coverPhoto": null
+        },
+        {
+          "slug": "east-york-roommate",
+          "name": "Roommate wanted: 3-bedroom house in East York",
+          "term": "roommate",
+          "rent": 1100,
+          "per": "month",
+          "facts": ["Unfurnished room", "Shared bath (2)"],
+          "neighbourhood": "East York",
+          "available": "Jan 1",
+          "coverPhoto": null
+        },
+        {
+          "slug": "scarborough-furnished-condo",
+          "name": "Furnished 2-bed condo near Scarborough Town Centre",
+          "term": "long-term",
+          "rent": 2400,
+          "per": "month",
+          "facts": ["2 bedrooms", "2 baths"],
+          "neighbourhood": "Scarborough",
+          "available": "Feb 1",
+          "coverPhoto": null
+        }
+      ],
+      "openRequestId": null
     }
   },
   "GET /api/listings/luzandre": {
@@ -2106,7 +2631,7 @@
       },
       "services": [
         {
-          "id": "84a378e7-96c7-43d6-b6e8-07dcf376f18b",
+          "id": "1a5af464-e782-4df3-8500-1339e7f72577",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -2114,7 +2639,7 @@
           "action": "ask"
         },
         {
-          "id": "1dadfa92-56d0-4f5a-8ffa-e43316a2c371",
+          "id": "4cb1118b-c2ee-4ab6-94e4-1fbc1955de5f",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -2192,13 +2717,16 @@
           "verified": true,
           "coverPhoto": null
         }
-      ]
+      ],
+      "space": null,
+      "relatedSpaces": [],
+      "openRequestId": null
     }
   },
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "2c1f264e-21c6-4f9d-85ab-83a89e82ac20",
+      "id": "dfac16b4-05d4-42da-90f6-632f10ff0924",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -2270,7 +2798,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "bc5e777c-d7ab-494e-923e-12d0990f47c9",
+      "id": "6dcb208f-7b7c-4969-a92f-f56f62031075",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -2375,7 +2903,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "31b9ced0-b51b-43c3-9182-59e6ff61ab29",
+      "id": "eaa365d0-3e77-4678-bcd0-17f6dd477ff3",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -2454,8 +2982,104 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "cdaaaabb98a64a8dbc9723cda4f0ed00",
+      "correlationId": "6cb6cad6fc6c446e808cb09c7fc575ce",
       "code": "product_not_found"
+    }
+  },
+  "GET /api/listings/roncesvalles-guest-suite": {
+    "status": 200,
+    "body": {
+      "slug": "roncesvalles-guest-suite",
+      "kind": "space",
+      "name": "Guest suite near Roncesvalles",
+      "category": {
+        "slug": "rooms-rentals",
+        "name": "Rooms & rentals"
+      },
+      "verified": true,
+      "stage": "live",
+      "viewerRelation": "visitor",
+      "ownerName": "Paul & Marta Kowalski",
+      "tagline": "Private suite for visiting family, conferences or a weekend away",
+      "credentials": [],
+      "highlight": null,
+      "about": "Ten minutes’ walk to High Park and the Queen streetcar. Members of our church get a quiet, clean place to land.",
+      "coverPhoto": null,
+      "details": {
+        "where": null,
+        "hours": null,
+        "languages": null,
+        "delivery": null,
+        "madeToOrder": null,
+        "onJubileeSince": "2026-10-29T01:23:08.5992339+00:00",
+        "replies": null
+      },
+      "services": [],
+      "productCount": 0,
+      "products": [],
+      "related": [],
+      "space": {
+        "term": "short-stay",
+        "rent": 120,
+        "per": "night",
+        "available": "Most weekends",
+        "minimumStay": 2,
+        "minimumStayLabel": "2 nights",
+        "neighbourhood": "Roncesvalles",
+        "place": "Guest suite",
+        "facts": ["Queen bed", "Private bath", "Sleeps 2", "Self check-in"],
+        "included": ["Wi-Fi", "Furnished", "Parking", "Private bath"],
+        "household": null,
+        "rules": ["Check-in after 3 pm", "No parties", "No smoking"],
+        "callToAction": "Request to book"
+      },
+      "relatedSpaces": [
+        {
+          "slug": "leslieville-family-room",
+          "name": "Furnished room in a family home, Leslieville",
+          "term": "room",
+          "rent": 950,
+          "per": "month",
+          "facts": ["Double bed", "Shared bath"],
+          "neighbourhood": "Leslieville",
+          "available": "Now",
+          "coverPhoto": null
+        },
+        {
+          "slug": "annex-basement-apartment",
+          "name": "Bright basement apartment in the Annex",
+          "term": "long-term",
+          "rent": 1850,
+          "per": "month",
+          "facts": ["1 bedroom", "1 bath"],
+          "neighbourhood": "The Annex",
+          "available": "Dec 1",
+          "coverPhoto": null
+        },
+        {
+          "slug": "east-york-roommate",
+          "name": "Roommate wanted: 3-bedroom house in East York",
+          "term": "roommate",
+          "rent": 1100,
+          "per": "month",
+          "facts": ["Unfurnished room", "Shared bath (2)"],
+          "neighbourhood": "East York",
+          "available": "Jan 1",
+          "coverPhoto": null
+        },
+        {
+          "slug": "scarborough-furnished-condo",
+          "name": "Furnished 2-bed condo near Scarborough Town Centre",
+          "term": "long-term",
+          "rent": 2400,
+          "per": "month",
+          "facts": ["2 bedrooms", "2 baths"],
+          "neighbourhood": "Scarborough",
+          "available": "Feb 1",
+          "coverPhoto": null
+        }
+      ],
+      "openRequestId": null
     }
   },
   "GET /api/saved": {
@@ -2463,7 +3087,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "7e40e7bbc36d4dbca20d396bbf6ebb25",
+      "correlationId": "806ad0a09a0746229f5eefc96cd459eb",
       "code": "sign_in_required"
     }
   },
@@ -2488,14 +3112,14 @@
           "count": 6
         },
         {
-          "slug": "business-tech",
-          "name": "Business & tech",
+          "slug": "rooms-rentals",
+          "name": "Rooms & rentals",
           "count": 5
         },
         {
-          "slug": "real-estate-living",
-          "name": "Real estate & living",
-          "count": 4
+          "slug": "business-tech",
+          "name": "Business & tech",
+          "count": 5
         }
       ]
     }
@@ -2536,7 +3160,8 @@
                 "length": 6
               }
             ]
-          }
+          },
+          "space": null
         },
         {
           "kind": "product",
@@ -2553,7 +3178,8 @@
                 "length": 5
               }
             ]
-          }
+          },
+          "space": null
         }
       ],
       "suggestion": null
@@ -2583,7 +3209,8 @@
                 "length": 8
               }
             ]
-          }
+          },
+          "space": null
         },
         {
           "kind": "business",
@@ -2600,7 +3227,8 @@
                 "length": 5
               }
             ]
-          }
+          },
+          "space": null
         }
       ],
       "suggestion": null
@@ -2613,7 +3241,15 @@
       "googleSignIn": true
     }
   },
+  "POST /api/listings/annex-basement-apartment/views": {
+    "status": 204,
+    "body": null
+  },
   "POST /api/listings/deeks-insurance/views": {
+    "status": 204,
+    "body": null
+  },
+  "POST /api/listings/east-york-roommate/views": {
     "status": 204,
     "body": null
   },
@@ -2621,7 +3257,15 @@
     "status": 204,
     "body": null
   },
+  "POST /api/listings/leslieville-family-room/views": {
+    "status": 204,
+    "body": null
+  },
   "POST /api/listings/luzandre/views": {
+    "status": 204,
+    "body": null
+  },
+  "POST /api/listings/roncesvalles-guest-suite/views": {
     "status": 204,
     "body": null
   }

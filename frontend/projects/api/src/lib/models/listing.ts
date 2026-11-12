@@ -1,7 +1,7 @@
-import { BusinessCard, CategoryLink, ProductCard } from './directory';
+import { BusinessCard, CategoryLink, ProductCard, SpaceCard, SpaceTerm } from './directory';
 
 /** Main offer of a listing; it picks the layout of the listing page. */
-export type ListingKind = 'services' | 'shop';
+export type ListingKind = 'services' | 'shop' | 'space';
 
 /** The caller's relation to the listing, decided by the server from the session. */
 export type ViewerRelation = 'visitor' | 'member' | 'owner' | 'verifier';
@@ -32,6 +32,29 @@ export interface ListingDetails {
   replies: ReplyTimeBand | null;
 }
 
+/**
+ * The rental details of a space (L2-205). The page never carries the exact address, whoever asks
+ * (L2-208 AC1).
+ */
+export interface SpaceDetails {
+  term: SpaceTerm;
+  /** Whole dollars, per night or per month. */
+  rent: number;
+  per: 'night' | 'month';
+  available: string;
+  minimumStay: number;
+  /** "2 nights", "12-month lease"; empty when there is no minimum. */
+  minimumStayLabel: string;
+  neighbourhood: string;
+  place: string;
+  facts: string[];
+  included: string[];
+  household: string | null;
+  rules: string[];
+  /** "Request to book", "Request a viewing" or "Meet the household" (L2-206 AC1). */
+  callToAction: string;
+}
+
 /** `GET /api/listings/{slug}`: the listing page of one business (L2-033, L2-034). */
 export interface ListingPage {
   slug: string;
@@ -53,4 +76,10 @@ export interface ListingPage {
   productCount: number;
   products: ProductCard[];
   related: BusinessCard[];
+  /** The rental details; null unless the listing is a space. */
+  space: SpaceDetails | null;
+  /** "More rooms & rentals" on the page of a space. */
+  relatedSpaces: SpaceCard[];
+  /** The member's open request on this space, when they have one (L2-206). */
+  openRequestId?: string | null;
 }

@@ -1,3 +1,5 @@
+import type { SpaceDraft } from './listing-drafts';
+
 /** The owner's workspace: My business, the listing editor, photos, pause and resume (L2-085 to L2-088, L2-096). */
 
 export type BusinessState =
@@ -97,6 +99,8 @@ export interface ListingEditor {
   categories: CategoryOption[];
   photos: ListingPhoto[];
   recheckRequested: boolean;
+  /** A space's own fields, with its exact address for its owner (L2-209); absent for a business. */
+  space?: SpaceDraft | null;
 }
 
 /** What the owner saves; `version` is the one the editor opened (L2-087 AC8). */
@@ -110,6 +114,8 @@ export interface ListingChanges {
   hours: string;
   website: string;
   highlight: string;
+  /** A space's own fields (L2-209); omitted for a business. */
+  space?: SpaceDraft;
 }
 
 export interface PauseResult {

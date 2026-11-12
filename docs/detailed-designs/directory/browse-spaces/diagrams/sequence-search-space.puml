@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour — Find a space in search
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor or member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "SearchPage" as page
+  participant "SearchApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "SearchController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SearchDirectoryQueryHandler" as handler
+  participant "ISearchIndex" as index
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Search "Leslieville"
+page -> client : search("Leslieville")
+client -> controller : GET /api/search?q=Leslieville
+controller -> handler : Send SearchDirectoryQuery
+handler -> index : SearchAsync("Leslieville")
+index -> db : Match title and line, and neighbourhood, the space, key facts; never the address (L2-204)
+db --> index : Public listings (L2-028)
+index --> handler : Hits; a space hit has Kind business, Space card and "in neighbourhood"
+handler --> controller : SearchResults with counts including spaces
+controller --> client : 200 OK, no address in the body (L2-208)
+client --> page : Results
+page --> actor : Under "Businesses", the room in Leslieville as a space card
+@enduml

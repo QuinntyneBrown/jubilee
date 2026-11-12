@@ -15,6 +15,7 @@ const NOUN: Record<RequestKind, string> = {
   booking: 'meeting',
   quote: 'quote request',
   order: 'order',
+  space: 'request',
 };
 
 /**

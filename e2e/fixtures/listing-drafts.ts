@@ -3,8 +3,23 @@ import type { Page, Route } from '@playwright/test';
 // A stand-in for the listing-draft endpoints (L2-071 to L2-079). The requests the app makes are
 // kept so a test can prove what it sent (ADR 0009).
 
+/** The rental fields of a space draft (L2-199). */
+export interface FakeSpaceDraft {
+  term: 'short-stay' | 'long-term' | 'room' | 'roommate';
+  rent: number | null;
+  available: string;
+  minimumStay: number;
+  neighbourhood: string;
+  address: string;
+  place: string;
+  facts: string[];
+  included: string[];
+  household: string | null;
+  rules: string[];
+}
+
 export interface FakeDraftBody {
-  kind: 'products' | 'services';
+  kind: 'products' | 'services' | 'space';
   name: string;
   tagline: string;
   categorySlug: string | null;
@@ -18,6 +33,7 @@ export interface FakeDraftBody {
     priceCents: number | null;
   }[];
   idempotencyKey: string | null;
+  space?: FakeSpaceDraft | null;
 }
 
 export interface FakeDraft extends FakeDraftBody {
@@ -27,6 +43,9 @@ export interface FakeDraft extends FakeDraftBody {
 
 export type DraftOutcome = 'ok' | 'load-fails' | 'invalid' | 'limit' | 'hang';
 
+/** The codes a 422 answer carries when the outcome is `invalid`. */
+export type DraftErrors = Record<string, string>;
+
 export interface FakeListingDrafts {
   /** The draft the member left earlier, or null for a first visit. */
   draft: FakeDraft | null;
@@ -34,6 +53,8 @@ export interface FakeListingDrafts {
   creates: FakeDraftBody[];
   saves: FakeDraftBody[];
   submits: FakeDraftBody[];
+  /** The field codes of an `invalid` answer. */
+  errors: DraftErrors;
 }
 
 const problem = (status: number, body: object) => ({
@@ -52,6 +73,7 @@ export async function stubListingDrafts(
     creates: [],
     saves: [],
     submits: [],
+    errors: { tagline: 'TOO_LONG:94' },
     ...initial,
   };
   const store = (id: string, body: FakeDraftBody): FakeDraft => ({
@@ -92,9 +114,7 @@ export async function stubListingDrafts(
           }),
         );
       case 'invalid':
-        return route.fulfill(
-          problem(422, { code: 'validation_failed', errors: { tagline: 'TOO_LONG:94' } }),
-        );
+        return route.fulfill(problem(422, { code: 'validation_failed', errors: fake.errors }));
       default:
         fake.submits.push(body);
         return route.fulfill({
