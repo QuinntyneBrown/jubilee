@@ -82,8 +82,8 @@ design introduces.
   or builds it: total count, featured businesses from `FeaturedSelector`, five
   shop products, and the groups from `DirectoryGrouping`.
 - **`PublicListingFilter`** — query filter that keeps only public listings. It
-  excludes the stages draft, pending reference, ready to review, needs a
-  decision and changes requested, and each paused, deleted or held listing
+  excludes the stages draft, ready to review, changes requested and
+  declined, and each paused, deleted or held listing
   (L2-028). Each public list and count in the slice applies it.
 - **`FeaturedSelector`** — application service in `Jubilee.Application`, because it queries the database. It returns the public listings of
   the current week's `FeaturedSlot` rows, up to five; when none is set it

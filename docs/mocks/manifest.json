@@ -124,25 +124,6 @@
       }
     },
     {
-      "id": "church-reference",
-      "kind": "page",
-      "title": "Church reference",
-      "route": "/reference/:token",
-      "states": [
-        "default",
-        "loading",
-        "error",
-        "invalid",
-        "submitting",
-        "success",
-        "expired",
-        "reported"
-      ],
-      "not_applicable": {
-        "empty": "A form page has no collection that could be empty."
-      }
-    },
-    {
       "id": "statement-of-faith",
       "kind": "page",
       "title": "Statement of faith",
@@ -584,10 +565,72 @@
       ]
     },
     {
+      "id": "admin-shell",
+      "kind": "page",
+      "title": "Admin shell",
+      "route": "/ (admin application)",
+      "states": [
+        "default",
+        "admin-only",
+        "not-found"
+      ],
+      "requirements": [
+        "L2-188"
+      ],
+      "not_applicable": {
+        "loading": "The shell renders with the staff session it was opened with; each screen inside it has its own loading state.",
+        "empty": "The shell has no collection of its own; the screens inside it have their empty states.",
+        "error": "A failed screen load shows that screen's error state inside the shell."
+      }
+    },
+    {
+      "id": "admin-sign-in",
+      "kind": "page",
+      "title": "Staff sign-in",
+      "route": "/sign-in (admin application)",
+      "states": [
+        "default",
+        "busy",
+        "second-factor-missing",
+        "not-staff",
+        "network-refused",
+        "error",
+        "signed-out",
+        "session-expired"
+      ],
+      "requirements": [
+        "L2-189",
+        "L2-190",
+        "L2-192"
+      ],
+      "not_applicable": {
+        "loading": "The screen is static content delivered with the admin application; the only request it makes decides the network-refused state.",
+        "empty": "A sign-in screen has no collection that could be empty.",
+        "invalid": "There is no field to fill: sign-in happens at the identity provider."
+      }
+    },
+    {
+      "id": "admin-moved",
+      "kind": "page",
+      "title": "Page moved",
+      "route": "/admin/* (app)",
+      "states": [
+        "default"
+      ],
+      "requirements": [
+        "L2-194"
+      ],
+      "not_applicable": {
+        "loading": "The page is static content delivered with the app shell; nothing is fetched.",
+        "empty": "The page has no collection that could be empty.",
+        "error": "The page makes no request that could fail."
+      }
+    },
+    {
       "id": "admin-verifications",
       "kind": "page",
       "title": "Verification queue",
-      "route": "/admin/verifications",
+      "route": "/verifications (admin application)",
       "states": [
         "default",
         "loading",
@@ -600,7 +643,7 @@
       "id": "admin-verification",
       "kind": "page",
       "title": "Verify listing",
-      "route": "/admin/verifications/:id",
+      "route": "/verifications/:id (admin application)",
       "states": [
         "default",
         "loading",
@@ -1037,7 +1080,7 @@
       "id": "admin-reports",
       "kind": "page",
       "title": "Reports",
-      "route": "/admin/reports",
+      "route": "/reports (admin application)",
       "states": [
         "default",
         "loading",
@@ -1050,20 +1093,23 @@
       "id": "admin-report",
       "kind": "page",
       "title": "Report",
-      "route": "/admin/reports/:id",
+      "route": "/reports/:id (admin application)",
       "states": [
         "default",
         "conversation",
         "resolved",
         "loading",
         "error"
-      ]
+      ],
+      "not_applicable": {
+        "empty": "A report page shows one report; it has no collection that could be empty."
+      }
     },
     {
       "id": "admin-featured",
       "kind": "page",
       "title": "Featured businesses",
-      "route": "/admin/featured",
+      "route": "/featured (admin application)",
       "states": [
         "default",
         "loading",

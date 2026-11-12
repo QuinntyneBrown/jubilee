@@ -1,10 +1,5 @@
 /** The stages the verification queue lists, as the API names them (L2-099). */
-export type QueueStage =
-  'ready-to-review' | 'waiting-on-reference' | 'needs-a-decision' | 'changes-requested';
-
-/** How the church reference stands, as the queue and the review show it. */
-export type ReferenceState =
-  'confirmed' | 'waiting' | 'cant-vouch' | 'doesnt-know' | 'expired' | 'deleted';
+export type QueueStage = 'ready-to-review' | 'changes-requested';
 
 export interface QueueTab {
   stage: QueueStage;
@@ -17,8 +12,6 @@ export interface QueueRow {
   name: string;
   categoryName: string;
   ownerName: string;
-  church: string;
-  reference: ReferenceState;
   submittedAt: string;
   stage: QueueStage;
   stageLabel: string;
@@ -41,17 +34,6 @@ export interface ReviewOwner {
   emailConfirmed: boolean;
   memberSince: string;
   otherListings: number;
-}
-
-export interface ReviewReference {
-  church: string;
-  referenceEmail: string;
-  state: ReferenceState;
-  answeredByName: string | null;
-  answeredByRole: string | null;
-  answeredAt: string | null;
-  answer: 'vouches' | 'cant-vouch' | 'doesnt-know' | null;
-  note: string | null;
 }
 
 export interface ReviewCheck {
@@ -84,7 +66,6 @@ export interface VerificationReview {
   stage: QueueStage | 'live' | 'declined';
   stageLabel: string;
   owner: ReviewOwner;
-  reference: ReviewReference;
   flags: string[];
   checklist: ReviewCheck[];
   decision: ReviewDecision | null;
@@ -107,5 +88,4 @@ export const CHANGE_AREAS: { key: string; label: string }[] = [
   { key: 'tagline', label: 'Tagline or description' },
   { key: 'photos', label: 'Photos' },
   { key: 'category', label: 'Category' },
-  { key: 'reference', label: 'Church reference' },
 ];

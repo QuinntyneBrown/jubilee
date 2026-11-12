@@ -36,6 +36,7 @@ class Member {
   +string Phone
   +PostalCode PostalCode
   +string HomeChurch
+  +string HomeChurchAddress
 }
 
 class PostalCode {

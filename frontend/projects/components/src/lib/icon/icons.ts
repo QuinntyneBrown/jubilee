@@ -26,6 +26,7 @@ export const ICONS = {
   ],
   'arrow-down': [path('M12 5v14m0 0 6-6m-6 6-6-6')],
   'arrow-left': [path('M19 12H5m0 0 6-6m-6 6 6 6')],
+  'arrow-right': [path('M5 12h14M13 6l6 6-6 6')],
   'arrow-up': [path('M12 19V5m0 0-6 6m6-6 6 6')],
   'arrow-up-right': [path('M7 7h10v10M7 17 17 7')],
   bag: [path('M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2')],

@@ -12,9 +12,7 @@ skinparam class {
 title Class structure — Request changes
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused
@@ -26,7 +24,6 @@ enum ChangeArea {
   TaglineOrDescription
   Photos
   Category
-  ChurchReference
 }
 class Listing {
   +Guid Id
@@ -45,7 +42,6 @@ class ChangeRequest {
   +DateTimeOffset RequestedAt
   +DateTimeOffset? AnsweredAt
   +ListingSnapshot Snapshot
-  +RequiresNewReference(): bool
 }
 class ListingSnapshot {
   +string Name
@@ -53,14 +49,7 @@ class ListingSnapshot {
   +string Description
   +string Category
   +IReadOnlyList<Guid> PhotoIds
-  +string ReferenceEmailHash
   +ChangedFields(current: Listing): IReadOnlyList<string>
-}
-class ChurchReference {
-  +string Church
-  +string PastorEmail
-  +DateTimeOffset? DeleteAfter
-  +StartDeletionClock(decidedAt: DateTimeOffset): void
 }
 class RequestChangesCommand {
   +Guid ListingId
@@ -95,8 +84,7 @@ RequestChangesCommandHandler --> Listing : loads / mutates
 ResubmitListingCommandHandler --> Listing : loads / mutates
 DeclineListingCommandHandler --> Listing : loads / mutates
 Listing "1" *-- "*" ChangeRequest
-Listing "1" *-- "0..1" ChurchReference
 ChangeRequest "1" *-- "1" ListingSnapshot
-ChangeRequest --> "1..4" ChangeArea
+ChangeRequest --> "1..3" ChangeArea
 Listing --> ListingStage
 @enduml

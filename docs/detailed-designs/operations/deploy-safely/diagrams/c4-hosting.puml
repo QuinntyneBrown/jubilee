@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Hosting of the three applications
+
+Person(member, "Member", "Uses the app")
+Person(visitor, "Visitor", "Reads the marketing site")
+Person(staff, "Staff member", "On an allowed network")
+System_Boundary(azure, "rg-jubilee-prod") {
+  Container(www, "jubilee-to-www", "App Service - Node server.js", "www.jubilee.to - the marketing site")
+  Container(app, "jubilee-to-app", "App Service - server.js - Jubilee API - Jubilee Worker", "app.jubilee.to - the app and /api on loopback")
+  Container(admin, "jubilee-to-admin", "App Service - Node server.js", "admin.jubilee.to - the admin application - access restrictions")
+  ContainerDb(db, "Jubilee database", "Azure SQL", "System of record")
+}
+System_Ext(gh, "GitHub Actions", "CI and deploy.yml")
+Rel(visitor, www, "Opens", "HTTPS")
+Rel(member, app, "Opens", "HTTPS")
+Rel(staff, admin, "Opens", "HTTPS")
+Rel(admin, app, "Proxies /api with X-Jubilee-Client-Address and X-Jubilee-Proxy-Key", "HTTPS")
+Rel(app, db, "Reads and writes", "EF Core")
+Rel(gh, www, "Deploys", "az webapp deploy")
+Rel(gh, app, "Deploys", "az webapp deploy")
+Rel(gh, admin, "Deploys", "az webapp deploy")
+@enduml

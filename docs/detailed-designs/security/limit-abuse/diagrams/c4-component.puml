@@ -5,7 +5,7 @@ title Components — Limit abuse
 
 Container_Boundary(web, "Jubilee Web") {
   Component(interceptor, "RateLimitInterceptor", "Angular HTTP interceptor", "Turns 429 and Retry-After into a toast")
-  Component(widget, "BotChallengeWidget", "Angular component", "Adds a challenge token to join and report and reference forms")
+  Component(widget, "BotChallengeWidget", "Angular component", "Adds a challenge token to join and report forms")
 }
 Container_Boundary(api, "Jubilee API") {
   Component(limiter, "RateLimitMiddleware", "ASP.NET Core middleware", "Applies the RateLimitPolicy named on the endpoint")

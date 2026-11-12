@@ -1,6 +1,6 @@
 # ADR 0034: Download your data and delete your account
 
-Status: accepted
+Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed, so the archive has no reference or answer to leave out (L2-146 is retired); the profile section gains the home church address, and erasure removes it with the home church.
 
 ## Context
 

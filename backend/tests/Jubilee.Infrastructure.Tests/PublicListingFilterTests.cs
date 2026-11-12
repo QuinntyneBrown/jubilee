@@ -74,7 +74,7 @@ public class PublicListingFilterTests : IDisposable
         var verifiedInDatabase = await _database.WithDb(db =>
             db.Listings.Where(VerifiedListingSpecification.Criteria).Select(l => l.Slug).ToListAsync());
 
-        Assert.Equal(104, listings.Count);
+        Assert.Equal(72, listings.Count);
         Assert.Equal(listings.Where(l => l.IsPublic()).Select(l => l.Slug).Order(), publicInDatabase.Order());
         Assert.Equal(listings.Where(l => l.IsVerified).Select(l => l.Slug).Order(), verifiedInDatabase.Order());
         Assert.Single(publicInDatabase);

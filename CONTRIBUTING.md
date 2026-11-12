@@ -21,7 +21,7 @@ By taking part you agree to follow the [code of conduct](CODE_OF_CONDUCT.md).
 - **Report a bug.** Open an issue with the bug report template. Include the steps, what you
   expected and what happened.
 - **Suggest a feature.** Open an issue with the feature request template. Say which role it is
-  for (member, owner, church reference or verification team) and which journey in
+  for (member, owner or verification team) and which journey in
   [`docs/journey.md`](docs/journey.md) it belongs to, if any.
 - **Improve the documentation.** Requirements, designs, mocks and the design system are all in
   `docs/` and welcome corrections.

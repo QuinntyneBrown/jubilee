@@ -1,0 +1,50 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Authorize staff requests
+
+class StaffPolicies <<static>> {
+  +Verifier = "staff-verifier"
+  +Admin = "staff-admin"
+  +AddStaffPolicies(builder): AuthorizationBuilder
+}
+class StaffSession <<static>> {
+  +Scheme = "Staff"
+  +Cookie = "__Host-jubilee.staff"
+}
+class RequiresVerifierAttribute {
+  +Policy = StaffPolicies.Verifier
+}
+class RequiresAdminAttribute {
+  +Policy = StaffPolicies.Admin
+}
+class AuthorizeAttribute
+class StaffChallenge {
+  +OnRedirectToLogin(context): Task
+  +OnRedirectToAccessDenied(context): Task
+}
+class AdminVerificationsController
+class AdminReportsController
+class AdminFeaturedController
+class AdminAuditController
+class AdminContentController
+AuthorizeAttribute <|-- RequiresVerifierAttribute
+AuthorizeAttribute <|-- RequiresAdminAttribute
+RequiresVerifierAttribute ..> StaffPolicies
+RequiresAdminAttribute ..> StaffPolicies
+StaffPolicies ..> StaffSession : authenticates with
+StaffSession --> StaffChallenge : events
+AdminVerificationsController ..> RequiresVerifierAttribute
+AdminReportsController ..> RequiresVerifierAttribute
+AdminFeaturedController ..> RequiresVerifierAttribute
+AdminAuditController ..> RequiresAdminAttribute
+AdminContentController ..> RequiresAdminAttribute
+@enduml

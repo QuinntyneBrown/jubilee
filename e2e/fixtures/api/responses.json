@@ -1202,7 +1202,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "d1dd6f9d8180462ab2ec03c2a30be60d",
+      "correlationId": "13b0d26061404577ae4706ace5e167b5",
       "code": "category_not_found"
     }
   },
@@ -1268,7 +1268,7 @@
         {
           "heading": "How does a business get verified?",
           "anchor": "how-does-a-business-get-verified",
-          "body": "The owner names a pastor or elder. We e-mail that person a private form. When they confirm, our team reviews the listing and publishes it, usually within two business days."
+          "body": "The owner submits the listing and agrees to the statement of faith. The Jubilee verification team reviews it and publishes it, usually within two business days."
         },
         {
           "heading": "Does Jubilee take payment?",
@@ -1305,12 +1305,7 @@
         {
           "heading": "What we keep",
           "anchor": "what-we-keep",
-          "body": "- Your name, e-mail, and optional phone and neighbourhood.\n- Messages and requests you send, so both sides can see them.\n- For businesses: listing details and the church reference you name."
-        },
-        {
-          "heading": "Church references",
-          "anchor": "church-references",
-          "body": "A reference’s answer is seen only by the Jubilee verification team. It is never shown to the business owner or the public, and we delete it 90 days after a decision."
+          "body": "- Your name, e-mail, and optional phone, neighbourhood and home church name and address. Your home church is shown to no one.\n- Messages and requests you send, so both sides can see them.\n- For businesses: listing details."
         },
         {
           "heading": "Your choices",
@@ -1330,7 +1325,7 @@
     "body": {
       "slug": "statement-of-faith",
       "title": "Statement of faith",
-      "lead": "Jubilee is open to everyone as a customer. Businesses that list here agree to the commitments below, and a pastor or elder confirms them.",
+      "lead": "Jubilee is open to everyone as a customer. Businesses that list here agree to the commitments below, and every listing is verified before it goes live.",
       "version": 1,
       "publishedAt": "2026-11-02T17:00:00+00:00",
       "sections": [
@@ -1345,9 +1340,9 @@
           "body": "- We tell the truth about what we sell, what it costs and when it will be ready.\n- We treat every customer with the same care, whatever their background or belief.\n- We keep our word, and we put it right when we fall short.\n- We see profit as something to steward: for our families, our churches and our city."
         },
         {
-          "heading": "How a listing is confirmed",
-          "anchor": "how-a-listing-is-confirmed",
-          "body": "Each owner names a pastor or elder who knows them. We contact that person privately before the listing goes live. Read more in [Help](/help)."
+          "heading": "How a listing is verified",
+          "anchor": "how-a-listing-is-verified",
+          "body": "Each owner agrees to these commitments when listing. The Jubilee verification team reviews every listing before it goes live. Read more in [Help](/help)."
         }
       ]
     }
@@ -1919,13 +1914,26 @@
       ]
     }
   },
+  "GET /api/events": {
+    "status": 401,
+    "body": {
+      "title": "Sign in to continue.",
+      "status": 401,
+      "correlationId": "d4f0a04c7c56426b82dd49b941202b96",
+      "code": "sign_in_required"
+    }
+  },
+  "GET /api/health/ping": {
+    "status": 204,
+    "body": null
+  },
   "GET /api/listings/bethel-gift-baskets": {
     "status": 404,
     "body": {
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "1aeb02afa3ae416193d1fc7ee5fd5296",
+      "correlationId": "aa464e63202f46709c037517ebb73424",
       "code": "listing_not_found"
     }
   },
@@ -1954,7 +1962,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-22T23:03:33.4949943+00:00",
+        "onJubileeSince": "2026-10-24T00:52:02.1393662+00:00",
         "replies": null
       },
       "services": [],
@@ -2012,7 +2020,7 @@
       },
       "services": [
         {
-          "id": "0c7b0628-0273-4c65-8da2-42fd0c6b6a12",
+          "id": "02370bff-500c-41e5-b215-970ae1f4a7ac",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -2020,7 +2028,7 @@
           "action": "book"
         },
         {
-          "id": "b7383188-bfd2-40d3-b1d8-f4b9e7fd49e6",
+          "id": "d187de20-6af9-4128-9c57-c118bda4d811",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -2028,7 +2036,7 @@
           "action": "book"
         },
         {
-          "id": "623670a4-3e1b-41b6-9f17-d99db76ddb09",
+          "id": "061af75e-9ec1-461e-be01-b07589995b61",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -2036,7 +2044,7 @@
           "action": "book"
         },
         {
-          "id": "5a52d861-455d-43ed-95d9-6031e45797cb",
+          "id": "a497c2f7-3cd7-4216-b9c0-2390474ed446",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -2098,7 +2106,7 @@
       },
       "services": [
         {
-          "id": "cb61bd0b-3a15-4824-a80d-ce8ff4bada6d",
+          "id": "84a378e7-96c7-43d6-b6e8-07dcf376f18b",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -2106,7 +2114,7 @@
           "action": "ask"
         },
         {
-          "id": "19d75649-5168-4c2c-8bb0-b7a94c509d2c",
+          "id": "1dadfa92-56d0-4f5a-8ffa-e43316a2c371",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -2190,7 +2198,7 @@
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "62001c75-4b3d-4e5d-848e-8d5e1d48be44",
+      "id": "2c1f264e-21c6-4f9d-85ab-83a89e82ac20",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -2262,7 +2270,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "a82b0ff9-76cc-47df-869f-94df0b624e7c",
+      "id": "bc5e777c-d7ab-494e-923e-12d0990f47c9",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -2367,7 +2375,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "8429c588-e6e0-4150-93ec-94d3427c7c89",
+      "id": "31b9ced0-b51b-43c3-9182-59e6ff61ab29",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -2446,8 +2454,17 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "4ee5ca9ae31c45799d1a06a875825289",
+      "correlationId": "cdaaaabb98a64a8dbc9723cda4f0ed00",
       "code": "product_not_found"
+    }
+  },
+  "GET /api/saved": {
+    "status": 401,
+    "body": {
+      "title": "Sign in to continue.",
+      "status": 401,
+      "correlationId": "7e40e7bbc36d4dbca20d396bbf6ebb25",
+      "code": "sign_in_required"
     }
   },
   "GET /api/search/start": {
@@ -2605,10 +2622,6 @@
     "body": null
   },
   "POST /api/listings/luzandre/views": {
-    "status": 204,
-    "body": null
-  },
-  "GET /api/health/ping": {
     "status": 204,
     "body": null
   }

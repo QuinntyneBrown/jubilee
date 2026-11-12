@@ -6,8 +6,6 @@ const NOTHING: NavigationSummary = {
   unreadNotificationCount: 0,
   newRequestCount: 0,
   ownsListing: false,
-  isVerifier: false,
-  verificationCount: 0,
 };
 
 /**

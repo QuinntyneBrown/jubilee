@@ -23,7 +23,6 @@ import {
   HttpSavedApi,
   SAVED_API,
   HttpAccountApi,
-  ADMIN_API,
   INCOMING_REQUESTS_API,
   CATALOGUE_API,
   EVENTS_API,
@@ -33,16 +32,13 @@ import {
   MY_BUSINESS_API,
   HttpMyBusinessApi,
   HttpIncomingRequestsApi,
-  HttpAdminApi,
   DIRECTORY_API,
   LISTINGS_API,
   HttpDirectoryApi,
   HttpListingsApi,
   HttpMessagesApi,
   HttpListingDraftsApi,
-  HttpReferenceApi,
   HttpRequestsApi,
-  REFERENCE_API,
   LISTING_DRAFTS_API,
   MESSAGES_API,
   REQUESTS_API,
@@ -54,7 +50,9 @@ import {
   SEARCH_API,
   SESSION_API,
 } from 'api';
+import { ADMIN_URL } from './admin-url';
 import { routes } from './app.routes';
+import { environment } from '../environments/environment';
 import { connectionInterceptor } from './services/offline/connection.interceptor';
 import { errorInterceptor } from './services/error.interceptor';
 import { NavigationTrail } from './services/navigation-trail';
@@ -74,6 +72,7 @@ export const appConfig: ApplicationConfig = {
     }),
     // "Shop products" scrolls to the products (L2-034 AC1).
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
+    { provide: ADMIN_URL, useValue: environment.adminUrl },
     { provide: ACCOUNT_API, useClass: HttpAccountApi },
     { provide: CONTENT_API, useClass: HttpContentApi },
     { provide: HELP_API, useClass: HttpHelpApi },
@@ -90,8 +89,6 @@ export const appConfig: ApplicationConfig = {
     { provide: MESSAGES_API, useClass: HttpMessagesApi },
     { provide: REQUESTS_API, useClass: HttpRequestsApi },
     { provide: LISTING_DRAFTS_API, useClass: HttpListingDraftsApi },
-    { provide: REFERENCE_API, useClass: HttpReferenceApi },
-    { provide: ADMIN_API, useClass: HttpAdminApi },
     { provide: INCOMING_REQUESTS_API, useClass: HttpIncomingRequestsApi },
     { provide: MY_BUSINESS_API, useClass: HttpMyBusinessApi },
     { provide: CATALOGUE_API, useClass: HttpCatalogueApi },

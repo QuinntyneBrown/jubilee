@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Authorize staff requests
+
+Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(member, "Member", "Signed in to the app")
+System_Boundary(j, "Jubilee") {
+  Container(admin, "Jubilee Admin Web", "Angular SPA", "Staff screens")
+  Container(web, "Jubilee Web", "Angular SPA", "Member screens")
+  Container(api, "Jubilee API", "ASP.NET Core", "Staff policies on /api/admin/*")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Sessions of both kinds")
+}
+Rel(staff, admin, "Uses", "HTTPS")
+Rel(member, web, "Uses", "HTTPS")
+Rel(admin, api, "Calls /api/admin/* with __Host-jubilee.staff", "JSON/HTTPS")
+Rel(web, api, "Calls member endpoints with jubilee.session", "JSON/HTTPS")
+Rel(api, db, "Looks up the session within its kind", "EF Core")
+@enduml

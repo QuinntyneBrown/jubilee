@@ -1,0 +1,93 @@
+<jb-page-header heading="Reports" [subtitle]="subtitle()"> </jb-page-header>
+@let reports = state();
+@switch (reports.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load the reports">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ reports.reference }}</code
+      >.
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load(filter())">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the reports…</p>
+    <ul jb-row-list-skeleton [count]="4" action></ul>
+  }
+  @case ('loaded') {
+    <div
+      jb-tab-list
+      label="Report status"
+      [items]="filters"
+      [selected]="filter()"
+      (selectedChange)="load($event)"
+      style="margin-top: var(--space-4)"
+    ></div>
+    @if (reports.value.items.length === 0) {
+      @if (filter() === 'unresolved') {
+        <div jb-empty-state icon="check" heading="No reports to review">
+          Reports about listings and conversations appear here as soon as a member sends one.
+          <button slot="actions" jb-button type="button" (click)="load(filter())">
+            <svg jb-icon name="refresh"></svg>Refresh
+          </button>
+        </div>
+      } @else {
+        <div jb-empty-state [compact]="true" icon="check" heading="Nothing here right now">
+          No reports have this status.
+          <button slot="actions" jb-button type="button" (click)="load('unresolved')">
+            Show unresolved
+          </button>
+        </div>
+      }
+    } @else {
+      <div jb-table-scroll style="margin-top: var(--space-4)">
+        <table jb-table caption="Reports waiting for review">
+          <thead>
+            <tr>
+              <th jb-table-cell scope="col">Business</th>
+              <th jb-table-cell scope="col">Reason</th>
+              <th jb-table-cell scope="col">Report</th>
+              <th jb-table-cell scope="col">Reporter</th>
+              <th jb-table-cell scope="col">Received</th>
+              <th jb-table-cell scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of reports.value.items; track item.id) {
+              <tr>
+                <td jb-table-cell>
+                  <a [routerLink]="['/reports', item.id]">{{ item.listing.name }}</a>
+                  @if (item.type === 'conversation') {
+                    <span class="text-caption"> conversation</span>
+                  }
+                </td>
+                <td jb-table-cell>{{ item.reason }}</td>
+                <td jb-table-cell>{{ item.description }}</td>
+                <td jb-table-cell>{{ item.reporterName }}</td>
+                <td jb-table-cell>{{ received(item) }}</td>
+                <td jb-table-cell>
+                  @if (item.overdue) {
+                    <span jb-badge tone="warning">Overdue</span>
+                  }
+                  <span
+                    jb-badge
+                    [tone]="
+                      item.status === 'in-review'
+                        ? 'info'
+                        : item.status === 'resolved'
+                          ? 'success'
+                          : null
+                    "
+                    >{{ statusLabel(item) }}</span
+                  >
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+}

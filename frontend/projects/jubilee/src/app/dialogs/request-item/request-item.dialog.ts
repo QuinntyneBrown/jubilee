@@ -33,7 +33,7 @@ import {
   Price,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
-import { newKey } from '../../services/message-time';
+import { newKey } from 'api';
 
 export interface RequestItemData {
   shopSlug: string;

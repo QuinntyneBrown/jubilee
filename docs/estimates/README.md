@@ -1,7 +1,7 @@
 # Estimates
 
-- Overall effort: 367 days
-- Complete: 58%
+- Overall effort: 370 days
+- Complete: 61%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -12,19 +12,19 @@
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 56% |
 | [listings](listings.md) | 16 days | 41% |
-| [accounts](accounts.md) | 45 days | 82% |
-| [security](security.md) | 26 days | 11% |
+| [accounts](accounts.md) | 50 days | 84% |
+| [security](security.md) | 34 days | 31% |
 | [messaging](messaging.md) | 17 days | 94% |
 | [requests](requests.md) | 34 days | 85% |
 | [notifications](notifications.md) | 16 days | 86% |
-| [onboarding](onboarding.md) | 15 days | 84% |
-| [church-reference](church-reference.md) | 10 days | 78% |
+| [onboarding](onboarding.md) | 12 days | 87% |
+| [admin](admin.md) | 7 days | 90% |
 | [verification](verification.md) | 20 days | 81% |
 | [owner-workspace](owner-workspace.md) | 20 days | 90% |
-| [privacy](privacy.md) | 16 days | 9% |
+| [privacy](privacy.md) | 12 days | 13% |
 | [accessibility](accessibility.md) | 10 days | 0% |
 | [performance](performance.md) | 9 days | 6% |
-| [operations](operations.md) | 30 days | 16% |
+| [operations](operations.md) | 30 days | 30% |
 | [offline](offline.md) | 12 days | 83% |
 | [marketing](marketing.md) | 4 days | 95% |
 
@@ -33,5 +33,5 @@
 1. design-system, interaction-states: move the remaining presentation into the components library with a parity spec each (ADR 0035, 0036), then validation, dialog confirmation and date and money formats
 2. listings: the business and product page states
 3. security, privacy, accessibility: authorization and rate limits, data visibility and retention, screen-reader and keyboard coverage
-4. operations, performance: e-mail delivery, backups, deployment, availability, latency and page budgets
-5. Polish the remaining 70–90% designs: browse home sign-in prompt, church-reference outcome, offline and notification details
+4. operations, performance, admin: backups, availability, latency and page budgets; set up the admin application in production (`eng/azure/README.md`)
+5. Polish the remaining 70–90% designs: browse home sign-in prompt, offline and notification details

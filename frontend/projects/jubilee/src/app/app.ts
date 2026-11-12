@@ -27,11 +27,11 @@ import { JbRouteData } from './app.routes';
 import { AccountMenuData, AccountMenuDialog } from './dialogs/account-menu/account-menu.dialog';
 import { ConnectionService, STATUS_URL } from './services/offline/connection.service';
 import { QueueDrainer } from './services/offline/queue-drainer';
-import { ClockService } from './services/clock.service';
+import { ClockService } from 'api';
 import { NavigationStore } from './services/navigation.store';
 import { RealtimeService } from './services/realtime.service';
 import { SessionService } from './services/session.service';
-import { ToastRegion } from './toasts/toast-region';
+import { ToastRegion } from 'components';
 
 const BARE: JbRouteData = { shell: 'bare', page: '' };
 
@@ -96,8 +96,6 @@ export class App {
       ownsListing: summary.ownsListing,
       unreadConversationCount: summary.unreadConversationCount,
       unreadNotificationCount: summary.unreadNotificationCount,
-      isVerifier: member.isVerifier,
-      verificationCount: summary.verificationCount ?? 0,
     };
   });
 
@@ -189,7 +187,6 @@ export class App {
         initials: member.initials,
         email: member.email,
         ownsListing: summary.ownsListing,
-        isVerifier: member.isVerifier,
       },
       ariaLabelledBy: 'dlg-title',
       ariaModal: true,

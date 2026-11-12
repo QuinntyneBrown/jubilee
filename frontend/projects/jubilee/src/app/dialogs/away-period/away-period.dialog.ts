@@ -11,8 +11,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { AwayPeriod, MY_BUSINESS_API } from 'api';
 import { Alert, Button, DialogBody, DialogFooter, DialogFrame, Field, Input } from 'components';
-import { ClockService } from '../../services/clock.service';
-import { isoDay } from '../../services/message-time';
+import { ClockService } from 'api';
+import { isoDay } from 'api';
 
 export interface AwayPeriodData {
   /** The instant the owner is back, when an away period is set. */

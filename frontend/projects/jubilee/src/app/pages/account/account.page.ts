@@ -39,10 +39,10 @@ import {
 import { DeleteAccountDialog } from '../../dialogs/delete-account/delete-account.dialog';
 import { LeaveUnsavedDialog } from '../../dialogs/leave-unsaved/leave-unsaved.dialog';
 import { HasUnsavedChanges } from '../../guards/unsaved-changes.guard';
-import { LoadState, errorReference } from '../../services/load-state';
-import { clockTime, dayLabel, fullDate, monthYear } from '../../services/message-time';
+import { LoadState, errorReference } from 'api';
+import { clockTime, dayLabel, fullDate, monthYear } from 'api';
 import { SessionService } from '../../services/session.service';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 import { ACCOUNT_TABS } from './account-tabs';
 
 type FieldName = 'firstName' | 'lastName' | 'phone' | 'postalCode';
@@ -115,6 +115,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
   protected readonly phone = signal('');
   protected readonly postalCode = signal('');
   protected readonly homeChurch = signal('');
+  protected readonly homeChurchAddress = signal('');
   protected readonly pronouns = signal('');
   protected readonly saving = signal(false);
   protected readonly problems = signal<Problem[]>([]);
@@ -224,6 +225,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
     this.phone.set(account.phone ?? '');
     this.postalCode.set(account.postalCode ?? '');
     this.homeChurch.set(account.homeChurch ?? '');
+    this.homeChurchAddress.set(account.homeChurchAddress ?? '');
     this.pronouns.set(account.pronouns ?? '');
     this.saved.set(this.current());
   }
@@ -235,6 +237,7 @@ export class AccountPage implements OnInit, HasUnsavedChanges {
       phone: this.phone().trim() || null,
       postalCode: this.postalCode().trim() || null,
       homeChurch: this.homeChurch().trim() || null,
+      homeChurchAddress: this.homeChurchAddress().trim() || null,
       pronouns: this.pronouns().trim() || null,
     };
   }

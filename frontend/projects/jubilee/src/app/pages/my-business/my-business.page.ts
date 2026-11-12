@@ -58,11 +58,11 @@ import {
   PauseListingData,
   PauseListingDialog,
 } from '../../dialogs/pause-listing/pause-listing.dialog';
-import { ClockService } from '../../services/clock.service';
-import { LoadState, errorReference } from '../../services/load-state';
-import { dayLabel, threadTime } from '../../services/message-time';
+import { ClockService } from 'api';
+import { LoadState, errorReference } from 'api';
+import { dayLabel, threadTime } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 
 /** How long an owner can take back a confirmation (L2-052 AC4). */
 const UNDO_MS = 8000;
@@ -155,12 +155,16 @@ export class MyBusinessPage implements OnInit {
     return `${stats.views.change > 0 ? '↑' : '↓'} ${percent}% on last week`;
   }
 
-  /** The four steps to live and where the listing stands in them. */
+  /** "today", "yesterday" or "3 days ago": the end of the subtitle the API words. */
+  protected submittedWords(business: MyBusiness): string {
+    return business.subtitle.split('submitted ')[1] ?? 'recently';
+  }
+
+  /** The three steps to live and where the listing stands in them. */
   protected steps(
     business: MyBusiness,
   ): { title: string; meta: string; state: TimelineStepState }[] {
     const state = business.state;
-    const afterReference = state !== 'pending-reference' && state !== 'draft';
     const reviewNote =
       state === 'changes-requested'
         ? 'Changes requested'
@@ -170,21 +174,10 @@ export class MyBusinessPage implements OnInit {
     return [
       {
         title: 'Listing submitted',
-        meta: business.subtitle.split('submitted ')[1] ?? '',
+        meta: this.submittedWords(business),
         state: 'complete',
       },
-      {
-        title: 'Church reference',
-        meta: afterReference
-          ? 'Confirmed'
-          : `Waiting for ${business.reference?.referenceEmail ?? 'your church reference'}`,
-        state: afterReference ? 'complete' : 'current',
-      },
-      {
-        title: 'Review by Jubilee',
-        meta: afterReference ? reviewNote : '',
-        state: afterReference ? 'current' : 'upcoming',
-      },
+      { title: 'Review by Jubilee', meta: reviewNote, state: 'current' },
       { title: 'Live on Jubilee', meta: '', state: 'upcoming' },
     ];
   }

@@ -34,21 +34,6 @@
         ></span>
       }
     </a>
-    @if (member.isVerifier) {
-      <a
-        class="nav-link"
-        routerLink="/admin/verifications"
-        [attr.aria-current]="current() === 'verifications' ? 'page' : null"
-        >Verifications
-        @if (member.verificationCount > 0) {
-          <span
-            jb-badge
-            [count]="member.verificationCount"
-            [label]="member.verificationCount + ' waiting'"
-          ></span>
-        }
-      </a>
-    }
   </nav>
   @if (member.ownsListing) {
     <a

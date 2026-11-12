@@ -4,20 +4,19 @@
 
 A business appears on Jubilee only after the verification team approves it.
 Submission is the step at which the owner hands a finished draft over: the form
-at `/list` is validated in full, the listing leaves the stage `Draft`, and the
-church reference is asked to confirm the owner. This feature covers that step
+at `/list` is validated in full, the listing leaves the stage `Draft` and enters
+the verification queue. This feature covers that step
 and the rule that lets one owner hold more than one listing.
 
 The slice uses three local terms.
 
-- **submission** — transition of a listing from `Draft` to `WaitingOnReference`, requested by its owner
+- **submission** — transition of a listing from `Draft` to `ReadyToReview`, requested by its owner
 - **listing stage** — position of a listing in its lifecycle, one value of `ListingStage`
 - **listing switcher** — control at the top of My business that lists each listing of the owner
 
-`ListingStage` has ten values: `Draft`, `WaitingOnReference`
-("Waiting on reference"), `ReadyToReview` ("Ready to review"),
-`NeedsDecision` ("Needs a decision"), `ChangesRequested` ("Changes
-requested"), `Live`, `Paused`, `OnHold`, `Removed` and `Declined`. A submitted listing shows the
+`ListingStage` has eight values: `Draft`, `ReadyToReview` ("Ready to
+review"), `ChangesRequested` ("Changes requested"), `Live`, `Paused`,
+`OnHold`, `Removed` and `Declined`. A submitted listing shows the
 mark "Pending verification" to its owner until it is `Live`.
 
 Submission is a create request and carries an idempotency key, so a double
@@ -26,15 +25,19 @@ fill in the form but may not submit it.
 
 ## Description
 
-The feature is a vertical slice from the `/list` page to the `Jubilee database`,
-with the outbox handing the reference request to `Jubilee Worker`.
+The feature is a vertical slice from the `/list` page to the `Jubilee database`.
+Submission sends no e-mail and involves no third party: the listing goes
+straight to the verification queue.
 
 - **`ListBusinessPage`** — Angular page at `/list`. On "Submit for
   verification" it validates the form, makes the fields read-only and shows the
   button busy with `aria-busy="true"`. On success it shows "{Business} is in
   for verification. Nothing more to do right now. We'll e-mail you the moment
   you're live." with "Go to My business" and "Add more products" (or "Add more
-  services"). A submission that takes longer than `10 s` fails with the page's
+  services"). Under "What happens next" it shows three steps: "You submitted
+  {Business}" (complete), "We review your listing" with "Within two business
+  days" (current) and "You're live" with "We e-mail you the moment members can
+  find you" (upcoming). A submission that takes longer than `10 s` fails with the page's
   failed state (L2-127).
 - **`ErrorSummary`** — shared component. For three invalid fields it shows "Fix
   3 things to continue" with `role="alert"`, lists each error as a link to its
@@ -51,18 +54,16 @@ with the outbox handing the reference request to `Jubilee Worker`.
   unconfirmed member receives HTTP 403 with code `EMAIL_UNCONFIRMED`; the page
   keeps the button disabled with "Confirm your e-mail to submit."
 - **`SubmitListingCommandValidator`** — runs every submission rule on the
-  server: the listing details (L2-072), the church reference (L2-074) and the
-  statement of faith agreement (L2-075). A failure returns HTTP 422 with
+  server: the listing details (L2-072) and the statement of faith agreement
+  (L2-075). A failure returns HTTP 422 with
   per-field codes that match the browser messages.
 - **`SubmitListingCommandHandler`** — MediatR handler. It applies the final
   values, assigns the slug, records the agreement, and calls
-  `Listing.SubmitForVerification`. It saves the listing and a
-  `ReferenceRequested` outbox message in one transaction.
+  `Listing.SubmitForVerification`. It saves the listing in one transaction.
 - **`Listing`** — domain entity. `SubmitForVerification` allows the transition
-  only from `Draft`, sets `Stage` to `WaitingOnReference` and sets
-  `SubmittedAt`. `SubmittedAt` orders the verification queue.
-- **`ReferenceRequested`** — outbox event that `OutboxDispatcherJob` in
-  `Jubilee Worker` turns into the reference request e-mail (L2-080).
+  only from `Draft`, sets `Stage` to `ReadyToReview` and sets
+  `SubmittedAt` and `ReadyAt`. `SubmittedAt` orders the verification queue
+  (L2-099).
 - **`ListingSwitcher`** — component at the top of `MyBusinessPage`. It shows
   each listing of the owner with its stage and the action "List another
   business". After submission, My business shows the pending state for the
@@ -83,7 +84,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-078` | `L1-011` | When a valid form is submitted, the system shall make the fields read-only, move the listing to the stage "waiting on reference", send the reference e-mail and show the submitted state. An invalid form shall show the summary "Fix {n} things to continue" with a link to each field. |
+| `L2-078` | `L1-011` | When a valid form is submitted, the system shall make the fields read-only, move the listing to the stage "Ready to review" in the verification queue and show the submitted state with the three steps of "What happens next". An invalid form shall show the summary "Fix {n} things to continue" with a link to each field. |
 | `L2-079` | `L1-011` | An owner may hold up to 5 listings, shown in a switcher at the top of My business, and the system shall refuse a sixth. The verification team shall see an owner's other listings with their stages when reviewing one. |
 | `L2-005` | `L1-001` | Until the e-mail is confirmed, a member shall be able to browse, search and save but shall not message, book, request or list a business; the API shall respond 403 with code `EMAIL_UNCONFIRMED`. |
 | `L2-126` | `L1-018` | A page form submitted with errors shall show the summary "Fix {n} thing(s) to continue", mark each invalid field, keep typed values, and apply the same rules and message codes on the server. |
@@ -94,16 +95,15 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-The owner submits a listing. Jubilee asks the church reference by e-mail and
-puts the listing in front of the verification team.
+The owner submits a listing. Jubilee puts the listing in front of the
+verification team.
 
 ![C4 system context for submitting for verification](diagrams/c4-context.png)
 
 ### Containers
 
 `Jubilee Web` submits with an idempotency key. `Jubilee API` stores the listing
-and an outbox message; `Jubilee Worker` sends the reference request through the
-`E-mail provider`.
+in the `Jubilee database` and the key in the `Cache`.
 
 ![C4 container view for submitting for verification](diagrams/c4-container.png)
 
@@ -117,7 +117,8 @@ controller validates and sends `SubmitListingCommand` or
 
 ### Class structure
 
-`SubmitListingCommandHandler` mutates `Listing` and writes `ReferenceRequested`.
+`SubmitListingCommandHandler` mutates `Listing` and returns a
+`SubmissionResult`.
 `Member` owns at most 5 listings, and `OwnerListingSummary` projects a listing
 for the switcher and the review screen.
 
@@ -127,7 +128,7 @@ for the switcher and the review screen.
 
 The browser validates first. The server checks the idempotency key, ownership,
 e-mail confirmation and the rules, then moves the listing to
-`WaitingOnReference` and queues the reference request in the same transaction.
+`ReadyToReview`, where the verification queue shows it.
 
 ![Sequence diagram for submitting a listing for verification](diagrams/sequence-submit.png)
 

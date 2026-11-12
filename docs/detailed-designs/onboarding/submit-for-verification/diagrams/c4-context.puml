@@ -4,13 +4,9 @@ LAYOUT_WITH_LEGEND()
 title System Context — Submit for verification
 
 Person(owner, "Owner", "Member who submits one or more business listings")
-Person_Ext(reference, "Church reference", "Pastor or elder named by the owner")
 Person(verifier, "Verification team member", "Reviews submitted listings")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
-System_Ext(email, "E-mail provider", "Delivers the reference request e-mail")
 
 Rel(owner, jubilee, "Submits a listing and starts further listings")
-Rel(jubilee, email, "Sends the reference request via")
-Rel(email, reference, "Delivers the request to")
 Rel(verifier, jubilee, "Sees the submitted listing and the owner's other listings")
 @enduml

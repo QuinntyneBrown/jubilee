@@ -554,9 +554,6 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<double>("RecommendedScore")
                         .HasColumnType("float");
 
-                    b.Property<DateTimeOffset?>("ReferenceConfirmedOn")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasMaxLength(120)
@@ -630,9 +627,6 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<DateTimeOffset?>("ReferenceDeletedAt")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<DateTimeOffset?>("ResolvedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -674,11 +668,6 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<string>("Church")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -703,11 +692,6 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("PastorEmail")
-                        .IsRequired()
-                        .HasMaxLength(254)
-                        .HasColumnType("nvarchar(254)");
 
                     b.Property<string>("Place")
                         .HasMaxLength(200)
@@ -855,11 +839,6 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("AgreedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("Church")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
                     b.Property<string>("Flags")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -876,16 +855,6 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("PastorEmail")
-                        .IsRequired()
-                        .HasMaxLength(254)
-                        .HasColumnType("nvarchar(254)");
-
-                    b.Property<string>("PastorEmailKey")
-                        .IsRequired()
-                        .HasMaxLength(254)
-                        .HasColumnType("nvarchar(254)");
 
                     b.Property<DateTimeOffset?>("ReadyAt")
                         .HasColumnType("datetimeoffset");
@@ -905,8 +874,6 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.HasIndex("OwnerSubject", "IdempotencyKey")
                         .IsUnique();
-
-                    b.HasIndex("PastorEmailKey", "SubmittedAt");
 
                     b.ToTable("ListingSubmissions", (string)null);
                 });
@@ -1021,6 +988,10 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("HomeChurchAddress")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1079,6 +1050,11 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
                     b.Property<DateTimeOffset>("LastActivityAt")
                         .HasColumnType("datetimeoffset");
 
@@ -1087,6 +1063,9 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<bool>("Persistent")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("StaffMemberId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("Ticket")
                         .IsRequired()
@@ -1098,6 +1077,8 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsUnique();
 
                     b.HasIndex("MemberId");
+
+                    b.HasIndex("StaffMemberId");
 
                     b.ToTable("Sessions", (string)null);
                 });
@@ -1414,95 +1395,6 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("MemberSubject", "SearchedAt");
 
                     b.ToTable("RecentSearches", (string)null);
-                });
-
-            modelBuilder.Entity("Jubilee.Domain.ReferenceAnswer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("AnsweredAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("Kind")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("LinkId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ListingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ListingId");
-
-                    b.ToTable("ReferenceAnswers", (string)null);
-                });
-
-            modelBuilder.Entity("Jubilee.Domain.ReferenceLink", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Church")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTimeOffset?>("ClosedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int?>("EndedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("ExpiresAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset?>("ExpiryNoticeSentAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("IssuedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("Kind")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ListingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ReferenceEmail")
-                        .IsRequired()
-                        .HasMaxLength(254)
-                        .HasColumnType("nvarchar(254)");
-
-                    b.Property<string>("TokenHash")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TokenHash")
-                        .IsUnique();
-
-                    b.HasIndex("ListingId", "IssuedAt");
-
-                    b.ToTable("ReferenceLinks", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.ReportAction", b =>
@@ -1880,6 +1772,42 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("SignInFailures", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.StaffMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("ObjectId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("Roles")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "ObjectId")
+                        .IsUnique()
+                        .HasFilter("[ObjectId] IS NOT NULL");
+
+                    b.ToTable("StaffMembers", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.StockAlert", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2099,24 +2027,6 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Navigation("Attributes");
 
                     b.Navigation("Options");
-                });
-
-            modelBuilder.Entity("Jubilee.Domain.ReferenceAnswer", b =>
-                {
-                    b.HasOne("Jubilee.Domain.Listing", null)
-                        .WithMany()
-                        .HasForeignKey("ListingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Jubilee.Domain.ReferenceLink", b =>
-                {
-                    b.HasOne("Jubilee.Domain.Listing", null)
-                        .WithMany()
-                        .HasForeignKey("ListingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Request", b =>

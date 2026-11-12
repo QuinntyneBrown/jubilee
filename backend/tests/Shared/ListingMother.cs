@@ -6,9 +6,7 @@ namespace Jubilee.Tests.Shared;
 public enum NonPublicState
 {
     Draft,
-    PendingReference,
     ReadyToReview,
-    NeedsDecision,
     ChangesRequested,
     Paused,
     Deleted,

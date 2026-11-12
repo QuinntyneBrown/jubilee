@@ -5,7 +5,7 @@
 Jubilee is Toronto's Christian marketplace. Every exchange between a browser and
 Jubilee crosses networks that neither side controls, and some actions start from
 a link in an e-mail: confirming an address, resetting a password, changing an
-address, answering as a church reference, and downloading personal data. This
+address, and downloading personal data. This
 feature defines how connections are encrypted, which protective headers every
 response carries, and how e-mailed links are made hard to guess, steal or reuse.
 
@@ -22,8 +22,7 @@ hash, so a copy of the database does not yield usable links. The token is kept
 out of the three places it could leak from: the `Referer` header, the address
 bar and the logs.
 
-The feature is cross-cutting: the account, onboarding, church-reference and
-privacy slices issue and redeem their links through the service described here.
+The feature is cross-cutting: the account and privacy slices issue and redeem their links through the service described here.
 
 ## Description
 
@@ -45,18 +44,17 @@ pipeline.
   list `<TO SUPPLY>`), and the Content Security Policy of L2-136. The static
   host applies the same `SecurityHeadersOptions`.
 - **`TokenPageHeaderPolicy`** — part of `SecurityHeadersMiddleware`. For token
-  pages (`/verify-email/:token`, `/reset-password/:token`, `/reference/:token`
+  pages (`/verify-email/:token`, `/reset-password/:token`
   and the e-mail-change and data-download pages, routes `<TO SUPPLY>`) and for
   the API endpoints that redeem tokens it replaces the referrer policy with
   `Referrer-Policy: no-referrer`.
-- **`LinkToken`** — entity holding `TokenHash`, `Purpose`, the subject it is
-  bound to (a `Member`, or a `Listing` and reference e-mail address), `ExpiresAt`,
+- **`LinkToken`** — entity holding `TokenHash`, `Purpose`, the `Member` it is
+  bound to, `ExpiresAt`,
   `UsedAt` and `RevokedAt`. The plain token is never stored.
 - **`LinkTokenPurpose`** — enumeration with one lifetime each:
   `EmailConfirmation` 24 hours, `PasswordReset` 60 minutes, `EmailChange`
-  24 hours, `ChurchReference` 14 days, `DataDownload` 7 days. `PasswordReset`
-  and `ChurchReference` are single-use (L2-008, L2-080); the other purposes
-  follow their own requirements.
+  24 hours, `DataDownload` 7 days. `PasswordReset` is single-use (L2-008);
+  the other purposes follow their own requirements.
 - **`ILinkTokenService`** — application service. `IssueAsync` draws 32 bytes
   (256 bits, above the 128-bit minimum) from the cryptographic random number
   generator, encodes them as base64url, stores the SHA-256 hash and returns the
@@ -88,17 +86,15 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-139` | `L1-019` | The system shall redirect any HTTP request to HTTPS with TLS 1.2 as the minimum and TLS 1.3 preferred. Every response shall include `Strict-Transport-Security: max-age=31536000; includeSubDomains`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a `Permissions-Policy` disabling unused features and the CSP of L2-136, and an external scan of production shall grade A or better. |
-| `L2-140` | `L1-019` | Each e-mailed link token (e-mail confirmation, password reset, change of e-mail, church reference, data download) shall have at least 128 bits of randomness, be stored only as a SHA-256 hash, have a single purpose, expire as specified (24 hours, 60 minutes, 24 hours, 14 days, 7 days) and be single-use where specified. A token page shall set `Referrer-Policy: no-referrer` and remove the token from the address bar after reading it, and the token value shall be redacted from logs. |
+| `L2-140` | `L1-019` | Each e-mailed link token (e-mail confirmation, password reset, change of e-mail, data download) shall have at least 128 bits of randomness, be stored only as a SHA-256 hash, have a single purpose, expire as specified (24 hours, 60 minutes, 24 hours, 7 days) and be single-use where specified. A token page shall set `Referrer-Policy: no-referrer` and remove the token from the address bar after reading it, and the token value shall be redacted from logs. |
 | `L2-136` | `L1-019` | The Content Security Policy shall allow scripts only from the app's own origin with nonces or hashes, disallow `unsafe-inline` scripts and `unsafe-eval`, and set `frame-ancestors 'none'`. |
-| `L2-080` | `L1-012` | The church reference token shall have at least 128 bits of randomness, be stored only as a hash, be bound to one listing and one reference e-mail, and work once, for 14 days. |
 
 ## Diagrams
 
 ### System context
 
 People reach Jubilee over HTTPS only. Jubilee sends links through the e-mail
-provider, and the recipients, including a church reference with no account,
-open them.
+provider, and the members who receive them open them.
 
 ![C4 system context for securing transport and tokens](diagrams/c4-context.png)
 

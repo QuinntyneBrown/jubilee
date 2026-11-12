@@ -33,9 +33,9 @@ import {
   DirectoryGroup,
   DirectoryGroups,
 } from 'components';
-import { ClockService } from '../../services/clock.service';
+import { ClockService } from 'api';
 import { REQUIRES_CONNECTION } from '../../directives/requires-connection';
-import { clockTime } from '../../services/message-time';
+import { clockTime } from 'api';
 import { ConnectionService } from '../../services/offline/connection.service';
 import { DirectoryStore } from '../../services/directory.store';
 import { SessionService } from '../../services/session.service';

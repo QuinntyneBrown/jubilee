@@ -26,7 +26,11 @@ body {
   background: var(--color-bg-canvas);
   -webkit-font-smoothing: antialiased;
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
+/* The footer is last at every page length (L2-112 criterion 5): main takes the height the content leaves. */
+main { flex: 1 0 auto; width: 100%; }
 h1, h2, h3, h4, p, ul, ol, figure, blockquote { margin: 0; }
 h1 { font: var(--text-h1); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tight); text-wrap: balance; }
 @media (min-width: 48rem) { h1 { font-size: var(--font-size-4xl); } }
@@ -511,6 +515,24 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 /* A choice chip (a radio or checkbox in a label) is a primary control: 44 px on a phone (L2-162). */
 @media (max-width: 47.99rem) { .chip:has(input) { min-height: var(--target-comfortable); min-width: var(--target-comfortable); justify-content: center; } }
 .topbar__dot { position: absolute; top: var(--space-2); right: var(--space-2); width: var(--indicator-size); height: var(--indicator-size); border-radius: var(--radius-full); background: var(--color-accent); }
+
+/* ---------- Admin top bar (the admin application's shell, L2-188) ---------- */
+/* The ink top bar with the "admin" tag, the staff navigation and the staff member. Under 768 px
+   the navigation drops below the lockup as one row that scrolls sideways, and the name and role
+   give way to "Sign out". */
+.admin-bar { flex-wrap: wrap; row-gap: 0; }
+.admin-bar__tag { display: inline-flex; align-items: center; margin-left: var(--space-2); padding: var(--space-0-5) var(--space-2); border: var(--border-width-hairline) solid var(--color-border-on-brand); border-radius: var(--radius-sm); color: var(--color-fg-on-brand-muted); font: var(--text-caption); letter-spacing: normal; text-transform: lowercase; }
+.admin-bar__nav { order: 3; display: flex; flex: 1 0 100%; gap: var(--space-1); margin-inline: calc(-1 * var(--layout-margin)); padding-inline: var(--layout-margin); overflow-x: auto; scrollbar-width: none; border-top: var(--border-width-hairline) solid var(--color-border-on-brand); }
+.admin-bar__nav .nav-link { flex: none; min-height: var(--target-comfortable); }
+.admin-bar__staff { display: none; flex-direction: column; align-items: flex-end; line-height: var(--line-height-tight); }
+.admin-bar__name { font: var(--text-label); color: var(--color-fg-on-brand); }
+.admin-bar__role { font: var(--text-caption); color: var(--color-fg-on-brand-muted); }
+@media (min-width: 48rem) {
+  .admin-bar { flex-wrap: nowrap; }
+  .admin-bar__nav { order: 0; flex: 0 1 auto; margin-inline: var(--space-4) 0; padding-inline: 0; border-top: 0; }
+  .admin-bar__nav .nav-link { min-height: var(--layout-topbar-height); }
+  .admin-bar__staff { display: flex; }
+}
 
 /* ---------- Phone tab bar ---------------------------------------------------- */
 .tabbar { position: fixed; inset: auto 0 0 0; z-index: var(--z-sticky); display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--color-bg-surface); border-top: var(--border-width-hairline) solid var(--color-border-default); padding-bottom: env(safe-area-inset-bottom); }

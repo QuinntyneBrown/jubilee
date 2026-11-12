@@ -21,7 +21,7 @@ import {
   DialogFooter,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
-import { newKey } from '../../services/message-time';
+import { newKey } from 'api';
 
 export interface ReportListingData {
   slug: string;

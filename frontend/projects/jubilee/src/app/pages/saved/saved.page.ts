@@ -20,7 +20,7 @@ import {
   SavedCard,
   UnavailableCard,
 } from 'components';
-import { LoadState, errorReference } from '../../services/load-state';
+import { LoadState, errorReference } from 'api';
 import { SavedStore } from '../../services/saved.store';
 
 /** The saved page at /saved (L2-042): what the member saved, newest first, private to them. */

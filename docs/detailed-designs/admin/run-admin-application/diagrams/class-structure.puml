@@ -1,0 +1,61 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Run the admin application
+
+class StaffSessionDto <<view model>> {
+  +string displayName
+  +string initials
+  +string email
+  +StaffRole[] roles
+  +number verificationCount
+}
+enum StaffRole {
+  verifier
+  admin
+}
+class StaffSessionService {
+  +staff: Signal<StaffSessionDto | null>
+  +refused: Signal<boolean>
+  +resolve(): Promise<void>
+  +signOut(): Observable<void>
+  +expire(): void
+  +signInUrl(returnUrl: string): string
+}
+interface StaffSessionApi {
+  +getSession(): Observable<StaffSessionDto>
+  +signOut(): Observable<void>
+  +signInUrl(returnUrl: string): string
+}
+class App <<jb-root>> {
+  #routeData: Signal<AdminRouteData>
+  #notForRole: Signal<boolean>
+  #signOut(): void
+}
+class AdminBar <<jb-admin-bar>> {
+  +staff: StaffChromeMember | null
+  +current: StaffSection
+  +signOut: OutputEmitter<void>
+}
+class AdminOnlyPage {
+  +signOut: OutputEmitter<void>
+}
+class AdminMovedPage {
+  #adminLink: string
+}
+StaffSessionService --> StaffSessionApi : uses
+StaffSessionService o-- StaffSessionDto : holds
+StaffSessionDto --> StaffRole
+App --> StaffSessionService : reads
+App ..> AdminBar : composes
+App ..> AdminOnlyPage : shows without the verifier role
+AdminMovedPage ..> "ADMIN_URL" : reads token
+@enduml

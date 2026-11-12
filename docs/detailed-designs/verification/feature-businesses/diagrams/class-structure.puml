@@ -12,9 +12,7 @@ skinparam class {
 title Class structure — Feature businesses
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused

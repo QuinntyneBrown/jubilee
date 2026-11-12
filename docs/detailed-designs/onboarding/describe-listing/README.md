@@ -5,8 +5,8 @@
 Jubilee is Toronto's Christian marketplace: a directory of verified
 Christian-owned businesses. A *listing* is the record of one business on Jubilee.
 Before a listing is public it passes through onboarding, the form at `/list`
-where a member describes the business, names a church reference and submits the
-listing for verification. This feature covers the first part of that form: the
+where a member describes the business and submits the listing for
+verification. This feature covers the first part of that form: the
 choice between products and services, the listing details, the first items, and
 the live preview.
 
@@ -17,12 +17,11 @@ The slice uses four local terms.
 - **slug** — unique URL segment generated from the business name, such as `luzandre-com`
 - **listing flag** — marker on a listing that draws the verification team's attention on the review screen
 
-A listing on `/list` holds the stage `Draft`. `ListingStage` has ten values:
-`Draft`, `WaitingOnReference`, `ReadyToReview`, `NeedsDecision`,
-`ChangesRequested`, `Live`, `Paused`, `OnHold`, `Removed` and `Declined`. Nothing entered here is
-public until the verification team approves the listing. Naming the church
-reference, saving the draft and submitting are separate features of the
-`onboarding` subsystem.
+A listing on `/list` holds the stage `Draft`. `ListingStage` has eight values:
+`Draft`, `ReadyToReview`, `ChangesRequested`, `Live`, `Paused`, `OnHold`,
+`Removed` and `Declined`. Nothing entered here is public until the
+verification team approves the listing. Saving the draft and submitting are
+separate features of the `onboarding` subsystem.
 
 ## Description
 
@@ -30,7 +29,7 @@ The feature is a vertical slice from the `/list` page to the `Jubilee database`.
 
 - **`ListBusinessPage`** — Angular page at `/list`. It shows "List your
   business", the line "Free for Christian-owned businesses in Toronto. Every
-  listing is verified with a church reference.", and "What do you offer?". From
+  listing is verified before it goes live.", and "What do you offer?". From
   `1024 px` the preview sits to the right of the form; under `1024 px` it moves
   below the form.
 - **`AuthGuard`** — route guard on `/list`. A `Visitor` is sent to sign in or

@@ -1,0 +1,25 @@
+@startuml
+title UML sequence behaviour — A direct call from outside the allow-list
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Caller off the list" as actor
+box "Backend — App host" #D1FADF
+  participant "App Service front end" as appfront
+  participant "server.js (app)" as appproxy
+end box
+box "Backend — Jubilee API" #ECFDF3
+  participant "ForwardedHeaders" as fwd
+  participant "StaffProxyMiddleware" as key
+  participant "StaffNetworkMiddleware" as net
+end box
+actor -> appfront : GET app.jubilee.to/api/admin/verifications\nX-Forwarded-For: 203.0.113.5 (forged)
+appfront -> appproxy : X-Forwarded-For: 203.0.113.5, caller address
+appproxy -> fwd : From loopback
+fwd -> key : Remote address = caller address (last entry)
+key -> key : No valid proxy key - drop the headers
+key -> net : Remote address = caller address
+net --> actor : 403 NETWORK_NOT_ALLOWED before authentication (L2-192)
+@enduml

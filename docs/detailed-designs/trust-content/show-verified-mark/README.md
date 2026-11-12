@@ -3,15 +3,14 @@
 ## Overview
 
 Jubilee is Toronto's Christian marketplace: a directory of verified
-Christian-owned businesses. Before a listing is public, the owner names a church
-reference, the reference answers privately, and the verification team approves
-the listing. The *verified mark* — icon and the text "Verified" shown with a
+Christian-owned businesses. Before a listing is public, the owner submits it and the
+verification team reviews and approves it. The *verified mark* — icon and the text "Verified" shown with a
 listing — tells a member that this happened.
 
 The mark is a promise, so the design derives it from one fact on the server and
 renders it through one component. A listing carries the mark only when the
 verification team approved it and it is currently live. A draft, a listing that
-waits on its reference or on review, a listing with requested changes and a
+waits on review, a listing with requested changes and a
 paused listing never carry it.
 
 The mark does not rely on colour alone. It combines the success colour, an icon

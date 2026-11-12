@@ -18,7 +18,6 @@ function toState(dto: SessionDto): SessionState {
           emailConfirmed: dto.emailStatus !== 'unconfirmed',
           emailBounced: dto.emailBounced ?? false,
           agreementRequired: dto.agreementRequired ?? false,
-          isVerifier: dto.isVerifier ?? false,
         },
       }
     : { status: 'visitor' };

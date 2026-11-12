@@ -31,13 +31,6 @@
           <a jb-menu-link icon="plus" routerLink="/list" (click)="close()">List your business </a>
         }
       </li>
-      @if (data.isVerifier) {
-        <li>
-          <a jb-menu-link icon="verified" routerLink="/admin/verifications" (click)="close()"
-            >Verification queue
-          </a>
-        </li>
-      }
       <li>
         <a jb-menu-link icon="info" routerLink="/help" (click)="close()">Help </a>
       </li>

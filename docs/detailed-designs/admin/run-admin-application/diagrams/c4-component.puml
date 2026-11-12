@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Run the admin application
+
+Container_Boundary(admin, "Jubilee Admin Web") {
+  Component(root, "App", "Angular root container", "Skip link - admin bar - routed page - toasts")
+  Component(bar, "jb-admin-bar", "components library", "Lockup and tag - staff navigation - name and role - Sign out")
+  Component(guard, "staffGuard", "Route guard", "Sends a caller without a staff session to /sign-in")
+  Component(session, "StaffSessionService", "Angular service", "Holds the staff member and roles")
+  Component(pages, "Queue - review - reports - report - featured pages", "Angular pages", "The five staff screens")
+  Component(adminapi, "AdminApi and StaffSessionApi", "api library", "Typed HTTP clients")
+  Component(expiry, "sessionExpiredInterceptor", "HTTP interceptor", "Sends a 401 to /session-expired or /sign-in")
+}
+Container_Boundary(web, "Jubilee Web") {
+  Component(moved, "AdminMovedPage", "Angular page on admin/**", "Links the same screen in the admin application")
+}
+Container(api, "Jubilee API", "ASP.NET Core", "/api/staff/* and /api/admin/*")
+Rel(root, bar, "Composes")
+Rel(root, session, "Reads")
+Rel(guard, session, "Loads and reads")
+Rel(pages, adminapi, "Reads and decides through")
+Rel(session, adminapi, "GET /api/staff/session through")
+Rel(adminapi, api, "Calls", "JSON/HTTPS")
+Rel(expiry, session, "Clears on SESSION_EXPIRED")
+@enduml

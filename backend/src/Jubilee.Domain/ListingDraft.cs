@@ -29,7 +29,7 @@ public sealed class DraftItem
 /// <summary>
 /// A listing the member is still filling in (L2-077). Nothing is public until it is submitted, and
 /// every field may be empty or invalid while it is a draft. Submitting turns it into a
-/// <see cref="Listing"/> that waits on its church reference.
+/// <see cref="Listing"/> the verification team reviews.
 /// </summary>
 public sealed class ListingDraft
 {
@@ -68,10 +68,6 @@ public sealed class ListingDraft
     /// <summary>The store address of a shop, or the area a service business serves.</summary>
     public string? Place { get; private set; }
 
-    public string Church { get; private set; } = string.Empty;
-
-    public string PastorEmail { get; private set; } = string.Empty;
-
     public bool Agreed { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
@@ -99,8 +95,6 @@ public sealed class ListingDraft
         string? categorySlug,
         string? highlight,
         string? place,
-        string? church,
-        string? pastorEmail,
         bool agreed,
         IEnumerable<DraftItem> items,
         DateTimeOffset now)
@@ -111,8 +105,6 @@ public sealed class ListingDraft
         CategorySlug = Cut(categorySlug, 60);
         Highlight = Cut(highlight, 60);
         Place = Cut(place, 200);
-        Church = Cut(church, 200) ?? string.Empty;
-        PastorEmail = Cut(pastorEmail, 254) ?? string.Empty;
         Agreed = agreed;
         _items.Clear();
         foreach (var item in items.Take(MaxItems))

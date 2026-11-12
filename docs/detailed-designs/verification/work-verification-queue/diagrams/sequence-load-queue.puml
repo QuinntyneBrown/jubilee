@@ -15,8 +15,8 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "Verification team member" as actor
-box "Frontend — Jubilee Web" #E0F2FE
-  participant "VerifierGuard" as guard
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "staffGuard" as guard
   participant "VerificationQueuePage" as page
   participant "AdminApi" as client
 end box
@@ -30,20 +30,20 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> guard : Open /admin/verifications
-guard -> guard : Check verifier role and second factor (L2-098)
+actor -> guard : Open /verifications
+guard -> guard : Staff session signed in with a second factor (L2-098, L2-188)
 guard --> page : Activate route
 page -> client : getQueue(filter)
 client -> controller : GET /api/admin/verifications?filter=ready-to-review
-controller -> controller : Authenticate session and apply VerifierPolicy (L2-133)
-alt caller lacks the verifier role
-  controller --> client : 403 ProblemDetails
+controller -> controller : Authenticate the staff session and apply RequiresVerifier (L2-133, L2-191)
+alt staff session without the verifier role
+  controller --> client : 403 FORBIDDEN
   client --> page : Forbidden
-  page --> actor : Show the forbidden page (L2-098)
-else verifier with second factor
+  page --> actor : Show "Nothing here for your role" (L2-188)
+else staff session with the verifier role
   controller -> handler : Send GetVerificationQueueQuery
   handler -> db : Read submitted listings, oldest submitted first (L2-099)
-  db --> handler : Rows with owner and reference outcome
+  db --> handler : Rows with owner and stage
   handler -> calendar : Business days in "Ready to review"
   calendar --> handler : Days waited
   handler -> handler : Mark rows over 2 business days overdue (L2-099)

@@ -14,6 +14,9 @@ export class AccountPage extends ShellPage implements Screen {
   readonly phoneHelp: Locator;
   readonly postalCode: Locator;
   readonly homeChurch: Locator;
+  readonly homeChurchAddress: Locator;
+  readonly homeChurchAddressHint: Locator;
+  readonly pronounsHint: Locator;
   readonly pronouns: Locator;
   readonly lastSaved: Locator;
   readonly save: Locator;
@@ -46,7 +49,10 @@ export class AccountPage extends ShellPage implements Screen {
     this.phone = this.main.getByLabel('Phone');
     this.phoneHelp = this.main.locator('#phone-help');
     this.postalCode = this.main.getByLabel('Postal code');
-    this.homeChurch = this.main.getByLabel('Home church');
+    this.homeChurch = this.main.locator('#church');
+    this.homeChurchAddress = this.main.locator('#church-address');
+    this.homeChurchAddressHint = this.main.locator('#church-address-help');
+    this.pronounsHint = this.main.locator('#pronouns-help');
     this.pronouns = this.main.getByLabel('Pronouns');
     this.lastSaved = this.main.locator('.form-actions .inline-status');
     this.save = this.main.getByRole('button', { name: /^(Save profile|Saving…)$/ });

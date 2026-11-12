@@ -34,11 +34,11 @@ import {
   TabList,
 } from 'components';
 import { interval } from 'rxjs';
-import { ClockService } from '../../services/clock.service';
-import { LoadState, errorReference } from '../../services/load-state';
-import { threadTime } from '../../services/message-time';
+import { ClockService } from 'api';
+import { LoadState, errorReference } from 'api';
+import { threadTime } from 'api';
 import { STATUS_TONE, statusChangeToast } from '../../services/request-status';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 
 /** How often the page looks again, so a status change shows without a reload (L2-070). */
 const POLL_MS = 5000;

@@ -13,9 +13,9 @@ Nothing you've sent is lost." with the button "Check again". The 503 response
 carries a `Retry-After` header so that browsers, crawlers and monitoring tools
 know when to return.
 
-Maintenance also affects links that were sent earlier. Church reference links
-and e-mail confirmation links have a limited validity; a pastor who opens a
-reference link during maintenance cannot answer. The design therefore extends
+Maintenance also affects links that were sent earlier. E-mail confirmation
+links have a limited validity; a member who opens one during maintenance cannot
+confirm. The design therefore extends
 the remaining validity of those links by the length of the *maintenance window*,
 the interval between the switch turning on and turning off.
 
@@ -55,7 +55,7 @@ one background job.
 - **`MaintenanceWindow`** — entity that records one period of maintenance.
   `Close(now)` sets `EndedAt` and returns the window length.
 - **`LinkTokenExtensionService`** — selects each unused `LinkToken` with the
-  purpose `ChurchReference` or `EmailConfirmation` that was valid at
+  purpose `EmailConfirmation` that was valid at
   `StartedAt`, and adds the window length to its `ExpiresAt`. Tokens and the
   closed window are saved in one unit of work, so a window is applied once.
 - **`LinkToken.Extend`** — domain method that moves `ExpiresAt` forward. Other
@@ -71,15 +71,15 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-117` | `L1-016` | While maintenance mode is on, the server shall respond 503 with `Retry-After` to any page request and show the maintenance page with the back-by time and "Check again". Church reference links and e-mail confirmation links shall keep their remaining validity extended by the length of the maintenance window. An operator shall turn the mode on or off with a configuration switch, without a deployment, and the back-by time shall be part of the switch. |
+| `L2-117` | `L1-016` | While maintenance mode is on, the server shall respond 503 with `Retry-After` to any page request and show the maintenance page with the back-by time and "Check again". E-mail confirmation links shall keep their remaining validity extended by the length of the maintenance window. An operator shall turn the mode on or off with a configuration switch, without a deployment, and the back-by time shall be part of the switch. |
 
 ## Diagrams
 
 ### System context
 
 The on-call engineer sets the switch in the configuration store, Jubilee reads
-it, and members receive the maintenance page. A church reference benefits from
-the extended link validity.
+it, and members receive the maintenance page. A member who holds an
+e-mail confirmation link benefits from the extended link validity.
 
 ![C4 system context for running maintenance mode](diagrams/c4-context.png)
 
@@ -118,7 +118,7 @@ interceptor.
 ### Behaviour — switch maintenance mode and extend links
 
 The switch takes effect without a deployment. When it turns off, the job closes
-the window and the service extends church reference and e-mail confirmation
-links by the window length.
+the window and the service extends e-mail confirmation links by the window
+length.
 
 ![Sequence diagram for switching maintenance mode and extending links](diagrams/sequence-switch-and-extend-links.png)

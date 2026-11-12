@@ -187,6 +187,8 @@ Every inconsistency found while extracting, and how the system resolved it. *Ope
 - **1.0 — 10 Nov 2026.** First extraction from docs/mocks. Value changes against the mocks' draft tokens are listed in the drift log above.
 - **1.1 — 11 Nov 2026.** Log in and Sign up redrawn from the Magic Patterns design (ADR 0038). New pages: [Auth layout](components/auth-layout.html), with its split frame and the link under the form, and [Lockup](components/lockup.html). Documented on existing pages: the password control with its show-password button (Text field), the label action and the hint under the control (Form field), the Google button and its mark (Button), a label that is a sentence with links (Checkbox), `.form-grid--2-lg` and the two layouts (Form layout), `eye-off` (Iconography). Changed values in the kit: `.divider-text` goes from `--text-caption` with a `--space-3` gap to `--text-body-sm` with a `--space-4` gap and reads "or use email"; `.choice__text` is no longer a flex column and its `small` is a block. No token was added.
 
+- **1.2 — 11 Nov 2026.** The admin application (L2-188). New variant on [Top bar](components/top-bar.html): `.admin-bar` with `__tag`, `__nav`, `__staff`, `__name` and `__role`; its navigation becomes a sideways-scrolling row below 768px. The app's ink bar loses its Verifications link ([Navigation](patterns/navigation.html)). No token was added; the new pairings (`--color-fg-on-brand-muted` and `--color-fg-on-brand` on `--color-bg-brand`) were already checked.
+
 ## Verification
 
 Run on 10 November 2026, all from the repository root:

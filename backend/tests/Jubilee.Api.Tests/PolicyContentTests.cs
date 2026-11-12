@@ -17,7 +17,7 @@ public sealed class PolicyContentTests : IClassFixture<JubileeApiFactory>, IAsyn
 
     public Task DisposeAsync() => Task.CompletedTask;
 
-    private HttpClient AsAdmin() => _factory.CreateMemberClient("Ada Admin", "member|ada", role: "admin");
+    private HttpClient AsAdmin() => _factory.CreateStaffClient("Ada Admin", "member|ada", "admin");
 
     private static async Task<JsonElement> Json(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
@@ -30,7 +30,7 @@ public sealed class PolicyContentTests : IClassFixture<JubileeApiFactory>, IAsyn
     };
 
     [Theory]
-    [InlineData("statement-of-faith", "Statement of faith", "How a listing is confirmed")]
+    [InlineData("statement-of-faith", "Statement of faith", "How a listing is verified")]
     [InlineData("terms", "Terms of use", "Requests and payment")]
     [InlineData("privacy", "Privacy", "Your choices")]
     [InlineData("help", "Help", "How do I report a listing?")]
@@ -66,6 +66,9 @@ public sealed class PolicyContentTests : IClassFixture<JubileeApiFactory>, IAsyn
         var text = string.Join(' ', page.GetProperty("sections").EnumerateArray().Select(s => s.GetProperty("body").GetString()));
         Assert.Contains("privacy@jubilee.example", text);
         Assert.Contains("see or correct", text);
+        // L2-108 AC1: the notice has no section about church references, and says the home church is private.
+        Assert.DoesNotContain(page.GetProperty("sections").EnumerateArray(), s => s.GetProperty("heading").GetString() == "Church references");
+        Assert.Contains("Your home church is shown to no one.", text);
     }
 
     [Fact]

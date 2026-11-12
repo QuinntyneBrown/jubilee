@@ -44,9 +44,9 @@ public class EmailLayoutTests
     [Fact]
     public void L2_179_AC5_the_preheader_is_the_first_thing_said_after_the_greeting()
     {
-        var html = Html("Hello,\n\nRuth Okafor is listing Okafor Bakery on Jubilee and named you as her church reference.\n\nAnswer here: https://jubilee.test/reference/abc\n\n" + Signature);
+        var html = Html("Hello,\n\nEsther from the Jubilee verification team asked for changes to Okafor Bakery.\n\nAnswer here: https://jubilee.test/my-business\n\n" + Signature);
 
-        Assert.Contains("opacity:0;color:transparent;\">Ruth Okafor is listing Okafor Bakery on Jubilee and named you as her church reference.</div>", html);
+        Assert.Contains("opacity:0;color:transparent;\">Esther from the Jubilee verification team asked for changes to Okafor Bakery.</div>", html);
         Assert.Contains(">Answer here</a>", html);
     }
 

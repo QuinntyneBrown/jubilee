@@ -15,9 +15,7 @@ title Class structure — Submit for verification
 
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused
@@ -33,6 +31,7 @@ class Listing {
   +ListingSlug Slug
   +ListingStage Stage
   +DateTimeOffset? SubmittedAt
+  +DateTimeOffset? ReadyAt
   +SubmitForVerification(now: DateTimeOffset): void
 }
 
@@ -79,11 +78,6 @@ class OwnerListingSummary {
   +ListingStage Stage
 }
 
-class ReferenceRequested <<outbox event>> {
-  +Guid ListingId
-  +Guid ChurchReferenceId
-}
-
 class IdempotencyRecord {
   +string Key
   +Guid MemberId
@@ -97,7 +91,6 @@ Listing --> ListingStage : has
 SubmitListingCommandHandler ..> SubmitListingCommand : handles
 SubmitListingCommandValidator ..> SubmitListingCommand : validates
 SubmitListingCommandHandler --> Listing : loads / mutates
-SubmitListingCommandHandler ..> ReferenceRequested : writes to outbox
 SubmitListingCommandHandler ..> SubmissionResult : returns
 SubmitListingCommand ..> IdempotencyRecord : keyed by
 StartListingDraftCommandHandler ..> StartListingDraftCommand : handles

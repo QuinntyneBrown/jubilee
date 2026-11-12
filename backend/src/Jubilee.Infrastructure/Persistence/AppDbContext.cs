@@ -49,6 +49,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<SignInFailure> SignInFailures => Set<SignInFailure>();
 
+    public DbSet<StaffMember> StaffMembers => Set<StaffMember>();
+
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
     public DbSet<Conversation> Conversations => Set<Conversation>();
@@ -72,10 +74,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<ListingDraft> ListingDrafts => Set<ListingDraft>();
 
     public DbSet<ListingSubmission> ListingSubmissions => Set<ListingSubmission>();
-
-    public DbSet<ReferenceLink> ReferenceLinks => Set<ReferenceLink>();
-
-    public DbSet<ReferenceAnswer> ReferenceAnswers => Set<ReferenceAnswer>();
 
     public DbSet<ReviewTick> ReviewTicks => Set<ReviewTick>();
 

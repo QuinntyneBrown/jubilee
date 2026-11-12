@@ -2,34 +2,27 @@
 !include <C4/C4_Component>
 LAYOUT_WITH_LEGEND()
 title Components — Work the verification queue
-Container_Boundary(web, "Jubilee Web") {
-  Component(guard, "VerifierGuard", "Angular route guard", "Admits verifiers with a completed second factor to /admin routes")
+Container_Boundary(web, "Jubilee Admin Web") {
+  Component(guard, "staffGuard", "Angular route guard", "Admits a staff session - sends others to staff sign-in")
   Component(page, "VerificationQueuePage", "Angular page", "Shows summary line and filter tabs and queue table")
-  Component(badge, "VerificationsBadge", "Angular component", "Shows Verifications n in the top bar")
+  Component(badge, "jb-admin-bar", "components library", "Shows Verifications n in the admin bar")
   Component(client, "AdminApi", "Typed HTTP client", "Calls the /api/admin endpoints")
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "AdminVerificationsController", "ASP.NET Core controller", "Exposes GET /api/admin/verifications and its summary")
-  Component(roles, "AdminRolesController", "ASP.NET Core controller", "Exposes PUT /api/admin/members/id/roles")
-  Component(policy, "VerifierPolicy", "Authorization policy", "Requires the verifier role and a second factor on the session")
+  Component(policy, "RequiresVerifier", "Staff authorization policy", "Requires a staff session with the verifier role")
   Component(qh, "GetVerificationQueueQueryHandler", "MediatR handler", "Builds rows and counts and overdue marks")
-  Component(rh, "ChangeMemberRoleCommandHandler", "MediatR handler", "Grants or removes a role and writes the audit entry")
   Component(cal, "BusinessDayCalendar", "Application service", "Counts business days for the overdue rule")
 }
-ContainerDb(db, "Jubilee database", "SQL Server", "Listings and roles and audit entries")
-ContainerDb(cache, "Cache", "Redis", "Sessions and queue count")
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings and staff sessions")
 
 Rel(guard, page, "Activates")
 Rel(page, client, "Loads the queue through")
-Rel(badge, client, "Loads the count through")
+Rel(badge, client, "Gets the count from GET /api/staff/session through")
 Rel(client, ctrl, "Calls", "JSON/HTTPS")
-Rel(client, roles, "Calls", "JSON/HTTPS")
 Rel(ctrl, policy, "Applies")
-Rel(roles, policy, "Applies the admin variant of")
-Rel(policy, cache, "Reads session from")
+Rel(policy, db, "Reads the staff session from", "EF Core")
 Rel(ctrl, qh, "Sends GetVerificationQueueQuery")
-Rel(roles, rh, "Sends ChangeMemberRoleCommand")
 Rel(qh, cal, "Asks for business days waited")
 Rel(qh, db, "Reads", "EF Core")
-Rel(rh, db, "Writes role and audit entry", "EF Core")
 @enduml

@@ -28,10 +28,10 @@ import {
   Tabs,
 } from 'components';
 import { Observable } from 'rxjs';
-import { LoadState, errorReference } from '../../services/load-state';
-import { clockTime, monthYear } from '../../services/message-time';
+import { LoadState, errorReference } from 'api';
+import { clockTime, monthYear } from 'api';
 import { SessionService } from '../../services/session.service';
-import { ToastService } from '../../toasts/toast.service';
+import { ToastService } from 'components';
 import { ACCOUNT_TABS } from '../account/account-tabs';
 
 interface SettingRow {

@@ -11,8 +11,8 @@ A *data archive* is a machine-readable JSON file that holds what Jubilee stores
 about one member: the profile, the saved list, the requests the member sent, the
 messages, and the notification settings. For an *owner* — member who owns a
 business listing — the archive also holds the listing, its products and
-services, and the requests customers sent to the business. The church
-reference's private answer about the owner is never part of an archive.
+services, and the requests customers sent to the business. The profile part
+includes the home church and the home church address.
 
 The archive is built in the background, not while the member waits. The
 *download link* in the e-mail works for 7 days. It opens only for a visitor who
@@ -59,9 +59,8 @@ names below are the names the design introduces.
   `ProfileSection`, `SavedListSection`, `SentRequestsSection`,
   `MessagesSection` and `NotificationSettingsSection` for each member, plus
   `ListingSection`, `ProductsSection`, `ServicesSection` and
-  `IncomingRequestsSection` for an owner. No section reads `ChurchReference` or
-  `ReferenceAnswer`, and an automated test asserts that the archive of an owner
-  contains neither (L2-146).
+  `IncomingRequestsSection` for an owner. `ProfileSection` includes the home
+  church and the home church address (`L2-196`).
 - **`IExportStore`** — storage adapter for archive files. It writes to a private
   area of object storage that the CDN does not serve; the file is reachable only
   through `DataExportsController`. Files are encrypted at rest. Until object storage is added, the archive is kept in a private column of `DataExport` that only the download endpoint reads (ADR 0034).
@@ -88,7 +87,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 |-------|--------------|-------------|
 | `L2-018` | `L1-002` | The system shall let a member download their data, as stated on the privacy page. |
 | `L2-140` | `L1-019` | Each e-mailed link token shall have at least 128 bits of randomness, shall be stored only as a SHA-256 hash, shall have a single purpose, and shall expire as specified (7 days for a data download). |
-| `L2-146` | `L1-020` | A church reference's answer, name, role and note shall be visible only to verifiers and shall be excluded from the owner's data download. |
+| `L2-196` | `L1-002` | A member's data download shall contain the home church and the home church address. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on each API endpoint, and shall return 404 and log the attempt when a member requests another member's object. |
 | `L2-182` | `L1-025` | Each background job shall be idempotent, and a failed job shall be retried up to 5 times with back-off and then moved to a dead-letter queue that alerts on-call. |
 
@@ -128,8 +127,8 @@ sections are added only when the member owns a listing.
 
 ### Behaviour — request and build the archive
 
-The request returns HTTP `202` at once. `DataExportJob` builds the JSON archive
-without the church reference's answer, stores it, and e-mails a link within 24
+The request returns HTTP `202` at once. `DataExportJob` builds the JSON archive,
+stores it, and e-mails a link within 24
 hours.
 
 ![Sequence diagram for requesting and building the archive](diagrams/sequence-request-archive.png)

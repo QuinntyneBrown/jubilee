@@ -12,6 +12,7 @@ export interface FakeAccount {
   phone: string | null;
   postalCode: string | null;
   homeChurch: string | null;
+  homeChurchAddress: string | null;
   pronouns: string | null;
   memberSince: string;
   profileSavedAt: string | null;
@@ -61,6 +62,7 @@ export const ACCOUNT: FakeAccount = {
   phone: '416-555-0142',
   postalCode: 'M4C 1A1',
   homeChurch: 'Grace Toronto Church',
+  homeChurchAddress: '383 Jarvis Street, Toronto',
   pronouns: null,
   memberSince: '2026-10-02T14:00:00Z',
   profileSavedAt: '2026-11-09T15:00:00Z',
@@ -147,6 +149,7 @@ export async function stubProfile(
       phone: (sent['phone'] as string | null) ?? null,
       postalCode: (sent['postalCode'] as string | null) ?? null,
       homeChurch: (sent['homeChurch'] as string | null) ?? null,
+      homeChurchAddress: (sent['homeChurchAddress'] as string | null) ?? null,
       pronouns: (sent['pronouns'] as string | null) ?? null,
       profileSavedAt: '2026-11-10T14:00:00Z',
     };

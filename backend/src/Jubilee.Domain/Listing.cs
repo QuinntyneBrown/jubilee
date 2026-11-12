@@ -73,9 +73,6 @@ public sealed class Listing
 
     public string? ApprovedBy { get; private set; }
 
-    /// <summary>The month the church reference confirmed the owner; the only reference fact kept after the 90 days (L2-146).</summary>
-    public DateTimeOffset? ReferenceConfirmedOn { get; private set; }
-
     public OfferFilter Offers { get; private set; }
 
     public AreaServed AreasServed { get; private set; }
@@ -132,8 +129,6 @@ public sealed class Listing
         Stage = ListingStage.Live;
         RefreshRecommendedScore(now);
     }
-
-    public void ConfirmReference(DateTimeOffset now) => ReferenceConfirmedOn = now;
 
     /// <summary>The owner's edit of the words members read; the review screen highlights what changed (L2-103 AC2).</summary>
     public void Reword(string name, string tagline, string categorySlug, string? about)

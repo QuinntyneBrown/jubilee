@@ -7,7 +7,7 @@ Person(member, "Member", "Signed-in member without the verifier role")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 System_Ext(observability, "Observability platform", "Receives logs carrying error references and correlation IDs")
 
-Rel(verifier, jubilee, "Signs in with a second factor and works the queue in", "HTTPS")
+Rel(verifier, jubilee, "Signs in through single sign-on with a second factor and works the queue in the admin application of", "HTTPS")
 Rel(member, jubilee, "Is refused admin routes by", "HTTPS 403")
 Rel(jubilee, observability, "Sends request logs to")
 @enduml

@@ -19,7 +19,6 @@ body:
         - Visitor
         - Member
         - Owner
-        - Church reference
         - Verification team
     validations:
       required: true

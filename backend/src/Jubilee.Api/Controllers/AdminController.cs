@@ -3,45 +3,22 @@ using System.Text.Json.Serialization;
 using Jubilee.Api.Errors;
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Errors;
-using Jubilee.Application.Reference;
 using Jubilee.Application.Verification;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+using Jubilee.Api.Sessions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Jubilee.Api.Controllers;
 
-/// <summary>Only the verification team reaches the admin endpoints; anyone else gets 403 (L2-098 AC1).</summary>
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public sealed class RequiresVerifierAttribute : Attribute, IAsyncActionFilter
-{
-    public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-    {
-        if (!context.HttpContext.User.ToViewer().IsVerifier)
-        {
-            throw new ForbiddenException("FORBIDDEN", "This area is for the Jubilee verification team.");
-        }
+/// <summary>
+/// Only a staff session holding the <c>verifier</c> role reaches the verification and moderation
+/// endpoints (L2-191, ADR 0040); a member session is refused whatever it carries.
+/// </summary>
+public sealed class RequiresVerifierAttribute() : AuthorizeAttribute(StaffPolicies.Verifier);
 
-        return next();
-    }
-}
-
-/// <summary>Only an <c>admin</c> role holder reads the audit log (L2-180 AC3).</summary>
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public sealed class RequiresAdminAttribute : Attribute, IAsyncActionFilter
-{
-    public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
-    {
-        var user = context.HttpContext.User;
-        var isAdmin = user.FindAll("role").Concat(user.FindAll(ClaimTypes.Role)).Any(c => c.Value == "admin");
-        if (!isAdmin)
-        {
-            throw new ForbiddenException("FORBIDDEN", "This area is for the Jubilee administrators.");
-        }
-
-        return next();
-    }
-}
+/// <summary>Only a staff session holding the <c>admin</c> role reaches the administrator endpoints (L2-191).</summary>
+public sealed class RequiresAdminAttribute() : AuthorizeAttribute(StaffPolicies.Admin);
 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record ChecklistRequest(IReadOnlyList<string>? Ticked);

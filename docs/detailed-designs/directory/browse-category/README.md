@@ -3,7 +3,7 @@
 ## Overview
 
 Jubilee is Toronto's Christian marketplace: a directory of businesses that the
-verification team has checked against a church reference. The directory is
+Jubilee verification team has verified. The directory is
 divided into ten fixed categories: Shops, Financial & insurance, Legal &
 immigration, Home & property, Real estate & living, Health & family, Business &
 tech, Learning, Media and Community. This feature covers the page that lists the

@@ -45,7 +45,7 @@ else caller owns the listing
   area --> handler : Area label such as East York, M4C
   handler --> controller : IncomingRequestDto with ContactPhone of this request only
   controller -> modifier : Serialise for audience RequestBusiness
-  modifier -> modifier : Omit e-mail, home church and full postal code (L2-145)
+  modifier -> modifier : Omit e-mail, home church, home church address and full postal code (L2-145)
   modifier --> controller : JSON without hidden fields
   controller --> client : 200 audience-limited request
   client --> page : Typed request

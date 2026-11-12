@@ -1,0 +1,37 @@
+<jb-auth-layout
+  split
+  [heading]="heading()"
+  lead="For the Jubilee verification team and administrators. You’ll sign in with your Jubilee staff account and confirm it with a second factor."
+  panelLabel="About the admin application"
+  panelHeadline="The verification team’s workspace."
+  panelLead="Review listings, handle reports and choose the featured businesses."
+  homeLink="/sign-in"
+  homeLabel="Jubilee admin, sign in"
+>
+  @if (message(); as message) {
+    <div jb-alert [tone]="message.tone" [role]="message.role" [heading]="message.heading">
+      {{ message.text }}
+      @if (message.reference) {
+        <code>{{ message.reference }}</code
+        >{{ message.after }}
+      }
+    </div>
+  }
+  @if (!refused()) {
+    <button
+      jb-button
+      variant="primary"
+      size="lg"
+      block
+      type="button"
+      [attr.aria-disabled]="busy() ? 'true' : null"
+      (click)="signIn()"
+    >
+      @if (!busy()) {
+        <svg jb-icon name="shield"></svg>
+      }
+      {{ label() }}
+    </button>
+  }
+  <span slot="foot">Members sign in at <a href="https://app.jubilee.to">app.jubilee.to</a>.</span>
+</jb-auth-layout>

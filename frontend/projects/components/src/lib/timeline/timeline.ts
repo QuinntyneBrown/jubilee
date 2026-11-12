@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
  *
  *     <ol jb-timeline>
  *       <li jb-timeline-step state="complete" heading="You submitted Legacy Financial"></li>
- *       <li jb-timeline-step state="current" heading="Your pastor confirms you" text="…"></li>
+ *       <li jb-timeline-step state="current" heading="We review your listing" text="…"></li>
  *       <li jb-timeline-step heading="We review and publish"></li>
  *     </ol>
  */

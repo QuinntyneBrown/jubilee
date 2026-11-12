@@ -67,6 +67,14 @@ The slice consists of pipeline stages, two console tools, and the feature flag c
 - **`SyntheticDataSeeder`** — console tool that fills staging with synthetic data. No job
   copies production data into staging, and the restore drill of `L2-177` targets an isolated
   instance instead of staging.
+- **Three applications** — the frontend `build` script and CI build, lint and format-check
+  the app (`jubilee`), the marketing site (`marketing`) and the admin application (`admin`).
+  `eng/azure/deploy.sh` packages each with `server.js` and deploys it to its own App Service:
+  `jubilee-to-app` (the app, the API and the worker), `jubilee-to-www` and `jubilee-to-admin`.
+  The admin host runs `server.js` with `API_ORIGIN=https://app.jubilee.to` and `PROXY_KEY`, so
+  its `/api` reaches the one API with the caller's address kept (`L2-192`, ADR 0040). The
+  admin host's access restrictions, its host name and the Entra app registration are set by
+  hand from `eng/azure/README.md`, never by the pipeline.
 
 ## Requirements
 
@@ -76,6 +84,7 @@ level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-178` | `L1-025` | A change merged to the main branch shall pass unit, integration and acceptance tests, accessibility scans, budgets and security scans before it deploys to staging, and a production deploy shall require an approval. A production deploy shall cause no downtime and shall be reversible in under 10 minutes, database migrations shall be backward compatible with the previous release, features shall be switchable per environment and per percentage of users, and development, staging and production shall be defined as code with no real personal data in staging. |
+| `L2-195` | `L1-025` | The build script and CI shall build, lint and format-check the app, the marketing site and the admin application; `npm run start:admin` shall serve the admin application on port 4202 with a development identity the API refuses outside Development; a deployment shall put the admin application on its own App Service behind `https://admin.jubilee.to` with `/api` sent to the API and the caller's address kept; the e2e suite shall serve it as a further web server answered from the recording. |
 | `L2-133` | `L1-019` | Each API endpoint shall check the caller's role and ownership of the specific object on the server before doing anything, and no check shall rely on the client hiding a control. |
 | `L2-180` | `L1-025` | Sensitive actions shall produce an append-only audit record that stores actor, action, target, time, before and after values, and reason. Audit records shall not be editable or deletable through the application, shall be kept for 2 years, and shall be searchable by an admin within 2 seconds. |
 
@@ -103,6 +112,13 @@ each migration is backward compatible. `Jubilee Web` reads feature flags from th
 which reads the values that `FeatureFlagEvaluator` computes.
 
 ![C4 component view for deploying safely](diagrams/c4-component.png)
+
+### Hosting of the three applications
+
+Each application has its own App Service; the admin host sends `/api` to the API on
+`jubilee-to-app`, which runs beside the app on loopback (`L2-195`).
+
+![C4 container view of the hosting of the three applications](diagrams/c4-hosting.png)
 
 ### Class structure
 

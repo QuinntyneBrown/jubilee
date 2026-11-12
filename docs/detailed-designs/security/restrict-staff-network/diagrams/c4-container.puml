@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Restrict staff access by network
+
+Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person_Ext(other, "Caller off the list", "Outside the allow-list")
+System_Boundary(j, "Jubilee") {
+  Container(adminhost, "Admin host", "App Service jubilee-to-admin - server.js", "Access restrictions - proxies /api with the proxy key")
+  Container(apphost, "App host", "App Service jubilee-to-app - server.js", "Proxies /api on loopback")
+  Container(api, "Jubilee API", "ASP.NET Core on 127.0.0.1", "Forwarded headers - proxy check - network check")
+}
+Rel(staff, adminhost, "Opens admin.jubilee.to", "HTTPS")
+Rel(adminhost, apphost, "/api with X-Jubilee-Client-Address and X-Jubilee-Proxy-Key", "HTTPS")
+Rel(other, apphost, "Calls app.jubilee.to/api/admin directly", "HTTPS")
+Rel(apphost, api, "Forwards with X-Forwarded-For", "HTTP loopback")
+@enduml

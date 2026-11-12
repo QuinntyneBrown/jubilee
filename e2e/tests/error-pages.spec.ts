@@ -6,12 +6,13 @@ import {
   stubUnhandled,
 } from '../fixtures/errors';
 import { expect, test } from '../fixtures/jb-test';
-import { stubAdmin, esther } from '../fixtures/admin';
+import { stubMyBusiness } from '../fixtures/my-business';
 import { Toasts } from '../pages/toasts';
 import { BrowsePage } from '../pages/browse.page';
 import { BusinessPage } from '../pages/business.page';
 import { ForbiddenPage } from '../pages/forbidden.page';
 import { MaintenancePage } from '../pages/maintenance.page';
+import { NotFoundPage } from '../pages/not-found.page';
 import { ReportListingDialog } from '../pages/report-listing.dialog';
 import { ServerErrorPage } from '../pages/server-error.page';
 
@@ -105,6 +106,20 @@ test.describe('server error (L2-115, L2-118)', () => {
   });
 });
 
+test.describe('not found (L2-113)', () => {
+  test('a church reference link from an old e-mail shows the not-found page', async ({
+    page,
+    jb,
+  }) => {
+    // ADR 0041: Jubilee no longer asks for a church reference, so `/reference/:token` is no page.
+    const notFound = new NotFoundPage(page);
+    await jb.goto('/reference/0123456789abcdef');
+
+    await expect(notFound.heading).toHaveText('We can’t find that page');
+    await expect(page).toHaveURL(/\/reference\/0123456789abcdef$/);
+  });
+});
+
 test.describe('maintenance (L2-117)', () => {
   test('AC1: while Jubilee is being updated the page says when it is back and that nothing is lost', async ({
     page,
@@ -187,15 +202,15 @@ test.describe('forbidden: ask for access (L2-114)', () => {
     const forbidden = new ForbiddenPage(page);
     const toasts = new Toasts(page);
     await forbidden.setWidth(1280);
-    await stubAdmin(page, {}, { ...esther, isVerifier: false });
+    await stubMyBusiness(page, { overview: 'forbidden' });
     const help = await stubHelp(page);
-    await jb.goto('/admin/verifications');
+    await jb.goto('/my-business');
     await forbidden.askForAccess.click();
 
     await expect(toasts.withTitle('We’ve passed your request to the team.')).toBeVisible();
     await expect(forbidden.askForAccess).toHaveText('Requested ✓');
     await expect(forbidden.askForAccess).toBeDisabled();
-    expect(help.bodies).toEqual([{ url: '/admin/verifications' }]);
+    expect(help.bodies).toEqual([{ url: '/my-business' }]);
     expect(help.keys[0]).toBeTruthy();
   });
 
@@ -206,9 +221,9 @@ test.describe('forbidden: ask for access (L2-114)', () => {
     const forbidden = new ForbiddenPage(page);
     const toasts = new Toasts(page);
     await forbidden.setWidth(1280);
-    await stubAdmin(page, {}, { ...esther, isVerifier: false });
+    await stubMyBusiness(page, { overview: 'forbidden' });
     const help = await stubHelp(page, { failures: 1 });
-    await jb.goto('/admin/verifications');
+    await jb.goto('/my-business');
     await forbidden.askForAccess.click();
 
     const failed = toasts.withTitle('We couldn’t send your request.');

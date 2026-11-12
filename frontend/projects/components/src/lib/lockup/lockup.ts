@@ -13,7 +13,8 @@ export type LockupSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
  * are the lockup of the Log in and Sign up screens, `sm` (24 px) and `xs` (22 px) the lockup of
  * the marketing site's bar and footer: those four have the mark at 1.1em, as the Magic Patterns
  * design draws it.
- * `onInk` is for the brand panel, which is ink in both themes.
+ * `onInk` is for the brand panel, which is ink in both themes. What the lockup holds follows the
+ * wordmark: the admin bar puts its "admin" tag there.
  */
 @Component({
   selector: 'a[jb-lockup], span[jb-lockup]',

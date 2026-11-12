@@ -54,6 +54,10 @@ small navigation read model in the `Jubilee API`.
 - **`SiteFooter`** — Angular component. It renders "© {year} Jubilee · Toronto's
   Christian marketplace", with the year from the device clock, and router links
   to `/statement-of-faith`, `/help`, `/terms` and `/privacy`.
+  The footer is the last thing on the page at every page length: the page is a
+  column at least as tall as the viewport and `main` takes the height the
+  content leaves, so a short page puts the footer at the bottom of the viewport
+  (directly above the tab bar under 768 px) and no space shows below it.
 - **`UnreadBadge`** — shared component for a count. It shows "99+" above 99 and
   announces "{n} unread" to screen readers.
 - **`ViewportService`** — Angular service that exposes two signals from
@@ -87,7 +91,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-112` | `L1-015` | Every app page shall show the footer "© {year} Jubilee · Toronto's Christian marketplace" with links "Statement of faith", "Help", "Terms" and "Privacy", and a "Skip to content" link as the first focusable element that moves focus to `main`. A member shall see the top bar navigation at 768 px or wider, with the search box from 1024 px, and a fixed tab bar above the device safe area under 768 px, with page space reserved for it. |
+| `L2-112` | `L1-015` | Every app page shall show the footer "© {year} Jubilee · Toronto's Christian marketplace" with links "Statement of faith", "Help", "Terms" and "Privacy", and a "Skip to content" link as the first focusable element that moves focus to `main`. A member shall see the top bar navigation at 768 px or wider, with the search box from 1024 px, and a fixed tab bar above the device safe area under 768 px, with page space reserved for it. The footer shall sit at the bottom of the viewport when the content is shorter than it, with no space below the footer at any page length. |
 | `L2-164` | `L1-023` | Under 768 px a member page shall show the bottom tab bar and a top bar with only the brand, the search link and the notifications button; from 768 px to 1023 px the tab bar shall be hidden and the top bar shall show the primary navigation; from 1024 px the top bar shall also show the search box. |
 | `L2-065` | `L1-010` | "Messages" in the top bar and tab bar shall carry a count badge with the number of unread conversations, announced as "{n} unread", shown as "99+" above 99 and updated within 5 seconds while the page is open. |
 

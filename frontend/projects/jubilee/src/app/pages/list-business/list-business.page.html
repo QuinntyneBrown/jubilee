@@ -21,13 +21,13 @@
           <li
             jb-timeline-step
             state="current"
-            heading="Your pastor confirms you"
-            [text]="'We e-mailed ' + done.pastorEmail + ' at ' + done.church + ' just now'"
+            heading="We review your listing"
+            text="Within two business days"
           ></li>
           <li
             jb-timeline-step
-            heading="We review and publish"
-            text="Within two business days of their answer"
+            heading="You’re live"
+            text="We e-mail you the moment members can find you"
           ></li>
         </ol>
       </div>
@@ -37,8 +37,8 @@
       <div>
         <h1>List your business</h1>
         <p class="subtitle" style="margin-bottom: var(--space-6)">
-          Free for Christian-owned businesses in Toronto. Every listing is verified with a church
-          reference.
+          Free for Christian-owned businesses in Toronto. Every listing is verified before it goes
+          live.
         </p>
         @if (loading()) {
           <p class="visually-hidden" role="status">Loading your draft…</p>
@@ -221,48 +221,6 @@
                   </button>
                 </li>
               </ul>
-            </fieldset>
-            <fieldset [disabled]="busy()">
-              <legend>Church reference</legend>
-              <p jb-field-help>
-                A pastor or elder who can confirm you. We contact them privately; they never see
-                your listing details.
-              </p>
-              <div class="form-grid form-grid--2" style="margin-top: var(--space-2)">
-                <div
-                  jb-field
-                  label="Church"
-                  controlId="ref-church"
-                  required
-                  [error]="errors().church"
-                >
-                  <input
-                    jb-input
-                    name="church"
-                    type="text"
-                    required
-                    [ngModel]="church()"
-                    (ngModelChange)="church.set($event); clear('church'); touched()"
-                  />
-                </div>
-                <div
-                  jb-field
-                  label="Pastor’s e-mail"
-                  controlId="ref-email"
-                  required
-                  [error]="errors().pastorEmail"
-                >
-                  <input
-                    jb-input
-                    name="pastorEmail"
-                    type="email"
-                    placeholder="name@church.ca"
-                    required
-                    [ngModel]="pastorEmail()"
-                    (ngModelChange)="pastorEmail.set($event); clear('pastorEmail'); touched()"
-                  />
-                </div>
-              </div>
             </fieldset>
             <div>
               <jb-checkbox

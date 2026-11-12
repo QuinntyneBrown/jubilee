@@ -136,7 +136,7 @@ public sealed class ResetPasswordCommandHandler(
     {
         var now = clock.GetUtcNow();
         var token = await ResetLinks.FindRedeemableAsync(db, request.Token, now, cancellationToken)
-            ?? throw new Reference.GoneException("LINK_EXPIRED", "This link has expired.");
+            ?? throw new Errors.GoneException("LINK_EXPIRED", "This link has expired.");
 
         var errors = new Dictionary<string, string>();
         var password = request.NewPassword ?? string.Empty;

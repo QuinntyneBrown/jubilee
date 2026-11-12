@@ -9,6 +9,8 @@ export const BASELINE = process.env['JB_BASELINE'] === '1' || process.env['JB_PA
 export type Theme = 'light' | 'dark';
 /** Where `npm run start:marketing` serves the marketing site (ADR 0013). */
 export const MARKETING_URL = 'http://localhost:4201';
+/** Where `npm run start:admin` serves the admin application (ADR 0040). */
+export const ADMIN_URL = 'http://localhost:4202';
 
 export interface OpenOptions {
   theme?: Theme;
@@ -40,6 +42,12 @@ export class Jb {
       await this.goto(`${MARKETING_URL}${route.app}`, options.theme, options.now);
       return;
     }
+    if ('site' in route && route.site === 'admin') {
+      // The admin application has no member session: its stub answers the staff session too.
+      if (route.stub) await applyStub(this.page, route.stub);
+      await this.gotoAdmin(route.app, options.theme, options.now);
+      return;
+    }
     await this.signInAs(options.who ?? route.who, options.navigation);
     if (route.stub) await applyStub(this.page, route.stub);
     if ('via' in route && route.via) {
@@ -59,6 +67,11 @@ export class Jb {
     await this.page.goto(path);
     // The app renders after it has resolved the session; wait for its shell.
     await this.page.locator('main#main').waitFor({ state: 'attached' });
+  }
+
+  /** Opens a path of the admin application (ADR 0040), answered like the app's. */
+  async gotoAdmin(path: string, theme: Theme = 'light', now: Date = mockNow): Promise<void> {
+    await this.goto(`${ADMIN_URL}${path}`, theme, now);
   }
 
   /**

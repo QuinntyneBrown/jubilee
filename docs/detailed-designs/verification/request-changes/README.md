@@ -9,22 +9,20 @@ feature.
 
 *Change request* — message from a verifier to an owner naming what to change
 before the listing can be published. A change request names one or more *change
-areas*: "Tagline or description", "Photos", "Category" or "Church reference".
+areas*: "Tagline or description", "Photos" or "Category".
 The listing stays unpublished in the stage "Changes requested" until the owner
 edits it and presses "Resubmit". *Resubmission* returns the listing to the
 queue under its original submitted date, so a corrected listing does not lose
 its place.
 
-*Decline* — closing decision available when a listing is in "Needs a decision",
-the stage a listing enters when the church reference cannot vouch for the owner
-or does not know the owner (`L2-083`). The owner receives the reason by e-mail
-and may submit again after naming a different reference. The reference answer
-is deleted 90 days after the decline.
+*Decline* — closing decision available when a listing is in "Ready to review".
+The verifier uses it when the listing cannot be verified. The owner receives the
+reason by e-mail and may submit again.
 
 ## Description
 
 The feature spans the admin review page, the owner's My business page, three
-commands and two `Jubilee Worker` jobs.
+commands and one `Jubilee Worker` job.
 
 - **`RequestChangesDialog`** — dialog titled "Ask {owner} for changes". It
   states "The listing stays unpublished and comes back to the queue when she
@@ -38,15 +36,16 @@ commands and two `Jubilee Worker` jobs.
   returns to the queue when she resubmits." For a resubmitted listing it
   highlights each field named by `ListingSnapshot.ChangedFields`.
 - **`DeclineListingDialog`** — dialog behind the action "Decline listing". It
-  collects the reason for the owner. Its mock is `dialogs/decline-listing`; the
-  title reads "Decline {business}?" and the field "Reason for {first name}"
-  (ADR 0020).
+  collects the reason for the owner and says "{Owner} is e-mailed your reason.
+  Use this when the listing cannot be verified." Its mock is
+  `dialogs/decline-listing`; the title reads "Decline {business}?" and the
+  field "Reason for {first name}" (ADR 0020).
 - **`MyBusinessPage`** — owner page. It shows the requested changes and the
   verifier's message, and offers "Resubmit" while the stage is "Changes
   requested".
 - **`AdminVerificationsController`** — exposes
   `POST /api/admin/verifications/{id}/change-requests` and
-  `POST /api/admin/verifications/{id}/decline` under `VerifierPolicy`, and
+  `POST /api/admin/verifications/{id}/decline` under `RequiresVerifier`, the staff policy (`security/authorize-staff-requests`), and
   refuses a verifier who owns the listing with HTTP 403.
 - **`ListingsController`** — exposes `POST /api/listings/{id}/resubmit`. A
   caller who does not own the listing receives HTTP 403.
@@ -59,30 +58,20 @@ commands and two `Jubilee Worker` jobs.
   `ListingSnapshot`. The handler appends the `AuditEntry` and writes a
   `ChangesRequested` `OutboxMessage` in the same unit of work.
 - **`ChangeRequest`** — entity with the areas, message, verifier, request time
-  and snapshot. `RequiresNewReference()` is true when `Areas` contains
-  `ChurchReference`.
+  and snapshot.
 - **`ListingSnapshot`** — value object copied from the listing when changes are
   requested. `ChangedFields(current)` compares it with the resubmitted listing
   and returns the names of the fields that differ.
 - **`ResubmitListingCommandHandler`** — calls `Listing.Resubmit`. The listing
-  moves to `ReadyToReview`, or to `WaitingOnReference` when
-  `RequiresNewReference()` is true; in that case the handler writes a
-  `ReferenceRequested` `OutboxMessage` so a new reference request is sent.
-  `SubmittedAt` is not changed.
+  always moves to `ReadyToReview`. `SubmittedAt` is not changed.
 - **`DeclineListingCommandHandler`** — calls `Listing.Decline`, which accepts
-  only the stage `NeedsDecision` and sets `Declined`. The handler sets
-  `ChurchReference.DeleteAfter` to the decision time plus 90 days, appends the
+  only the stage `ReadyToReview` and sets `Declined`. The handler appends the
   `AuditEntry`, and writes a `ListingDeclined` `OutboxMessage` that carries the
   reason. Any other stage yields HTTP 409.
-- **Submitting again after a decline** — the listing submission flow accepts a
-  declined listing only when the named `ChurchReference` differs from the one
-  on the declined submission.
+- **Submitting again after a decline** — the owner of a declined listing may
+  submit again; the new submission enters the queue at "Ready to review".
 - **`OutboxDispatcherJob`** — sends the change request or the decline reason to
-  the owner through `IEmailSender`, creates the owner's `Notification`, and
-  sends the new reference request when one is due.
-- **`ReferenceAnswerPurgeJob`** — scheduled job that permanently deletes the
-  reference's answer, note, name and e-mail once `DeleteAfter` has passed. Its
-  schedule is daily (`ReferenceRetentionJob`, ADR 0020).
+  the owner through `IEmailSender` and creates the owner's `Notification`.
 
 ## Requirements
 
@@ -91,11 +80,10 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-102` | `L1-014` | The system shall let a verifier ask the owner for changes through a dialog with change areas and a required message, shall move the listing to "Changes requested", and shall e-mail the owner and show the requested changes on My business. When "Church reference" is ticked, a new reference request shall be sent on resubmission before the listing returns to "Ready to review". |
-| `L2-103` | `L1-014` | The system shall return a resubmitted listing to "Ready to review" (or "Waiting on reference" when a new reference is due), shall keep its original submitted date for queue order, and shall highlight on the review screen the fields changed since the request. |
-| `L2-104` | `L1-014` | The system shall let a verifier decline a listing in "Needs a decision" with a reason for the owner, shall close the listing and e-mail the reason, and shall allow the owner to submit again after naming a different reference. The reference answer shall be deleted 90 days after the decline. |
+| `L2-102` | `L1-014` | The system shall let a verifier ask the owner for changes through a dialog with change areas and a required message, shall move the listing to "Changes requested", and shall e-mail the owner and show the requested changes on My business. The change areas shall be "Tagline or description", "Photos" and "Category". |
+| `L2-103` | `L1-014` | The system shall return a resubmitted listing to "Ready to review", shall keep its original submitted date for queue order, and shall highlight on the review screen the fields changed since the request. |
+| `L2-104` | `L1-014` | The system shall let a verifier decline a listing in "Ready to review" with a reason for the owner, shall close the listing and e-mail the reason, and shall allow the owner to submit again. |
 | `L2-098` | `L1-014` | A verifier who owns a listing shall not approve or request changes on it, and every admin API shall return HTTP 403 to a member without the `verifier` role. |
-| `L2-146` | `L1-020` | The reference's answer, note, name and e-mail shall be permanently deleted 90 days after a verification decision (approve, decline). |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record with actor, action, target, time, before and after values, and reason for each verification decision. |
 
 ## Diagrams
@@ -103,15 +91,14 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 ### System context
 
 The verifier and the owner both act through Jubilee. The e-mail provider carries
-the change request or decline reason to the owner, and a new reference request
-to the church reference when the reference changes.
+the change request or decline reason to the owner.
 
 ![C4 system context for requesting changes](diagrams/c4-context.png)
 
 ### Containers
 
 `Jubilee API` records each decision in the `Jubilee database`. `Jubilee Worker`
-dispatches the e-mail and runs the purge schedule.
+dispatches the e-mail.
 
 ![C4 container view for requesting changes](diagrams/c4-container.png)
 
@@ -140,15 +127,14 @@ requested" with an audit entry, and `OutboxDispatcherJob` tells the owner.
 
 ### Behaviour — resubmit a listing
 
-`Listing.Resubmit` chooses the next stage from the open change request and keeps
-`SubmittedAt`. A ticked "Church reference" area triggers a new reference
-request.
+`Listing.Resubmit` returns the listing to "Ready to review" and keeps
+`SubmittedAt`.
 
 ![Sequence diagram for resubmitting a listing](diagrams/sequence-resubmit.png)
 
 ### Behaviour — decline a listing
 
-The handler declines only from "Needs a decision" and starts the 90-day clock.
-`ReferenceAnswerPurgeJob` deletes the answer once the clock has run out.
+The handler declines only from "Ready to review". `OutboxDispatcherJob` then
+e-mails the reason to the owner.
 
 ![Sequence diagram for declining a listing](diagrams/sequence-decline.png)

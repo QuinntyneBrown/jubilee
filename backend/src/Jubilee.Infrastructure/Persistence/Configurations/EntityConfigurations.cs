@@ -274,6 +274,7 @@ public sealed class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.Property(m => m.FirstName).HasMaxLength(50).IsRequired();
         builder.Property(m => m.LastName).HasMaxLength(50).IsRequired();
         builder.Property(m => m.HomeChurch).HasMaxLength(100);
+        builder.Property(m => m.HomeChurchAddress).HasMaxLength(Member.MaxHomeChurchAddressLength);
         builder.Property(m => m.Phone).HasMaxLength(10);
         builder.Property(m => m.PostalCode).HasMaxLength(7);
         builder.Property(m => m.Pronouns).HasMaxLength(40);
@@ -494,8 +495,6 @@ public sealed class ListingDraftConfiguration : IEntityTypeConfiguration<Listing
         builder.Property(d => d.CategorySlug).HasMaxLength(60);
         builder.Property(d => d.Highlight).HasMaxLength(60);
         builder.Property(d => d.Place).HasMaxLength(200);
-        builder.Property(d => d.Church).HasMaxLength(200);
-        builder.Property(d => d.PastorEmail).HasMaxLength(254);
         builder.HasIndex(d => new { d.OwnerSubject, d.UpdatedAt });
         builder.HasIndex(d => d.UpdatedAt);
         builder.HasMany(d => d.Items).WithOne().HasForeignKey(i => i.ListingDraftId).OnDelete(DeleteBehavior.Cascade);
@@ -524,9 +523,6 @@ public sealed class ListingSubmissionConfiguration : IEntityTypeConfiguration<Li
         builder.HasKey(s => s.Id);
         builder.Property(s => s.Id).ValueGeneratedNever();
         builder.Property(s => s.OwnerSubject).HasMaxLength(200).IsRequired();
-        builder.Property(s => s.Church).HasMaxLength(200).IsRequired();
-        builder.Property(s => s.PastorEmail).HasMaxLength(254).IsRequired();
-        builder.Property(s => s.PastorEmailKey).HasMaxLength(254).IsRequired();
         builder.Property(s => s.StatementVersion).HasMaxLength(20).IsRequired();
         builder.Property(s => s.IdempotencyKey).HasMaxLength(100).IsRequired();
         builder.Property(s => s.Flags).HasConversion(
@@ -537,40 +533,8 @@ public sealed class ListingSubmissionConfiguration : IEntityTypeConfiguration<Li
                 list => list.Aggregate(0, (hash, item) => HashCode.Combine(hash, item.GetHashCode())),
                 list => list.ToList()));
         builder.HasIndex(s => new { s.OwnerSubject, s.IdempotencyKey }).IsUnique();
-        builder.HasIndex(s => new { s.PastorEmailKey, s.SubmittedAt });
         builder.HasIndex(s => s.ListingId).IsUnique();
         builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public sealed class ReferenceLinkConfiguration : IEntityTypeConfiguration<ReferenceLink>
-{
-    public void Configure(EntityTypeBuilder<ReferenceLink> builder)
-    {
-        builder.ToTable("ReferenceLinks");
-        builder.HasKey(l => l.Id);
-        builder.Property(l => l.Id).ValueGeneratedNever();
-        builder.Property(l => l.TokenHash).HasMaxLength(64).IsRequired();
-        builder.Property(l => l.ReferenceEmail).HasMaxLength(254).IsRequired();
-        builder.Property(l => l.Church).HasMaxLength(200).IsRequired();
-        builder.HasIndex(l => l.TokenHash).IsUnique();
-        builder.HasIndex(l => new { l.ListingId, l.IssuedAt });
-        builder.HasOne<Listing>().WithMany().HasForeignKey(l => l.ListingId).OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public sealed class ReferenceAnswerConfiguration : IEntityTypeConfiguration<ReferenceAnswer>
-{
-    public void Configure(EntityTypeBuilder<ReferenceAnswer> builder)
-    {
-        builder.ToTable("ReferenceAnswers");
-        builder.HasKey(a => a.Id);
-        builder.Property(a => a.Id).ValueGeneratedNever();
-        builder.Property(a => a.Name).HasMaxLength(200).IsRequired();
-        builder.Property(a => a.Role).HasMaxLength(200).IsRequired();
-        builder.Property(a => a.Note).HasMaxLength(1000);
-        builder.HasIndex(a => a.ListingId);
-        builder.HasOne<Listing>().WithMany().HasForeignKey(a => a.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
 
@@ -676,6 +640,24 @@ public sealed class MemberSessionConfiguration : IEntityTypeConfiguration<Member
         builder.Property(s => s.KeyHash).HasMaxLength(64).IsRequired();
         builder.HasIndex(s => s.KeyHash).IsUnique();
         builder.HasIndex(s => s.MemberId);
+        builder.Property(s => s.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.HasIndex(s => s.StaffMemberId);
+    }
+}
+
+public sealed class StaffMemberConfiguration : IEntityTypeConfiguration<StaffMember>
+{
+    public void Configure(EntityTypeBuilder<StaffMember> builder)
+    {
+        builder.ToTable("StaffMembers");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.Email).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.HasIndex(s => s.Email).IsUnique();
+        builder.Property(s => s.TenantId).HasMaxLength(64);
+        builder.Property(s => s.ObjectId).HasMaxLength(64);
+        builder.HasIndex(s => new { s.TenantId, s.ObjectId }).IsUnique().HasFilter("[ObjectId] IS NOT NULL");
+        builder.Ignore(s => s.IsBound);
     }
 }
 

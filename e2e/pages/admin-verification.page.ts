@@ -1,14 +1,15 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { ShellPage } from './shell.page';
+import { AdminShellPage } from './admin-shell.page';
 
-/** `/admin/verifications/:id`: the review of one submitted listing (L2-100). */
-export class AdminVerificationPage extends ShellPage implements Screen {
+/** `/verifications/:id`: the review of one submitted listing (L2-100). */
+export class AdminVerificationPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly subtitle: Locator;
   readonly breadcrumb: Locator;
   readonly owner: Locator;
-  readonly churchReference: Locator;
+  /** The headings of the page's panels, in order. */
+  readonly panels: Locator;
   readonly checklist: Locator;
   readonly checks: Locator;
   readonly requestChanges: Locator;
@@ -26,7 +27,7 @@ export class AdminVerificationPage extends ShellPage implements Screen {
     this.subtitle = this.main.locator('.subtitle');
     this.breadcrumb = this.main.getByRole('navigation', { name: 'Breadcrumb' });
     this.owner = this.main.locator('section[aria-labelledby="own"]');
-    this.churchReference = this.main.locator('section[aria-labelledby="ref"]');
+    this.panels = this.main.getByRole('heading', { level: 2 });
     this.checklist = this.main.locator('section[aria-labelledby="chk"]');
     this.checks = this.checklist.getByRole('checkbox');
     this.requestChanges = this.main.getByRole('button', { name: 'Request changes' });

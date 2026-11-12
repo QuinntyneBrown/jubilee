@@ -18,6 +18,7 @@ const valid = {
   email: 'joanna.adeyemi@example.com',
   password: 'longpassword1',
   church: 'Grace Toronto Church',
+  churchAddress: '383 Jarvis Street, Toronto',
   agree: true,
 };
 
@@ -76,6 +77,18 @@ test.describe('join with e-mail (L2-001)', () => {
       'Shown to no one. Helps us recommend businesses near you.',
     );
     await expect(join.fieldOf('Home church')).toContainText('(optional)');
+    // L2-196 AC1: the address follows the name, optional too.
+    await expect(join.fieldOf('Home church address')).toContainText('(optional)');
+    await expect(join.homeChurchAddress).toHaveAttribute(
+      'placeholder',
+      'e.g. 2700 Bristol Circle, Oakville',
+    );
+    await expect(join.homeChurchAddress).toHaveAttribute('maxlength', '200');
+    await expect(join.homeChurchAddress).not.toHaveAttribute('required', '');
+    await expect(join.homeChurchAddressHint).toHaveText('Shown to no one.');
+    expect(await join.topEdge(join.homeChurchAddress)).toBeGreaterThanOrEqual(
+      await join.bottomEdge(join.homeChurch),
+    );
     await expect(join.main).not.toContainText('(required)');
     for (const control of [join.firstName, join.lastName, join.email, join.password]) {
       await expect(control).toHaveAttribute('required', '');
@@ -219,6 +232,7 @@ test.describe('join with e-mail (L2-001)', () => {
         email: valid.email,
         password: valid.password,
         homeChurch: 'Grace Toronto Church',
+        homeChurchAddress: '383 Jarvis Street, Toronto',
         agreementAccepted: true,
         challengeToken: null,
       },

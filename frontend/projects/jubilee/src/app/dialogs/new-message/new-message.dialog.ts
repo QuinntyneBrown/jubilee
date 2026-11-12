@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { MESSAGES_API } from 'api';
 import { Button, Alert, Field, Textarea, DialogFrame, DialogBody, DialogFooter } from 'components';
-import { newKey } from '../../services/message-time';
+import { newKey } from 'api';
 
 export interface NewMessageData {
   slug: string;

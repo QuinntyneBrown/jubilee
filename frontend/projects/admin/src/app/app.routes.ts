@@ -1,0 +1,101 @@
+import { Routes } from '@angular/router';
+import { StaffSection } from 'components';
+import { signedOutGuard, staffGuard } from './guards/staff.guard';
+
+/**
+ * The data every route of the admin application carries: `shell` picks the chrome (the admin
+ * bar, or the sign-in frame), `page` is stamped on `<body data-page>`, `section` marks the current
+ * entry of the staff navigation, and `verifier` says the screen is the verification team's
+ * (L2-188 AC4).
+ */
+export interface AdminRouteData {
+  shell: 'admin' | 'bare';
+  page: string;
+  section?: StaffSection;
+  verifier?: boolean;
+}
+
+export type SignInState = 'sign-in' | 'signed-out' | 'session-expired';
+
+const data = (value: AdminRouteData & { state?: SignInState }) => value;
+
+const screen = (page: string, section: StaffSection) =>
+  data({ shell: 'admin', page, section, verifier: true });
+
+export const routes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'verifications' },
+  {
+    path: 'sign-in',
+    canActivate: [signedOutGuard],
+    loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
+    data: data({ shell: 'bare', page: 'admin-sign-in', state: 'sign-in' }),
+    title: 'Sign in · Jubilee admin',
+  },
+  {
+    path: 'signed-out',
+    canActivate: [signedOutGuard],
+    loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
+    data: data({ shell: 'bare', page: 'admin-sign-in', state: 'signed-out' }),
+    title: 'Signed out · Jubilee admin',
+  },
+  {
+    path: 'session-expired',
+    canActivate: [signedOutGuard],
+    loadComponent: () => import('./pages/sign-in/sign-in.page').then((m) => m.SignInPage),
+    data: data({ shell: 'bare', page: 'admin-sign-in', state: 'session-expired' }),
+    title: 'Session ended · Jubilee admin',
+  },
+  {
+    path: '',
+    canActivateChild: [staffGuard],
+    children: [
+      {
+        path: 'verifications',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/admin-verifications/admin-verifications.page').then(
+            (m) => m.AdminVerificationsPage,
+          ),
+        data: screen('admin-verifications', 'verifications'),
+        title: 'Verification queue · Jubilee admin',
+      },
+      {
+        path: 'verifications/:id',
+        loadComponent: () =>
+          import('./pages/admin-verification/admin-verification.page').then(
+            (m) => m.AdminVerificationPage,
+          ),
+        data: screen('admin-verification', 'verifications'),
+        title: 'Review a listing · Jubilee admin',
+      },
+      {
+        path: 'reports',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/admin-reports/admin-reports.page').then((m) => m.AdminReportsPage),
+        data: screen('admin-reports', 'reports'),
+        title: 'Reports · Jubilee admin',
+      },
+      {
+        path: 'reports/:id',
+        loadComponent: () =>
+          import('./pages/admin-report/admin-report.page').then((m) => m.AdminReportPage),
+        data: screen('admin-report', 'reports'),
+        title: 'Review a report · Jubilee admin',
+      },
+      {
+        path: 'featured',
+        loadComponent: () =>
+          import('./pages/admin-featured/admin-featured.page').then((m) => m.AdminFeaturedPage),
+        data: screen('admin-featured', 'featured'),
+        title: 'Featured this week · Jubilee admin',
+      },
+      {
+        path: '**',
+        loadComponent: () => import('./pages/not-found/not-found.page').then((m) => m.NotFoundPage),
+        data: data({ shell: 'admin', page: 'admin-not-found' }),
+        title: 'Page not found · Jubilee admin',
+      },
+    ],
+  },
+];

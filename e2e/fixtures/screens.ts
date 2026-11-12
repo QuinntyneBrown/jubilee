@@ -1,7 +1,10 @@
 import type { Page } from '@playwright/test';
 import { AdminFeaturedPage } from '../pages/admin-featured.page';
+import { AdminMovedPage } from '../pages/admin-moved.page';
 import { AdminReportPage } from '../pages/admin-report.page';
 import { AdminReportsPage } from '../pages/admin-reports.page';
+import { AdminShellPage } from '../pages/admin-shell.page';
+import { AdminSignInPage } from '../pages/admin-sign-in.page';
 import { AdminVerificationPage } from '../pages/admin-verification.page';
 import { AdminVerificationsPage } from '../pages/admin-verifications.page';
 import { BrowsePage } from '../pages/browse.page';
@@ -103,6 +106,16 @@ export const screens: {
   { key: 'my-services.error', screen: (page) => new MyServicesPage(page) },
   { key: 'edit-listing', screen: (page) => new EditListingPage(page) },
   { key: 'edit-listing.error', screen: (page) => new EditListingPage(page) },
+  { key: 'admin-sign-in', screen: (page) => new AdminSignInPage(page) },
+  { key: 'admin-sign-in.second-factor-missing', screen: (page) => new AdminSignInPage(page) },
+  { key: 'admin-sign-in.not-staff', screen: (page) => new AdminSignInPage(page) },
+  { key: 'admin-sign-in.error', screen: (page) => new AdminSignInPage(page) },
+  { key: 'admin-sign-in.network-refused', screen: (page) => new AdminSignInPage(page) },
+  { key: 'admin-sign-in.signed-out', screen: (page) => new AdminSignInPage(page) },
+  { key: 'admin-sign-in.session-expired', screen: (page) => new AdminSignInPage(page) },
+  { key: 'admin-shell.admin-only', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-shell.not-found', screen: (page) => new AdminShellPage(page) },
+  { key: 'admin-moved', screen: (page) => new AdminMovedPage(page) },
   { key: 'admin-verifications', screen: (page) => new AdminVerificationsPage(page) },
   { key: 'admin-verifications.empty', screen: (page) => new AdminVerificationsPage(page) },
   { key: 'admin-verifications.error', screen: (page) => new AdminVerificationsPage(page) },

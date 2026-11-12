@@ -28,7 +28,7 @@ cut lands on a downbeat.
 | 01 | Sunday | Hook | 0:00.00 | 0:07.20 | Warm church photo, slow pull-back. A gold line underlines "trust." Colour drains in the last bar. |
 | 02 | Monday | Hook | 0:07.20 | 0:14.40 | Cold kitchen photo. A feed of stranger search results scrolls faster, then freezes. Gold wipe. |
 | 03 | Meet Jubilee | Hook | 0:14.40 | 0:21.60 | The drop: the gold slab collapses into the logo's crossbar, the J draws, the aurora pulses on the kick. Six borough pins. |
-| 04 | Why join | Why join | 0:21.60 | 0:28.80 | The seal stamps on "vouched"; three reasons land with the narration. |
+| 04 | Why join | Why join | 0:21.60 | 0:28.80 | The seal stamps on "verified"; three reasons land with the narration. |
 | 05 | Shop | What you can do | 0:28.80 | 0:36.00 | Four catalogue products land on the words that name them; the bag fills on every beat. |
 | 06 | Hire & book | What you can do | 0:36.00 | 0:43.20 | A Legacy Financial booking card: the slot hops, is tapped, and "Booked." confirms on the downbeat. |
 | 07 | Why list | Why list | 0:43.20 | 0:50.40 | Key lift, gold aurora. An owner's portrait with three notifications stacking on the beat. |
@@ -56,7 +56,7 @@ Other things to know:
 - **Narration pace.** The spec asks for about 150 words a minute, but several of its windows need
   more than 200. The windows win, so those lines are spoken fast.
 - **Hard syncs are approximate.** "Bibles" and "gifts" start on 30.60 and 31.20 exactly (they are
-  separate phrases). "vouched" (22.80), "flowers" (32.40) and "tap" (40.20) are placed by estimate,
+  separate phrases). "verified" (22.80), "flowers" (32.40) and "tap" (40.20) are placed by estimate,
   because the voice model gives no word timings; expect them within about a tenth of a second.
 - **Stamp sounds follow the picture.** The spec's hit table puts the stamp at 22.80 and 52.20; in
   the prototype's code the seal starts to fall then and lands at 23.00 and 52.70, so the thud is

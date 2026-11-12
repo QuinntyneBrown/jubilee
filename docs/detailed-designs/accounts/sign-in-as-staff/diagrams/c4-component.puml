@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Sign in as staff
+
+Container_Boundary(admin, "Jubilee Admin Web") {
+  Component(page, "SignInPage", "Angular page", "Sign-in button and messages")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "StaffSignInController", "ASP.NET Core controller", "Start and callback")
+  Component(sess, "StaffSessionController", "ASP.NET Core controller", "Current staff session and sign-out")
+  Component(client, "IStaffIdentityClient", "Infrastructure adapter", "Entra or the development identity")
+  Component(txn, "IOidcTransactionStore", "Infrastructure adapter", "State - nonce - code verifier")
+  Component(handler, "CompleteStaffSignInCommandHandler", "MediatR handler", "Proves mfa - finds and binds the staff account")
+  Component(scheme, "Staff scheme and StaffTicketStore", "Cookie authentication", "__Host-jubilee.staff - 30 min idle - 8 h")
+  Component(staffacc, "StaffMember", "Domain entity", "Roles and bound identity")
+}
+Container_Boundary(cli, "Jubilee CLI") {
+  Component(cmd, "jubilee staff", "Console command", "grant - revoke - list")
+  Component(grant, "Grant and RevokeStaffRoleCommandHandler", "MediatR handlers", "Change roles - end sessions")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "StaffMembers - Sessions")
+System_Ext(entra, "Microsoft Entra ID", "OpenID Connect")
+Rel(page, ctrl, "Navigates to", "HTTPS")
+Rel(page, sess, "GET and DELETE /api/staff/session", "JSON/HTTPS")
+Rel(ctrl, txn, "Saves and consumes")
+Rel(ctrl, client, "Redeems the code through")
+Rel(client, entra, "Token request and signing keys", "HTTPS")
+Rel(ctrl, handler, "Sends CompleteStaffSignInCommand")
+Rel(handler, staffacc, "Finds and binds")
+Rel(ctrl, scheme, "Signs in with")
+Rel(scheme, db, "Stores the ticket", "EF Core")
+Rel(cmd, grant, "Sends")
+Rel(grant, db, "Saves", "EF Core")
+@enduml

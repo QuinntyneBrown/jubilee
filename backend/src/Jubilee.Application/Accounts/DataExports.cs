@@ -162,8 +162,7 @@ public sealed class DataExportBuilder(IAppDbContext db, AccountSettings settings
 }
 
 /// <summary>
-/// The JSON archive of one member (L2-018). Every section reads its own tables; none reads the church reference or its
-/// answer, so it can never reach an archive (L2-146).
+/// The JSON archive of one member (L2-018). Every section reads the member's own rows only.
 /// </summary>
 internal static class DataArchive
 {
@@ -183,6 +182,7 @@ internal static class DataArchive
                 member.Phone,
                 member.PostalCode,
                 member.HomeChurch,
+                member.HomeChurchAddress,
                 member.Pronouns,
                 memberSince = member.CreatedAt,
             },

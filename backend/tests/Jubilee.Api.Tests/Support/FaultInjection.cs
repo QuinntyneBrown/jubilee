@@ -97,10 +97,6 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<ListingSubmission> ListingSubmissions => Use(inner.ListingSubmissions);
 
-    public DbSet<ReferenceLink> ReferenceLinks => Use(inner.ReferenceLinks);
-
-    public DbSet<ReferenceAnswer> ReferenceAnswers => Use(inner.ReferenceAnswers);
-
     public DbSet<ReviewTick> ReviewTicks => Use(inner.ReviewTicks);
 
     public DbSet<ListingDecision> ListingDecisions => Use(inner.ListingDecisions);
@@ -111,6 +107,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
     public DbSet<MemberSession> Sessions => Use(inner.Sessions);
 
     public DbSet<SignInFailure> SignInFailures => Use(inner.SignInFailures);
+
+    public DbSet<StaffMember> StaffMembers => Use(inner.StaffMembers);
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

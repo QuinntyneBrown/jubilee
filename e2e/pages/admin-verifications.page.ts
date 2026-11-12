@@ -1,12 +1,16 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { ShellPage } from './shell.page';
+import { AdminShellPage } from './admin-shell.page';
 
-/** `/admin/verifications`: the verification team's queue (L2-099). */
-export class AdminVerificationsPage extends ShellPage implements Screen {
+/** `/verifications` of the admin application: the verification team's queue (L2-099). */
+export class AdminVerificationsPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly subtitle: Locator;
   readonly tabsList: Locator;
+  /** Every filter tab, in order. */
+  readonly filters: Locator;
+  /** The table's column headings, in order. */
+  readonly columns: Locator;
   readonly rows: Locator;
   readonly empty: Locator;
   readonly alert: Locator;
@@ -19,6 +23,8 @@ export class AdminVerificationsPage extends ShellPage implements Screen {
     this.heading = this.main.getByRole('heading', { level: 1 });
     this.subtitle = this.main.locator('.subtitle');
     this.tabsList = this.main.getByRole('tablist', { name: 'Queue filter' });
+    this.filters = this.tabsList.getByRole('tab');
+    this.columns = this.main.getByRole('columnheader');
     this.rows = this.main.locator('tbody tr');
     this.empty = this.main.locator('.empty');
     this.alert = this.main.getByRole('alert');

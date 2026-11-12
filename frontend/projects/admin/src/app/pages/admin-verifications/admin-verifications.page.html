@@ -1,0 +1,78 @@
+<jb-page-header heading="Verification queue" [subtitle]="subtitle()"> </jb-page-header>
+@let queue = state();
+@switch (queue.status) {
+  @case ('error') {
+    <div jb-empty-state [error]="true" icon="alert" heading="We couldn’t load the queue">
+      Nothing is lost. Check your connection and try again. If it keeps happening, tell us and quote
+      <code>{{ queue.reference }}</code
+      >.
+      <button slot="actions" jb-button variant="primary" type="button" (click)="load(stage())">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+      <a slot="actions" jb-button routerLink="/">Back to browse</a>
+    </div>
+  }
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the queue…</p>
+    <ul jb-row-list-skeleton [count]="4" action></ul>
+  }
+  @case ('loaded') {
+    @if (queue.value.total === 0) {
+      <div jb-empty-state icon="check" heading="The queue is clear">
+        Every submitted listing has been reviewed. New submissions appear here as soon as the owner
+        sends them.
+        <button slot="actions" jb-button type="button" (click)="load(null)">
+          <svg jb-icon name="refresh"></svg>Refresh
+        </button>
+      </div>
+    } @else {
+      <div
+        jb-tab-list
+        label="Queue filter"
+        [items]="stageTabs()"
+        [selected]="stage()"
+        (selectedChange)="load($event)"
+      ></div>
+      @if (queue.value.rows.length === 0) {
+        <div jb-empty-state [compact]="true" icon="check" heading="Nothing here right now">
+          No listings are in this stage.
+          <button slot="actions" jb-button type="button" (click)="load('ready-to-review')">
+            Show ready to review
+          </button>
+        </div>
+      } @else {
+        <div jb-table-scroll style="margin-top: var(--space-4)">
+          <table jb-table caption="Listings waiting for verification">
+            <thead>
+              <tr>
+                <th jb-table-cell scope="col">Business</th>
+                <th jb-table-cell scope="col">Category</th>
+                <th jb-table-cell scope="col">Owner</th>
+                <th jb-table-cell scope="col">Submitted</th>
+                <th jb-table-cell scope="col">Stage</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of queue.value.rows; track row.id) {
+                <tr>
+                  <td jb-table-cell>
+                    <a [routerLink]="['/verifications', row.id]">{{ row.name }}</a>
+                  </td>
+                  <td jb-table-cell>{{ row.categoryName }}</td>
+                  <td jb-table-cell>{{ row.ownerName }}</td>
+                  <td jb-table-cell>
+                    {{ submitted(row) }}
+                    @if (row.overdue) {
+                      <span jb-badge tone="warning">Overdue</span>
+                    }
+                  </td>
+                  <td jb-table-cell>{{ row.stageLabel }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+}

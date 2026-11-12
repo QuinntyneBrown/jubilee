@@ -1,6 +1,6 @@
 import { BadgeTone } from 'components';
 import { MemberRequestStatus, RequestKind } from 'api';
-import { ToastSpec } from '../toasts/toast.service';
+import { ToastSpec } from 'components';
 
 /** How a status reads as a badge: the word always says it too. */
 export const STATUS_TONE: Record<MemberRequestStatus, BadgeTone | ''> = {

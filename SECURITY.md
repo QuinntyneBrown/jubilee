@@ -1,7 +1,7 @@
 # Security policy
 
 The security of Jubilee and of the people who use it matters. Jubilee holds members' accounts,
-private messages and requests, owners' listings and church references, so we treat every report
+private messages and requests and owners' listings, so we treat every report
 seriously.
 
 ## Supported versions
