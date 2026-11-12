@@ -5,22 +5,19 @@ title Containers — Edit a listing
 
 Person(owner, "Owner", "Edits a business listing")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "Listing editor with live preview")
-  Container(api, "Jubilee API", "ASP.NET Core", "Validates and saves listing edits and uploads")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Photo processing and outbox dispatch")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Listings, photos and outbox")
-  ContainerDb(media, "Media storage", "Object storage + CDN", "Photo originals and renditions")
-  ContainerDb(search, "Search index", "Query-time analysis over SQL Server", "Full-text search over businesses")
+  Container(web, "Jubilee Web", "Angular single-page application", "Listing editor with live preview and the public listing page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Checks and saves listing edits and processes uploads and serves /media")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Sends outbox e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings, photos, audit records, notifications and outbox")
+  ContainerDb(media, "Media store", "Files under Media:Root", "Photo renditions in WebP and JPEG")
 }
-System_Ext(scanner, "Malware scanner", "Scans uploaded photos")
+System_Ext(email, "E-mail provider", "Delivers Jubilee's e-mail")
 
 Rel(owner, web, "Uses", "HTTPS")
-Rel(web, api, "Saves edits and uploads photos", "JSON and multipart/HTTPS")
-Rel(web, media, "Loads photo renditions", "HTTPS")
+Rel(web, api, "Saves edits and uploads and orders photos", "JSON and multipart/HTTPS")
+Rel(web, api, "Loads photo renditions from /media", "HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")
-Rel(api, media, "Stores originals")
-Rel(worker, db, "Reads outbox and photo status", "EF Core")
-Rel(worker, media, "Writes renditions")
-Rel(worker, scanner, "Scans originals")
-Rel(worker, search, "Updates the listing document")
+Rel(api, media, "Saves and reads and deletes renditions", "File system")
+Rel(worker, db, "Reads due outbox messages", "EF Core")
+Rel(worker, email, "Sends the e-mails of a re-check")
 @enduml

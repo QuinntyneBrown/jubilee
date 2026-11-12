@@ -16,54 +16,63 @@ skinparam package {
 }
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "OwnerWorkspaceShell" as shell
-  participant "MyBusinessOverviewPage" as page
-  participant "OwnerWorkspaceApi" as client
+  participant "MyBusinessPage" as page
+  participant "MyBusinessApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "OwnerWorkspaceController" as controller
+  participant "MyBusinessController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetOwnerWorkspaceQueryHandler" as wsq
-  participant "GetBusinessOverviewQueryHandler" as ovq
+  participant "GetMyBusinessQueryHandler" as handler
+  participant "Workspace" as rules
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> shell : Open /my-business
-shell -> client : Load workspace summary
-client -> controller : GET /api/owner/workspace
-controller -> controller : Authenticate session cookie
-controller -> wsq : Send GetOwnerWorkspaceQuery
-wsq -> db : Load caller's listing and stage detail
-db --> wsq : Listing or none
-wsq --> controller : OwnerWorkspace
-controller --> client : 200 OwnerWorkspace
-client --> shell : Workspace summary
-alt No listing
-  shell --> actor : Show "List your business free." with "List your business" (L2-086)
-else Listing not live
-  shell -> shell : Show the stage in the header (L2-097)
-  shell -> page : Render pending or changes-requested view
-  page --> actor : Show stage copy and next actions (L2-086)
-else Listing live
-  shell -> shell : Mark Overview tab aria-current="page" (L2-097)
-  shell -> page : Render live overview
-  page -> client : Load overview
-  client -> controller : GET /api/owner/listings/{listingId}/overview
-  controller -> controller : Apply ListingOwnerPolicy (L2-097 and L2-133)
-  alt Caller does not own the listing
-    controller --> client : 403 ProblemDetails
-    client --> page : Forbidden
-    page --> actor : Show the forbidden page
-  else Caller owns the listing
-    controller -> ovq : Send GetBusinessOverviewQuery
-    ovq -> db : Read statistics and up to 3 new requests and summary
-    db --> ovq : Read models
-    ovq --> controller : BusinessOverview
-    controller --> client : 200 BusinessOverview
-    client --> page : Overview
-    page --> actor : Show four stats and "Needs your reply" and "Your listing" (L2-085)
+actor -> page : Open /my-business (memberGuard passes a signed-in member)
+page -> client : overview()
+client -> controller : GET /api/my-business
+controller -> controller : Read the subject of the session cookie
+controller -> handler : Send GetMyBusinessQuery(subject)
+handler -> rules : OwnedBy(subject), then Current(owned)
+rules -> db : Read the caller's listings that are not deleted
+db --> rules : Listings, oldest first
+rules --> handler : Listing chosen last, else the live one, else the oldest (L2-079 AC5)
+alt Caller owns nothing
+  handler --> controller : MyBusinessDto with State none
+  controller --> client : 200 OK
+  client --> page : MyBusiness
+  page --> actor : Show "List your business free" with "List your business" (L2-086 AC1)
+else Caller owns a listing
+  handler -> db : Read the owner's drafts, the submission and the listing's requests
+  db --> handler : Rows
+  opt Listing is live
+    handler -> db : Read ListingView of 14 days, unread conversations, saved items, products and services
+    db --> handler : Rows
+    handler -> handler : Build MyBusinessStatsDto and MyBusinessSummaryDto (L2-085 AC2 and AC6)
   end
+  opt Stage is ChangesRequested or Declined
+    handler -> handler : Send GetOwnerVerificationQuery for the reviewer's words
+  end
+  handler -> rules : State and Subtitle (L2-097 AC3)
+  handler --> controller : MyBusinessDto with Businesses
+  controller --> client : 200 OK
+  client --> page : MyBusiness
+  alt Stats present
+    page --> actor : Show the header, four stats, "Needs your reply" and "Your listing" (L2-085)
+  else Listing not live
+    page --> actor : Show the alert of the stage, "Verification progress" and "How members see you" (L2-086)
+  end
+  opt More than one entry in Businesses
+    page --> actor : Show the select "Business" with the one shown selected (L2-079 AC4)
+  end
+end
+opt The API answers 403
+  client --> page : HttpErrorResponse 403
+  page --> actor : Navigate to /forbidden (L2-097 AC1)
+end
+opt Any other failure
+  client --> page : HttpErrorResponse
+  page --> actor : Show "We couldn’t load your business" with the reference and "Try again" (L2-118)
 end
 @enduml

@@ -4,11 +4,14 @@ LAYOUT_WITH_LEGEND()
 title System Context — Edit a listing
 
 Person(owner, "Owner", "Member who owns a business listing")
+Person(member, "Member or visitor", "Sees the listing and its photos on the public page")
 Person(verifier, "Verification team member", "Re-checks a changed name or category")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
-System_Ext(scanner, "Malware scanner", "Scans uploaded photos")
+System_Ext(email, "E-mail provider", "Delivers Jubilee's e-mail")
 
 Rel(owner, jubilee, "Edits listing details and photos using", "HTTPS")
-Rel(jubilee, verifier, "Notifies of a name or category change")
-Rel(jubilee, scanner, "Submits each uploaded photo to")
+Rel(member, jubilee, "Opens the public listing page in", "HTTPS")
+Rel(jubilee, email, "Sends the e-mails of a re-check through")
+Rel(email, owner, "Delivers We'll re-check {Business} to")
+Rel(email, verifier, "Delivers the old and new name and category to")
 @enduml

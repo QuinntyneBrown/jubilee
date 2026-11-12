@@ -17,58 +17,65 @@ skinparam package {
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "EditListingPage" as page
-  participant "ListingsApi" as client
+  participant "MyBusinessApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "OwnerListingController" as controller
+  participant "MyBusinessController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "UpdateListingCommandValidator" as validator
-  participant "UpdateListingCommandHandler" as handler
+  participant "SaveListingCommandHandler" as handler
   participant "Listing" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcher" as outbox
+  participant "OutboxDispatcherJob" as outbox
 end box
+actor "Verification team" as team
 actor -> page : Press "Save listing"
-page -> page : Make fields read-only and button busy (L2-127)
-page -> client : Build typed request with loaded version
-client -> controller : PUT /api/owner/listings/{listingId} with If-Match
-controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
-controller -> validator : Validate UpdateListingCommand
-alt Invalid fields
-  validator --> controller : Field codes such as TAGLINE_TOO_LONG and HOURS_REQUIRED
-  controller --> client : 422 ProblemDetails with per-field codes
-  client --> page : Validation errors
-  page --> actor : Show "Fix 2 things to continue" and keep typed values (L2-126)
-else Valid fields
-  validator --> controller : Valid
-  controller -> handler : Send UpdateListingCommand
-  handler -> db : Load listing
-  db --> handler : Listing with RowVersion
-  handler -> entity : UpdateDetails (L2-087)
-  entity --> handler : ListingChange
-  handler -> db : Save listing and outbox messages in one unit of work
-  alt Stored version is newer
-    db --> handler : Concurrency conflict
-    handler --> controller : Conflict LISTING_CHANGED
+page -> page : check(): name, line, hours and website
+alt Browser finds problems
+  page --> actor : Show "Fix {n} things to continue" in jb-form-summary and keep typed values (L2-126)
+else Draft passes
+  page -> page : Make fields read-only and the button busy (L2-127)
+  page -> client : save(ListingChanges with listingId and version)
+  client -> controller : PUT /api/my-business/listing
+  controller -> controller : Read the subject; SaveListingBody refuses unknown fields (L2-133 AC4)
+  controller -> handler : Send SaveListingCommand
+  handler -> db : Workspace.Owned: load the owner's listing, or 403 FORBIDDEN (L2-133 AC3)
+  db --> handler : Listing
+  handler -> handler : Check each field
+  alt Invalid fields
+    handler --> controller : ValidationFailedException with a code per field
+    controller --> client : 422 ProblemDetails
+    client --> page : HttpErrorResponse
+    page --> actor : Show the fields in the summary
+  else Version differs, or ListingId names another listing
+    handler --> controller : ConflictException LISTING_CHANGED
     controller --> client : 409 ProblemDetails
-    client --> page : Conflict
-    page --> actor : Show "This listing changed since you opened it. Reload to see the latest."
-  else Version matches
+    client --> page : HttpErrorResponse
+    page --> actor : Show "This listing changed since you opened it. Reload to see the latest." with "Reload" (L2-087 AC8)
+  else Valid and current
+    handler -> entity : Edit(name, tagline, category, about, where, hours, website, highlight, now)
+    entity --> handler : Version + 1; true when the name or category changed
+    opt Name or category changed on a live listing (L2-087 AC6)
+      entity -> entity : Stamp RecheckRequestedAt
+      handler -> handler : Add AuditRecord listing.recheck-requested with the old and new values
+      handler -> handler : TellOfRecheck: Notification and e-mail to the owner, e-mail to VerificationSettings.TeamEmail
+    end
+    handler -> db : Save listing, audit record, Notification and OutboxMessages in one SaveChangesAsync
     db --> handler : Commit result
-    handler --> controller : Updated listing with new version
-    controller --> client : 200 listing
-    client --> page : Saved listing
-    page --> actor : Show "Listing updated. Your changes are live now."
-    outbox -> db : Read ListingUpdated and ListingRecheckRequested
-    db --> outbox : Pending messages
-    outbox -> outbox : Update search index
-    opt Name or category changed
-      outbox -> outbox : Notify verification team to re-check within two business days (L2-087)
+    handler --> controller : ListingEditorDto
+    controller --> client : 200 OK
+    client --> page : ListingEditor
+    page --> actor : Show "Listing updated": "Your changes are live now." with "View public listing" (L2-087 AC5)
+    opt A re-check was asked
+      page --> actor : Add "the verification team will take another look within two business days. Your listing stays live."
+      outbox -> db : Read due outbox messages
+      db --> outbox : Messages
+      outbox --> actor : E-mail "We’ll re-check {Business}"
+      outbox --> team : E-mail "Re-check: {Business} changed its name or category" with the old and new values and the admin link
     end
   end
 end

@@ -16,56 +16,54 @@ skinparam package {
 }
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "ListingPhotosEditor" as page
-  participant "ListingsApi" as client
+  participant "EditListingPage" as page
+  participant "MyBusinessApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "OwnerListingController" as controller
+  participant "MyBusinessController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "AddListingPhotoCommandHandler" as handler
-  participant "ImageInspector" as inspector
-  participant "Listing" as entity
+  participant "AddPhotoCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  participant "IMediaStore" as media
+  participant "SkiaImageProcessor" as image
+  participant "FileMediaStore" as media
   database "Jubilee database" as db
 end box
-box "Backend — Jubilee Worker" #D1FADF
-  participant "PhotoProcessingJob" as job
-end box
-participant "Malware scanner" as scanner
-actor -> page : Add a photo and optional alt text
-page -> client : Build multipart request
-client -> controller : POST /api/owner/listings/{listingId}/photos
-controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
-controller -> handler : Send AddListingPhotoCommand
-handler -> db : Load listing with photos
-db --> handler : Listing
-handler -> inspector : Check magic bytes and 5 MB limit (L2-088 and L2-138)
-inspector --> handler : ImageInspection
-handler -> entity : AddPhoto with 6 photo limit (L2-088)
-alt Seventh photo or file over 5 MB or not a real JPG or PNG
-  entity --> handler : Rule violated
-  handler --> controller : PHOTO_LIMIT_REACHED or PHOTO_TOO_LARGE or PHOTO_NOT_IMAGE
-  controller --> client : 422 ProblemDetails
-  client --> page : Refusal
-  page --> actor : Show the message naming the rule
-else Accepted
-  entity --> handler : Photo added with status Processing
-  handler -> media : Store original under a random name
-  media --> handler : Storage key
-  handler -> db : Save photo row and outbox message in one unit of work
-  db --> handler : Commit result
-  handler --> controller : ListingPhotoDto
-  controller --> client : 201 photo
-  client --> page : Photo
-  page --> actor : Show the photo with default alt text "{business} photo {n}"
-  job -> scanner : Scan original
-  scanner --> job : Clean or infected
-  job -> media : Re-encode and strip metadata and write 320 640 1280 px in WebP and JPEG (L2-088)
-  media --> job : Rendition URLs
-  job -> db : Mark photo Ready or Rejected
-  db --> job : Commit result
+actor -> page : Press "Add photo" and choose a file
+alt Six photos already, or the file is over 5 MB
+  page --> actor : Show the rule and send nothing (L2-088 AC2)
+else
+  page -> client : addPhoto(file)
+  client -> controller : POST /api/my-business/photos (multipart file)
+  controller -> handler : Send AddPhotoCommand(subject, content)
+  handler -> db : Workspace.Owned, then count the listing's photos (L2-133)
+  db --> handler : Listing and count
+  alt Six photos already
+    handler --> controller : ConflictException TOO_MANY_PHOTOS
+    controller --> client : 409 ProblemDetails
+    client --> page : HttpErrorResponse
+    page --> actor : Show "A listing can have 6 photos. Remove one to add another."
+  else
+    handler -> image : Process(upload)
+    alt Over 5 MB, not a JPEG or PNG by its bytes, or over 8,000 pixels a side (L2-138 AC1)
+      image --> handler : InvalidPhotoException TOO_LARGE, NOT_AN_IMAGE or TOO_BIG_IN_PIXELS
+      handler --> controller : InvalidPhotoException
+      controller --> client : 422 ProblemDetails with the code
+      client --> page : HttpErrorResponse
+      page --> actor : Show the message naming the rule (L2-088 AC2)
+    else Accepted
+      image -> image : Decode and encode again without metadata at 320, 640 and 1280 px in JPEG and WebP (L2-088 AC4)
+      image --> handler : ProcessedImage with 6 renditions
+      handler -> media : Save each rendition under a random 32-digit hex key
+      media --> handler : Stored
+      handler -> db : Add ListingPhoto at the last position and save
+      db --> handler : Commit result
+      handler --> controller : ListingEditorDto
+      controller --> client : 201 Created
+      client --> page : ListingEditor
+      page --> actor : Show the photo with the default description "{business} photo {n}" (L2-088 AC5)
+    end
+  end
 end
 @enduml

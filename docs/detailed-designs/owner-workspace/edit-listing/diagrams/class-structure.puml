@@ -13,98 +13,226 @@ skinparam class {
 ' --------------------------
 title Class structure — Edit a listing
 
-enum PhotoStatus {
-  Processing
-  Ready
-  Rejected
-}
-
 class Listing {
   +Guid Id
-  +Guid OwnerId
+  +string Slug
   +string Name
   +string Tagline
-  +string About
-  +Guid CategoryId
-  +string Where
-  +string Hours
+  +string CategorySlug
+  +string? About
+  +string? Where
+  +string? Hours
   +string? Website
   +string? Highlight
-  +byte[] RowVersion
-  +UpdateDetails(details: ListingDetails): ListingChange
-  +AddPhoto(photo: ListingPhoto): void
-  +ReorderPhotos(photoIds: IReadOnlyList<Guid>): void
-  +RemovePhoto(photoId: Guid): void
+  +ListingStage Stage
+  +int Version
+  +DateTimeOffset? RecheckRequestedAt
+  +Edit(name, tagline, categorySlug, about, where, hours, website, highlight, now): bool
+  +DescribeSpace(details: SpaceDetails): void
 }
 
 class ListingPhoto {
   +Guid Id
-  +int SortOrder
-  +string? AltText
-  +PhotoStatus Status
-  +bool IsCover
-  +SetAltText(text: string): void
-}
-
-class PhotoRendition {
-  +int WidthPx
-  +string Format
-  +string Url
-}
-
-class ListingChange {
-  +bool NameChanged
-  +bool CategoryChanged
-  +bool RequiresRecheck
-}
-
-class UpdateListingCommand {
   +Guid ListingId
-  +byte[] ExpectedVersion
-  +ListingDetails Details
+  +string Key
+  +int Position
+  +string? Alt
+  +int Width
+  +int Height
+  +DateTimeOffset AddedAt
+  +{static} int MaxPerListing = 6
+  +{static} int MaxAltLength = 125
+  +{static} Add(listingId, key, position, width, height, now): ListingPhoto
+  +MoveTo(position: int): void
+  +DescribeAs(alt: string?): void
 }
 
-class UpdateListingCommandValidator {
-  +int TaglineMax = 90
-  +int AboutMax = 1500
-  +int HighlightMax = 30
-  +Validate(command: UpdateListingCommand): ValidationResult
+class SaveListingBody {
+  +int Version
+  +string? Name
+  +string? Tagline
+  +string? Category
+  +string? About
+  +string? Where
+  +string? Hours
+  +string? Website
+  +string? Highlight
+  +SpaceDraftRequest? Space
+  +Guid? ListingId
 }
 
-class UpdateListingCommandHandler {
-  +Handle(command: UpdateListingCommand): Task<Result<ListingDto>>
+class SaveListingCommand {
+  +string Subject
+  +int Version
+  +string? Name
+  +string? Tagline
+  +string? CategorySlug
+  +string? About
+  +string? Where
+  +string? Hours
+  +string? Website
+  +string? Highlight
+  +SpaceInput? Space
+  +Guid? ListingId
 }
 
-class AddListingPhotoCommandHandler {
-  +int MaxPhotos = 6
-  +Handle(command: AddListingPhotoCommand): Task<Result<ListingPhotoDto>>
+class SaveListingCommandHandler {
+  +Handle(request: SaveListingCommand): Task<ListingEditorDto>
+  -TellOfRecheck(listing, oldName, oldCategory, now): Task
 }
 
-class ImageInspector {
-  +long MaxBytes = 5 MB
-  +Inspect(content: Stream): ImageInspection
+class Workspace <<static>> {
+  +{static} int MaxName = 80
+  +{static} int MaxTagline = 90
+  +{static} int MaxAbout = 1500
+  +{static} int MaxHighlight = 30
+  +{static} int MaxWebsite = 300
+  +{static} int MaxWhere = 200
+  +{static} int MaxHours = 200
+  +{static} Owned(db: IAppDbContext, subject: string): Task<Listing>
+  +{static} Editor(db: IAppDbContext, listing: Listing): Task<ListingEditorDto>
+  +{static} DefaultAlt(business: string, position: int): string
+}
+
+class ListingEditorDto {
+  +Guid Id
+  +int Version
+  +string Slug
+  +string Stage
+  +bool Paused
+  +string Name
+  +string Tagline
+  +string CategorySlug
+  +IReadOnlyList<CategoryOptionDto> Categories
+  +IReadOnlyList<ListingPhotoDto> Photos
+  +bool RecheckRequested
+  +SpaceDraftDto? Space
+}
+
+class ListingPhotoDto {
+  +Guid Id
+  +string Key
+  +int Position
+  +string Alt
+  +string? CustomAlt
+  +int Width
+  +int Height
+}
+
+class ListingPagePhotoDto {
+  +string Key
+  +string Alt
+  +int Width
+  +int Height
+}
+
+class VerificationSettings {
+  +string? TeamEmail
+  +string AdminBaseUrl
+}
+
+class AuditRecord {
+  +{static} Make(...): AuditRecord
+}
+
+class Notification {
+  +string Kind
+  +string Title
+  +string Detail
+  +string Target
+}
+
+class OutboxMessage {
+  +string ToAddress
+  +string Subject
+  +string TextBody
+  +{static} Email(...): OutboxMessage
+}
+
+class ValidationFailedException {
+  +IReadOnlyDictionary<string, string> Errors
+}
+
+class ConflictException {
+  +string Code
+}
+
+class AddPhotoCommandHandler {
+  +Handle(request: AddPhotoCommand): Task<ListingEditorDto>
+}
+
+class MovePhotoCommandHandler {
+  +Handle(request: MovePhotoCommand): Task<ListingEditorDto>
+}
+
+class DescribePhotoCommandHandler {
+  +Handle(request: DescribePhotoCommand): Task<ListingEditorDto>
+}
+
+class RemovePhotoCommandHandler {
+  +Handle(request: RemovePhotoCommand): Task<ListingEditorDto>
+}
+
+interface IImageProcessor {
+  +Process(upload: Stream): ProcessedImage
+}
+
+class SkiaImageProcessor {
+  +{static} int MaxBytes = 5 MB
+  +{static} int MaxSide = 8000
+  +{static} int[] Widths = 320, 640, 1280
+}
+
+class ProcessedImage {
+  +int Width
+  +int Height
+  +IReadOnlyList<Rendition> Renditions
+}
+
+class Rendition {
+  +int Width
+  +string Format
+  +byte[] Data
+}
+
+class InvalidPhotoException {
+  +string Code
 }
 
 interface IMediaStore {
-  +StoreOriginalAsync(content: Stream): Task<string>
-  +StoreRenditionAsync(key: string, widthPx: int, format: string): Task<string>
+  +Save(key: string, width: int, format: string, data: byte[]): Task
+  +Read(key: string, width: int, format: string): Task<byte[]?>
+  +Delete(key: string): Task
 }
 
-class PhotoProcessingJob {
-  +int[] Widths = 320, 640, 1280
-  +ProcessAsync(photoId: Guid): Task
-}
+class FileMediaStore
 
-Listing "1" *-- "0..6" ListingPhoto
-ListingPhoto "1" *-- "0..6" PhotoRendition
-ListingPhoto --> PhotoStatus : has
-Listing ..> ListingChange : returns
-UpdateListingCommandHandler ..> UpdateListingCommand : handles
-UpdateListingCommandValidator ..> UpdateListingCommand : validates
-UpdateListingCommandHandler --> Listing : loads / mutates
-AddListingPhotoCommandHandler --> Listing : adds photo
-AddListingPhotoCommandHandler ..> ImageInspector : checks content
-AddListingPhotoCommandHandler ..> IMediaStore : stores original
-PhotoProcessingJob ..> IMediaStore : writes renditions
-PhotoProcessingJob ..> ListingPhoto : marks Ready or Rejected
+Listing "1" <-- "0..6" ListingPhoto : ListingId
+SaveListingBody ..> SaveListingCommand : becomes
+SaveListingCommandHandler ..> SaveListingCommand : handles
+SaveListingCommandHandler ..> Workspace : finds the listing with
+SaveListingCommandHandler --> Listing : calls Edit
+SaveListingCommandHandler ..> ValidationFailedException : throws per field
+SaveListingCommandHandler ..> ConflictException : throws LISTING_CHANGED
+SaveListingCommandHandler ..> VerificationSettings : reads TeamEmail
+SaveListingCommandHandler ..> AuditRecord : writes listing.recheck-requested
+SaveListingCommandHandler ..> Notification : tells the owner
+SaveListingCommandHandler ..> OutboxMessage : e-mails the owner and the team
+SaveListingCommandHandler ..> ListingEditorDto : returns
+ListingEditorDto *-- "0..6" ListingPhotoDto : Photos
+Workspace ..> ListingEditorDto : builds
+AddPhotoCommandHandler ..> IImageProcessor : processes with
+AddPhotoCommandHandler ..> IMediaStore : saves renditions
+AddPhotoCommandHandler --> ListingPhoto : adds
+AddPhotoCommandHandler ..> ConflictException : throws TOO_MANY_PHOTOS
+MovePhotoCommandHandler --> ListingPhoto : calls MoveTo
+DescribePhotoCommandHandler --> ListingPhoto : calls DescribeAs
+RemovePhotoCommandHandler --> ListingPhoto : removes
+RemovePhotoCommandHandler ..> IMediaStore : deletes files
+SkiaImageProcessor ..|> IImageProcessor
+SkiaImageProcessor ..> InvalidPhotoException : throws
+SkiaImageProcessor ..> ProcessedImage : returns
+ProcessedImage *-- "6" Rendition
+FileMediaStore ..|> IMediaStore
+ListingPhoto ..> ListingPagePhotoDto : shown on the public page as
 @enduml

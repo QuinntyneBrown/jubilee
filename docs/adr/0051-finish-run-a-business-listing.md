@@ -36,7 +36,7 @@ live listing, or the oldest.
   carry the `listingId` the editor opened, and a save that names another listing than the one being
   worked on is refused with 409 `LISTING_CHANGED`, the same answer as a stale version.
 - **The switcher is a native select with a link, on the overview only.** `MyBusinessPage` shows a
-  `jb-field` "Business" with a `jb-select` when the owner has more than one entry, and "List another
+  native `select` with `jb-select`, labelled "Business", when the owner has more than one entry, and "List another
   business" (`/list?draft=new`) for every owner with a listing. A draft in the select opens
   `/list?draft={id}`. A native select works by touch and by keyboard with nothing to build, so no
   new component and no menu was added; `jb-select` gains the `fit` input (`select--fit`), which
@@ -85,6 +85,12 @@ live listing, or the oldest.
   passed, and no public answer may be kept by a browser or a CDN for longer than 60 seconds
   (`Cache-Control`), search not at all. The tests fail when `IDirectoryReadCache.TimeToLive` or
   `PublicDirectoryCacheAttribute.MaxAgeSeconds` is lengthened. No production code changed.
+
+- **Three faults of the overview found while aligning the designs are corrected.** The API quoted
+  `JB-BUS-503` for My business where `L2-118`, the mock and the page say `JB-BIZ-503`; the banner of
+  a listing just approved said "in the directory" for every category but Shops, where `L2-086` AC4
+  names the category (`MyBusinessDto.CategoryName`); and the requested changes were headed "Changes
+  needed" without their number and without the date (`L2-086` AC3).
 
 ## Consequences
 

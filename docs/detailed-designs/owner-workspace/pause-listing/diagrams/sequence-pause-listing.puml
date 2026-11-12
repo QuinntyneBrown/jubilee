@@ -16,56 +16,58 @@ skinparam package {
 }
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "MyBusinessOverviewPage" as page
+  participant "MyBusinessPage" as page
   participant "PauseListingDialog" as dialog
-  participant "ListingsApi" as client
+  participant "MyBusinessApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "OwnerListingController" as controller
+  participant "MyBusinessController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "PauseListingCommandHandler" as handler
   participant "Listing" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "DirectoryCacheInvalidationInterceptor" as interceptor
   database "Jubilee database" as db
-  database "Cache" as cache
+  database "Directory read cache" as cache
 end box
-box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcher" as outbox
-end box
-participant "Search index" as search
+actor "Visitor" as visitor
 actor -> page : Press "Pause listing"
-page -> dialog : Open "Pause {business}?" with the open request count
-dialog --> actor : Focus "Keep it live" (L2-129)
+page -> dialog : Open with PauseListingData: business name and count of new requests
+dialog --> actor : Ask "Pause {business}?" and focus "Keep it live" (L2-129)
 actor -> dialog : Press "Pause listing"
-dialog -> client : Build typed request
-client -> controller : POST /api/owner/listings/{listingId}/pause
-controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
-controller -> handler : Send PauseListingCommand
-handler -> db : Load listing
+dialog -> client : pause()
+client -> controller : POST /api/my-business/pause
+controller -> controller : Read the subject of the session cookie
+controller -> handler : Send PauseListingCommand(subject)
+handler -> db : Workspace.Owned: load the owner's listing, or 403 FORBIDDEN (L2-133)
 db --> handler : Listing
-handler -> entity : Pause(now) keeps ApprovedAt (L2-096)
-entity --> handler : Stage Paused
-handler -> db : Save stage and ListingVisibilityChanged outbox message
-alt Save succeeds
+alt Listing is not live, or is already paused
+  handler --> controller : ConflictException NOT_LIVE or ALREADY_PAUSED
+  controller --> client : 409 ProblemDetails
+  client --> dialog : HttpErrorResponse
+  dialog --> actor : Show "We couldn’t pause it": "Your listing is still live. Try again." (L2-096 AC5)
+else Listing is live and not paused
+  handler -> entity : Pause(now)
+  entity --> handler : IsPaused true, PausedAt recorded; Stage and ApprovedAt kept (L2-096)
+  handler -> db : SaveChangesAsync
   db --> handler : Commit result
-  handler -> cache : Remove the listing's public cache entries
-  cache --> handler : Removed
-  handler --> controller : ListingStageDto
-  controller --> client : 200 stage Paused
-  client --> dialog : Paused
-  dialog --> page : Close and update the stage
-  page --> actor : Show persistent banner "Your listing is paused." with "Resume listing" (L2-067)
-  outbox -> db : Read ListingVisibilityChanged
-  db --> outbox : Pending message
-  outbox -> search : Remove listing and its products and services within 60 seconds (L2-096)
-  search --> outbox : Removed
-else Save fails
-  db --> handler : Error
-  handler --> controller : Failure
-  controller --> client : ProblemDetails with error reference
-  client --> dialog : Failed
-  dialog --> actor : Show "We couldn't pause it. Your listing is still live. Try again."
+  interceptor -> cache : InvalidateAsync: replace the version of every entry
+  handler --> controller : PauseResultDto(paused, pausedAt, state paused, needsReview false)
+  controller --> client : 200 OK
+  client --> dialog : PauseResult
+  dialog --> page : Close with the result
+  page -> client : overview()
+  client --> page : MyBusiness with paused true
+  page --> actor : Toast "Listing paused" and the persistent banner "Your listing is paused." with "Resume listing" (L2-067)
+  visitor -> controller : Next public read: a list, search or GET /api/listings/{slug}
+  controller -> db : Build the answer with WherePublic (L2-028)
+  db --> controller : Public listings without the paused one
+  controller --> visitor : Lists without the listing; 404 for its URL; Cache-Control of at most 60 seconds (L2-096 AC2)
+end
+opt Any other failure of the pause
+  client --> dialog : HttpErrorResponse
+  dialog --> actor : Show "We couldn’t pause it" with "Try again" (L2-128)
 end
 @enduml
