@@ -107,6 +107,10 @@ export type StubName =
   | 'business-empty'
   | 'business-retrying'
   | 'business-paused'
+  | 'business-statement-due'
+  | 'business-statement-pending'
+  | 'business-statement-failing'
+  | 'business-statement-lapsed'
   | 'editor'
   | 'editor-photos'
   | 'order'
@@ -913,6 +917,42 @@ export const routes = {
     mock: 'notifications/verification-banner/persistent.html',
     who: 'member',
     stub: 'business-paused',
+  },
+  'my-business.statement-due': {
+    app: '/my-business',
+    mock: 'pages/my-business/statement-due.html',
+    who: 'member',
+    stub: 'business-statement-due',
+  },
+  'my-business.statement-lapsed': {
+    app: '/my-business',
+    mock: 'pages/my-business/statement-lapsed.html',
+    who: 'member',
+    stub: 'business-statement-lapsed',
+  },
+  'statement-agreement': {
+    app: '/my-business',
+    mock: 'dialogs/statement-agreement/default.html',
+    who: 'member',
+    stub: 'business-statement-due',
+  },
+  'statement-agreement.busy': {
+    app: '/my-business',
+    mock: 'dialogs/statement-agreement/busy.html',
+    who: 'member',
+    stub: 'business-statement-pending',
+  },
+  'statement-agreement.failed': {
+    app: '/my-business',
+    mock: 'dialogs/statement-agreement/failed.html',
+    who: 'member',
+    stub: 'business-statement-failing',
+  },
+  'statement-agreement.lapsed': {
+    app: '/my-business',
+    mock: 'dialogs/statement-agreement/lapsed.html',
+    who: 'member',
+    stub: 'business-statement-lapsed',
   },
   'edit-listing': {
     app: '/my-business/listing',

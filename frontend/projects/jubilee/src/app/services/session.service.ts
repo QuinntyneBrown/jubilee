@@ -18,6 +18,7 @@ function toState(dto: SessionDto): SessionState {
           emailConfirmed: dto.emailStatus !== 'unconfirmed',
           emailBounced: dto.emailBounced ?? false,
           agreementRequired: dto.agreementRequired ?? false,
+          statementDue: dto.statementDue ?? null,
         },
       }
     : { status: 'visitor' };
@@ -94,6 +95,15 @@ export class SessionService {
     return this.api.signOutOthers().pipe(
       switchMap(() => this.resolve()),
       map(() => undefined),
+    );
+  }
+
+  /** The owner agreed to the updated statement of faith (L2-075 AC4): nothing more is owed. */
+  statementAgreed(): void {
+    this.current.update((state) =>
+      state.status === 'member'
+        ? { status: 'member', member: { ...state.member, statementDue: null } }
+        : state,
     );
   }
 

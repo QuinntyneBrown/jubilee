@@ -43,7 +43,40 @@
         <a slot="actions" jb-button routerLink="/help">How verification works</a>
       </div>
     } @else {
-      @if (b.paused) {
+      @let due = statementDue();
+      @let lapsed = !!due?.overdue && b.paused;
+      @if (due) {
+        <div jb-alert tone="warning" icon="info" banner>
+          @if (lapsed) {
+            <span
+              ><strong
+                >{{ due.business }} is paused until you agree to the updated statement of
+                faith.</strong
+              >
+              It’s hidden from browse and search; your requests and messages stay.</span
+            >
+          } @else {
+            <span
+              ><strong>The statement of faith has been updated.</strong> Read it and agree by
+              {{ agreeBy() }} to keep {{ due.business }} live.</span
+            >
+          }
+
+          <button
+            slot="actions"
+            jb-button
+            size="sm"
+            type="button"
+            #agreeButton
+            (click)="readAndAgree(due, agreeButton.element)"
+          >
+            Read and agree
+          </button>
+        </div>
+      }
+      @if (b.paused && lapsed) {
+        <!-- "Read and agree" replaces "Resume listing" until the owner agrees (L2-096 AC6). -->
+      } @else if (b.paused) {
         <div jb-alert banner>
           <span
             ><strong>Your listing is paused.</strong> It’s hidden from browse and search until you
