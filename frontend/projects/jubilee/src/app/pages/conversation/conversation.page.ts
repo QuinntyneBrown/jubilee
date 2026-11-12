@@ -40,7 +40,7 @@ import {
 import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { MessagesStore } from '../../services/messages.store';
-import { clockTime, dayHeading, dayKey, newKey } from 'api';
+import { awayDay, clockTime, dayHeading, dayKey, newKey } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
 import { RealtimeService } from '../../services/realtime.service';
 import { ConnectionService } from '../../services/offline/connection.service';
@@ -180,6 +180,12 @@ export class ConversationPage implements OnInit {
     return `${conversation.counterpart.name}${replies}`;
   });
 
+  /** The day the owner is back, while they are away; null once that day has come (L2-062). */
+  protected readonly awayUntil = computed(() => this.awayDayOf(this.conversation()));
+
+  /** The away toast that is showing, so that a second one is never put on top of it. */
+  private awayToast: number | null = null;
+
   protected readonly entries = computed<Entry[]>(() => {
     const now = this.clock.now();
     const entries: Entry[] = [];
@@ -264,6 +270,7 @@ export class ConversationPage implements OnInit {
         // Opening marks the conversation read, so the counts change.
         this.store.load();
         this.navigation.load();
+        this.tellAway();
       },
       error: (error: unknown) => {
         if (this.isOfflineFailure(error)) {
@@ -299,6 +306,29 @@ export class ConversationPage implements OnInit {
     this.hasMore.set(saved.data.hasMore);
     this.muted.set(saved.data.muted);
     this.state.set({ status: 'loaded', value: saved.data });
+  }
+
+  private awayDayOf(conversation: Conversation | null): string | null {
+    const until = conversation?.awayUntil;
+    const now = this.clock.now();
+    return until && Date.parse(until) > now.getTime() ? awayDay(until, now) : null;
+  }
+
+  /**
+   * The toast of L2-062 AC1, when the conversation opens and when a message is sent: the owner is
+   * away until a day. Nothing is said once that day has come (AC2), and never twice at once.
+   */
+  private tellAway(): void {
+    const conversation = this.conversation();
+    const day = this.awayDayOf(conversation);
+    if (!conversation || !day) return;
+    if (this.toasts.toasts().some((toast) => toast.id === this.awayToast)) return;
+    const firstName = conversation.counterpart.name.trim().split(' ')[0];
+    this.awayToast = this.toasts.show({
+      tone: 'info',
+      title: `${firstName} is away until ${day}`,
+      text: 'They’ll see your message when they’re back.',
+    });
   }
 
   /** Reads the latest messages again without a loading state, and says so when a reply came. */
@@ -523,6 +553,7 @@ export class ConversationPage implements OnInit {
           list.some((m) => m.id === message.id) ? list : [...list, message],
         );
         this.store.load();
+        this.tellAway();
       },
       error: (error: unknown) => {
         if (

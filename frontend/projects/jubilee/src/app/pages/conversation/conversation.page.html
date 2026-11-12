@@ -67,9 +67,10 @@
           </jb-menu>
         </ng-template>
       </div>
-      @if (conversation.awayUntil) {
+      @if (awayUntil(); as day) {
         <p jb-alert data-testid="away">
-          {{ conversation.counterpart.name }} is away and will reply when they’re back.
+          {{ conversation.counterpart.name }} is away until {{ day }} and will reply when they’re
+          back.
         </p>
       }
       @if (entries().length === 0) {

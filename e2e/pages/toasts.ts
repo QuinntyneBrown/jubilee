@@ -18,6 +18,13 @@ export class Toasts {
       .filter({ has: this.page.locator('.toast__title', { hasText: title }) });
   }
 
+  /** The info toast with this title: something to know, nothing to do. */
+  info(title: string | RegExp): Locator {
+    return this.region
+      .locator('.toast.toast--info')
+      .filter({ has: this.page.locator('.toast__title', { hasText: title }) });
+  }
+
   /** The warning toast with this title: something needs attention, nothing broke. */
   warning(title: string | RegExp): Locator {
     return this.region

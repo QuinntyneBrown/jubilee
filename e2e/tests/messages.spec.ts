@@ -245,6 +245,147 @@ test.describe('a conversation (L2-057)', () => {
   });
 });
 
+test.describe('an owner who is away (L2-062)', () => {
+  // The mocks' today is Tuesday 10 November; an away period ends at the start of its day in Toronto.
+  const THURSDAY = '2026-11-12T05:00:00Z';
+
+  test('AC1: opening the conversation shows a toast and a line, both with the day the owner is back', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    await jb.goto('/messages/c-legacy');
+
+    const toast = toasts.withTitle('Trevor is away until Thursday');
+    await expect(toast).toContainText('They’ll see your message when they’re back.');
+    await expect(toasts.info('Trevor is away until Thursday')).toHaveCount(1);
+    await expect(conversation.away).toHaveText(
+      'Trevor Chew is away until Thursday and will reply when they’re back.',
+    );
+  });
+
+  test('AC1: a day more than six days ahead is named by its date', async ({ page, jb }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: '2026-11-23T05:00:00Z' });
+    await jb.goto('/messages/c-legacy');
+
+    await expect(toasts.withTitle('Trevor is away until Mon 23 Nov')).toHaveCount(1);
+    await expect(conversation.away).toContainText('is away until Mon 23 Nov');
+  });
+
+  test('AC1: sending a message shows the toast again, and never two at once', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    await jb.goto('/messages/c-legacy');
+    const toast = toasts.withTitle('Trevor is away until Thursday');
+    await toasts.dismiss(toast).click();
+    await expect(toast).toHaveCount(0);
+
+    await conversation.composer.fill('No rush, see you when you’re back.');
+    await conversation.send.click();
+    await expect(conversation.bubbles).toHaveCount(4);
+    await expect(toast).toHaveCount(1);
+
+    await conversation.composer.fill('One more thing.');
+    await conversation.send.click();
+    await expect(conversation.bubbles).toHaveCount(5);
+    await expect(toast).toHaveCount(1);
+  });
+
+  test('AC1: by keyboard, Enter sends and the toast says the owner is away', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(360);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    await jb.goto('/messages/c-legacy');
+    const toast = toasts.withTitle('Trevor is away until Thursday');
+    await toasts.dismiss(toast).click();
+
+    await conversation.composer.fill('Thank you');
+    await conversation.composer.press('Enter');
+
+    await expect(toast).toHaveCount(1);
+  });
+
+  test('AC2: once the day has come, opening and sending show no away notice', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    // Friday 13 November: the owner came back the day before.
+    await jb.goto('/messages/c-legacy', 'light', new Date('2026-11-13T14:00:00Z'));
+    await expect(conversation.bubbles).toHaveCount(3);
+
+    await conversation.composer.fill('Welcome back');
+    await conversation.send.click();
+
+    await expect(conversation.bubbles).toHaveCount(4);
+    await expect(toasts.withTitle(/is away/)).toHaveCount(0);
+    await expect(conversation.away).toHaveCount(0);
+  });
+
+  test('AC2: the day comes while the conversation is open, and the next message shows no toast', async ({
+    page,
+    jb,
+  }) => {
+    const conversation = new ConversationPage(page);
+    const toasts = new Toasts(page);
+    await conversation.setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    await jb.goto('/messages/c-legacy');
+    const toast = toasts.withTitle(/is away/);
+    await toasts.dismiss(toast).click();
+    await page.clock.setFixedTime(new Date('2026-11-12T14:00:00Z'));
+
+    await conversation.composer.fill('Welcome back');
+    await conversation.send.click();
+
+    await expect(conversation.bubbles).toHaveCount(4);
+    await expect(toast).toHaveCount(0);
+  });
+
+  test('L2-055 AC3: a first message to an owner who is away opens the conversation, which says so', async ({
+    page,
+    jb,
+  }) => {
+    const dialog = new NewMessageDialog(page);
+    const toasts = new Toasts(page);
+    await new BusinessPage(page).setWidth(1280);
+    await jb.signInAs('member');
+    await stubMessaging(page, { awayUntil: THURSDAY });
+    await jb.goto('/b/legacy-financial/message');
+
+    await dialog.message.fill('Hello Trevor');
+    await dialog.send.click();
+
+    await expect(page).toHaveURL(/\/messages\/c-legacy$/);
+    await expect(toasts.withTitle('Trevor is away until Thursday')).toHaveCount(1);
+    await expect(toasts.withTitle(/sent/i)).toHaveCount(0);
+  });
+});
+
 test.describe('request cards (L2-057 AC4)', () => {
   test('AC4: a request shows as a card in the timeline, at the time it was sent, with its status', async ({
     page,
