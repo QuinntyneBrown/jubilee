@@ -66,3 +66,6 @@ journey that is implemented: the effort-weighted average of its feature designs 
   network) beside the admin application and staff sign-in. Production operations work that no
   journey reaches (backups, deployment pipeline, load and penetration testing) is not estimated here.
 - The percentages were last recalculated from the code and its tests on 12 November 2026.
+- [`prompts/`](prompts/) holds one implementation prompt per unfinished journey, named by its number. Each
+  lists what the journey still lacks and runs it to 100%, from requirements to a pull request. Journey 28
+  is complete and has none. The prompt for journey 27 is for launch day: it restores the links to the app.
