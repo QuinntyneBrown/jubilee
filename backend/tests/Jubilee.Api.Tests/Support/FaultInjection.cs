@@ -112,6 +112,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<SignInFailure> SignInFailures => Use(inner.SignInFailures);
 
+    public DbSet<StaffMember> StaffMembers => Use(inner.StaffMembers);
+
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         outage.ThrowIfUnavailable();

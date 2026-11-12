@@ -681,6 +681,22 @@ public sealed class MemberSessionConfiguration : IEntityTypeConfiguration<Member
     }
 }
 
+public sealed class StaffMemberConfiguration : IEntityTypeConfiguration<StaffMember>
+{
+    public void Configure(EntityTypeBuilder<StaffMember> builder)
+    {
+        builder.ToTable("StaffMembers");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.Email).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.HasIndex(s => s.Email).IsUnique();
+        builder.Property(s => s.TenantId).HasMaxLength(64);
+        builder.Property(s => s.ObjectId).HasMaxLength(64);
+        builder.HasIndex(s => new { s.TenantId, s.ObjectId }).IsUnique().HasFilter("[ObjectId] IS NOT NULL");
+        builder.Ignore(s => s.IsBound);
+    }
+}
+
 public sealed class SignInFailureConfiguration : IEntityTypeConfiguration<SignInFailure>
 {
     public void Configure(EntityTypeBuilder<SignInFailure> builder)

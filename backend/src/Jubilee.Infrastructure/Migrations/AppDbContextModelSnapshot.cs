@@ -1890,6 +1890,42 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("SignInFailures", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.StaffMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("ObjectId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("Roles")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "ObjectId")
+                        .IsUnique()
+                        .HasFilter("[ObjectId] IS NOT NULL");
+
+                    b.ToTable("StaffMembers", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.StockAlert", b =>
                 {
                     b.Property<Guid>("Id")

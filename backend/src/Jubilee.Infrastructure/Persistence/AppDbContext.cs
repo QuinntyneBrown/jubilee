@@ -49,6 +49,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<SignInFailure> SignInFailures => Set<SignInFailure>();
 
+    public DbSet<StaffMember> StaffMembers => Set<StaffMember>();
+
     public DbSet<FeaturedSlot> FeaturedSlots => Set<FeaturedSlot>();
 
     public DbSet<Conversation> Conversations => Set<Conversation>();

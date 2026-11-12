@@ -82,5 +82,7 @@ public interface IAppDbContext
 
     DbSet<SignInFailure> SignInFailures { get; }
 
+    DbSet<StaffMember> StaffMembers { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
