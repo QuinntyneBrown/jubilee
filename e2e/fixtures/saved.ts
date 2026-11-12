@@ -145,6 +145,8 @@ export const BROWSE_SAVED: FakeSavedItem[] = [
       businessSlug: 'luzandre',
       name: 'Faith heavyweight tee, charcoal',
       shopName: 'Luzandre.com',
+      priceCents: 3400,
+      tile: { tint: 'ink', icon: 'shirt' },
     },
   },
   {
