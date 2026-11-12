@@ -518,6 +518,17 @@ export const routes = {
     mock: 'pages/maintenance/default.html',
     who: 'visitor',
   },
+  // The static copies the app's host serves when the app cannot answer a page load (L2-115 AC3, L2-117 AC1, ADR 0056).
+  'static-server-error': {
+    app: '/static/server-error.html',
+    mock: 'pages/server-error/default.html',
+    who: 'visitor',
+  },
+  'static-maintenance': {
+    app: '/static/maintenance.html',
+    mock: 'pages/maintenance/default.html',
+    who: 'visitor',
+  },
   offline: { app: '/offline', mock: 'pages/offline/default.html', who: 'visitor' },
   terms: { app: '/terms', mock: 'pages/terms/default.html', who: 'visitor' },
   privacy: { app: '/privacy', mock: 'pages/privacy/default.html', who: 'visitor' },

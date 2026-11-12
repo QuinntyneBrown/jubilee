@@ -10,6 +10,9 @@
 //     See ADR 0040.
 // Unknown paths without a file extension answer index.html so the app's router can take them, except
 // that a link-preview fetcher's /b/{slug} is answered with the API's social preview (ADR 0055).
+// Where the folder holds routes.json (the app's host), a page load gets its status first: the address
+// is matched against routes.json and the API is asked (GET /api/documents/status) for a 404, 403 or
+// 301; maintenance answers 503 and an unhandled failure 500 with static pages (ADR 0056).
 // server.test.js beside this file holds its tests: `node --test eng/azure/server.test.js`.
 'use strict';
 
@@ -396,6 +399,182 @@ async function replay() {
   }
 }
 
+// ---- Page loads: the status of the app's document (L2-113, L2-114 AC1, L2-115 AC3, L2-117 AC1, ADR 0056) ----
+
+const statusTimeoutMs = Number(process.env.DOCUMENT_STATUS_TIMEOUT_MS || 3000);
+const STATUS_PATH = '/api/documents/status';
+const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const TORONTO = 'America/Toronto';
+let routes = { mtimeMs: -1, value: null };
+
+// routes.json of the app, read again when it changes; null where there is none (the marketing and admin sites).
+function appRoutes() {
+  const file = path.join(root, 'routes.json');
+  const found = stat(file);
+  if (!found) {
+    return null;
+  }
+  if (found.mtimeMs !== routes.mtimeMs) {
+    try {
+      const read = JSON.parse(fs.readFileSync(file, 'utf8'));
+      const compile = (list) => (Array.isArray(list) ? list.map((pattern) => pattern.split('/').filter(Boolean)) : []);
+      routes = { mtimeMs: found.mtimeMs, value: { pages: compile(read.pages), owner: compile(read.owner) } };
+    } catch {
+      console.error('routes.json could not be read.');
+      routes = { mtimeMs: found.mtimeMs, value: null };
+    }
+  }
+  return routes.value;
+}
+
+function matches(segments, pattern) {
+  for (let i = 0; i < pattern.length; i++) {
+    if (pattern[i] === '**') {
+      return true;
+    }
+    if (i >= segments.length || (pattern[i].startsWith(':') ? segments[i] === '' : segments[i] !== pattern[i])) {
+      return false;
+    }
+  }
+  return segments.length === pattern.length;
+}
+
+// 'page', 'owner' (the owner's workspace) or null when the app has no such page.
+function pageKind(known, urlPath) {
+  const segments = urlPath.split('/').filter(Boolean);
+  if (known.owner.some((pattern) => matches(segments, pattern))) {
+    return 'owner';
+  }
+  return known.pages.some((pattern) => matches(segments, pattern)) ? 'page' : null;
+}
+
+// Asks the API what this page load answers. Resolves with its answer, or null when it did not answer in time.
+function askStatus(req, urlPath, owner) {
+  return new Promise((resolve) => {
+    const headers = stamp({ host: req.headers.host || api.host, accept: 'application/json' }, callerAddress(req));
+    for (const name of ['cookie', 'x-forwarded-for', 'x-forwarded-proto', 'x-correlation-id']) {
+      if (req.headers[name]) {
+        headers[name] = req.headers[name];
+      }
+    }
+    const target = `${STATUS_PATH}?path=${encodeURIComponent(urlPath)}${owner ? '&owner=true' : ''}`;
+    const client = api.protocol === 'https:' ? https : http;
+    const upstream = client.request(upstreamOptions('GET', target, headers), (answer) => {
+      const chunks = [];
+      answer.on('data', (chunk) => chunks.push(chunk));
+      answer.on('end', () => {
+        clearTimeout(timer);
+        let body = null;
+        try {
+          body = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        } catch {
+          // Not JSON: only the status is read.
+        }
+        resolve({ status: answer.statusCode || 502, headers: answer.headers, body });
+      });
+      answer.on('error', () => resolve(null));
+    });
+    const timer = setTimeout(() => upstream.destroy(new Error('The API did not answer in time.')), statusTimeoutMs);
+    upstream.on('error', () => {
+      clearTimeout(timer);
+      resolve(null);
+    });
+    upstream.end();
+  });
+}
+
+// "6:00 a.m. Eastern on Wednesday 11 November", as the app's maintenance page says it.
+function backByText(value) {
+  const at = new Date(value);
+  if (Number.isNaN(at.getTime())) {
+    return null;
+  }
+  const time = new Intl.DateTimeFormat('en-CA', { hour: 'numeric', minute: '2-digit', timeZone: TORONTO }).format(at);
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-CA', { weekday: 'long', day: 'numeric', month: 'long', timeZone: TORONTO })
+      .formatToParts(at)
+      .map((part) => [part.type, part.value]),
+  );
+  return `${time.replace(/\s/g, ' ')} Eastern on ${parts.weekday} ${parts.day} ${parts.month}`;
+}
+
+const escapeHtml = (text) =>
+  String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+// One of the static pages of public/static/ (no script), with what sits between its markers replaced.
+function staticPage(req, res, status, name, fills, headers = {}) {
+  let html;
+  try {
+    html = fs.readFileSync(path.join(root, 'static', name), 'utf8');
+  } catch {
+    return plain(req, res, status, status === 503 ? 'Jubilee is being updated.' : 'Something went wrong on our side.');
+  }
+  for (const [marker, text] of Object.entries(fills)) {
+    html = html.replace(new RegExp(`<!--${marker}-->[\\s\\S]*?<!--/${marker}-->`), escapeHtml(text));
+  }
+  secure(req, res);
+  res.writeHead(status, { 'Content-Type': types['.html'], 'Cache-Control': 'no-store', ...headers });
+  res.end(req.method === 'HEAD' ? undefined : html);
+}
+
+// The static server error page with a reference this host logs with its own correlation ID.
+function hostFailure(req, res, what) {
+  const correlation = crypto.randomUUID();
+  const hash = crypto.createHash('sha256').update(correlation, 'utf8').digest();
+  const reference = `JB-500-${[0, 1, 2, 3].map((i) => ALPHABET[hash[i] % ALPHABET.length]).join('')}`;
+  console.error(`${reference}: ${what} (correlation ${correlation}).`);
+  return staticPage(req, res, 500, 'server-error.html', { reference });
+}
+
+// The app's index.html with the status of the page load; never cached, as its status may change.
+function serveApp(req, res, status) {
+  let html;
+  try {
+    html = fs.readFileSync(path.join(root, 'index.html'));
+  } catch {
+    return hostFailure(req, res, 'the app could not be read');
+  }
+  secure(req, res);
+  res.writeHead(status, { 'Content-Type': types['.html'], 'Cache-Control': 'no-store', 'Content-Length': html.length });
+  return res.end(req.method === 'HEAD' ? undefined : html);
+}
+
+async function pageLoad(req, res, known, urlPath) {
+  const kind = pageKind(known, urlPath);
+  const answer = await askStatus(req, urlPath, kind === 'owner');
+  const body = answer && answer.body && typeof answer.body === 'object' ? answer.body : {};
+  if (answer && answer.status === 503 && body.code === 'MAINTENANCE') {
+    const when = body.backBy ? backByText(body.backBy) : null;
+    return staticPage(req, res, 503, 'maintenance.html', { 'back-by': when ? `We’re back by ${when}.` : 'We’ll be back shortly.' }, {
+      'Retry-After': String(answer.headers['retry-after'] || 300),
+    });
+  }
+  if (answer && answer.status === 500) {
+    const reference = /^JB-500-[A-Z0-9]{4}$/.test(String(body.reference)) ? body.reference : null;
+    return reference
+      ? staticPage(req, res, 500, 'server-error.html', { reference })
+      : hostFailure(req, res, 'the API failed without a reference');
+  }
+  const decided = answer && answer.status === 200 ? body.status : 200;
+  if (decided === 301 && typeof body.location === 'string' && /^\/[^/\\]/.test(body.location)) {
+    const query = (req.url || '').includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+    secure(req, res);
+    res.writeHead(301, { Location: body.location + query, 'Cache-Control': 'no-store' });
+    return res.end();
+  }
+  if (decided === 404 || decided === 403) {
+    return serveApp(req, res, decided);
+  }
+  if (kind === null) {
+    return serveApp(req, res, 404);
+  }
+  if (!stat(path.join(root, 'index.html'))) {
+    return hostFailure(req, res, 'the app could not be read');
+  }
+  const preview = previewPath(req);
+  return preview ? proxy(req, res, preview) : serve(req, res);
+}
+
 function locate(urlPath) {
   let decoded;
   try {
@@ -500,6 +679,10 @@ const server = http.createServer((req, res) => {
       return plain(req, res, 404, 'Not found.');
     }
     return keepDir && req.method === 'POST' && keptPaths.includes(urlPath) ? submit(req, res, urlPath) : proxy(req, res);
+  }
+  const known = api && forwarded(STATUS_PATH) && (req.method === 'GET' || req.method === 'HEAD') && !path.extname(urlPath) ? appRoutes() : null;
+  if (known) {
+    return pageLoad(req, res, known, urlPath);
   }
   const preview = previewPath(req);
   return preview ? proxy(req, res, preview) : serve(req, res);

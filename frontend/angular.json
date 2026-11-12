@@ -22,6 +22,11 @@
               {
                 "glob": "**/*",
                 "input": "projects/jubilee/public"
+              },
+              {
+                "glob": "Archivo.woff2",
+                "input": "projects/components/src/lib/assets/fonts",
+                "output": "static"
               }
             ],
             "styles": [

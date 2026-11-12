@@ -27,6 +27,14 @@ Everything is in the resource group `rg-jubilee-prod`, Canada Central.
     listing shows its name, tagline and `og-image.png` (ADR 0055). Nothing outside `server.js` is
     needed for it; the preview's addresses come from `App__PublicBaseUrl`.
 
+    A page load gets its status before the app runs (ADR 0056): `server.js` matches the address
+    against the app's `routes.json` and asks the API `GET /api/documents/status`, then answers the
+    app with 200, 404 or 403, a 301 for an old listing slug, the static maintenance page with 503
+    and `Retry-After` while `Maintenance__Enabled` is on, or the static server error page with 500
+    (`public/static/`, no script). The API has three seconds; without an answer the app is served
+    with 200. No setting is needed: it runs because the app's folder has `routes.json` and `/api`
+    goes to the API beside it. The marketing and admin sites have no `routes.json` and are unchanged.
+
   The app and the API share an origin because the app calls `/api` by relative address and the
   session cookie is same-site. The API cannot serve the app's files itself: its security headers
   (`default-src 'none'`) are meant for API answers only. The API sits behind `server.js` on
@@ -353,5 +361,11 @@ deployment; `jubilee reset` followed by `jubilee migrate` empties it before real
 ## Checking it
 
 - `https://app.jubilee.to/api/health` answers `{"status":"ok"}`.
+- Page-load statuses (ADR 0056), after a deployment that changed `server.js`, the routes or the
+  listings: `curl -sI https://app.jubilee.to/no-such-page` answers `404`;
+  `curl -sI https://app.jubilee.to/b/{a listing's slug}` answers `200`; a listing renamed by its
+  owner answers its old slug with `301` and `Location: /b/{new slug}`. While `Maintenance__Enabled`
+  is `true` (with `Maintenance__BackBy` an ISO time), `curl -si https://app.jubilee.to/` answers
+  `503` with `Retry-After` and the page "Jubilee is being updated"; set it back to `false` after.
 - Logs: `az webapp log tail -g rg-jubilee-prod -n jubilee-to-app` (the API, the worker and
   `server.js` all write to the container log).

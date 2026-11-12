@@ -2,8 +2,8 @@
 // `node --test eng/azure/server.test.js`. Each test starts server.js as App Service does, with its settings in
 // the environment, against a stand-in for the Jubilee API. Nothing but Node's standard library.
 //
-// Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186, L2-038 (AC4); ADR 0040, ADR 0044, ADR 0047,
-// ADR 0055.
+// Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186, L2-038 (AC4), L2-113 (AC1 to AC3),
+// L2-114 (AC1), L2-115 (AC3), L2-117 (AC1); ADR 0040, ADR 0044, ADR 0047, ADR 0055, ADR 0056.
 'use strict';
 
 const { test, after } = require('node:test');
@@ -258,6 +258,191 @@ test('Given the app\'s public folder, when og-image.png is asked for, then it is
 
   assert.equal(answer.status, 200);
   assert.equal(answer.headers['content-type'], 'image/png');
+});
+
+// ---- The status of a page load (L2-113, L2-114 AC1, L2-115 AC3, L2-117 AC1, ADR 0056) ----
+
+const APP = '<!doctype html><title>Jubilee</title>';
+const PUBLIC = path.join(__dirname, '..', '..', 'frontend', 'projects', 'jubilee', 'public');
+const BROWSER = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
+
+/** The app's host: the API beside it, and the app's routes.json and static pages in its folder. */
+async function appHost(answer, settings = {}) {
+  const api = await standIn('127.0.0.1', (seen) =>
+    seen.url.startsWith('/api/documents/status') ? answer(seen) : { status: 200, headers: { 'Content-Type': 'text/html' }, body: PREVIEW },
+  );
+  const site = await host({ API_ORIGIN: api.origin, ...settings });
+  fs.copyFileSync(path.join(PUBLIC, 'routes.json'), path.join(site.root, 'routes.json'));
+  fs.mkdirSync(path.join(site.root, 'static'));
+  for (const name of ['server-error.html', 'maintenance.html']) {
+    fs.copyFileSync(path.join(PUBLIC, 'static', name), path.join(site.root, 'static', name));
+  }
+  return { api, site, asked: () => api.requests.filter((r) => r.url.startsWith('/api/documents/status')).map((r) => r.url) };
+}
+
+const status = (value, more = {}) => () => ({
+  status: 200,
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ status: value, ...more }),
+});
+const maintenance = (backBy) => () => ({
+  status: 503,
+  headers: { 'Content-Type': 'application/problem+json', 'Retry-After': '7200' },
+  body: JSON.stringify({ status: 503, code: 'MAINTENANCE', ...(backBy ? { backBy } : {}) }),
+});
+const page = (site, path_, headers = {}) => call(site, { path: path_, headers: { 'User-Agent': BROWSER, ...headers } });
+
+test('Given an address of the app whose records exist, when it is loaded, then the API is asked with the cookie and the app answers 200', async () => {
+  const { site, api, asked } = await appHost(status(200));
+
+  const answer = await page(site, '/search?q=tees', { Cookie: '__Host-jubilee.session=abc' });
+
+  assert.equal(answer.status, 200);
+  assert.equal(answer.body, APP);
+  assert.deepEqual(asked(), ['/api/documents/status?path=%2Fsearch']);
+  assert.equal(api.requests[0].headers.cookie, '__Host-jubilee.session=abc');
+});
+
+test('Given an address that is no page of the app, when it is loaded, then it answers 404 with the app', async () => {
+  const { site } = await appHost(status(200));
+
+  for (const path_ of ['/no-such-page', '/b/luzandre/p', '/my-business/elsewhere', '/search/more']) {
+    const answer = await page(site, path_);
+    assert.equal(answer.status, 404, path_);
+    assert.equal(answer.body, APP, path_);
+    assert.equal(answer.headers['cache-control'], 'no-store', path_);
+  }
+});
+
+test('Given a listing that is missing or not public, when its page is loaded, then the API\'s 404 is the page load\'s', async () => {
+  const { site } = await appHost(status(404));
+
+  const answer = await page(site, '/b/gone-co');
+
+  assert.equal(answer.status, 404);
+  assert.equal(answer.body, APP);
+});
+
+test('Given an old slug of a renamed listing, when its page is loaded, then it answers 301 to the current address with the query kept', async () => {
+  const { site } = await appHost(status(301, { location: '/b/luzandre/p/faith-tee' }));
+
+  const answer = await page(site, '/b/luzandre-print-co/p/faith-tee?utm_source=whatsapp');
+
+  assert.equal(answer.status, 301);
+  assert.equal(answer.headers.location, '/b/luzandre/p/faith-tee?utm_source=whatsapp');
+});
+
+test('Given a link-preview fetcher and an old slug, when it asks for /b/{slug}, then it is redirected before any preview', async () => {
+  const { site, api } = await appHost(status(301, { location: '/b/luzandre' }));
+
+  const answer = await call(site, { path: '/b/luzandre-print-co', headers: { 'User-Agent': FETCHERS.WhatsApp } });
+
+  assert.equal(answer.status, 301);
+  assert.equal(answer.headers.location, '/b/luzandre');
+  assert.equal(api.requests.filter((r) => r.url.endsWith('/social-preview')).length, 0);
+});
+
+test('Given a link-preview fetcher and a public listing, when it asks for /b/{slug}, then it still gets the social preview', async () => {
+  const { site } = await appHost(status(200));
+
+  const answer = await call(site, { path: '/b/legacy-financial', headers: { 'User-Agent': FETCHERS.Facebook } });
+
+  assert.equal(answer.body, PREVIEW);
+});
+
+test('Given the owner\'s workspace, when a member who owns no listing loads it, then the API is asked as an owner page and it answers 403 with the app', async () => {
+  const { site, asked } = await appHost(status(403));
+
+  const answer = await page(site, '/my-business/requests');
+
+  assert.equal(answer.status, 403);
+  assert.equal(answer.body, APP);
+  assert.deepEqual(asked(), ['/api/documents/status?path=%2Fmy-business%2Frequests&owner=true']);
+});
+
+test('Given maintenance, when any page is loaded, then it answers 503 with Retry-After and the static page with the back-by time', async () => {
+  const { site } = await appHost(maintenance('2026-11-11T11:00:00+00:00'));
+
+  for (const path_ of ['/', '/b/luzandre', '/no-such-page']) {
+    const answer = await page(site, path_);
+    assert.equal(answer.status, 503, path_);
+    assert.equal(answer.headers['retry-after'], '7200');
+    assert.equal(answer.headers['cache-control'], 'no-store');
+    assert.match(answer.headers['content-type'], /^text\/html/);
+    assert.match(answer.body, /<h1 class="empty__title">Jubilee is being updated<\/h1>/);
+    assert.match(answer.body, /We’re back by 6:00 a\.m\. Eastern on Wednesday 11 November\. Nothing you’ve sent is lost\./);
+    assert.match(answer.body, /href="">.*Check again<\/a>/s);
+    assert.doesNotMatch(answer.body, /<script/i);
+    assert.match(answer.body, /url\("\/static\/Archivo\.woff2"\)/);
+  }
+});
+
+test('Given maintenance without a back-by time, when a page is loaded, then the static page says it will be back shortly', async () => {
+  const { site } = await appHost(maintenance(null));
+
+  const answer = await page(site, '/');
+
+  assert.equal(answer.status, 503);
+  assert.match(answer.body, /We’ll be back shortly\. Nothing you’ve sent is lost\./);
+});
+
+test('Given the API fails with an unhandled error, when a page is loaded, then it answers 500 with the static error page and the API\'s reference', async () => {
+  const { site } = await appHost(() => ({
+    status: 500,
+    headers: { 'Content-Type': 'application/problem+json' },
+    body: JSON.stringify({ status: 500, code: 'unexpected_error', reference: 'JB-500-7F3K', detail: 'at Jubilee.Api.Something in C:\\src\\x.cs' }),
+  }));
+
+  const answer = await page(site, '/b/luzandre');
+
+  assert.equal(answer.status, 500);
+  assert.match(answer.body, /Something went wrong on our side/);
+  assert.match(answer.body, /Reference <code>JB-500-7F3K<\/code>/);
+  assert.match(answer.body, /href="\/help"/);
+  assert.doesNotMatch(answer.body, /<script|Jubilee\.Api|x\.cs/i);
+});
+
+test('Given the API does not answer in time or cannot be reached, when a page is loaded, then the app is served with 200', async () => {
+  const slow = await appHost(() => ({ ...status(200)(), afterMs: 1500 }), { DOCUMENT_STATUS_TIMEOUT_MS: '200' });
+  assert.equal((await page(slow.site, '/b/luzandre')).status, 200);
+
+  const site = await host({ API_ORIGIN: `http://127.0.0.1:${await freePort()}` });
+  fs.copyFileSync(path.join(PUBLIC, 'routes.json'), path.join(site.root, 'routes.json'));
+  const answer = await page(site, '/search');
+  assert.equal(answer.status, 200);
+  assert.equal(answer.body, APP);
+});
+
+test('Given the app\'s files cannot be read, when a page is loaded, then it answers 500 with the static error page and a reference in the log', async () => {
+  const { site } = await appHost(status(200));
+  fs.rmSync(path.join(site.root, 'index.html'));
+
+  const answer = await page(site, '/search');
+
+  assert.equal(answer.status, 500);
+  const reference = /Reference <code>(JB-500-[A-Z2-9]{4})<\/code>/.exec(answer.body);
+  assert.ok(reference, 'the page shows a reference');
+  await until(() => site.log.includes(reference[1]), 'the log names the reference');
+  assert.match(site.log, new RegExp(`${reference[1]}.*correlation [0-9a-f-]{36}`));
+});
+
+test('Given a file, a HEAD of a page and a request that is not a page load, then the API is asked only for page loads', async () => {
+  const { site, asked } = await appHost(status(404));
+  fs.writeFileSync(path.join(site.root, 'main-ABCDEFGH.js'), 'console.log(1)');
+
+  assert.equal((await page(site, '/main-ABCDEFGH.js')).status, 200);
+  assert.equal((await call(site, { method: 'HEAD', path: '/b/gone-co' })).status, 404);
+  assert.deepEqual(asked(), ['/api/documents/status?path=%2Fb%2Fgone-co']);
+});
+
+test('Given a folder without routes.json (the marketing and admin sites), when a page is loaded, then nothing is asked and the page answers 200', async () => {
+  const api = await standIn('127.0.0.1', status(404));
+  const site = await host({ API_ORIGIN: api.origin });
+
+  const answer = await page(site, '/no-such-page');
+
+  assert.equal(answer.status, 200);
+  assert.equal(api.requests.length, 0);
 });
 
 // ---- The Host of a forwarded request (ADR 0047) ----
