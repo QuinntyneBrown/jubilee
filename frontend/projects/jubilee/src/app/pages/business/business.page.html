@@ -232,7 +232,16 @@
           <ul jb-card-grid>
             @for (other of listing.relatedSpaces; track other.slug) {
               <li>
-                <a jb-space-card [space]="other" [routerLink]="['/b', other.slug]"></a>
+                @let target = hearts.business(other);
+                <div
+                  jb-saveable
+                  [name]="other.name"
+                  [saved]="hearts.isSaved(target)"
+                  [busy]="hearts.isBusy(target)"
+                  (pressed)="hearts.press(target, $event)"
+                >
+                  <a jb-space-card [space]="other" [routerLink]="['/b', other.slug]"></a>
+                </div>
               </li>
             }
           </ul>
@@ -367,12 +376,21 @@
                 <ul jb-card-grid columns="3">
                   @for (product of listing.products; track product.slug) {
                     <li>
-                      <a
-                        jb-product-card
-                        [product]="product"
-                        [showShop]="false"
-                        [routerLink]="['/b', listing.slug, 'p', product.slug]"
-                      ></a>
+                      @let target = hearts.product(listing.slug, product);
+                      <div
+                        jb-saveable
+                        [name]="product.name"
+                        [saved]="hearts.isSaved(target)"
+                        [busy]="hearts.isBusy(target)"
+                        (pressed)="hearts.press(target, $event)"
+                      >
+                        <a
+                          jb-product-card
+                          [product]="product"
+                          [showShop]="false"
+                          [routerLink]="['/b', listing.slug, 'p', product.slug]"
+                        ></a>
+                      </div>
                     </li>
                   }
                 </ul>
@@ -459,7 +477,20 @@
           <ul jb-card-grid>
             @for (business of listing.related; track business.slug) {
               <li>
-                <a jb-business-card [business]="business" [routerLink]="['/b', business.slug]"></a>
+                @let target = hearts.business(business);
+                <div
+                  jb-saveable
+                  [name]="business.name"
+                  [saved]="hearts.isSaved(target)"
+                  [busy]="hearts.isBusy(target)"
+                  (pressed)="hearts.press(target, $event)"
+                >
+                  <a
+                    jb-business-card
+                    [business]="business"
+                    [routerLink]="['/b', business.slug]"
+                  ></a>
+                </div>
               </li>
             }
           </ul>

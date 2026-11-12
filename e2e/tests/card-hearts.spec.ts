@@ -1,7 +1,10 @@
 import { expect, test } from '../fixtures/jb-test';
 import { SAVED_ITEMS, stubSaved, type FakeSavedItem } from '../fixtures/saved';
 import { BrowsePage } from '../pages/browse.page';
+import { BusinessPage } from '../pages/business.page';
 import { CategoryPage } from '../pages/category.page';
+import { ProductPage } from '../pages/product.page';
+import { SearchPage } from '../pages/search.page';
 import { Toasts } from '../pages/toasts';
 
 // Hearts on business, product and space cards (L2-041 AC7 to AC10, ADR 0054). The saved list is
@@ -119,5 +122,90 @@ test.describe('the heart on a business card (L2-041 AC7)', () => {
     await expect(heart).toHaveAttribute('aria-pressed', 'true');
     await expect(heart).toBeFocused();
     expect(fake.calls).toEqual(['PUT businesses/legacy-financial']);
+  });
+});
+
+test.describe('the heart on product and space cards (L2-041 AC7)', () => {
+  test('a product card on Browse saves the product of its shop', async ({ page, jb }) => {
+    const browse = new BrowsePage(page);
+    const toasts = new Toasts(page);
+    const fake = await stubSaved(page, { items: [] });
+    await jb.open('browse');
+    const heart = browse.productCard(0).heart;
+
+    await expect(heart).toHaveAccessibleName('Save Faith heavyweight tee, charcoal');
+    await heart.click();
+
+    await expect(heart).toHaveAttribute('aria-pressed', 'true');
+    await expect(
+      toasts.withTitle('Saved Faith heavyweight tee, charcoal. Find it any time under Saved.'),
+    ).toBeVisible();
+    expect(fake.calls).toEqual(['PUT products/luzandre/faith-heavyweight-tee-charcoal']);
+  });
+
+  test('a space card on the rooms shelf is saved as the listing it is', async ({ page, jb }) => {
+    const browse = new BrowsePage(page);
+    const fake = await stubSaved(page, { items: [] });
+    await jb.open('browse');
+    const heart = browse.spaceCard(0).heart;
+
+    await expect(heart).toHaveAccessibleName('Save Guest suite near Roncesvalles');
+    await heart.click();
+
+    await expect(heart).toHaveAttribute('aria-pressed', 'true');
+    expect(fake.calls).toEqual(['PUT businesses/roncesvalles-guest-suite']);
+  });
+
+  test('a space card in the Rooms & rentals category and in search has its heart', async ({
+    page,
+    jb,
+  }) => {
+    const category = new CategoryPage(page);
+    const search = new SearchPage(page);
+    const fake = await stubSaved(page, { items: [] });
+
+    await jb.open('category.rooms-rentals');
+    await category.spaceCard(0).heart.click();
+    await expect(category.spaceCard(0).heart).toHaveAttribute('aria-pressed', 'true');
+
+    await jb.open('search.spaces');
+    await search.spaceCard(0).heart.click();
+    await expect(search.spaceCard(0).heart).toHaveAttribute('aria-pressed', 'true');
+
+    expect(fake.calls).toHaveLength(2);
+    expect(fake.calls.every((call) => call.startsWith('PUT businesses/'))).toBe(true);
+  });
+
+  test('the product cards of a shop and the related businesses of a listing have hearts', async ({
+    page,
+    jb,
+  }) => {
+    const shop = new BusinessPage(page);
+    const fake = await stubSaved(page, { items: [] });
+    await jb.open('shop');
+    const product = shop.productCard(0);
+    const name = (await product.name.textContent())!.trim();
+
+    await expect(product.heart).toHaveAccessibleName(`Save ${name}`);
+    await product.heart.click();
+    await expect(product.heart).toHaveAttribute('aria-pressed', 'true');
+    expect(fake.calls[0]).toMatch(/^PUT products\/luzandre\//);
+
+    await jb.open('business');
+    await shop.relatedCard(0).heart.click();
+    await expect(shop.relatedCard(0).heart).toHaveAttribute('aria-pressed', 'true');
+    expect(fake.calls[1]).toMatch(/^PUT businesses\//);
+  });
+
+  test('the cards of more from the shop on a product page have hearts', async ({ page, jb }) => {
+    const product = new ProductPage(page);
+    const fake = await stubSaved(page, { items: [] });
+    await jb.open('product');
+    const more = product.moreCard(0);
+
+    await more.heart.click();
+
+    await expect(more.heart).toHaveAttribute('aria-pressed', 'true');
+    expect(fake.calls[0]).toMatch(/^PUT products\/luzandre\//);
   });
 });

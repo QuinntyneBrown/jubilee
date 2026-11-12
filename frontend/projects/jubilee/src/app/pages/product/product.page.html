@@ -119,12 +119,21 @@
         <ul jb-card-grid>
           @for (other of product.more; track other.slug) {
             <li>
-              <a
-                jb-product-card
-                [product]="other"
-                [showShop]="false"
-                [routerLink]="['/b', product.shop.slug, 'p', other.slug]"
-              ></a>
+              @let target = hearts.product(product.shop.slug, other);
+              <div
+                jb-saveable
+                [name]="other.name"
+                [saved]="hearts.isSaved(target)"
+                [busy]="hearts.isBusy(target)"
+                (pressed)="hearts.press(target, $event)"
+              >
+                <a
+                  jb-product-card
+                  [product]="other"
+                  [showShop]="false"
+                  [routerLink]="['/b', product.shop.slug, 'p', other.slug]"
+                ></a>
+              </div>
             </li>
           }
         </ul>

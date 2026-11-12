@@ -70,6 +70,21 @@ public sealed class SavedTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
         Assert.Equal("Legacy Financial", item.GetProperty("business").GetProperty("name").GetString());
     }
 
+    // L2-041 AC7: the heart on a space card saves the space as the listing it is (ADR 0054)
+    [Fact]
+    public async Task L2_041_AC7_a_space_is_saved_by_its_slug_and_listed_as_a_business()
+    {
+        await _factory.Arrange(ListingMother.Space("annex-basement", SpaceTerm.LongTerm));
+
+        var response = await Save(AsJoanna(), "annex-basement");
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        var item = Assert.Single((await List(AsJoanna())).GetProperty("items").EnumerateArray());
+        Assert.Equal("business", item.GetProperty("kind").GetString());
+        Assert.True(item.GetProperty("available").GetBoolean());
+        Assert.Equal("annex-basement", item.GetProperty("business").GetProperty("slug").GetString());
+    }
+
     // L2-041 AC1: pressing twice, or a retry after a lost answer, leaves one row
     [Fact]
     public async Task L2_041_saving_again_succeeds_and_leaves_one_row()

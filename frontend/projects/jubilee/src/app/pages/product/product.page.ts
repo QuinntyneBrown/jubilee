@@ -32,7 +32,9 @@ import {
   ProductRequestForm,
   ProductRequestView,
   ProductSelection,
+  Saveable,
 } from 'components';
+import { CardHearts } from '../../services/card-hearts';
 import { Subscription } from 'rxjs';
 import { RequestItemData, RequestItemDialog } from '../../dialogs/request-item/request-item.dialog';
 import {
@@ -53,6 +55,7 @@ import { SessionService } from '../../services/session.service';
 @Component({
   selector: 'jb-product-page',
   imports: [
+    Saveable,
     RouterLink,
     EmptyState,
     Icon,
@@ -75,6 +78,8 @@ import { SessionService } from '../../services/session.service';
   templateUrl: './product.page.html',
 })
 export class ProductPage {
+  /** The hearts of the cards (L2-041 AC7, ADR 0054). */
+  protected readonly hearts = inject(CardHearts);
   private readonly api = inject(LISTINGS_API);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -149,6 +154,7 @@ export class ProductPage {
   });
 
   constructor() {
+    this.hearts.attach();
     const params = this.route.paramMap.subscribe((map) => {
       this.slug.set(map.get('slug') ?? '');
       this.productSlug.set(map.get('product') ?? '');
