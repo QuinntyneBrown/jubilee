@@ -57,6 +57,46 @@ node tools/video-build/build.mjs docs/videos/NN-topic --no-captions --fps 30 --c
   A deck whose `<body>` has `data-captions="off"` starts without them (`?captions=1` shows them).
 - **Size.** `--fps` and `--crf` (default 60 and 16) trade smoothness and quality for file size.
 
+## How a demo video is built
+
+A demo video shows a finished piece of work in the app itself: a voice explains while the screen is
+driven, over a quiet piano bed. Each journey prompt in `docs/prompts/` ends with one.
+
+```
+docs/videos/NN-topic/
+  narration.json     the lines: { "title", "scenes": [{ "id", "say" }] }        (written)
+  demo.spec.ts       drives the app, one demo.scene(id, …) per line           (written)
+  README.md          what the video shows and its run sheet                    (written)
+  script.md          the transcript                                            (generated)
+  captions.vtt       captions in film time, a sidecar file                     (generated)
+  NN-topic.mp3       voice and ducked music                                    (generated)
+  NN-topic.mp4       1920x1080, 30 fps, captions burned in                     (generated)
+```
+
+```sh
+pip install edge-tts
+node tools/video-demo/build.mjs docs/videos/NN-topic --check             # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/NN-topic                     # record and encode
+node tools/video-demo/build.mjs docs/videos/NN-topic --keep-recording    # encode again from the last recording
+```
+
+- **The voice** is edge-tts (`en-CA-ClaraNeural`; `"voice"` and `"rate"` in `narration.json` change
+  it). It is free and needs the network. Each line is kept in `.cache/video-demo/` by what it says,
+  so an unchanged line is not spoken again.
+- **The recording** is `demo.spec.ts`, run by Playwright under `e2e/playwright.demo.config.ts`. It
+  is not a test and `npm test` never runs it. It imports `test` from `e2e/fixtures/demo.ts` and the
+  page objects from `e2e/pages/`; the app is answered from the recorded API and the stubs, as in
+  every spec (ADR 0009), so a demo shows only what a behaviour spec can reach.
+  `demo.scene(id, actions)` runs the actions and then waits until the line has been said;
+  `demo.click`, `demo.type`, `demo.point` and `demo.scroll` move a visible pointer;
+  `demo.card(title, lines)` covers the page with a card for the opening, the close and work that
+  has nothing to show on a screen, and `demo.hideCard()` removes it. `demo.jb` opens screens by
+  route key and `demo.page` is the page.
+- **The music** is the piano bed of video 02 (`02-business-plan/music.mp3`), looped, turned down
+  under the voice and faded out. `"music"` in `narration.json` names another file; `--no-music`
+  leaves it out.
+- **Captions** are burned in (`--no-captions` leaves them out); `captions.vtt` is written either way.
+
 ## The deck
 
 `slides.html` loads `assets/pitch.css`, `assets/pitch.js` (the runtime) and the folder's `film.js`
