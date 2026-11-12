@@ -6,7 +6,7 @@ import { EditListingPage } from "../../../e2e/pages/edit-listing.page";
 import { MyBusinessPage } from "../../../e2e/pages/my-business.page";
 import { PauseListingDialog } from "../../../e2e/pages/pause-listing.dialog";
 
-// Video 11: journey 15, run a business listing. Naomi's workspace is answered by the fake of
+// Video 12: journey 15, run a business listing. Naomi's workspace is answered by the fake of
 // my-business.spec.ts (ADR 0009), with her other business and a draft, and three photos whose files
 // are the pictures of the design reference. The public page with photos is the stubbed state
 // `business.photos` of listing-photos.spec.ts. The cards say what the run proved behind the screen.
@@ -116,7 +116,7 @@ test("journey 15: run a business listing", async ({ demo }) => {
   await park();
   await demo.card("A re-check tells the team and the owner", [
     'L2-087 AC6: the verification team is e-mailed "Re-check: Luzandre Print Co. changed its name or category", with the old and the new name and category and the link to the admin application.',
-    'The owner gets the e-mail and the notification "We’ll re-check Luzandre Print Co."; both e-mails are saved with the change. RecheckNoticeTests.cs, ADR 0051.',
+    'The owner gets the e-mail and the notification "We’ll re-check Luzandre Print Co."; both e-mails are saved with the change. RecheckNoticeTests.cs, ADR 0052.',
   ]);
   await demo.scene("email");
 
@@ -164,7 +164,7 @@ test("journey 15: run a business listing", async ({ demo }) => {
   await demo.scene("bound");
 
   await demo.card("Journey 15 is complete", [
-    "ADR 0051 records the decisions and amends ADR 0023; the three owner-workspace designs name the code as built.",
+    "ADR 0052 records the decisions and amends ADR 0023; the three owner-workspace designs name the code as built.",
     "Left for the owner: the visual, responsive and accessibility sweeps, and jubilee migrate for AddWorkspaceChoice.",
     "Not built here: a list of re-checks in the admin application, and the photo on the business card (L2-155 AC3).",
   ]);

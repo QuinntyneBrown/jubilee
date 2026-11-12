@@ -637,7 +637,7 @@ test.describe('run a business listing: the editor (L2-087, L2-088)', () => {
     await expect(editor.success).toContainText('Your changes are live now.');
     await expect(editor.success.getByRole('link', { name: 'View public listing' })).toBeVisible();
     expect(fake.saves).toHaveLength(1);
-    // The save names the listing the editor opened (ADR 0051).
+    // The save names the listing the editor opened (ADR 0052).
     expect(fake.saves[0]).toMatchObject({
       listingId: '7c1d0000-0000-4000-8000-000000000001',
       version: 0,

@@ -289,7 +289,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
     /// <summary>
     /// How many different members saved the business or one of its products, and how many of them saved the first of
     /// those in the last 7 days: a count, never who (L2-041 AC6, L2-085 AC6). A removed save leaves no row, so the
-    /// change is never below zero (ADR 0051).
+    /// change is never below zero (ADR 0052).
     /// </summary>
     private async Task<StatDto> SavedByMembers(Guid listingId, DateTimeOffset now, CancellationToken cancellationToken)
     {
@@ -421,7 +421,7 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
             throw new ValidationFailedException(errors);
         }
 
-        // The editor may say which listing it opened: after a switch in another tab it is not this one (ADR 0051).
+        // The editor may say which listing it opened: after a switch in another tab it is not this one (ADR 0052).
         if (request.Version != listing.Version || (request.ListingId is { } opened && opened != listing.Id))
         {
             throw new ConflictException("LISTING_CHANGED", "This listing changed since you opened it. Reload to see the latest.");

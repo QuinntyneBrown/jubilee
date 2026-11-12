@@ -1,6 +1,6 @@
 # 0023. Run a business listing decisions
 
-Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed. The overview states `pending-reference` and `needs-a-decision` are gone, a submitted listing shows "We're reviewing {Business}" with no action, and "Your listing" shows "Verification — Verified {Mon YYYY}" in place of the church reference. The rest stands. Amended by ADR 0051, 12 November 2026: the deferrals of the weekly change of "Saved by members", the re-check notice, drag to reorder photos and the photos on the public page are closed, the pause bound is proved, and an owner switches between their businesses. The photo on the business card stays deferred.
+Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed. The overview states `pending-reference` and `needs-a-decision` are gone, a submitted listing shows "We're reviewing {Business}" with no action, and "Your listing" shows "Verification — Verified {Mon YYYY}" in place of the church reference. The rest stands. Amended by ADR 0052, 12 November 2026: the deferrals of the weekly change of "Saved by members", the re-check notice, drag to reorder photos and the photos on the public page are closed, the pause bound is proved, and an owner switches between their businesses. The photo on the business card stays deferred.
 
 ## Context
 

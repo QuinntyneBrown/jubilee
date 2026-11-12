@@ -1,109 +1,109 @@
 WEBVTT
 
-00:00:00.482 --> 00:00:03.522
+00:00:00.423 --> 00:00:03.463
 Journey fifteen: run a business listing.
 
-00:00:03.522 --> 00:00:08.918
+00:00:03.463 --> 00:00:08.859
 An owner monitors the listing, edits its details, and pauses or resumes
 
-00:00:08.918 --> 00:00:13.706
+00:00:08.859 --> 00:00:13.647
 it. This run takes the journey from ninety percent to complete.
 
-00:00:14.563 --> 00:00:19.632
+00:00:14.505 --> 00:00:19.574
 Naomi owns Luzandre.com. On My business, Saved by members now carries
 
-00:00:19.632 --> 00:00:24.333
+00:00:19.574 --> 00:00:24.275
 its weekly change: twenty-eight members, four of them this week.
 
-00:00:24.333 --> 00:00:29.475
+00:00:24.275 --> 00:00:29.417
 The change counts the members who first saved the business in the last
 
-00:00:29.475 --> 00:00:30.283
+00:00:29.417 --> 00:00:30.225
 seven days.
 
-00:00:30.986 --> 00:00:36.411
+00:00:30.927 --> 00:00:36.351
 Naomi has more than one business. A select named Business lists each one
 
-00:00:36.411 --> 00:00:41.835
+00:00:36.351 --> 00:00:41.776
 with its stage. She chooses Laurent Photography, and the workspace moves
 
-00:00:41.835 --> 00:00:45.074
+00:00:41.776 --> 00:00:45.015
 to it: we're reviewing Laurent Photography.
 
-00:00:45.775 --> 00:00:51.198
+00:00:45.717 --> 00:00:51.139
 The choice is kept on the server, on the listing, so every page of the
 
-00:00:51.198 --> 00:00:55.226
+00:00:51.139 --> 00:00:55.167
 workspace follows it. She goes back to Luzandre.com.
 
-00:00:55.226 --> 00:00:58.711
+00:00:55.167 --> 00:00:58.653
 List another business opens the listing form.
 
-00:00:59.413 --> 00:01:04.284
+00:00:59.355 --> 00:01:04.226
 In the listing editor, photos are now reordered by dragging a handle.
 
-00:01:04.284 --> 00:01:09.013
+00:01:04.226 --> 00:01:08.955
 Naomi drags the third photo to the front, and it becomes the cover.
 
-00:01:09.715 --> 00:01:15.253
+00:01:09.658 --> 00:01:15.196
 The handle is for a pointer. With the keyboard, the move buttons do the
 
-00:01:15.253 --> 00:01:17.515
+00:01:15.196 --> 00:01:17.458
 same: move photo two earlier.
 
-00:01:18.218 --> 00:01:20.943
+00:01:18.161 --> 00:01:20.886
 She changes the name of her live listing.
 
-00:01:20.943 --> 00:01:25.729
+00:01:20.886 --> 00:01:25.671
 The change is live at once, and the page says the verification team will
 
-00:01:25.729 --> 00:01:28.586
+00:01:25.671 --> 00:01:28.529
 take another look within two business days.
 
-00:01:29.617 --> 00:01:34.749
+00:01:29.559 --> 00:01:34.691
 New in this run, somebody is told. The verification team gets an e-mail
 
-00:01:34.749 --> 00:01:39.158
+00:01:34.691 --> 00:01:39.100
 with the old and the new name, and Naomi gets an e-mail and a
 
-00:01:39.158 --> 00:01:42.193
+00:01:39.100 --> 00:01:42.135
 notification: we'll re-check her business.
 
-00:01:43.212 --> 00:01:48.349
+00:01:43.166 --> 00:01:48.302
 Members now see the photos. On the public page of a business, the cover
 
-00:01:48.349 --> 00:01:53.412
+00:01:48.302 --> 00:01:53.366
 stands in place of the tile, and the other photos follow under Photos.
 
-00:01:54.447 --> 00:01:58.571
+00:01:54.400 --> 00:01:58.523
 Each photo is a picture, with a WebP source and a JPEG fallback, a
 
-00:01:58.571 --> 00:02:03.006
+00:01:58.523 --> 00:02:02.959
 source set at the true widths, and its width and height, so the browser
 
-00:02:03.006 --> 00:02:06.567
+00:02:02.959 --> 00:02:06.520
 chooses a size for the screen and the page does not jump.
 
-00:02:07.548 --> 00:02:12.779
+00:02:07.503 --> 00:02:12.733
 Last, the pause. Naomi pauses her listing, and My business says it is
 
-00:02:12.779 --> 00:02:16.644
+00:02:12.733 --> 00:02:16.599
 hidden from browse and search until she resumes it.
 
-00:02:17.695 --> 00:02:22.193
+00:02:17.647 --> 00:02:22.145
 The requirement says a paused listing leaves all public lists within
 
-00:02:22.193 --> 00:02:26.757
+00:02:22.145 --> 00:02:26.709
 sixty seconds. A new test proves it: on the welcome page, browse, the
 
-00:02:26.757 --> 00:02:31.519
+00:02:26.709 --> 00:02:31.471
 category, search and related businesses, and on what a browser may keep.
 
-00:02:32.377 --> 00:02:38.066
+00:02:32.330 --> 00:02:38.019
 Journey fifteen is complete. Left for the owner: the sweeps, and jubilee
 
-00:02:38.066 --> 00:02:43.754
+00:02:38.019 --> 00:02:43.707
 migrate for one new column. A list of re-checks in the admin application
 
-00:02:43.754 --> 00:02:45.097
+00:02:43.707 --> 00:02:45.050
 is not built yet.

@@ -37,7 +37,7 @@ owner-workspace feature renders under them.
 
 The feature is a vertical slice from `MyBusinessPage` in `Jubilee Web` to
 `Jubilee database`. The names below are the names in the code; the parts decided
-in ADR 0051 are marked with it.
+in ADR 0052 are marked with it.
 
 - **`MyBusinessPage`** — Angular page at `/my-business`
   (`frontend/projects/jubilee/src/app/pages/my-business`), a container of `jb-*`
@@ -80,7 +80,7 @@ in ADR 0051 are marked with it.
   banner "{Business} is verified and live. Members can find you in {category}."
   (`MyBusiness.categoryName`, for example "Shops") with "View listing" and "Dismiss";
   the dismissal is held in the page only.
-- **The switcher** (ADR 0051, `L2-079` AC4 and AC5) — a native `select` with
+- **The switcher** (ADR 0052, `L2-079` AC4 and AC5) — a native `select` with
   `jb-select` and the label "Business", shown when `MyBusiness.businesses` has
   more than one entry. Each option reads "{name} · {stageLabel}" and the
   business shown is selected. "List another business" links to
@@ -129,7 +129,7 @@ in ADR 0051 are marked with it.
   before; the page turns it into a percentage. `UnansweredMessages` counts the
   listing's conversations the owner has not muted and has not read since the
   last message.
-- **Saved by members** (ADR 0051, `L2-085` AC6) — `SavedByMembers` in the
+- **Saved by members** (ADR 0052, `L2-085` AC6) — `SavedByMembers` in the
   handler reads the `SavedItem` rows of kind `Business` for the listing and of
   kind `Product` for its products, groups them by `MemberSubject` and takes each
   member's earliest `SavedAt`. `Saved.Value` is the number of members and
@@ -142,7 +142,7 @@ in ADR 0051 are marked with it.
   "Pending verification", "Changes requested", "Declined" or "Draft"), then each
   `ListingDraft` of the owner as "Draft"; a draft without a name reads "Untitled
   business".
-- **`ChooseBusinessCommand`** and **`ChooseBusinessCommandHandler`** (ADR 0051)
+- **`ChooseBusinessCommand`** and **`ChooseBusinessCommandHandler`** (ADR 0052)
   — the handler loads the listing by `ListingId` and the caller's subject. A
   listing the caller does not own, or one that is deleted, throws
   `ForbiddenException`, HTTP 403 with code `FORBIDDEN`, and nothing changes. It

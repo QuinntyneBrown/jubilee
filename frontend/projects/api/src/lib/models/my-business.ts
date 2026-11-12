@@ -130,7 +130,7 @@ export interface ListingChanges {
   hours: string;
   website: string;
   highlight: string;
-  /** The listing the editor opened, so a save after a switch in another tab is refused (ADR 0051). */
+  /** The listing the editor opened, so a save after a switch in another tab is refused (ADR 0052). */
   listingId?: string;
   /** A space's own fields (L2-209); omitted for a business. */
   space?: SpaceDraft;

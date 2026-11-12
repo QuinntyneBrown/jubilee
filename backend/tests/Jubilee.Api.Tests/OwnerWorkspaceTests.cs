@@ -254,7 +254,7 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         await _factory.WithDb(async db => Assert.Null((await db.Listings.SingleAsync(l => l.Id == theirs.Id)).WorkspaceChosenAt));
     }
 
-    // ADR 0051: a form opened on one business is not saved onto another after a switch in a second tab
+    // ADR 0052: a form opened on one business is not saved onto another after a switch in a second tab
     [Fact]
     public async Task L2_087_AC8_a_save_from_an_editor_opened_on_another_business_is_refused()
     {

@@ -16,7 +16,7 @@ public sealed class VerificationTeamEmailFactory : JubileeApiFactory
 // Acceptance Test
 // Traces to: L2-087 AC6
 // Description: a change of the name or category of a live listing is live at once, and the verification team
-// and the owner are told that the listing is looked at again within two business days (ADR 0051).
+// and the owner are told that the listing is looked at again within two business days (ADR 0052).
 public sealed class RecheckNoticeTests(VerificationTeamEmailFactory factory) : IClassFixture<VerificationTeamEmailFactory>, IAsyncLifetime
 {
     private Member _naomi = null!;
@@ -118,7 +118,7 @@ public sealed class RecheckNoticeTests(VerificationTeamEmailFactory factory) : I
     }
 }
 
-/// <summary>With no address of its own, the re-check goes where the team already reads its mail (ADR 0051).</summary>
+/// <summary>With no address of its own, the re-check goes where the team already reads its mail (ADR 0052).</summary>
 public sealed class RecheckNoticeFallbackTests(LaunchTeamEmailFactory factory) : IClassFixture<LaunchTeamEmailFactory>, IAsyncLifetime
 {
     public Task InitializeAsync() => factory.Reset();

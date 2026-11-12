@@ -26,7 +26,7 @@ banner that My business shows while the listing is paused.
 
 The feature is a vertical slice from the pause dialog in `Jubilee Web` to
 `Jubilee database` and the directory read cache. The names below are the names
-in the code. ADR 0003 decides the cache, ADR 0023 the pause, and ADR 0051 the
+in the code. ADR 0003 decides the cache, ADR 0023 the pause, and ADR 0052 the
 proof of the 60-second bound.
 
 - **`PauseListingDialog`** — Angular CDK dialog
@@ -119,7 +119,7 @@ proof of the 60-second bound.
   by a browser or a CDN is older than 60 seconds.
 
 The 60-second bound of `L2-096` AC2 and AC3 and `L2-028` AC2 is proven by
-`PauseBoundTests` (`backend/tests/Jubilee.Api.Tests`, ADR 0051) through the
+`PauseBoundTests` (`backend/tests/Jubilee.Api.Tests`, ADR 0052) through the
 owner's own endpoints:
 
 - `L2_096_AC2_a_listing_its_owner_pauses_is_gone_from_every_public_page_on_the_next_request`

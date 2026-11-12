@@ -1,4 +1,4 @@
-# 11 · Journey 15: Run a business listing
+# 12 · Journey 15: Run a business listing
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 

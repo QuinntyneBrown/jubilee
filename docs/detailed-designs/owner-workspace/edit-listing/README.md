@@ -31,7 +31,7 @@ from overwriting the first.
 The feature is a vertical slice from `EditListingPage` in `Jubilee Web` to
 `Jubilee database` and the media store, with the e-mails of a re-check sent by
 `Jubilee Worker`. The names below are the names in the code; the parts decided
-in ADR 0051 are marked with it. ADR 0023 holds the earlier decisions.
+in ADR 0052 are marked with it. ADR 0023 holds the earlier decisions.
 
 - **`EditListingPage`** — Angular page at `/my-business/listing`
   (`frontend/projects/jubilee/src/app/pages/edit-listing`), a container of
@@ -71,7 +71,7 @@ in ADR 0051 are marked with it. ADR 0023 holds the earlier decisions.
   help text reads "Up to 6 photos, JPG or PNG, 5 MB each. The first is your
   cover. Drag a photo by its handle, or use the arrows, to change the order."
   Each photo action sends at once and does not wait for "Save listing".
-- **Reordering** (ADR 0051, `L2-088` AC3) — the list carries `cdkDropList` with
+- **Reordering** (ADR 0052, `L2-088` AC3) — the list carries `cdkDropList` with
   `cdkDropListOrientation="mixed"`, each photo `cdkDrag`, and the handle
   `cdkDragHandle` from the Angular CDK, so a touch elsewhere on a photo still
   scrolls the page. `drop` shows the new order at once and calls
@@ -117,12 +117,12 @@ in ADR 0051 are marked with it. ADR 0023 holds the earlier decisions.
   other than `Listing.Version` throws `ConflictException`, HTTP 409 with code
   `LISTING_CHANGED`. The same answer refuses a save whose `ListingId` names
   another listing than the one being worked on, which happens after a switch of
-  business in another tab (ADR 0051). The handler then calls `Listing.Edit` and
+  business in another tab (ADR 0052). The handler then calls `Listing.Edit` and
   saves once.
 - **`Listing.Edit`** — sets the fields, increments `Version`, and returns true
   when the name or the category changed. On a live listing that also stamps
   `RecheckRequestedAt`. The listing stays live.
-- **Re-check** (ADR 0051, `L2-087` AC6) — when `Edit` returns true on a live
+- **Re-check** (ADR 0052, `L2-087` AC6) — when `Edit` returns true on a live
   listing the handler adds the `AuditRecord` `listing.recheck-requested` with
   the old and new name and category and calls `TellOfRecheck`. That writes the
   owner a `Notification` "We’ll re-check {Business}" through
@@ -145,7 +145,7 @@ in ADR 0051 are marked with it. ADR 0023 holds the earlier decisions.
   e-mail `OutboxMessage` through `OutboxDispatcher` and `IEmailSender`.
 - **Left open** — the admin application has no list of listings awaiting a
   re-check and no action to mark a re-check done; nothing clears
-  `RecheckRequestedAt` (ADR 0051). The two-business-day promise is the
+  `RecheckRequestedAt` (ADR 0052). The two-business-day promise is the
   verification team's and no timer enforces it.
 - **`AddPhotoCommandHandler`** — refuses a seventh photo with HTTP 409
   `TOO_MANY_PHOTOS` (`ListingPhoto.MaxPerListing`), passes the upload to
@@ -177,7 +177,7 @@ in ADR 0051 are marked with it. ADR 0023 holds the earlier decisions.
   is no status: a photo exists only after its renditions are stored.
   `ListingPhotoDto` gives `Alt` as the owner's text or the default "{business}
   photo {n}", and `CustomAlt` as the owner's text alone.
-- **Photos on the public page** (ADR 0051, `L2-221`) —
+- **Photos on the public page** (ADR 0052, `L2-221`) —
   `GetListingPageQueryHandler` adds `Photos` (`ListingPagePhotoDto`: `Key`,
   `Alt`, `Width`, `Height`) to `ListingPageDto` in the owner's order;
   `CoverPhoto` stays null and is not read. `BusinessPage` shows the first photo
@@ -197,7 +197,7 @@ in ADR 0051 are marked with it. ADR 0023 holds the earlier decisions.
   cover shows on the next request of the public page.
 
 The business card in lists still shows the category tile; its photo is deferred
-with the CDN of `L2-155` AC3 (ADR 0051).
+with the CDN of `L2-155` AC3 (ADR 0052).
 
 The integration tests are in `OwnerWorkspaceTests` and `RecheckNoticeTests`
 (`backend/tests/Jubilee.Api.Tests`), among them

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-// L2-096 AC2 and AC3, L2-028 AC2 (ADR 0003, ADR 0051): a pause reaches every public page within
+// L2-096 AC2 and AC3, L2-028 AC2 (ADR 0003, ADR 0052): a pause reaches every public page within
 // 60 seconds, and so does a resume. Naomi owns "pauses"; "stays" is another live business in the
 // same category, so each is on the other's page under the related businesses.
 public sealed class PauseBoundTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
