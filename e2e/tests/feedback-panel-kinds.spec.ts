@@ -117,6 +117,8 @@ test.describe('bug reports, kudos and failures in the feedback panel (L2-210)', 
     await jb.goto('/');
     await shell.feedbackLauncher.click();
     await panel.tab('Kudos').click();
+    // The rating tab has a note of the same name: wait for the kudos panel before typing.
+    await expect(panel.send).toHaveText('Send kudos');
     await panel.note.fill('Thank you for building this.');
     await expect(panel.send).toBeEnabled();
     await panel.send.click();
