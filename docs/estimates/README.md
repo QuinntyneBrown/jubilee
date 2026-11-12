@@ -11,7 +11,7 @@
 | [design-system](design-system.md) | 6 days | 30% |
 | [interaction-states](interaction-states.md) | 17 days | 5% |
 | [system-pages](system-pages.md) | 10 days | 86% |
-| [listings](listings.md) | 20 days | 93% |
+| [listings](listings.md) | 20 days | 95% |
 | [accounts](accounts.md) | 50 days | 93% |
 | [security](security.md) | 34 days | 32% |
 | [messaging](messaging.md) | 17 days | 98% |

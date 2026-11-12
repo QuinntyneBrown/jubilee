@@ -21,7 +21,9 @@ import {
   MediaTile,
   CardGrid,
   SpaceCard,
+  Saveable,
 } from 'components';
+import { CardHearts } from '../../services/card-hearts';
 import { SearchStore } from '../../services/search.store';
 
 interface SearchTab {
@@ -47,6 +49,7 @@ function plural(count: number, one: string, many: string): string {
 @Component({
   selector: 'jb-search-page',
   imports: [
+    Saveable,
     RouterLink,
     CardGrid,
     SpaceCard,
@@ -73,6 +76,8 @@ function plural(count: number, one: string, many: string): string {
   templateUrl: './search.page.html',
 })
 export class SearchPage {
+  /** The hearts of the cards (L2-041 AC7, ADR 0054). */
+  protected readonly hearts = inject(CardHearts);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   protected readonly store = inject(SearchStore);
@@ -102,6 +107,7 @@ export class SearchPage {
   protected readonly rows = computed(() => this.shown().filter((hit) => !hit.space));
 
   constructor() {
+    this.hearts.attach();
     this.route.queryParamMap.subscribe((params) => this.store.open(params.get('q')));
   }
 

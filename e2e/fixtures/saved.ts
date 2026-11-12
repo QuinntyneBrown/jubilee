@@ -33,8 +33,11 @@ export interface FakeSavedItem {
 export interface FakeSaved {
   /** `fails` answers the list with a 503. */
   list: 'ok' | 'fails';
-  /** `offline` answers a save with a 503; `limit` with 409 SAVED_LIMIT_REACHED. */
-  save: 'ok' | 'offline' | 'limit';
+  /**
+   * `offline` answers a save with a 503; `limit` with 409 SAVED_LIMIT_REACHED; `pending` never
+   * answers it, so the heart stays busy.
+   */
+  save: 'ok' | 'offline' | 'limit' | 'pending';
   items: FakeSavedItem[];
   /** The calls the app made, as "PUT businesses/luzandre". */
   calls: string[];
@@ -127,6 +130,40 @@ export const SAVED_ITEMS: FakeSavedItem[] = [
   },
 ];
 
+/**
+ * The saved list of `pages/browse/saved-hearts.html`: Legacy Financial, a space and a product of
+ * Browse, so their hearts show saved (L2-041 AC7).
+ */
+export const BROWSE_SAVED: FakeSavedItem[] = [
+  {
+    ...SAVED_ITEMS[0],
+    id: 'a1000000-0000-4000-8000-000000000013',
+    name: 'Faith heavyweight tee, charcoal',
+    product: {
+      ...SAVED_ITEMS[0].product!,
+      slug: 'faith-heavyweight-tee-charcoal',
+      businessSlug: 'luzandre',
+      name: 'Faith heavyweight tee, charcoal',
+      shopName: 'Luzandre.com',
+      priceCents: 3400,
+      tile: { tint: 'ink', icon: 'shirt' },
+    },
+  },
+  {
+    ...SAVED_ITEMS[3],
+    id: 'a1000000-0000-4000-8000-000000000012',
+    name: 'Guest suite near Roncesvalles',
+    business: card(
+      'roncesvalles-guest-suite',
+      'Guest suite near Roncesvalles',
+      'Queen bed · Private bath',
+      'rooms-rentals',
+      'Most weekends',
+    ),
+  },
+  { ...SAVED_ITEMS[3], id: 'a1000000-0000-4000-8000-000000000011' },
+];
+
 export const PAUSED: FakeSavedItem = {
   id: 'a1000000-0000-4000-8000-000000000009',
   kind: 'business',
@@ -165,6 +202,7 @@ export async function stubSaved(
     }
     fake.calls.push(`${request.method()} ${path}`);
     if (request.method() === 'PUT') {
+      if (fake.save === 'pending') return; // never answered: the heart stays busy
       if (fake.save === 'offline') return route.fulfill(problem(503, { reference: 'JB-SAV-504' }));
       if (fake.save === 'limit')
         return route.fulfill(problem(409, { code: 'SAVED_LIMIT_REACHED' }));

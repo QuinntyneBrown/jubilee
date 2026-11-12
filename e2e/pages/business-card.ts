@@ -1,5 +1,10 @@
 import type { Locator } from '@playwright/test';
 
+/** The heart `jb-saveable` draws beside a card's link: a sibling of the link, never inside it. */
+export function heartOf(card: Locator): Locator {
+  return card.locator('xpath=../button[contains(@class, "saveable__heart")]');
+}
+
 /** One business card (`a.biz-card`): the large tile of featured and category lists. */
 export class BusinessCard {
   readonly name: Locator;
@@ -11,6 +16,8 @@ export class BusinessCard {
   readonly verifiedIcon: Locator;
   readonly mediaTile: Locator;
   readonly categoryLabel: Locator;
+  /** The heart beside the card's link (`jb-saveable`, L2-041 AC7). */
+  readonly heart: Locator;
 
   constructor(readonly root: Locator) {
     this.name = root.locator('.biz-card__name');
@@ -21,6 +28,7 @@ export class BusinessCard {
     this.verifiedIcon = this.verifiedMark.locator('svg');
     this.mediaTile = root.locator('.media');
     this.categoryLabel = root.locator('.media__tag');
+    this.heart = heartOf(root);
   }
 
   /** Number of text lines the tagline occupies. */

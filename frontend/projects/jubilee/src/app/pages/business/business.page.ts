@@ -62,7 +62,9 @@ import {
   TERM_TILES,
   availability,
   formatRent,
+  Saveable,
 } from 'components';
+import { CardHearts } from '../../services/card-hearts';
 import { Subscription } from 'rxjs';
 import { BookMeetingData, BookMeetingDialog } from '../../dialogs/book-meeting/book-meeting.dialog';
 import {
@@ -133,6 +135,7 @@ const STATUS_WORDS: Record<ListingStatus, string> = {
 @Component({
   selector: 'jb-business-page',
   imports: [
+    Saveable,
     NgTemplateOutlet,
     RequiresConnection,
     RouterLink,
@@ -176,6 +179,8 @@ const STATUS_WORDS: Record<ListingStatus, string> = {
   templateUrl: './business.page.html',
 })
 export class BusinessPage {
+  /** The hearts of the cards (L2-041 AC7, ADR 0054). */
+  protected readonly hearts = inject(CardHearts);
   private readonly api = inject(LISTINGS_API);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -278,6 +283,7 @@ export class BusinessPage {
   });
 
   constructor() {
+    this.hearts.attach();
     const params = this.route.paramMap.subscribe((map) => {
       this.slug = map.get('slug') ?? '';
       this.slugValue.set(this.slug);

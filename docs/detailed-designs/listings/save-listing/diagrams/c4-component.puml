@@ -4,7 +4,10 @@ LAYOUT_WITH_LEGEND()
 title Components — Save a listing
 
 Container_Boundary(web, "Jubilee Web") {
-  Component(heart, "SaveButton", "Angular component", "Heart toggle with aria-pressed")
+  Component(heart, "Saveable", "jb-saveable component", "Card with its heart, aria-pressed and aria-busy")
+  Component(hearts, "CardHearts", "Angular service", "Wires the hearts on cards; remembers a visitor's save")
+  Component(pages, "BusinessPage and ProductPage", "Angular pages", "Heart of the listing and the product")
+  Component(app, "App", "Application root", "Resets SavedStore when no member is signed in")
   Component(page, "SavedPage", "Angular page", "Route /saved with business and product cards")
   Component(store, "SavedStore", "Signal store", "Optimistic set of saved item keys")
   Component(toast, "ToastService", "Angular service", "Success toast with Undo and error toast with Try again")
@@ -12,19 +15,22 @@ Container_Boundary(web, "Jubilee Web") {
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "SavedController", "ASP.NET Core controller", "PUT and DELETE and GET under /api/saved")
-  Component(save, "SaveItemCommandHandler", "MediatR handler", "Adds a SavedItem within the 500 limit")
-  Component(unsave, "UnsaveItemCommandHandler", "MediatR handler", "Removes a SavedItem")
+  Component(save, "SaveBusinessCommandHandler and SaveProductCommandHandler", "MediatR handlers", "Add a SavedItem within the 500 limit")
+  Component(unsave, "Unsave*CommandHandler", "MediatR handlers", "Remove a SavedItem by slugs or by id")
   Component(list, "GetSavedListQueryHandler", "MediatR handler", "Lists the caller's items newest first")
 }
 ContainerDb(db, "Jubilee database", "SQL Server", "SavedItem rows")
 
-Rel(heart, store, "Toggles through")
+Rel(heart, hearts, "Reports presses to")
+Rel(hearts, store, "Toggles through")
+Rel(pages, store, "Toggles through")
+Rel(app, store, "Resets on sign-out")
 Rel(page, store, "Reads the list from")
 Rel(store, toast, "Shows toasts through")
 Rel(store, client, "Calls")
 Rel(client, ctrl, "Calls", "JSON/HTTPS")
-Rel(ctrl, save, "Sends SaveItemCommand")
-Rel(ctrl, unsave, "Sends UnsaveItemCommand")
+Rel(ctrl, save, "Sends SaveBusinessCommand or SaveProductCommand")
+Rel(ctrl, unsave, "Sends Unsave commands")
 Rel(ctrl, list, "Sends GetSavedListQuery")
 Rel(save, db, "Inserts", "EF Core")
 Rel(unsave, db, "Deletes", "EF Core")

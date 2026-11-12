@@ -48,7 +48,9 @@ export class ProductPage extends ShellPage implements Screen {
   constructor(page: Page) {
     super(page);
     this.breadcrumb = this.main.getByRole('navigation', { name: 'Breadcrumb' });
-    this.saveButton = this.main.getByRole('button', { name: /^Save/ });
+    this.saveButton = this.main.getByRole('button', {
+      name: /^(Save|Saved\. Remove from saved)$/,
+    });
     this.breadcrumbLinks = this.breadcrumb.getByRole('link');
     this.breadcrumbCurrent = this.breadcrumb.locator('[aria-current="page"]');
     this.mediaTile = this.main.locator('.media').first();

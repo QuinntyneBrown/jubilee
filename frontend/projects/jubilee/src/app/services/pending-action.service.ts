@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import type { SaveTarget } from './saved.store';
 
 /** The action a visitor started before being asked to join or sign in (L2-012 AC2). */
-export interface PendingAction {
-  kind: 'stock-alert';
-  returnPath: string;
-}
+export type PendingAction =
+  | { kind: 'stock-alert'; returnPath: string }
+  /** A heart pressed on a card (L2-041 AC9): the item to save once the visitor is back. */
+  | { kind: 'save'; returnPath: string; target: SaveTarget };
 
 const KEY = 'jubilee-pending-action';
 
@@ -33,6 +34,20 @@ export class PendingActionService {
       return true;
     } catch {
       return false;
+    }
+  }
+
+  /** The save remembered for this path, removed as it is read (L2-012 AC4). */
+  takeSave(path: string): SaveTarget | null {
+    try {
+      const raw = sessionStorage.getItem(KEY);
+      if (!raw) return null;
+      const action = JSON.parse(raw) as PendingAction;
+      if (action.kind !== 'save' || action.returnPath !== path) return null;
+      sessionStorage.removeItem(KEY);
+      return action.target;
+    } catch {
+      return null;
     }
   }
 }

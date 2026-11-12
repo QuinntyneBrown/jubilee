@@ -25,7 +25,11 @@ export class SavedStore {
   /** Hearts pressed while the list was being read: the list read is older than they are. */
   private readonly sinceLoad = new Map<string, boolean>();
   private loading = false;
+  /** Counts the resets, so a list read that was on its way before one is dropped. */
+  private generation = 0;
   private readonly full = signal<SavedList | null>(null);
+  /** Keys whose save or removal the server has not answered yet (L2-041 AC8). */
+  private readonly busyKeys = signal<ReadonlySet<string>>(new Set());
 
   /** The list as last loaded, for the saved page. */
   readonly list = this.full.asReadonly();
@@ -37,24 +41,34 @@ export class SavedStore {
     this.loaded = true;
     this.loading = true;
     this.sinceLoad.clear();
+    const generation = this.generation;
     this.api.list().subscribe({
       next: (list) => {
+        if (generation !== this.generation) return;
         this.loading = false;
         this.adopt(list);
         // A save made while the list was on its way stays saved (L2-012 AC4).
         for (const [key, saved] of this.sinceLoad) this.set(key, saved);
       },
       error: () => {
+        if (generation !== this.generation) return;
         this.loading = false;
         this.loaded = false;
       },
     });
   }
 
-  /** Forgets everything, on sign-out or when another member signs in. */
+  /**
+   * Forgets everything: the keys, the busy keys, the loaded list and a list read still on its way.
+   * The application root calls it whenever no member is signed in (L2-041 AC10).
+   */
   reset(): void {
+    this.generation++;
     this.loaded = false;
+    this.loading = false;
+    this.sinceLoad.clear();
     this.keys.set(new Set());
+    this.busyKeys.set(new Set());
     this.full.set(null);
   }
 
@@ -68,21 +82,31 @@ export class SavedStore {
     return this.keys().has(keyOf(target));
   }
 
-  /** The heart was pressed. */
+  /** Whether the save or removal of the item is on its way (L2-041 AC8). */
+  isBusy(target: SaveTarget): boolean {
+    return this.busyKeys().has(keyOf(target));
+  }
+
+  /** The heart was pressed; a busy heart ignores it. */
   toggle(target: SaveTarget): void {
+    if (this.isBusy(target)) return;
     if (this.isSaved(target)) this.remove(target);
     else this.save(target);
   }
 
   save(target: SaveTarget): void {
     const key = keyOf(target);
+    const generation = this.generation;
     this.set(key, true);
+    this.setBusy(key, true);
     const call =
       target.kind === 'business'
         ? this.api.saveBusiness(target.slug)
         : this.api.saveProduct(target.shopSlug, target.slug);
     call.subscribe({
       next: () => {
+        if (generation !== this.generation) return;
+        this.setBusy(key, false);
         this.full.set(null);
         this.toasts.show({
           tone: 'success',
@@ -91,6 +115,8 @@ export class SavedStore {
         });
       },
       error: (error: HttpErrorResponse) => {
+        if (generation !== this.generation) return;
+        this.setBusy(key, false);
         this.set(key, false);
         if (error.status === 409 && error.error?.code === 'SAVED_LIMIT_REACHED') {
           this.toasts.show({
@@ -110,14 +136,22 @@ export class SavedStore {
 
   remove(target: SaveTarget): void {
     const key = keyOf(target);
+    const generation = this.generation;
     this.set(key, false);
+    this.setBusy(key, true);
     const call =
       target.kind === 'business'
         ? this.api.unsaveBusiness(target.slug)
         : this.api.unsaveProduct(target.shopSlug, target.slug);
     call.subscribe({
-      next: () => this.full.set(null),
+      next: () => {
+        if (generation !== this.generation) return;
+        this.setBusy(key, false);
+        this.full.set(null);
+      },
       error: () => {
+        if (generation !== this.generation) return;
+        this.setBusy(key, false);
         this.set(key, true);
         this.toasts.show({
           tone: 'danger',
@@ -152,6 +186,15 @@ export class SavedStore {
           tone: 'danger',
           title: `Couldn\u2019t remove ${item.name} from Saved. Try again.`,
         }),
+    });
+  }
+
+  private setBusy(key: string, busy: boolean): void {
+    this.busyKeys.update((keys) => {
+      const next = new Set(keys);
+      if (busy) next.add(key);
+      else next.delete(key);
+      return next;
     });
   }
 

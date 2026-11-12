@@ -19,7 +19,7 @@ A member saves a business or a product with a heart and finds the saved items on
 
 ## Deferred
 
-- Hearts on cards in lists (browse, category, search, shop): the mocks show the heart on the business page only. The product page's heart is a new element, and the mock of the product page was updated with it.
+- Hearts on cards in lists (browse, category, search, shop): the mocks show the heart on the business page only. The product page's heart is a new element, and the mock of the product page was updated with it. Closed by ADR 0054.
 - A "Saved" link in the chrome: the mocks have none; the account menu that leads to it arrives with journey 20. The page is at `/saved`, and the toast names it.
-- Clearing the store on sign-out: the sign-out of journey 5 calls `SavedStore.reset()`.
+- Clearing the store on sign-out: closed by ADR 0054, the application root resets `SavedStore` whenever no member is signed in.
 - Back-in-stock alerts (journey 8, done in journey 2's alert) are not changed.
