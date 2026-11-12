@@ -6,12 +6,11 @@ title Components — Browse home
 
 Container_Boundary(web, "Jubilee Web") {
   Component(page, "BrowseHomePage", "Angular page", "Route / with loaded and empty and error states")
-  Component(greet, "GreetingHeader and JoinPanel", "Angular components", "Greeting for a member or New here? for a visitor")
-  Component(rails, "FeaturedRail and ShopProductsRail", "Angular components", "Up to 5 BusinessCard and up to 5 ProductCard")
-  Component(groups, "DirectoryGroupList", "Angular component", "Category groups of DirectoryRow with See all")
-  Component(prompt, "SignInPromptService", "Angular service", "Opens SignInRequiredDialog for a visitor")
+  Component(greet, "Hero and Band", "Angular components", "Greeting for a member or New here? for a visitor")
+  Component(rails, "FeatureGrid and Scroller", "Angular components", "Up to 5 BusinessCard and up to 5 ProductCard")
+  Component(groups, "DirectoryGroups", "Angular component", "Category groups of DirectoryRow with See all")
   Component(store, "DirectoryStore", "Signal store", "Directory state and retry")
-  Component(client, "DirectoryApi", "Typed HTTP client", "getHome")
+  Component(client, "DirectoryApi", "Contract behind DIRECTORY_API", "getHome")
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "DirectoryController", "ASP.NET Core controller", "GET /api/directory/home for anonymous callers")
@@ -20,14 +19,14 @@ Container_Boundary(api, "Jubilee API") {
   Component(selector, "FeaturedSelector", "Domain service", "Featured slots or most recently verified")
   Component(grouping, "DirectoryGrouping", "Domain service", "Counts and first four per category")
   Component(readCache, "IDirectoryReadCache", "Application service", "60 s read cache")
+  Component(invalidator, "DirectoryCacheInvalidationInterceptor", "EF Core SaveChangesInterceptor", "Removes cached directory entries after a save")
 }
-ContainerDb(cache, "Cache", "Redis", "Read cache")
+ContainerDb(cache, "Cache", "IDistributedCache: memory or Redis", "Read cache")
 ContainerDb(db, "Jubilee database", "SQL Server", "Listing and Product and Category and FeaturedSlot")
 
 Rel(page, greet, "Renders by session")
 Rel(page, rails, "Renders")
 Rel(page, groups, "Renders")
-Rel(rails, prompt, "Asks on a visitor action")
 Rel(page, store, "Reads state")
 Rel(store, client, "Loads")
 Rel(client, ctrl, "Calls", "JSON/HTTPS")
@@ -37,6 +36,7 @@ Rel(handler, selector, "Selects 5 with")
 Rel(handler, grouping, "Groups with")
 Rel(handler, filter, "Applies")
 Rel(readCache, cache, "Stores")
+Rel(invalidator, readCache, "Invalidates after a Listing, Product, Service or FeaturedSlot is saved")
 Rel(filter, db, "Queries", "EF Core")
 Rel(selector, db, "Queries", "EF Core")
 @enduml

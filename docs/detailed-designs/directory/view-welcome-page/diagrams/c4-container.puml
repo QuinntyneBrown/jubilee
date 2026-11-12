@@ -8,14 +8,11 @@ Person(visitor, "Visitor", "Opens the public landing page")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Welcome page at /welcome")
   Container(api, "Jubilee API", "ASP.NET Core", "GET /api/directory/welcome")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Outbox dispatch and cache invalidation")
-  ContainerDb(cache, "Cache", "Redis", "Welcome response for 60 s")
+  ContainerDb(cache, "Cache", "IDistributedCache: memory or Redis", "Welcome response for 60 s")
   ContainerDb(db, "Jubilee database", "SQL Server", "Listings and categories and featured slots")
 }
 Rel(visitor, web, "Uses", "HTTPS")
 Rel(web, api, "Requests welcome data", "JSON/HTTPS")
-Rel(api, cache, "Reads and writes the cached response", "Redis protocol")
+Rel(api, cache, "Reads and writes the cached response and removes it when a listing change is saved")
 Rel(api, db, "Counts public listings and reads featured slots", "EF Core")
-Rel(worker, db, "Reads the outbox", "EF Core")
-Rel(worker, cache, "Removes the entry on a listing change", "Redis protocol")
 @enduml

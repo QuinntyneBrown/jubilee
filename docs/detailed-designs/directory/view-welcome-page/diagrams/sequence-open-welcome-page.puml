@@ -18,7 +18,7 @@ skinparam package {
 
 actor "Visitor or Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "WelcomeRedirectGuard" as guard
+  participant "welcomeRedirectGuard" as guard
   participant "WelcomePage" as page
   participant "DirectoryApi" as client
 end box

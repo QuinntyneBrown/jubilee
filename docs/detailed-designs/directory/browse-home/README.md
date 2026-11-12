@@ -8,7 +8,7 @@ directory. It is the first page a signed-in *member* sees, and a *visitor* —
 anyone who is not signed in — sees the same directory with prompts to join in
 place of the personal parts.
 
-The page has four parts. Category chips ("All" plus the ten categories) lead to
+The page has four parts. Category chips ("All" plus the eleven categories) lead to
 the category pages. "Featured this week" shows up to five businesses that the
 verification team chose for the week. "From the shops" shows up to five
 products with a link "All shops". "All {n} businesses" is the full directory
@@ -30,8 +30,7 @@ other state does not appear and is not counted, and it leaves the page within
 The feature is a read-only vertical slice from the browse page in `Jubilee Web`
 to the `Jubilee database`, with a short-lived read cache in between. The
 directory response carries no personal data, so the same response serves
-members and visitors. Nothing is built yet; the names below are the names the
-design introduces.
+members and visitors. The names below are the names in the code.
 
 - **`BrowseHomePage`** — Angular page at `/`, open to visitors and members. It
   composes the parts below and owns the page states. With no public listing it
@@ -39,27 +38,28 @@ design introduces.
   directory fails to load, the top bar and tab bar stay and the page shows "We
   couldn't load the directory" with `JB-DIR-503`, "Try again" and "Open
   messages".
-- **`GreetingHeader`** — Angular component for a signed-in member. It reads the
-  first name from `SessionService` and the hour in `America/Toronto` from the
-  browser service `ClockService`: "Morning, {first name}" before
-  12:00, "Afternoon, {first name}" from 12:00, "Evening, {first name}" from
-  17:00. A visitor gets no greeting.
-- **`JoinPanel`** — Angular component shown to a visitor in place of the
-  greeting: "New here?" with "Join free to message businesses, book meetings and
-  save favourites." and "Join free". For a visitor the top bar shows "Sign in"
-  and "Join free" in place of the avatar, and the page shows no saved-heart
-  state and no message count.
-- **`CategoryChips`** — Angular component with "All" and the ten categories,
-  each a link to `/c/:category`.
-- **`FeaturedRail`** and **`BusinessCard`** — up to five featured businesses.
+- **`Hero`** (`jb-hero`) — component that carries the greeting of a signed-in
+  member. `BrowseHomePage` reads the first name from `SessionService` and the
+  hour in `America/Toronto` from the browser service `ClockService`:
+  "Morning, {first name}" before 12:00, "Afternoon, {first name}" from 12:00,
+  "Evening, {first name}" from 17:00. A visitor gets the tagline "Toronto's
+  Christian marketplace" and no greeting.
+- **`Band`** (`jb-band`) — component shown to a visitor as the join panel:
+  "New here?" with "Join free to message businesses, book meetings and save
+  favourites." and "Join free". For a visitor the top bar shows "Sign in" and
+  "Join free" in place of the avatar, and the page shows no saved-heart state
+  and no message count.
+- **`ChipRow`** and **`Chip`** (`jb-chip-row`, `jb-chip`) — "All" and the
+  eleven categories, each a link to `/c/:category`.
+- **`FeatureGrid`** and **`BusinessCard`** — up to five featured businesses.
   Each card has a category media tile or cover photo, a short category label,
   the name, the tagline, an optional highlight (green line) and the "Verified"
   mark. The name wraps and is never truncated; the tagline is clamped to two
   lines.
-- **`ShopProductsRail`** and **`ProductCard`** — up to five products with "All
+- **`Scroller`** and **`ProductCard`** — up to five products with "All
   shops". Each card shows photo, product name, shop name and price, formatted by
   `PricePipe` as "$34" or "$22 ea" for per-unit pricing.
-- **`DirectoryGroupList`** and **`DirectoryRow`** — the heading "All {n}
+- **`DirectoryGroups`**, **`DirectoryGroup`** and **`DirectoryRow`** — the heading "All {n}
   businesses" and one group per category with its count. A group with more than
   four businesses lists four and a "See all {n}" link to the category page; a
   group of four or fewer lists all of them with no link; a category with no
@@ -67,11 +67,13 @@ design introduces.
   ellipsis and exposes the full name to assistive technology.
 - **`CountPipe`** — Angular pipe that formats counts with a thousands separator
   ("1,204").
-- **`SignInPromptService`** — Angular service that opens `SignInRequiredDialog`
-  when a visitor presses a save, message, book, quote or order action, and
-  keeps the action to resume after sign-in (L2-012).
-- **`DirectoryStore`** and **`DirectoryApi`** — signal store and typed HTTP
-  client. `DirectoryApi.getHome()` calls `GET /api/directory/home`. The store
+- **`SignInRequiredDialog`** — CDK dialog that the business, product and space
+  pages open when a visitor presses a save, message, book, quote or order
+  action; it keeps the action to resume after sign-in (L2-012). The browse home
+  itself offers a visitor links only.
+- **`DirectoryStore`** and **`DirectoryApi`** — signal store and the contract
+  of the public directory (token `DIRECTORY_API`, implemented by
+  `HttpDirectoryApi`). `DirectoryApi.getHome()` calls `GET /api/directory/home`. The store
   holds the states loading, loaded, empty and error, and "Try again" reloads
   only the directory region.
 - **`DirectoryController`** — ASP.NET Core controller in `Jubilee.Api`. The
@@ -91,10 +93,14 @@ design introduces.
 - **`DirectoryGrouping`** — application service that turns public listings into
   `CategoryGroupDto` items: the category's count, its first four listings, and
   `HasMore` when the count exceeds four. It omits a category whose count is 0.
-- **`IDirectoryReadCache`** and **`DirectoryCacheInvalidator`** — Redis read
-  cache with a time to live of `60 s`, and the outbox handler in
-  `Jubilee Worker` that removes the cached entry when a listing changes state.
-  Together they bound the time a paused listing stays visible to 60 seconds.
+- **`IDirectoryReadCache`** and **`DirectoryCacheInvalidationInterceptor`** —
+  the read cache with a time to live of `60 s` (`DistributedDirectoryReadCache`
+  on `IDistributedCache`: in memory by default, Redis when
+  `ConnectionStrings:Redis` is set), and the EF Core `SaveChangesInterceptor`
+  that removes every cached directory entry after `AppDbContext` saves a
+  change to a `Listing`, `Product`, `Service` or `FeaturedSlot`. Together they
+  bound the time a paused listing stays visible to 60 seconds, and a listing
+  paused through the API is gone on the next request.
 
 A member's saved-heart state and message count come from the saved-list and
 messaging slices and are merged in the browser. "From the shops" shows the five most recently added
@@ -106,13 +112,13 @@ is offered to a member only, and a visitor gets "Sign in" in its place. The dire
 L2-028 (HTTP `404` for a listing that is not public, with a preview for its
 owner and the verification team) is enforced by the business page slice.
 
-Until the outbox of `Jubilee Worker` exists (`operations/run-background-jobs`),
-`DirectoryCacheInvalidationInterceptor` in `Jubilee.Infrastructure` does the
-work of `DirectoryCacheInvalidator`: it removes the cached directory entries
-when `AppDbContext` saves a change to a `Listing`, `Product` or `FeaturedSlot`.
-`IDirectoryReadCache` is built on `IDistributedCache`, in memory unless a Redis
-connection string is configured, and the API also marks the responses
-`Cache-Control: public, max-age=60` (`docs/adr/0003-directory-read-cache.md`).
+`DirectoryCacheInvalidationInterceptor` is registered on `AppDbContext` in every
+process that uses it (`Jubilee API`, `Jubilee Worker` and the `jubilee` CLI).
+With the in-memory store each process holds its own entries, so a change saved
+by another process is seen when the entry expires, at most 60 seconds later;
+with Redis the removal reaches every process at once. The API also marks the
+responses `Cache-Control: public, max-age=60`
+(`docs/adr/0003-directory-read-cache.md`).
 
 ### Spaces
 
@@ -158,13 +164,13 @@ The slice calls no external system.
 
 `Jubilee Web` requests the directory from `Jubilee API`, which answers from the
 `Cache` or the `Jubilee database`; photos load from `Media storage`.
-`Jubilee Worker` removes the cached entry when a listing changes state.
+`Jubilee API` removes the cached entries when it saves a change to a listing.
 
 ![C4 container view for the browse home](diagrams/c4-container.png)
 
 ### Components
 
-`BrowseHomePage` composes the greeting or join panel, the two rails and the
+`BrowseHomePage` composes the hero or join panel, the two rails and the
 grouped directory, and loads through `DirectoryStore` and `DirectoryApi`.
 `GetBrowseHomeQueryHandler` uses `PublicListingFilter`, `FeaturedSelector` and
 `DirectoryGrouping`.
@@ -189,14 +195,18 @@ each have their own state.
 
 ### Behaviour — visitor presses a personal action
 
-A visitor who presses save, message, book, quote or order gets the sign-in
-prompt; after sign-in the page resumes the action.
+The browse home offers a visitor links only. A visitor who opens a business
+from it and presses save, message, book, quote or order gets the sign-in
+prompt on that page; after sign-in the page resumes the action.
 
 ![Sequence diagram for a visitor pressing a personal action](diagrams/sequence-visitor-action.png)
 
 ### Behaviour — paused listing leaves the directory
 
-Pausing a listing removes the cached directory through the outbox, and the
-`60 s` expiry bounds the delay, so the listing is absent within 60 seconds.
+`PauseListingCommandHandler` saves the paused listing, and
+`DirectoryCacheInvalidationInterceptor` removes the cached directory entries
+when the save completes, so the listing is absent on the next request. The
+`60 s` expiry bounds the delay for a copy held by another process, a CDN or a
+browser, so the listing is absent within 60 seconds.
 
 ![Sequence diagram for a paused listing leaving the directory](diagrams/sequence-paused-listing-leaves.png)

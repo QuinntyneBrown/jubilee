@@ -16,7 +16,7 @@ skinparam package {
 }
 actor "Visitor or Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "FilterChips" as chips
+  participant "Chip" as chips
   participant "FiltersDialog" as sheet
   participant "CategoryStore" as store
   participant "DirectoryApi" as client

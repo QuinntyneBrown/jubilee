@@ -5,10 +5,10 @@ title Components — Browse a category
 
 Container_Boundary(web, "Jubilee Web") {
   Component(page, "CategoryPage", "Angular page", "Renders heading and count and cards for /c/:category")
-  Component(filters, "FilterChips and FiltersDialog", "Angular components", "Inline chips from 768 px and a sheet below 768 px")
-  Component(pager, "SortControl and Pagination", "Angular components", "Choose the sort order and the page")
+  Component(filters, "Chip and FiltersDialog", "Angular components", "Inline chips from 768 px and a sheet below 768 px")
+  Component(pager, "Select and Pagination", "Angular components", "Choose the sort order and the page")
   Component(store, "CategoryStore", "Signal store", "Holds the CategoryQuery read from the query string")
-  Component(client, "DirectoryApi", "Typed HTTP client", "Calls the category endpoints")
+  Component(client, "DirectoryApi", "Contract behind DIRECTORY_API", "Calls the category endpoints")
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "CategoriesController", "ASP.NET Core controller", "Exposes GET /api/categories/{slug}/listings")

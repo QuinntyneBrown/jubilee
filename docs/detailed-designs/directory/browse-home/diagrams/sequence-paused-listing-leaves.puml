@@ -18,39 +18,41 @@ skinparam package {
 
 actor "Owner" as actor
 box "Backend — Jubilee API" #D1FADF
-  participant "ListingsController" as controller
+  participant "MyBusinessController" as controller
   participant "DirectoryController" as directory
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "PauseListingCommandHandler" as pause
   participant "Listing" as entity
   participant "GetBrowseHomeQueryHandler" as handler
 end box
-box "Backend — Jubilee Worker" #D1FADF
-  participant "DirectoryCacheInvalidator" as invalidator
-end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "DirectoryCacheInvalidationInterceptor" as invalidator
   participant "IDirectoryReadCache" as cache
   database "Jubilee database" as db
 end box
-actor -> controller : Confirm "Pause listing"
-controller -> entity : Pause
-entity --> controller : Stage paused. IsPublic is false
-controller -> db : Save the listing and a ListingVisibilityChanged outbox message in one unit of work
-db --> controller : Commit result
+actor -> controller : Confirm "Pause listing" (POST /api/my-business/pause)
+controller -> pause : Send PauseListingCommand
+pause -> entity : Pause
+entity --> pause : Paused. IsPublic is false
+pause -> db : Save the listing through AppDbContext
+db -> invalidator : SavedChangesAsync: a Listing changed
+invalidator -> cache : InvalidateAsync replaces the cache version (L2-156)
+cache --> invalidator : Every directory entry is orphaned
+db --> pause : Commit result
+pause --> controller : PauseResultDto
 controller --> actor : 200 OK
-invalidator -> db : Read the outbox message
-db --> invalidator : ListingVisibilityChanged
-invalidator -> cache : Remove the directory entries
-cache --> invalidator : Removed
-invalidator -> db : Mark the message dispatched
-db --> invalidator : Commit result
-== Next request for / (at most 60 s after the pause) ==
+== Next request for / ==
 directory -> handler : Send GetBrowseHomeQuery
-handler -> cache : Get the directory entry
-cache --> handler : Miss or entry expired after 60 s
+handler -> cache : GetOrCreateAsync("home")
+cache --> handler : Miss
 handler -> db : Load public listings through PublicListingFilter (L2-028)
 db --> handler : Listings without the paused one
-handler -> cache : Set the directory entry for 60 s
+handler -> cache : Store the directory entry for 60 s
 cache --> handler : Stored
 handler --> directory : BrowseHomeDto with updated counts and groups
+== A copy held by another process, a CDN or a browser ==
+directory -> handler : Send GetBrowseHomeQuery
+handler -> cache : GetOrCreateAsync("home")
+cache --> handler : Entry expired after 60 s, so it is rebuilt (L2-028)
 @enduml

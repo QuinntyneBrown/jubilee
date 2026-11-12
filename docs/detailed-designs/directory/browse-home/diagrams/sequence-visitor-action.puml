@@ -18,37 +18,35 @@ skinparam package {
 
 actor "Visitor" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "BusinessCard" as card
-  participant "SignInPromptService" as prompt
+  participant "BrowseHomePage" as page
+  participant "BusinessPage" as business
   participant "SignInRequiredDialog" as dialog
   participant "SessionService" as session
-  participant "BrowseHomePage" as page
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "SavedItemsController" as controller
+  participant "SavedController" as controller
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-actor -> card : Press the save heart
-card -> session : Read the signed-in state
-session --> card : Not signed in
-card -> prompt : requireAccount(save action and current path)
-prompt -> dialog : Open (L2-022)
+actor -> page : Open a business card or a directory row
+page --> business : Navigate to /b/:slug
+actor -> business : Press "Save"
+business -> session : Read the signed-in state
+session --> business : Not signed in
+business -> dialog : Open with the save action and the current path (L2-022)
 dialog --> actor : Offer "Sign in" and "Join free"
 alt Visitor closes the dialog
   actor -> dialog : Escape
-  dialog --> card : Closed and focus returns to the heart
+  dialog --> business : Closed and focus returns to "Save"
 else Visitor signs in or joins
   actor -> dialog : Choose "Sign in"
   dialog -> session : Start sign-in with a same-origin return path (L2-012)
-  session --> page : Signed in and returned to /
-  page -> prompt : Resume the pending action
-  prompt -> controller : POST /api/saved-items
+  session --> business : Signed in and returned to /b/:slug
+  business -> controller : PUT /api/saved/businesses/{slug}
   controller -> db : Save the item for the member
   db --> controller : Commit result
-  controller --> prompt : 201 Created
-  prompt --> page : Saved
-  page --> actor : Show the greeting and the filled heart
+  controller --> business : Saved
+  business --> actor : Show the business as saved
 end
 @enduml

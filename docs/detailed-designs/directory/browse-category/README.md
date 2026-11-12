@@ -4,7 +4,7 @@
 
 Jubilee is Toronto's Christian marketplace: a directory of businesses that the
 Jubilee verification team has verified. The directory is
-divided into ten fixed categories: Shops, Financial & insurance, Legal &
+divided into eleven fixed categories: Shops, Rooms & rentals, Financial & insurance, Legal &
 immigration, Home & property, Real estate & living, Health & family, Business &
 tech, Learning, Media and Community. This feature covers the page that lists the
 businesses of one category at `/c/:category`.
@@ -32,12 +32,12 @@ an out-of-range page number with the nearest valid page.
 The feature is a read-only vertical slice from the Angular page to the database.
 
 - **`CategoryPage`** — Angular page for the route `/c/:category`. It renders the
-  breadcrumb, heading, count line, category fact, `FilterChips`, `SortControl`,
+  breadcrumb, heading, count line, category fact, the filter chips, the "Sort" control,
   the `BusinessCard` grid and `Pagination`. It renders the empty state "No one
   has listed here yet" with "List your business" and "Browse other categories",
   the no-results state, and the error state "We couldn't load this category"
   with the reference `JB-CAT-503`. An unknown slug leads to the not-found page.
-- **`FilterChips`** — inline toggle chips shown from 768 px: one per offer
+- **`Chip`** (`jb-chip`) — inline toggle chips that `CategoryPage` shows from 768 px: one per offer
   ("Free quote", "Emergency calls", "Open Saturdays") and one per area, labelled
   "Serves {area}". Each chip is a button with `aria-pressed`. The chips stay visible in the no-results state.
 - **`FiltersDialog`** — sheet shown below 768 px when "Filters" is pressed. It
@@ -45,8 +45,8 @@ The feature is a read-only vertical slice from the Angular page to the database.
   (Scarborough, North York, East York, Etobicoke, Downtown), "Sort" and "Clear
   all". Its primary button reads "Show {n} businesses"; the count comes from
   `GET /api/categories/{slug}/listings/count` each time a box changes.
-- **`SortControl`** — control that offers "Recommended" (the default), "Newest"
-  and "Name A–Z".
+- **`Select`** inside **`Field`** (`jb-select`, `jb-field`) — the "Sort" control,
+  which offers "Recommended" (the default), "Newest" and "Name A–Z".
 - **`Pagination`** — previous, numbered and next controls that collapse middle
   pages to "…", with the footer "Showing 1–16 of 312". With 16 or fewer results
   it renders no controls and the footer "Showing all {n}". After a page change
@@ -56,7 +56,8 @@ The feature is a read-only vertical slice from the Angular page to the database.
   writes each change back to the URL, resets `page` to 1 when a filter or the
   sort changes, and remembers the most recently added filter for the "Remove"
   button of the no-results state.
-- **`DirectoryApi`** — typed Angular HTTP client for
+- **`DirectoryApi`** — contract of the public directory (token `DIRECTORY_API`,
+  implemented by `HttpDirectoryApi`) for
   `GET /api/categories/{slug}/listings` and its `/count` variant.
 - **`CategoriesController`** — ASP.NET Core controller in `Jubilee.Api`. Both
   endpoints are anonymous. The controller returns 404 `ProblemDetails` for an
@@ -95,7 +96,7 @@ The feature is a read-only vertical slice from the Angular page to the database.
   count and left out when it is 0.
 
 `DirectoryCacheInvalidationInterceptor` in `Jubilee.Infrastructure` removes the cached directory entries
-when `AppDbContext` saves a change to a `Listing`, `Product` or `FeaturedSlot`.
+when `AppDbContext` saves a change to a `Listing`, `Product`, `Service` or `FeaturedSlot`.
 `IDirectoryReadCache` is built on `IDistributedCache`, in memory unless a Redis
 connection string is configured, and the API also marks the responses
 `Cache-Control: public, max-age=60` (`docs/adr/0003-directory-read-cache.md`).

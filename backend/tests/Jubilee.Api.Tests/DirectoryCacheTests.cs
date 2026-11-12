@@ -1,3 +1,6 @@
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Jubilee.Api.Tests.Support;
 using Jubilee.Domain;
 using Jubilee.Tests.Shared;
@@ -127,6 +130,89 @@ public class DirectoryCacheTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
         Assert.Equal("name", byName.GetProperty("sort").GetString());
         Assert.Equal(["radio"], media.GetProperty("businesses").Slugs());
     }
+
+    // L2-156 AC2 / L2-028 AC2 (ADR 0003): the owner's own "Pause listing" and "Resume" reach every
+    // cached read on the next request, with no time passing.
+    [Fact]
+    public async Task L2_156_AC2_a_listing_its_owner_pauses_and_resumes_changes_every_read_on_the_next_request()
+    {
+        var listing = ListingMother.Public("pauses");
+        listing.AssignOwner("member|naomi");
+        await _factory.Arrange(ListingMother.Public("stays"), listing);
+        var naomi = _factory.CreateMemberClient("Naomi Laurent", "member|naomi");
+        Assert.All(await ReadAll(), body => Assert.Contains("pauses", body));
+
+        Assert.Equal(HttpStatusCode.OK, (await naomi.PostAsync("/api/my-business/pause", null)).StatusCode);
+
+        var paused = await ReadAll();
+        Assert.All(paused, body => Assert.DoesNotContain("pauses", body));
+        Assert.All(paused, body => Assert.Contains("stays", body));
+
+        Assert.Equal(HttpStatusCode.OK, (await naomi.PostAsync("/api/my-business/resume", null)).StatusCode);
+
+        Assert.All(await ReadAll(), body => Assert.Contains("pauses", body));
+    }
+
+    // L2-156 AC2 / L2-020 AC3 (ADR 0003): a listing the verification team approves is counted and
+    // listed on the next request.
+    [Fact]
+    public async Task L2_020_AC3_a_listing_a_verifier_approves_is_counted_and_listed_on_the_next_request()
+    {
+        await _factory.Arrange(ListingMother.Public("first", "shops"));
+        var owner = Member.Join(EmailAddress.TryParse("naomi@example.com")!, "Naomi", "Laurent", null, "hash", ListingMother.Now);
+        owner.ConfirmEmail();
+        await _factory.Arrange(owner);
+        var naomi = _factory.CreateMemberClient("Naomi Laurent", owner.Id.ToString());
+        var draft = new Dictionary<string, object?>
+        {
+            ["kind"] = "products",
+            ["name"] = "Luzandre.com",
+            ["tagline"] = "Christian apparel and gifts",
+            ["categorySlug"] = "shops",
+            ["highlight"] = null,
+            ["place"] = "Toronto",
+            ["agreed"] = true,
+            ["items"] = Array.Empty<object>(),
+            ["idempotencyKey"] = Guid.NewGuid().ToString(),
+        };
+        var draftId = (await Json(await naomi.PostAsJsonAsync("/api/listing-drafts", draft))).GetProperty("id").GetGuid();
+        var id = (await Json(await naomi.PostAsJsonAsync($"/api/listing-drafts/{draftId}/submit", draft))).GetProperty("listingId").GetGuid();
+        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        await esther.PutAsJsonAsync($"/api/admin/verifications/{id}/checklist", new { ticked = ChecklistItems.All.Select(i => i.Key) });
+        Assert.Equal(1, (await _factory.GetJson("/api/directory/welcome")).GetProperty("liveBusinessCount").GetInt32());
+        Assert.Equal(1, (await _factory.GetJson("/api/directory/home")).GetProperty("liveBusinessCount").GetInt32());
+        Assert.Equal(1, (await _factory.GetJson("/api/categories/shops/listings")).GetProperty("totalCount").GetInt32());
+
+        var approved = await esther.PostAsJsonAsync($"/api/admin/verifications/{id}/approve", new { });
+
+        Assert.Equal(HttpStatusCode.OK, approved.StatusCode);
+        Assert.Equal(2, (await _factory.GetJson("/api/directory/welcome")).GetProperty("liveBusinessCount").GetInt32());
+        Assert.Equal(2, (await _factory.GetJson("/api/directory/home")).GetProperty("liveBusinessCount").GetInt32());
+        var shops = await _factory.GetJson("/api/categories/shops/listings");
+        Assert.Equal(2, shops.GetProperty("totalCount").GetInt32());
+        Assert.Contains("Luzandre.com", shops.GetProperty("businesses").EnumerateArray().Select(b => b.GetProperty("name").GetString()));
+    }
+
+    // L2-156 AC2 / L2-106 AC1 (ADR 0003): the week a verifier sets as "Featured this week" shows on
+    // the welcome page and the browse home on the next request.
+    [Fact]
+    public async Task L2_106_AC1_the_week_a_verifier_features_shows_on_welcome_and_home_on_the_next_request()
+    {
+        var old = ListingMother.Public("old", approvedAt: ListingMother.Now.AddDays(-90));
+        await _factory.Arrange(old, ListingMother.Public("recent"));
+        Assert.Equal(["recent", "old"], (await _factory.GetJson("/api/directory/welcome")).GetProperty("featured").Slugs());
+        Assert.Equal(["recent", "old"], (await _factory.GetJson("/api/directory/home")).GetProperty("featured").Slugs());
+        var miriam = _factory.CreateStaffClient("Miriam Castillo", "member|miriam", "verifier");
+
+        var set = await miriam.PutAsJsonAsync("/api/admin/featured-weeks/2026-11-10", new { listingIds = new[] { old.Id } });
+
+        Assert.Equal(HttpStatusCode.OK, set.StatusCode);
+        Assert.Equal(["old"], (await _factory.GetJson("/api/directory/welcome")).GetProperty("featured").Slugs());
+        Assert.Equal(["old"], (await _factory.GetJson("/api/directory/home")).GetProperty("featured").Slugs());
+    }
+
+    private static async Task<JsonElement> Json(HttpResponseMessage response) =>
+        JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
 
     private async Task<string[]> ReadAll()
     {

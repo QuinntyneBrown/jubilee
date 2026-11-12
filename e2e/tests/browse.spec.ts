@@ -93,6 +93,23 @@ test.describe('browse home for a member (L2-021)', () => {
     await expect(row).toHaveAccessibleName(/Luzandre\.com.*Verified/);
   });
 
+  test('AC4: a category with no live businesses has no group', async ({ page, jb }) => {
+    const browse = new BrowsePage(page);
+    // Given a directory in which no Learning business is live, so the answer has no Learning group
+    const directory = browseHomeFromMock('default');
+    directory.groups = directory.groups.filter((group) => group.slug !== 'learning');
+    await stubBrowseHome(page, directory);
+    // When the directory renders
+    await jb.open('browse');
+    // Then that group is omitted and the others keep their fixed order
+    await expect(browse.groupHeadings).toHaveText(
+      categories.filter((category) => category.slug !== 'learning').map((c) => c.name),
+    );
+    await expect(browse.group('Learning').root).toHaveCount(0);
+    // And the category itself can still be opened from its chip
+    await expect(browse.categoryChip('Learning')).toHaveAttribute('href', '/c/learning');
+  });
+
   test('AC5: with no live businesses it shows "No businesses are listed yet"', async ({
     page,
     jb,

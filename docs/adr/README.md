@@ -8,7 +8,7 @@ something else: a new record supersedes it and both say so.
 |---|---|---|
 | [0001](0001-backend-stack.md) | Backend stack: .NET 10, MediatR, EF Core, SQL Server, with SQLite for tests and the e2e API | Accepted |
 | [0002](0002-frontend-workspace.md) | Frontend workspace: three Angular projects built from source, one global component stylesheet, `jb-*` attribute selectors | Accepted, amended by 0035 |
-| [0003](0003-directory-read-cache.md) | Directory read cache: 60 seconds, removed when a listing changes, and a rate limit on public reads | Accepted |
+| [0003](0003-directory-read-cache.md) | Directory read cache: 60 seconds, removed by a SaveChanges interceptor when a listing changes (the designed path, no outbox handler), and a rate limit on public reads | Accepted |
 | [0004](0004-directory-ordering-rules.md) | Directory ordering rules: the Recommended score, category groups, "From the shops" and the category fact | Accepted |
 | [0005](0005-visual-baselines-from-mocks.md) | Visual regression: baselines are rendered from the mocks on each run | Accepted |
 | [0006](0006-session-and-navigation-before-sign-in.md) | Session and navigation endpoints before sign-in exists | Accepted |
