@@ -328,7 +328,8 @@
         "owner",
         "edge",
         "preview",
-        "replies-fast"
+        "replies-fast",
+        "photos"
       ]
     },
     {
@@ -600,7 +601,8 @@
         "error",
         "pending",
         "changes-requested",
-        "away"
+        "away",
+        "businesses"
       ]
     },
     {
@@ -615,7 +617,8 @@
         "invalid",
         "submitting",
         "success",
-        "space"
+        "space",
+        "photos"
       ],
       "not_applicable": {
         "empty": "A form page has no collection that could be empty."

@@ -163,6 +163,15 @@
       <pre><code>&lt;div class="media media--square"&gt;
   &lt;img src="/img/faith-tee.jpg" alt="Charcoal tee with a gold FAITH print, folded" loading="lazy" width="800" height="800"&gt;
 &lt;/div&gt;</code></pre>
+      <h3>A photo an owner uploaded</h3>
+      <p>A listing's own photos (<code>L2-088</code>, <code>L2-221</code>) are kept as renditions 320, 640 and 1280 pixels wide in WebP and JPEG. The tile wraps a <code>&lt;picture&gt;</code>: a WebP <code>&lt;source&gt;</code> and a JPEG <code>&lt;img&gt;</code>, each with a <code>srcset</code> of the renditions at their true widths (a rendition is never wider than the original) and a <code>sizes</code> hint, so a phone fetches the small file and a wide screen the large one. The image always carries <code>width</code> and <code>height</code>. The largest photo above the fold, the cover of a listing page, is fetched first with <code>fetchpriority="high"</code>; every other photo is <code>loading="lazy"</code>.</p>
+      <pre><code>&lt;div class="media"&gt;
+  &lt;picture&gt;
+    &lt;source type="image/webp" srcset="/media/9f…c2/320.webp 320w, /media/9f…c2/640.webp 640w, /media/9f…c2/1280.webp 1280w" sizes="(min-width: 64rem) 40rem, 100vw"&gt;
+    &lt;img src="/media/9f…c2/640.jpg" srcset="/media/9f…c2/320.jpg 320w, /media/9f…c2/640.jpg 640w, /media/9f…c2/1280.jpg 1280w" sizes="(min-width: 64rem) 40rem, 100vw"
+         alt="Trevor Chew at his desk with a client" width="1280" height="960" fetchpriority="high"&gt;
+  &lt;/picture&gt;
+&lt;/div&gt;</code></pre>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
       <p>Width always comes from the container; the modifier fixes the shape.</p>
@@ -204,7 +213,7 @@
         <li>The tile is fluid: 100% of its column at every width, the ratio fixed by <code>aspect-ratio</code>.</li>
         <li>In the feature grid's first card from 1024px the ratio is released (<code>aspect-ratio: auto</code>) and the tile stretches to at least 20rem tall.</li>
         <li>Thumbs stay 48px at every width. The tag never scales.</li>
-        <li>Serve photos with <code>srcset</code> at 1×/2× for each column width; the tile never shows a photo larger than 640px wide.</li>
+        <li>Serve an uploaded photo as a <code>&lt;picture&gt;</code> with <code>srcset</code> and <code>sizes</code> (see "A photo an owner uploaded"): the browser picks the rendition for the column width and the pixel density.</li>
       </ul>
     </section>
     <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
@@ -304,6 +313,7 @@
       <ul>
         <li><a href="../../mocks/pages/browse/default.html">pages/browse/default</a> (all four tones, tags)</li>
         <li><a href="../../mocks/pages/business/default.html">pages/business/default</a> (detail photo)</li>
+        <li><a href="../../mocks/pages/business/photos.html">pages/business/photos</a> (the cover and the other photos of a listing, each a picture with srcset)</li>
         <li><a href="../../mocks/pages/product/default.html">pages/product/default</a> (square product photo)</li>
         <li><a href="../../mocks/pages/my-products/default.html">pages/my-products/default</a> (thumbs)</li>
         <li><a href="../../mocks/pages/saved/default.html">pages/saved/default</a> (ink tile in a saved card)</li>
