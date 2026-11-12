@@ -165,8 +165,8 @@ differ or leave a gap.
   the existing `RequestsController`, like bookings, quotes and orders, and name
   the space by `listingSlug` in the body.
 - **Own space** — refused with HTTP 409 `OWN_LISTING`, the status and code the
-  other request kinds already use for an owner's own listing, where `L2-206`
-  AC10 says HTTP 403. `<TO SUPPLY>`: align the requirement or the code.
+  other request kinds already use for an owner's own listing, as `L2-206`
+  AC10 requires.
 - **A second open request** — the page hides the call to action while a request
   is open, and the server also refuses a second open request with HTTP 409
   `ALREADY_REQUESTED`, so two tabs cannot send two (`L2-206` AC9).
