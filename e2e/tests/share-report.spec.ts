@@ -263,6 +263,43 @@ test.describe('report a listing (L2-039)', () => {
     await expect(report.send).not.toHaveAttribute('aria-busy', 'true');
   });
 
+  test('L2-128 AC2: a lost connection says so and keeps what was typed', async ({ page, jb }) => {
+    const business = new BusinessPage(page);
+    const report = new ReportListingDialog(page);
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    await stubReports(page, { mode: 'dropped' });
+    await jb.goto('/b/luzandre');
+    await business.reportLink.click();
+    await report.reason(/real business/).click();
+    await report.description.fill('No such shop at that address.');
+    await report.send.click();
+
+    await expect(report.alert).toContainText(
+      'Your connection dropped before it reached us. Nothing was sent and what you typed is still here. Try again.',
+    );
+    await expect(report.description).toHaveValue('No such shop at that address.');
+  });
+
+  test('AC4: the description stops at 2,000 characters and the counter says none are left', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    const report = new ReportListingDialog(page);
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    await stubReports(page);
+    await jb.goto('/b/luzandre');
+    await business.reportLink.click();
+    await report.description.fill('a'.repeat(1999));
+    await report.description.press('End');
+    await report.description.pressSequentially('bc');
+
+    await expect(report.description).toHaveValue('a'.repeat(1999) + 'b');
+    await expect(report.counter).toHaveText('0 characters left');
+  });
+
   test('AC5: too many reports in an hour asks the member to wait', async ({ page, jb }) => {
     const business = new BusinessPage(page);
     const report = new ReportListingDialog(page);

@@ -4,8 +4,8 @@ import type { Page } from '@playwright/test';
 // it sends it with, is kept so a test can prove it (ADR 0009).
 
 export interface FakeReports {
-  /** `invalid` answers with the server's field codes, `offline` with a 503, `limited` with a 429. */
-  mode: 'ok' | 'invalid' | 'offline' | 'limited';
+  /** `invalid` answers with the server's field codes, `offline` with a 503, `limited` with a 429, `dropped` not at all (a lost connection). */
+  mode: 'ok' | 'invalid' | 'offline' | 'limited' | 'dropped';
   /** How many of the next reports fail with a 503 before the endpoint answers. */
   failures: number;
   /** While true, a report is held unanswered until `release()` (the in-flight state, L2-127). */
@@ -56,6 +56,8 @@ export async function stubReports(
         });
       case 'offline':
         return problem(503, { reference: 'JB-REPORT-503' });
+      case 'dropped':
+        return route.abort('internetdisconnected');
       case 'limited':
         return problem(429, { code: 'RATE_LIMITED' });
       default:
