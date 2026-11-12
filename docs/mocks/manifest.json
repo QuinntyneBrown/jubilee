@@ -620,7 +620,9 @@
         "pending",
         "changes-requested",
         "away",
-        "businesses"
+        "businesses",
+        "statement-due",
+        "statement-lapsed"
       ]
     },
     {
@@ -766,7 +768,8 @@
         "error",
         "approved",
         "changes-requested",
-        "space"
+        "space",
+        "no-items"
       ],
       "not_applicable": {
         "empty": "A review page shows one listing; it has no collection that could be empty."
@@ -1028,7 +1031,8 @@
         "busy",
         "invalid",
         "failed",
-        "edit"
+        "edit",
+        "onboarding"
       ]
     },
     {
@@ -1041,7 +1045,8 @@
         "busy",
         "invalid",
         "failed",
-        "edit"
+        "edit",
+        "onboarding"
       ]
     },
     {
@@ -1150,6 +1155,21 @@
         "invalid",
         "failed"
       ]
+    },
+    {
+      "id": "statement-agreement",
+      "kind": "dialog",
+      "title": "Statement of faith agreement",
+      "opens_from": "my-business",
+      "states": [
+        "default",
+        "busy",
+        "failed",
+        "lapsed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
     },
     {
       "id": "sign-out",

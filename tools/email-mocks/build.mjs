@@ -111,6 +111,11 @@ const emails = [
   ['account-deleted', 'Your Jubilee account was deleted', `Hi Joanna,\n\nYour Jubilee account is deleted. You are signed out everywhere, your open requests are cancelled and the businesses have been told. Your personal data is erased within 30 days.\n\nIf you didn't do this, write to help@jubilee.example at once.${end}`],
   ['listing-verified', 'Luzandre.com is verified and live on Jubilee', `Hi Naomi,\n\nLuzandre.com is verified and live. Members can find you in Shops.\n\nSee it here: ${base}/b/luzandre${end}`],
   ['listing-recheck', 'We’ll re-check Luzandre Print Co.', `Hi Naomi,\n\nYour change is live now. Because the name or category changed, the verification team looks at the listing again within two business days. You don’t need to do anything.\n\nSee it here: ${base}/b/luzandre${end}`],
+  ['statement-lapsed', 'Luzandre.com is paused until you agree to the statement of faith', `Hi Naomi,
+
+We updated Jubilee’s statement of faith on 2 November 2026 and asked every owner to read it and agree within 30 days. We have not had your agreement, so Luzandre.com is paused: it is hidden from browse and search. Your requests and your messages stay, and nothing is deleted.
+
+Read the statement and agree, and Luzandre.com is live again at once: ${base}/my-business${end}`],
   ['listing-changes-needed', 'Luzandre.com: changes needed before we can publish', `Hi Naomi,\n\nMiriam from the Jubilee verification team asked for changes to Luzandre.com (description, photos):\n\nPlease say where your shirts are printed, and replace the stock photo with one of your own products.\n\nMake the changes and resubmit from My business: ${base}/my-business${end}`],
   ['listing-not-verified', 'We couldn’t verify Luzandre.com', `Hi Naomi,\n\nWe couldn’t verify Luzandre.com.\n\nWe could not confirm that the business in the listing is trading: the website and the phone number did not answer.\n\nYou can submit it again when that is fixed: ${base}/list${end}`],
   ['draft-expiring', 'Your draft of Luzandre.com will be deleted in 14 days', `Hi Naomi,\n\nYou started listing Luzandre.com on Jubilee and have not touched it in six months. We will delete the draft in 14 days.\n\nContinue it any time before then: ${base}/list\n\nNothing was ever public. ${signature}\n`],
