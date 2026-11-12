@@ -18,6 +18,7 @@ export type StubName =
   | 'category-long'
   | 'category-not-found'
   | 'browse-rooms-empty'
+  | 'browse-saved-hearts'
   | 'space-loading'
   | 'space-error'
   | 'space-requested'
@@ -522,6 +523,12 @@ export const routes = {
     who: 'member',
   },
   // No roommate is listed, and the member chooses "Roommates".
+  'browse.saved-hearts': {
+    app: '/',
+    mock: 'pages/browse/saved-hearts.html',
+    who: 'member',
+    stub: 'browse-saved-hearts',
+  },
   'browse.rooms-empty': {
     app: '/',
     mock: 'pages/browse/rooms-empty.html',

@@ -1,0 +1,12 @@
+<ng-content />
+<button
+  #heart
+  class="saveable__heart"
+  type="button"
+  [attr.aria-pressed]="saved()"
+  [attr.aria-busy]="busy() ? 'true' : null"
+  [attr.aria-label]="saved() ? 'Saved. Remove ' + name() + ' from saved' : 'Save ' + name()"
+  (click)="pressed.emit(heart)"
+>
+  <svg jb-icon class="saveable__icon" name="heart"></svg>
+</button>

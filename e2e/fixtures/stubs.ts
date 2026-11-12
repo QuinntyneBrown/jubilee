@@ -10,7 +10,7 @@ import { stubModeration } from './moderation';
 import { stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
 import { stubProfile } from './profile';
-import { stubSaved } from './saved';
+import { BROWSE_SAVED, stubSaved } from './saved';
 import { stubFeedback } from './feedback';
 import { stubPasswordReset } from './password-reset';
 import { BACK_IN_STOCK, NOTIFICATIONS, stubNotifications } from './notifications';
@@ -584,6 +584,9 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return void (await stubFeedback(page));
     case 'saved':
       return void (await stubSaved(page));
+    case 'browse-saved-hearts':
+      // Saves are never answered, so a pressed heart stays busy (L2-041 AC8).
+      return void (await stubSaved(page, { items: BROWSE_SAVED, save: 'pending' }));
     case 'saved-empty':
       return void (await stubSaved(page, { items: [] }));
     case 'saved-error':

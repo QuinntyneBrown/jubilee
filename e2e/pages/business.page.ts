@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { BusinessCard } from './business-card';
+import { BusinessCard, heartOf } from './business-card';
 import { ShellPage } from './shell.page';
 
 /** One row of "Services" or "Custom work" (`li.row`). */
@@ -24,12 +24,15 @@ export class ProductCardPart {
   readonly shopName: Locator;
   readonly price: Locator;
   readonly badge: Locator;
+  /** The heart beside the card's link (L2-041 AC7). */
+  readonly heart: Locator;
 
   constructor(readonly root: Locator) {
     this.name = root.locator('.biz-card__name');
     this.shopName = root.locator('.biz-card__tagline');
     this.price = root.locator('.price');
     this.badge = root.locator('.media__tag');
+    this.heart = heartOf(root);
   }
 }
 

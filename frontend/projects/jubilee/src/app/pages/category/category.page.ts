@@ -28,7 +28,9 @@ import {
   Section,
   SpaceCard,
   TermFilter,
+  Saveable,
 } from 'components';
+import { CardHearts } from '../../services/card-hearts';
 import { combineLatest } from 'rxjs';
 import {
   FiltersDialog,
@@ -68,6 +70,7 @@ function businesses(count: number): string {
 @Component({
   selector: 'jb-category-page',
   imports: [
+    Saveable,
     RouterLink,
     BusinessCard,
     CardGridSkeleton,
@@ -92,6 +95,8 @@ function businesses(count: number): string {
   templateUrl: './category.page.html',
 })
 export class CategoryPage {
+  /** The hearts of the cards (L2-041 AC7, ADR 0054). */
+  protected readonly hearts = inject(CardHearts);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly dialog = inject(Dialog);
@@ -147,6 +152,7 @@ export class CategoryPage {
   });
 
   constructor() {
+    this.hearts.attach();
     combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(([params, query]) =>
       this.store.open(params.get('category') ?? '', query),
     );

@@ -91,11 +91,20 @@
             <ul jb-feature-grid>
               @for (business of directory.featured; track business.slug) {
                 <li jb-feature-grid-item>
-                  <a
-                    jb-business-card
-                    [business]="business"
-                    [routerLink]="['/b', business.slug]"
-                  ></a>
+                  @let target = hearts.business(business);
+                  <div
+                    jb-saveable
+                    [name]="business.name"
+                    [saved]="hearts.isSaved(target)"
+                    [busy]="hearts.isBusy(target)"
+                    (pressed)="hearts.press(target, $event)"
+                  >
+                    <a
+                      jb-business-card
+                      [business]="business"
+                      [routerLink]="['/b', business.slug]"
+                    ></a>
+                  </div>
                 </li>
               }
             </ul>

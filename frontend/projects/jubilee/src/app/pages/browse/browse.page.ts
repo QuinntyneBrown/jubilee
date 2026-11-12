@@ -36,7 +36,9 @@ import {
   CardGrid,
   SpaceCard,
   TermFilter,
+  Saveable,
 } from 'components';
+import { CardHearts } from '../../services/card-hearts';
 import { ClockService } from 'api';
 import { REQUIRES_CONNECTION } from '../../directives/requires-connection';
 import { clockTime } from 'api';
@@ -52,6 +54,7 @@ import { SessionService } from '../../services/session.service';
 @Component({
   selector: 'jb-browse-page',
   imports: [
+    Saveable,
     RouterLink,
     BusinessCard,
     CardGridSkeleton,
@@ -86,6 +89,8 @@ import { SessionService } from '../../services/session.service';
   templateUrl: './browse.page.html',
 })
 export class BrowsePage {
+  /** The hearts of the cards (L2-041 AC7, ADR 0054). */
+  protected readonly hearts = inject(CardHearts);
   private readonly connectivity = inject(ConnectionService);
   /** Search needs a connection: offline, the box of the hero is disabled and says why (L2-122). */
   protected readonly offline = this.connectivity.isOffline;
@@ -108,6 +113,7 @@ export class BrowsePage {
   });
 
   constructor() {
+    this.hearts.attach();
     this.store.load();
     const connection = inject(ConnectionService);
     // The banner says which directory is on show while offline (L2-119 AC1), and the page reads the

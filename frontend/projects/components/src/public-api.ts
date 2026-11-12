@@ -165,6 +165,7 @@ export * from './lib/score-rows/score-row';
 export * from './lib/file-list/file-list';
 export * from './lib/feedback-history/feedback-history';
 export * from './lib/moment-check/moment-check';
+export * from './lib/saveable/saveable';
 export * from './lib/space-card/space-card';
 export * from './lib/space-card/space-card-preview';
 export * from './lib/space-card/space-terms';

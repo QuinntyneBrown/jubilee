@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { BusinessCard } from './business-card';
+import { BusinessCard, heartOf } from './business-card';
 import { SpaceCard, TermFilter } from './space-card';
 import { ShellPage } from './shell.page';
 
@@ -10,12 +10,15 @@ export class ProductCard {
   readonly shopName: Locator;
   readonly price: Locator;
   readonly mediaTile: Locator;
+  /** The heart beside the card's link (L2-041 AC7). */
+  readonly heart: Locator;
 
   constructor(readonly root: Locator) {
     this.name = root.locator('.biz-card__name');
     this.shopName = root.locator('.biz-card__tagline');
     this.price = root.locator('.price');
     this.mediaTile = root.locator('.media');
+    this.heart = heartOf(root);
   }
 }
 
@@ -145,6 +148,22 @@ export class BrowsePage extends ShellPage implements Screen {
 
   spaceCard(index: number): SpaceCard {
     return new SpaceCard(this.spaceCards.nth(index));
+  }
+
+  /** A featured card with its heart (`jb-saveable`), for parity. */
+  featuredSaveable(index: number): Locator {
+    return this.featuredCards.nth(index).locator('xpath=..');
+  }
+
+  /**
+   * The hearts of `pages/browse/saved-hearts.html` (L2-041 AC7, AC8), from the keyboard: the
+   * second featured heart pressed and left busy, then focus on the third.
+   */
+  async arrangeHeartStates(): Promise<void> {
+    await this.featuredCard(1).heart.focus();
+    await this.page.keyboard.press('Enter');
+    await this.page.keyboard.press('Tab');
+    await this.page.keyboard.press('Tab');
   }
 
   productCard(index: number): ProductCard {

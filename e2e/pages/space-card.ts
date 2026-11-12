@@ -1,4 +1,5 @@
 import type { Locator } from '@playwright/test';
+import { heartOf } from './business-card';
 
 /** One space card (`a.space-card`): a room or rental in a grid (L2-203). */
 export class SpaceCard {
@@ -10,8 +11,11 @@ export class SpaceCard {
   readonly area: Locator;
   readonly available: Locator;
   readonly mediaTile: Locator;
+  /** The heart beside the card's link (L2-041 AC7). */
+  readonly heart: Locator;
 
   constructor(readonly root: Locator) {
+    this.heart = heartOf(root);
     this.badge = root.locator('.space-card__badge');
     this.price = root.locator('.space-card__price');
     this.unit = root.locator('.space-card__unit');
