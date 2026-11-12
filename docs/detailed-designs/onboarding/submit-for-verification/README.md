@@ -48,8 +48,9 @@ the decisions are in ADR 0018, ADR 0041, ADR 0050 and ADR 0052.
   shows three steps: "You submitted {Business}" (complete), "We review your
   listing" with "Within two business days" (current) and "You’re live" with "We
   e-mail you the moment members can find you" (upcoming). An HTTP 422 answer
-  restores the editable form with the field errors; another failure shows "We
-  couldn’t save that. Try again."
+  restores the editable form with the field errors; another failure, or no
+  answer within 10 seconds (`SUBMIT_TIMEOUT_MS`), shows "We couldn’t save that.
+  Try again." (`L2-127` AC2).
 - **`FormSummary`** (`jb-form-summary`) — component of the `components`
   library. For three invalid fields it shows "Fix 3 things to continue" with
   `role="alert"`, lists each error as a link to its field, and receives focus
@@ -149,7 +150,11 @@ then on; choosing a draft opens `/list?draft={id}` (`L2-079` AC1, AC4 and AC5).
 - **`StatementDueDto`** — part of the answer of `GET /api/session` as
   `statementDue`: `version`, `updatedOn`, `agreeBy`, `overdue` and `business`.
   It is present only for an owner whose latest agreed version is earlier than
-  `StatementOfFaith.Version`.
+  `StatementOfFaith.Version`. `SessionController` asks `GetStatementDueQuery`,
+  which reads the latest agreed version with
+  `StatementAgreements.LatestAgreedAsync` and names the listing
+  `Workspace.Find` returns; `overdue` is true once the Toronto date is after
+  `StatementOfFaith.AgreeBy`.
 - **`StatementAgreementDialog`** — CDK dialog in `dialogs/statement-agreement`.
   The root component `App` opens it once per load of the app when the session
   carries `statementDue`. It is titled "The statement of faith has been
@@ -161,7 +166,10 @@ then on; choosing a draft opens `/list?draft={id}` (`L2-079` AC1, AC4 and AC5).
   On success the dialog closes and a toast says "Thank you" with "Your
   agreement to the statement of faith is recorded." On failure the dialog
   stays open with "We couldn’t record that. Try again." (`L2-075` AC3 and
-  AC4).
+  AC4). It posts through `StatementOfFaithApi`, the contract behind
+  `STATEMENT_OF_FAITH_API`, and on success tells `SessionService`
+  (`statementAgreed`), so the banner of My business goes at once. Escape and a
+  click outside are "Not now", except while the agreement is being recorded.
 - **`MyBusinessPage`** — while the session carries `statementDue` it shows the
   banner "The statement of faith has been updated. Read it and agree by {date}
   to keep {Business} live." with "Read and agree", which opens the dialog
@@ -173,8 +181,11 @@ then on; choosing a draft opens `/list?draft={id}` (`L2-079` AC1, AC4 and AC5).
   The handler refuses a version other than the current one with HTTP 409 and
   code `STATEMENT_VERSION`, records one `StatementAgreement` per owner and
   version however often it is called, and resumes each listing the job paused,
-  the listings that carry `Listing.StatementLapsedAt`. Such a listing is live
-  again at once, without new verification (`L2-075` AC6).
+  the listings that carry `Listing.StatementLapsedAt`, with
+  `Listing.ResumeAfterStatement`. Such a listing is live again at once, without
+  new verification (`L2-075` AC6); a listing the owner paused themselves stays
+  paused. `MyBusinessPage` loads the overview again when the session no longer
+  carries `statementDue`.
 - **`StatementAgreementJob`** — hosted service in `Jubilee Worker`. Once a day
   it sends `RunStatementAgreementJobCommand`, whose handler works through
   `ScheduledJobs.RunOnceAsync` with the job name `statement-agreement` and the

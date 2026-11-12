@@ -38,6 +38,7 @@ class Listing {
   +MoveTo(stage: ListingStage): void
   +SetHighlight(highlight: string?): void
   +PauseForStatement(now: DateTimeOffset): void
+  +ResumeAfterStatement(): void
 }
 
 class ListingDraft {

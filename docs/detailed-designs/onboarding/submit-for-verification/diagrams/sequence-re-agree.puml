@@ -38,7 +38,7 @@ end box
 == The owner opens the app after the statement was updated ==
 actor -> root : Sign in or open the app
 root -> session : GET /api/session
-session -> db : Read the owner's greatest agreed version
+session -> db : GetStatementDueQuery reads the owner's greatest agreed version
 db --> session : A version earlier than StatementOfFaith.Version
 session --> root : Session with statementDue (L2-075)
 root -> dialog : Open once per load of the app
@@ -57,7 +57,7 @@ else "I agree"
     dialog --> actor : Stay open with "We couldn’t record that. Try again."
   else Current version
     agree -> db : Add a StatementAgreement unless one exists for this version
-    agree -> entity : Resume each listing with StatementLapsedAt
+    agree -> entity : ResumeAfterStatement on each listing with StatementLapsedAt
     agree -> db : Save changes
     db --> agree : Commit result
     agree --> controller : Recorded
