@@ -436,6 +436,8 @@ export class RequestQuoteDialog {
   readonly budget: Locator;
   readonly phone: Locator;
   readonly phoneHelp: Locator;
+  /** The label of each field, with its "(required)" or "(optional)" mark, in order. */
+  readonly labels: Locator;
   readonly fieldError: Locator;
   readonly alert: Locator;
   readonly send: Locator;
@@ -446,6 +448,7 @@ export class RequestQuoteDialog {
     this.root = page.getByRole('dialog');
     this.title = this.root.locator('.dialog__title');
     this.description = this.root.locator('#dlg-desc');
+    this.labels = this.root.locator('.field__label');
     this.what = this.root.getByLabel('What do you need?');
     this.neededBy = this.root.getByLabel('Needed by');
     this.budget = this.root.getByLabel('Budget');
@@ -456,6 +459,15 @@ export class RequestQuoteDialog {
     this.send = this.root.getByRole('button', { name: 'Send request' });
     this.cancel = this.root.getByRole('button', { name: 'Cancel' });
     this.viewRequest = this.root.getByRole('link', { name: 'View request' });
+  }
+
+  /** Moves the focus with Tab until it is on `field`, as a keyboard user does. */
+  async tabTo(field: Locator): Promise<void> {
+    for (let presses = 0; presses < 8; presses++) {
+      if (await field.evaluate((element) => element === document.activeElement)) return;
+      await this.root.page().keyboard.press('Tab');
+    }
+    throw new Error('Tab did not reach the field');
   }
 }
 

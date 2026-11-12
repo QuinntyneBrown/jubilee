@@ -23,7 +23,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 5 | Sign in and out | Sign in, stay signed in safely, and sign out. | 6 | 100% |
 | 6 | Message a business | Hold a private conversation with a business from an inbox. | 12 | 98% |
 | 7 | Book a meeting | Request a meeting time for a service with a business. | 6 | 100% |
-| 8 | Request a quote | Describe a job and ask a business for a quote. | 3 | 95% |
+| 8 | Request a quote | Describe a job and ask a business for a quote. | 3 | 100% |
 | 9 | Request a product | Send a shop an order request for a product, without payment. | 3 | 100% |
 | 10 | List a business | Describe a business and submit it for verification. | 12 | 87% |
 | 11 | Removed: answer a church reference | Jubilee no longer asks for a church reference (ADR 0041). The number is not reused. | 0 | n/a |

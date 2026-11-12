@@ -55,6 +55,8 @@ export interface QuoteOptions {
   ownerFirstName: string;
   /** For example "within a few hours"; null with too few replies. */
   usuallyReplies: string | null;
+  /** The member's own profile phone, like "416-555-0142", for the dialog to start with (L2-045 AC7). */
+  phone: string | null;
 }
 
 /**

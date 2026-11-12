@@ -13,10 +13,11 @@ skinparam class {
 ' --------------------------
 title Class structure — Request a quote
 
-enum RequestType {
+enum RequestKind {
   Booking
   Quote
   Order
+  Space
 }
 
 enum RequestStatus {
@@ -29,85 +30,105 @@ enum RequestStatus {
 
 class Request {
   +Guid Id
-  +RequestType Type
+  +RequestKind Kind
   +RequestStatus Status
-  +Guid MemberId
+  +string MemberSubject
+  +string MemberName
   +Guid ListingId
-  +Guid ConversationId
-  +DeclineReason? DeclineReason
-  +string? DeclineMessage
+  +string IdempotencyKey
+  +Guid? ServiceId
+  +string? ServiceName
+  +string? Note
+  +DateOnly? NeededBy
+  +string? Budget
+  +string? Phone
   +DateTimeOffset CreatedAt
-  +DateTimeOffset? NudgedAt
-  +Confirm(actorId: Guid, now: DateTimeOffset): void
-  +Decline(actorId: Guid, reason: DeclineReason, message: string, now: DateTimeOffset): void
-  +Cancel(actorId: Guid, now: DateTimeOffset): void
-  +Complete(actorId: Guid?, now: DateTimeOffset): void
-  +UndoLastTransition(actorId: Guid, now: DateTimeOffset): void
-  +MarkNudged(now: DateTimeOffset): void
+  +{static} int MaxDescriptionLength = 2000
+  +{static} int MaxBudgetLength = 60
+  +{static} AskForQuote(...): Request
+  +Confirm(actor: string, now: DateTimeOffset): void
+  +UndoConfirm(actor: string, now: DateTimeOffset): void
+  +Decline(actor: string, now: DateTimeOffset): void
+  +Cancel(actor: string, now: DateTimeOffset): void
+  +UndoCancel(actor: string, now: DateTimeOffset): void
+  +Complete(actor: string, now: DateTimeOffset): void
 }
 
 class RequestTransition {
   +Guid Id
-  +RequestStatus? From
+  +RequestStatus From
   +RequestStatus To
-  +Guid? ActorId
-  +DateTimeOffset OccurredAt
+  +string Actor
+  +DateTimeOffset At
   +DateTimeOffset? UndoableUntil
 }
 
 Request "1" *-- "1..*" RequestTransition : records
-Request --> RequestType : has
+Request --> RequestKind : has
 Request --> RequestStatus : has
 
-class QuoteDetails {
-  +Guid? ServiceId
-  +string Description
-  +DateOnly? NeededBy
-  +string? Budget
-  +PhoneNumber? Phone
-}
-
-class PhoneNumber {
-  +string Digits
-  +{static} TryParse(input: string, out value: PhoneNumber): bool
-  +Format(): string
-}
-
-class RequestQuoteCommand {
-  +Guid ListingId
-  +Guid? ServiceId
-  +string Description
-  +DateOnly? NeededBy
-  +string? Budget
+class Member {
+  +Guid Id
   +string? Phone
 }
 
-class RequestQuoteCommandValidator {
-  +int DescriptionMaxLength = 2000
-  +int BudgetMaxLength = 60
-  +Validate(command: RequestQuoteCommand): ValidationResult
+class GetQuoteOptionsQuery {
+  +string Subject
+  +string Slug
+}
+
+class GetQuoteOptionsQueryHandler {
+  +Handle(query: GetQuoteOptionsQuery): Task<QuoteOptionsDto>
+}
+
+class QuoteOptionsDto {
+  +BusinessRef Business
+  +string OwnerFirstName
+  +string? UsuallyReplies
+  +string? Phone
+}
+
+class Profiles <<static>> {
+  +{static} FormatPhone(digits: string?): string?
+}
+
+class RequestQuoteCommand {
+  +string Subject
+  +string Name
+  +string ListingSlug
+  +Guid? ServiceId
+  +string? Description
+  +string? NeededBy
+  +string? Budget
+  +string? Phone
+  +string? IdempotencyKey
 }
 
 class RequestQuoteCommandHandler {
-  +Handle(command: RequestQuoteCommand): Task<RequestCreatedResult>
+  +Handle(command: RequestQuoteCommand): Task<BookedRequestDto>
 }
 
-class RequestCreatedResult {
-  +Guid RequestId
-  +RequestStatus Status
-  +string TypicalReplyTime
+class BookedRequestDto {
+  +Guid Id
+  +string Status
+  +string MemberStatus
 }
 
-interface IClock {
-  +TorontoToday(): DateOnly
-  +UtcNow(): DateTimeOffset
+class Notification {
+  +string MemberSubject
+  +string Kind
+  +string Title
+  +string Detail
+  +string Target
+  +Guid? CorrelationId
 }
 
-Request "1" *-- "0..1" QuoteDetails : owns
-QuoteDetails "1" *-- "0..1" PhoneNumber : holds
+GetQuoteOptionsQueryHandler ..> GetQuoteOptionsQuery : handles
+GetQuoteOptionsQueryHandler ..> QuoteOptionsDto : returns
+GetQuoteOptionsQueryHandler ..> Member : reads the caller's phone
+GetQuoteOptionsQueryHandler ..> Profiles : formats with
 RequestQuoteCommandHandler ..> RequestQuoteCommand : handles
-RequestQuoteCommandValidator ..> RequestQuoteCommand : validates
-RequestQuoteCommandValidator ..> IClock : reads today
 RequestQuoteCommandHandler --> Request : creates
-RequestQuoteCommandHandler ..> RequestCreatedResult : returns
+RequestQuoteCommandHandler --> Notification : writes for the owner
+RequestQuoteCommandHandler ..> BookedRequestDto : returns
 @enduml

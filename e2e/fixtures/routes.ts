@@ -8,6 +8,7 @@ export type Who = 'visitor' | 'member';
 /** Names a data stub in `fixtures/stubs.ts`; absent means the recorded answers of the seeded API (ADR 0009). */
 export type StubName =
   | 'browse-loading'
+  | 'quote'
   | 'browse-empty'
   | 'browse-error'
   | 'browse-edge'
@@ -435,9 +436,10 @@ export const routes = {
     who: 'member',
   },
   'request-quote': {
-    app: '/b/legacy-financial/quote',
+    app: '/b/luzandre/quote',
     mock: 'dialogs/request-quote/default.html',
     who: 'member',
+    stub: 'quote',
   },
   'request-space.short-stay': {
     app: '/b/roncesvalles-guest-suite/request',

@@ -10,16 +10,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Requests;
 
-/// <summary>What the quote dialog needs to open (L2-045 AC1).</summary>
-public sealed record QuoteOptionsDto(BusinessRef Business, string OwnerFirstName, string? UsuallyReplies);
+/// <summary>
+/// What the quote dialog needs to open (L2-045 AC1). <c>Phone</c> is the caller's own profile phone, like
+/// <c>416-555-0142</c>, for the dialog to start with (L2-045 AC7); null when the profile has none.
+/// </summary>
+public sealed record QuoteOptionsDto(BusinessRef Business, string OwnerFirstName, string? UsuallyReplies, string? Phone);
 
-public sealed record GetQuoteOptionsQuery(string Slug) : IRequest<QuoteOptionsDto>;
+public sealed record GetQuoteOptionsQuery(string Subject, string Slug) : IRequest<QuoteOptionsDto>;
 
 public sealed class GetQuoteOptionsQueryHandler(IAppDbContext db) : IRequestHandler<GetQuoteOptionsQuery, QuoteOptionsDto>
 {
     public async Task<QuoteOptionsDto> Handle(GetQuoteOptionsQuery request, CancellationToken cancellationToken)
     {
         var listing = await Bookable.PublicListing(db, request.Slug, cancellationToken);
+        var phone = Guid.TryParse(request.Subject, out var memberId)
+            ? await db.Members.AsNoTracking().Where(m => m.Id == memberId).Select(m => m.Phone).SingleOrDefaultAsync(cancellationToken)
+            : null;
         return new QuoteOptionsDto(
             new BusinessRef(listing.Name, listing.Slug),
             Bookable.OwnerFirstName(listing),
@@ -29,7 +35,8 @@ public sealed class GetQuoteOptionsQueryHandler(IAppDbContext db) : IRequestHand
                 "day" => "within a day",
                 "few-days" => "within a few days",
                 _ => null,
-            });
+            },
+            Profiles.FormatPhone(phone));
     }
 }
 
