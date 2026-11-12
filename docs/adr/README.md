@@ -46,6 +46,7 @@ something else: a new record supersedes it and both say so.
 | [0049](0049-finish-join-jubilee.md) | Finish joining: the unconfirmed address changed in a dialog of its own, an address in use said from the session, the resend limit said in the banner, and tokens kept out of the logs by `LoggedPath` | Accepted |
 | [0050](0050-finish-respond-to-customer-requests.md) | Finish responding to customer requests: the page listens to the event stream and polls only while it cannot connect, "Replies fast" is a `jb-badge` on the listing page and the business card, the response-time job runs once per hour across instances through `JobRun`, and a confirmation that answers after its dialog closed is still reported | Accepted |
 | [0051](0051-finish-message-a-business.md) | Finish messaging: the away notice as a toast with its day, the inbox paged by 50 with a button, message photos scanned by ClamAV before they are stored and kept by `IMediaStore` (no scanner, no photo), photos still not queued offline, conversation reports limited to 10 a day | Accepted |
+| [0051](0051-finish-run-a-business-listing.md) | Finish running a business listing: "Saved by members" counts first saves of the week, the owner's choice of business is kept on the listing and switched with a select on My business, a re-check e-mails the owner and the team, photos are reordered by drag with the CDK beside the move buttons, public photos are a `picture` with `srcset` drawn by `jb-media-tile`, and the 60-second pause bound is proved for every public read | Accepted |
 
 ## Format
 
