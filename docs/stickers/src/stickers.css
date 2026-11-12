@@ -1,0 +1,85 @@
+/* Jubilee die-cut stickers: the shared stage, faces and keyline rule.
+   The artwork is the "Jubilee Stickers" frame in Magic Patterns (link in the
+   README); colours are the brand colours of its components/parts.tsx. */
+
+@font-face {
+  /* The variable file with the width axis: the wordmark is set at wdth 110. */
+  font-family: "Archivo";
+  src: url("../../design-system/assets/fonts/Archivo.woff2") format("woff2");
+  font-weight: 400 900;
+  font-stretch: 62% 125%;
+  font-display: block;
+}
+
+@font-face {
+  /* The bundled Inter stops at 600. The range is declared to 700 so the one
+     700 line (the badge's ring text) is drawn at 600, not with a faux bold. */
+  font-family: "Inter";
+  src: url("../../design-system/assets/fonts/Inter.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: block;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* The stage is exactly the canvas. The render script screenshots this
+   element, so its size is the exported pixel size. */
+.stage {
+  width: 900px;
+  height: 900px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+}
+
+.sticker {
+  display: block;
+  width: 900px;
+  height: 900px;
+}
+
+/* Preview mode, for the -preview.png files only. Never applied to the print
+   export: the drop shadow would bake grey pixels into the transparent edge. */
+body.preview {
+  background: #f4f2ec;
+}
+
+body.preview .stage {
+  width: 1020px;
+  height: 1020px;
+}
+
+body.preview .sticker {
+  filter: drop-shadow(0 10px 18px rgba(11, 14, 20, 0.18));
+}
+
+/* --- Shared artwork idioms -------------------------------------------- */
+
+/* Every silhouette piece is painted white with a fat round-joined stroke and
+   paint-order: stroke, so the stroke sits wholly outside the shape. The
+   overlapping white pieces union into one continuous die-cut outline. Each
+   piece carries its own stroke-width: 130 (twice the 65 px rim) for a filled
+   shape drawn 1:1, and the mark's own stroke plus 130 / k where the mark
+   keeps its source coordinates under scale(k). */
+.keyline {
+  fill: #ffffff;
+  stroke: #ffffff;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  paint-order: stroke;
+}
+
+.keyline-open {
+  fill: none;
+}
+
+/* Archivo at 110 width, the wordmark's setting. */
+.wide {
+  font-variation-settings: "wdth" 110;
+}

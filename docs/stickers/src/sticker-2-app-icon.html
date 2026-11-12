@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Jubilee sticker: app icon</title>
+    <link rel="stylesheet" href="stickers.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <!-- Sticker 2: the app icon (components/AppIconSticker.tsx). Night tile,
+           22% corners, the mark filling three quarters of it. -->
+      <svg class="sticker" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+        <title>Jubilee app icon sticker</title>
+
+        <!-- Die cut -->
+        <g id="cut">
+          <rect class="keyline" x="170" y="170" width="560" height="560" rx="123" stroke-width="130" />
+          <!-- Squares off the rim under the rounded corners so the URL runs straight -->
+          <rect class="keyline" x="210" y="650" width="480" height="80" stroke-width="130" />
+        </g>
+
+        <!-- Artwork -->
+        <rect x="170" y="170" width="560" height="560" rx="123" fill="#0b0e14" />
+        <g transform="translate(249.6 253) scale(4.14)" fill="none">
+          <path d="M60 8 V60 A20 20 0 0 1 20 60 V38" stroke="#f4f2ec" stroke-width="14.5" stroke-linecap="butt" />
+          <path d="M36 27 H84" stroke="#ffb81c" stroke-width="14.5" stroke-linecap="butt" />
+        </g>
+
+        <!-- Edge URL -->
+        <text
+          x="453.5"
+          y="772"
+          text-anchor="middle"
+          font-family="'Archivo'"
+          font-weight="800"
+          font-size="28"
+          letter-spacing="7"
+          fill="#000000"
+        >JUBILEE.TO</text>
+      </svg>
+    </div>
+  </body>
+</html>

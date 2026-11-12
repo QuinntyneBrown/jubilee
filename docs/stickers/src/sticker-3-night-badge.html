@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Jubilee sticker: night badge</title>
+    <link rel="stylesheet" href="stickers.css" />
+  </head>
+  <body>
+    <div class="stage">
+      <!-- Sticker 3: the round Night badge (components/BadgeSticker.tsx). The one
+           sticker for dark laptops and cases; its edge URL follows the ring. -->
+      <svg class="sticker" viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+        <title>Jubilee night badge sticker</title>
+        <defs>
+          <!-- Inside the badge, across the top: glyphs sit outside this baseline -->
+          <path id="badgeTop" d="M 212 450 A 238 238 0 0 1 688 450" fill="none" />
+          <!-- Down the middle of the white rim, under the badge: glyphs face the centre -->
+          <path id="badgeRim" d="M 98 450 A 352 352 0 0 0 802 450" fill="none" />
+        </defs>
+
+        <!-- Die cut -->
+        <g id="cut">
+          <circle class="keyline" cx="450" cy="450" r="320" stroke-width="130" />
+        </g>
+
+        <!-- Artwork -->
+        <circle cx="450" cy="450" r="320" fill="#0b0e14" />
+        <circle cx="450" cy="450" r="292" fill="none" stroke="#ffb81c" stroke-width="5" />
+
+        <text font-family="'Inter'" font-weight="700" font-size="26" letter-spacing="6" fill="#ffb81c" text-anchor="middle">
+          <textPath href="#badgeTop" startOffset="50%">CHRISTIAN-OWNED · TORONTO</textPath>
+        </text>
+
+        <g transform="translate(343.5 318) scale(2.2)" fill="none">
+          <path d="M60 8 V60 A20 20 0 0 1 20 60 V38" stroke="#f4f2ec" stroke-width="14.5" stroke-linecap="butt" />
+          <path d="M36 27 H84" stroke="#ffb81c" stroke-width="14.5" stroke-linecap="butt" />
+        </g>
+        <text
+          class="wide"
+          x="450"
+          y="600"
+          text-anchor="middle"
+          font-family="'Archivo'"
+          font-weight="700"
+          font-size="76"
+          letter-spacing="-2"
+          fill="#f4f2ec"
+        >jubilee</text>
+
+        <!-- Edge URL -->
+        <text font-family="'Archivo'" font-weight="800" font-size="28" letter-spacing="7" fill="#000000" text-anchor="middle">
+          <textPath href="#badgeRim" startOffset="50%">JUBILEE.TO</textPath>
+        </text>
+      </svg>
+    </div>
+  </body>
+</html>
