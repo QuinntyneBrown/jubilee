@@ -26,6 +26,22 @@ import { DataDownloadPage } from '../pages/data-download.page';
 import { ConfirmEmailChangePage } from '../pages/confirm-email-change.page';
 import { NotificationSettingsPage } from '../pages/notification-settings.page';
 import { SavedPage } from '../pages/saved.page';
+import { FeedbackPage } from '../pages/feedback.page';
+import {
+  FeedbackBugInvalidScreen,
+  FeedbackBugScreenshotsScreen,
+  FeedbackLauncherScreen,
+  FeedbackPanelBugScreen,
+  FeedbackPanelKudosReadyScreen,
+  FeedbackPanelKudosScreen,
+  FeedbackPanelRateChosenScreen,
+  FeedbackPanelScreen,
+  FeedbackPanelSentScreen,
+  FeedbackRateInvalidScreen,
+  ListBusinessCheckInLowScreen,
+  ListBusinessCheckInThanksScreen,
+  ListBusinessSubmittedScreen,
+} from '../pages/feedback.screens';
 import { ForgotPasswordPage } from '../pages/forgot-password.page';
 import { ResetPasswordPage } from '../pages/reset-password.page';
 import { NotificationsPage } from '../pages/notifications.page';
@@ -88,6 +104,32 @@ export const screens: {
   { key: 'confirm-email-change.success', screen: (page) => new ConfirmEmailChangePage(page) },
   { key: 'confirm-email-change.expired', screen: (page) => new ConfirmEmailChangePage(page) },
   { key: 'confirm-email-change.in-use', screen: (page) => new ConfirmEmailChangePage(page) },
+  { key: 'browse.feedback-launcher', screen: (page) => new FeedbackLauncherScreen(page) },
+  { key: 'feedback-panel', screen: (page) => new FeedbackPanelScreen(page) },
+  { key: 'feedback-panel.rate-chosen', screen: (page) => new FeedbackPanelRateChosenScreen(page) },
+  { key: 'feedback-panel.bug', screen: (page) => new FeedbackPanelBugScreen(page) },
+  { key: 'feedback-panel.kudos', screen: (page) => new FeedbackPanelKudosScreen(page) },
+  { key: 'feedback-panel.kudos-ready', screen: (page) => new FeedbackPanelKudosReadyScreen(page) },
+  { key: 'feedback-panel.sent-rating', screen: (page) => new FeedbackPanelSentScreen(page) },
+  { key: 'feedback', screen: (page) => new FeedbackPage(page) },
+  { key: 'feedback.rate-invalid', screen: (page) => new FeedbackRateInvalidScreen(page) },
+  { key: 'feedback.bug', screen: (page) => new FeedbackPage(page) },
+  { key: 'feedback.bug-invalid', screen: (page) => new FeedbackBugInvalidScreen(page) },
+  { key: 'feedback.bug-screenshots', screen: (page) => new FeedbackBugScreenshotsScreen(page) },
+  { key: 'feedback.kudos', screen: (page) => new FeedbackPage(page) },
+  { key: 'feedback.kudos-no-business', screen: (page) => new FeedbackPage(page) },
+  { key: 'feedback.history-empty', screen: (page) => new FeedbackPage(page) },
+  { key: 'feedback.history-loading', screen: (page) => new FeedbackPage(page) },
+  { key: 'feedback.history-error', screen: (page) => new FeedbackPage(page) },
+  { key: 'list-business.success', screen: (page) => new ListBusinessSubmittedScreen(page) },
+  {
+    key: 'list-business.success-check-in-low',
+    screen: (page) => new ListBusinessCheckInLowScreen(page),
+  },
+  {
+    key: 'list-business.success-check-in-thanks',
+    screen: (page) => new ListBusinessCheckInThanksScreen(page),
+  },
   { key: 'saved', screen: (page) => new SavedPage(page) },
   { key: 'saved.empty', screen: (page) => new SavedPage(page) },
   { key: 'saved.error', screen: (page) => new SavedPage(page) },

@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Send feedback from the panel
+
+Person(visitor, "Visitor", "Sees no launcher")
+Person(member, "Member", "Sends a rating or a bug report or kudos from any screen")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Browses without the launcher", "HTTPS")
+Rel(member, jubilee, "Opens the panel and sends feedback in", "HTTPS")
+@enduml

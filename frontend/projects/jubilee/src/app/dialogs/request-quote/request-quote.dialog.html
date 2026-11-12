@@ -28,6 +28,16 @@
     >
   }
   @if (view() === 'success') {
+    <div jb-dialog-body>
+      <div
+        jb-moment-check
+        question="How easy was it to send your request?"
+        [score]="checkIn.score()"
+        [thanked]="checkIn.thanked()"
+        (scoreChange)="checkIn.choose($event)"
+        (sent)="checkIn.send($event)"
+      ></div>
+    </div>
     <div jb-dialog-footer>
       <button jb-button type="button" (click)="close()">Close</button>
       <a

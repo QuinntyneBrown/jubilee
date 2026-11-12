@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Save a check-in
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+participant "Jubilee Web" as web
+box "Backend — Jubilee API" #D1FADF
+  participant "FeedbackController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SaveCheckInCommandHandler" as handler
+  participant "Feedback" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+web -> controller : PUT /api/feedback/check-ins/{id} with moment and score and optional note
+controller -> handler : Send SaveCheckInCommand with the member of the session
+handler -> handler : Validate the moment and the score of 1 to 5 and the note of at most 1,000 characters
+alt Invalid input
+  handler --> controller : ValidationFailedException
+  controller --> web : 422 with MOMENT_UNKNOWN or SCORE_REQUIRED or NOTE_TOO_LONG
+else Valid
+  handler -> db : Load Feedback by id
+  db --> handler : Feedback or none
+  alt Feedback of another member
+    handler --> controller : NotFoundException
+    controller --> web : 404 (L2-133)
+  else Check-in of the caller
+    handler -> entity : Replace the score and the note
+    handler -> db : Save
+    db --> handler : Commit result
+    controller --> web : 204 No Content
+  else No feedback with the id
+    handler -> db : Count the member's check-ins of the past hour
+    db --> handler : Count
+    alt 30 already
+      handler --> controller : RateLimitedException
+      controller --> web : 429 with Retry-After (L2-137)
+    else Under the limit
+      handler -> entity : Create a Feedback of kind CheckIn with the id
+      handler -> db : Save
+      db --> handler : Commit result
+      controller --> web : 204 No Content
+    end
+  end
+end
+@enduml

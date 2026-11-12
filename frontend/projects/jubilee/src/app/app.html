@@ -49,4 +49,7 @@
     (accountMenu)="openAccountMenu($event)"
   ></nav>
 }
+@if (routeData().shell === 'app' && member() && routeData().page !== 'feedback') {
+  <jb-feedback-launcher (opened)="openFeedback($event)" />
+}
 <jb-toast-region />

@@ -188,6 +188,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         Logs.Clear();
         await WithDb(async db =>
         {
+            db.RemoveRange(db.FeedbackScreenshots);
+            db.RemoveRange(db.Feedback);
             db.RemoveRange(db.Notifications);
             db.RemoveRange(db.RequestTransitions);
             db.RemoveRange(db.DeliveryMethods);

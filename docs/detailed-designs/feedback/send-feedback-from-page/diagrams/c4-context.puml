@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Send feedback from the page
+
+Person(visitor, "Visitor", "Is sent to sign in and returns to the page")
+Person(member, "Member", "Tells the full story on the feedback page")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Opens /feedback in", "HTTPS")
+Rel(member, jubilee, "Sends a rating or a bug report with screenshots or kudos in", "HTTPS")
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Receive and store feedback
+
+Person(visitor, "Visitor", "Is refused by every feedback endpoint")
+Person(member, "Member", "Sends feedback and reads their own")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Receives 401 from", "HTTPS")
+Rel(member, jubilee, "Sends and reads feedback in", "HTTPS")
+@enduml

@@ -1,0 +1,147 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Receive and store feedback
+
+enum FeedbackKind {
+  Rating
+  BugReport
+  Kudos
+  CheckIn
+}
+
+enum FeedbackStatus {
+  Received
+  Read
+  InProgress
+  Fixed
+}
+
+enum BugFrequency {
+  Once
+  Sometimes
+  EveryTime
+}
+
+enum CheckInMoment {
+  RequestSent
+  ListingSubmitted
+}
+
+class AreaScores <<record>> {
+  +int? Finding
+  +int? Listing
+  +int? Messaging
+  +int? Trust
+}
+
+class Feedback {
+  +{static} int MaxNoteLength = 1000
+  +{static} int MaxAnswerLength = 2000
+  +{static} int MaxScreenshots = 3
+  +{static} string[] KudosChips
+  +{static} string[] BugPlaces
+  +Guid Id
+  +FeedbackKind Kind
+  +string MemberSubject
+  +string MemberName
+  +FeedbackStatus Status
+  +DateTimeOffset CreatedAt
+  +string IdempotencyKey
+  +bool MayContact
+  +int? Rating
+  +string? Note
+  +int? FindingScore
+  +int? ListingScore
+  +int? MessagingScore
+  +int? TrustScore
+  +string? Reply
+  .. bug report ..
+  what happened, place, expectation
+  BugFrequency?, screen, browser and device
+  version, reference
+  .. kudos ..
+  chips, listing id, consent to show
+  .. check-in ..
+  CheckInMoment?
+  --
+  +{static} IsScore(score: int?): bool
+  +{static} Rate(...): Feedback
+  +MarkRead(): void
+  +StartWork(): void
+  +MarkFixed(): void
+  +ReplyWith(reply: string): void
+}
+
+class FeedbackScreenshot {
+  +Guid Id
+  +string MemberSubject
+  +string ContentType
+  +byte[] Content
+  +DateTimeOffset CreatedAt
+  +Guid? FeedbackId
+}
+
+class Listing {
+  +Guid Id
+  +string Slug
+  +string Name
+}
+
+class FeedbackController {
+  +Mine(): IReadOnlyList<FeedbackItemDto>
+  +Rate(body: SendRatingBody): 201
+  .. one action per further endpoint ..
+  POST bug-reports, POST kudos
+  POST screenshots, PUT check-ins/{id}
+  GET businesses
+}
+
+class SendRatingCommand
+class SendBugReportCommand
+class SendKudosCommand
+class SaveCheckInCommand
+class UploadFeedbackScreenshotCommand
+class GetMyFeedbackQuery
+class GetKudosBusinessesQuery
+
+class FeedbackRules {
+  +{static} int ItemsPerHour = 10
+}
+
+class ImageSanitizer <<static>>
+
+Feedback --> "1" FeedbackKind
+Feedback --> "1" FeedbackStatus
+Feedback --> "0..1" BugFrequency
+Feedback --> "0..1" CheckInMoment
+Feedback ..> AreaScores : takes
+Feedback "0..1" o-- "0..3" FeedbackScreenshot : screenshots of a bug report
+Feedback "0..*" --> "0..1" Listing : kudos for
+FeedbackController ..> SendRatingCommand : sends
+FeedbackController ..> SendBugReportCommand : sends
+FeedbackController ..> SendKudosCommand : sends
+FeedbackController ..> SaveCheckInCommand : sends
+FeedbackController ..> UploadFeedbackScreenshotCommand : sends
+FeedbackController ..> GetMyFeedbackQuery : sends
+FeedbackController ..> GetKudosBusinessesQuery : sends
+SendRatingCommand ..> Feedback : creates
+SendBugReportCommand ..> Feedback : creates
+SendKudosCommand ..> Feedback : creates
+SaveCheckInCommand ..> Feedback : creates or replaces
+UploadFeedbackScreenshotCommand ..> FeedbackScreenshot : creates
+UploadFeedbackScreenshotCommand ..> ImageSanitizer : cleans with
+SendRatingCommand ..> FeedbackRules : limited by
+SendBugReportCommand ..> FeedbackRules : limited by
+SendKudosCommand ..> FeedbackRules : limited by
+@enduml

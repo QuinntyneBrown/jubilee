@@ -101,6 +101,12 @@ export type StubName =
   | 'confirm-email-change'
   | 'confirm-email-change-expired'
   | 'confirm-email-change-in-use'
+  | 'feedback'
+  | 'feedback-empty'
+  | 'feedback-loading'
+  | 'feedback-error'
+  | 'feedback-no-business'
+  | 'feedback-check-in'
   | 'saved'
   | 'saved-empty'
   | 'saved-error'
@@ -925,6 +931,109 @@ export const routes = {
     mock: 'pages/confirm-email-change/in-use.html',
     who: 'visitor',
     stub: 'confirm-email-change-in-use',
+  },
+  // Member feedback (L2-210 to L2-213). The panel has no address: its screen opens it.
+  'browse.feedback-launcher': {
+    app: '/',
+    mock: 'pages/browse/feedback-launcher.html',
+    who: 'member',
+  },
+  'feedback-panel': { app: '/', mock: 'dialogs/feedback/default.html', who: 'member' },
+  'feedback-panel.rate-chosen': {
+    app: '/',
+    mock: 'dialogs/feedback/rate-chosen.html',
+    who: 'member',
+  },
+  'feedback-panel.bug': { app: '/', mock: 'dialogs/feedback/bug.html', who: 'member' },
+  'feedback-panel.kudos': { app: '/', mock: 'dialogs/feedback/kudos.html', who: 'member' },
+  'feedback-panel.kudos-ready': {
+    app: '/',
+    mock: 'dialogs/feedback/kudos-ready.html',
+    who: 'member',
+  },
+  'feedback-panel.sent-rating': {
+    app: '/',
+    mock: 'dialogs/feedback/sent-rating.html',
+    who: 'member',
+    stub: 'feedback',
+  },
+  feedback: {
+    app: '/feedback/rate',
+    mock: 'pages/feedback/default.html',
+    who: 'member',
+    stub: 'feedback',
+  },
+  'feedback.rate-invalid': {
+    app: '/feedback/rate',
+    mock: 'pages/feedback/rate-invalid.html',
+    who: 'member',
+    stub: 'feedback',
+  },
+  'feedback.bug': {
+    app: '/feedback/bug',
+    mock: 'pages/feedback/bug.html',
+    who: 'member',
+    stub: 'feedback',
+  },
+  'feedback.bug-invalid': {
+    app: '/feedback/bug',
+    mock: 'pages/feedback/bug-invalid.html',
+    who: 'member',
+    stub: 'feedback',
+  },
+  'feedback.bug-screenshots': {
+    app: '/feedback/bug',
+    mock: 'pages/feedback/bug-screenshots.html',
+    who: 'member',
+    stub: 'feedback',
+  },
+  'feedback.kudos': {
+    app: '/feedback/kudos',
+    mock: 'pages/feedback/kudos.html',
+    who: 'member',
+    stub: 'feedback',
+  },
+  'feedback.kudos-no-business': {
+    app: '/feedback/kudos',
+    mock: 'pages/feedback/kudos-no-business.html',
+    who: 'member',
+    stub: 'feedback-no-business',
+  },
+  'feedback.history-empty': {
+    app: '/feedback/rate',
+    mock: 'pages/feedback/history-empty.html',
+    who: 'member',
+    stub: 'feedback-empty',
+  },
+  'feedback.history-loading': {
+    app: '/feedback/rate',
+    mock: 'pages/feedback/history-loading.html',
+    who: 'member',
+    stub: 'feedback-loading',
+  },
+  'feedback.history-error': {
+    app: '/feedback/rate',
+    mock: 'pages/feedback/history-error.html',
+    who: 'member',
+    stub: 'feedback-error',
+  },
+  'list-business.success': {
+    app: '/list',
+    mock: 'pages/list-business/success.html',
+    who: 'member',
+    stub: 'feedback-check-in',
+  },
+  'list-business.success-check-in-low': {
+    app: '/list',
+    mock: 'pages/list-business/success-check-in-low.html',
+    who: 'member',
+    stub: 'feedback-check-in',
+  },
+  'list-business.success-check-in-thanks': {
+    app: '/list',
+    mock: 'pages/list-business/success-check-in-thanks.html',
+    who: 'member',
+    stub: 'feedback-check-in',
   },
   saved: { app: '/saved', mock: 'pages/saved/default.html', who: 'member', stub: 'saved' },
   'saved.empty': {

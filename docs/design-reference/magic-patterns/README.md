@@ -93,6 +93,37 @@ new capture. `sign-up-intents-1280.png` and `browse-rooms-shelf-*.png` show the 
   `marketing-home-360.png` and `marketing-home-1280.png` and adds its rows to the table. Until
   then the marketing components are compared with the mocks only.
 
+- **The "Feedback" frame and the "Feedback Review" canvas.** Member feedback (L1-029) is drawn in
+  the editor only: the frame "Feedback" (the feedback page,
+  <https://www.magicpatterns.com/os/vjQEdxvHPvuznVPfxRXYfe/hTBKhcvY3pn42huxjd3C54>), the shared
+  source `shared/components/Feedback.tsx` (the launcher, the panel, the star scale, the kind tabs
+  and the moment check-in) and the canvas "Feedback Review"
+  (<https://www.magicpatterns.com/os/vjQEdxvHPvuznVPfxRXYfe/w29MqU6vhuqi7xutXeQkF5>), which lays
+  out every state: the panel on Browse (rate, report a bug, kudos, sent), the check-in on a listing
+  after a request and on the submitted listing form, and the page (rate, report a bug, kudos for a
+  business, sent). None of it is on the published site. The repository owner exports the canvas
+  here as `feedback-page-<state>-<width>.png`, `feedback-panel-<state>-<width>.png` and
+  `feedback-check-in-<width>.png` and adds their rows to the table. Until then the feedback
+  components (`feedback-launcher`, `star-scale`, `score-scale`, `moment-check`, `feedback-history`
+  and the `corner` dialog, the `segmented` tab list) are compared with the mocks only. The mocks
+  were drawn from the frame's source: its sizes, radii, copy and motion.
+
+## Feedback: what the product changes from the frame
+
+The frame is a prototype with sample data. The product keeps its layout and changes these, by
+decision (ADR 0043):
+
+| Frame | Product | Why |
+|---|---|---|
+| "Rooms & rentals", "Request to rent", "rental", "host", "space" | "business", "request", "listing" | The specifications have no rentals; the words are those of `docs/specs/` |
+| Four rating areas named for rentals | "Finding businesses", "Listing your business", "Messages and requests", "Trust and verification" | The product's real areas |
+| "Logged as JB-1042. We'll message you in Jubilee when it's fixed." | "Logged as {reference}. Follow it under Your feedback." | Telling the member about a status change is deferred; the reference is real |
+| "We've passed your note to Legacy Financial. It will appear on their page once they've seen it." and "Show this on their Jubilee page with my first name" | "Thank you. We've kept your note for {business}." and "Jubilee may show this on their page with my first name" | Showing kudos on a business page is deferred; the consent is stored |
+| "Include a screenshot of this screen" in the panel | absent; the page's "Add screenshots" stays | A page cannot capture itself reliably on every phone browser |
+| "We'll attach: … Safari on iPhone · v1.4.2" | the screen, the browser and the app version as the member's device reports them | Real values |
+| "You can message me about this", ticked | the same label, not ticked | Consent is given, never assumed (L2-145) |
+| The panel has no scrim from 768 px | the panel is a modal dialog with the scrim at every width | One dialog behaviour, focus held inside (L2-160) |
+
 ## Known differences
 
 Where the design system and the mocks differ from the reference, the difference is listed here

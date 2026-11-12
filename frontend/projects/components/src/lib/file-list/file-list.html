@@ -1,0 +1,42 @@
+<input
+  #picker
+  type="file"
+  hidden
+  tabindex="-1"
+  aria-hidden="true"
+  [attr.accept]="accept()"
+  [multiple]="multiple()"
+  (change)="picked()"
+/>
+<button
+  #add
+  class="file-list__add"
+  type="button"
+  [disabled]="disabled() || full()"
+  (click)="open()"
+>
+  <svg jb-icon size="lg" name="image" class="file-list__add-icon"></svg>
+  <span>{{ label() }}</span>
+</button>
+@if (files().length > 0) {
+  <ul class="file-list__items" [attr.aria-label]="listLabel()">
+    @for (file of files(); track file.id) {
+      <li class="file-list__item">
+        <svg jb-icon name="image" class="file-list__icon"></svg>
+        <span class="file-list__name">{{ file.name }}</span>
+        <button
+          class="file-list__remove"
+          type="button"
+          [attr.aria-label]="'Remove ' + file.name"
+          [disabled]="disabled()"
+          (click)="remove(file.id)"
+        >
+          Remove
+        </button>
+      </li>
+    }
+  </ul>
+}
+@if (error(); as error) {
+  <span class="file-list__error" role="alert">{{ error }}</span>
+}

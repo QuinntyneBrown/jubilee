@@ -33,6 +33,16 @@
           ></li>
         </ol>
       </div>
+      <div jb-section>
+        <div
+          jb-moment-check
+          question="How easy was it to list your business?"
+          [score]="checkIn.score()"
+          [thanked]="checkIn.thanked()"
+          (scoreChange)="checkIn.choose($event)"
+          (sent)="checkIn.send($event)"
+        ></div>
+      </div>
     </div>
   } @else {
     <div class="split" style="margin-top: var(--space-6)">

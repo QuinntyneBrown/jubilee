@@ -25,6 +25,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<AccessRequest> AccessRequests => Set<AccessRequest>();
 
+    public DbSet<Feedback> Feedback => Set<Feedback>();
+
+    public DbSet<FeedbackScreenshot> FeedbackScreenshots => Set<FeedbackScreenshot>();
+
     public DbSet<ListingReport> ListingReports => Set<ListingReport>();
 
     public DbSet<ListingReportEntry> ListingReportEntries => Set<ListingReportEntry>();

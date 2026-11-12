@@ -1,0 +1,84 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Follow your feedback
+
+class FeedbackHistory <<jb-feedback-history>> {
+  +items: InputSignal<FeedbackItem[]>
+  +state: InputSignal<"loading" | "loaded" | "failed">
+  +retry: OutputEmitterRef<void>
+}
+
+interface FeedbackApi {
+  +mine(): Observable<FeedbackItem[]>
+}
+
+class FeedbackItem {
+  +id: string
+  +kind: string
+  +rating: number | null
+  +summary: string | null
+  +businessName: string | null
+  +createdAt: string
+  +status: string
+  +reference: string | null
+  +reply: string | null
+}
+
+class GetMyFeedbackQuery {
+  +string Subject
+}
+
+class GetMyFeedbackQueryHandler {
+  +Handle(query: GetMyFeedbackQuery): Task<IReadOnlyList<FeedbackItemDto>>
+}
+
+class FeedbackItemDto {
+  +Guid Id
+  +string Kind
+  +int? Rating
+  +string? Summary
+  +string? BusinessName
+  +DateTimeOffset CreatedAt
+  +string Status
+  +string? Reference
+  +string? Reply
+}
+
+enum FeedbackStatus {
+  Received
+  Read
+  InProgress
+  Fixed
+}
+
+class Feedback {
+  +Guid Id
+  +FeedbackKind Kind
+  +string MemberSubject
+  +FeedbackStatus Status
+  +string? Reply
+  +DateTimeOffset CreatedAt
+  +MarkRead(): void
+  +StartWork(): void
+  +MarkFixed(): void
+  +ReplyWith(reply: string): void
+}
+
+FeedbackHistory --> "0..*" FeedbackItem : shows
+FeedbackApi ..> FeedbackItem : answers
+GetMyFeedbackQueryHandler ..> GetMyFeedbackQuery : handles
+GetMyFeedbackQueryHandler ..> FeedbackItemDto : answers
+GetMyFeedbackQueryHandler --> Feedback : reads
+Feedback --> "1" FeedbackStatus
+@enduml

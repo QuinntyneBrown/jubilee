@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Answer a moment check-in
+
+Person(member, "Member", "Has just sent a request or submitted a listing")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(member, jubilee, "Answers how easy it was in", "HTTPS")
+@enduml

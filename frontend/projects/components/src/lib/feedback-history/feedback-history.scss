@@ -1,0 +1,89 @@
+// Block: feedback-history. The host is the section.
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.feedback-history__heading {
+  font: var(--text-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.feedback-history__list {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.feedback-history__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+}
+
+.feedback-history__item + .feedback-history__item {
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.feedback-history__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-subtle);
+  color: var(--color-fg-default);
+}
+
+.feedback-history__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.feedback-history__title {
+  font: var(--text-label);
+  font-size: var(--font-size-md);
+  overflow-wrap: anywhere;
+}
+
+.feedback-history__meta {
+  margin-top: var(--space-0-5);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.feedback-history__status {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-fg-default);
+}
+
+.feedback-history__reply {
+  margin-top: var(--space-2);
+  padding-left: var(--space-3);
+  border-left: var(--border-width-thick) solid var(--color-accent);
+  font: var(--text-body-sm);
+  color: var(--color-fg-default);
+  overflow-wrap: anywhere;
+}
+
+.feedback-history__empty {
+  margin-top: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.feedback-history__error {
+  margin-top: var(--space-3);
+}
+
+.feedback-history__placeholder {
+  flex: none;
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
+}

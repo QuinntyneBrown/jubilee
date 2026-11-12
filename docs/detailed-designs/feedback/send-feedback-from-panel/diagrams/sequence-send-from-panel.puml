@@ -1,0 +1,67 @@
+@startuml
+title UML sequence behaviour — Send from the panel
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "FeedbackDialog" as dialog
+  participant "FeedbackApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "FeedbackController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "Send command handler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+dialog --> actor : Send button disabled while nothing can be sent (L2-210)
+actor -> dialog : Choose a star or type what went wrong or press a chip
+dialog --> actor : Send button enabled
+actor -> dialog : Press "Send rating" or "Send report" or "Send kudos"
+dialog --> actor : Button busy with aria-busy and a second press sends nothing (L2-127)
+dialog -> client : sendRating or sendBugReport or sendKudos(request, key of the tab)
+client -> controller : POST /api/feedback/ratings or bug-reports or kudos with Idempotency-Key
+controller -> controller : Take the member from the session (L2-133)
+controller -> handler : Send the command
+handler -> db : Look up the member's feedback with this key (L2-132)
+db --> handler : Feedback or none
+alt Key seen before
+  handler --> controller : First item
+else New key
+  handler -> handler : Validate and apply the hourly limit
+  handler -> db : Save Feedback with status Received
+  db --> handler : Commit result
+  handler --> controller : FeedbackItemDto
+end
+controller --> client : 201 Created with the item
+client --> dialog : FeedbackItem
+alt Rating
+  dialog --> actor : "Thank you, {first name}." and "Every rating is read, and it shapes what we build next."
+else Bug report
+  dialog --> actor : "Thank you, {first name}." and "Logged as {reference}. Follow it under Your feedback."
+else Kudos
+  dialog --> actor : "Thank you, {first name}." and "We'll pass it on to the team. Notes like this keep us going."
+end
+actor -> dialog : Press "Done"
+dialog --> actor : Close and return focus to the launcher
+opt Send fails or takes longer than 10 seconds or answers 429
+  client --> dialog : Error or timeout
+  dialog --> actor : Alert "We couldn't send that" with the reason and the input kept (L2-128)
+  actor -> dialog : Press the send button again
+  dialog -> client : Same call with the same key (L2-132)
+end
+@enduml

@@ -1,0 +1,91 @@
+// Block: feedback-launcher. The host only holds the button, which shares the bars' layer, so
+// dialogs and toasts cover it; under 48rem it sits above the phone tab bar.
+:host {
+  display: contents;
+}
+
+.feedback-launcher {
+  position: fixed;
+  z-index: var(--z-sticky);
+  right: var(--space-4);
+  bottom: calc(var(--layout-tabbar-height) + env(safe-area-inset-bottom) + var(--space-6));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: var(--control-height-md);
+  height: var(--control-height-md);
+  padding: 0;
+  border: var(--border-width-hairline) solid var(--color-border-inverse);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-inverse);
+  color: var(--color-fg-inverse);
+  font: var(--text-label);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  box-shadow: var(--shadow-3);
+  cursor: pointer;
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.feedback-launcher:hover {
+  box-shadow: var(--shadow-4);
+}
+
+.feedback-launcher:active {
+  transform: scale(0.97);
+}
+
+.feedback-launcher:focus-visible {
+  border-radius: var(--radius-full);
+}
+
+.feedback-launcher__label {
+  display: none;
+}
+
+// A screen with a booking bar keeps the launcher clear of it on a phone.
+@media (max-width: 47.99rem) {
+  :host-context(body:has(.booking-bar)) .feedback-launcher {
+    bottom: calc(
+      var(--layout-tabbar-height) + env(safe-area-inset-bottom) + var(--control-height-lg) +
+        var(--space-6) + var(--space-4)
+    );
+  }
+}
+
+@media (min-width: 48rem) {
+  .feedback-launcher {
+    right: var(--space-6);
+    bottom: var(--space-6);
+    width: auto;
+    padding: 0 var(--space-4);
+  }
+
+  .feedback-launcher__label {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-launcher:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .feedback-launcher {
+    forced-color-adjust: none;
+    background: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
+}
+
+@media print {
+  .feedback-launcher {
+    display: none;
+  }
+}

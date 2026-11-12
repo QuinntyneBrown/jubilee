@@ -132,6 +132,53 @@ public sealed class ContentVersionConfiguration : IEntityTypeConfiguration<Conte
     }
 }
 
+public sealed class FeedbackConfiguration : IEntityTypeConfiguration<Feedback>
+{
+    public void Configure(EntityTypeBuilder<Feedback> builder)
+    {
+        builder.ToTable("Feedback");
+        builder.HasKey(f => f.Id);
+        builder.Property(f => f.Id).ValueGeneratedNever();
+        builder.Property(f => f.Kind).HasConversion<string>().HasMaxLength(16);
+        builder.Property(f => f.Status).HasConversion<string>().HasMaxLength(16);
+        builder.Property(f => f.MemberSubject).HasMaxLength(100).IsRequired();
+        builder.Property(f => f.MemberName).HasMaxLength(200).IsRequired();
+        builder.Property(f => f.IdempotencyKey).HasMaxLength(100).IsRequired();
+        builder.Property(f => f.Note).HasMaxLength(Feedback.MaxNoteLength);
+        builder.Property(f => f.Reply).HasMaxLength(Feedback.MaxAnswerLength);
+        builder.HasIndex(f => new { f.MemberSubject, f.IdempotencyKey }).IsUnique();
+        builder.Property(f => f.Reference).HasMaxLength(16);
+        builder.Property(f => f.Place).HasMaxLength(16);
+        builder.Property(f => f.Happened).HasMaxLength(Feedback.MaxAnswerLength);
+        builder.Property(f => f.Expected).HasMaxLength(Feedback.MaxAnswerLength);
+        builder.Property(f => f.Frequency).HasConversion<string>().HasMaxLength(16);
+        builder.Property(f => f.Screen).HasMaxLength(Feedback.MaxScreenLength);
+        builder.Property(f => f.UserAgent).HasMaxLength(Feedback.MaxUserAgentLength);
+        builder.Property(f => f.AppVersion).HasMaxLength(Feedback.MaxVersionLength);
+        builder.Property(f => f.BusinessName).HasMaxLength(200);
+        builder.Property(f => f.Chips).HasMaxLength(200);
+        builder.Property(f => f.Moment).HasConversion<string>().HasMaxLength(24);
+        builder.Ignore(f => f.ChipList);
+        builder.HasIndex(f => f.Reference).IsUnique();
+        builder.HasIndex(f => new { f.MemberSubject, f.CreatedAt });
+        builder.HasOne<Listing>().WithMany().HasForeignKey(f => f.ListingId).OnDelete(DeleteBehavior.SetNull);
+    }
+}
+
+public sealed class FeedbackScreenshotConfiguration : IEntityTypeConfiguration<FeedbackScreenshot>
+{
+    public void Configure(EntityTypeBuilder<FeedbackScreenshot> builder)
+    {
+        builder.ToTable("FeedbackScreenshots");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.UploaderSubject).HasMaxLength(100).IsRequired();
+        builder.Property(s => s.ContentType).HasMaxLength(50).IsRequired();
+        builder.HasIndex(s => new { s.UploaderSubject, s.CreatedAt });
+        builder.HasOne<Feedback>().WithMany().HasForeignKey(s => s.FeedbackId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
 public sealed class ListingReportConfiguration : IEntityTypeConfiguration<ListingReport>
 {
     public void Configure(EntityTypeBuilder<ListingReport> builder)

@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Answer a moment check-in
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(book, "BookMeetingDialog", "CDK dialog", "Success view with the moment request-sent")
+  Component(quote, "RequestQuoteDialog", "CDK dialog", "Success view with the moment request-sent")
+  Component(item, "RequestItemDialog", "CDK dialog", "Success view with the moment request-sent")
+  Component(list, "ListBusinessPage", "Angular page", "Submitted view with the moment listing-submitted")
+  Component(check, "jb-moment-check", "Library component", "Question and low-score note and thanks")
+  Component(scale, "jb-score-scale", "Library component", "Five native radios 1 to 5 between Very hard and Very easy")
+  Component(client, "FeedbackApi", "Service contract", "saveCheckIn(id, request)")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "FeedbackController", "ASP.NET Core controller", "PUT /api/feedback/check-ins/{id}")
+  Component(handler, "SaveCheckInCommandHandler", "MediatR handler", "Creates the check-in or replaces the caller's own")
+  Component(entity, "Feedback", "Domain entity", "Kind CheckIn with moment and score and note")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Feedback rows")
+
+Rel(book, check, "Places")
+Rel(quote, check, "Places")
+Rel(item, check, "Places")
+Rel(list, check, "Places")
+Rel(check, scale, "Shows")
+Rel(book, client, "Saves through")
+Rel(quote, client, "Saves through")
+Rel(item, client, "Saves through")
+Rel(list, client, "Saves through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, handler, "Sends SaveCheckInCommand")
+Rel(handler, entity, "Creates or replaces")
+Rel(handler, db, "Reads and saves", "EF Core")
+@enduml

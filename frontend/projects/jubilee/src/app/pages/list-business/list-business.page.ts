@@ -52,10 +52,13 @@ import {
   Price,
   EmptyState,
   BusinessCardPreview,
+  MomentCheck,
+  Section,
 } from 'components';
 import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialog';
 import { SessionService } from '../../services/session.service';
 import { clockTime, newKey } from 'api';
+import { momentCheckIn } from '../../services/moment-check-in';
 import {
   INCLUSIONS,
   PLACES,
@@ -179,6 +182,8 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
     Price,
     EmptyState,
     BusinessCardPreview,
+    MomentCheck,
+    Section,
     Chip,
     SpaceCardPreview,
     Textarea,
@@ -189,6 +194,8 @@ function summaryFor(field: FieldName, code: string, space: boolean): string {
   templateUrl: './list-business.page.html',
 })
 export class ListBusinessPage {
+  /** The one question of the confirmation (L2-211). */
+  protected readonly checkIn = momentCheckIn('listing-submitted');
   private readonly api = inject(LISTING_DRAFTS_API);
   private readonly dialog = inject(Dialog);
   private readonly route = inject(ActivatedRoute);

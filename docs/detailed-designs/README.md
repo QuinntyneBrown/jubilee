@@ -80,6 +80,16 @@ and observability are marked `<TO SUPPLY>` in the feature designs.
 | [Search the directory](directory/search-directory/README.md) | `L2-029`, `L2-030`, `L2-031`, `L2-032`, `L2-028`, `L2-118`, `L2-133`, `L2-181`, `L2-204` |
 | [View welcome page](directory/view-welcome-page/README.md) | `L2-020`, `L2-028`, `L2-027`, `L2-106` |
 
+### feedback
+
+| Feature | L2 requirements cited |
+|---|---|
+| [Answer a moment check-in](feedback/answer-moment-check-in/README.md) | `L2-211` |
+| [Follow your feedback](feedback/follow-your-feedback/README.md) | `L2-213`, `L2-123`, `L2-125`, `L2-133` |
+| [Receive and store feedback](feedback/receive-and-store-feedback/README.md) | `L2-214`, `L2-132`, `L2-133`, `L2-136`, `L2-137`, `L2-138`, `L2-017`, `L2-018` |
+| [Send feedback from the page](feedback/send-feedback-from-page/README.md) | `L2-212`, `L2-126`, `L2-138` |
+| [Send feedback from the panel](feedback/send-feedback-from-panel/README.md) | `L2-210`, `L2-127`, `L2-128`, `L2-130`, `L2-132`, `L2-158` |
+
 ### interaction-states
 
 | Feature | L2 requirements cited |

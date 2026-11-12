@@ -46,9 +46,19 @@
     padding: var(--space-12) var(--space-4) 0;
   }
 
+  // The feedback panel: a card in the bottom right corner.
+  :host(.dialog--corner) {
+    place-items: end;
+  }
+
   .dialog__panel {
     border-radius: var(--radius-lg);
     animation-name: scale-in;
+  }
+
+  .dialog__panel--corner {
+    max-width: 24rem;
+    transform-origin: bottom right;
   }
 }
 

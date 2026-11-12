@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Receive and store feedback
+
+Person(member, "Member", "Sends feedback and reads their own")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Panel and feedback page and moment check-ins")
+  Container(api, "Jubilee API", "ASP.NET Core", "Feedback endpoints under /api/feedback")
+  Container(cli, "Jubilee CLI", ".NET console application", "jubilee migrate adds the Feedback and FeedbackScreenshots tables")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Feedback and FeedbackScreenshots")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Calls the feedback endpoints of", "JSON/HTTPS")
+Rel(api, db, "Reads and writes feedback and screenshots in", "EF Core")
+Rel(cli, db, "Applies the migration to", "EF Core")
+@enduml

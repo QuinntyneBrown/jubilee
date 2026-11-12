@@ -1,0 +1,7 @@
+<div class="score-rows__text">
+  <p class="score-rows__name">{{ heading() }}</p>
+  @if (detail(); as detail) {
+    <p class="score-rows__detail">{{ detail }}</p>
+  }
+</div>
+<ng-content />

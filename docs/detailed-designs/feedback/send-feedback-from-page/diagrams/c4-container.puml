@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Send feedback from the page
+
+Person(member, "Member", "Sends feedback from the feedback page")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Feedback page at /feedback/:tab")
+  Container(api, "Jubilee API", "ASP.NET Core", "Validates and stores feedback and cleans screenshots")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Feedback and FeedbackScreenshots")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "Uploads screenshots and posts feedback to", "JSON/HTTPS")
+Rel(web, api, "Reads the contacted businesses from", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml

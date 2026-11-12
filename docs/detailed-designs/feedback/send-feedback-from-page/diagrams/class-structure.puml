@@ -1,0 +1,114 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Send feedback from the page
+
+interface FeedbackApi {
+  +sendRating(request: RatingRequest, idempotencyKey: string): Observable<FeedbackItem>
+  +sendBugReport(request: BugReportRequest, idempotencyKey: string): Observable<FeedbackItem>
+  +sendKudos(request: KudosRequest, idempotencyKey: string): Observable<FeedbackItem>
+  +uploadScreenshot(picture: Blob): Observable<UploadedScreenshot>
+  +kudosBusinesses(): Observable<KudosBusiness[]>
+}
+
+class HttpFeedbackApi {
+  -http: HttpClient
+}
+
+class FeedbackPage {
+  #tab: Signal<FeedbackTab>
+  #view: Signal<View>
+  #problems: Signal<Record<string, string>>
+  #screenshots: Signal<ChosenScreenshot[]>
+  #businesses: Signal<KudosBusiness[]>
+  -keys: Record<FeedbackTab, string>
+  #selectTab(tab: FeedbackTab): void
+  #addScreenshots(files: File[]): void
+  #removeScreenshot(index: number): void
+  #submit(): void
+}
+
+class RatingRequest {
+  +rating: number
+  +note: string | null
+  +areas: AreaScores
+  +mayContact: boolean
+}
+
+class AreaScores {
+  +finding: number | null
+  +listing: number | null
+  +messaging: number | null
+  +trust: number | null
+}
+
+class BugReportRequest {
+  +place: BugPlace
+  +happened: string
+  +expected: string | null
+  +frequency: BugFrequency | null
+  +screen: string
+  +version: string
+  +screenshotIds: string[]
+  +mayContact: boolean
+}
+
+class KudosRequest {
+  +chips: KudosChip[]
+  +note: string | null
+  +business: string | null
+  +mayShow: boolean
+  +mayContact: boolean
+}
+
+class ChosenScreenshot {
+  +name: string
+  +blob: Blob
+  +id: string | null
+}
+
+class UploadedScreenshot {
+  +id: string
+}
+
+class KudosBusiness {
+  +slug: string
+  +name: string
+}
+
+class FeedbackItem {
+  +id: string
+  +kind: string
+  +status: string
+  +reference: string | null
+  +businessName: string | null
+  +createdAt: string
+}
+
+class PhotoAttachmentService {
+  +typeOf(file: Blob): Promise<"image/jpeg" | "image/png" | null>
+  +needsShrinking(file: Blob): boolean
+}
+
+HttpFeedbackApi ..|> FeedbackApi
+FeedbackPage --> FeedbackApi : sends through
+FeedbackPage --> PhotoAttachmentService : checks files with
+FeedbackPage "1" *-- "0..3" ChosenScreenshot
+FeedbackPage --> "0..*" KudosBusiness
+RatingRequest *-- "1" AreaScores
+FeedbackApi ..> RatingRequest
+FeedbackApi ..> BugReportRequest
+FeedbackApi ..> KudosRequest
+FeedbackApi ..> UploadedScreenshot : answers
+FeedbackApi ..> FeedbackItem : answers
+@enduml

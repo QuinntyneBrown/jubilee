@@ -1,0 +1,26 @@
+<legend [id]="legendId()">
+  {{ legend() }}
+  @if (required()) {
+    <span class="star-scale__marker">(required)</span>
+  }
+</legend>
+<div class="star-scale__stars">
+  @for (word of words(); track $index) {
+    <label class="star-scale__star">
+      <input
+        type="radio"
+        [name]="controlId()"
+        [value]="$index + 1"
+        [checked]="value() === $index + 1"
+        [disabled]="disabled()"
+        (change)="valueChange.emit($index + 1)"
+      />
+      <svg jb-icon name="star" class="star-scale__icon"></svg>
+      <span class="visually-hidden">{{ $index + 1 }} of {{ words().length }}: {{ word }}</span>
+    </label>
+  }
+  <span class="star-scale__word" aria-hidden="true">{{ word() }}</span>
+</div>
+@if (error(); as error) {
+  <span class="star-scale__error" [id]="errorId()">{{ error }}</span>
+}

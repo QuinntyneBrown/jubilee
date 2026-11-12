@@ -229,7 +229,7 @@ def run_checks(root: Path) -> tuple[list[str], list[str], dict]:
     required_by_kind.update(manifest.get("required_states", {}))
     listed: set[Path] = set()
     ids_cache: dict[Path, set[str]] = {}
-    seen_ids: set[str] = set()
+    seen_ids: set[tuple[str, str]] = set()
     coverage: dict[str, list[dict]] = {kind: [] for kind in KIND_FOLDERS}
 
     for screen in manifest["screens"]:
@@ -237,9 +237,9 @@ def run_checks(root: Path) -> tuple[list[str], list[str], dict]:
         if not sid or kind not in KIND_FOLDERS:
             errors.append(f"manifest: screen {screen!r} needs an 'id' and a 'kind' of {sorted(KIND_FOLDERS)}")
             continue
-        if sid in seen_ids:
-            errors.append(f"manifest: duplicate screen id '{sid}'")
-        seen_ids.add(sid)
+        if (kind, sid) in seen_ids:
+            errors.append(f"manifest: duplicate {kind} id '{sid}'")
+        seen_ids.add((kind, sid))
         if not screen.get("title"):
             errors.append(f"manifest: screen '{sid}' has no title")
         states = screen.get("states") or []

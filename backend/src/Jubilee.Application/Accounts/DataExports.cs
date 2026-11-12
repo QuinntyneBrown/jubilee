@@ -198,6 +198,7 @@ internal static class DataArchive
             ["savedList"] = await Saved(db, subject, cancellationToken),
             ["requests"] = await Requests(db, subject, cancellationToken),
             ["conversations"] = await Conversations(db, subject, cancellationToken),
+            ["feedback"] = await FeedbackOf(db, subject, cancellationToken),
         };
 
         var owned = await db.Listings.AsNoTracking().Where(l => l.OwnerId == subject && l.DeletedAt == null).ToListAsync(cancellationToken);
@@ -252,6 +253,40 @@ internal static class DataArchive
             kind = i.Kind.ToString(),
             name = (i.Kind == SavedItemKind.Business ? listingNames : productNames).GetValueOrDefault(i.TargetId) ?? "(no longer listed)",
             savedAt = i.SavedAt,
+        }).ToList();
+    }
+
+    /// <summary>Everything the member sent as feedback, check-ins too (L2-214 AC12). A screenshot is counted, not copied.</summary>
+    private static async Task<object> FeedbackOf(IAppDbContext db, string subject, CancellationToken cancellationToken)
+    {
+        var feedback = (await db.Feedback.AsNoTracking().Where(f => f.MemberSubject == subject).ToListAsync(cancellationToken))
+            .OrderBy(f => f.CreatedAt).ToList();
+        var screenshots = (await db.FeedbackScreenshots.AsNoTracking()
+            .Where(s => s.UploaderSubject == subject && s.FeedbackId != null).Select(s => s.FeedbackId).ToListAsync(cancellationToken))
+            .GroupBy(id => id!.Value).ToDictionary(g => g.Key, g => g.Count());
+        return feedback.Select(f => new
+        {
+            kind = f.Kind.ToString(),
+            status = f.Status.ToString(),
+            sent = f.CreatedAt,
+            f.Rating,
+            f.Note,
+            areas = new { finding = f.FindingScore, listing = f.ListingScore, messaging = f.MessagingScore, trust = f.TrustScore },
+            f.Reference,
+            where = f.Place,
+            f.Happened,
+            f.Expected,
+            frequency = f.Frequency?.ToString(),
+            f.Screen,
+            f.UserAgent,
+            f.AppVersion,
+            screenshots = screenshots.GetValueOrDefault(f.Id),
+            business = f.BusinessName,
+            chips = f.ChipList,
+            f.ShowOnPage,
+            moment = f.Moment?.ToString(),
+            f.MayContact,
+            f.Reply,
         }).ToList();
     }
 

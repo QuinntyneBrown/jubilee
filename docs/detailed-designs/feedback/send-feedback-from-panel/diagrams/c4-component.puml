@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Send feedback from the panel
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(app, "App", "Angular root container", "Shows the launcher for a member on an app-shell route other than feedback")
+  Component(launcher, "jb-feedback-launcher", "Library component", "Pill Feedback from 768 px and round button Give feedback under it")
+  Component(dialog, "FeedbackDialog", "CDK dialog", "Tabs and values and view and one idempotency key per tab")
+  Component(frame, "jb-dialog corner placement", "Library component", "Bottom sheet under 640 px and corner card from 640 px")
+  Component(tabs, "div[jb-tab-list] segmented look", "Library component", "Rate and Report a bug and Kudos with roving focus")
+  Component(stars, "jb-star-scale", "Library component", "Five native radios named n of 5 and a word")
+  Component(chips, "jb-chip", "Library component", "Toggle button with aria-pressed")
+  Component(session, "SessionService", "Angular service", "Holds the member and the first name")
+  Component(client, "FeedbackApi", "Service contract", "FEEDBACK_API implemented by HttpFeedbackApi")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "FeedbackController", "ASP.NET Core controller", "POST /api/feedback/ratings and bug-reports and kudos")
+}
+
+Rel(app, launcher, "Renders")
+Rel(app, session, "Reads the member from")
+Rel(app, dialog, "Opens with the route page through CDK Dialog")
+Rel(dialog, frame, "Is framed by")
+Rel(dialog, tabs, "Composes")
+Rel(dialog, stars, "Composes")
+Rel(dialog, chips, "Composes")
+Rel(dialog, session, "Reads the first name from")
+Rel(dialog, client, "Sends through")
+Rel(client, ctrl, "Calls with Idempotency-Key", "JSON/HTTPS")
+@enduml

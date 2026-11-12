@@ -1,0 +1,80 @@
+@startuml
+title UML sequence behaviour — Send a bug report with screenshots
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "FeedbackPage" as page
+  participant "jb-file-list" as files
+  participant "PhotoAttachmentService" as photo
+  participant "FeedbackApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "FeedbackController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "UploadFeedbackScreenshotCommandHandler" as upload
+  participant "SendBugReportCommandHandler" as send
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> files : Press "Add screenshots" and choose files
+files -> page : Files chosen
+loop Each chosen file
+  alt Three screenshots already listed
+    page -> files : Show "You can add up to three screenshots."
+  else
+    page -> photo : typeOf(file)
+    photo --> page : image/jpeg or image/png or null
+    alt Not a JPEG or PNG, or over 5 MB
+      page -> files : Show "Use a JPEG or PNG of 5 MB or less." (L2-212)
+    else Accepted
+      page -> files : List the file by name with "Remove"
+    end
+  end
+end
+actor -> page : Fill the form and press "Send bug report"
+page -> page : Check the place and what happened (L2-126)
+loop Each listed screenshot without an id
+  page -> client : uploadScreenshot(blob)
+  client -> controller : POST /api/feedback/screenshots
+  controller -> upload : Send UploadFeedbackScreenshotCommand
+  upload -> upload : Check the bytes and the size then remove metadata (L2-138)
+  upload -> db : Save FeedbackScreenshot for the member
+  db --> upload : Commit result
+  upload --> controller : Screenshot id
+  controller --> client : 201 Created or 422 INVALID_IMAGE or TOO_LARGE or 429
+  client --> page : Id kept with the screenshot for a retry
+end
+page -> client : sendBugReport(request with screenshotIds, key)
+client -> controller : POST /api/feedback/bug-reports with Idempotency-Key and User-Agent
+controller -> send : Send SendBugReportCommand with the User-Agent value
+send -> db : Load the named screenshots of the caller that no report uses
+db --> send : Screenshots
+send -> send : Draw a reference FB- and six characters
+send -> db : Save the bug report and link its screenshots
+db --> send : Commit result
+send --> controller : FeedbackItemDto with the reference
+controller --> client : 201 Created
+client --> page : FeedbackItem
+page --> actor : "Got it. We're on it." and "{First name}, your report is logged as {reference}. Follow it under Your feedback."
+opt An upload or the send fails
+  client --> page : Error or timeout
+  page --> actor : Alert "We couldn't send that" with the screenshots and their ids kept
+  actor -> page : Submit again
+  page -> client : Upload only the screenshots without an id then send with the same key (L2-132)
+end
+@enduml

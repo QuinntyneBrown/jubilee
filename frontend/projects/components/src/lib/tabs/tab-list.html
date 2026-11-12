@@ -8,9 +8,13 @@
     [attr.aria-selected]="item.key === selected()"
     [attr.aria-controls]="panelPrefix() ? panelPrefix() + item.key : null"
     [attr.tabindex]="item.key === selected() ? null : -1"
+    [disabled]="disabled() && item.key !== selected()"
     (click)="selectedChange.emit(item.key)"
     (keydown)="move($event, i)"
   >
+    @if (item.icon; as icon) {
+      <svg jb-icon size="sm" [name]="icon"></svg>
+    }
     {{ item.label }}
     @if (item.count !== undefined && item.count !== null) {
       <span jb-badge>{{ item.count }}</span>

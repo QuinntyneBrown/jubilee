@@ -14,6 +14,8 @@ import {
   CONTENT_API,
   HttpReportsApi,
   REPORTS_API,
+  FEEDBACK_API,
+  HttpFeedbackApi,
   ACCOUNT_DATA_API,
   HttpAccountDataApi,
   HttpProfileApi,
@@ -51,6 +53,7 @@ import {
   SESSION_API,
 } from 'api';
 import { ADMIN_URL } from './admin-url';
+import { APP_VERSION } from './app-version';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 import { connectionInterceptor } from './services/offline/connection.interceptor';
@@ -73,10 +76,12 @@ export const appConfig: ApplicationConfig = {
     // "Shop products" scrolls to the products (L2-034 AC1).
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     { provide: ADMIN_URL, useValue: environment.adminUrl },
+    { provide: APP_VERSION, useValue: environment.version },
     { provide: ACCOUNT_API, useClass: HttpAccountApi },
     { provide: CONTENT_API, useClass: HttpContentApi },
     { provide: HELP_API, useClass: HttpHelpApi },
     { provide: REPORTS_API, useClass: HttpReportsApi },
+    { provide: FEEDBACK_API, useClass: HttpFeedbackApi },
     { provide: PROFILE_API, useClass: HttpProfileApi },
     { provide: ACCOUNT_DATA_API, useClass: HttpAccountDataApi },
     { provide: PASSWORD_RESET_API, useClass: HttpPasswordResetApi },

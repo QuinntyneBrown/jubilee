@@ -15,6 +15,7 @@ import {
   ChromeMember,
   ConnectionBanner,
   ConnectionBannerKind,
+  FeedbackLauncher,
   SiteFooter,
   SkipLink,
   TabBar,
@@ -25,6 +26,7 @@ import {
 import { filter, map, startWith } from 'rxjs';
 import { JbRouteData } from './app.routes';
 import { AccountMenuData, AccountMenuDialog } from './dialogs/account-menu/account-menu.dialog';
+import type { FeedbackDialogData } from './dialogs/feedback/feedback.dialog';
 import { ConnectionService, STATUS_URL } from './services/offline/connection.service';
 import { QueueDrainer } from './services/offline/queue-drainer';
 import { ClockService } from 'api';
@@ -40,6 +42,7 @@ const BARE: JbRouteData = { shell: 'bare', page: '' };
   selector: 'jb-root',
   imports: [
     ConnectionBanner,
+    FeedbackLauncher,
     RouterOutlet,
     SkipLink,
     TopBar,
@@ -192,6 +195,19 @@ export class App {
       ariaModal: true,
       backdropClass: 'backdrop',
       restoreFocus: avatar,
+    });
+  }
+
+  /** The feedback panel from the launcher (L2-210); focus returns to the launcher when it closes. */
+  protected async openFeedback(launcher: HTMLElement): Promise<void> {
+    // The panel is loaded when it is first opened, so it adds nothing to the first load.
+    const { FeedbackDialog } = await import('./dialogs/feedback/feedback.dialog');
+    this.dialog.open<void, FeedbackDialogData>(FeedbackDialog, {
+      data: { page: this.routeData().page },
+      ariaLabelledBy: 'dlg-title',
+      ariaModal: true,
+      backdropClass: 'backdrop',
+      restoreFocus: launcher,
     });
   }
 

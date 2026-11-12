@@ -1,0 +1,133 @@
+// Block: star-scale. The host is the fieldset. The state is the radio's :checked: the chosen
+// star and those before it are filled. Each star is a 44px target; --jb-star-size is the drawn
+// star.
+:host {
+  --jb-star-size: var(--avatar-size-sm);
+}
+
+:host(.star-scale--lg) {
+  --jb-star-size: calc(var(--avatar-size-sm) + var(--space-1));
+}
+
+.star-scale__marker {
+  font-weight: var(--font-weight-regular);
+  color: var(--color-fg-muted);
+}
+
+.star-scale__stars {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-inline-start: calc((var(--jb-star-size) - var(--target-comfortable)) / 2);
+}
+
+.star-scale__star {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--target-comfortable);
+  height: var(--target-comfortable);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.star-scale__star input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.star-scale__icon {
+  width: var(--jb-star-size);
+  height: var(--jb-star-size);
+  fill: none;
+  stroke: var(--color-border-strong);
+  stroke-width: 1.75;
+  transition:
+    fill var(--duration-fast) var(--ease-standard),
+    stroke var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.star-scale__star:has(input:checked) .star-scale__icon,
+.star-scale__star:has(~ .star-scale__star input:checked) .star-scale__icon {
+  fill: var(--color-accent);
+  stroke: var(--color-accent-border);
+}
+
+@media (hover: hover) {
+  .star-scale__star:hover .star-scale__icon,
+  .star-scale__star:has(~ .star-scale__star:hover) .star-scale__icon {
+    stroke: var(--color-fg-default);
+  }
+}
+
+.star-scale__star:active .star-scale__icon {
+  transform: scale(0.9);
+}
+
+.star-scale__star:has(input:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: calc(-1 * var(--focus-ring-width));
+}
+
+.star-scale__star:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.star-scale__star:has(input:disabled) input {
+  cursor: not-allowed;
+}
+
+.star-scale__word {
+  margin-inline-start: var(--space-2);
+  font: var(--text-label);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-fg-default);
+}
+
+:host(:not(:has(input:checked))) .star-scale__word {
+  color: var(--color-fg-muted);
+}
+
+:host(.star-scale--lg) .star-scale__word {
+  font-size: var(--font-size-lg);
+}
+
+:host([aria-invalid='true']) .star-scale__icon {
+  stroke: var(--color-danger-solid);
+}
+
+.star-scale__error {
+  margin-top: var(--space-1);
+  font: var(--text-body-sm);
+  color: var(--color-danger-fg);
+  display: flex;
+  gap: var(--space-1);
+  align-items: flex-start;
+}
+
+.star-scale__error::before {
+  content: '⚠' / '';
+  flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-scale__star:active .star-scale__icon {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .star-scale__star:has(input:checked) .star-scale__icon,
+  .star-scale__star:has(~ .star-scale__star input:checked) .star-scale__icon {
+    fill: Highlight;
+    stroke: Highlight;
+  }
+}
