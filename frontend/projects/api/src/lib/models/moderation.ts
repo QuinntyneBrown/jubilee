@@ -6,14 +6,17 @@ export type ReportStatus = 'open' | 'in-review' | 'resolved';
 export type ReportFilter = 'unresolved' | 'open' | 'in-review' | 'resolved';
 
 export type ReportActionKind =
-  'dismiss' | 'message-reporter' | 'message-owner' | 'hold' | 'remove' | 'lift-hold';
+  'dismiss' | 'message-reporter' | 'message-owner' | 'hold' | 'remove' | 'lift-hold' | 'take-down';
+
+/** What a report is about: a listing, a conversation with it, or a review of it (L2-236). */
+export type ReportType = 'listing' | 'conversation' | 'review';
 
 /** How a reported listing stands: live, paused, on hold, removed. */
 export type ListingState = 'live' | 'paused' | 'on-hold' | 'removed' | 'not-live';
 
 export interface ReportListItem {
   id: string;
-  type: 'listing' | 'conversation';
+  type: ReportType;
   listing: { name: string; slug: string };
   reason: string;
   description: string;
@@ -44,9 +47,22 @@ export interface ReportAction {
   at: string;
 }
 
+/** A reported review as it stands, for the verification team (L2-236 AC2). */
+export interface ReviewUnderReport {
+  author: string;
+  initials: string;
+  rating: number;
+  itemName: string;
+  text: string;
+  createdAt: string;
+  editedAt: string | null;
+  reply: { from: string; text: string; at: string; editedAt: string | null } | null;
+  takenDown: boolean;
+}
+
 export interface ReportDetail {
   id: string;
-  type: 'listing' | 'conversation';
+  type: ReportType;
   status: ReportStatus;
   overdue: boolean;
   createdAt: string;
@@ -55,6 +71,8 @@ export interface ReportDetail {
   entries: { reason: string; description: string; at: string }[];
   /** The messages of a reported conversation, only while the report is unresolved. */
   conversation: { memberName: string; messages: ReportedMessage[] } | null;
+  /** The reported review, for a report of type `review`. */
+  review?: ReviewUnderReport | null;
   actions: ReportAction[];
   resolutionNote: string | null;
 }

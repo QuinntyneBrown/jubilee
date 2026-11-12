@@ -1,7 +1,8 @@
 <jb-dialog
   heading="{{ wording().title }}"
   description="{{ wording().text }}"
-  icon="shield"
+  [icon]="data.kind === 'take-down' ? 'trash' : 'shield'"
+  [tone]="data.kind === 'take-down' ? 'danger' : 'info'"
   [busy]="busy()"
   (closed)="close()"
 >
@@ -14,16 +15,18 @@
     @if (wording().messages) {
       <div
         jb-field
-        label="Message"
+        [label]="wording().messageLabel ?? 'Message'"
         controlId="r-text"
         required
-        [error]="textProblem() ? 'Write the message to send.' : null"
+        [counter]="counter()"
+        [error]="textProblem() ? (wording().messageMissing ?? 'Write the message to send.') : null"
       >
         <textarea
           jb-textarea
           name="messageText"
           rows="4"
           required
+          [attr.maxlength]="wording().messageMax ?? null"
           [readOnly]="busy()"
           [ngModel]="text()"
           (ngModelChange)="text.set($event)"
@@ -35,7 +38,7 @@
       label="Resolution note"
       controlId="r-note"
       required
-      hint="Kept with the report and in the audit log. Never shown to the owner or the reporter."
+      [hint]="wording().noteHint ?? noteHint"
       [error]="noteProblem() ? 'Write a note about what you decided and why.' : null"
     >
       <textarea

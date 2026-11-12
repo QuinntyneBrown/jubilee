@@ -33,6 +33,9 @@
     @let report = current.value;
     <jb-page-header [heading]="title(report)">
       <ng-container ngProjectAs="[slot=subtitle]">
+        @if (report.type === 'review') {
+          Review ·
+        }
         {{ report.entries[0].reason }} · received {{ received(report) }} ·
         @if (report.overdue) {
           <span jb-badge tone="warning">Overdue</span>
@@ -53,24 +56,67 @@
       </ng-container>
     </jb-page-header>
     <div class="stack" style="margin-top: var(--space-4)">
-      <section jb-card heading="Report" headingId="rep">
-        <dl jb-description-list style="margin-top: var(--space-4)">
-          <div jb-description-item term="Business">
-            <a [routerLink]="['/b', report.listing.slug]">{{ report.listing.name }}</a> ·
-            {{ listingState(report) }}
+      @if (report.review; as review) {
+        <section jb-card heading="The review as it stands" headingId="rv">
+          <div style="margin-top: var(--space-4)">
+            <article jb-review [review]="reviewView(review)"></article>
           </div>
-          @for (entry of report.entries; track entry.at) {
-            <div jb-description-item term="Reason" [value]="entry.reason"></div>
-            <div jb-description-item term="What they wrote" [value]="entry.description"></div>
-          }
-          <div jb-description-item term="Reporter">
-            {{ report.reporterName }}
-            <span class="text-caption"
-              >Visible to the verification team only. The owner is never told.</span
-            >
-          </div>
-        </dl>
-      </section>
+          <p class="text-caption" style="margin-top: var(--space-3)">
+            On <a [routerLink]="['/b', report.listing.slug]">{{ report.listing.name }}</a> ·
+            @if (review.takenDown) {
+              taken down
+            } @else if (review.reply) {
+              the owner replied
+            } @else {
+              no reply from the owner
+            }
+          </p>
+        </section>
+        <section
+          jb-card
+          [heading]="'Reports of this review (' + report.entries.length + ')'"
+          headingId="reps"
+        >
+          <ul jb-rows style="margin-top: var(--space-3)">
+            @for (entry of report.entries; track entry.at) {
+              <li jb-row>
+                <p jb-row-title>{{ entry.reason }}</p>
+                <p jb-row-meta>
+                  {{ when(entry.at) }} ·
+                  @if (entry.description) {
+                    “{{ entry.description }}”
+                  } @else {
+                    no note
+                  }
+                </p>
+              </li>
+            }
+          </ul>
+          <p class="text-caption" style="margin-top: var(--space-3)">
+            Reporters are visible to the verification team only. The author and the owner are never
+            told who reported it.
+          </p>
+        </section>
+      } @else {
+        <section jb-card heading="Report" headingId="rep">
+          <dl jb-description-list style="margin-top: var(--space-4)">
+            <div jb-description-item term="Business">
+              <a [routerLink]="['/b', report.listing.slug]">{{ report.listing.name }}</a> ·
+              {{ listingState(report) }}
+            </div>
+            @for (entry of report.entries; track entry.at) {
+              <div jb-description-item term="Reason" [value]="entry.reason"></div>
+              <div jb-description-item term="What they wrote" [value]="entry.description"></div>
+            }
+            <div jb-description-item term="Reporter">
+              {{ report.reporterName }}
+              <span class="text-caption"
+                >Visible to the verification team only. The owner is never told.</span
+              >
+            </div>
+          </dl>
+        </section>
+      }
       @if (report.conversation; as conversation) {
         <section jb-card heading="Reported conversation" headingId="conv">
           <p class="text-caption" style="margin-top: var(--space-2)">
@@ -120,51 +166,87 @@
         <p jb-alert>This report is resolved. No more actions can be taken on it.</p>
       } @else {
         <section jb-card heading="Resolve" headingId="act">
-          <p class="text-muted" style="margin-top: var(--space-2)">
-            Every action needs a resolution note. Dismissing or removing resolves the report; a hold
-            keeps it in review until you lift it.
-          </p>
-          <div class="cluster" style="margin-top: var(--space-4)">
-            <button #dismiss jb-button type="button" (click)="act('dismiss', dismiss.element)">
-              Dismiss report
-            </button>
-            <button
-              #toReporter
-              jb-button
-              type="button"
-              (click)="act('message-reporter', toReporter.element)"
-            >
-              Message reporter
-            </button>
-            <button
-              #toOwner
-              jb-button
-              type="button"
-              (click)="act('message-owner', toOwner.element)"
-            >
-              Message owner
-            </button>
-            @if (report.listing.state === 'on-hold') {
-              <button #lift jb-button type="button" (click)="act('lift-hold', lift.element)">
-                Lift hold
-              </button>
-            } @else if (report.listing.state !== 'removed') {
-              <button #hold jb-button type="button" (click)="act('hold', hold.element)">
-                Place on hold
-              </button>
-            }
-            @if (report.listing.state !== 'removed') {
+          @if (report.type === 'review') {
+            <p class="text-muted" style="margin-top: var(--space-2)">
+              Every action needs a resolution note. Taking the review down resolves every report of
+              it and tells the author why.
+            </p>
+            <div class="cluster" style="margin-top: var(--space-4)">
               <button
-                #remove
+                #dismissReview
                 jb-button
-                variant="danger"
                 type="button"
-                (click)="act('remove', remove.element)"
+                (click)="act('dismiss', dismissReview.element)"
               >
-                Remove listing
+                Dismiss
               </button>
-            }
-          </div>
+              <button
+                #reviewReporter
+                jb-button
+                type="button"
+                (click)="act('message-reporter', reviewReporter.element)"
+              >
+                Message the reporter
+              </button>
+              @if (!report.review?.takenDown) {
+                <button
+                  #takeDown
+                  jb-button
+                  variant="danger"
+                  type="button"
+                  (click)="act('take-down', takeDown.element)"
+                >
+                  Take the review down
+                </button>
+              }
+            </div>
+          } @else {
+            <p class="text-muted" style="margin-top: var(--space-2)">
+              Every action needs a resolution note. Dismissing or removing resolves the report; a
+              hold keeps it in review until you lift it.
+            </p>
+            <div class="cluster" style="margin-top: var(--space-4)">
+              <button #dismiss jb-button type="button" (click)="act('dismiss', dismiss.element)">
+                Dismiss report
+              </button>
+              <button
+                #toReporter
+                jb-button
+                type="button"
+                (click)="act('message-reporter', toReporter.element)"
+              >
+                Message reporter
+              </button>
+              <button
+                #toOwner
+                jb-button
+                type="button"
+                (click)="act('message-owner', toOwner.element)"
+              >
+                Message owner
+              </button>
+              @if (report.listing.state === 'on-hold') {
+                <button #lift jb-button type="button" (click)="act('lift-hold', lift.element)">
+                  Lift hold
+                </button>
+              } @else if (report.listing.state !== 'removed') {
+                <button #hold jb-button type="button" (click)="act('hold', hold.element)">
+                  Place on hold
+                </button>
+              }
+              @if (report.listing.state !== 'removed') {
+                <button
+                  #remove
+                  jb-button
+                  variant="danger"
+                  type="button"
+                  (click)="act('remove', remove.element)"
+                >
+                  Remove listing
+                </button>
+              }
+            </div>
+          }
         </section>
       }
     </div>
