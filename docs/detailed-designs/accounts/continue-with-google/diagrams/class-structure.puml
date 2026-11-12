@@ -23,23 +23,23 @@ enum GoogleSignInOutcome {
   Linked
   CreatedAwaitingAgreement
   EmailNotVerified
-  Rejected
 }
 
 class Member {
   +Guid Id
-  +EmailAddress Email
+  +string Email
+  +string EmailKey
   +EmailStatus EmailStatus
-  +string GoogleSubject
-  +string PasswordHash
+  +string? GoogleSubject
+  +string? PasswordHash
   +DateTimeOffset? AgreementAcceptedAt
-  +{static} JoinWithGoogle(identity: GoogleIdentity, now: DateTimeOffset): Member
-  +LinkGoogle(subject: string): void
-  +AcceptAgreement(now: DateTimeOffset): void
+  +{static} JoinWithGoogle(email: EmailAddress, firstName: string, lastName: string, googleSubject: string, now: DateTimeOffset): Member
+  +LinkGoogle(googleSubject: string): void
+  +AcceptAgreement(now: DateTimeOffset, termsVersion: int): void
   +IsUsable(): bool
 }
 
-class GoogleIdentity <<value object>> {
+class GoogleIdentity <<record>> {
   +string Subject
   +string Email
   +bool EmailVerified
@@ -47,57 +47,86 @@ class GoogleIdentity <<value object>> {
   +string FamilyName
 }
 
-class OidcTransaction {
+class OidcTransaction <<record>> {
   +string State
   +string Nonce
   +string CodeVerifier
-  +ReturnUrl ReturnUrl
-  +DateTimeOffset CreatedAt
+  +string ReturnUrl
+  +string From
 }
 
-class ReturnUrl <<value object>> {
-  +string Path
-  +{static} Parse(raw: string): ReturnUrl
+class ReturnUrl <<static>> {
+  +{static} Parse(value: string?): string
 }
 
 interface IOidcTransactionStore {
-  +Save(transaction: OidcTransaction): Task
-  +Consume(state: string): Task<OidcTransaction>
+  +SaveAsync(transaction: OidcTransaction, cancellationToken: CancellationToken): Task
+  +ConsumeAsync(state: string, cancellationToken: CancellationToken): Task<OidcTransaction?>
 }
 
 interface IGoogleIdentityClient {
-  +BuildAuthorizationUrl(transaction: OidcTransaction): Uri
-  +Redeem(code: string, transaction: OidcTransaction): Task<GoogleIdentity>
+  +bool IsConfigured
+  +BuildAuthorizationUrl(redirectUri: string, state: string, nonce: string, codeChallenge: string): Uri
+  +RedeemAsync(redirectUri: string, code: string, codeVerifier: string, nonce: string, cancellationToken: CancellationToken): Task<GoogleIdentity>
 }
 
-class CompleteGoogleSignInCommand {
+class CompleteGoogleSignInCommand <<record>> {
   +GoogleIdentity Identity
-  +ReturnUrl ReturnUrl
+}
+
+class GoogleSignInResult <<record>> {
+  +GoogleSignInOutcome Outcome
+  +Member? Member
 }
 
 class CompleteGoogleSignInCommandHandler {
-  +Handle(command: CompleteGoogleSignInCommand): Task<GoogleSignInResult>
+  +Handle(request: CompleteGoogleSignInCommand, cancellationToken: CancellationToken): Task<GoogleSignInResult>
+}
+
+class AcceptAgreementCommand <<record>> {
+  +Guid MemberId
 }
 
 class AcceptAgreementCommandHandler {
-  +Handle(command: AcceptAgreementCommand): Task<Result>
+  +Handle(request: AcceptAgreementCommand, cancellationToken: CancellationToken): Task
 }
 
 class GoogleSignInController {
-  +Start(returnUrl: string): IActionResult
-  +Callback(code: string, state: string): Task<IActionResult>
+  +Start(returnUrl: string?, from: string?, cancellationToken: CancellationToken): Task<IActionResult>
+  +Callback(code: string?, state: string?, error: string?, cancellationToken: CancellationToken): Task<IActionResult>
+  -{static} Failure(transaction: OidcTransaction, error: string): string
+  -RedirectUri(): string
+}
+
+class SessionDto <<record>> {
+  +bool SignedIn
+  +bool? AgreementRequired
+  +bool GoogleSignIn
+}
+
+class SessionController {
+  +Get(cancellationToken: CancellationToken): Task<SessionDto>
+}
+
+class AgreementRequiredMiddleware {
+  +InvokeAsync(context: HttpContext, sender: ISender): Task
 }
 
 GoogleSignInController ..> IOidcTransactionStore : uses
 GoogleSignInController ..> IGoogleIdentityClient : uses
 GoogleSignInController ..> CompleteGoogleSignInCommand : sends
+GoogleSignInController ..> ReturnUrl : parses with
 IOidcTransactionStore --> OidcTransaction : stores
-OidcTransaction *-- ReturnUrl : owns
 IGoogleIdentityClient ..> GoogleIdentity : returns
 CompleteGoogleSignInCommand --> GoogleIdentity : carries
 CompleteGoogleSignInCommandHandler ..> CompleteGoogleSignInCommand : handles
 CompleteGoogleSignInCommandHandler --> Member : creates or links
-CompleteGoogleSignInCommandHandler ..> GoogleSignInOutcome : returns
+CompleteGoogleSignInCommandHandler ..> GoogleSignInResult : returns
+GoogleSignInResult --> GoogleSignInOutcome : has
+AcceptAgreementCommandHandler ..> AcceptAgreementCommand : handles
 AcceptAgreementCommandHandler --> Member : mutates
+SessionController ..> IGoogleIdentityClient : reads IsConfigured
+SessionController ..> SessionDto : returns
+AgreementRequiredMiddleware ..> Member : reads the agreement of
 Member --> EmailStatus : has
 @enduml

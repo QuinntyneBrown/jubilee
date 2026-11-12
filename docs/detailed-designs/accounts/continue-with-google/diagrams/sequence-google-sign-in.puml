@@ -16,7 +16,7 @@ skinparam package {
 }
 actor "Visitor" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "SignInPage" as page
+  participant "JoinPage or SignInPage" as page
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "GoogleSignInController" as controller
@@ -27,53 +27,53 @@ box "Backend — Jubilee Application and Domain" #ECFDF3
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   participant "IGoogleIdentityClient" as oidc
+  participant "IOidcTransactionStore" as txn
   database "Cache" as cache
   database "Jubilee database" as db
 end box
 participant "Google Identity" as google
 
-actor -> page : Press "Continue with Google"
-page -> controller : GET /api/auth/google/start?returnUrl=...
-controller -> controller : Create state - nonce - PKCE code verifier (L2-003)
-controller -> cache : Save OidcTransaction keyed by state
-cache --> controller : Saved
-controller --> actor : 302 to Google with state - nonce - code challenge
+actor -> page : Press "Sign up with Google" or "Continue with Google"
+page -> controller : GET /api/auth/google/start?from=join|sign-in&returnUrl=...
+controller -> controller : Create state - nonce - PKCE code verifier - ReturnUrl.Parse (L2-003 - L2-012)
+controller -> txn : SaveAsync(OidcTransaction)
+txn -> cache : Store keyed by state for 10 minutes
+cache --> txn : Saved
+controller -> oidc : BuildAuthorizationUrl(redirectUri, state, nonce, codeChallenge)
+oidc --> controller : Authorization URL
+controller --> actor : 302 to Google with state - nonce - code challenge S256
 actor -> google : Sign in and consent
 google --> actor : 302 to /api/auth/google/callback with code and state
 actor -> controller : GET /api/auth/google/callback
-controller -> cache : Consume OidcTransaction for state
-cache --> controller : Transaction or nothing
-alt state unknown
-  controller --> actor : 302 to /sign-in with the sign-in error state
-else state matches
-  controller -> oidc : Redeem(code, transaction)
-  oidc -> google : Token request with code verifier (PKCE)
-  google --> oidc : ID token
-  oidc -> oidc : Validate signature - issuer - audience - expiry - nonce (L2-003)
-  oidc --> controller : GoogleIdentity or failure
-  alt ID token invalid or nonce mismatch
-    controller --> actor : 302 to /sign-in with the sign-in error state
-  else e-mail not verified by Google
-    controller --> actor : 302 to /sign-in showing "Use a Google account with a confirmed e-mail, or join with e-mail."
-  else identity accepted
-    controller -> handler : Send CompleteGoogleSignInCommand
-    handler -> db : Find member by Google subject - then by e-mail
-    db --> handler : Member or nothing
-    alt member already linked
-      handler -> handler : Outcome SignedIn
-    else confirmed e-mail account with the same verified e-mail
-      handler -> entity : LinkGoogle(subject) (L2-003)
-      entity --> handler : Linked
-    else no account
-      handler -> entity : Member.JoinWithGoogle with EmailStatus Confirmed (L2-003)
-      entity --> handler : Member awaiting agreement
-    end
-    handler -> db : Save changes in one unit of work
-    db --> handler : Commit result
-    handler -> cache : Store new Session (L2-010)
-    cache --> handler : Session identifier
-    handler --> controller : GoogleSignInResult
-    controller --> actor : 302 with session cookie to the return URL or /join/agreement
-  end
+controller -> txn : ConsumeAsync(state)
+txn -> cache : Read and delete
+cache --> txn : Transaction
+txn --> controller : OidcTransaction
+controller -> oidc : RedeemAsync(redirectUri, code, codeVerifier, nonce)
+oidc -> google : Token request with code verifier (PKCE)
+google --> oidc : ID token
+oidc -> oidc : Validate signature - issuer - audience - expiry - nonce (L2-003)
+oidc --> controller : GoogleIdentity with a verified e-mail
+controller -> handler : Send CompleteGoogleSignInCommand
+handler -> db : Find member by GoogleSubject - then by EmailKey
+db --> handler : Member or nothing
+alt member already linked
+  handler -> handler : Outcome SignedIn
+else account with the same verified e-mail
+  handler -> entity : LinkGoogle(subject) (L2-003)
+  entity --> handler : Linked - an unconfirmed account loses its password and is confirmed
+  handler -> db : Save changes
+else no account
+  handler -> entity : Member.JoinWithGoogle with EmailStatus Confirmed (L2-003)
+  entity --> handler : Member awaiting agreement
+  handler -> db : Save the new member
+end
+handler --> controller : GoogleSignInResult with the member
+controller -> db : SignInMemberAsync stores a new MemberSession (L2-010)
+db --> controller : Session key
+alt member is usable
+  controller --> actor : 302 to the return URL with cookie __Host-jubilee.session (L2-135)
+else agreement not accepted yet
+  controller --> actor : 302 to /join/agreement?returnUrl=... with cookie __Host-jubilee.session
 end
 @enduml

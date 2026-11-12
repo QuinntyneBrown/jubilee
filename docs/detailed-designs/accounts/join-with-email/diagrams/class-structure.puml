@@ -21,62 +21,83 @@ enum EmailStatus {
 enum LinkTokenPurpose {
   EmailConfirmation
   PasswordReset
-  EmailChange
-  DataDownload
+  ChangeEmail
 }
 
-class EmailAddress <<value object>> {
+class EmailAddress <<record>> {
   +string Value
-  +{static} Parse(raw: string): EmailAddress
-  -Normalise(raw: string): string
+  +string Key
+  +{static} TryParse(raw: string?): EmailAddress?
 }
 
 class Member {
   +Guid Id
+  +string Email
+  +string EmailKey
   +string FirstName
   +string LastName
-  +EmailAddress Email
   +EmailStatus EmailStatus
-  +string PasswordHash
+  +string? PasswordHash
   +string? HomeChurch
   +string? HomeChurchAddress
-  +DateTimeOffset AgreementAcceptedAt
+  +DateTimeOffset? AgreementAcceptedAt
   +DateTimeOffset CreatedAt
-  +{static} Join(firstName: string, lastName: string, email: EmailAddress, passwordHash: string, homeChurch: string?, homeChurchAddress: string?, now: DateTimeOffset): Member
+  +{static} Join(email: EmailAddress, firstName: string, lastName: string, homeChurch: string?, passwordHash: string, now: DateTimeOffset, termsVersion: int, homeChurchAddress: string?): Member
 }
 
 class LinkToken {
   +Guid Id
   +Guid MemberId
   +LinkTokenPurpose Purpose
-  +byte[] TokenHash
+  +string TokenHash
   +DateTimeOffset ExpiresAt
   +DateTimeOffset? UsedAt
   +DateTimeOffset? SupersededAt
+  +{static} Issue(memberId: Guid, purpose: LinkTokenPurpose, tokenHash: string, now: DateTimeOffset, lifetime: TimeSpan): LinkToken
   +Supersede(now: DateTimeOffset): void
 }
 
-class JoinWithEmailCommand {
-  +string FirstName
-  +string LastName
-  +string Email
-  +string Password
+class LinkTokens <<static>> {
+  +{static} NewValue(): string
+  +{static} Hash(value: string): string
+}
+
+class OutboxMessage {
+  +string ToAddress
+  +string Subject
+  +string TextBody
+  +{static} Email(...): OutboxMessage
+}
+
+class AccountEmails {
+  +QueueConfirmationAsync(member: Member, cancellationToken: CancellationToken): Task
+  +QueueAddressInUseNotice(holder: Member): void
+}
+
+class JoinWithEmailCommand <<record>> {
+  +string? FirstName
+  +string? LastName
+  +string? Email
+  +string? Password
   +string? HomeChurch
   +string? HomeChurchAddress
   +bool AgreementAccepted
-  +string ChallengeToken
-}
-
-class JoinWithEmailCommandValidator {
-  +Validate(command: JoinWithEmailCommand): ValidationResult
 }
 
 class JoinWithEmailCommandHandler {
-  +Handle(command: JoinWithEmailCommand): Task<JoinResult>
+  +Handle(request: JoinWithEmailCommand, cancellationToken: CancellationToken): Task<Member>
+}
+
+class ResendConfirmationCommand <<record>> {
+  +Guid MemberId
 }
 
 class ResendConfirmationCommandHandler {
-  +Handle(command: ResendConfirmationCommand): Task<Result>
+  +Handle(request: ResendConfirmationCommand, cancellationToken: CancellationToken): Task
+}
+
+class ValidationFailedException {
+  +IReadOnlyDictionary<string, string> Errors
 }
 
 interface IPasswordHasher {
@@ -84,25 +105,35 @@ interface IPasswordHasher {
   +Verify(hash: string, password: string): bool
 }
 
-interface ILinkTokenService {
-  +Issue(memberId: Guid, purpose: LinkTokenPurpose, lifetime: TimeSpan): IssuedToken
-  +SupersedeOutstanding(memberId: Guid, purpose: LinkTokenPurpose): void
-}
-
 interface IBreachedPasswordChecker {
-  +IsBreached(password: string): Task<bool>
+  +IsBreachedAsync(password: string, cancellationToken: CancellationToken): Task<bool>
 }
 
-Member *-- EmailAddress : owns
+interface IBotChallengeVerifier {
+  +VerifyAsync(token: string?, remoteIp: string?, cancellationToken: CancellationToken): Task<bool>
+}
+
+class AccountController {
+  +Join(request: JoinRequest, cancellationToken: CancellationToken): Task<ActionResult<JoinResponse>>
+  +ResendConfirmation(cancellationToken: CancellationToken): Task<IActionResult>
+}
+
 Member --> EmailStatus : has
+Member ..> EmailAddress : created from
 Member "1" --> "*" LinkToken : receives
 LinkToken --> LinkTokenPurpose : has
+AccountController ..> IBotChallengeVerifier : uses
+AccountController ..> JoinWithEmailCommand : sends
+AccountController ..> ResendConfirmationCommand : sends
 JoinWithEmailCommandHandler ..> JoinWithEmailCommand : handles
-JoinWithEmailCommandValidator ..> JoinWithEmailCommand : validates
-JoinWithEmailCommandValidator ..> IBreachedPasswordChecker : uses
+JoinWithEmailCommandHandler ..> IBreachedPasswordChecker : uses
 JoinWithEmailCommandHandler ..> IPasswordHasher : uses
-JoinWithEmailCommandHandler ..> ILinkTokenService : uses
+JoinWithEmailCommandHandler ..> AccountEmails : uses
+JoinWithEmailCommandHandler ..> ValidationFailedException : throws
 JoinWithEmailCommandHandler --> Member : creates
-ResendConfirmationCommandHandler ..> ILinkTokenService : uses
-ILinkTokenService --> LinkToken : issues
+ResendConfirmationCommandHandler ..> ResendConfirmationCommand : handles
+ResendConfirmationCommandHandler ..> AccountEmails : uses
+AccountEmails ..> LinkTokens : uses
+AccountEmails --> LinkToken : issues and supersedes
+AccountEmails --> OutboxMessage : queues
 @enduml

@@ -20,15 +20,16 @@ box "Frontend — Jubilee Web" #E0F2FE
   participant "AccountApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
+  participant "ASP.NET Core rate limiter" as limit
+  participant "CsrfMiddleware" as csrf
   participant "AccountController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "ResendConfirmationCommandHandler" as handler
-  participant "ILinkTokenService" as tokens
+  participant "AccountEmails" as emails
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
-  database "Cache" as cache
 end box
 box "Backend — Jubilee Worker" #D1FADF
   participant "OutboxDispatcherJob" as job
@@ -37,31 +38,34 @@ participant "E-mail provider" as email
 
 actor -> page : Press "Send it again"
 page -> client : resendConfirmation()
-client -> controller : POST /api/account/confirmation/resend
-controller -> controller : Authenticate session and check anti-CSRF token (L2-135)
-controller -> cache : Increment resend counter for the member (L2-137)
-alt more than 5 resends in the hour
-  cache --> controller : Limit exceeded
-  controller --> client : 429 with Retry-After
+client -> limit : POST /api/account/confirmation/resend with cookie __Host-jubilee.session
+limit -> limit : Count the request for the member under AccountRateLimit.Resends (L2-137)
+alt more than 5 resends and changes of address in the hour
+  limit --> client : 429 with Retry-After
   client --> page : Rate-limit error
-  page --> actor : Show "You're doing that a lot. Try again in {n} minutes."
+  page --> actor : Show "We couldn’t send it. Try again in a moment."
 else within the limit
-  cache --> controller : Count within limit
+  limit -> csrf : Forward request
+  csrf -> csrf : Check the anti-CSRF token (L2-135)
+  csrf -> controller : Forward request
   controller -> handler : Send ResendConfirmationCommand
-  handler -> tokens : SupersedeOutstanding(member, EmailConfirmation)
-  tokens -> db : Mark earlier tokens superseded (L2-001)
-  db --> tokens : Updated
-  handler -> tokens : Issue(member, EmailConfirmation, 24 hours)
-  tokens --> handler : New token and its SHA-256 hash (L2-140)
+  handler -> db : Load member
+  db --> handler : Unconfirmed member
+  handler -> emails : QueueConfirmationAsync(member)
+  emails -> db : Load outstanding confirmation tokens
+  db --> emails : Tokens
+  emails -> emails : Supersede each earlier token (L2-001)
+  emails -> emails : LinkTokens.NewValue and LinkTokens.Hash - LinkToken for 24 hours (L2-140)
+  emails --> handler : LinkToken and OutboxMessage added
   handler -> db : Save token hash and outbox message in one unit of work
   db --> handler : Commit result
-  handler --> controller : Result
+  handler --> controller : Done
   controller --> client : 202 Accepted
   client --> page : Resent
-  page --> actor : Confirm that a new link is on its way
-  job -> db : Read pending outbox message
-  db --> job : ConfirmationEmailRequested
-  job -> email : Send confirmation e-mail with the new link
+  page --> actor : Show "We sent a new link to {address}."
+  job -> db : Read due outbox messages through OutboxDispatcher
+  db --> job : Confirmation e-mail
+  job -> email : Send confirmation e-mail with the new link through IEmailSender
   email --> job : Accepted
 end
 @enduml

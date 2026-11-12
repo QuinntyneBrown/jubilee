@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Say the resend limit
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "App with jb-verify-email-banner" as banner
+  participant "VerifyEmailPage" as page
+  participant "AccountApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ASP.NET Core rate limiter" as limit
+  participant "AccountController" as controller
+end box
+
+alt "Send it again" on the banner
+  actor -> banner : Press "Send it again"
+  banner -> client : resendConfirmation()
+else "Send it again" on the waiting page
+  actor -> page : Press "Send it again"
+  page -> client : resendConfirmation()
+end
+client -> limit : POST /api/account/confirmation/resend
+limit -> limit : Count the request for the member under AccountRateLimit.Resends (L2-137)
+alt within 5 resends and changes of address in the hour
+  limit -> controller : Forward request
+  controller --> client : 202 Accepted after ResendConfirmationCommand
+  client --> banner : Resent
+  banner --> actor : Banner state sent - or the waiting page says "We sent a new link to {address}."
+else limit reached
+  limit --> client : 429 with Retry-After in seconds - no e-mail is sent
+  client --> banner : Rate-limit error with the wait
+  banner --> actor : Banner state limited - warning tone - "You’re doing that a lot. Try again in {n} minutes." - no "Send it again" (L2-005)
+  client --> page : Rate-limit error with the wait
+  page --> actor : Alert "You’re doing that a lot. Try again in {n} minutes." (L2-005)
+end
+@enduml

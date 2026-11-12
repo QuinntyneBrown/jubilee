@@ -65,8 +65,9 @@ with the confirmation e-mail sent by `Jubilee Worker`.
   `jb-alert` and `jb-form-summary` of the `components` library, and the link
   under the form is a `jb-auth-link`. The inputs limit length to 50 characters
   for each name, 254 for the e-mail and 128 for the password. After a
-  successful join the page shows "Check your e-mail" with "Send it again". A
-  `GuestGuard` on the route redirects a signed-in member to `/`.
+  successful join the page shows "Check your e-mail" with "Open verification
+  page", a link to `/verify-email`, and "Send it again". The `guestGuard` on
+  the route redirects a signed-in member to `/`.
 - **`jb-auth-layout`** — frame component of the `components` library, used
   with `split` by the Sign up and Log in screens (`L2-187`). It takes the
   `heading` and the `lead` of the page as inputs and projects the form. Under
@@ -84,68 +85,103 @@ with the confirmation e-mail sent by `Jubilee Worker`.
   is not submitted. The button follows the password in the tab order and works
   with Enter and with Space. It changes only the `type` of the control in the
   browser; nothing is sent to `Jubilee API`.
-- **`ErrorSummary`** (`jb-form-summary`) — shared Angular component. On an
-  invalid submit it shows a summary titled "Fix {n} things to continue" above
-  the form, lists each problem as a link to its field, and receives focus.
-  Every typed value except the password is kept.
-- **`AccountApi`** — typed Angular HTTP client. `join()` sends
+- **`FormSummary`** (`jb-form-summary`) — component of the `components`
+  library. On an invalid submit it shows a summary titled "Fix {n} things to
+  continue" above the form, lists each problem as a link to its field, and
+  receives focus. Every typed value except the password is kept.
+- **`AccountApi`** — service contract of the `api` library, injected through
+  the `ACCOUNT_API` token and implemented by `HttpAccountApi`. `join()` sends
   `POST /api/account/join` with the form values and the bot challenge token;
   `resendConfirmation()` sends `POST /api/account/confirmation/resend`.
-- **`RateLimitMiddleware`** — ASP.NET Core middleware in `Jubilee.Api`. It
-  counts joins per IP address in the `Cache` and answers `429` with
-  `Retry-After` above 5 per hour, and counts confirmation resends per member
-  above 5 per hour. The page then shows "You're doing that a lot. Try again in
-  {n} minutes."
-- **`AccountController`** — ASP.NET Core controller exposing `/api/account`. For
-  a join it verifies the challenge token with the `Bot challenge provider`
-  through `IBotChallengeVerifier`, sends `JoinWithEmailCommand` through MediatR,
-  and sets the session cookie on success.
-- **`JoinWithEmailCommand`** — request object carrying `FirstName`, `LastName`,
-  `Email`, `Password`, `HomeChurch`, `HomeChurchAddress`, `AgreementAccepted`
-  and `ChallengeToken`. The join request carries `homeChurchAddress` (string or
-  null) beside `homeChurch`; a home church over 100 characters or an address
-  over 200 is refused with the code `TOO_LONG` for that field. Both values are
-  stored on `Member` (`HomeChurch`, `HomeChurchAddress`), are shown to no one
-  and are used only for recommendations (`L2-145`).
-- **`JoinWithEmailCommandValidator`** — FluentValidation validator. It applies
-  the field lengths, the password length of 10 to 128 characters with no
-  composition rules, the agreement, the uniqueness of the normalised e-mail, and
-  the breached-password check through `IBreachedPasswordChecker`. It returns all
-  failures together; `ProblemDetailsMiddleware` maps them to `422` with the
-  field codes `REQUIRED`, `TOO_LONG`, `EMAIL_INVALID`, `EMAIL_TAKEN`,
-  `PASSWORD_TOO_SHORT`, `PASSWORD_BREACHED` and `AGREEMENT_REQUIRED`.
-- **`JoinWithEmailCommandHandler`** — MediatR handler. It hashes the password
-  with `IPasswordHasher`, creates the `Member`, issues the confirmation
-  `LinkToken`, and saves the member, the token hash and a
-  `ConfirmationEmailRequested` outbox message in one unit of work. It then
-  stores a new `Session` so that the unconfirmed member can resend the link.
+- **`AccountRateLimit`** — names of two policies of ASP.NET Core's rate
+  limiter, registered by `DirectoryRateLimit.AddJubileeRateLimiting`; the
+  feature has no middleware of its own for limits. `AccountRateLimit.Joins`
+  allows 5 joins per IP address per hour. `AccountRateLimit.Resends` allows 5
+  requests per member per hour, shared by the confirmation resend and the
+  change of an unconfirmed address (`L2-005`). The limiter counts in fixed
+  windows in the memory of `Jubilee API` and answers `429` with `Retry-After`
+  in seconds and the code `rate_limited`. `JoinPage` then shows "You’re doing
+  that a lot. Try again in {n} minutes."
+- **`AccountController`** — ASP.NET Core controller exposing `/api/account`.
+  For a join it verifies the challenge token with the `Bot challenge provider`
+  through `IBotChallengeVerifier` (`TurnstileBotChallengeVerifier`) before
+  anything else. A failed challenge throws `ValidationFailedException` with
+  `challenge: CHALLENGE_FAILED`, and `JoinPage` shows "We couldn’t check that
+  you’re not a robot. Wait a moment and try again." A passed challenge sends
+  `JoinWithEmailCommand` through MediatR. On success `SignInMemberAsync`
+  starts the session and the controller answers `201` with the stored address.
+- **Session cookie** — `DatabaseTicketStore` stores a `MemberSession` in the
+  `Jubilee database`, and the browser receives only its opaque key in the
+  cookie `__Host-jubilee.session`. `Program.cs` configures the cookie as
+  `Secure` in every environment, `HttpOnly`, `SameSite=Lax`, `Path=/`, with no
+  `Domain` (`L2-135`, ADR 0046). `LegacySessionCookieMiddleware` removes an
+  earlier `jubilee.session` cookie from the browser; that cookie is never read
+  as a session. `CsrfMiddleware` refuses a state-changing request that carries
+  a session cookie without the matching anti-CSRF token.
+- **`JoinWithEmailCommand`** — request record carrying `FirstName`,
+  `LastName`, `Email`, `Password`, `HomeChurch`, `HomeChurchAddress` and
+  `AgreementAccepted`. The challenge token stays in the `JoinRequest` body
+  that the controller reads. The join request carries `homeChurchAddress`
+  (string or null) beside `homeChurch`; a home church over 100 characters or
+  an address over 200 is refused with the code `TOO_LONG` for that field. Both
+  values are stored on `Member` (`HomeChurch`, `HomeChurchAddress`), are shown
+  to no one and are used only for recommendations (`L2-145`).
+- **`JoinWithEmailCommandHandler`** — MediatR handler. It validates the
+  command itself; the slice has no separate validator class. It applies the
+  field lengths, the password length of 10 to 128 characters with no
+  composition rules, the breached-password check through
+  `IBreachedPasswordChecker`, the agreement, and the uniqueness of the e-mail
+  by `Member.EmailKey`. It collects every failure and throws one
+  `ValidationFailedException` with the field codes `REQUIRED`, `TOO_LONG`,
+  `EMAIL_INVALID`, `EMAIL_TAKEN`, `PASSWORD_TOO_SHORT`, `PASSWORD_BREACHED`
+  and `AGREEMENT_REQUIRED`. For a valid command it hashes the password with
+  `IPasswordHasher`, creates the `Member`, calls
+  `AccountEmails.QueueConfirmationAsync`, and saves the member, the token hash
+  and the outbox message in one unit of work. It returns the `Member`.
+- **`ValidationFailedException`** and **`ExceptionHandlingMiddleware`** — the
+  exception carries one code per invalid field. The middleware maps it to
+  `422` ProblemDetails with the code `validation_failed` and the `errors`
+  dictionary.
 - **`Member`** — domain entity. `Member.Join(...)` sets `EmailStatus` to
   `Unconfirmed` and records `AgreementAcceptedAt`.
-- **`EmailAddress`** — value object. `Parse` trims the input and lower-cases the
-  domain, so the stored address is normalised.
+- **`EmailAddress`** — record. `TryParse` trims the input and lower-cases the
+  domain, so the stored address is normalised; it returns null for a value
+  that is not an address. `Key` is the lower-cased form that uniqueness
+  compares.
 - **`IPasswordHasher`** — application service implemented by
-  `Argon2idPasswordHasher`: Argon2id with at least 19 MiB of memory, at least 2
-  iterations and a unique salt. The plain password is never stored and never
-  written to logs.
-- **`ILinkTokenService`** and **`LinkToken`** — the service creates a token with
-  at least 128 bits of randomness, stores only its SHA-256 hash with the purpose
-  `EmailConfirmation` and an expiry of 24 hours, and returns the raw value once
-  for the e-mail. `SupersedeOutstanding` makes earlier links for the same member
-  and purpose stop working.
-- **`ResendConfirmationCommandHandler`** — handles "Send it again". It
-  supersedes the outstanding confirmation tokens, issues a new one and queues a
-  new e-mail.
-- **`OutboxDispatcherJob`** — hosted job in `Jubilee.Worker`. It reads the
-  outbox message and sends the confirmation e-mail through `IEmailSender` to the
-  `E-mail provider`.
+  `Argon2idPasswordHasher`: Argon2id with 19 MiB of memory, 2 iterations and a
+  unique 16-byte salt. The plain password is never stored and never written to
+  logs; request bodies are not logged.
+- **`IBreachedPasswordChecker`** — application service implemented by
+  `HaveIBeenPwnedChecker`. It sends the first 5 characters of the SHA-1 of the
+  password as a k-anonymity range query. When the service does not answer
+  within 2 seconds the password is accepted.
+- **`LinkTokens`** and **`LinkToken`** — `LinkTokens.NewValue()` returns 32
+  random bytes in base64url form, and `LinkTokens.Hash()` returns the SHA-256
+  of a value. `LinkToken.Issue` stores only the hash, with the purpose
+  `EmailConfirmation` and `LinkToken.EmailConfirmationLifetime` of 24 hours.
+  The raw value appears once, in the e-mail.
+- **`AccountEmails`** — application service. `QueueConfirmationAsync`
+  supersedes the outstanding confirmation tokens of the member, issues a new
+  `LinkToken`, and adds an `OutboxMessage` whose text carries the link
+  `/verify-email/{token}`. `QueueAddressInUseNotice` adds an `OutboxMessage`
+  that tells the holder of an address that someone tried to use it.
+- **`ResendConfirmationCommandHandler`** — handles "Send it again". It loads
+  the member, does nothing for a confirmed member, and otherwise calls
+  `AccountEmails.QueueConfirmationAsync` and saves. The controller answers
+  `202`.
+- **`OutboxDispatcherJob`** — hosted job in `Jubilee.Worker`. Every 10 seconds
+  it runs `OutboxDispatcher.DispatchDueAsync`, which sends each due
+  `OutboxMessage` through `IEmailSender` to the `E-mail provider`.
 
 When the e-mail already belongs to an account, the server returns `EMAIL_TAKEN`
-only after the bot challenge passes and within the join rate limit. The field
-shows "An account already uses this e-mail. Log in instead, or use another
-address.", no second account is created, and the handler queues a notice to the
-existing account holder that someone tried to join with the address. A join
-that cannot be loaded or completed because the service is unavailable shows the
-error reference `JB-AUTH-503`.
+only after the request is within the join rate limit and the bot challenge has
+passed. The field shows "An account already uses this e-mail. Log in instead,
+or use another address.", no second account is created, and the handler queues
+a notice to the existing account holder through
+`AccountEmails.QueueAddressInUseNotice`. A join that cannot be loaded or
+completed because the service is unavailable shows the error reference
+`JB-AUTH-503`.
 
 ## Requirements
 
@@ -161,6 +197,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-137` | `L1-019` | The server shall respond `429` with `Retry-After` above 5 joins per IP per hour and above 5 e-mail confirmation resends per hour, and the join form shall be protected by a privacy-respecting bot challenge. |
 | `L2-140` | `L1-019` | An e-mail confirmation token shall have at least 128 bits of randomness, shall be stored only as a SHA-256 hash, shall have a single purpose, and shall expire after 24 hours. |
 | `L2-141` | `L1-019` | For a join with an e-mail that already has an account, the inline message of `L2-002` shall be shown only after the bot challenge passes and within the join rate limit, and an e-mail shall be sent to the existing account holder. |
+| `L2-135` | `L1-019` | A session shall be an opaque random identifier of at least 128 bits in a cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, no `Domain` and the `__Host-` prefix (`__Host-jubilee.session` for a member). The earlier member cookie `jubilee.session` shall not be accepted as a session, and the response shall remove it. |
 | `L2-187` | `L1-001` | The Sign up screen (`/join`) and the Log in screen (`/sign-in`) shall share one frame: a brand panel beside the form from 1024 px, and a card under the lockup below that width. Both screens shall offer to show the password being typed. |
 
 ## Diagrams
@@ -176,45 +213,54 @@ link through the e-mail provider.
 ### Containers
 
 `Jubilee Web` posts the join request to `Jubilee API`, which writes the member,
-the token hash and the outbox message to the `Jubilee database` and keeps the
-rate-limit counter and the session in the `Cache`. `Jubilee Worker` sends the
-e-mail.
+the token hash, the outbox message and the session to the `Jubilee database`.
+The rate limiter counts in the memory of `Jubilee API`. `Jubilee Worker` sends
+the e-mail.
 
 ![C4 container view for joining with e-mail](diagrams/c4-container.png)
 
 ### Components
 
-`JoinPage` submits through `AccountApi`. Inside `Jubilee API` the request passes
-`RateLimitMiddleware`, then `AccountController` validates the command and sends
-it to `JoinWithEmailCommandHandler`, which creates the `Member` and the
-confirmation token. Of the `jb-*` components that `JoinPage` composes, only
-`ErrorSummary` is drawn; the others are presentation.
+`JoinPage` submits through `AccountApi`. Inside `Jubilee API` the request
+passes the `AccountRateLimit.Joins` policy, then `AccountController` verifies
+the challenge through `IBotChallengeVerifier` and sends the command to
+`JoinWithEmailCommandHandler`. The handler validates, creates the `Member` and
+queues the confirmation through `AccountEmails`; a failure reaches the page
+through `ExceptionHandlingMiddleware`. Of the `jb-*` components that `JoinPage`
+composes, only `FormSummary` is drawn; the others are presentation.
 
 ![C4 component view for joining with e-mail](diagrams/c4-component.png)
 
 ### Class structure
 
-`Member` owns an `EmailAddress` and an `EmailStatus` and receives `LinkToken`
-records. The handlers depend on `IPasswordHasher` and `ILinkTokenService`; the
-validator depends on `IBreachedPasswordChecker`.
+`Member` is created from an `EmailAddress`, holds an `EmailStatus` and receives
+`LinkToken` records. `JoinWithEmailCommandHandler` depends on `IPasswordHasher`,
+`IBreachedPasswordChecker` and `AccountEmails`, and throws
+`ValidationFailedException`. `AccountEmails` uses `LinkTokens` to issue a
+`LinkToken` and queues an `OutboxMessage`.
 
 ![Class diagram for joining with e-mail](diagrams/class-structure.png)
 
 ### Behaviour — join with e-mail
 
-The page validates first and shows every problem at once. The server counts the
-attempt, verifies the bot challenge, validates again (`L2-002`), hashes the
-password (`L2-134`), and commits the member, the token hash (`L2-140`) and the
-outbox message in one unit of work. Showing or hiding the password changes
-only the control in the browser and adds no message to the sequence
-(`L2-187`).
+The page validates first and shows every problem at once. The rate limiter
+counts the attempt, the controller verifies the bot challenge, and the handler
+validates again (`L2-002`), hashes the password (`L2-134`), and commits the
+member, the token hash (`L2-140`) and the outbox message in one unit of work.
+The controller then starts the session and sets `__Host-jubilee.session`
+(`L2-135`). Showing or hiding the password changes only the control in the
+browser and adds no message to the sequence (`L2-187`).
 
 ![Sequence diagram for joining with e-mail](diagrams/sequence-join.png)
 
 ### Behaviour — send the confirmation e-mail again
 
-"Send it again" supersedes the earlier link, issues a new one valid for 24
-hours, and is limited to 5 resends per hour (`L2-137`). `OutboxDispatcherJob`
-sends the new e-mail after the commit.
+"Send it again" supersedes the earlier link and issues a new one valid for 24
+hours. Resends and changes of an unconfirmed address share one limit of 5 per
+member per hour (`L2-137`). `OutboxDispatcherJob` sends the new e-mail after
+the commit. The success state of `JoinPage` shows "We couldn’t send it. Try
+again in a moment." for a resend that fails for any reason; the banner and the
+waiting page of the confirm e-mail feature name the limit and the wait
+(`L2-005`).
 
 ![Sequence diagram for sending the confirmation e-mail again](diagrams/sequence-resend-confirmation.png)

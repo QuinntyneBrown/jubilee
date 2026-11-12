@@ -16,16 +16,19 @@ skinparam package {
 }
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "VerifyEmailPage" as page
+  participant "VerifyEmailPage or App" as opener
+  participant "ChangeUnconfirmedEmailDialog" as dialog
   participant "AccountApi" as client
+  participant "SessionService" as session
 end box
 box "Backend — Jubilee API" #D1FADF
+  participant "ASP.NET Core rate limiter" as limit
   participant "AccountController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "ChangeUnconfirmedEmailCommandHandler" as handler
   participant "Member" as entity
-  participant "ILinkTokenService" as tokens
+  participant "AccountEmails" as emails
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
@@ -35,34 +38,60 @@ box "Backend — Jubilee Worker" #D1FADF
 end box
 participant "E-mail provider" as email
 
-actor -> page : Press "Use another e-mail" and enter a new address
-page -> client : changeUnconfirmedEmail(address)
-client -> controller : PUT /api/account/unconfirmed-email
-controller -> controller : Authenticate session and check anti-CSRF token (L2-135)
-controller -> handler : Send ChangeUnconfirmedEmailCommand
-handler -> db : Load member
-db --> handler : Member
-alt address malformed or member already confirmed
-  handler --> controller : Validation failure
-  controller --> client : 422 ProblemDetails with field code
-  client --> page : Field error
-  page --> actor : Show the field error and keep the typed address
-else address accepted
-  handler -> entity : ReplaceUnconfirmedEmail(address) (L2-004)
-  entity --> handler : Address replaced - bounce flag cleared
-  handler -> tokens : SupersedeOutstanding(member, EmailConfirmation)
-  tokens --> handler : Earlier links stop working
-  handler -> tokens : Issue(member, EmailConfirmation, 24 hours)
-  tokens --> handler : New token and its hash
-  handler -> db : Save member - token hash - outbox message in one unit of work
-  db --> handler : Commit result
-  handler --> controller : Result
-  controller --> client : 202 Accepted
-  client --> page : Changed
-  page --> actor : Show "Confirm your e-mail" naming the new address
-  job -> db : Read pending outbox message
-  db --> job : ConfirmationEmailRequested
-  job -> email : Send confirmation e-mail to the new address
-  email --> job : Accepted
+actor -> opener : Press "Use another e-mail" on the waiting page or "Change e-mail" on the banner
+opener -> dialog : Open the dialog "Use another e-mail" (L2-004)
+actor -> dialog : Enter "New e-mail" and send
+alt address empty or not a full e-mail address
+  dialog --> actor : Show "Enter the e-mail you want to use." or "Enter a full e-mail address, like name@example.com."
+else address well-formed
+  dialog --> actor : Button reads "Sending…" and the dialog cannot be closed
+  dialog -> client : changeUnconfirmedEmail(email)
+  client -> limit : PUT /api/account/unconfirmed-email
+  limit -> limit : Count the request for the member under AccountRateLimit.Resends (L2-005)
+  alt more than 5 resends and changes in the hour
+    limit --> client : 429 with Retry-After
+    client --> dialog : Rate-limit error
+    dialog --> actor : Show the alert "You’re doing that a lot. Try again in {n} minutes." (L2-004)
+  else within the limit
+    limit -> controller : Forward after CsrfMiddleware checks the anti-CSRF token (L2-135)
+    controller -> handler : Send ChangeUnconfirmedEmailCommand
+    handler -> handler : EmailAddress.TryParse(email)
+    alt address malformed
+      handler --> controller : Throw ValidationFailedException with email EMAIL_INVALID
+      controller --> client : 422 ProblemDetails from ExceptionHandlingMiddleware
+      client --> dialog : Field error
+      dialog --> actor : Show "Enter a full e-mail address, like name@example.com."
+    else address parsed
+      handler -> db : Load the member and any other member with the same EmailKey
+      db --> handler : Member - holder or nothing
+      alt address belongs to another account
+        handler -> emails : QueueAddressInUseNotice(holder) (L2-141)
+        emails --> handler : OutboxMessage to the holder added
+        handler -> db : Save the outbox message - the address is not replaced
+      else address free
+        handler -> entity : ReplaceUnconfirmedEmail(email) (L2-004)
+        entity --> handler : Address replaced - bounce flag cleared
+        handler -> emails : QueueConfirmationAsync(member)
+        emails -> emails : Supersede earlier tokens - issue a LinkToken for 24 hours (L2-140)
+        emails --> handler : LinkToken and OutboxMessage added
+        handler -> db : Save member - token hash - outbox message in one unit of work
+      end
+      db --> handler : Commit result
+      handler --> controller : Done
+      controller --> client : 204 No Content in both cases (L2-141)
+      client --> dialog : Sent
+      dialog -> session : resolve()
+      session --> dialog : Session with the member's address
+      alt the session's address is the new one
+        dialog --> actor : Show "Check your new inbox" naming the address with "Done"
+      else the session's address is unchanged
+        dialog --> actor : Show "An account already uses this e-mail. Use another address."
+      end
+      job -> db : Read due outbox messages through OutboxDispatcher
+      db --> job : Confirmation e-mail or address-in-use notice
+      job -> email : Send through IEmailSender
+      email --> job : Accepted
+    end
+  end
 end
 @enduml
