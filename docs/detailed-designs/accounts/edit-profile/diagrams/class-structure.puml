@@ -35,11 +35,12 @@ class Member {
   +PhoneNumber? Phone
   +PostalCode? PostalCode
   +string? HomeChurch
+  +string? HomeChurchAddress
   +Pronouns Pronouns
   +MemberRole Role
   +DateTime JoinedAt
   +DateTime? ProfileSavedAt
-  +UpdateProfile(firstName: string, lastName: string, phone: PhoneNumber?, postalCode: PostalCode?, homeChurch: string?, pronouns: Pronouns, now: DateTime): void
+  +UpdateProfile(firstName: string, lastName: string, phone: PhoneNumber?, postalCode: PostalCode?, homeChurch: string?, homeChurchAddress: string?, pronouns: Pronouns, now: DateTime): void
 }
 
 class PhoneNumber <<value object>> {
@@ -66,6 +67,7 @@ class UpdateProfileCommand {
   +string? Phone
   +string? PostalCode
   +string? HomeChurch
+  +string? HomeChurchAddress
   +Pronouns Pronouns
 }
 
@@ -89,6 +91,7 @@ class AccountDto {
   +string? Phone
   +string? PostalCode
   +string? HomeChurch
+  +string? HomeChurchAddress
   +Pronouns Pronouns
   +DateTime JoinedAt
   +DateTime? ProfileSavedAt

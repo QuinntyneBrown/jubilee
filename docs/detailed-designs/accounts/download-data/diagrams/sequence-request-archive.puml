@@ -50,11 +50,11 @@ page --> actor : Say that the link arrives by e-mail within 24 hours (L2-018)
 job -> db : Receive the outbox message and load the DataExport
 db --> job : DataExport (Requested)
 job -> builder : BuildAsync(member)
-builder -> db : Read profile and saved list and requests and messages and settings
+builder -> db : Read profile with home church and its address and saved list and requests and messages and settings
 db --> builder : Member data
 opt Member owns a listing
   builder -> db : Read listing and products and services and incoming requests
-  db --> builder : Owner data without ReferenceAnswer (L2-146)
+  db --> builder : Owner data
 end
 builder --> job : JSON archive stream
 job -> store : SaveAsync(key and archive)

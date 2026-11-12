@@ -62,7 +62,7 @@ public sealed class CliTests
 
         Assert.Equal(5, notPublic.Count);
         Assert.Contains(notPublic, l => l.Stage == ListingStage.Draft);
-        Assert.Contains(notPublic, l => l.Stage == ListingStage.PendingReference);
+        Assert.Contains(notPublic, l => l.Stage == ListingStage.ReadyToReview);
         Assert.Contains(notPublic, l => l.Stage == ListingStage.ChangesRequested);
         Assert.Contains(notPublic, l => l.IsVerified && l.IsPaused);
         Assert.Contains(notPublic, l => l.IsVerified && l.IsUnderModerationHold);

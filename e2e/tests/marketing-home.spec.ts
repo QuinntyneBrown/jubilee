@@ -23,11 +23,11 @@ test.describe('marketing home page (L2-183)', () => {
     // And the opening
     await expect(home.heading).toHaveText('Toronto’s Christian businesses, in one place.');
     await expect(home.lead).toHaveText(
-      'Jubilee is where Toronto’s Christian community finds shops, advisors and trades it can trust. Every business is vouched for by a church, so you can shop, hire and recommend with confidence.',
+      'Jubilee is where Toronto’s Christian community finds shops, advisors and trades it can trust. Every business is verified before it appears, so you can shop, hire and recommend with confidence.',
     );
     await expect(home.startBrowsing).toBeVisible();
     await expect(home.watchTheFilm).toBeVisible();
-    await expect(home.note).toHaveText('Free for members · Every business church-verified');
+    await expect(home.note).toHaveText('Free for members · Every business verified');
     // And every section heading, in order (AC7: each reads as one sentence)
     await expect(home.headings).toHaveText([
       'See Jubilee in action.',
@@ -64,7 +64,7 @@ test.describe('marketing home page (L2-183)', () => {
       'Family owned and operated since 1961',
     ]);
     await expect(home.glimpseNotes).toHaveText([
-      'Vouched for by Grace Toronto Church',
+      'Verified by the Jubilee team',
       'WaterWorks replied in 12 min',
     ]);
   });
@@ -79,7 +79,7 @@ test.describe('marketing home page (L2-183)', () => {
       'The recommendations you already ask your church for, gathered in one place and ready when you need them.',
     );
     await expect(home.benefits).toHaveText([
-      'Know who you’re dealing with. Every business is vouched for by a pastor or elder before it appears. No more guessing from star ratings.',
+      'Know who you’re dealing with. Every business is verified by the Jubilee team before it appears. No more guessing from star ratings.',
       'Keep your money in the community. Every purchase supports a family that shares your faith and your city, and helps them build something lasting.',
       'Find it in seconds, not Sundays. A plumber, a lawyer, a study Bible. Look in one place instead of asking around after service.',
     ]);
@@ -92,7 +92,7 @@ test.describe('marketing home page (L2-183)', () => {
       'Reach believers across Toronto who would rather buy from someone who shares their faith.',
     );
     await expect(home.points).toHaveText([
-      'Customers who already trust youYour church’s word travels with your listing, so first conversations start warm.',
+      'Customers who already trust youThe Verified mark travels with your listing, so first conversations start warm.',
       'A page that sells for youShow your products or services, prices and story. Update it whenever you like.',
       'Free to joinNo listing fees and no cut of your sales. Just honest business, done well.',
     ]);

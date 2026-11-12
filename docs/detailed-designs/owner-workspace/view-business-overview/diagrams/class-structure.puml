@@ -15,9 +15,7 @@ title Class structure — View the business overview
 
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused
@@ -48,9 +46,7 @@ class OwnerWorkspace {
 }
 
 class StageDetail {
-  +string ReferenceName
-  +string Church
-  +DateTimeOffset? ReferenceEmailedAt
+  +DateTimeOffset? SubmittedAt
   +IReadOnlyList<string> RequestedChanges
   +string ReviewerFirstName
   +DateTimeOffset? ChangesRequestedAt
@@ -76,7 +72,7 @@ class ListingSummary {
   +int ProductCount
   +int SoldOutCount
   +int ServiceCount
-  +string ReferenceStatus
+  +DateTimeOffset? ApprovedAt
 }
 
 class RequestCard {

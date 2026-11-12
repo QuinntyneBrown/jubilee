@@ -226,17 +226,12 @@ public sealed class StaffSignInTests : IClassFixture<JubileeApiFactory>, IAsyncL
         var body = new Dictionary<string, object?>
         {
             ["kind"] = "products", ["name"] = "Esther Co", ["tagline"] = "Gifts", ["categorySlug"] = "shops", ["highlight"] = null, ["place"] = null,
-            ["church"] = "Grace", ["pastorEmail"] = "p@church.example", ["agreed"] = true, ["items"] = Array.Empty<object>(), ["idempotencyKey"] = "k1",
+            ["agreed"] = true, ["items"] = Array.Empty<object>(), ["idempotencyKey"] = "k1",
         };
         var draft = await (await owner.PostAsJsonAsync("/api/listing-drafts", body)).Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
         var submitted = await (await owner.PostAsJsonAsync($"/api/listing-drafts/{draft.GetProperty("id").GetGuid()}/submit", body))
             .Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
         var id = submitted.GetProperty("listingId").GetGuid();
-        await _factory.WithDb(async db =>
-        {
-            (await db.Listings.SingleAsync(l => l.Id == id)).MoveTo(ListingStage.ReadyToReview);
-            await db.SaveChangesAsync();
-        });
         await Grant("esther@jubilee.to", StaffRoles.Verifier);
         var (client, _) = await SignIn();
 

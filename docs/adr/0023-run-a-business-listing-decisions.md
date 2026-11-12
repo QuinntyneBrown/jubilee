@@ -1,6 +1,6 @@
 # 0023. Run a business listing decisions
 
-Status: accepted
+Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed. The overview states `pending-reference` and `needs-a-decision` are gone, a submitted listing shows "We're reviewing {Business}" with no action, and "Your listing" shows "Verification — Verified {Mon YYYY}" in place of the church reference. The rest stands.
 
 ## Context
 

@@ -134,9 +134,9 @@ ${BOROUGHS.map(([name, x], i) => `<div class="a" style="left:${x}px;top:840px;di
   };
 
   // ── S04 · Why join · 0:21.60–0:28.80 · bars 10–12 ─────────────────────────────────────────────────
-  // Cream paper. The seal stamps on "vouched"; three reasons arrive on the narration, each drawing its rule.
+  // Cream paper. The seal stamps on "verified"; three reasons arrive on the narration, each drawing its rule.
   const REASONS = [
-    { at: b(2.5), title: 'Vouched for by a pastor or elder.', body: 'Every business is checked by a local church before it appears. No guessing from star ratings.' },
+    { at: b(2.5), title: 'Verified by the Jubilee team.', body: 'Every business is verified by the Jubilee team before it appears. No guessing from star ratings.' },
     { at: b(4.5), title: 'Your money stays in the community.', body: 'Every purchase supports a family that shares your faith and your city.' },
     { at: b(7.5), title: 'Free for members.', body: 'Browse, save and share as much as you like. Find it in seconds, not Sundays.' },
   ];
@@ -319,7 +319,7 @@ ${S.wipe((t) => lerp(0.5, 1, prog(t, 0, 0.3)))}
   // Cream, hard cut in on the downbeat. A crossbar draws down through three steps; the seal stamps on step 2.
   const STEPS = [
     { at: b(1), title: 'Create your page', body: 'Your products or services, prices and story.' },
-    { at: b(3), title: 'Get vouched for', body: 'A pastor or elder from your church confirms you.' },
+    { at: b(3), title: 'Get verified', body: 'The Jubilee team verifies you before you go live.' },
     { at: b(5.5), title: 'Welcome customers', body: 'Members message, book and buy from you directly.' },
   ];
   const NODE_Y = [0, 190, 380];

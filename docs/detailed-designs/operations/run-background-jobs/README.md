@@ -3,8 +3,7 @@
 ## Overview
 
 Jubilee is Toronto's Christian marketplace. Part of its work happens without a waiting
-request: meeting reminders 1 hour before a booking, daily e-mail summaries, reminders to
-church references, deletions under the retention schedule, listing statistics and
+request: meeting reminders 1 hour before a booking, daily e-mail summaries, deletions under the retention schedule, listing statistics and
 response-time badges. This feature is the runtime in `Jubilee Worker` that schedules and runs
 that work, and the rules each job follows.
 
@@ -26,7 +25,7 @@ The slice lives in `Jubilee.Worker`, with its entities in `Jubilee.Domain` and t
 endpoints in `Jubilee.Api`.
 
 - **`IJob`** — interface each job implements: `Name` and `ExecuteAsync(JobContext)`. The
-  scheduled jobs are `MeetingReminderJob`, `DailySummaryJob`, `ReferenceReminderJob`,
+  scheduled jobs are `MeetingReminderJob`, `DailySummaryJob`,
   `RetentionDeletionJob`, `StatisticsJob` and `ResponseTimeBadgeJob`. `OutboxDispatcherJob`
   and `SendEmailJob` run continuously under the same runner.
 - **`JobDefinition`** — registration of one job: its name, its cron expression in Toronto
@@ -72,7 +71,7 @@ level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-182` | `L1-025` | Each scheduled job (meeting reminders, daily summaries, reference reminders, retention deletions, statistics, response-time badges) shall be idempotent, shall run at most once per schedule across instances, and shall record its last success. A failed job shall be retried up to 5 times with back-off and then moved to a dead-letter queue that alerts on-call, and reminder and summary times shall be computed in America/Toronto and be correct across daylight saving changes. |
+| `L2-182` | `L1-025` | Each scheduled job (meeting reminders, daily summaries, retention deletions, statistics, response-time badges) shall be idempotent, shall run at most once per schedule across instances, and shall record its last success. A failed job shall be retried up to 5 times with back-off and then moved to a dead-letter queue that alerts on-call, and reminder and summary times shall be computed in America/Toronto and be correct across daylight saving changes. |
 | `L2-175` | `L1-025` | Each request shall receive a correlation ID that is returned in the `X-Request-Id` header and propagated to each downstream call, job and log line. Logs shall be structured JSON without passwords, tokens, message bodies or full e-mail addresses, and traces shall cover browser to API to database for at least 10 % of requests and 100 % of errors. |
 
 ## Diagrams

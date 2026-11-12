@@ -12,6 +12,7 @@ import { BrowsePage } from '../pages/browse.page';
 import { BusinessPage } from '../pages/business.page';
 import { ForbiddenPage } from '../pages/forbidden.page';
 import { MaintenancePage } from '../pages/maintenance.page';
+import { NotFoundPage } from '../pages/not-found.page';
 import { ReportListingDialog } from '../pages/report-listing.dialog';
 import { ServerErrorPage } from '../pages/server-error.page';
 
@@ -102,6 +103,20 @@ test.describe('server error (L2-115, L2-118)', () => {
     await expect(report.alert).toBeVisible();
     await expect(report.description).toHaveValue('Please look at this.');
     await expect(page).toHaveURL(/\/b\/luzandre\/report$/);
+  });
+});
+
+test.describe('not found (L2-113)', () => {
+  test('a church reference link from an old e-mail shows the not-found page', async ({
+    page,
+    jb,
+  }) => {
+    // ADR 0041: Jubilee no longer asks for a church reference, so `/reference/:token` is no page.
+    const notFound = new NotFoundPage(page);
+    await jb.goto('/reference/0123456789abcdef');
+
+    await expect(notFound.heading).toHaveText('We can’t find that page');
+    await expect(page).toHaveURL(/\/reference\/0123456789abcdef$/);
   });
 });
 

@@ -79,8 +79,8 @@ public sealed partial class AccountSettingsTests : IClassFixture<JubileeApiFacto
 
     private static object Profile(
         string first = "Joanna", string last = "Adeyemi", string? phone = "416-555-0142", string? postal = "M4C 1A1",
-        string? church = "Grace Toronto Church", string? pronouns = "she/her") =>
-        new { firstName = first, lastName = last, phone, postalCode = postal, homeChurch = church, pronouns };
+        string? church = "Grace Toronto Church", string? pronouns = "she/her", string? churchAddress = "383 Jarvis Street, Toronto") =>
+        new { firstName = first, lastName = last, phone, postalCode = postal, homeChurch = church, homeChurchAddress = churchAddress, pronouns };
 
     private static Task<HttpResponseMessage> SaveProfile(HttpClient client, object profile) => client.PutAsJsonAsync("/api/account/profile", profile);
 
@@ -109,6 +109,35 @@ public sealed partial class AccountSettingsTests : IClassFixture<JubileeApiFacto
         Assert.True(DateTimeOffset.TryParse(account.GetProperty("memberSince").GetString(), out _));
     }
 
+    // L2-196 AC3, AC5: either field without the other, and clearing removes the value
+    [Fact]
+    public async Task L2_188_the_address_is_saved_without_a_name_and_cleared_when_it_is_emptied()
+    {
+        var client = await Join();
+
+        Assert.Equal(HttpStatusCode.OK, (await SaveProfile(client, Profile(church: null, churchAddress: " 383 Jarvis Street, Toronto "))).StatusCode);
+        var only = await Account(client);
+        Assert.Equal(JsonValueKind.Null, only.GetProperty("homeChurch").ValueKind);
+        Assert.Equal("383 Jarvis Street, Toronto", only.GetProperty("homeChurchAddress").GetString());
+
+        Assert.Equal(HttpStatusCode.OK, (await SaveProfile(client, Profile(church: "Grace Toronto Church", churchAddress: ""))).StatusCode);
+        var cleared = await Account(client);
+        Assert.Equal("Grace Toronto Church", cleared.GetProperty("homeChurch").GetString());
+        Assert.Equal(JsonValueKind.Null, cleared.GetProperty("homeChurchAddress").ValueKind);
+    }
+
+    // L2-196 AC4
+    [Fact]
+    public async Task L2_188_AC4_a_home_church_address_over_200_characters_is_refused()
+    {
+        var client = await Join();
+
+        var response = await SaveProfile(client, Profile(churchAddress: new string('a', 201)));
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        Assert.Contains("\"homeChurchAddress\":\"TOO_LONG\"", await response.Content.ReadAsStringAsync());
+    }
+
     // L2-013 AC2, AC5
     [Fact]
     public async Task L2_013_AC2_a_saved_profile_persists_and_says_when_it_was_saved()
@@ -124,6 +153,7 @@ public sealed partial class AccountSettingsTests : IClassFixture<JubileeApiFacto
         Assert.Equal("416-555-0142", account.GetProperty("phone").GetString());
         Assert.Equal("M4C 1A1", account.GetProperty("postalCode").GetString());
         Assert.Equal("Grace Toronto Church", account.GetProperty("homeChurch").GetString());
+        Assert.Equal("383 Jarvis Street, Toronto", account.GetProperty("homeChurchAddress").GetString());
         Assert.Equal("she/her", account.GetProperty("pronouns").GetString());
         Assert.Equal(_factory.Clock.GetUtcNow(), account.GetProperty("profileSavedAt").GetDateTimeOffset());
     }

@@ -1,15 +1,7 @@
 /** The owner's workspace: My business, the listing editor, photos, pause and resume (L2-085 to L2-088, L2-096). */
 
 export type BusinessState =
-  | 'none'
-  | 'draft'
-  | 'pending-reference'
-  | 'ready-to-review'
-  | 'needs-a-decision'
-  | 'changes-requested'
-  | 'live'
-  | 'paused'
-  | 'declined';
+  'none' | 'draft' | 'ready-to-review' | 'changes-requested' | 'live' | 'paused' | 'declined';
 
 export interface BusinessStat {
   value: number;
@@ -37,14 +29,8 @@ export interface BusinessSummary {
   products: number;
   soldOut: number;
   services: number;
-  reference: string;
-}
-
-export interface BusinessReference {
-  church: string;
-  referenceEmail: string;
-  state: string;
-  requestedAt: string;
+  /** "Verified Jun 2026": when the verification team approved the listing. */
+  verification: string;
 }
 
 export interface BusinessVerification {
@@ -76,7 +62,6 @@ export interface MyBusiness {
   stats: BusinessStats | null;
   needsReply: NeedsReply[];
   summary: BusinessSummary | null;
-  reference: BusinessReference | null;
   verification: BusinessVerification | null;
 }
 

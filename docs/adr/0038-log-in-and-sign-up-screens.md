@@ -4,7 +4,9 @@
 
 Accepted, 11 November 2026. Applies ADR 0035 (presentation in `components`) and ADR 0036
 (component parity) to the two screens. Changes none of ADR 0012, ADR 0013 or ADR 0037: joining,
-sessions and the Google flow behave as before.
+sessions and the Google flow behave as before. Amended by ADR 0041, 12 November 2026: the church
+reference page is removed, so the bare frame serves eleven pages, and Sign up marks two optional
+fields, "Home church" and "Home church address".
 
 ## Context
 

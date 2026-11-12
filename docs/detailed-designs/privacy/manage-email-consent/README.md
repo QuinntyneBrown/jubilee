@@ -71,8 +71,7 @@ checks on outgoing promotional e-mail.
   promotional mailing. Its schedule is `<TO SUPPLY>`.
 - **`PromotionalAudienceQuery`** — selects members whose e-mail address is
   confirmed and deliverable and whose `NotificationPreferences` has the
-  category on. No other source feeds the audience; church reference addresses
-  are never read.
+  category on. No other source feeds the audience.
 - **`PromotionalEmailComposer`** — builds each `EmailMessage` from the
   category template. It adds the Jubilee sender name and mailing address
   (`<TO SUPPLY>`), the unsubscribe link, and the headers `List-Unsubscribe`

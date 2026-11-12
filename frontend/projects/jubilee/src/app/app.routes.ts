@@ -104,13 +104,6 @@ export const routes: Routes = [
     title: 'Conversation · Jubilee',
   },
   {
-    path: 'reference/:token',
-    loadComponent: () =>
-      import('./pages/church-reference/church-reference.page').then((m) => m.ChurchReferencePage),
-    data: data({ shell: 'bare', page: 'church-reference' }),
-    title: 'Confirm a reference · Jubilee',
-  },
-  {
     path: 'list',
     pathMatch: 'full',
     loadComponent: () =>

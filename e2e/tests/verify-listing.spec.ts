@@ -66,15 +66,13 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
 
     await expect(queue.heading).toHaveText('Verification queue');
     await expect(queue.subtitle).toHaveText(
-      '4 listings · 2 ready to review · oldest waiting 4 days',
+      '4 listings · 4 ready to review · oldest waiting 4 days',
     );
     await expect(queue.filter(/Ready to review/)).toHaveAttribute('aria-selected', 'true');
-    await expect(queue.filter(/Waiting on reference/)).toContainText('1');
-    await expect(queue.filter(/Needs a decision/)).toContainText('1');
-    await expect(queue.filter(/Changes requested/)).toContainText('0');
+    await expect(queue.filters).toHaveText([/Ready to review\s*4/, /Changes requested\s*0/]);
   });
 
-  test('L2-099 AC2: each row names the business, owner and church reference, with the reference in words', async ({
+  test('L2-099 AC2: each row names the business, its category, its owner and when it was submitted', async ({
     page,
     jb,
   }) => {
@@ -83,10 +81,10 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     await stubAdmin(page);
     await jb.gotoAdmin('/verifications');
 
-    await expect(queue.rows).toHaveCount(2);
+    await expect(queue.columns).toHaveText(['Business', 'Category', 'Owner', 'Submitted', 'Stage']);
+    await expect(queue.rows).toHaveCount(4);
     await expect(queue.row('Luzandre.com')).toContainText('Shops');
     await expect(queue.row('Luzandre.com')).toContainText('Naomi Laurent');
-    await expect(queue.row('Luzandre.com')).toContainText('Confirmed');
     await expect(queue.row('Luzandre.com')).toContainText('9:40 a.m.');
     await expect(queue.row('Park Insurance Brokers')).toContainText('Financial & insurance');
   });
@@ -96,14 +94,13 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     await queue.setWidth(1280);
     const fake = await stubAdmin(page);
     await jb.gotoAdmin('/verifications');
-    await expect(queue.rows).toHaveCount(2);
+    await expect(queue.rows).toHaveCount(4);
 
-    await queue.filter(/Needs a decision/).click();
+    await queue.filter(/Changes requested/).click();
 
-    await expect(queue.filter(/Needs a decision/)).toHaveAttribute('aria-selected', 'true');
-    await expect(queue.rows).toHaveCount(1);
-    await expect(queue.row('Okafor & Sons Furniture')).toContainText('Can’t vouch');
-    expect(fake.queueRequests.at(-1)).toContain('stage=needs-a-decision');
+    await expect(queue.filter(/Changes requested/)).toHaveAttribute('aria-selected', 'true');
+    await expect(queue.rows).toHaveCount(0);
+    expect(fake.queueRequests.at(-1)).toContain('stage=changes-requested');
   });
 
   test('L2-099 AC3: a stage with no listings says so and offers the ready ones', async ({
@@ -119,7 +116,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
 
     await expect(queue.empty).toContainText('Nothing here right now');
     await queue.empty.getByRole('button', { name: 'Show ready to review' }).click();
-    await expect(queue.rows).toHaveCount(2);
+    await expect(queue.rows).toHaveCount(4);
   });
 
   test('L2-099 AC4: an empty queue says it is clear', async ({ page, jb }) => {
@@ -145,7 +142,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
     await expect(queue.reference).toHaveText('JB-ADM-503');
     fake.queue = 'ok';
     await queue.tryAgain.click();
-    await expect(queue.rows).toHaveCount(2);
+    await expect(queue.rows).toHaveCount(4);
   });
 
   test('L2-099: a row opens the review of that listing', async ({ page, jb }) => {
@@ -162,7 +159,7 @@ test.describe('verify a listing: access and the queue (L2-098, L2-099)', () => {
 });
 
 test.describe('verify a listing: the review (L2-100)', () => {
-  test('AC1: the review shows the owner, the church reference answer and the checklist', async ({
+  test('AC1: the review shows the owner and the checklist, and names no church reference', async ({
     page,
     jb,
   }) => {
@@ -176,14 +173,8 @@ test.describe('verify a listing: the review (L2-100)', () => {
     await expect(review.subtitle).toContainText('Ready to review');
     await expect(review.owner).toContainText('Naomi Laurent');
     await expect(review.owner).toContainText('naomi@luzandre.example · confirmed');
-    await expect(review.churchReference).toContainText('Grace Toronto Church');
-    await expect(review.churchReference).toContainText('Daniel Okoro, Lead pastor');
-    await expect(review.churchReference).toContainText('Knows them and can vouch');
-    await expect(review.churchReference).toContainText(
-      '“Naomi has served on our hospitality team for six years.”',
-    );
-    await expect(review.churchReference).toContainText('Private. Never shown to the owner');
-    await expect(review.checks).toHaveCount(5);
+    await expect(review.panels).toHaveText(['Owner', 'Checklist', 'How members see you']);
+    await expect(review.checks).toHaveCount(3);
     await expect(review.preview).toContainText('Pending verification');
     await expect(review.breadcrumb).toContainText('Verification queue');
   });
@@ -198,8 +189,6 @@ test.describe('verify a listing: the review (L2-100)', () => {
 
     await expect(review.check(/Tagline and description/)).not.toBeChecked();
     expect(fake.checklists.at(-1)?.ticked).toEqual([
-      'owner-name',
-      'reference',
       'photos',
       'category',
     ]);
@@ -211,10 +200,10 @@ test.describe('verify a listing: the review (L2-100)', () => {
   }) => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
-    await stubAdmin(page, { cannotDecideBecause: 'Waiting for the church reference.' });
+    await stubAdmin(page, { cannotDecideBecause: 'Waiting on the owner.' });
     await jb.gotoAdmin(REVIEW);
 
-    await expect(review.notices).toContainText('Waiting for the church reference.');
+    await expect(review.notices).toContainText('Waiting on the owner.');
     await expect(review.approve).toBeDisabled();
   });
 
@@ -276,7 +265,7 @@ test.describe('verify a listing: approve (L2-101)', () => {
     const review = new AdminVerificationPage(page);
     const dialog = new ApproveListingDialog(page);
     await review.setWidth(1280);
-    const fake = await stubAdmin(page, { ticked: ['owner-name', 'reference', 'category'] });
+    const fake = await stubAdmin(page, { ticked: ['category'] });
     await jb.gotoAdmin(REVIEW);
 
     await review.approve.click();
@@ -343,7 +332,8 @@ test.describe('verify a listing: request changes (L2-102)', () => {
 
     await review.requestChanges.click();
     await expect(dialog.title).toHaveText('Ask Naomi for changes');
-    await expect(dialog.areas).toHaveCount(4);
+    await expect(dialog.areas).toHaveCount(3);
+    await expect(dialog.root).not.toContainText('Church reference');
     await dialog.send.click();
 
     await expect(dialog.errors.nth(0)).toHaveText('Choose at least one thing to change.');
@@ -400,37 +390,38 @@ test.describe('verify a listing: request changes (L2-102)', () => {
 });
 
 test.describe('verify a listing: decline (L2-104)', () => {
-  test('AC1: a listing that needs a decision can be declined with a reason', async ({
+  test('AC1: a listing that is ready to review can be declined with a reason', async ({
     page,
     jb,
   }) => {
     const review = new AdminVerificationPage(page);
     const dialog = new DeclineListingDialog(page);
     await review.setWidth(1280);
-    const fake = await stubAdmin(page, { stage: 'needs-a-decision' });
+    const fake = await stubAdmin(page);
     await jb.gotoAdmin(REVIEW);
 
     await review.decline.click();
     await expect(dialog.title).toHaveText('Decline Luzandre.com?');
+    await expect(dialog.root).toContainText('Use this when the listing cannot be verified.');
     await dialog.decline.click();
     await expect(dialog.error).toHaveText('Tell the owner why the listing was declined.');
     await expect(dialog.reason).toBeFocused();
     expect(fake.declines).toEqual([]);
 
-    await dialog.reason.fill('Your church reference could not vouch for you.');
+    await dialog.reason.fill('We could not confirm that this business exists.');
     await dialog.decline.click();
 
     await expect(dialog.root).toHaveCount(0);
     await expect(review.subtitle).toContainText('Declined');
     expect(fake.declines).toEqual([
-      { id: LISTING_ID, reason: 'Your church reference could not vouch for you.' },
+      { id: LISTING_ID, reason: 'We could not confirm that this business exists.' },
     ]);
   });
 
-  test('a listing that is ready to review cannot be declined', async ({ page, jb }) => {
+  test('a listing that waits on its owner cannot be declined', async ({ page, jb }) => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
-    await stubAdmin(page);
+    await stubAdmin(page, { stage: 'changes-requested' });
     await jb.gotoAdmin(REVIEW);
 
     await expect(review.decline).toHaveCount(0);

@@ -1,6 +1,6 @@
 # ADR 0031: Recover from errors
 
-Status: accepted
+Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed, so a maintenance window extends no reference links; e-mail confirmation and change-of-e-mail links are extended as before.
 
 ## Context
 

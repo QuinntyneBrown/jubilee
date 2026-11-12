@@ -10,8 +10,6 @@ export interface FakeDraftBody {
   categorySlug: string | null;
   highlight: string | null;
   place: string | null;
-  church: string;
-  pastorEmail: string;
   agreed: boolean;
   items: {
     name: string;
@@ -95,7 +93,7 @@ export async function stubListingDrafts(
         );
       case 'invalid':
         return route.fulfill(
-          problem(422, { code: 'validation_failed', errors: { pastorEmail: 'OWN_EMAIL' } }),
+          problem(422, { code: 'validation_failed', errors: { tagline: 'TOO_LONG:94' } }),
         );
       default:
         fake.submits.push(body);
@@ -106,9 +104,7 @@ export async function stubListingDrafts(
             slug: 'luzandre-com',
             name: body.name,
             kind: body.kind,
-            stage: 'pending-reference',
-            church: body.church,
-            pastorEmail: body.pastorEmail,
+            stage: 'ready-to-review',
             submittedAt: '2026-11-10T14:40:00Z',
           },
         });

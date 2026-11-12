@@ -1,6 +1,6 @@
 # 0028. Manage profile and settings decisions
 
-Status: accepted
+Status: accepted. Amended by ADR 0041, 12 November 2026: the profile gains an optional home church address (`homeChurchAddress`, 200 characters, `TOO_LONG`), and pronouns no longer word a church reference request, which is removed. The rest stands.
 
 ## Context
 

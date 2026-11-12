@@ -22,7 +22,6 @@ enum LinkTokenPurpose {
   EmailConfirmation
   PasswordReset
   EmailChange
-  ChurchReference
   DataDownload
 }
 

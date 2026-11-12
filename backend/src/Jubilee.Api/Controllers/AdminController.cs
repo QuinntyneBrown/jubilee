@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using Jubilee.Api.Errors;
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Errors;
-using Jubilee.Application.Reference;
 using Jubilee.Application.Verification;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

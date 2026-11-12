@@ -21,8 +21,6 @@ public sealed record ListingDraftDto(
     string? CategorySlug,
     string? Highlight,
     string? Place,
-    string Church,
-    string PastorEmail,
     bool Agreed,
     DateTimeOffset UpdatedAt,
     IReadOnlyList<DraftItemDto> Items)
@@ -35,8 +33,6 @@ public sealed record ListingDraftDto(
         draft.CategorySlug,
         draft.Highlight,
         draft.Place,
-        draft.Church,
-        draft.PastorEmail,
         draft.Agreed,
         draft.UpdatedAt,
         [.. draft.Items.OrderBy(i => i.Position).Select(i => new DraftItemDto(i.Name, i.Detail, WireValues.Of(i.PriceKind), i.PriceCents))]);
@@ -52,15 +48,13 @@ public sealed record DraftInput(
     string? CategorySlug,
     string? Highlight,
     string? Place,
-    string? Church,
-    string? PastorEmail,
     bool Agreed,
     IReadOnlyList<DraftItemInput>? Items);
 
 public sealed record DraftItemInput(string? Name, string? Detail, string? PriceKind, int? PriceCents);
 
 public sealed record SubmittedListingDto(
-    Guid ListingId, string Slug, string Name, string Kind, string Stage, string Church, string PastorEmail, DateTimeOffset SubmittedAt);
+    Guid ListingId, string Slug, string Name, string Kind, string Stage, DateTimeOffset SubmittedAt);
 
 internal static class Drafts
 {
@@ -88,7 +82,7 @@ internal static class Drafts
     public static void Apply(ListingDraft draft, DraftInput input, DateTimeOffset now) =>
         draft.Save(
             KindOf(input.Kind), input.Name, input.Tagline, input.CategorySlug, input.Highlight, input.Place,
-            input.Church, input.PastorEmail, input.Agreed, ItemsOf(input), now);
+            input.Agreed, ItemsOf(input), now);
 
     public static async Task<ListingDraft> Owned(IAppDbContext db, string subject, Guid id, CancellationToken cancellationToken) =>
         await db.ListingDrafts.Include(d => d.Items).SingleOrDefaultAsync(d => d.Id == id && d.OwnerSubject == subject, cancellationToken)
@@ -150,11 +144,11 @@ public sealed class SaveListingDraftCommandHandler(IAppDbContext db, TimeProvide
     }
 }
 
-/// <summary>Submits a draft for verification (L2-078): it becomes a listing waiting on its church reference.</summary>
+/// <summary>Submits a draft for verification (L2-078): it becomes a listing the verification team can review straight away.</summary>
 public sealed record SubmitListingCommand(string Subject, string Name, Guid DraftId, DraftInput Input, string? IdempotencyKey)
     : IRequest<SubmittedListingDto>;
 
-public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings)
+public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimeProvider clock)
     : IRequestHandler<SubmitListingCommand, SubmittedListingDto>
 {
     public const int MaxTaglineLength = 90;
@@ -189,7 +183,6 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
         var input = command.Input;
         var name = input.Name?.Trim() ?? string.Empty;
         var tagline = input.Tagline?.Trim() ?? string.Empty;
-        var pastor = input.PastorEmail?.Trim();
         var errors = new Dictionary<string, string>();
         if (name.Length == 0)
         {
@@ -210,21 +203,6 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
             errors["categorySlug"] = "REQUIRED";
         }
 
-        if (string.IsNullOrWhiteSpace(input.Church))
-        {
-            errors["church"] = "REQUIRED";
-        }
-
-        var address = EmailAddress.TryParse(pastor);
-        if (address is null)
-        {
-            errors["pastorEmail"] = "INVALID";
-        }
-        else if (await IsOwnEmail(command.Subject, address, cancellationToken))
-        {
-            errors["pastorEmail"] = "OWN_EMAIL";
-        }
-
         if (!input.Agreed)
         {
             errors["agreed"] = "REQUIRED";
@@ -239,21 +217,10 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
         }
 
         var now = clock.GetUtcNow();
-        var pastorKey = address!.Key;
         var flags = new List<string>();
         if (HasContactOrCode(name, tagline))
         {
             flags.Add("CONTACT_IN_TEXT");
-        }
-
-        var others = await db.ListingSubmissions.AsNoTracking()
-            .Where(s => s.PastorEmailKey == pastorKey && s.OwnerSubject != command.Subject && s.SubmittedAt >= now.AddDays(-30))
-            .Select(s => s.OwnerSubject)
-            .Distinct()
-            .CountAsync(cancellationToken);
-        if (others >= 5)
-        {
-            flags.Add("REFERENCE_REUSED");
         }
 
         var listing = Listing.Create(await UniqueSlug(name, cancellationToken), name, tagline, input.CategorySlug!, now);
@@ -261,15 +228,13 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
         listing.AssignOwner(command.Subject);
         listing.Describe(new ListingProfile(command.Name, [], null, input.Place?.Trim(), null, null, null, null));
         listing.SetHighlight(input.Highlight);
-        listing.MoveTo(ListingStage.PendingReference);
+        listing.MoveTo(ListingStage.ReadyToReview);
         db.Listings.Add(listing);
         AddItems(listing, input, now);
 
-        var submission = ListingSubmission.Record(
-            listing.Id, command.Subject, input.Church!.Trim(), address.Value, key, flags, now);
+        var submission = ListingSubmission.Record(listing.Id, command.Subject, key, flags, now);
+        submission.MarkReady(now);
         db.ListingSubmissions.Add(submission);
-        var (_, ownerFirst) = await Reference.ReferenceRequests.OwnerNames(db, command.Subject, cancellationToken);
-        Reference.ReferenceRequests.Issue(db, settings, listing, command.Name, ownerFirst, submission, ReferenceLinkKind.Initial, [], now);
         db.ListingDrafts.Remove(draft);
         await db.SaveChangesAsync(cancellationToken);
         return Result(listing, submission);
@@ -280,21 +245,8 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
         listing.Slug,
         listing.Name,
         ListingDraftDto.Wire(listing.Kind),
-        "pending-reference",
-        submission.Church,
-        submission.PastorEmail,
+        WireValues.Of(listing.Stage),
         submission.SubmittedAt);
-
-    private async Task<bool> IsOwnEmail(string subject, EmailAddress pastor, CancellationToken cancellationToken)
-    {
-        if (!Guid.TryParse(subject, out var id))
-        {
-            return false;
-        }
-
-        var member = await db.Members.AsNoTracking().SingleOrDefaultAsync(m => m.Id == id, cancellationToken);
-        return member is not null && member.EmailKey == pastor.Key;
-    }
 
     private static bool HasContactOrCode(string name, string tagline) =>
         Url().IsMatch(name) || Email().IsMatch(name) || Phone().IsMatch(name) || Discount().IsMatch(name)

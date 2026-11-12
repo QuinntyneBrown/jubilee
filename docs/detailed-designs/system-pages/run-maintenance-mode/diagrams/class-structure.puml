@@ -12,7 +12,6 @@ skinparam class {
 title Class structure — Run maintenance mode
 enum LinkTokenPurpose {
   EmailConfirmation
-  ChurchReference
   PasswordReset
 }
 class MaintenanceOptions {

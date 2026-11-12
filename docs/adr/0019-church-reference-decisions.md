@@ -1,6 +1,6 @@
 # 0019. Church reference decisions
 
-Status: accepted
+Status: superseded by ADR 0041, 12 November 2026. Jubilee no longer asks an owner for a church reference: the links, the page, the endpoints, the e-mails, the jobs and the tables below are removed. This record is kept as history.
 
 ## Context
 

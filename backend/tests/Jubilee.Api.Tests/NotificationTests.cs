@@ -249,10 +249,10 @@ public sealed class NotificationTests : IClassFixture<JubileeApiFactory>, IAsync
         await _factory.Arrange(
             approved,
             changes,
-            ListingSubmission.Record(approved.Id, JoannaId, "Grace Toronto Church", "pastor@church.example", Guid.NewGuid().ToString(), [], ListingMother.Now),
-            ListingSubmission.Record(changes.Id, JoannaId, "Grace Toronto Church", "pastor@church.example", Guid.NewGuid().ToString(), [], ListingMother.Now));
+            ListingSubmission.Record(approved.Id, JoannaId, Guid.NewGuid().ToString(), [], ListingMother.Now),
+            ListingSubmission.Record(changes.Id, JoannaId, Guid.NewGuid().ToString(), [], ListingMother.Now));
 
-        var approve = await verifier.PostAsJsonAsync($"/api/admin/verifications/{approved.Id}/approve", new { note = "Reviewed with the church reference." });
+        var approve = await verifier.PostAsJsonAsync($"/api/admin/verifications/{approved.Id}/approve", new { note = "Reviewed with the owner." });
         var ask = await verifier.PostAsJsonAsync($"/api/admin/verifications/{changes.Id}/request-changes", new { areas = new[] { "tagline" }, message = "Remove the discount code." });
 
         Assert.True(approve.IsSuccessStatusCode, await approve.Content.ReadAsStringAsync());

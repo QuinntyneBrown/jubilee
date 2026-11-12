@@ -12,9 +12,7 @@ skinparam class {
 title Class structure — Work the verification queue
 enum ListingStage {
   Draft
-  WaitingOnReference
   ReadyToReview
-  NeedsDecision
   ChangesRequested
   Live
   Paused
@@ -24,15 +22,7 @@ enum ListingStage {
 }
 enum QueueFilter {
   ReadyToReview
-  WaitingOnReference
-  NeedsDecision
   ChangesRequested
-}
-enum ReferenceOutcome {
-  Waiting
-  Confirmed
-  CantVouch
-  DoesntKnow
 }
 class GetVerificationQueueQuery {
   +QueueFilter? Filter
@@ -52,7 +42,6 @@ class VerificationQueueItem {
   +string BusinessName
   +string Category
   +string OwnerName
-  +ReferenceOutcome Reference
   +DateTimeOffset SubmittedAt
   +ListingStage Stage
   +bool Overdue
@@ -67,6 +56,5 @@ GetVerificationQueueQueryHandler --> VerificationQueueResult : returns
 GetVerificationQueueQueryHandler ..> BusinessDayCalendar : uses
 VerificationQueueResult "1" *-- "*" VerificationQueueItem
 VerificationQueueItem --> ListingStage
-VerificationQueueItem --> ReferenceOutcome
 GetVerificationQueueQuery --> QueueFilter
 @enduml

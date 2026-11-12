@@ -36,7 +36,7 @@ store -> client : getDraft(listingId)
 client -> controller : GET /api/listings/{listingId}/draft
 controller -> controller : Authenticate and check the caller owns the listing
 controller -> handler : Send GetListingDraftQuery
-handler -> db : Read the draft with items and reference fields
+handler -> db : Read the draft with its items
 alt Draft read
   db --> handler : Draft
   handler --> controller : ListingDraftDto

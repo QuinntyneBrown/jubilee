@@ -43,7 +43,7 @@ dialog -> client : approve(id, note, version)
 client -> controller : POST /api/admin/verifications/{id}/approve
 controller -> controller : Authenticate, apply VerifierPolicy and refuse the listing's owner (L2-098)
 controller -> handler : Send ApproveListingCommand
-handler -> db : Load listing, review and church reference
+handler -> db : Load listing and review
 db --> handler : Current state
 alt a decision already exists or the version is stale
   handler --> controller : Conflict
@@ -52,8 +52,7 @@ alt a decision already exists or the version is stale
   dialog --> actor : Close and show the other verifier's decision
 else no decision yet
   handler -> entity : Approve(verifier, note, now)
-  entity --> handler : Stage Live, Verified true, VerificationDecision
-  handler -> handler : Start the 90-day deletion clock on the reference answer (L2-101)
+  entity --> handler : Stage Live, Verified true, ApprovedAt, VerificationDecision
   handler -> db : Save listing, AuditEntry (L2-180) and OutboxMessage in one unit of work
   db --> handler : Commit result
   handler --> controller : Typed result

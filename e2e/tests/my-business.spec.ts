@@ -41,7 +41,9 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await expect(business.section(/^Requests/)).toContainText('3');
     await expect(business.listingCard).toContainText('4 products');
     await expect(business.listingCard).toContainText('1 sold out');
-    await expect(business.listingCard).toContainText('Confirmed Jun 2026 · Verified');
+    await expect(business.listingCard).toContainText('Verification');
+    await expect(business.listingCard).toContainText('Verified Jun 2026');
+    await expect(business.listingCard).not.toContainText('Church reference');
   });
 
   test('L2-085: the requests that need a reply are listed and can be confirmed from here', async ({
@@ -66,18 +68,26 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await expect(toasts.withTitle('Order confirmed')).toBeVisible();
   });
 
-  test('L2-086: a listing waiting for its church reference shows the progress and no numbers', async ({
+  test('L2-086: a submitted listing says it is being reviewed, with the progress and no numbers', async ({
     page,
     jb,
   }) => {
     const business = new MyBusinessPage(page);
     await business.setWidth(1280);
-    await stubMyBusiness(page, { state: 'pending-reference' });
+    await stubMyBusiness(page, { state: 'ready-to-review' });
     await jb.goto(OVERVIEW);
 
     await expect(business.subtitle).toHaveText('Pending verification · submitted today');
-    await expect(business.alert.first()).toContainText('Waiting for your church reference');
-    await expect(business.timeline).toHaveCount(4);
+    await expect(business.alert.first()).toContainText('We’re reviewing Luzandre.com');
+    await expect(business.alert.first()).toContainText(
+      'You submitted it today. We review and publish within two business days.',
+    );
+    await expect(business.alert.first().getByRole('button')).toHaveCount(0);
+    await expect(business.timeline).toContainText([
+      'Listing submitted',
+      'Review by Jubilee',
+      'Live on Jubilee',
+    ]);
     await expect(business.timeline.nth(1)).toHaveAttribute('aria-current', 'step');
     await expect(business.publicLink).toHaveText(/Preview listing/);
     await expect(business.stats).toHaveCount(0);

@@ -15,7 +15,7 @@ export interface AppGlimpseResult {
  *
  *     <div jb-app-glimpse label="A glimpse of the app" search="Home repairs near Leslieville"
  *          caption="Home & property · 11 verified" [results]="results">
- *       <p jb-floating-note tone="trust" icon="verified">Vouched for by Grace Toronto Church</p>
+ *       <p jb-floating-note tone="trust" icon="verified">Verified by the Jubilee team</p>
  *     </div>
  *
  * It is a picture of the app, not a part of it: nothing in it can be used. It reads the

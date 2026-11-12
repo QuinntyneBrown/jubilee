@@ -42,7 +42,7 @@ watcher -> db : Load the open MaintenanceWindow
 db --> watcher : Window
 watcher -> watcher : Close(now) gives the window length
 watcher -> ext : ExtendFor(window)
-ext -> db : Read unused church reference and e-mail confirmation tokens valid at StartedAt
+ext -> db : Read unused e-mail confirmation tokens valid at StartedAt
 db --> ext : Link tokens
 ext -> ext : Extend each ExpiresAt by the window length (L2-117)
 ext -> db : Save tokens and the closed window in one unit of work

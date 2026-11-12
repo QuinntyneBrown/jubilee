@@ -154,7 +154,6 @@ export async function stubMyBusiness(
         stats: null,
         needsReply: [],
         summary: null,
-        reference: null,
         verification: null,
       };
     }
@@ -208,17 +207,8 @@ export async function stubMyBusiness(
           ]
         : [],
       summary: live
-        ? { products: 4, soldOut: 1, services: 2, reference: 'Confirmed Jun 2026 · Verified' }
+        ? { products: 4, soldOut: 1, services: 2, verification: 'Verified Jun 2026' }
         : null,
-      reference:
-        fake.state === 'pending-reference'
-          ? {
-              church: 'Grace Toronto Church',
-              referenceEmail: 'pastor@grace.example',
-              state: 'waiting',
-              requestedAt: '2026-11-10T14:40:00Z',
-            }
-          : null,
       verification:
         fake.state === 'changes-requested'
           ? {

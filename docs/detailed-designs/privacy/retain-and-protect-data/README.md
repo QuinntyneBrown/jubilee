@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee holds personal data for members, owners and church references:
+Jubilee holds personal data for members and owners:
 profiles, requests, messages, notifications and reports. Canadian privacy law
 (PIPEDA) and `L1-020` expect that data to be protected where it rests and
 where it travels, kept in Canada, and removed once its purpose has ended. This

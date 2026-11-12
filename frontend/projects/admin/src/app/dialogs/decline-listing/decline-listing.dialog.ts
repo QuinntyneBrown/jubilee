@@ -19,7 +19,7 @@ export interface DeclineListingData {
 
 type View = 'form' | 'busy' | 'failed';
 
-/** DeclineListingDialog (L2-104): closes a listing the church reference could not vouch for, with a reason. */
+/** DeclineListingDialog (L2-104): closes a listing that cannot be verified, with a reason. */
 @Component({
   selector: 'jb-decline-listing-dialog',
   imports: [FormsModule, Button, Alert, Field, Textarea, DialogFrame, DialogBody, DialogFooter],

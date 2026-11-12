@@ -31,11 +31,45 @@ test.describe('edit the profile (L2-013)', () => {
     );
     await expect(account.postalCode).toHaveValue('M4C 1A1');
     await expect(account.homeChurch).toHaveValue('Grace Toronto Church');
+    await expect(account.homeChurchAddress).toHaveValue('383 Jarvis Street, Toronto');
+    await expect(account.homeChurchAddressHint).toHaveText('Shown to no one.');
+    await expect(account.pronounsHint).toHaveText(
+      'Used in messages we write about you, such as a change request from the verification team.',
+    );
     await expect(account.lastSaved).toHaveText('Last saved Mon 9 Nov');
     await expect(account.passwordRow).toContainText('Changed 14 Oct 2026');
   });
 
-  test('AC2: saving sends the six fields and says when it was saved', async ({ page, jb }) => {
+  test('L2-196: the home church name can be cleared while its address is kept, and the other way round', async ({
+    page,
+    jb,
+  }) => {
+    const account = new AccountPage(page);
+    await jb.signInAs('member');
+    const fake = await stubProfile(page);
+    await jb.goto('/account');
+
+    await account.homeChurch.fill('');
+    await account.homeChurchAddress.fill('  1 Yonge Street, Toronto  ');
+    await account.save.click();
+    await expect(account.saved).toContainText('Profile saved');
+    await account.homeChurch.fill('Grace Toronto Church');
+    await account.homeChurchAddress.fill('');
+    await account.save.click();
+
+    await expect.poll(() => fake.profiles.length).toBe(2);
+    expect(fake.profiles[0]).toMatchObject({
+      homeChurch: null,
+      homeChurchAddress: '1 Yonge Street, Toronto',
+    });
+    expect(fake.profiles[1]).toMatchObject({
+      homeChurch: 'Grace Toronto Church',
+      homeChurchAddress: null,
+    });
+    await expect(account.homeChurchAddress).toHaveAttribute('maxlength', '200');
+  });
+
+  test('AC2: saving sends the seven fields and says when it was saved', async ({ page, jb }) => {
     const account = new AccountPage(page);
     await jb.signInAs('member');
     const fake = await stubProfile(page);
@@ -55,6 +89,7 @@ test.describe('edit the profile (L2-013)', () => {
         phone: '416-555-0100',
         postalCode: 'M4C 1A1',
         homeChurch: 'Grace Toronto Church',
+        homeChurchAddress: '383 Jarvis Street, Toronto',
         pronouns: 'she/her',
       },
     ]);
