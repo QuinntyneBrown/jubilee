@@ -15,6 +15,10 @@ export class ListBusinessPage extends ShellPage implements Screen {
   readonly category: Locator;
   readonly place: Locator;
   readonly placeLabel: Locator;
+  /** The optional green line of the card (L2-072 AC1). */
+  readonly highlight: Locator;
+  readonly highlightLabel: Locator;
+  readonly highlightHelp: Locator;
   /** The page's line under its heading. */
   readonly intro: Locator;
   /** Every group of fields the form has, by its legend. */
@@ -37,6 +41,10 @@ export class ListBusinessPage extends ShellPage implements Screen {
   readonly previewName: Locator;
   readonly previewTagline: Locator;
   readonly previewTag: Locator;
+  /** The green lines of the preview card: the highlight, when there is one, then the mark. */
+  readonly previewPerks: Locator;
+  /** The card of "How members see you". */
+  readonly previewCard: Locator;
   readonly doneHeading: Locator;
   readonly doneText: Locator;
   readonly timeline: Locator;
@@ -56,6 +64,9 @@ export class ListBusinessPage extends ShellPage implements Screen {
     this.category = this.main.locator('#cat');
     this.place = this.main.locator('#area');
     this.placeLabel = this.main.locator('label[for="area"]');
+    this.highlight = this.main.locator('#perk');
+    this.highlightLabel = this.main.locator('label[for="perk"]');
+    this.highlightHelp = this.main.locator('#perk-help');
     this.intro = this.main.locator('.subtitle');
     this.legends = this.main.locator('legend');
     this.agree = this.main.getByRole('checkbox', { name: /statement of faith/ });
@@ -78,6 +89,8 @@ export class ListBusinessPage extends ShellPage implements Screen {
     this.previewName = this.preview.locator('.biz-card__name');
     this.previewTagline = this.preview.locator('.biz-card__tagline');
     this.previewTag = this.preview.locator('.media__tag');
+    this.previewPerks = this.preview.locator('.biz-card .perk');
+    this.previewCard = this.preview.locator('.biz-card');
     this.doneHeading = this.main.getByRole('heading', { level: 1 });
     this.doneText = this.main.locator('.empty__text');
     this.timeline = this.main.locator('.timeline li');
@@ -91,6 +104,13 @@ export class ListBusinessPage extends ShellPage implements Screen {
 
   regions(): Region[] {
     return [{ name: 'main', locator: this.main }];
+  }
+
+  /** Writes the shop of the design reference, as the preview of the mock shows it. */
+  async fillExample(): Promise<void> {
+    await this.name.fill('Luzandre.com');
+    await this.tagline.fill('Unique & custom Christian apparel, artworks & gifts that bring joy');
+    await this.highlight.fill('Ships across Canada');
   }
 
   /** The button that takes a product or a service out of the draft again. */

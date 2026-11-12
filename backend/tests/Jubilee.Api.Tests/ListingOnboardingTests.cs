@@ -355,6 +355,34 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 
+    // L2-072 AC7: the highlight is kept to 30 characters and the listing carries it
+    [Fact]
+    public async Task L2_072_AC7_a_highlight_is_cut_to_30_characters_and_the_submitted_listing_carries_it()
+    {
+        var body = Body();
+        body["highlight"] = "  Ships across Canada and the United States  ";
+
+        var draft = await SaveNew(Joanna(), body);
+        var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+
+        Assert.Equal("Ships across Canada and the Un", draft.GetProperty("highlight").GetString());
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal("Ships across Canada and the Un", (await ListingOf("luzandre-com")).Highlight);
+    }
+
+    [Fact]
+    public async Task L2_072_AC7_a_listing_submitted_without_a_highlight_has_none()
+    {
+        var body = Body();
+        body["highlight"] = "   ";
+        var draft = await SaveNew(Joanna(), body);
+
+        await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
+
+        Assert.Equal(JsonValueKind.Null, draft.GetProperty("highlight").ValueKind);
+        Assert.Null((await ListingOf("luzandre-com")).Highlight);
+    }
+
     // L2-072 AC5: a unique slug, with a number when taken
     [Fact]
     public async Task L2_072_AC5_the_slug_comes_from_the_name_and_takes_a_number_when_it_is_taken()

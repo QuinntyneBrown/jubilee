@@ -2,6 +2,9 @@
 <p class="biz-card__name">{{ name() }}</p>
 <p class="biz-card__tagline">{{ tagline() }}</p>
 <p class="biz-card__meta">
+  @if (highlight(); as line) {
+    <span jb-perk>{{ line }}</span>
+  }
   @if (verified()) {
     <span jb-verified-mark></span>
   } @else {

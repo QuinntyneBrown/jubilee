@@ -106,6 +106,8 @@ const FIELD_ORDER: FieldName[] = [
 ];
 const AUTOSAVE_MS = 10_000;
 const TAGLINE_MAX = 90;
+/** The green line of the card, as in the listing editor (L2-072 AC7, L2-087). */
+const HIGHLIGHT_MAX = 30;
 
 /** FieldName-level wording (L2-071 to L2-079). Codes come from the server or from the same checks here. */
 export function messageFor(field: FieldName, code: string, space = false): string {
@@ -206,6 +208,7 @@ export class ListBusinessPage {
   protected readonly categories = CATEGORIES;
   protected readonly format = formatPrice;
   protected readonly taglineMax = TAGLINE_MAX;
+  protected readonly highlightMax = HIGHLIGHT_MAX;
 
   protected readonly loading = signal(true);
   protected readonly loadFailed = signal(false);
@@ -214,6 +217,7 @@ export class ListBusinessPage {
   protected readonly name = signal('');
   protected readonly tagline = signal('');
   protected readonly categorySlug = signal('shops');
+  protected readonly highlight = signal('');
   protected readonly place = signal('');
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
@@ -297,6 +301,7 @@ export class ListBusinessPage {
     this.name.set(draft.name);
     this.tagline.set(draft.tagline);
     this.categorySlug.set(draft.categorySlug ?? 'shops');
+    this.highlight.set(draft.highlight ?? '');
     this.place.set(draft.place ?? '');
     this.agreed.set(draft.agreed);
     this.items.set(draft.items);
@@ -340,7 +345,7 @@ export class ListBusinessPage {
       name: this.name().trim(),
       tagline: this.tagline().trim(),
       categorySlug: this.isSpace() ? null : this.categorySlug() || null,
-      highlight: null,
+      highlight: this.isSpace() ? null : this.highlight().trim() || null,
       place: this.isSpace() ? null : this.place().trim() || null,
       agreed: this.agreed(),
       items: this.isSpace() ? [] : this.items(),

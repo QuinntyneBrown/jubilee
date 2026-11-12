@@ -387,7 +387,7 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
 
         // The public place of a space is its neighbourhood; the exact address stays in its details (L2-208).
         listing.Describe(new ListingProfile(command.Name, [], null, space?.Neighbourhood ?? input.Place?.Trim(), null, null, null, null));
-        listing.SetHighlight(input.Highlight);
+        listing.SetHighlight(space is null ? ListingDraft.Cut(input.Highlight, ListingDraft.MaxHighlightLength) : null);
         listing.MoveTo(ListingStage.ReadyToReview);
         db.Listings.Add(listing);
         if (space is null)

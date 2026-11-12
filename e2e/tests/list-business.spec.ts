@@ -53,6 +53,53 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await expect(list.placeLabel).toHaveText('Area you serve');
   });
 
+  test('the highlight is the green line of the preview, and stops at 30 characters (L2-072 AC1, AC7, L2-076 AC1)', async ({
+    page,
+    jb,
+  }) => {
+    const list = new ListBusinessPage(page);
+    await list.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubListingDrafts(page);
+    await jb.goto('/list');
+
+    await expect(list.highlightLabel).toHaveText('Highlight (optional)');
+    await expect(list.highlightHelp).toHaveText(
+      'A short green line on your card, like “Free first meeting”. 30 characters at most.',
+    );
+    // With no highlight the card has only its mark.
+    await expect(list.previewPerks).toHaveText(['Pending verification']);
+
+    await list.highlight.fill('Ships across Canada');
+    await expect(list.previewPerks).toHaveText(['Ships across Canada', 'Pending verification']);
+
+    await list.highlight.fill('Ships across Canada and the United States');
+    await expect(list.highlight).toHaveValue('Ships across Canada and the Un');
+
+    await list.highlight.fill('Free first meeting');
+    await list.saveDraft.click();
+    await expect(list.saved).toBeVisible();
+    expect(fake.creates[0].highlight).toBe('Free first meeting');
+
+    // A space has no highlight (ADR 0018).
+    await list.space.offer.check();
+    await expect(list.highlight).toHaveCount(0);
+  });
+
+  test('the highlight of a saved draft is restored, in the form and in the preview', async ({
+    page,
+    jb,
+  }) => {
+    const list = new ListBusinessPage(page);
+    await list.setWidth(1280);
+    await jb.signInAs('member');
+    await stubListingDrafts(page, { draft: { ...earlier, highlight: 'Ships across Canada' } });
+    await jb.goto('/list');
+
+    await expect(list.highlight).toHaveValue('Ships across Canada');
+    await expect(list.previewPerks).toHaveText(['Ships across Canada', 'Pending verification']);
+  });
+
   test('the draft left earlier is restored', async ({ page, jb }) => {
     const list = new ListBusinessPage(page);
     await list.setWidth(1280);

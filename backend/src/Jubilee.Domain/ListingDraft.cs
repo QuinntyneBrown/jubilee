@@ -72,6 +72,9 @@ public sealed class ListingDraft
 
     public const int MaxTaglineLength = 200;
 
+    /// <summary>The green line of the card is 30 characters at most, as in the listing editor (L2-072 AC7, L2-087).</summary>
+    public const int MaxHighlightLength = 30;
+
     public const int MaxItems = 50;
 
     /// <summary>A draft untouched this long is e-mailed about, then deleted 14 days later (L2-077 AC5).</summary>
@@ -143,7 +146,7 @@ public sealed class ListingDraft
         Name = Cut(name, MaxNameLength) ?? string.Empty;
         Tagline = Cut(tagline, MaxTaglineLength) ?? string.Empty;
         CategorySlug = Cut(categorySlug, 60);
-        Highlight = Cut(highlight, 60);
+        Highlight = kind == ListingKind.Space ? null : Cut(highlight, MaxHighlightLength);
         Place = Cut(place, 200);
         Agreed = agreed;
         _items.Clear();
@@ -172,7 +175,8 @@ public sealed class ListingDraft
 
     public void NoticeSent(DateTimeOffset now) => NoticeSentAt = now;
 
-    private static string? Cut(string? value, int max)
+    /// <summary>A value trimmed and cut to <paramref name="max"/> characters; null when nothing is left.</summary>
+    public static string? Cut(string? value, int max)
     {
         var trimmed = value?.Trim();
         if (string.IsNullOrEmpty(trimmed))
