@@ -11,8 +11,6 @@ const earlier: FakeDraft = {
   categorySlug: 'shops',
   highlight: null,
   place: 'Online · ships across Canada',
-  church: 'Grace Toronto Church',
-  pastorEmail: '',
   agreed: false,
   items: [
     { name: 'Gold cross stoneware mug', detail: null, priceKind: 'amount', priceCents: 2400 },
@@ -33,6 +31,11 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await jb.goto('/list');
 
     await expect(list.heading).toHaveText('List your business');
+    await expect(list.intro).toHaveText(
+      'Free for Christian-owned businesses in Toronto. Every listing is verified before it goes live.',
+    );
+    // L2-071: nobody is asked for a church or a pastor.
+    await expect(list.legends).toHaveText(['What do you offer?', 'Products']);
     await expect(list.products).toBeChecked();
     await expect(list.previewTag).toHaveText('Shop');
     await expect(list.previewName).toHaveText('Your business name');
@@ -56,7 +59,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await jb.goto('/list');
 
     await expect(list.name).toHaveValue('Luzandre.com');
-    await expect(list.church).toHaveValue('Grace Toronto Church');
+    await expect(list.tagline).toHaveValue('Unique & custom Christian apparel');
     await expect(list.itemRows).toHaveCount(1);
     await expect(list.itemRows.first()).toContainText('Gold cross stoneware mug');
     await expect(list.itemRows.first()).toContainText('$24');
@@ -161,20 +164,17 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     const fake = await stubListingDrafts(page);
     await jb.goto('/list');
     await list.tagline.fill('Christian apparel & gifts');
-    await list.church.fill('Grace Toronto Church');
 
     await list.submit.click();
 
     await expect(list.summary).toBeFocused();
-    await expect(list.summary).toContainText('Fix 3 things to continue');
+    await expect(list.summary).toContainText('Fix 2 things to continue');
     await expect(list.summaryLinks).toHaveText([
       'Enter your business name',
-      'Enter your pastor’s e-mail address',
       'Agree to the statement of faith',
     ]);
     await expect(list.fieldError).toHaveText([
       'Enter your business name as customers know it.',
-      'Enter your pastor’s e-mail address, like name@church.ca.',
       'Agree to the statement of faith to submit your listing.',
     ]);
     await expect(list.tagline).toHaveValue('Christian apparel & gifts');
@@ -213,14 +213,21 @@ test.describe('list your business (L2-071 to L2-079)', () => {
       'Nothing more to do right now. We’ll e-mail you the moment you’re live.',
     );
     await expect(list.timeline).toHaveCount(3);
-    await expect(list.timeline.nth(1)).toContainText('Your pastor confirms you');
-    await expect(list.timeline.nth(1)).toContainText(
-      'daniel.okoro@gracetoronto.example at Grace Toronto Church',
+    await expect(list.timeline).toContainText([
+      'You submitted Luzandre.com',
+      'We review your listing',
+      'You’re live',
+    ]);
+    await expect(list.timeline.nth(1)).toContainText('Within two business days');
+    await expect(list.timeline.nth(2)).toContainText(
+      'We e-mail you the moment members can find you',
     );
     await expect(list.goToMyBusiness).toHaveAttribute('href', '/my-business');
     expect(fake.submits).toHaveLength(1);
     expect(fake.submits[0].idempotencyKey).toMatch(/^[\w-]{8,}$/);
     expect(fake.submits[0].agreed).toBe(true);
+    expect(fake.submits[0]).not.toHaveProperty('church');
+    expect(fake.submits[0]).not.toHaveProperty('pastorEmail');
   });
 
   test('while submitting the button is busy and the fields are locked', async ({ page, jb }) => {
@@ -237,7 +244,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await expect(list.name).toHaveAttribute('readonly', '');
   });
 
-  test('the server refusing the pastor’s e-mail is shown on that field', async ({ page, jb }) => {
+  test('a field the server refuses is shown on that field', async ({ page, jb }) => {
     const list = new ListBusinessPage(page);
     await list.setWidth(1280);
     await jb.signInAs('member');
@@ -247,7 +254,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
 
     await list.submit.click();
 
-    await expect(list.fieldError).toHaveText(['Your reference must be someone other than you.']);
+    await expect(list.fieldError).toHaveText(['Shorten this to 90 characters. It has 94.']);
     await expect(list.summary).toBeFocused();
   });
 

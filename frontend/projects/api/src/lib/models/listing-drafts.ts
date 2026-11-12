@@ -21,8 +21,6 @@ export interface ListingDraft {
   highlight: string | null;
   /** A shop's store address, or the area a service business serves. */
   place: string | null;
-  church: string;
-  pastorEmail: string;
   agreed: boolean;
   updatedAt: string;
   items: DraftItem[];
@@ -36,21 +34,17 @@ export interface ListingDraftBody {
   categorySlug: string | null;
   highlight: string | null;
   place: string | null;
-  church: string;
-  pastorEmail: string;
   agreed: boolean;
   items: DraftItem[];
   idempotencyKey: string | null;
 }
 
-/** `POST /api/listing-drafts/{id}/submit`: the listing now waits on its church reference. */
+/** `POST /api/listing-drafts/{id}/submit`: the listing is now with the verification team. */
 export interface SubmittedListing {
   listingId: string;
   slug: string;
   name: string;
   kind: OfferKind;
-  stage: 'pending-reference';
-  church: string;
-  pastorEmail: string;
+  stage: 'ready-to-review';
   submittedAt: string;
 }

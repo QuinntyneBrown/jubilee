@@ -51,26 +51,17 @@ import { ListingItemDialog } from '../../dialogs/listing-item/listing-item.dialo
 import { SessionService } from '../../services/session.service';
 import { clockTime, newKey } from 'api';
 
-type FieldName = 'name' | 'tagline' | 'categorySlug' | 'church' | 'pastorEmail' | 'agreed';
+type FieldName = 'name' | 'tagline' | 'categorySlug' | 'agreed';
 
 /** The element each field's summary link and first-invalid focus go to. */
 const FIELD_ID: Record<FieldName, string> = {
   name: 'name',
   tagline: 'tagline',
   categorySlug: 'cat',
-  church: 'ref-church',
-  pastorEmail: 'ref-email',
   agreed: 'agree',
 };
 
-const FIELD_ORDER: FieldName[] = [
-  'name',
-  'tagline',
-  'categorySlug',
-  'church',
-  'pastorEmail',
-  'agreed',
-];
+const FIELD_ORDER: FieldName[] = ['name', 'tagline', 'categorySlug', 'agreed'];
 const AUTOSAVE_MS = 10_000;
 const TAGLINE_MAX = 90;
 
@@ -87,12 +78,6 @@ export function messageFor(field: FieldName, code: string): string {
       return 'Enter one line on what you do.';
     case 'categorySlug':
       return 'Choose a category.';
-    case 'church':
-      return 'Enter your church’s name.';
-    case 'pastorEmail':
-      return code === 'OWN_EMAIL'
-        ? 'Your reference must be someone other than you.'
-        : 'Enter your pastor’s e-mail address, like name@church.ca.';
     case 'agreed':
       return 'Agree to the statement of faith to submit your listing.';
   }
@@ -100,13 +85,11 @@ export function messageFor(field: FieldName, code: string): string {
 
 /** The summary's shorter wording ("Enter your business name"). */
 function summaryFor(field: FieldName, code: string): string {
-  if (code.startsWith('TOO_LONG') || code === 'OWN_EMAIL') return messageFor(field, code);
+  if (code.startsWith('TOO_LONG')) return messageFor(field, code);
   const text = messageFor(field, code);
   switch (field) {
     case 'name':
       return 'Enter your business name';
-    case 'pastorEmail':
-      return 'Enter your pastor’s e-mail address';
     case 'agreed':
       return 'Agree to the statement of faith';
     default:
@@ -168,8 +151,6 @@ export class ListBusinessPage {
   protected readonly tagline = signal('');
   protected readonly categorySlug = signal('shops');
   protected readonly place = signal('');
-  protected readonly church = signal('');
-  protected readonly pastorEmail = signal('');
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
 
@@ -228,8 +209,6 @@ export class ListBusinessPage {
     this.tagline.set(draft.tagline);
     this.categorySlug.set(draft.categorySlug ?? 'shops');
     this.place.set(draft.place ?? '');
-    this.church.set(draft.church);
-    this.pastorEmail.set(draft.pastorEmail);
     this.agreed.set(draft.agreed);
     this.items.set(draft.items);
   }
@@ -261,8 +240,6 @@ export class ListBusinessPage {
       categorySlug: this.categorySlug() || null,
       highlight: null,
       place: this.place().trim() || null,
-      church: this.church().trim(),
-      pastorEmail: this.pastorEmail().trim(),
       agreed: this.agreed(),
       items: this.items(),
       idempotencyKey: null,
@@ -316,9 +293,6 @@ export class ListBusinessPage {
     if (!tagline) codes.tagline = 'REQUIRED';
     else if (tagline.length > TAGLINE_MAX) codes.tagline = `TOO_LONG:${tagline.length}`;
     if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
-    if (!this.church().trim()) codes.church = 'REQUIRED';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.pastorEmail().trim()))
-      codes.pastorEmail = 'INVALID';
     if (!this.agreed()) codes.agreed = 'REQUIRED';
     return codes;
   }
