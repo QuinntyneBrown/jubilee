@@ -163,6 +163,43 @@ public sealed class EventStreamTests : IClassFixture<FastEventsFactory>, IAsyncL
         Assert.Null(await naomi.NextNotification(TimeSpan.FromMilliseconds(300)));
     }
 
+    // L2-046 AC8, L2-070 AC1, AC3: a new order request reaches the owner's open page, and not the member's
+    [Fact]
+    public async Task L2_046_AC8_a_new_order_request_reaches_the_owners_open_page_and_not_the_members()
+    {
+        Guid pickup = default;
+        await _factory.WithDb(async db =>
+        {
+            var shop = db.Listings.Single(l => l.Slug == "luzandre-com");
+            var tee = Product.Create(shop.Id, "faith-tee", "Faith heavyweight tee, charcoal", 3400, false, TileTint.Ink, TileIcon.Shirt, ListingMother.Now.AddMinutes(-10));
+            tee.SetStock(20);
+            var method = DeliveryMethod.Create(shop.Id, 1, DeliveryKind.Pickup, "Pick up in Leslieville", 0, "Free");
+            db.Products.Add(tee);
+            db.DeliveryMethods.Add(method);
+            await db.SaveChangesAsync();
+            pickup = method.Id;
+        });
+        using var joanna = await Open(Joanna());
+        using var naomi = await Open(Naomi());
+        _factory.Clock.Advance(TimeSpan.FromSeconds(1));
+
+        var sent = await Joanna().PostAsJsonAsync("/api/requests/orders", new
+        {
+            listingSlug = "luzandre-com", productSlug = "faith-tee", option = (string?)null, quantity = 2, deliveryMethodId = pickup,
+            shippingAddress = (string?)null, note = (string?)null, idempotencyKey = Guid.NewGuid().ToString(),
+        });
+        Assert.Equal(HttpStatusCode.Created, sent.StatusCode);
+
+        var frame = await naomi.NextNotification(TimeSpan.FromSeconds(2));
+        Assert.NotNull(frame);
+        Assert.Equal("request", frame.Data.GetProperty("kind").GetString());
+        Assert.Equal("New order request from Joanna Adeyemi", frame.Data.GetProperty("title").GetString());
+        Assert.Equal("Faith heavyweight tee, charcoal × 2", frame.Data.GetProperty("detail").GetString());
+        Assert.Equal("/my-business/requests", frame.Data.GetProperty("target").GetString());
+        Assert.NotNull(frame.Id);
+        Assert.Null(await joanna.NextNotification(TimeSpan.FromMilliseconds(300)));
+    }
+
     // L2-065 AC4: the badge counts follow within seconds
     [Fact]
     public async Task L2_065_AC4_the_badge_counts_are_sent_when_they_change()

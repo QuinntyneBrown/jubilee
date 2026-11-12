@@ -325,6 +325,68 @@ public sealed class OrderRequestTests : IClassFixture<JubileeApiFactory>, IAsync
         Assert.Contains("48 Woodmount Ave", mail.TextBody);
     }
 
+    // L2-046 AC8, L2-043 AC1, L2-064 AC6: the owner is told in the app and finds the request under New; the member is not told yet
+    [Fact]
+    public async Task L2_046_AC8_the_owner_gets_an_in_app_notification_and_the_request_is_new_in_incoming_requests()
+    {
+        var naomi = _factory.CreateMemberClient("Naomi Luzandre", NaomiId);
+
+        var sent = await Json(await Order(Joanna(), quantity: 2));
+
+        var told = Assert.Single((await _factory.GetJson("/api/notifications", naomi)).GetProperty("items").EnumerateArray());
+        Assert.Equal("New order request from Joanna Adeyemi", told.GetProperty("title").GetString());
+        Assert.Equal("Faith heavyweight tee, charcoal × 2", told.GetProperty("detail").GetString());
+        Assert.Equal("request", told.GetProperty("kind").GetString());
+        Assert.Equal("/my-business/requests", told.GetProperty("target").GetString());
+        Assert.False(told.GetProperty("read").GetBoolean());
+        Assert.Empty((await _factory.GetJson("/api/notifications", Joanna())).GetProperty("items").EnumerateArray());
+        var row = Assert.Single((await _factory.GetJson("/api/my-business/requests?tab=new", naomi)).GetProperty("rows").EnumerateArray());
+        Assert.Equal(sent.GetProperty("id").GetGuid(), row.GetProperty("id").GetGuid());
+        Assert.Equal("order", row.GetProperty("kind").GetString());
+        Assert.Equal("New", row.GetProperty("statusLabel").GetString());
+        Assert.Equal("Joanna Adeyemi", row.GetProperty("customerName").GetString());
+        Assert.Equal("Faith heavyweight tee, charcoal × 2", row.GetProperty("title").GetString());
+        Assert.Equal("$77.00 + tax", row.GetProperty("total").GetString());
+    }
+
+    // L2-052 AC2, AC4: the customer is told in the app when the shop confirms, and only then does the stock go down
+    [Fact]
+    public async Task L2_052_AC2_AC4_confirming_the_order_tells_the_customer_in_the_app_and_reduces_the_stock()
+    {
+        var naomi = _factory.CreateMemberClient("Naomi Luzandre", NaomiId);
+        var id = (await Json(await Order(Joanna(), quantity: 2))).GetProperty("id").GetGuid();
+
+        Assert.Equal(HttpStatusCode.OK, (await naomi.PostAsync($"/api/my-business/requests/{id}/confirm", null)).StatusCode);
+
+        var told = Assert.Single((await _factory.GetJson("/api/notifications", Joanna())).GetProperty("items").EnumerateArray());
+        Assert.Contains("Luzandre.com confirmed", told.GetProperty("title").GetString());
+        Assert.Equal("request", told.GetProperty("kind").GetString());
+        Assert.Equal($"/requests/{id}", told.GetProperty("target").GetString());
+        var medium = (await _factory.GetJson(OptionsUrl, Joanna())).GetProperty("product").GetProperty("options").EnumerateArray().ElementAt(1);
+        Assert.Equal(18, medium.GetProperty("maxQuantity").GetInt32());
+    }
+
+    // L2-046 AC8, L2-057 AC8: the order is a card in the conversation of the member and the shop
+    [Fact]
+    public async Task L2_046_AC8_an_order_card_appears_in_the_conversation_with_the_shop()
+    {
+        var started = await Json(await Joanna().PostAsJsonAsync(
+            "/api/conversations", new { listingSlug = "luzandre", body = "Do you ship to Ottawa?", idempotencyKey = Guid.NewGuid().ToString() }));
+        var conversation = started.GetProperty("conversationId").GetString();
+        _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+
+        await Order(Joanna(), quantity: 2);
+
+        var card = Assert.Single((await _factory.GetJson($"/api/conversations/{conversation}", Joanna())).GetProperty("requests").EnumerateArray());
+        Assert.Equal("Order request", card.GetProperty("kindLabel").GetString());
+        Assert.Equal("Faith heavyweight tee, charcoal × 2", card.GetProperty("title").GetString());
+        Assert.Equal("Ship to me · $77.00 + tax", card.GetProperty("detail").GetString());
+        Assert.Equal("Awaiting reply", card.GetProperty("statusLabel").GetString());
+        var owners = Assert.Single((await _factory.GetJson($"/api/conversations/{conversation}", _factory.CreateMemberClient("Naomi Luzandre", NaomiId)))
+            .GetProperty("requests").EnumerateArray());
+        Assert.Equal("Order request", owners.GetProperty("kindLabel").GetString());
+    }
+
     [Fact]
     public async Task L2_046_a_shop_that_is_not_listed_or_another_shops_product_is_not_found()
     {
