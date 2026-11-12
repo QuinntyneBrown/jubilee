@@ -4,8 +4,8 @@ import { EditListingPage } from '../pages/edit-listing.page';
 
 const EDITOR = '/my-business/listing';
 
-test.describe('edit a space (L2-208)', () => {
-  test('L2-208 AC1: the owner of a space edits its own fields, filled with what is stored', async ({
+test.describe('edit a space (L2-209)', () => {
+  test('L2-209 AC1: the owner of a space edits its own fields, filled with what is stored', async ({
     page,
     jb,
   }) => {
@@ -30,7 +30,9 @@ test.describe('edit a space (L2-208)', () => {
     await expect(editor.space.neighbourhood).toHaveValue('Roncesvalles');
     await expect(editor.space.address).toHaveValue('112 Fermanagh Ave, Toronto, ON M6R 1M2');
     await expect(editor.space.place).toHaveValue('Guest suite');
-    await expect(editor.space.facts).toHaveValue('Queen bed\nPrivate bath\nSleeps 2\nSelf check-in');
+    await expect(editor.space.facts).toHaveValue(
+      'Queen bed\nPrivate bath\nSleeps 2\nSelf check-in',
+    );
     await expect(editor.space.includedChip('Wi-Fi')).toHaveAttribute('aria-pressed', 'true');
     await expect(editor.space.includedChip('Utilities')).toHaveAttribute('aria-pressed', 'false');
     await expect(editor.space.rules).toHaveValue('Check-in after 3 pm\nNo parties\nNo smoking');
@@ -45,7 +47,7 @@ test.describe('edit a space (L2-208)', () => {
     await expect(editor.space.previewPending).toHaveCount(0);
   });
 
-  test('L2-208 AC2: valid changes are saved and live at once', async ({ page, jb }) => {
+  test('L2-209 AC2: valid changes are saved and live at once', async ({ page, jb }) => {
     // Given the owner of the guest suite in the editor
     const editor = new EditListingPage(page);
     await editor.setWidth(1280);
@@ -81,7 +83,7 @@ test.describe('edit a space (L2-208)', () => {
     await expect(editor.space.price).toHaveValue('140');
   });
 
-  test('L2-208 AC2: the space fields are checked as when it was listed, and nothing is sent', async ({
+  test('L2-209 AC2: the space fields are checked as when it was listed, and nothing is sent', async ({
     page,
     jb,
   }) => {
@@ -107,7 +109,7 @@ test.describe('edit a space (L2-208)', () => {
     expect(fake.saves).toEqual([]);
   });
 
-  test('L2-208 AC3: a change of term changes the price unit and the card, and is saved', async ({
+  test('L2-209 AC3: a change of term changes the price unit and the card, and is saved', async ({
     page,
     jb,
   }) => {

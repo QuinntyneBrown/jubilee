@@ -1,6 +1,6 @@
 # 0018. Listing onboarding decisions
 
-Status: accepted
+Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed. Submit no longer takes a church or a pastor's e-mail, queues no e-mail to a pastor, sets no `REFERENCE_REUSED` flag and creates the listing at Ready to review, not `PendingReference`. The design `name-church-reference` is deleted. The rest stands.
 
 ## Context
 

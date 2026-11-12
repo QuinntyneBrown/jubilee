@@ -6,9 +6,7 @@ namespace Jubilee.Tests.Shared;
 public enum NonPublicState
 {
     Draft,
-    PendingReference,
     ReadyToReview,
-    NeedsDecision,
     ChangesRequested,
     Paused,
     Deleted,
@@ -40,7 +38,7 @@ public static class ListingMother
         return listing;
     }
 
-    /// <summary>A live space in "Rooms & rentals" (L2-196), approved like any listing.</summary>
+    /// <summary>A live space in "Rooms & rentals" (L2-197), approved like any listing.</summary>
     public static Listing Space(
         string slug,
         SpaceTerm term = SpaceTerm.LongTerm,

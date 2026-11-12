@@ -43,7 +43,7 @@ public sealed class AccountEmails(IAppDbContext db, AccountSettings settings, Ti
 
 /// <summary>Join with e-mail and password (L2-001, L2-002).</summary>
 public sealed record JoinWithEmailCommand(
-    string? FirstName, string? LastName, string? Email, string? Password, string? HomeChurch, bool AgreementAccepted)
+    string? FirstName, string? LastName, string? Email, string? Password, string? HomeChurch, string? HomeChurchAddress, bool AgreementAccepted)
     : IRequest<Member>;
 
 public sealed class JoinWithEmailCommandHandler(
@@ -67,6 +67,11 @@ public sealed class JoinWithEmailCommandHandler(
         if ((request.HomeChurch?.Trim().Length ?? 0) > MaxChurchLength)
         {
             errors["homeChurch"] = "TOO_LONG";
+        }
+
+        if ((request.HomeChurchAddress?.Trim().Length ?? 0) > Member.MaxHomeChurchAddressLength)
+        {
+            errors["homeChurchAddress"] = "TOO_LONG";
         }
 
         var email = EmailAddress.TryParse(request.Email);
@@ -123,7 +128,7 @@ public sealed class JoinWithEmailCommandHandler(
             throw new ValidationFailedException(errors);
         }
 
-        var member = Member.Join(email!, request.FirstName!, request.LastName!, request.HomeChurch, hasher.Hash(password), clock.GetUtcNow(), await content.TermsVersion(cancellationToken));
+        var member = Member.Join(email!, request.FirstName!, request.LastName!, request.HomeChurch, hasher.Hash(password), clock.GetUtcNow(), homeChurchAddress: request.HomeChurchAddress, termsVersion: await content.TermsVersion(cancellationToken));
         db.Members.Add(member);
         await emails.QueueConfirmationAsync(member, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);

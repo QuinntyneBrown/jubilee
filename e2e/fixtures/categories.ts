@@ -12,7 +12,7 @@ export const categories = [
   { slug: 'community', name: 'Community' },
 ] as const;
 
-/** The eleven categories of the chips, "Rooms & rentals" second (L2-020, L2-196). */
+/** The eleven categories of the chips, "Rooms & rentals" second (L2-020, L2-197). */
 export const chipCategories = [
   categories[0],
   { slug: 'rooms-rentals', name: 'Rooms & rentals' },

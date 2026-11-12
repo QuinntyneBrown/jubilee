@@ -37,7 +37,6 @@ public static partial class EmailLayout
         ("/confirm-email-change/", "Confirm your new e-mail"),
         ("/reset-password/", "Choose a new password"),
         ("/forgot-password", "Reset your password"),
-        ("/reference/", "Answer the request"),
         ("/account/data/", "Download your data"),
         ("/sign-in", "Sign in to Jubilee"),
     ];

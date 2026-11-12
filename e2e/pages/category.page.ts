@@ -30,7 +30,7 @@ export class CategoryPage extends ShellPage implements Screen {
   readonly errorReference: Locator;
   readonly tryAgain: Locator;
   readonly filters: FiltersDialog;
-  /** Rooms & rentals (L2-201): the term filter, the space cards and the closing call to list. */
+  /** Rooms & rentals (L2-202): the term filter, the space cards and the closing call to list. */
   readonly termFilter: TermFilter;
   readonly spaceCards: Locator;
   readonly loadingSpaceCards: Locator;

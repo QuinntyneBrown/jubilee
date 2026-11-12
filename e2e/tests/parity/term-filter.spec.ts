@@ -2,7 +2,7 @@ import { parity } from '../../fixtures/parity';
 import { BrowsePage } from '../../pages/browse.page';
 import { CategoryPage } from '../../pages/category.page';
 
-// jb-term-filter: "Any length" and the four terms, on Browse and on Rooms & rentals (L2-200 AC2).
+// jb-term-filter: "Any length" and the four terms, on Browse and on Rooms & rentals (L2-201 AC2).
 parity('term-filter', {
   cases: [
     {

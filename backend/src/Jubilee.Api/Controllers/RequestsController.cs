@@ -13,7 +13,7 @@ public sealed record BookMeetingRequest(
 public sealed record RequestQuoteRequest(
     string? ListingSlug, Guid? ServiceId, string? Description, string? NeededBy, string? Budget, string? Phone, string? IdempotencyKey);
 
-/// <summary>The body of a space request. Any price the client sends is not read: the server computes it (L2-205 AC8).</summary>
+/// <summary>The body of a space request. Any price the client sends is not read: the server computes it (L2-206 AC8).</summary>
 public sealed record RequestSpaceRequest(
     string? ListingSlug, string? CheckIn, string? CheckOut, string? MoveIn, int? StayMonths, string? Note, string? IdempotencyKey);
 

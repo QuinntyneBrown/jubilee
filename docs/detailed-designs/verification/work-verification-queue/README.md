@@ -13,9 +13,9 @@ staff session (`security/authorize-staff-requests`) on an allowed network
 application.
 
 The *verification queue* is the list of submitted listings that have not yet
-been approved or declined. Each listing in the queue holds one of four stages:
-"Ready to review", "Waiting on reference", "Needs a decision" or "Changes
-requested". The queue orders listings oldest submitted first and marks a listing
+been approved or declined. Each listing in the queue holds one of two stages:
+"Ready to review" or "Changes requested". A submitted listing enters the queue
+at "Ready to review". The queue orders listings oldest submitted first and marks a listing
 *overdue* when it has been "Ready to review" for more than 2 business days.
 
 The slice is read-mostly. Decisions on a single listing belong to the review
@@ -32,9 +32,9 @@ The feature runs from the Angular admin shell to the Jubilee database.
   staff sign-in; the second factor is proved there (ADR 0040).
 - **`VerificationQueuePage`** — Angular page of the admin application at `/verifications`. It shows
   the summary line (for example "4 listings · 2 ready to review · oldest waiting
-  4 days"), the filter tabs "Ready to review", "Waiting on reference", "Needs a
-  decision" and "Changes requested" with their counts, and a table with the
-  columns Business, Category, Owner, Church reference, Submitted and Stage.
+  4 days"), the filter tabs "Ready to review" and "Changes requested" with their
+  counts, and a table with the columns Business, Category, Owner, Submitted and
+  Stage.
 - **Queue states** — `VerificationQueuePage` renders five states. An empty queue
   shows "The queue is clear. Every submitted listing has been reviewed. New
   submissions appear here as soon as the owner sends them." with "Refresh". An
@@ -55,9 +55,8 @@ The feature runs from the Angular admin shell to the Jubilee database.
   (`security/authorize-staff-requests`). Any other caller receives 401 or 403 as
   `ProblemDetails`; the check runs on the server and does not rely on the guard.
 - **`GetVerificationQueueQueryHandler`** — MediatR handler. It reads listings in
-  the four queue stages ordered by `SubmittedAt` ascending, counts each filter,
-  computes the age of the oldest listing in days, and maps the church reference
-  to `Confirmed`, `Waiting`, `CantVouch` or `DoesntKnow`.
+  the two queue stages ordered by `SubmittedAt` ascending, counts each filter
+  and computes the age of the oldest listing in days.
 - **`BusinessDayCalendar`** — application service that counts business days
   between two instants. The handler marks a row `Overdue` when a listing has
   held "Ready to review" for more than 2 business days. The time zone is Toronto; the holiday
@@ -77,7 +76,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-098` | `L1-014` | The system shall refuse every admin API to a caller without a staff session holding the `verifier` role as `L2-191` states, shall require a verifier to complete a second factor through single sign-on before any admin screen is available, and shall show "Verifications {n}" in the admin application's top bar. Only an `admin` role holder shall grant or remove roles, each change shall be written to the audit log, and a verifier who owns a listing shall not approve or request changes on it. |
-| `L2-099` | `L1-014` | The system shall list submitted listings at `/verifications` in the admin application, ordered oldest submitted first, with a summary line, four filter tabs with counts, and the columns Business, Category, Owner, Church reference, Submitted and Stage. The page shall mark a listing overdue after more than 2 business days in "Ready to review" and shall show dedicated empty, empty-filter and load-error (`JB-ADM-503`) states. |
+| `L2-099` | `L1-014` | The system shall list submitted listings at `/verifications` in the admin application, ordered oldest submitted first, with a summary line, the filter tabs "Ready to review" and "Changes requested" with counts, and the columns Business, Category, Owner, Submitted and Stage. The page shall mark a listing overdue after more than 2 business days in "Ready to review" and shall show dedicated empty, empty-filter and load-error (`JB-ADM-503`) states. |
 | `L2-133` | `L1-019` | The system shall check the caller's role and ownership of the specific object on every API endpoint before doing anything, without relying on the client hiding a control. |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record with actor, action, target, time, before and after values, and reason for each sensitive action, including role changes. |
 | `L2-118` | `L1-016` | The system shall show a quotable error reference on every load-error state, with `503` when the service was unavailable. |

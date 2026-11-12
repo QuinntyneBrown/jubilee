@@ -15,8 +15,10 @@ export class ListBusinessPage extends ShellPage implements Screen {
   readonly category: Locator;
   readonly place: Locator;
   readonly placeLabel: Locator;
-  readonly church: Locator;
-  readonly pastorEmail: Locator;
+  /** The page's line under its heading. */
+  readonly intro: Locator;
+  /** Every group of fields the form has, by its legend. */
+  readonly legends: Locator;
   readonly agree: Locator;
   readonly addItem: Locator;
   readonly itemRows: Locator;
@@ -39,7 +41,7 @@ export class ListBusinessPage extends ShellPage implements Screen {
   readonly doneText: Locator;
   readonly timeline: Locator;
   readonly goToMyBusiness: Locator;
-  /** The fields of a space (L2-197, L2-198). */
+  /** The fields of a space (L2-198, L2-199). */
   readonly space: SpaceFields;
 
   constructor(page: Page) {
@@ -54,8 +56,8 @@ export class ListBusinessPage extends ShellPage implements Screen {
     this.category = this.main.locator('#cat');
     this.place = this.main.locator('#area');
     this.placeLabel = this.main.locator('label[for="area"]');
-    this.church = this.main.locator('#ref-church');
-    this.pastorEmail = this.main.locator('#ref-email');
+    this.intro = this.main.locator('.subtitle');
+    this.legends = this.main.locator('legend');
     this.agree = this.main.getByRole('checkbox', { name: /statement of faith/ });
     this.addItem = this.main.getByRole('button', { name: /^Add a (product|service)$/ });
     this.itemRows = this.main
@@ -95,13 +97,11 @@ export class ListBusinessPage extends ShellPage implements Screen {
   async fillValid(): Promise<void> {
     await this.name.fill('Luzandre.com');
     await this.tagline.fill('Unique & custom Christian apparel, artworks & gifts');
-    await this.church.fill('Grace Toronto Church');
-    await this.pastorEmail.fill('daniel.okoro@gracetoronto.example');
     await this.agree.check();
   }
 }
 
-/** The space form of List your business (L2-197 to L2-199). */
+/** The space form of List your business (L2-198 to L2-200). */
 export class SpaceFields {
   readonly offer: Locator;
   readonly nameLabel: Locator;

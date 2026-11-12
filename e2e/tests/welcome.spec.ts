@@ -42,6 +42,9 @@ test.describe('welcome page (L2-020)', () => {
       'Ask, book or order',
       'Keep wealth working for the kingdom',
     ]);
+    await expect(welcome.stepList).toContainText(
+      'Every listing is a Christian-owned business verified by the Jubilee verification team.',
+    );
     // Up to four featured businesses (L2-106: the first four of this week's slots) with "Browse all {n}"
     await expect(welcome.featuredCards).toHaveCount(4);
     await expect(welcome.featuredCard(0).name).toHaveText('Legacy Financial');
@@ -51,6 +54,9 @@ test.describe('welcome page (L2-020)', () => {
     await expect(welcome.browseAll).toHaveText('Browse all 47');
     await expect(welcome.browseAll).toHaveAttribute('href', '/');
     // The "Own a business?" panel
+    await expect(welcome.ownABusiness).toContainText(
+      'List it free. Tell us what you offer, submit it for verification, and you are live once we approve it.',
+    );
     await expect(welcome.listYourBusiness).toHaveAttribute('href', '/join?returnUrl=%2Flist');
   });
 

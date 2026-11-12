@@ -6,9 +6,9 @@ title System Context — Describe a space
 Person(member, "Member", "Lists a room, suite, apartment, house or hall to rent")
 Person(team, "Verification team", "Reviews the space without its exact address")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
-System_Ext(email, "E-mail provider", "Sends the church reference request")
+System_Ext(email, "E-mail provider", "Tells the owner when the space is live")
 
 Rel(member, jubilee, "Chooses A space, fills in the space fields and submits")
 Rel(team, jubilee, "Reviews and approves the space")
-Rel(jubilee, email, "Asks the church reference", "HTTPS")
+Rel(jubilee, email, "Sends the decision e-mail", "HTTPS")
 @enduml

@@ -93,7 +93,7 @@ the public page features render that tile.
 ### Spaces
 
 For a space, the screen shows Photos, "Listing title", the line, "About" and
-the space fields of `L2-198` with their stored values, the exact address
+the space fields of `L2-199` with their stored values, the exact address
 included, and not "Category", "Hours" or "Website". `GET
 /api/my-business/listing` returns `ListingEditorDto` with `Space`
 (`SpaceDraftDto`, with the address, for the owner only), and `PUT
@@ -102,7 +102,7 @@ validated by `Drafts.ValidateSpace`; hours are not required for a space. A save
 that moves a space out of "Rooms & rentals", or a business into it, is refused
 with HTTP 422 and `category` `CATEGORY_LOCKED`. A change of
 term is live immediately in the space's cards and page. Photos follow
-`L2-088`; onboarding has none, so they are added here (ADR 0041; see
+`L2-088`; onboarding has none, so they are added here (ADR 0042; see
 [Describe a space](../../onboarding/describe-space/README.md)).
 
 ## Requirements
@@ -118,8 +118,8 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-127` | `L1-018` | While a form submits, its fields shall be read-only, the primary button shall show a spinner with `aria-busy="true"`, and a second press shall send nothing. |
 | `L2-133` | `L1-019` | The server shall check ownership of the listing before doing anything, shall return 403 to an owner API call for a listing the caller does not own, and shall reject an update that includes fields the caller may not set. |
 | `L2-138` | `L1-019` | The server shall check each upload by its magic bytes, accept only JPEG and PNG up to 5 MB and 8,000 × 8,000 pixels, re-encode the image, strip metadata, scan it for malware and serve it from a separate cookieless domain. |
-| `L2-208` | `L1-028` | `/my-business/listing` for a space shall show the space fields with their stored values and not "Category", "Hours" or "Website", validate them as on `/list`, and publish a change of term to the cards and page. |
-| `L2-207` | `L1-028` | The exact address shall reach only the member whose space request is `confirmed` or `completed`, and the owner shall see and change it on Edit listing. |
+| `L2-209` | `L1-028` | `/my-business/listing` for a space shall show the space fields with their stored values and not "Category", "Hours" or "Website", validate them as on `/list`, and publish a change of term to the cards and page. |
+| `L2-208` | `L1-028` | The exact address shall reach only the member whose space request is `confirmed` or `completed`, and the owner shall see and change it on Edit listing. |
 
 ## Diagrams
 

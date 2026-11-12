@@ -48,7 +48,6 @@
                 <th jb-table-cell scope="col">Business</th>
                 <th jb-table-cell scope="col">Category</th>
                 <th jb-table-cell scope="col">Owner</th>
-                <th jb-table-cell scope="col">Church reference</th>
                 <th jb-table-cell scope="col">Submitted</th>
                 <th jb-table-cell scope="col">Stage</th>
               </tr>
@@ -61,9 +60,6 @@
                   </td>
                   <td jb-table-cell>{{ row.categoryName }}</td>
                   <td jb-table-cell>{{ row.ownerName }}</td>
-                  <td jb-table-cell>
-                    <span jb-badge [tone]="reference(row).tone">{{ reference(row).label }}</span>
-                  </td>
                   <td jb-table-cell>
                     {{ submitted(row) }}
                     @if (row.overdue) {

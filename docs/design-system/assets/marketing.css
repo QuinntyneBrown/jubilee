@@ -220,6 +220,14 @@
 .mkt-chapter__time { width: 2.25rem; flex: none; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; color: var(--jb-mkt-accent-text); }
 .mkt-chapter__title { font-size: 0.9375rem; font-weight: var(--font-weight-medium); }
 
+/* ---------- Mission ------------------------------------------------------- */
+.mkt-mission { background: var(--jb-mkt-ink); color: var(--jb-mkt-paper); }
+.mkt-mission__inner { padding-block: var(--space-20); }
+@media (min-width: 64rem) { .mkt-mission__inner { padding-block: 7rem; } }
+.mkt-mission__text { max-width: 42rem; }
+.mkt-mission .mkt-accent { color: var(--color-accent); }
+.mkt-mission__statement { margin-top: var(--space-5); font-size: var(--font-size-lg); line-height: 1.625; color: color-mix(in srgb, var(--jb-mkt-paper) 75%, transparent); }
+
 /* ---------- Why Jubilee --------------------------------------------------- */
 .mkt-why { border-top: var(--border-width-hairline) solid color-mix(in srgb, var(--color-fg-default) 10%, transparent); }
 .mkt-why__inner { display: grid; gap: var(--space-10); padding-block: var(--space-20); }

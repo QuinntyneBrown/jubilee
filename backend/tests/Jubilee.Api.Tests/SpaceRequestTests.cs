@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Jubilee.Api.Tests;
 
 /// <summary>
-/// A member requests a space (L2-205), the owner answers it (L2-206), and the exact address reaches
-/// only the renter whose request the owner accepted (L2-207).
+/// A member requests a space (L2-206), the owner answers it (L2-207), and the exact address reaches
+/// only the renter whose request the owner accepted (L2-208).
 /// </summary>
 public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
@@ -57,7 +57,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
             checkIn = Day(Today.AddDays(fromDays)),
             checkOut = Day(Today.AddDays(fromDays + nights)),
             note = "Visiting family for the weekend.",
-            totalCents = 1, // A price from the client is ignored (L2-205 AC8).
+            totalCents = 1, // A price from the client is ignored (L2-206 AC8).
             idempotencyKey = Guid.NewGuid().ToString(),
         });
 
@@ -82,7 +82,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_205_AC3_AC7_AC8_a_short_stay_request_is_new_with_its_nights_and_a_total_from_the_stored_rent()
+    public async Task L2_206_AC3_AC7_AC8_a_short_stay_request_is_new_with_its_nights_and_a_total_from_the_stored_rent()
     {
         var id = await Sent(await Stay(Joanna()));
 
@@ -98,7 +98,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_205_AC4_a_long_term_request_has_a_move_in_and_a_stay_and_no_total()
+    public async Task L2_206_AC4_a_long_term_request_has_a_move_in_and_a_stay_and_no_total()
     {
         var id = await Sent(await Viewing(Joanna()));
 
@@ -115,7 +115,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     [InlineData(5, 0, "checkOut", "NOT_AFTER_CHECK_IN")]
     [InlineData(400, 2, "checkIn", "TOO_FAR")]
     [InlineData(5, 1, "checkOut", "BELOW_MINIMUM_STAY")]
-    public async Task L2_205_AC5_AC6_bad_dates_and_a_stay_below_the_minimum_are_refused(int fromDays, int nights, string field, string code)
+    public async Task L2_206_AC5_AC6_bad_dates_and_a_stay_below_the_minimum_are_refused(int fromDays, int nights, string field, string code)
     {
         var response = await Stay(Joanna(), fromDays, nights);
 
@@ -125,7 +125,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_205_AC6_a_monthly_stay_below_the_minimum_is_refused()
+    public async Task L2_206_AC6_a_monthly_stay_below_the_minimum_is_refused()
     {
         var response = await Viewing(Joanna(), months: 4);
 
@@ -134,7 +134,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_205_AC10_an_owner_cannot_request_their_own_space()
+    public async Task L2_206_AC10_an_owner_cannot_request_their_own_space()
     {
         var response = await Stay(Owner());
 
@@ -143,7 +143,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_205_AC9_the_page_knows_the_members_open_request_and_no_one_elses()
+    public async Task L2_206_AC9_the_page_knows_the_members_open_request_and_no_one_elses()
     {
         var id = await Sent(await Stay(Joanna()));
 
@@ -157,7 +157,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_205_AC9_a_second_open_request_for_the_same_space_is_refused()
+    public async Task L2_206_AC9_a_second_open_request_for_the_same_space_is_refused()
     {
         await Sent(await Stay(Joanna()));
 
@@ -169,7 +169,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_205_AC7_the_owner_is_told_and_the_request_is_in_the_members_requests()
+    public async Task L2_206_AC7_the_owner_is_told_and_the_request_is_in_the_members_requests()
     {
         var id = await Sent(await Stay(Joanna()));
 
@@ -183,7 +183,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_206_AC1_the_owner_sees_the_space_request_with_its_dates_and_total()
+    public async Task L2_207_AC1_the_owner_sees_the_space_request_with_its_dates_and_total()
     {
         await Sent(await Stay(Joanna()));
 
@@ -199,7 +199,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_207_AC2_AC3_AC4_the_address_reaches_only_the_accepted_renter_and_only_while_confirmed()
+    public async Task L2_208_AC2_AC3_AC4_the_address_reaches_only_the_accepted_renter_and_only_while_confirmed()
     {
         var joannas = await Sent(await Stay(Joanna()));
         var samuels = await Sent(await Stay(Samuel(), fromDays: 30));
@@ -228,7 +228,7 @@ public class SpaceRequestTests : IClassFixture<JubileeApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task L2_206_AC3_a_declined_space_request_never_shows_the_address()
+    public async Task L2_207_AC3_a_declined_space_request_never_shows_the_address()
     {
         var id = await Sent(await Stay(Joanna()));
 

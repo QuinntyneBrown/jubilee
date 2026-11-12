@@ -14,8 +14,8 @@ export interface DraftItem {
 }
 
 /**
- * The rental fields of a space (L2-198). The exact address goes only to the owner and, once
- * they accept, to that renter (L2-207).
+ * The rental fields of a space (L2-199). The exact address goes only to the owner and, once
+ * they accept, to that renter (L2-208).
  */
 export interface SpaceDraft {
   term: SpaceTerm;
@@ -43,8 +43,6 @@ export interface ListingDraft {
   highlight: string | null;
   /** A shop's store address, or the area a service business serves. */
   place: string | null;
-  church: string;
-  pastorEmail: string;
   agreed: boolean;
   updatedAt: string;
   items: DraftItem[];
@@ -60,22 +58,18 @@ export interface ListingDraftBody {
   categorySlug: string | null;
   highlight: string | null;
   place: string | null;
-  church: string;
-  pastorEmail: string;
   agreed: boolean;
   items: DraftItem[];
   space: SpaceDraft | null;
   idempotencyKey: string | null;
 }
 
-/** `POST /api/listing-drafts/{id}/submit`: the listing now waits on its church reference. */
+/** `POST /api/listing-drafts/{id}/submit`: the listing is now with the verification team. */
 export interface SubmittedListing {
   listingId: string;
   slug: string;
   name: string;
   kind: OfferKind;
-  stage: 'pending-reference';
-  church: string;
-  pastorEmail: string;
+  stage: 'ready-to-review';
   submittedAt: string;
 }

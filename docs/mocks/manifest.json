@@ -124,25 +124,6 @@
       }
     },
     {
-      "id": "church-reference",
-      "kind": "page",
-      "title": "Church reference",
-      "route": "/reference/:token",
-      "states": [
-        "default",
-        "loading",
-        "error",
-        "invalid",
-        "submitting",
-        "success",
-        "expired",
-        "reported"
-      ],
-      "not_applicable": {
-        "empty": "A form page has no collection that could be empty."
-      }
-    },
-    {
       "id": "statement-of-faith",
       "kind": "page",
       "title": "Statement of faith",
@@ -352,11 +333,11 @@
       "title": "Space",
       "route": "/b/:slug",
       "requirements": [
-        "L2-196",
-        "L2-202",
-        "L2-204",
+        "L2-197",
+        "L2-203",
         "L2-205",
-        "L2-207"
+        "L2-206",
+        "L2-208"
       ],
       "states": [
         "short-stay",
@@ -371,7 +352,7 @@
       ],
       "not_applicable": {
         "default": "A space page is drawn once per term; short-stay (the guest suite near Roncesvalles) is its default.",
-        "empty": "A space page shows one space; parts it lacks (key facts, what’s included, house rules) are left out (L2-204 AC3)."
+        "empty": "A space page shows one space; parts it lacks (key facts, what’s included, house rules) are left out (L2-205 AC3)."
       }
     },
     {
@@ -756,7 +737,7 @@
       "title": "Request a space",
       "opens_from": "space",
       "requirements": [
-        "L2-205"
+        "L2-206"
       ],
       "states": [
         "short-stay",

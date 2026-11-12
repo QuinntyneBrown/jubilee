@@ -5,7 +5,7 @@ public sealed record Category(string Slug, string Name)
 {
     public const string ShopsSlug = "shops";
 
-    /// <summary>"Rooms & rentals": every space and nothing else (L2-196 AC3).</summary>
+    /// <summary>"Rooms & rentals": every space and nothing else (L2-197 AC3).</summary>
     public const string RoomsSlug = "rooms-rentals";
 
     /// <summary>The eleven categories in their fixed display order.</summary>

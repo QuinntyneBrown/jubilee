@@ -43,6 +43,10 @@ export const FILM = {
   ],
 } as const;
 
+/** Jubilee's mission, the single level-0 requirement (L0-001, docs/specs/L0.md), word for word. */
+export const MISSION =
+  'Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.';
+
 /** The number of verified businesses the page speaks of. */
 export const BUSINESS_COUNT = 47;
 

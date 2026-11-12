@@ -2,7 +2,7 @@ import { expect, test } from '../fixtures/jb-test';
 import { stubListingDrafts, type FakeDraft } from '../fixtures/listing-drafts';
 import { ListBusinessPage } from '../pages/list-business.page';
 
-// Listing a space through List your business (L2-197 to L2-199), against a stand-in for the
+// Listing a space through List your business (L2-198 to L2-200), against a stand-in for the
 // listing-draft endpoints (ADR 0009).
 
 const earlier: FakeDraft = {
@@ -13,8 +13,6 @@ const earlier: FakeDraft = {
   categorySlug: 'rooms-rentals',
   highlight: null,
   place: null,
-  church: 'Grace Toronto Church',
-  pastorEmail: '',
   agreed: false,
   items: [],
   idempotencyKey: null,
@@ -34,8 +32,8 @@ const earlier: FakeDraft = {
   },
 };
 
-test.describe('list a space (L2-197 to L2-199)', () => {
-  test('L2-197 AC1-AC3: "A space" turns the form into List a space, with its own preview', async ({
+test.describe('list a space (L2-198 to L2-200)', () => {
+  test('L2-198 AC1-AC3: "A space" turns the form into List a space, with its own preview', async ({
     page,
     jb,
   }) => {
@@ -66,7 +64,7 @@ test.describe('list a space (L2-197 to L2-199)', () => {
     await expect(list.space.previewBadge).toHaveText('Long term');
   });
 
-  test('L2-198 AC1-AC3, AC5: the fields follow the term, and what was typed stays', async ({
+  test('L2-199 AC1-AC3, AC5: the fields follow the term, and what was typed stays', async ({
     page,
     jb,
   }) => {
@@ -137,7 +135,7 @@ test.describe('list a space (L2-197 to L2-199)', () => {
     await expect(list.space.includedChip('Wi-Fi')).toHaveAttribute('aria-pressed', 'true');
   });
 
-  test('L2-198 AC4: a Room and a Roommate ask about the household', async ({ page, jb }) => {
+  test('L2-199 AC4: a Room and a Roommate ask about the household', async ({ page, jb }) => {
     const list = new ListBusinessPage(page);
     await list.setWidth(1280);
     await jb.signInAs('member');
@@ -159,7 +157,7 @@ test.describe('list a space (L2-197 to L2-199)', () => {
     await expect(list.space.household).toHaveCount(0);
   });
 
-  test('L2-198 AC6-AC8, L2-199 AC1: an empty space names every missing field', async ({
+  test('L2-199 AC6-AC8, L2-200 AC1: an empty space names every missing field', async ({
     page,
     jb,
   }) => {
@@ -189,7 +187,7 @@ test.describe('list a space (L2-197 to L2-199)', () => {
     expect(fake.submits).toHaveLength(0);
   });
 
-  test('L2-198 AC10, L2-197 AC4: a space draft saves every field and comes back as it was', async ({
+  test('L2-199 AC10, L2-198 AC4: a space draft saves every field and comes back as it was', async ({
     page,
     jb,
   }) => {
@@ -229,7 +227,7 @@ test.describe('list a space (L2-197 to L2-199)', () => {
     });
   });
 
-  test('L2-199 AC2: a valid space is in for verification', async ({ page, jb }) => {
+  test('L2-200 AC2: a valid space is in for verification', async ({ page, jb }) => {
     const list = new ListBusinessPage(page);
     await list.setWidth(1280);
     await jb.signInAs('member');
@@ -239,8 +237,6 @@ test.describe('list a space (L2-197 to L2-199)', () => {
     await list.name.fill('Bright basement apartment in the Annex');
     await list.tagline.fill('Separate entrance, garden walkout');
     await list.space.fillValid();
-    await list.church.fill('Trinity Annex Church');
-    await list.pastorEmail.fill('pastor@trinityannex.example');
     await list.space.agreement.check();
     await list.submit.click();
 
@@ -268,8 +264,6 @@ test.describe('list a space (L2-197 to L2-199)', () => {
     await list.name.fill('Bright basement apartment in the Annex');
     await list.tagline.fill('Separate entrance, garden walkout');
     await list.space.fillValid();
-    await list.church.fill('Trinity Annex Church');
-    await list.pastorEmail.fill('pastor@trinityannex.example');
     await list.space.agreement.check();
     await list.submit.click();
 

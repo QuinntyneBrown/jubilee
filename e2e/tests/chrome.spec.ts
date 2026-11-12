@@ -42,6 +42,37 @@ test.describe('footer and skip link (L2-112)', () => {
     // Then focus is on main
     await expect(shell.main).toBeFocused();
   });
+
+  for (const [width, height] of [
+    [1280, 1600],
+    [360, 1600],
+  ]) {
+    test(`AC5: at ${width} px a page shorter than the viewport has the footer at the bottom`, async ({
+      page,
+      jb,
+    }) => {
+      const shell = new ShellPage(page);
+      // Given a viewport taller than the page's content
+      await shell.setViewport(width, height);
+      await jb.open('not-found');
+      await expect(shell.footer).toBeVisible();
+      // Then no space shows below the footer (under 768 px it sits on the tab bar)
+      expect(Math.abs(await shell.spaceBelowFooter())).toBeLessThan(1);
+      // And the page does not scroll
+      expect(await shell.scrollsVertically()).toBe(false);
+    });
+  }
+
+  test('AC5: a page longer than the viewport ends with the footer', async ({ page, jb }) => {
+    const shell = new ShellPage(page);
+    // Given a viewport shorter than the page's content
+    await shell.setViewport(1280, 300);
+    await jb.open('not-found');
+    await expect(shell.footer).toBeVisible();
+    expect(await shell.scrollsVertically()).toBe(true);
+    // Then the footer is the end of the page
+    expect(Math.abs(await shell.spaceBelowFooter())).toBeLessThan(1);
+  });
 });
 
 test.describe('member navigation by viewport (L2-112, L2-164)', () => {

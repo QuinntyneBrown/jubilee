@@ -3,7 +3,8 @@
 ## Status
 
 Accepted, 11 November 2026. Fills in the provider and the sending domain the deliver-email design
-left as `<TO SUPPLY>`, and settles how the e-mails become HTML.
+left as `<TO SUPPLY>`, and settles how the e-mails become HTML. Amended by ADR 0041, 12 November
+2026: the reference request and its reminders are no longer among the queued e-mails.
 
 ## Context
 

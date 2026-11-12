@@ -122,7 +122,7 @@ on the same route, with the same load states and not-found rule.
 for every caller, with the call to action), `RelatedSpaces` (the four newest
 other live spaces as `SpaceCardDto`) and `OpenRequestId` (the signed-in member's
 open space request, added after the public cache read). The
-layout is the feature [View a space](../view-space/README.md) (ADR 0041).
+layout is the feature [View a space](../view-space/README.md) (ADR 0042).
 
 ## Requirements
 
@@ -138,7 +138,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API endpoint; no check shall rely on the client hiding a control. |
-| `L2-204` | `L1-028` | `/b/:slug` for a space shall show the space page and never send the exact address to anyone but the owner. |
+| `L2-205` | `L1-028` | `/b/:slug` for a space shall show the space page and never send the exact address to anyone but the owner. |
 
 ## Diagrams
 

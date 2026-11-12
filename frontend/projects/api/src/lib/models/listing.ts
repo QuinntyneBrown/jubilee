@@ -33,8 +33,8 @@ export interface ListingDetails {
 }
 
 /**
- * The rental details of a space (L2-204). The page never carries the exact address, whoever asks
- * (L2-207 AC1).
+ * The rental details of a space (L2-205). The page never carries the exact address, whoever asks
+ * (L2-208 AC1).
  */
 export interface SpaceDetails {
   term: SpaceTerm;
@@ -51,7 +51,7 @@ export interface SpaceDetails {
   included: string[];
   household: string | null;
   rules: string[];
-  /** "Request to book", "Request a viewing" or "Meet the household" (L2-205 AC1). */
+  /** "Request to book", "Request a viewing" or "Meet the household" (L2-206 AC1). */
   callToAction: string;
 }
 
@@ -80,6 +80,6 @@ export interface ListingPage {
   space: SpaceDetails | null;
   /** "More rooms & rentals" on the page of a space. */
   relatedSpaces: SpaceCard[];
-  /** The member's open request on this space, when they have one (L2-205). */
+  /** The member's open request on this space, when they have one (L2-206). */
   openRequestId?: string | null;
 }

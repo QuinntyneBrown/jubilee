@@ -36,7 +36,7 @@ page -> client : getReview(id)
 client -> controller : GET /api/admin/verifications/{id}
 controller -> controller : Authenticate session and apply VerifierPolicy (L2-098)
 controller -> qh : Send GetListingReviewQuery
-qh -> db : Load listing, owner, church reference, flags and ticks
+qh -> db : Load listing, owner, flags and ticks
 db --> qh : Review state
 qh -> audit : Record access to personal data with the listing ID (L2-150)
 audit --> qh : AuditEntry appended
@@ -45,8 +45,8 @@ alt load succeeds
   controller --> client : 200 with review, flags and allowed actions
   client --> page : Review
   page --> actor : Show panels, flags above the checklist and "How members see you" (L2-100)
-  opt stage is "Waiting on reference"
-    page --> actor : Disable "Approve and publish" with "Waiting for the church reference."
+  opt stage is "Changes requested"
+    page --> actor : Offer no decision until the owner resubmits (L2-100)
   end
 else upstream dependency fails
   controller --> client : 502 ProblemDetails with JB-ADM-502

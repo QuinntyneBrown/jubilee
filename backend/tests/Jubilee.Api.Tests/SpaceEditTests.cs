@@ -7,7 +7,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-/// <summary>The owner edits a live space from My business (L2-208).</summary>
+/// <summary>The owner edits a live space from My business (L2-209).</summary>
 public sealed class SpaceEditTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private const string Owner = "member|grace";
@@ -62,7 +62,7 @@ public sealed class SpaceEditTests : IClassFixture<JubileeApiFactory>, IAsyncLif
     };
 
     [Fact]
-    public async Task L2_208_AC1_the_editor_holds_the_space_fields_and_its_address_for_the_owner()
+    public async Task L2_209_AC1_the_editor_holds_the_space_fields_and_its_address_for_the_owner()
     {
         var editor = await _factory.GetJson("/api/my-business/listing", Grace());
 
@@ -74,7 +74,7 @@ public sealed class SpaceEditTests : IClassFixture<JubileeApiFactory>, IAsyncLif
     }
 
     [Fact]
-    public async Task L2_208_AC2_AC3_a_change_of_term_is_live_at_once_with_its_price_unit_and_call_to_action()
+    public async Task L2_209_AC2_AC3_a_change_of_term_is_live_at_once_with_its_price_unit_and_call_to_action()
     {
         var version = (await _factory.GetJson("/api/my-business/listing", Grace())).GetProperty("version").GetInt32();
 
@@ -89,7 +89,7 @@ public sealed class SpaceEditTests : IClassFixture<JubileeApiFactory>, IAsyncLif
     }
 
     [Fact]
-    public async Task L2_208_AC2_the_space_is_validated_as_when_it_was_listed()
+    public async Task L2_209_AC2_the_space_is_validated_as_when_it_was_listed()
     {
         var version = (await _factory.GetJson("/api/my-business/listing", Grace())).GetProperty("version").GetInt32();
 
@@ -103,7 +103,7 @@ public sealed class SpaceEditTests : IClassFixture<JubileeApiFactory>, IAsyncLif
     }
 
     [Fact]
-    public async Task L2_208_AC1_a_space_stays_in_rooms_and_rentals()
+    public async Task L2_209_AC1_a_space_stays_in_rooms_and_rentals()
     {
         var version = (await _factory.GetJson("/api/my-business/listing", Grace())).GetProperty("version").GetInt32();
 

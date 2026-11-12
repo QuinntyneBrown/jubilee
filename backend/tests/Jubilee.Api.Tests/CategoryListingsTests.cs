@@ -347,9 +347,7 @@ public class CategoryListingsTests : IClassFixture<JubileeApiFactory>, IAsyncLif
 
     [Theory]
     [InlineData(NonPublicState.Draft)]
-    [InlineData(NonPublicState.PendingReference)]
     [InlineData(NonPublicState.ReadyToReview)]
-    [InlineData(NonPublicState.NeedsDecision)]
     [InlineData(NonPublicState.ChangesRequested)]
     [InlineData(NonPublicState.Paused)]
     [InlineData(NonPublicState.Deleted)]

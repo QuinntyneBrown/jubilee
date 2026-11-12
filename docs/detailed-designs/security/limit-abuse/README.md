@@ -24,8 +24,8 @@ and timing for an existing and a non-existing address. The join form reveals
 that an address is taken only after the bot challenge passes and within the join
 limit, and the existing account holder is told by e-mail.
 
-The feature is cross-cutting: the join, sign-in, messaging, request, report,
-search and church-reference slices each name a policy from the table held here.
+The feature is cross-cutting: the join, sign-in, messaging, request, report
+and search slices each name a policy from the table held here.
 
 ## Description
 
@@ -38,8 +38,7 @@ and the outbox in the `Jubilee database`.
   10 minutes; `NewConversations` 10 per member per day; `Requests` (booking,
   quote, order) 20 per member per day; `Reports` 10 per member per day;
   `Search` 60 per IP per minute; `SignIn` per L2-007 (5 failures per account
-  and 20 failures per IP in 15 minutes); `ReferenceResend` per L2-080 (3 per
-  24 hours).
+  and 20 failures per IP in 15 minutes).
 - **`RateLimitMiddleware`** — middleware in `Jubilee.Api`. It reads the policy
   named on the endpoint by `[RateLimit(...)]`, builds the `RateLimitKey` and
   asks the store for a decision before the controller runs.
@@ -54,8 +53,8 @@ and the outbox in the `Jubilee database`.
 - **`RateLimitInterceptor`** — Angular HTTP interceptor. On `429` it reads
   `Retry-After`, rounds up to whole minutes and asks `ToastService` to show
   "You're doing that a lot. Try again in {n} minutes."
-- **`BotChallengeWidget`** — Angular component on the join page (`/join`), the
-  report dialog and the church-reference form (`/reference/:token`). It obtains
+- **`BotChallengeWidget`** — Angular component on the join page (`/join`) and the
+  report dialog. It obtains
   a challenge token from the `Bot challenge provider` and adds it to the
   submission.
 - **`IBotChallengeVerifier`** — application service implemented by
@@ -93,7 +92,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-137` | `L1-019` | The server shall respond 429 with `Retry-After` when a defined limit is exceeded (join, sign-in, password reset, confirmation resend, messages, new conversations, requests, reports, search, reference resends), and the UI shall show "You're doing that a lot. Try again in {n} minutes." The join, report and church-reference forms shall be protected by a privacy-respecting, accessible bot challenge, and a member reported for spam by 3 different businesses within 7 days shall be suspended from starting new conversations pending review. |
+| `L2-137` | `L1-019` | The server shall respond 429 with `Retry-After` when a defined limit is exceeded (join, sign-in, password reset, confirmation resend, messages, new conversations, requests, reports, search), and the UI shall show "You're doing that a lot. Try again in {n} minutes." The join and report forms shall be protected by a privacy-respecting, accessible bot challenge, and a member reported for spam by 3 different businesses within 7 days shall be suspended from starting new conversations pending review. |
 | `L2-141` | `L1-019` | Sign-in, forgot-password and e-mail-change endpoints shall return the same status, body shape and timing for existing and non-existing e-mails. Join with an existing e-mail shall show the inline message of L2-002 only after the bot challenge passes and within the join rate limit, and shall e-mail the existing account holder that someone tried to join with their address. |
 | `L2-007` | `L1-001` | Repeated failed sign-ins shall be slowed and then temporarily blocked to stop password guessing. |
 | `L2-008` | `L1-001` | A visitor shall be able to ask for a password reset link at `/forgot-password`, and the response shall be the same whether or not an account exists. |

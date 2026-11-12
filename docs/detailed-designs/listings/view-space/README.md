@@ -22,12 +22,12 @@ for a Short stay, "Request a viewing" for a Long term or Room, and "Meet the
 household" for a Roommate.
 
 The page never carries the space's *exact address* to anyone but its owner
-(`L2-204` AC6, `L2-207`).
+(`L2-205` AC6, `L2-208`).
 
 ## Description
 
 The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
-`Jubilee database`. The model is fixed by ADR 0041.
+`Jubilee database`. The model is fixed by ADR 0042.
 
 - **`BusinessPage`** (`pages/business/`) — the existing page at `/b/:slug`.
   When `ListingPageDto.Kind` is `space` it renders the space layout instead of
@@ -43,8 +43,7 @@ The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
     and "Rent" ("$120 per night");
   - "What’s included" and "House rules" as lists;
   - "Who lives here" with the household text, for a Room or Roommate only;
-  - the host card: "Your host", the owner's name, "Verified with a church
-    reference" and the about text when given;
+  - the host card: "Your host", the owner's name, "Verified by Jubilee" and the about text when given;
   - "More rooms & rentals" with up to four other live spaces as
     `jb-space-card` items (`directory/browse-spaces`).
   A part with nothing in it (no key facts, nothing included, no rules) is left
@@ -57,11 +56,11 @@ The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
   When `sent` is true it shows "Sent to {host first name}" and "You’ll hear back
   in Messages, usually within a day. The exact address is shared once they
   accept." in place of the call to action, and the call to action cannot be
-  pressed (`L2-205` AC9).
+  pressed (`L2-206` AC9).
 - **`jb-space-booking-bar`** (`SpaceBookingBar`,
   `components/src/lib/space-booking-bar/`) — the bar fixed to the bottom under
   `768 px` with the rent and the call to action; hidden once a request is sent
-  (`L2-204` AC4).
+  (`L2-205` AC4).
 - **Actions** — for a visitor the call to action, "Message host" and save open
   the sign-in prompt through `SignInPromptService` (`L2-012`). For a member
   the call to action opens `RequestSpaceDialog` (`requests/request-space`),
@@ -76,7 +75,7 @@ The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
     `Included`, `Household`, `Rules` and `CallToAction`, built by
     `SpacePageDto.From(Listing)`. It has **no address field**, so no caller
     receives the address from this endpoint, the owner included; the owner
-    reads it from the edit-listing endpoint (`L2-207` AC5).
+    reads it from the edit-listing endpoint (`L2-208` AC5).
   - `RelatedSpaces` — the four newest other public spaces as `SpaceCardDto`
     items; a business keeps `Related`, its two related businesses (`L2-040`).
   - `OpenRequestId` (`Guid?`) — the id of the signed-in member's `New` or
@@ -84,7 +83,7 @@ The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
     from `IDirectoryReadCache`, and the handler adds `OpenRequestId` after the
     cache read, so the cached page holds nothing personal.
 - **`SpaceTerms`** — supplies the price unit, the minimum-stay label and the
-  call to action, so a change of term (`L2-208` AC3) reaches the page with no
+  call to action, so a change of term (`L2-209` AC3) reaches the page with no
   other change.
 - **`EditListingPage`** — the owner's editor at `/my-business/listing`. For a
   space (`ListingEditorDto.Space`, with its exact address) it shows "Listing
@@ -93,7 +92,7 @@ The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
   holds them in the shared `SpaceForm` (`onboarding/describe-space`), checks
   them as when the space was listed, sends them as `space` in the save
   (`SaveListingBody.Space`, the category staying `rooms-rentals`), and previews
-  the space with `jb-space-card-preview` under "How renters see it" (`L2-208`).
+  the space with `jb-space-card-preview` under "How renters see it" (`L2-209`).
 
 ### Open questions
 
@@ -120,9 +119,9 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-204` | `L1-028` | `/b/:slug` for a space shall show "Back to rentals", the cover, "Verified host · {neighbourhood}", the title, the line, the booking card, the space with its key facts, the rows Available, Minimum stay, Neighbourhood and Rent, what's included, house rules, the household for a Room or Roommate, the host card and "More rooms & rentals"; it shall leave out empty parts, show a bottom bar under 768 px, and never send the exact address to anyone but the owner. |
-| `L2-205` | `L1-028` | The booking card shall show the rent, the minimum stay, the term's call to action, "Message host", save and "You won’t pay anything until the host accepts.", prompt a visitor to sign in, and show "Sent to {host first name}" in place of the call to action while the member has an open request. |
-| `L2-207` | `L1-028` | No public endpoint shall return the exact address of a space to a visitor, a member or the verification team. |
+| `L2-205` | `L1-028` | `/b/:slug` for a space shall show "Back to rentals", the cover, "Verified host · {neighbourhood}", the title, the line, the booking card, the space with its key facts, the rows Available, Minimum stay, Neighbourhood and Rent, what's included, house rules, the household for a Room or Roommate, the host card and "More rooms & rentals"; it shall leave out empty parts, show a bottom bar under 768 px, and never send the exact address to anyone but the owner. |
+| `L2-206` | `L1-028` | The booking card shall show the rent, the minimum stay, the term's call to action, "Message host", save and "You won’t pay anything until the host accepts.", prompt a visitor to sign in, and show "Sent to {host first name}" in place of the call to action while the member has an open request. |
+| `L2-208` | `L1-028` | No public endpoint shall return the exact address of a space to a visitor, a member or the verification team. |
 | `L2-012` | `L1-001` | When a visitor tries an action that needs an account, the system shall prompt them to join or sign in and bring them straight back. |
 | `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
 | `L2-037` | `L1-005` | An owner who opens their own live listing shall see an owner banner and "Edit listing" in place of the member actions. |

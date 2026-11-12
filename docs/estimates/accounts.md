@@ -19,7 +19,6 @@
 
 - A Turnstile widget and its keys in Azure: the join form shows the bot challenge and sends its token once `BotChallenge__SiteKey` and `BotChallenge__SecretKey` are set (`jb-bot-challenge`, `join.spec.ts`).
 - `/account` (where "Change e-mail" leads) and the unsubscribe and preferences links of e-mails (journey 24).
-- Reference e-mails (L2-080). The e-mail provider is in place (ADR 0038, `docs/estimates/operations.md`).
 - Session lifetime and `/session-expired` (L2-010), the `__Host-` cookie prefix, a CSP on the SPA host and the TLS redirect.
 - Return-to-action after joining: after confirming, the member is offered the page they were going to (L2-012 AC5); the action itself (the message dialog) is not reopened.
 - Visual states of the join form that need interaction (`invalid`, `submitting`, `success`, `error`) have no `routes.ts` entry; the behaviour spec covers them.

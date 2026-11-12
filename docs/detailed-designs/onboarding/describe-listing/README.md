@@ -5,8 +5,8 @@
 Jubilee is Toronto's Christian marketplace: a directory of verified
 Christian-owned businesses. A *listing* is the record of one business on Jubilee.
 Before a listing is public it passes through onboarding, the form at `/list`
-where a member describes the business, names a church reference and submits the
-listing for verification. This feature covers the first part of that form: the
+where a member describes the business and submits the listing for
+verification. This feature covers the first part of that form: the
 choice between products and services, the listing details, the first items, and
 the live preview.
 
@@ -17,12 +17,11 @@ The slice uses four local terms.
 - **slug** — unique URL segment generated from the business name, such as `luzandre-com`
 - **listing flag** — marker on a listing that draws the verification team's attention on the review screen
 
-A listing on `/list` holds the stage `Draft`. `ListingStage` has ten values:
-`Draft`, `WaitingOnReference`, `ReadyToReview`, `NeedsDecision`,
-`ChangesRequested`, `Live`, `Paused`, `OnHold`, `Removed` and `Declined`. Nothing entered here is
-public until the verification team approves the listing. Naming the church
-reference, saving the draft and submitting are separate features of the
-`onboarding` subsystem.
+A listing on `/list` holds the stage `Draft`. `ListingStage` has eight values:
+`Draft`, `ReadyToReview`, `ChangesRequested`, `Live`, `Paused`, `OnHold`,
+`Removed` and `Declined`. Nothing entered here is public until the
+verification team approves the listing. Saving the draft and submitting are
+separate features of the `onboarding` subsystem.
 
 ## Description
 
@@ -30,7 +29,7 @@ The feature is a vertical slice from the `/list` page to the `Jubilee database`.
 
 - **`ListBusinessPage`** — Angular page at `/list`. It shows "List your
   business", the line "Free for Christian-owned businesses in Toronto. Every
-  listing is verified with a church reference.", and "What do you offer?". From
+  listing is verified before it goes live.", and "What do you offer?". From
   `1024 px` the preview sits to the right of the form; under `1024 px` it moves
   below the form.
 - **`AuthGuard`** — route guard on `/list`. A `Visitor` is sent to sign in or
@@ -95,7 +94,7 @@ which becomes the second of eleven categories. For a space the form hides
 `Space`, and the body of the existing draft endpoints gains a nested `space`
 object. The space form,
 preview and agreement line are the feature
-[Describe a space](../describe-space/README.md) (ADR 0041).
+[Describe a space](../describe-space/README.md) (ADR 0042).
 
 ## Requirements
 
@@ -111,7 +110,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-005` | `L1-001` | Until the e-mail is confirmed, a member shall be able to browse, search and save but shall not message, book, request or list a business. |
 | `L2-126` | `L1-018` | A page form submitted with errors shall show the summary "Fix {n} thing(s) to continue", mark each invalid field, keep typed values, and apply the same rules and message codes on the server. |
 | `L2-133` | `L1-019` | Each API endpoint shall check the caller's role and ownership of the specific object before doing anything. |
-| `L2-197` | `L1-028` | `/list` shall offer "A space" beside "Products" and "Services", relabel the form for a space, preview the space card under "How renters see it", and restore a space saved as a draft. |
+| `L2-198` | `L1-028` | `/list` shall offer "A space" beside "Products" and "Services", relabel the form for a space, preview the space card under "How renters see it", and restore a space saved as a draft. |
 
 ## Diagrams
 

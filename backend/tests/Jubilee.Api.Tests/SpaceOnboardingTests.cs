@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
-/// <summary>Listing a space (L2-197 to L2-199): its draft, its fields and their validation, submission and review.</summary>
+/// <summary>Listing a space (L2-198 to L2-200): its draft, its fields and their validation, submission and review.</summary>
 public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private const string Address = "27 Curzon St, Toronto ON M4M 3B4";
@@ -55,8 +55,6 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
         ["categorySlug"] = null,
         ["highlight"] = null,
         ["place"] = null,
-        ["church"] = "Grace Toronto Church",
-        ["pastorEmail"] = "daniel.okoro@gracetoronto.example",
         ["agreed"] = agreed,
         ["items"] = Array.Empty<object>(),
         ["space"] = space ?? Space(),
@@ -71,7 +69,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
     }
 
     [Fact]
-    public async Task L2_197_AC4_L2_198_AC10_a_space_draft_keeps_its_term_and_every_field()
+    public async Task L2_198_AC4_L2_199_AC10_a_space_draft_keeps_its_term_and_every_field()
     {
         await Draft(Ruth(), Body(Space(rent: null, neighbourhood: null)));
 
@@ -90,7 +88,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
     }
 
     [Fact]
-    public async Task L2_199_AC2_a_valid_space_is_submitted_into_rooms_and_rentals_and_waits_on_its_reference()
+    public async Task L2_200_AC2_a_valid_space_is_submitted_into_rooms_and_rentals_ready_to_review()
     {
         var id = await Draft(Ruth(), Body());
 
@@ -99,7 +97,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var submitted = await Json(response);
         Assert.Equal("space", submitted.GetProperty("kind").GetString());
-        Assert.Equal("pending-reference", submitted.GetProperty("stage").GetString());
+        Assert.Equal("ready-to-review", submitted.GetProperty("stage").GetString());
 
         await _factory.WithDb(async db =>
         {
@@ -110,12 +108,12 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
             Assert.Equal(950, listing.Space.Rent);
             Assert.Equal(Address, listing.Space.Address);
             Assert.Equal("Ruth Mensah", listing.OwnerName);
-            Assert.Equal(ListingStage.PendingReference, listing.Stage);
+            Assert.Equal(ListingStage.ReadyToReview, listing.Stage);
         });
     }
 
     [Fact]
-    public async Task L2_198_AC6_AC7_AC8_an_incomplete_space_is_refused_field_by_field_and_needs_no_category()
+    public async Task L2_199_AC6_AC7_AC8_an_incomplete_space_is_refused_field_by_field_and_needs_no_category()
     {
         var id = await Draft(Ruth(), Body());
 
@@ -134,7 +132,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
     }
 
     [Fact]
-    public async Task L2_198_AC6_a_rent_over_fifty_thousand_is_refused()
+    public async Task L2_199_AC6_a_rent_over_fifty_thousand_is_refused()
     {
         var id = await Draft(Ruth(), Body());
 
@@ -144,7 +142,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
     }
 
     [Fact]
-    public async Task L2_198_AC4_a_long_term_space_needs_no_household()
+    public async Task L2_199_AC4_a_long_term_space_needs_no_household()
     {
         var id = await Draft(Ruth(), Body());
 
@@ -155,7 +153,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
     }
 
     [Fact]
-    public async Task L2_199_AC1_the_agreement_is_required()
+    public async Task L2_200_AC1_the_agreement_is_required()
     {
         var id = await Draft(Ruth(), Body());
 
@@ -165,7 +163,7 @@ public sealed class SpaceOnboardingTests : IClassFixture<JubileeApiFactory>, IAs
     }
 
     [Fact]
-    public async Task L2_199_AC3_the_verification_team_reviews_the_space_without_its_address()
+    public async Task L2_200_AC3_the_verification_team_reviews_the_space_without_its_address()
     {
         var id = await Draft(Ruth(), Body());
         var submitted = await Json(await Ruth().PostAsJsonAsync($"/api/listing-drafts/{id}/submit", Body()));

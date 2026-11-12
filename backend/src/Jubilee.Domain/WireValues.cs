@@ -36,12 +36,10 @@ public static class WireValues
 
     public static string Of(TileIcon value) => value.ToString().ToLowerInvariant();
 
-    /// <summary>"draft", "pending-reference", "ready-to-review", "needs-decision", "changes-requested" or "live".</summary>
+    /// <summary>"draft", "ready-to-review", "changes-requested" or "live".</summary>
     public static string Of(ListingStage value) => value switch
     {
-        ListingStage.PendingReference => "pending-reference",
         ListingStage.ReadyToReview => "ready-to-review",
-        ListingStage.NeedsDecision => "needs-decision",
         ListingStage.ChangesRequested => "changes-requested",
         _ => value.ToString().ToLowerInvariant(),
     };
@@ -61,7 +59,7 @@ public static class WireValues
         (SpaceTerm.Roommate, "roommate"),
     ];
 
-    /// <summary>"short-stay", "long-term", "room" or "roommate" (L2-196 AC1).</summary>
+    /// <summary>"short-stay", "long-term", "room" or "roommate" (L2-197 AC1).</summary>
     public static string Of(SpaceTerm value) => TermPairs.Single(p => p.Value == value).Wire;
 
     /// <summary>The term of a wire value; null for anything else.</summary>

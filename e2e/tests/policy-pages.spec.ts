@@ -18,7 +18,7 @@ test.describe('statement of faith (L2-107)', () => {
     await expect(policy.sectionHeadings).toHaveText([
       'What we believe',
       'How we do business',
-      'How a listing is confirmed',
+      'How a listing is verified',
     ]);
     await expect(policy.bullets).toHaveCount(4);
     await expect(policy.link('Help')).toHaveAttribute('href', '/help');
@@ -50,7 +50,7 @@ test.describe('terms of use (L2-108)', () => {
 });
 
 test.describe('privacy notice (L2-109)', () => {
-  test('AC1: it shows what we keep, church references, choices with links, and the date', async ({
+  test('AC1: it shows what we keep and the choices with links, with no section on church references, and the date', async ({
     page,
     jb,
   }) => {
@@ -59,7 +59,8 @@ test.describe('privacy notice (L2-109)', () => {
 
     await expect(policy.title).toHaveText('Privacy');
     await expect(policy.sectionHeadings.filter({ hasText: /^What we keep$/ })).toBeVisible();
-    await expect(policy.sectionHeadings.filter({ hasText: /^Church references$/ })).toBeVisible();
+    await expect(policy.sectionHeadings.filter({ hasText: /^Church references$/ })).toHaveCount(0);
+    await expect(policy.text(/Your home church is shown to no one\./)).toBeVisible();
     await expect(policy.sectionHeadings.filter({ hasText: /^Your choices$/ })).toBeVisible();
     await expect(policy.link('notification settings')).toHaveAttribute(
       'href',

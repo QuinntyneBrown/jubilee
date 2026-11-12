@@ -1,8 +1,8 @@
-# 0041. Rooms and rentals: a space is a listing kind, a space request is a request kind
+# 0042. Rooms and rentals: a space is a listing kind, a space request is a request kind
 
 ## Status
 
-Accepted, 11 November 2026. Implements L1-028 (L2-196 to L2-208); applies ADR 0009 (tests without
+Accepted, 11 November 2026. Implements L1-028 (L2-197 to L2-209); applies ADR 0009 (tests without
 a database), ADR 0018 (listing onboarding), ADR 0021 (responding to requests), ADR 0035
 (presentation in the components library) and ADR 0036 (component parity).
 

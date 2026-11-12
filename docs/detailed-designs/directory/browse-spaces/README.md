@@ -23,13 +23,13 @@ a toggle button whose pressed state is carried by `aria-pressed`.
 
 Every space shown is a *public listing* by the rules of `L2-028`: verified,
 live, and not paused, deleted or held. The *exact address* of a space is never
-part of any list, card or search response, and is never searched (`L2-207`).
+part of any list, card or search response, and is never searched (`L2-208`).
 
 ## Description
 
 The feature extends the three directory slices (`directory/browse-home`,
 `directory/browse-category`, `directory/search-directory`) from the pages in
-`Jubilee Web` to the `Jubilee database`. The model is fixed by ADR 0041.
+`Jubilee Web` to the `Jubilee database`. The model is fixed by ADR 0042.
 
 - **`jb-space-card`** (`SpaceCard`, `components/src/lib/space-card/`) —
   presentation component in the components library. It shows the cover photo or
@@ -39,7 +39,7 @@ The feature extends the three directory slices (`directory/browse-home`,
   neighbourhood and the availability line. The whole card is one link to
   `/b/:slug`, so click, tap, Enter and Space open the space page. The link's
   accessible name is the title, and the term, rent and neighbourhood are text,
-  never colour alone (`L2-202`). It takes a space card view model matching
+  never colour alone (`L2-203`). It takes a space card view model matching
   `SpaceCardDto`. Previews of a space that is not live use its sibling
   **`jb-space-card-preview`** (`SpaceCardPreview`), which shares the card's
   rules, follows nothing and is marked "Pending verification" until it is
@@ -68,7 +68,7 @@ The feature extends the three directory slices (`directory/browse-home`,
   `Spaces` is empty, so the shelf is not shown. The whole DTO stays in
   `IDirectoryReadCache` (ADR 0003).
 - **`DirectoryGrouping`** — leaves spaces out: "All {n} businesses" counts only
-  businesses and has no "Rooms & rentals" group (`L2-200` AC6).
+  businesses and has no "Rooms & rentals" group (`L2-201` AC6).
 - **`CategoryPage`** (`pages/category/`) — for `rooms-rentals` it shows the
   breadcrumb "Browse / Rooms & rentals", the heading "Rooms & rentals" with "{n}
   spaces", `jb-term-filter` and the space cards newest first in
@@ -92,7 +92,7 @@ The feature extends the three directory slices (`directory/browse-home`,
 - **`SpaceCardDto`** — `Slug`, `Name` (the title), `Term` (wire value),
   `Rent`, `Per` (`night` or `month`), `Facts` (the first two key facts),
   `Neighbourhood`, `Available` and `CoverPhoto`. It is built by
-  `SpaceCardDto.From(Listing)` and has no address field (`L2-202` AC4).
+  `SpaceCardDto.From(Listing)` and has no address field (`L2-203` AC4).
 - **`SearchDirectoryQueryHandler`** and **`ISearchIndex`** — on `GET
   /api/search`, a live space matches by its title and line like any listing,
   and also by its neighbourhood, the space and its key facts, with the match
@@ -128,12 +128,12 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-196` | `L1-028` | A space shall be in the category "Rooms & rentals", the second of eleven, under one of the terms Short stay, Long term, Room and Roommate, with rent per night for a Short stay and per month otherwise, and shall follow the public-listing rules of every listing. |
-| `L2-200` | `L1-028` | The browse home shall show "Rooms & places to stay" with "All {n}", a term filter and up to four space cards when a space is live, filter it by term without reloading, leave spaces out of "All {n} businesses", and use the placeholder "Plumber, lawyer, room to rent…". |
-| `L2-201` | `L1-028` | `/c/rooms-rentals` shall list the space cards newest first, 16 to a page, filtered by the term carried in the URL, without the business filters or "Sort", and shall end with "List a space". |
-| `L2-202` | `L1-028` | A space card shall show the cover or tile, the term badge, the rent, the title, up to two key facts, the neighbourhood and the availability, open the space page from click, tap, Enter or Space, announce its parts as text, and carry no exact address. |
-| `L2-203` | `L1-028` | Search shall match live spaces by title, line, neighbourhood, the space and key facts, list them under "Businesses" as space cards, and never search or return the exact address. |
-| `L2-207` | `L1-028` | No public endpoint shall return the exact address of a space to a visitor, a member or the verification team. |
+| `L2-197` | `L1-028` | A space shall be in the category "Rooms & rentals", the second of eleven, under one of the terms Short stay, Long term, Room and Roommate, with rent per night for a Short stay and per month otherwise, and shall follow the public-listing rules of every listing. |
+| `L2-201` | `L1-028` | The browse home shall show "Rooms & places to stay" with "All {n}", a term filter and up to four space cards when a space is live, filter it by term without reloading, leave spaces out of "All {n} businesses", and use the placeholder "Plumber, lawyer, room to rent…". |
+| `L2-202` | `L1-028` | `/c/rooms-rentals` shall list the space cards newest first, 16 to a page, filtered by the term carried in the URL, without the business filters or "Sort", and shall end with "List a space". |
+| `L2-203` | `L1-028` | A space card shall show the cover or tile, the term badge, the rent, the title, up to two key facts, the neighbourhood and the availability, open the space page from click, tap, Enter or Space, announce its parts as text, and carry no exact address. |
+| `L2-204` | `L1-028` | Search shall match live spaces by title, line, neighbourhood, the space and key facts, list them under "Businesses" as space cards, and never search or return the exact address. |
+| `L2-208` | `L1-028` | No public endpoint shall return the exact address of a space to a visitor, a member or the verification team. |
 | `L2-026` | `L1-003` | Long categories shall be paged 16 at a time. |
 | `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |

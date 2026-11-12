@@ -107,11 +107,11 @@
       <p class="ds-kicker">Component · Data display</p>
       <h1>Household</h1>
       <p class="ds-lead">Who lives here: the household of a Room or Roommate space, as the owner wrote it, shown above the host card.</p>
-      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: new</span><span class="ds-pill">L2-204 AC2</span></div>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: new</span><span class="ds-pill">L2-205 AC2</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Shown only for a Room or a Roommate, and only when the owner wrote something. It is a paragraph: the owner's own few lines (ADR 0041 keeps the household as text, not the design's list of people).</p>
+      <p>Shown only for a Room or a Roommate, and only when the owner wrote something. It is a paragraph: the owner's own few lines (ADR 0042 keeps the household as text, not the design's list of people).</p>
     </section>
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
       <div class="ds-anatomy"><figure class="ds-anatomy__figure"><div style="max-width: 24rem; width: 100%;"><section class="household" aria-labelledby="r1-hh"><h2 class="household__title" id="r1-hh">Who lives here</h2><p class="household__text">Ruth and Kwame with our daughter Abena (14) and a very calm cat. We eat together on Sundays and you’re always welcome.</p></section></div><span class="ds-callout" style="left: 2%; top: 5%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 2%; top: 45%;" aria-hidden="true">2</span></figure><ol class="ds-anatomy__list"><li><div><b>Title</b><small><code>.household__title</code>: "Who lives here", <code>--text-h3</code>.</small></div></li><li><div><b>Text</b><small><code>.household__text</code>: the household text, ruled above and below.</small></div></li></ol></div>
@@ -154,7 +154,7 @@
       <pre><code>&lt;section class="household" aria-labelledby="r1-hh"&gt;&lt;h2 class="household__title" id="r1-hh"&gt;Who lives here&lt;/h2&gt;&lt;p class="household__text"&gt;Ruth and Kwame with our daughter Abena (14) and a very calm cat. We eat together on Sundays and you’re always welcome.&lt;/p&gt;&lt;/section&gt;</code></pre><div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody><tr><td><code>.household</code></td><td>The section.</td></tr><tr><td><code>.household__title</code></td><td>Heading.</td></tr><tr><td><code>.household__text</code></td><td>The paragraph.</td></tr></tbody></table></div>
     </section>
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
-      <p>Extracted from these mocks:</p><ul><li><a href="../../mocks/pages/space/room.html">pages/space/room</a> (Room)</li><li><a href="../../mocks/pages/space/roommate.html">pages/space/roommate</a> (Roommate)</li></ul><p>Departure from the Magic Patterns <code>SpaceDetails</code> (ADR 0041): a paragraph instead of a list of people with avatars, and no "Looking for" line (it is part of the Roommate text).</p>
+      <p>Extracted from these mocks:</p><ul><li><a href="../../mocks/pages/space/room.html">pages/space/room</a> (Room)</li><li><a href="../../mocks/pages/space/roommate.html">pages/space/roommate</a> (Roommate)</li></ul><p>Departure from the Magic Patterns <code>SpaceDetails</code> (ADR 0042): a paragraph instead of a list of people with avatars, and no "Looking for" line (it is part of the Roommate text).</p>
     </section>
 
     <footer class="ds-footer"><span>Jubilee design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 10 November 2026; rooms and rentals added 11 November 2026</span><a href="#top">Back to top</a></footer>

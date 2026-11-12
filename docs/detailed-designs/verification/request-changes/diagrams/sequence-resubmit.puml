@@ -29,10 +29,6 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcherJob" as job
-end box
-participant "E-mail provider" as email
 actor -> page : Read the requested changes, edit and press "Resubmit"
 page -> client : resubmit(listingId)
 client -> controller : POST /api/listings/{id}/resubmit
@@ -41,19 +37,9 @@ controller -> handler : Send ResubmitListingCommand
 handler -> db : Load listing with its open ChangeRequest
 db --> handler : Current state
 handler -> entity : Resubmit(now)
-alt "Church reference" was ticked
-  entity --> handler : Stage WaitingOnReference, SubmittedAt unchanged (L2-102, L2-103)
-  handler -> db : Save listing and ReferenceRequested OutboxMessage
-  db --> handler : Commit result
-  job -> db : Read ReferenceRequested from the outbox
-  db --> job : Outbox message
-  job -> email : Send a new reference request to the pastor's e-mail
-  email --> job : Accepted
-else other areas only
-  entity --> handler : Stage ReadyToReview, SubmittedAt unchanged (L2-103)
-  handler -> db : Save listing in one unit of work
-  db --> handler : Commit result
-end
+entity --> handler : Stage ReadyToReview, SubmittedAt unchanged (L2-103)
+handler -> db : Save listing in one unit of work
+db --> handler : Commit result
 handler --> controller : Typed result
 controller --> client : 200 with stage
 client --> page : Resubmitted

@@ -58,7 +58,7 @@ export interface QuoteOptions {
 }
 
 /**
- * `POST /api/requests/spaces` (L2-205): a Short stay sends its check-in and check-out, any other
+ * `POST /api/requests/spaces` (L2-206): a Short stay sends its check-in and check-out, any other
  * term its move-in and months. No price: the server computes it from the stored rent (AC8).
  */
 export interface RequestSpaceRequest {

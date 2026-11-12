@@ -20,7 +20,7 @@ internal static class DemoCatalogue
     internal enum HiddenBecause
     {
         Draft,
-        PendingReference,
+        ReadyToReview,
         ChangesRequested,
         Paused,
         UnderModerationHold,
@@ -114,7 +114,7 @@ internal static class DemoCatalogue
     internal static readonly DemoHiddenListing[] HiddenListings =
     [
         new(new("shops", "emmaus-road-coffee-roasters", "Emmaus Road Coffee Roasters", "Small-batch coffee roasted in the Junction.", "Ships across Canada", OpenSaturdays, Etobicoke | Downtown), HiddenBecause.Draft),
-        new(new("learning", "narrow-gate-tutoring", "Narrow Gate Tutoring", "Patient math and reading help for grades 1 to 8.", "First lesson free", OpenSaturdays, Scarborough | EastYork), HiddenBecause.PendingReference),
+        new(new("learning", "narrow-gate-tutoring", "Narrow Gate Tutoring", "Patient math and reading help for grades 1 to 8.", "First lesson free", OpenSaturdays, Scarborough | EastYork), HiddenBecause.ReadyToReview),
         new(new("home-property", "living-stone-masonry", "Living Stone Masonry", "Brick, stone and chimney repair.", "Emergency calls", EmergencyCalls | FreeQuote | OpenSaturdays, Scarborough | EastYork), HiddenBecause.ChangesRequested),
         new(new("shops", "bethel-gift-baskets", "Bethel Gift Baskets", "Gift baskets for new neighbours, new babies and hard days.", "Pickup in store", OpenSaturdays, NorthYork), HiddenBecause.Paused),
         new(new("health-family", "shiloh-wellness-clinic", "Shiloh Wellness Clinic", "Physiotherapy and massage close to home.", "Accepting new clients", FreeQuote, EastYork | Downtown), HiddenBecause.UnderModerationHold),
@@ -161,7 +161,7 @@ internal static class DemoCatalogue
             ]),
     };
 
-    /// <summary>A space in "Rooms & rentals" (L2-196): its host, what the host says, and its rental details.</summary>
+    /// <summary>A space in "Rooms & rentals" (L2-197): its host, what the host says, and its rental details.</summary>
     internal sealed record DemoSpace(string Slug, string Name, string Tagline, string Host, string About, Func<SpaceDetails> Details);
 
     /// <summary>The live spaces of the design's sample data, one or more per term, newest first.</summary>

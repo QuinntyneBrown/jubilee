@@ -76,7 +76,7 @@ from design-system tokens.
 - **`RealtimeClient`** — source of event toasts and of listing and account
   events that change banners.
 - **Other banner tones** — informational, warning and error banners in the mocks
-  (for example "Your reference hasn’t answered in 7 days.") use the same `Banner`
+  (for example "We're reviewing {Business}" on My business) use the same `Banner`
   component; the features that own those conditions decide whether each one can
   be dismissed.
 

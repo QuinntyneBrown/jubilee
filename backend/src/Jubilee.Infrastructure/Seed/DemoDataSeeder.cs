@@ -169,8 +169,8 @@ public sealed class DemoDataSeeder(AppDbContext db, TimeProvider clock)
         var listing = Draft(hidden.Listing, now.AddDays(-3));
         switch (hidden.Because)
         {
-            case HiddenBecause.PendingReference:
-                listing.MoveTo(ListingStage.PendingReference);
+            case HiddenBecause.ReadyToReview:
+                listing.MoveTo(ListingStage.ReadyToReview);
                 break;
             case HiddenBecause.ChangesRequested:
                 listing.MoveTo(ListingStage.ChangesRequested);

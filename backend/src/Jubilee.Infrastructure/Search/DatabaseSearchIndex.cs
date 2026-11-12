@@ -49,7 +49,7 @@ public sealed class DatabaseSearchIndex(IAppDbContext db) : ISearchIndex
                 fields.Add(("description", listing.About));
             }
 
-            // A space is found by its neighbourhood, the space and its key facts; never by its address (L2-203).
+            // A space is found by its neighbourhood, the space and its key facts; never by its address (L2-204).
             if (listing.Space is { } space)
             {
                 if (Matches(stems, space.Neighbourhood))

@@ -88,11 +88,11 @@ internal static class IncomingRules
         ? SpaceTotal(r)
         : r.TotalCents is { } cents ? $"${(cents / 100m).ToString("N2", CultureInfo.InvariantCulture)} + tax" : null;
 
-    /// <summary>A Short stay's total in whole dollars, "$240"; null for a monthly term (L2-205 AC3).</summary>
+    /// <summary>A Short stay's total in whole dollars, "$240"; null for a monthly term (L2-206 AC3).</summary>
     public static string? SpaceTotal(Request r) =>
         r is { Kind: RequestKind.Space, TotalCents: { } cents } ? $"${(cents / 100).ToString("N0", CultureInfo.InvariantCulture)}" : null;
 
-    /// <summary>"Fri 13 Mar – Sun 15 Mar · 2 nights" or "Move in Sun 1 Mar · 12 months" (L2-206 AC1).</summary>
+    /// <summary>"Fri 13 Mar – Sun 15 Mar · 2 nights" or "Move in Sun 1 Mar · 12 months" (L2-207 AC1).</summary>
     public static string SpaceWhen(Request r)
     {
         static string Day(DateOnly day) => day.ToString("ddd d MMM", CultureInfo.InvariantCulture);

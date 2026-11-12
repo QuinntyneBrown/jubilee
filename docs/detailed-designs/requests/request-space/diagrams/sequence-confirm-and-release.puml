@@ -38,10 +38,10 @@ requests -> get : Send GetRequestQuery
 get -> db : Load the member's request (404 for another member, L2-133)
 get -> release : IsReleased(request)
 release --> get : false, status New
-get --> requests : Details "Address: Shared once {owner first name} accepts.", no address (L2-207)
+get --> requests : Details "Address: Shared once {owner first name} accepts.", no address (L2-208)
 requests --> detail : 200 OK
 owner -> confirm : Press "Confirm" on the space request
-confirm --> owner : "Only confirm if the space is free then. {Customer} gets your exact address when you confirm." (L2-206)
+confirm --> owner : "Only confirm if the space is free then. {Customer} gets your exact address when you confirm." (L2-207)
 owner -> confirm : "Confirm request"
 confirm -> incoming : POST /api/my-business/requests/{id}/confirm
 incoming -> confirmh : Send ConfirmRequestCommand (owner check, L2-133)
@@ -52,7 +52,7 @@ requests -> get : Send GetRequestQuery
 get -> release : IsReleased(request)
 release --> get : true, kind Space and status Confirmed
 get -> db : Read SpaceDetails.Address of the listing now
-get --> requests : Details "Address: {exact address}", callout "{owner} accepted" / "The address is {exact address}." (L2-207)
+get --> requests : Details "Address: {exact address}", callout "{owner} accepted" / "The address is {exact address}." (L2-208)
 requests --> detail : 200 OK
 detail --> member : Address shown
 note over release

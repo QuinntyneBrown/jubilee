@@ -262,7 +262,7 @@ public sealed class GetRequestQueryHandler(IAppDbContext db, TimeProvider clock,
                     $"{MemberRequestRules.Range(r)} by {how}. The link is in your messages and we’ll remind you an hour before.",
                     null);
             case RequestStatus.Confirmed when r.Kind == RequestKind.Space:
-                // The address reaches the accepted renter only (L2-207 AC3).
+                // The address reaches the accepted renter only (L2-208 AC3).
                 return new CalloutDto("success", $"{owner} accepted", $"The address is {listing.Space?.Address}.", null);
             case RequestStatus.Confirmed:
                 return new CalloutDto("success", $"{owner} confirmed your {noun}", $"{owner} will message you about payment and pickup.", null);

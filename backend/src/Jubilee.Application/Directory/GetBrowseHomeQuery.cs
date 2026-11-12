@@ -32,7 +32,7 @@ public sealed class GetBrowseHomeQueryHandler(
         return new BrowseHomeDto(count, CategoryLinkDto.All, [.. featured.Select(BusinessCardDto.From)], products, groups, rooms);
     }
 
-    /// <summary>The newest four spaces overall and of each term (L2-200 AC1, AC3), newest first.</summary>
+    /// <summary>The newest four spaces overall and of each term (L2-201 AC1, AC3), newest first.</summary>
     private async Task<RoomsShelfDto> RoomsShelfAsync(CancellationToken cancellationToken)
     {
         // The term is inside the JSON column, so the category's public spaces are picked in memory.

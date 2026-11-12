@@ -147,9 +147,7 @@ public class ListingPageTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 
     [Theory]
     [InlineData(NonPublicState.Draft)]
-    [InlineData(NonPublicState.PendingReference)]
     [InlineData(NonPublicState.ReadyToReview)]
-    [InlineData(NonPublicState.NeedsDecision)]
     [InlineData(NonPublicState.ChangesRequested)]
     [InlineData(NonPublicState.Paused)]
     [InlineData(NonPublicState.Deleted)]

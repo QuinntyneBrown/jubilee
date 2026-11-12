@@ -5,7 +5,7 @@
 Jubilee is Toronto's Christian marketplace: a directory of verified
 Christian-owned businesses. A *listing* is the record of one business on
 Jubilee, and onboarding at `/list` is the form where a member describes a
-listing, names a church reference and submits it for verification
+listing and submits it for verification
 (`onboarding/describe-listing`).
 
 This feature adds a third answer to "What do you offer?": "A space". A *space*
@@ -33,14 +33,14 @@ The slice uses the following local terms.
   that reaches only the renter whose request the owner accepts
   (`requests/request-space`)
 
-A space keeps every other onboarding rule: it waits on its church reference
-after submission (`L2-080`), and nothing is public until the verification team
-approves it (`L2-101`).
+A space keeps every other onboarding rule: after submission it is "Ready to
+review" in the verification queue (`L2-078`), and nothing is public until the
+verification team approves it (`L2-101`).
 
 ## Description
 
 The feature extends the onboarding slice from `ListBusinessPage` to the
-`Jubilee database`. The model is fixed by ADR 0041.
+`Jubilee database`. The model is fixed by ADR 0042.
 
 - **`ListBusinessPage`** — Angular page at `/list`
   (`pages/list-business/`). "What do you offer?" gains a third
@@ -55,7 +55,7 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
   own, so switching between the three cards keeps each typed value
   (`L2-071`). `SpaceForm` also holds the term rules, the checks, the body
   sent to the API and the preview's view model, and the listing editor uses
-  the same class for a space (`L2-208`).
+  the same class for a space (`L2-209`).
 - **Space fields** — composed from library components, no new presentation in
   the page:
   - "How are you renting it?" — a fieldset of four `jb-choice-card` radio
@@ -82,7 +82,7 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
     rooms. A few honest lines go a long way."; not rendered for a Short stay or
     Long term, but its value stays in the form.
   - The note "Add photos from My business once you submit. The first photo is
-    your cover." (`L2-198` AC11).
+    your cover." (`L2-199` AC11).
 - **Preview** — the region headed "How renters see it". It renders
   `jb-space-card-preview` (`directory/browse-spaces`) from `SpaceForm`'s values
   with the mark "Pending verification" and redraws without a server call
@@ -101,17 +101,17 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
 - **`ListingDraftsController`** — unchanged routes; it passes the `space`
   object through as `DraftInput.Space` (`SpaceInput`).
 - **`SaveListingDraftCommandHandler`** — stores the space fields on
-  `ListingDraft.Space` without validation (`L2-198` AC10, `L2-077`).
+  `ListingDraft.Space` without validation (`L2-199` AC10, `L2-077`).
 - **`GetCurrentDraftQueryHandler`** — returns `ListingDraftDto` with `kind`
   `space` and `space` (`SpaceDraftDto`, address included, since only the
   draft's owner reads it), so the page restores "A space", the term and every
-  field (`L2-197` AC4).
+  field (`L2-198` AC4).
 - **`SubmitListingCommandHandler`** — for a space, validates the fields with
   `Drafts.ValidateSpace`, checks the agreement (`agreed` `REQUIRED`), builds
   the `SpaceDetails` with `Drafts.SpaceFrom`, and creates the `Listing` with
   `Kind` `Space`. The category is forced to `rooms-rentals` whatever the body
-  says. It then follows `L2-078`: the listing waits on its church reference and
-  the reference e-mail is queued. The success page reads "{Listing title} is in
+  says. It then follows `L2-078`: the listing is "Ready to review" in the
+  verification queue. The success page reads "{Listing title} is in
   for verification. Nothing more to do right now. We'll e-mail you the moment
   you're live." with "Go to My business".
 - **`Drafts.ValidateSpace`** — static rules in
@@ -148,19 +148,19 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
   drafts). A services listing or shop has none.
 - **`ListingKind.Space`** — the third listing kind. A listing is a space
   exactly when its category is `rooms-rentals` (`Category.RoomsSlug`)
-  (`L2-196` AC3).
+  (`L2-197` AC3).
 - **`Category.All`** — "Rooms & rentals" (`rooms-rentals`) becomes the second
-  of eleven, after Shops (`L2-196` AC4).
+  of eleven, after Shops (`L2-197` AC4).
 
 The verification team's review (`L2-100`, `GET /api/admin/verifications/{id}`)
 has the kind `space` and a `space` object (`ReviewSpace`) with the term, rent,
 minimum stay, neighbourhood, the space, key facts, what's included, the
-household and the house rules, and no exact address (`L2-199` AC3).
+household and the house rules, and no exact address (`L2-200` AC3).
 `AdminVerificationPage` shows them in a card "The space" after the owner, with
 the caption "The exact address is never shown here; only the renter the owner
 accepts receives it.", and previews the space with `jb-space-card-preview`
 under "How renters see it". Approval makes the
-space live in "Rooms & rentals" and the rooms shelf (`L2-199` AC4).
+space live in "Rooms & rentals" and the rooms shelf (`L2-200` AC4).
 
 ### Open questions
 
@@ -168,7 +168,7 @@ The choices below are recorded where the design reference and the rules
 differ or leave a gap.
 
 - **Hourly rent** — the design reference prices a hall "/ hour". Deferred: a
-  Short stay is priced per night (ADR 0041).
+  Short stay is priced per night (ADR 0042).
 - **Household** — free text, not a structured list of people.
 - **Key facts** — the design's sell frame has no "Key facts" field, but the
   space card shows two facts, so the form adds the optional field.
@@ -190,10 +190,10 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-196` | `L1-028` | A space shall be in the category "Rooms & rentals", the second of eleven, under exactly one of the terms Short stay, Long term, Room and Roommate, priced per night for a Short stay and per month otherwise, and shall never move to another category. |
-| `L2-197` | `L1-028` | `/list` shall offer "A space" beside "Products" and "Services", relabel the form for a space, preview the space card under "How renters see it", and restore a space saved as a draft. |
-| `L2-198` | `L1-028` | The space form shall ask the term, rent, availability, minimum stay, neighbourhood, exact address, the space, key facts, what's included, house rules and, for a Room or Roommate, the household, keep values across terms, and validate them on the browser and the server. |
-| `L2-199` | `L1-028` | A space shall be submitted with its own agreement line, follow submission for verification, show its details but never its exact address to the verification team, and appear in "Rooms & rentals" and the rooms shelf once approved. |
+| `L2-197` | `L1-028` | A space shall be in the category "Rooms & rentals", the second of eleven, under exactly one of the terms Short stay, Long term, Room and Roommate, priced per night for a Short stay and per month otherwise, and shall never move to another category. |
+| `L2-198` | `L1-028` | `/list` shall offer "A space" beside "Products" and "Services", relabel the form for a space, preview the space card under "How renters see it", and restore a space saved as a draft. |
+| `L2-199` | `L1-028` | The space form shall ask the term, rent, availability, minimum stay, neighbourhood, exact address, the space, key facts, what's included, house rules and, for a Room or Roommate, the household, keep values across terms, and validate them on the browser and the server. |
+| `L2-200` | `L1-028` | A space shall be submitted with its own agreement line, follow submission for verification, show its details but never its exact address to the verification team, and appear in "Rooms & rentals" and the rooms shelf once approved. |
 | `L2-076` | `L1-011` | The preview shall update within 100 ms as the owner types and shall show the card marked "Pending verification". |
 | `L2-077` | `L1-011` | The owner shall be able to save the form as a draft without validation and resume it later. |
 | `L2-126` | `L1-018` | A page form submitted with errors shall show the summary "Fix {n} thing(s) to continue", mark each invalid field, keep typed values, and apply the same rules and message codes on the server. |
@@ -203,8 +203,8 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-A member lists a space in Jubilee; the church reference and the verification
-team take it from there as for any listing.
+A member lists a space in Jubilee; the verification team takes it from there
+as for any listing.
 
 ![C4 system context for describing a space](diagrams/c4-context.png)
 
@@ -244,6 +244,6 @@ validation.
 
 Submission validates the space fields and the space agreement on the server,
 answers HTTP 422 with field codes when they fail, and otherwise creates the
-listing in "Rooms & rentals" with kind `Space` and starts the church reference.
+listing in "Rooms & rentals" with kind `Space`, ready to review.
 
 ![Sequence diagram for submitting a space](diagrams/sequence-submit-space.png)

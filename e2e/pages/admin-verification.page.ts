@@ -8,7 +8,8 @@ export class AdminVerificationPage extends AdminShellPage implements Screen {
   readonly subtitle: Locator;
   readonly breadcrumb: Locator;
   readonly owner: Locator;
-  readonly churchReference: Locator;
+  /** The headings of the page's panels, in order. */
+  readonly panels: Locator;
   readonly checklist: Locator;
   readonly checks: Locator;
   readonly requestChanges: Locator;
@@ -29,7 +30,7 @@ export class AdminVerificationPage extends AdminShellPage implements Screen {
     this.subtitle = this.main.locator('.subtitle');
     this.breadcrumb = this.main.getByRole('navigation', { name: 'Breadcrumb' });
     this.owner = this.main.locator('section[aria-labelledby="own"]');
-    this.churchReference = this.main.locator('section[aria-labelledby="ref"]');
+    this.panels = this.main.getByRole('heading', { level: 2 });
     this.checklist = this.main.locator('section[aria-labelledby="chk"]');
     this.checks = this.checklist.getByRole('checkbox');
     this.requestChanges = this.main.getByRole('button', { name: 'Request changes' });

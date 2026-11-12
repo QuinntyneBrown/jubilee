@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Jubilee.Application.Requests;
 
 /// <summary>
-/// A renter asks the owner of a space for it (L2-205): a Short stay with its check-in and
+/// A renter asks the owner of a space for it (L2-206): a Short stay with its check-in and
 /// check-out, any other term with its move-in and months. Nothing is charged.
 /// </summary>
 public sealed record RequestSpaceCommand(
@@ -26,7 +26,7 @@ public sealed record RequestSpaceCommand(
 public sealed class RequestSpaceCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings settings)
     : IRequestHandler<RequestSpaceCommand, BookedRequestDto>
 {
-    /// <summary>A date can be asked for this far ahead at most (L2-205 AC5).</summary>
+    /// <summary>A date can be asked for this far ahead at most (L2-206 AC5).</summary>
     public const int MaxDaysAhead = 365;
 
     public async Task<BookedRequestDto> Handle(RequestSpaceCommand command, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ public sealed class RequestSpaceCommandHandler(IAppDbContext db, TimeProvider cl
             throw new ConflictException("OWN_LISTING", "You can't ask for your own space.");
         }
 
-        // One open request per member and space, so two tabs cannot send two (L2-205 AC9).
+        // One open request per member and space, so two tabs cannot send two (L2-206 AC9).
         if (await db.Requests.AsNoTracking().AnyAsync(
                 r => r.MemberSubject == command.Subject && r.ListingId == listing.Id && r.Kind == RequestKind.Space
                     && (r.Status == RequestStatus.New || r.Status == RequestStatus.Confirmed),

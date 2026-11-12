@@ -1,5 +1,11 @@
 # Jubilee user journeys
 
+Every journey serves Jubilee's mission, the single level-0 requirement in
+[`specs/L0.md`](specs/L0.md):
+
+> Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to
+> prosper with purpose and resource His Kingdom.
+
 Each row is one end-to-end user journey to implement, ordered by the value it adds to the user, highest first. The journeys are composed
 from the feature designs in [`detailed-designs/`](detailed-designs/README.md), the requirements in
 [`specs/L2.md`](specs/L2.md) and the screens in [`mocks/`](mocks/README.md).
@@ -19,8 +25,8 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 7 | Book a meeting | Request a meeting time for a service with a business. | 6 | 90% |
 | 8 | Request a quote | Describe a job and ask a business for a quote. | 3 | 90% |
 | 9 | Request a product | Send a shop an order request for a product, without payment. | 3 | 90% |
-| 10 | List a business | Describe a business, name a church reference, submit for verification. | 12 | 84% |
-| 11 | Answer a church reference | A pastor confirms or declines an owner through a private link. | 6 | 78% |
+| 10 | List a business | Describe a business and submit it for verification. | 12 | 87% |
+| 11 | Removed: answer a church reference | Jubilee no longer asks for a church reference (ADR 0041). The number is not reused. | 0 | n/a |
 | 12 | Verify a listing | Staff review submitted listings, then approve or request changes. | 10 | 80% |
 | 13 | Respond to customer requests | See incoming requests and confirm or decline each one. | 6 | 85% |
 | 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 79% |
@@ -39,7 +45,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 27 | Meet Jubilee on the marketing site | Read the marketing page, watch the pitch film, open the app or start listing. | 4 | 95% |
 | 28 | Rent a room or space | List a room, suite or hall; find spaces by term on Browse, the category and search; request one and let the owner confirm. | 19 | 100% |
 
-**Total: 187 days** for the 28 journeys, **87% complete** weighted by effort.
+**Total: 181 days** for the 27 journeys, **87% complete** weighted by effort.
 
 ## Notes
 

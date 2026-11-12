@@ -47,6 +47,8 @@ public sealed record EmailAddress
 /// <summary>A person with an account (L2-001, L2-004, L2-003).</summary>
 public sealed class Member
 {
+    public const int MaxHomeChurchAddressLength = 200;
+
     private Member()
     {
     }
@@ -63,6 +65,9 @@ public sealed class Member
     public string LastName { get; private set; } = string.Empty;
 
     public string? HomeChurch { get; private set; }
+
+    /// <summary>Where the home church is; optional, independent of its name and shown to no one (L2-196, L2-145).</summary>
+    public string? HomeChurchAddress { get; private set; }
 
     /// <summary>Ten digits, or null (L2-013). A request copies it when it is sent.</summary>
     public string? Phone { get; private set; }
@@ -175,7 +180,7 @@ public sealed class Member
     public string DisplayName => $"{FirstName} {LastName}".Trim();
 
     public static Member Join(
-        EmailAddress email, string firstName, string lastName, string? homeChurch, string passwordHash, DateTimeOffset now, int termsVersion = 1) => new()
+        EmailAddress email, string firstName, string lastName, string? homeChurch, string passwordHash, DateTimeOffset now, int termsVersion = 1, string? homeChurchAddress = null) => new()
         {
             Id = Guid.NewGuid(),
             Email = email.Value,
@@ -183,6 +188,7 @@ public sealed class Member
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
             HomeChurch = string.IsNullOrWhiteSpace(homeChurch) ? null : homeChurch.Trim(),
+            HomeChurchAddress = string.IsNullOrWhiteSpace(homeChurchAddress) ? null : homeChurchAddress.Trim(),
             PasswordHash = passwordHash,
             EmailStatus = EmailStatus.Unconfirmed,
             AgreementAcceptedAt = now,
@@ -222,6 +228,7 @@ public sealed class Member
         FirstName = "Former";
         LastName = "member";
         HomeChurch = null;
+        HomeChurchAddress = null;
         Phone = null;
         PostalCode = null;
         Pronouns = null;
@@ -230,15 +237,16 @@ public sealed class Member
         ErasedAt ??= now;
     }
 
-    /// <summary>Replaces the six profile fields; the caller has validated them (L2-013).</summary>
+    /// <summary>Replaces the seven profile fields; the caller has validated them (L2-013).</summary>
     public void UpdateProfile(
-        string firstName, string lastName, string? phone, string? postalCode, string? homeChurch, string? pronouns, DateTimeOffset now)
+        string firstName, string lastName, string? phone, string? postalCode, string? homeChurch, string? homeChurchAddress, string? pronouns, DateTimeOffset now)
     {
         FirstName = firstName.Trim();
         LastName = lastName.Trim();
         Phone = phone;
         PostalCode = postalCode;
         HomeChurch = string.IsNullOrWhiteSpace(homeChurch) ? null : homeChurch.Trim();
+        HomeChurchAddress = string.IsNullOrWhiteSpace(homeChurchAddress) ? null : homeChurchAddress.Trim();
         Pronouns = string.IsNullOrWhiteSpace(pronouns) ? null : pronouns.Trim();
         ProfileSavedAt = now;
     }

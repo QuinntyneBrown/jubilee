@@ -13,4 +13,4 @@ save-listing (ADR 0027): the saved list, save and unsave of businesses and produ
 
 report-listing and share-listing (ADR 0029): the report dialog (reason, description with counter, retry with the same key, validation, 429 and offline messages, sign-in prompt for a visitor), the private report store with the 24-hour addition window, rate limit and idempotency, the share dialog (Copy, E-mail, WhatsApp, More) and the social preview endpoint are done with tests. Deferred: the `og-image.png` asset, crawler routing of `/b/{slug}` to the preview, the team notification e-mail, and the moderation queue (journey 25).
 
-view-space (ADR 0041): the space page with its booking card and bar, facts, rows, inclusions, rules, household, host and related spaces, and the owner's editing of a space (L2-208) are done with tests. Excludes deferred work (see ADR 0041): hourly rent.
+view-space (ADR 0042): the space page with its booking card and bar, facts, rows, inclusions, rules, household, host and related spaces, and the owner's editing of a space (L2-209) are done with tests. Excludes deferred work (see ADR 0042): hourly rent.

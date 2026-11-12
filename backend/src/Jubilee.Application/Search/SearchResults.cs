@@ -17,7 +17,7 @@ public sealed record MatchExplanation(string Text, IReadOnlyList<HighlightRange>
 
 /// <summary>
 /// One result. <see cref="Slug"/> is always the business's slug. A space's result carries its space
-/// card, which never holds the exact address (L2-203).
+/// card, which never holds the exact address (L2-204).
 /// </summary>
 public sealed record SearchHit(
     string Kind,

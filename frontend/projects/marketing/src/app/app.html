@@ -14,9 +14,9 @@
       headingId="top-title"
       text="Toronto’s Christian businesses,"
       accent="in one place."
-      lead="Jubilee is where Toronto’s Christian community finds shops, advisors and trades it can trust. Every business is vouched for by a church, so you can shop, hire and recommend with confidence."
+      lead="Jubilee is where Toronto’s Christian community finds shops, advisors and trades it can trust. Every business is verified before it appears, so you can shop, hire and recommend with confidence."
       leadWidth="wide"
-      note="Free for members · Every business church-verified"
+      note="Free for members · Every business verified"
     >
       <a slot="actions" jb-marketing-button [href]="browseUrl">
         Start browsing
@@ -34,7 +34,7 @@
       [caption]="glimpse.caption"
       [results]="glimpse.results"
     >
-      <p jb-floating-note tone="trust" icon="verified">Vouched for by Grace Toronto Church</p>
+      <p jb-floating-note tone="trust" icon="verified">Verified by the Jubilee team</p>
       <p jb-floating-note tone="reply" icon="message">WaterWorks replied in 12 min</p>
     </div>
   </section>
@@ -53,6 +53,16 @@
       [still]="film.still"
       [length]="film.length"
       [chapters]="film.chapters"
+    />
+  </section>
+
+  <section jb-marketing-section id="mission" tone="ink" aria-labelledby="mission-title">
+    <jb-marketing-heading
+      measure
+      headingId="mission-title"
+      text="Our"
+      accent="mission."
+      [lead]="mission"
     />
   </section>
 

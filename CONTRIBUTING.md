@@ -21,7 +21,7 @@ By taking part you agree to follow the [code of conduct](CODE_OF_CONDUCT.md).
 - **Report a bug.** Open an issue with the bug report template. Include the steps, what you
   expected and what happened.
 - **Suggest a feature.** Open an issue with the feature request template. Say which role it is
-  for (member, owner, church reference or verification team) and which journey in
+  for (member, owner or verification team) and which journey in
   [`docs/journey.md`](docs/journey.md) it belongs to, if any.
 - **Improve the documentation.** Requirements, designs, mocks and the design system are all in
   `docs/` and welcome corrections.
@@ -37,6 +37,11 @@ Security vulnerabilities are never reported in a public issue; see [`SECURITY.md
 2. Read the [architecture decision records](docs/adr/README.md) for the area you will change.
 3. For anything larger than a small fix, open an issue first so the approach can be agreed before
    you write code.
+
+Every change serves Jubilee's mission, the single level-0 requirement
+([`docs/specs/L0.md`](docs/specs/L0.md)): "Abiding in Jesus and for love of Him, Jubilee equips
+Christian business people in Toronto to prosper with purpose and resource His Kingdom." A change
+that cannot be traced back to it does not belong here.
 
 Use the words the requirements use ([`docs/specs/L1.md`](docs/specs/L1.md),
 [`docs/specs/L2.md`](docs/specs/L2.md) and [`docs/journey.md`](docs/journey.md)) in code, docs and

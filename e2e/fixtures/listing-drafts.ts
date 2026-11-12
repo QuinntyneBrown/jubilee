@@ -3,7 +3,7 @@ import type { Page, Route } from '@playwright/test';
 // A stand-in for the listing-draft endpoints (L2-071 to L2-079). The requests the app makes are
 // kept so a test can prove what it sent (ADR 0009).
 
-/** The rental fields of a space draft (L2-198). */
+/** The rental fields of a space draft (L2-199). */
 export interface FakeSpaceDraft {
   term: 'short-stay' | 'long-term' | 'room' | 'roommate';
   rent: number | null;
@@ -25,8 +25,6 @@ export interface FakeDraftBody {
   categorySlug: string | null;
   highlight: string | null;
   place: string | null;
-  church: string;
-  pastorEmail: string;
   agreed: boolean;
   items: {
     name: string;
@@ -75,7 +73,7 @@ export async function stubListingDrafts(
     creates: [],
     saves: [],
     submits: [],
-    errors: { pastorEmail: 'OWN_EMAIL' },
+    errors: { tagline: 'TOO_LONG:94' },
     ...initial,
   };
   const store = (id: string, body: FakeDraftBody): FakeDraft => ({
@@ -116,9 +114,7 @@ export async function stubListingDrafts(
           }),
         );
       case 'invalid':
-        return route.fulfill(
-          problem(422, { code: 'validation_failed', errors: fake.errors }),
-        );
+        return route.fulfill(problem(422, { code: 'validation_failed', errors: fake.errors }));
       default:
         fake.submits.push(body);
         return route.fulfill({
@@ -128,9 +124,7 @@ export async function stubListingDrafts(
             slug: 'luzandre-com',
             name: body.name,
             kind: body.kind,
-            stage: 'pending-reference',
-            church: body.church,
-            pastorEmail: body.pastorEmail,
+            stage: 'ready-to-review',
             submittedAt: '2026-11-10T14:40:00Z',
           },
         });

@@ -48,19 +48,19 @@ else New key
     controller --> client : 404
   else Caller owns the space
     handler --> controller : OWN_LISTING
-    controller --> client : 409 ProblemDetails (L2-205)
+    controller --> client : 409 ProblemDetails (L2-206)
   else Caller has an open New or Confirmed request for it
     handler --> controller : ALREADY_REQUESTED
-    controller --> client : 409 ProblemDetails (L2-205)
+    controller --> client : 409 ProblemDetails (L2-206)
   else Another member
-    handler -> handler : Validate in Toronto dates: IN_THE_PAST, TOO_FAR,\nNOT_AFTER_CHECK_IN, BELOW_MINIMUM_STAY, stayMonths REQUIRED (L2-205)
+    handler -> handler : Validate in Toronto dates: IN_THE_PAST, TOO_FAR,\nNOT_AFTER_CHECK_IN, BELOW_MINIMUM_STAY, stayMonths REQUIRED (L2-206)
     alt Invalid
       handler --> controller : errors {field: code}
       controller --> client : 422 ProblemDetails
       client --> dialog : Errors
       dialog --> actor : "Choose a date from today on." or "This space needs at least {minimum stay}."
     else Valid
-      handler -> handler : Nights or months and the total from the stored rent (L2-205)
+      handler -> handler : Nights or months and the total from the stored rent (L2-206)
       handler -> entity : AskForSpace(...) with status New (L2-043)
       handler -> db : Save the request, the owner's notification and the queued e-mail (EmailPolicy.Queue)
       db --> handler : Commit result

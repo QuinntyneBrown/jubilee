@@ -6,7 +6,8 @@ Jubilee is Toronto's Christian marketplace. A *visitor* is a person who is not
 signed in; a *member* is a signed-in account holder. This feature covers the
 first step from one to the other: a visitor creates a free account at `/join`,
 the Sign up screen, with a first name, a last name, an e-mail address, a
-password, an optional home church, and agreement to the statement of faith and
+password, an optional home church and its optional address, and agreement to the
+statement of faith and
 the terms.
 
 The account starts *unconfirmed* — e-mail status of an account whose address
@@ -43,8 +44,12 @@ with the confirmation e-mail sent by `Jubilee Worker`.
   "First name", "Last name", "Email" (placeholder "you@example.com"),
   "Password" (hint "At least 10 characters.") and "Home church" marked
   "(optional)", with the placeholder "e.g. The Meeting House" and the hint
-  "Shown to no one. Helps us recommend businesses near you." Only the optional
-  field is marked; the 4 required controls carry `required` and no marker
+  "Shown to no one. Helps us recommend businesses near you." "Home church
+  address", also marked "(optional)", follows it with the placeholder "e.g.
+  2700 Bristol Circle, Oakville" and the hint "Shown to no one."; input stops
+  at 200 characters and either field may be filled without the other
+  (`L2-196`). Only the optional
+  fields are marked; the 4 required controls carry `required` and no marker
   (ADR 0038). From 640 px "First name" and "Last name" sit side by side, and
   from 1024 px "Email" and "Password" do as well; below those widths each pair
   is stacked (`L2-001`). The agreement checkbox reads "I am 18 or older and
@@ -96,7 +101,12 @@ with the confirmation e-mail sent by `Jubilee Worker`.
   through `IBotChallengeVerifier`, sends `JoinWithEmailCommand` through MediatR,
   and sets the session cookie on success.
 - **`JoinWithEmailCommand`** — request object carrying `FirstName`, `LastName`,
-  `Email`, `Password`, `HomeChurch`, `AgreementAccepted` and `ChallengeToken`.
+  `Email`, `Password`, `HomeChurch`, `HomeChurchAddress`, `AgreementAccepted`
+  and `ChallengeToken`. The join request carries `homeChurchAddress` (string or
+  null) beside `homeChurch`; a home church over 100 characters or an address
+  over 200 is refused with the code `TOO_LONG` for that field. Both values are
+  stored on `Member` (`HomeChurch`, `HomeChurchAddress`), are shown to no one
+  and are used only for recommendations (`L2-145`).
 - **`JoinWithEmailCommandValidator`** — FluentValidation validator. It applies
   the field lengths, the password length of 10 to 128 characters with no
   composition rules, the agreement, the uniqueness of the normalised e-mail, and
@@ -144,7 +154,8 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-001` | `L1-001` | The system shall let a visitor create an account at `/join`, the Sign up screen, with first name, last name, e-mail, password, an optional home church, and agreement to the statement of faith and terms, with a Google option offered first on the same page. On success the account shall be created unconfirmed and a confirmation e-mail shall be sent. |
+| `L2-001` | `L1-001` | The system shall let a visitor create an account at `/join`, the Sign up screen, with first name, last name, e-mail, password, an optional home church and its optional address, and agreement to the statement of faith and terms, with a Google option offered first on the same page. On success the account shall be created unconfirmed and a confirmation e-mail shall be sent. |
+| `L2-196` | `L1-002` | A visitor may give a home church by name, by address, by both or by neither when joining. "Home church address" shall be one optional free-text field of at most 200 characters with the hint "Shown to no one."; a longer value sent to the API shall be refused with the code `TOO_LONG`. |
 | `L2-002` | `L1-001` | The join form shall validate on submit, in the browser and again on the server, and shall report every problem at once. |
 | `L2-134` | `L1-019` | A stored password shall be hashed with Argon2id (memory at least 19 MiB, iterations at least 2) with a unique salt and shall never reach logs. A password shall be 10 to 128 characters with no composition rules and shall be checked against a breached-password list. |
 | `L2-137` | `L1-019` | The server shall respond `429` with `Retry-After` above 5 joins per IP per hour and above 5 e-mail confirmation resends per hour, and the join form shall be protected by a privacy-respecting bot challenge. |

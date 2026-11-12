@@ -46,7 +46,7 @@ import { SessionService } from '../../services/session.service';
 
 /**
  * The browse home (L2-021, L2-022): the hero with the greeting or the tagline, the category
- * chips, the featured businesses, the rooms and places to stay (L2-200), products from the shops
+ * chips, the featured businesses, the rooms and places to stay (L2-201), products from the shops
  * and the directory grouped by category. A visitor sees the same directory with a join panel.
  */
 @Component({
@@ -95,7 +95,7 @@ export class BrowsePage {
   protected readonly store = inject(DirectoryStore);
   protected readonly member = inject(SessionService).member;
   protected readonly categories = CATEGORIES;
-  /** The term of the rooms shelf; it filters the spaces already loaded (L2-200 AC3). */
+  /** The term of the rooms shelf; it filters the spaces already loaded (L2-201 AC3). */
   protected readonly shelfTerm = signal<SpaceTerm | null>(null);
 
   /** "Morning" before 12:00, "Afternoon" from 12:00, "Evening" from 17:00, Toronto time. */

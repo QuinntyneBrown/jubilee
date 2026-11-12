@@ -106,14 +106,14 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Data display</p>
       <h1>Badge</h1>
-      <p class="ds-lead">Badges are small, quiet labels for status and counts: a product that is sold out, a request awaiting reply, two unread messages. The Verified mark is a sibling that sits beside every vouched-for business.</p>
+      <p class="ds-lead">Badges are small, quiet labels for status and counts: a product that is sold out, a request awaiting reply, two unread messages. The Verified mark is a sibling that sits beside every verified business.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;span&gt;</code></span><span class="ds-pill">727 uses in the mocks</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Use a badge for a one- or two-word status of a record, or a count on a navigation item. Badges are not buttons; to filter by a status use a <a href="../components/chip.html">Chip</a>. For a message about the page, use an <a href="../components/alert.html">Alert and banner</a>.</p>
       <ul>
-        <li><b>Tones</b>: neutral (<code>.badge</code>) for finished or inactive states ("Completed", "Cancelled"); info for "Ready to review"; success for "Listed", "Confirmed"; warning for "Sold out", "Awaiting reply"; danger for "Declined", "Can’t vouch".</li>
+        <li><b>Tones</b>: neutral (<code>.badge</code>) for finished or inactive states ("Completed", "Cancelled"); info for "Ready to review"; success for "Listed", "Confirmed"; warning for "Sold out", "Awaiting reply"; danger for "Declined".</li>
         <li><b>Solid</b> (<code>.badge--solid</code>): gold with ink text for a rare highlight ("New"). At most one per card.</li>
         <li><b>Count</b> (<code>.badge--count</code>): a gold pill with tabular figures on tabs, the tab bar and icon buttons; carries an <code>aria-label</code> such as "2 unread".</li>
         <li><b>Verified</b> (<code>.verified</code>): not a pill but a success check icon and the word "Verified" in muted text, beside a business name.</li>
@@ -239,7 +239,7 @@
         <li>One or two words, a state not an instruction: "Sold out", "Awaiting reply", "Listed". Written in sentence case; CSS uppercases it.</li>
         <li>Pick the tone from what the person should feel: success when done well, warning when someone needs to act, danger when something stopped. Neutral when it is simply over.</li>
         <li>Counts above 99 show "99+" with the full number in the <code>aria-label</code>.</li>
-        <li>"Verified" is the only word for a vouched-for business. Do not use "Trusted" or "Approved".</li>
+        <li>"Verified" is the only word for a business the verification team has approved. Do not use "Trusted" or "Approved".</li>
       </ul>
     </section>
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
@@ -289,7 +289,7 @@
       <p>Extracted from these mocks:</p>
       <ul>
         <li><a href="../../mocks/pages/my-products/default.html">pages/my-products/default</a> (Listed and Sold out)</li>
-        <li><a href="../../mocks/pages/admin-verifications/default.html">pages/admin-verifications/default</a> (Confirmed, Waiting, Can’t vouch)</li>
+        <li><a href="../../mocks/pages/admin-verification/default.html">pages/admin-verification/default</a> (Ready to review)</li>
         <li><a href="../../mocks/pages/messages/default.html">pages/messages/default</a> (count badges)</li>
         <li><a href="../../mocks/pages/request-detail/cancelled.html">pages/request-detail/cancelled</a> (neutral Cancelled)</li>
         <li><a href="../../mocks/notifications/request-toast/warning.html">notifications/request-toast/warning</a> (tab totals as neutral badges)</li>

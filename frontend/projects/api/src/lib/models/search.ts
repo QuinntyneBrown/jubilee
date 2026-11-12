@@ -25,7 +25,7 @@ export interface SearchHit {
   categorySlug: string;
   /** Null when the search ran without its index (L2-181). */
   explanation: MatchExplanation | null;
-  /** A space's card, never its address (L2-203); absent for a business. */
+  /** A space's card, never its address (L2-204); absent for a business. */
   space?: SpaceCard | null;
 }
 

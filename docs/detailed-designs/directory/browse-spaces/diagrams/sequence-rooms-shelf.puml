@@ -41,20 +41,20 @@ else Not cached
   handler -> db : Public spaces newest first by ApprovedAt (L2-028)
   db --> handler : Listings with SpaceDetails
   handler -> handler : Count, newest 4 overall plus newest 4 per term
-  handler -> handler : SpaceCardDto.From each, no address (L2-207)
-  handler -> handler : Groups without spaces (L2-200)
+  handler -> handler : SpaceCardDto.From each, no address (L2-208)
+  handler -> handler : Groups without spaces (L2-201)
   handler -> cache : Store for 60 s (L2-156)
 end
 handler --> controller : BrowseHomeDto with Rooms {count, spaces}
 controller --> client : 200 OK
 client --> page : Browse home
 alt rooms.count is 0
-  page --> actor : No shelf (L2-200)
+  page --> actor : No shelf (L2-201)
 else Rooms present
   page --> actor : "Rooms & places to stay", "All {n}", "Any length" pressed, newest four cards
   actor -> filter : Press "Rooms"
   filter --> page : term room
-  page -> page : Pick the newest four spaces with term room, no request (L2-200)
+  page -> page : Pick the newest four spaces with term room, no request (L2-201)
   alt None
     page --> actor : "Nothing listed for this yet. New rooms and rentals are added every week."
   else Some

@@ -35,8 +35,8 @@
       <jb-page-header heading="My business" subtitle="You haven’t listed a business yet.">
       </jb-page-header>
       <div jb-empty-state icon="store" heading="List your business free">
-        Tell members what you offer, name a pastor or elder as your reference, and you’re live once
-        they confirm. It takes about ten minutes.
+        Tell members what you offer, submit it for verification, and you’re live once we approve it.
+        It takes about ten minutes.
         <a slot="actions" jb-button variant="primary" routerLink="/list-business">
           <svg jb-icon name="plus"></svg>List your business
         </a>
@@ -210,8 +210,8 @@
                       >
                     </li>
                     <li jb-row>
-                      <div jb-row-title>Church reference</div>
-                      <div jb-row-meta>{{ summary.reference }}</div>
+                      <div jb-row-title>Verification</div>
+                      <div jb-row-meta>{{ summary.verification }}</div>
                     </li>
                     <li jb-row>
                       @if (b.awayUntil; as until) {
@@ -279,11 +279,11 @@
             <div jb-alert tone="danger" heading="We couldn’t verify this listing">
               <div>{{ declined.reason }}</div>
             </div>
-          } @else if (b.state === 'pending-reference' && b.reference; as reference) {
-            <div jb-alert heading="Waiting for your church reference">
+          } @else if (b.state === 'ready-to-review') {
+            <div jb-alert [heading]="'We’re reviewing ' + b.name">
               <div>
-                We e-mailed {{ reference.referenceEmail }} at {{ reference.church }}. Once they
-                answer, we review and publish within two business days.
+                You submitted it {{ submittedWords(b) }}. We review and publish within two business
+                days.
               </div>
             </div>
           }

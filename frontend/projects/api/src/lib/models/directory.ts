@@ -38,10 +38,10 @@ export interface ProductCard {
   tile: { tint: TileTint; icon: ProductTileIcon };
 }
 
-/** How a space is rented (L2-196). */
+/** How a space is rented (L2-197). */
 export type SpaceTerm = 'short-stay' | 'long-term' | 'room' | 'roommate';
 
-/** A space as its card shows it (L2-202). It never carries an exact address. */
+/** A space as its card shows it (L2-203). It never carries an exact address. */
 export interface SpaceCard {
   slug: string;
   name: string;
@@ -55,7 +55,7 @@ export interface SpaceCard {
   coverPhoto: string | null;
 }
 
-/** "Rooms & places to stay" on Browse (L2-200): the newest spaces overall and per term. */
+/** "Rooms & places to stay" on Browse (L2-201): the newest spaces overall and per term. */
 export interface RoomsShelf {
   /** Live spaces in all. */
   count: number;
@@ -101,7 +101,7 @@ export interface CategoryFilters {
 export interface CategoryQuery extends CategoryFilters {
   sort: ListingSort;
   page: number;
-  /** Rooms & rentals only: the term chosen, or null for any length (L2-201 AC2). */
+  /** Rooms & rentals only: the term chosen, or null for any length (L2-202 AC2). */
   term: SpaceTerm | null;
 }
 

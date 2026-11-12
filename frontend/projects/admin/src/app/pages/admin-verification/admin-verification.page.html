@@ -128,38 +128,6 @@
             </p>
           </section>
         }
-        <section jb-card heading="Church reference" headingId="ref">
-          <dl jb-description-list style="margin-top: var(--space-4)">
-            <div jb-description-item term="Church" [value]="r.reference.church"></div>
-            @if (noAnswer()) {
-              <div jb-description-item term="Answer">
-                <span jb-badge tone="warning">{{
-                  r.reference.state === 'waiting'
-                    ? 'Waiting'
-                    : r.reference.state === 'expired'
-                      ? 'Expired'
-                      : 'Deleted'
-                }}</span>
-              </div>
-            } @else {
-              <div jb-description-item term="Answered by">
-                {{ r.reference.answeredByName }}, {{ r.reference.answeredByRole }} ·
-                {{ when(r.reference.answeredAt ?? r.submittedAt) }}
-              </div>
-              <div jb-description-item term="Answer">
-                @if (answer(); as a) {
-                  <span jb-badge [tone]="a.tone">{{ a.label }}</span>
-                }
-              </div>
-              @if (r.reference.note) {
-                <div jb-description-item term="Note">“{{ r.reference.note }}”</div>
-              }
-            }
-          </dl>
-          <p class="text-caption" style="margin-top: var(--space-3)">
-            Private. Never shown to the owner or the public; deleted 90 days after a decision.
-          </p>
-        </section>
         <section jb-card heading="Checklist" headingId="chk">
           @if (r.flags.length > 0) {
             <p class="text-caption" style="margin-top: var(--space-2)">

@@ -7,7 +7,7 @@ Person(member, "Member", "Lists a space on /list")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "ListBusinessPage with the space fields and How renters see it")
   Container(api, "Jubilee API", "ASP.NET Core", "Draft and submit endpoints under /api/listing-drafts")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Sends the church reference e-mail")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Sends the decision e-mail")
   ContainerDb(db, "Jubilee database", "SQL Server", "ListingDrafts and Listings, each with a Space JSON column")
 }
 System_Ext(email, "E-mail provider", "Delivers e-mail")

@@ -4,9 +4,7 @@ namespace Jubilee.Domain;
 public enum ListingStage
 {
     Draft = 0,
-    PendingReference = 1,
     ReadyToReview = 2,
-    NeedsDecision = 3,
     ChangesRequested = 4,
     Live = 5,
     Declined = 6,

@@ -4,18 +4,14 @@ LAYOUT_WITH_LEGEND()
 title Containers — Submit for verification
 
 Person(owner, "Owner", "Submits a listing")
-System_Ext(email, "E-mail provider", "Delivers e-mail")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Submit button and error summary and submitted state and listing switcher")
   Container(api, "Jubilee API", "ASP.NET Core", "Submission and listing endpoints under /api/listings")
-  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox and sends the reference e-mail")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Listings and outbox messages")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings")
   ContainerDb(cache, "Cache", "Redis", "Sessions and idempotency keys")
 }
 Rel(owner, web, "Presses Submit for verification", "HTTPS")
 Rel(web, api, "Submits with an idempotency key", "JSON/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")
 Rel(api, cache, "Stores the idempotency key for 24 hours")
-Rel(worker, db, "Reads outbox messages", "EF Core")
-Rel(worker, email, "Sends the reference request", "HTTPS")
 @enduml

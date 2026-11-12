@@ -1,7 +1,7 @@
 import type { IconName } from '../icon/icons';
 import type { TileTint } from '../media-tile/category-tile';
 
-/** How a space is rented (L2-196), as the API writes it. */
+/** How a space is rented (L2-197), as the API writes it. */
 export type SpaceTermValue = 'short-stay' | 'long-term' | 'room' | 'roommate';
 
 /** The four terms in their fixed order. */
@@ -12,7 +12,7 @@ export const SPACE_TERMS: readonly SpaceTermValue[] = [
   'roommate',
 ];
 
-/** The badge on a space card (L2-202 AC1). */
+/** The badge on a space card (L2-203 AC1). */
 export const TERM_BADGES: Readonly<Record<SpaceTermValue, string>> = {
   'short-stay': 'Short stay',
   'long-term': 'Long term',
@@ -20,7 +20,7 @@ export const TERM_BADGES: Readonly<Record<SpaceTermValue, string>> = {
   roommate: 'Roommate wanted',
 };
 
-/** The choices of the term filter (L2-200 AC2). */
+/** The choices of the term filter (L2-201 AC2). */
 export const TERM_FILTER_LABELS: Readonly<Record<SpaceTermValue, string>> = {
   'short-stay': 'Short stays',
   'long-term': 'Long term',
@@ -42,7 +42,7 @@ export function isNightly(term: SpaceTermValue): boolean {
 }
 
 /**
- * What a card says of when a space is free (L2-202 AC1): "Available now" for "Now", "From Dec 1"
+ * What a card says of when a space is free (L2-203 AC1): "Available now" for "Now", "From Dec 1"
  * for a monthly term, and a Short stay's own words ("Most weekends").
  */
 export function availability(term: SpaceTermValue, available: string): string {

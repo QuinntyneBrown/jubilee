@@ -21,7 +21,7 @@ export const SORTS: readonly { value: ListingSort; label: string }[] = [
   { value: 'name', label: 'Name A–Z' },
 ];
 
-/** The terms a space is rented on, in their fixed order (L2-196). */
+/** The terms a space is rented on, in their fixed order (L2-197). */
 export const SPACE_TERM_VALUES: readonly SpaceTerm[] = [
   'short-stay',
   'long-term',
@@ -56,7 +56,7 @@ export function parseCategoryQuery(params: { get(name: string): string | null })
     areas: list(params.get('areas'), AREAS),
     sort: SORTS.some((s) => s.value === sort) ? (sort as ListingSort) : 'recommended',
     page: Number.isInteger(page) && page > 1 ? page : 1,
-    // An unknown term is ignored (L2-201 AC2).
+    // An unknown term is ignored (L2-202 AC2).
     term: SPACE_TERM_VALUES.find((value) => value === term) ?? null,
   };
 }

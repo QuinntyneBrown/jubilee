@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ADMIN_API, DecisionResult, ReferenceState, ReviewSpace, VerificationReview } from 'api';
+import { ADMIN_API, DecisionResult, ReviewSpace, VerificationReview } from 'api';
 import {
   EmptyState,
   Icon,
@@ -19,7 +19,6 @@ import {
   Checkbox,
   Skeleton,
   Badge,
-  BadgeTone,
   Card,
   PageHeader,
   Breadcrumb,
@@ -46,13 +45,7 @@ import { ClockService } from 'api';
 import { LoadState, errorReference } from 'api';
 import { dayHeading, clockTime } from 'api';
 
-const ANSWERS: Record<string, { label: string; tone: BadgeTone }> = {
-  vouches: { label: 'Knows them and can vouch', tone: 'success' },
-  'cant-vouch': { label: 'Knows them but can’t vouch', tone: 'danger' },
-  'doesnt-know': { label: 'Doesn’t know them', tone: 'danger' },
-};
-
-/** A space's term as the owner chose it (L2-196). */
+/** A space's term as the owner chose it (L2-197). */
 const TERM_NAMES: Record<ReviewSpace['term'], string> = {
   'short-stay': 'Short stay',
   'long-term': 'Long term',
@@ -60,11 +53,9 @@ const TERM_NAMES: Record<ReviewSpace['term'], string> = {
   roommate: 'Roommate',
 };
 
-const WAITING_STATES: ReferenceState[] = ['waiting', 'expired', 'deleted'];
-
 /**
  * The review of one submitted listing at /verifications/:id (L2-100 to L2-104): the owner,
- * the church reference's private answer, the checklist and the three decisions.
+ * the checklist and the three decisions.
  */
 @Component({
   selector: 'jb-admin-verification-page',
@@ -111,29 +102,19 @@ export class AdminVerificationPage implements OnInit {
     const review = this.review();
     return review ? categoryTile(review.categorySlug) : null;
   });
-  /** Only a listing that is ready to review, or needs a decision, can still be decided. */
+  /** Only a listing that is ready to review can still be decided. */
   protected readonly open = computed(() => {
     const review = this.review();
-    return (
-      review !== null &&
-      !review.isOwnListing &&
-      (review.stage === 'ready-to-review' || review.stage === 'needs-a-decision')
-    );
+    return review !== null && !review.isOwnListing && review.stage === 'ready-to-review';
   });
   protected readonly canApprove = computed(
     () => this.open() && !this.review()?.cannotDecideBecause,
   );
-  protected readonly canDecline = computed(
-    () => this.open() && this.review()?.stage === 'needs-a-decision',
-  );
+  protected readonly canDecline = this.canApprove;
   protected readonly unticked = computed(
     () => (this.review()?.checklist.length ?? 0) - this.ticked().length,
   );
-  protected readonly answer = computed(() => {
-    const answer = this.review()?.reference.answer;
-    return answer ? ANSWERS[answer] : null;
-  });
-  /** A space's rows, in the order the owner filled them in (L2-199 AC3). */
+  /** A space's rows, in the order the owner filled them in (L2-200 AC3). */
   protected readonly spaceRows = computed(() => {
     const space = this.review()?.space;
     if (!space) return null;
@@ -164,10 +145,6 @@ export class AdminVerificationPage implements OnInit {
       neighbourhood: space.neighbourhood,
       available: space.available,
     };
-  });
-  protected readonly noAnswer = computed(() => {
-    const state = this.review()?.reference.state;
-    return state !== undefined && WAITING_STATES.includes(state);
   });
 
   ngOnInit(): void {

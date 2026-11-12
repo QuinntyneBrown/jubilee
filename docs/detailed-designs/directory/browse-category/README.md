@@ -3,7 +3,7 @@
 ## Overview
 
 Jubilee is Toronto's Christian marketplace: a directory of businesses that the
-verification team has checked against a church reference. The directory is
+Jubilee verification team has verified. The directory is
 divided into ten fixed categories: Shops, Financial & insurance, Legal &
 immigration, Home & property, Real estate & living, Health & family, Business &
 tech, Learning, Media and Community. This feature covers the page that lists the
@@ -108,7 +108,7 @@ filter and without the business filters or "Sort". `GET
 is ignored), `GetCategoryListingsQuery` gains `Term`, and `CategoryPageResult`
 gains `Spaces` (`SpaceCardDto`) and `Term`. Spaces are newest first and paged
 16 at a time. The page is part of the feature
-[Browse spaces](../browse-spaces/README.md) (ADR 0041).
+[Browse spaces](../browse-spaces/README.md) (ADR 0042).
 
 ## Requirements
 
@@ -124,7 +124,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
 | `L2-113` | `L1-016` | An unknown URL, a removed listing or a resource the user may not know exists shall produce a 404 response and the not-found page. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |
-| `L2-201` | `L1-028` | `/c/rooms-rentals` shall list the space cards newest first, 16 to a page, filtered by the term carried in the URL, without the business filters or "Sort", and shall end with "List a space". |
+| `L2-202` | `L1-028` | `/c/rooms-rentals` shall list the space cards newest first, 16 to a page, filtered by the term carried in the URL, without the business filters or "Sort", and shall end with "List a space". |
 
 ## Diagrams
 

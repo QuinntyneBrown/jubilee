@@ -7,6 +7,7 @@ export interface Account {
   phone: string | null;
   postalCode: string | null;
   homeChurch: string | null;
+  homeChurchAddress: string | null;
   pronouns: string | null;
   memberSince: string;
   profileSavedAt: string | null;
@@ -21,6 +22,7 @@ export interface ProfileForm {
   phone: string | null;
   postalCode: string | null;
   homeChurch: string | null;
+  homeChurchAddress: string | null;
   pronouns: string | null;
 }
 

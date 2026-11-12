@@ -4,7 +4,7 @@ import { ChipRow } from '../chip/chip-row';
 import { SPACE_TERMS, SpaceTermValue, TERM_FILTER_LABELS } from '../space-card/space-terms';
 
 /**
- * The term filter of rooms and rentals (L2-200 AC2): "Any length" and the four terms, each a
+ * The term filter of rooms and rentals (L2-201 AC2): "Any length" and the four terms, each a
  * toggle whose state is `aria-pressed`. It says which term was chosen; the page filters.
  *
  *     <jb-term-filter [term]="term()" (termChange)="choose($event)" />

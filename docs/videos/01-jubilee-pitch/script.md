@@ -18,7 +18,7 @@ Meet Jubilee. Toronto's Christian businesses, all in one place.
 
 ## 04 Why join
 
-Every business is vouched for by a pastor or elder. Your money stays in the community. And it's free to join.
+Every business is verified by the Jubilee team. Your money stays in the community. And it's free to join.
 
 ## 05 Shop
 
@@ -34,7 +34,7 @@ Own a business? Your church family is looking for you.
 
 ## 08 How to list
 
-Create your page, get vouched for by your church, and welcome customers who already trust you.
+Create your page, get verified by our team, and welcome customers who already trust you.
 
 ## 09 Close
 

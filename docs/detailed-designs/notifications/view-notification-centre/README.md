@@ -71,8 +71,8 @@ with one background component.
 - **`NotificationType`** — enumeration of the events that create a
   notification, with the recipient of each: `RequestCreated` (owner);
   `RequestConfirmed`, `RequestDeclined`, `RequestCancelled` (other party);
-  `NewMessage` (other participant); `ListingVerified`, `ChangesRequested`,
-  `ReferenceAnswered` (owner); `EmailConfirmed` (member); `ProductBackInStock`
+  `NewMessage` (other participant); `ListingVerified`, `ChangesRequested`
+  (owner); `EmailConfirmed` (member); `ProductBackInStock`
   (subscribed member); `NewBusinessInCategory` (opted-in member);
   `MeetingReminder` (member and owner, L2-069).
 - **`NotificationProjector`** — outbox event handler in `Jubilee Worker`. It

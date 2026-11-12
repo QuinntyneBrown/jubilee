@@ -19,6 +19,7 @@
 
 <p align="center">
   <a href="#getting-started">Getting started</a> ·
+  <a href="docs/specs/L0.md">Mission</a> ·
   <a href="docs/specs/L1.md">Requirements</a> ·
   <a href="docs/mocks/README.md">Mocks</a> ·
   <a href="docs/design-system/README.md">Design system</a> ·
@@ -26,13 +27,23 @@
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
+## Mission
+
+> Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to
+> prosper with purpose and resource His Kingdom.
+
+This is the motive of everything in Jubilee and its single level-0 requirement
+([`docs/specs/L0.md`](docs/specs/L0.md)). Every requirement, design and line of code points back to
+it.
+
 Jubilee is a directory of verified Christian-owned businesses in Toronto. A member finds a
 business, messages it, books a meeting, asks for a quote or requests a product, and the business
-confirms or declines. Every listing is confirmed by a pastor or elder before it goes live. Jubilee
-does not take payment; members pay the business directly.
+confirms or declines. Every listing is verified by the Jubilee verification team before it goes
+live. Jubilee does not take payment; members pay the business directly.
 
 ## Contents
 
+- [Mission](#mission)
 - [Architecture](#architecture)
 - [Getting started](#getting-started)
 - [Building and testing](#building-and-testing)
@@ -218,7 +229,7 @@ jubilee/
 ├── eng/                    local engineering scripts
 ├── tools/                  scripts that build the narrated videos
 ├── docs/
-│   ├── specs/              requirements: L1.md (high level), L2.md (acceptance criteria)
+│   ├── specs/              requirements: L0.md (the mission), L1.md (high level), L2.md (acceptance criteria)
 │   ├── mocks/              static HTML mocks of every screen in every state
 │   ├── design-system/      tokens, foundations, components and patterns
 │   ├── detailed-designs/   one design per feature, grouped by subsystem
@@ -241,6 +252,7 @@ jubilee/
 
 | Document | What it covers |
 |---|---|
+| [Mission](docs/specs/L0.md) | Why Jubilee exists: the single level-0 requirement everything traces to |
 | [High-level requirements](docs/specs/L1.md) | What Jubilee must do, in 25 requirements, and the roles |
 | [Detailed requirements](docs/specs/L2.md) | Acceptance criteria for every requirement |
 | [Mocks](docs/mocks/README.md) | 67 screens in 271 states; the source of truth for the UI |
@@ -260,7 +272,7 @@ user:
 
 1. **Find a business:** discover, view and search.
 2. **Join and make contact:** accounts, messaging and requests.
-3. **Fill the directory:** list a business, church reference and verification.
+3. **Fill the directory:** list a business and verification.
 4. **Follow through:** answering and tracking requests, the owner workspace and notifications.
 5. **Convenience and housekeeping:** saved lists, settings, policies, offline use and moderation.
 

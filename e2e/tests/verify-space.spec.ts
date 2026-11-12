@@ -4,8 +4,8 @@ import { AdminVerificationPage } from '../pages/admin-verification.page';
 
 const REVIEW = `/verifications/${LISTING_ID}`;
 
-test.describe('verify a space (L2-199)', () => {
-  test('L2-199 AC3: the review of a space shows its terms and details and never its exact address', async ({
+test.describe('verify a space (L2-200)', () => {
+  test('L2-200 AC3: the review of a space shows its terms and details and never its exact address', async ({
     page,
     jb,
   }) => {
@@ -39,7 +39,7 @@ test.describe('verify a space (L2-199)', () => {
     await expect(review.preview).toHaveCount(0);
   });
 
-  test('L2-199 AC3: the review of a room shows who lives there', async ({ page, jb }) => {
+  test('L2-200 AC3: the review of a room shows who lives there', async ({ page, jb }) => {
     const review = new AdminVerificationPage(page);
     await review.setWidth(1280);
     await stubAdmin(page, {

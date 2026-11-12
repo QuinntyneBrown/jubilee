@@ -164,8 +164,7 @@ public sealed partial class ErrorPagesTests : IClassFixture<JubileeApiFactory>, 
         var confirm = Token(memberId, LinkTokenPurpose.EmailConfirmation, "confirm", now, LinkToken.EmailConfirmationLifetime);
         var change = Token(memberId, LinkTokenPurpose.ChangeEmail, "change", now, LinkToken.ChangeEmailLifetime);
         var reset = Token(memberId, LinkTokenPurpose.PasswordReset, "reset", now, LinkToken.PasswordResetLifetime);
-        var link = ReferenceLink.Issue(listingId, "hash-of-reference", "pastor@example.com", "Grace Church", ReferenceLinkKind.Initial, now);
-        await _factory.Arrange(confirm, change, reset, link);
+        await _factory.Arrange(confirm, change, reset);
 
         _factory.Maintenance.Enabled = true;
         await Observe();
@@ -177,7 +176,6 @@ public sealed partial class ErrorPagesTests : IClassFixture<JubileeApiFactory>, 
         Assert.Equal(TimeSpan.FromHours(3), window.EndedAt - window.StartedAt);
         Assert.Equal(now + LinkToken.EmailConfirmationLifetime + TimeSpan.FromHours(3), (await Read(db => db.LinkTokens.SingleAsync(t => t.Id == confirm.Id))).ExpiresAt);
         Assert.Equal(now + LinkToken.ChangeEmailLifetime + TimeSpan.FromHours(3), (await Read(db => db.LinkTokens.SingleAsync(t => t.Id == change.Id))).ExpiresAt);
-        Assert.Equal(now + ReferenceLink.Lifetime + TimeSpan.FromHours(3), (await Read(db => db.ReferenceLinks.SingleAsync(l => l.Id == link.Id))).ExpiresAt);
         // A password reset is not one of the links that wait.
         Assert.Equal(now + LinkToken.PasswordResetLifetime, (await Read(db => db.LinkTokens.SingleAsync(t => t.Id == reset.Id))).ExpiresAt);
 

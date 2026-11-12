@@ -6,7 +6,7 @@ public enum RequestKind
     Quote = 1,
     Order = 2,
 
-    /// <summary>A renter asks to rent a space (L2-205, ADR 0041).</summary>
+    /// <summary>A renter asks to rent a space (L2-206, ADR 0042).</summary>
     Space = 3,
 }
 
@@ -72,7 +72,7 @@ public sealed class RequestTransition
 
 /// <summary>
 /// A member's ask of a business: a booking, a quote or an order (L2-043), or of the owner of a
-/// space: a space request (L2-205). Jubilee takes no payment. The booking fields are filled for a
+/// space: a space request (L2-206). Jubilee takes no payment. The booking fields are filled for a
 /// booking only, the space fields for a space request only.
 /// </summary>
 public sealed class Request
@@ -251,7 +251,7 @@ public sealed class Request
 
     /// <summary>
     /// A space request. The space's name is kept as the request's title; the rent and, for a Short
-    /// stay, the total come from the stored rent (L2-205 AC8).
+    /// stay, the total come from the stored rent (L2-206 AC8).
     /// </summary>
     public static Request AskForSpace(
         string memberSubject,

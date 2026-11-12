@@ -17,8 +17,7 @@ Container_Boundary(api, "Jubilee API") {
   Component(listing, "Listing", "Domain entity", "Owns the stage transitions")
 }
 Container_Boundary(worker, "Jubilee Worker") {
-  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Sends owner e-mail and notification and reference request")
-  Component(purge, "ReferenceAnswerPurgeJob", "Hosted job", "Deletes reference answers 90 days after a decision")
+  Component(outbox, "OutboxDispatcherJob", "Hosted job", "Sends owner e-mail and notification")
 }
 ContainerDb(db, "Jubilee database", "SQL Server", "Listings and change requests and outbox")
 
@@ -35,5 +34,4 @@ Rel(sh, listing, "Calls Resubmit on")
 Rel(dh, listing, "Calls Decline on")
 Rel(listing, db, "Is persisted in", "EF Core")
 Rel(outbox, db, "Reads outbox", "EF Core")
-Rel(purge, db, "Deletes expired answers", "EF Core")
 @enduml

@@ -39,7 +39,7 @@ alt Unknown or not public
   controller --> client : 404
   page --> actor : Not-found page (L2-028)
 else Public space
-  handler -> handler : SpacePageDto.From, no address (L2-204, L2-207)
+  handler -> handler : SpacePageDto.From, no address (L2-205, L2-208)
   handler -> db : Four newest other public spaces as RelatedSpaces
   note right of handler : The public page above is cached in IDirectoryReadCache
   handler -> db : After the cache read: the member's New or Confirmed space request
@@ -49,7 +49,7 @@ else Public space
   client --> page : Listing page
   page -> card : rent, unit, minimum stay, call to action, sent
   alt OpenRequestId present
-    card --> actor : "Sent to {host first name}" in place of the call to action (L2-205)
+    card --> actor : "Sent to {host first name}" in place of the call to action (L2-206)
   else No open request
     card --> actor : "Request to book", "Request a viewing" or "Meet the household"
     actor -> card : Press the call to action

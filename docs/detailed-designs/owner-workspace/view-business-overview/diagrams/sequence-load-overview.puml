@@ -44,7 +44,7 @@ alt No listing
   shell --> actor : Show "List your business free." with "List your business" (L2-086)
 else Listing not live
   shell -> shell : Show the stage in the header (L2-097)
-  shell -> page : Render waiting or changes-requested view
+  shell -> page : Render pending or changes-requested view
   page --> actor : Show stage copy and next actions (L2-086)
 else Listing live
   shell -> shell : Mark Overview tab aria-current="page" (L2-097)

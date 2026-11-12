@@ -4,7 +4,7 @@ import { Icon } from '../icon/icon';
 let nextId = 0;
 
 /**
- * "Your host": who is renting the space, verified with a church reference (L2-204 AC1):
+ * "Your host": who is renting the space, verified by Jubilee (L2-205 AC1):
  * `<section jb-host-card [name]="listing.ownerName" [about]="listing.about"></section>`.
  */
 @Component({

@@ -12,7 +12,7 @@ reminders.
 The terms below are local to this feature.
 
 - **category** — group of e-mails a member can turn on or off: "New messages", "Request updates", "Meeting reminders", "New businesses", "Tips for business owners"
-- **transactional e-mail** — e-mail sent regardless of preferences: confirmation, reset, reference request, decisions
+- **transactional e-mail** — e-mail sent regardless of preferences: confirmation, reset, verification decisions
 - **daily summary** — single e-mail that collects a day's events for a member who chose "One daily summary"
 - **presence** — short-lived record that a member has a given conversation open right now
 - **meeting reminder** — notice sent 1 hour before a confirmed booking starts

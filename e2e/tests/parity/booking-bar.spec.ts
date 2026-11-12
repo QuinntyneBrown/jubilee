@@ -2,7 +2,7 @@ import { parity } from '../../fixtures/parity';
 import { SpacePage } from '../../pages/space.page';
 
 // jb-booking-bar: the rent and the call to action, fixed above the tab bar under 768 px
-// (L2-204 AC4). From 768 px it draws nothing.
+// (L2-205 AC4). From 768 px it draws nothing.
 parity('booking-bar', {
   cases: [
     {

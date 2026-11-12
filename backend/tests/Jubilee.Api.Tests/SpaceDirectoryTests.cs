@@ -5,7 +5,7 @@ using Jubilee.Tests.Shared;
 
 namespace Jubilee.Api.Tests;
 
-/// <summary>Spaces in "Rooms & rentals": the category, the term filter and the space card (L2-196, L2-201, L2-202, L2-207).</summary>
+/// <summary>Spaces in "Rooms & rentals": the category, the term filter and the space card (L2-197, L2-202, L2-203, L2-208).</summary>
 public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private const string Url = "/api/categories/rooms-rentals/listings";
@@ -19,7 +19,7 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task L2_196_AC4_rooms_and_rentals_is_the_second_of_eleven_categories()
+    public async Task L2_197_AC4_rooms_and_rentals_is_the_second_of_eleven_categories()
     {
         var categories = (await _factory.GetJson("/api/directory/welcome")).GetProperty("categories");
 
@@ -29,7 +29,7 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     }
 
     [Fact]
-    public async Task L2_201_AC1_L2_202_AC1_the_category_lists_space_cards_newest_first_with_their_term_and_rent()
+    public async Task L2_202_AC1_L2_203_AC1_the_category_lists_space_cards_newest_first_with_their_term_and_rent()
     {
         await _factory.Arrange(
             ListingMother.Space("annex-basement", SpaceTerm.LongTerm, 1850, "The Annex", ListingMother.Now.AddDays(-2)),
@@ -56,7 +56,7 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     }
 
     [Fact]
-    public async Task L2_201_AC2_a_term_narrows_the_spaces_and_an_unknown_term_is_ignored()
+    public async Task L2_202_AC2_a_term_narrows_the_spaces_and_an_unknown_term_is_ignored()
     {
         await _factory.Arrange(
             ListingMother.Space("annex-basement", SpaceTerm.LongTerm),
@@ -75,7 +75,7 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     }
 
     [Fact]
-    public async Task L2_196_AC5_only_public_spaces_are_listed()
+    public async Task L2_197_AC5_only_public_spaces_are_listed()
     {
         var paused = ListingMother.Space("paused-suite");
         paused.Pause();
@@ -87,7 +87,7 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     }
 
     [Fact]
-    public async Task L2_202_AC4_L2_207_AC1_no_space_list_carries_the_exact_address()
+    public async Task L2_203_AC4_L2_208_AC1_no_space_list_carries_the_exact_address()
     {
         await _factory.Arrange(ListingMother.Space("annex-basement"));
 
@@ -98,7 +98,7 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     }
 
     [Fact]
-    public async Task L2_200_AC1_AC3_the_rooms_shelf_holds_the_newest_four_overall_and_the_newest_four_of_each_term()
+    public async Task L2_201_AC1_AC3_the_rooms_shelf_holds_the_newest_four_overall_and_the_newest_four_of_each_term()
     {
         var spaces = new List<Listing>();
         for (var i = 1; i <= 6; i++)
@@ -117,7 +117,7 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     }
 
     [Fact]
-    public async Task L2_200_AC5_without_spaces_the_rooms_shelf_is_empty()
+    public async Task L2_201_AC5_without_spaces_the_rooms_shelf_is_empty()
     {
         await _factory.Arrange(ListingMother.Public("plumber"));
 
@@ -128,7 +128,7 @@ public class SpaceDirectoryTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
     }
 
     [Fact]
-    public async Task L2_207_AC1_the_browse_home_carries_no_exact_address()
+    public async Task L2_208_AC1_the_browse_home_carries_no_exact_address()
     {
         await _factory.Arrange(ListingMother.Space("annex-basement"));
 

@@ -33,7 +33,7 @@ export function requestNoun(kind: IncomingRequestRow['kind']): string {
 
 /**
  * ConfirmRequestDialog (L2-052): the owner confirms an order, a booking, a quote request or a
- * space request. Confirming a space gives the member its exact address (L2-206 AC2).
+ * space request. Confirming a space gives the member its exact address (L2-207 AC2).
  */
 @Component({
   selector: 'jb-confirm-request-dialog',

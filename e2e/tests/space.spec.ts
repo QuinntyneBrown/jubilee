@@ -1,10 +1,10 @@
 import { expect, test } from '../fixtures/jb-test';
 import { SpacePage } from '../pages/space.page';
 
-// The page of a space (L2-204) and its booking card (L2-205 AC1, AC2), against the recorded
+// The page of a space (L2-205) and its booking card (L2-206 AC1, AC2), against the recorded
 // answers of the seeded API (ADR 0009).
 
-test.describe('space page (L2-204)', () => {
+test.describe('space page (L2-205)', () => {
   test('AC1: the guest suite shows its head, booking card, the space, its rows, inclusions, rules, host and more spaces', async ({
     page,
     jb,
@@ -35,7 +35,7 @@ test.describe('space page (L2-204)', () => {
     await expect(space.ruleItems).toHaveText(['Check-in after 3 pm', 'No parties', 'No smoking']);
     await expect(space.household).toHaveCount(0);
     await expect(space.hostName).toHaveText('Paul & Marta Kowalski');
-    await expect(space.hostVerified).toHaveText('Verified with a church reference');
+    await expect(space.hostVerified).toHaveText('Verified by Jubilee');
     await expect(space.hostAbout).toContainText('Ten minutes’ walk to High Park');
     await expect(space.moreCards).toHaveCount(4);
     await expect(space.moreCard(0).title).toHaveText(
@@ -44,7 +44,7 @@ test.describe('space page (L2-204)', () => {
     await expect(space.reportLink).toBeVisible();
   });
 
-  test('L2-205 AC1: the booking card has the rent, the minimum stay, the call to action, message, save and the payment line', async ({
+  test('L2-206 AC1: the booking card has the rent, the minimum stay, the call to action, message, save and the payment line', async ({
     page,
     jb,
   }) => {
@@ -61,7 +61,7 @@ test.describe('space page (L2-204)', () => {
     await expect(card.note).toHaveText('You won’t pay anything until the host accepts.');
   });
 
-  test('L2-205 AC1: the call to action fits the term', async ({ page, jb }) => {
+  test('L2-206 AC1: the call to action fits the term', async ({ page, jb }) => {
     const space = new SpacePage(page);
     await space.setWidth(1280);
 

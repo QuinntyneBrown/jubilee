@@ -38,7 +38,7 @@ content tables in the `Jubilee database`.
   payment or hold funds; you pay the business directly."), "Conduct" and "Last
   updated {date}".
 - **`PrivacyPage`** — Angular page at `/privacy`. It shows "What we keep",
-  "Church references", "Your choices" with links to notification settings and
+  "Your choices" with links to notification settings and
   the account page, and "Last updated {date}". The published text names the
   privacy contact and explains how to request access or correction, as PIPEDA
   requires; the contact is the placeholder address `privacy@jubilee.example` until the owner supplies the real one (ADR 0030).
@@ -89,7 +89,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 |-------|--------------|-------------|
 | `L2-107` | `L1-015` | The system shall show the statement of faith at `/statement-of-faith` with its introduction, "What we believe", "How we do business", "How a listing is confirmed" and "Last updated {date}". The statement's text shall be managed as versioned content without a code deployment, and previous versions shall be kept. |
 | `L2-108` | `L1-015` | The system shall show the terms of use at `/terms` with the sections "Your account", "Listings", "Requests and payment", "Conduct" and "Last updated {date}". A visitor who creates an account shall confirm being 18 or older as part of agreeing to the terms, and the terms version shall be recorded. |
-| `L2-109` | `L1-015` | The system shall show the privacy notice at `/privacy` with "What we keep", "Church references", "Your choices" and "Last updated {date}". The notice shall name the privacy contact and explain how to request access or correction, as PIPEDA requires. |
+| `L2-109` | `L1-015` | The system shall show the privacy notice at `/privacy` with "What we keep", "Your choices" and "Last updated {date}". The notice shall name the privacy contact and explain how to request access or correction, as PIPEDA requires. |
 | `L2-110` | `L1-015` | The system shall show the help page at `/help` with its five questions and answers and the contact line with "E-mail help@jubilee.example". Each question shall be a disclosure button with `aria-expanded` that opens by keyboard and has an anchor for direct links. |
 | `L2-133` | `L1-019` | The server shall check the caller's role on every API endpoint before doing anything; only an admin shall publish a content version. |
 

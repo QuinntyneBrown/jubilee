@@ -36,6 +36,7 @@ public sealed partial class AccountDataTests : IClassFixture<JubileeApiFactory>,
             email,
             password = Password,
             homeChurch = "Grace Toronto Church",
+            homeChurchAddress = "383 Jarvis Street, Toronto",
             agreementAccepted = true,
         });
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -198,6 +199,8 @@ public sealed partial class AccountDataTests : IClassFixture<JubileeApiFactory>,
         var archive = JsonDocument.Parse(text).RootElement;
         Assert.Equal("Joanna", archive.GetProperty("profile").GetProperty("firstName").GetString());
         Assert.Equal("joanna@example.com", archive.GetProperty("profile").GetProperty("email").GetString());
+        Assert.Equal("Grace Toronto Church", archive.GetProperty("profile").GetProperty("homeChurch").GetString());
+        Assert.Equal("383 Jarvis Street, Toronto", archive.GetProperty("profile").GetProperty("homeChurchAddress").GetString());
         Assert.Equal("Legacy Financial", archive.GetProperty("savedList")[0].GetProperty("name").GetString());
         Assert.Equal("Planning call", archive.GetProperty("requests")[0].GetProperty("service").GetString());
         Assert.Equal(
@@ -226,26 +229,6 @@ public sealed partial class AccountDataTests : IClassFixture<JubileeApiFactory>,
 
         Assert.Equal("Legacy Financial", archive.GetProperty("listings")[0].GetProperty("name").GetString());
         Assert.Equal("Trevor Chew", archive.GetProperty("incomingRequests")[0].GetProperty("from").GetString());
-    }
-
-    [Fact]
-    public async Task L2_146_The_archive_never_holds_the_church_reference_s_private_answer()
-    {
-        var (client, member) = await Joanna();
-        var listing = ListingMother.Public("legacy-financial", "financial-insurance", "Legacy Financial");
-        listing.AssignOwner(member.Id.ToString());
-        var link = ReferenceLink.Issue(listing.Id, "hash", "pastor@grace.example", "Grace Toronto Church", ReferenceLinkKind.Initial, ListingMother.Now);
-        var answer = ReferenceAnswer.Record(
-            listing.Id, link.Id, ReferenceAnswerKind.Vouches, "Pastor Okoro", "Lead pastor", "PRIVATE-NOTE-ABOUT-THE-OWNER", ListingMother.Now);
-        await _factory.Arrange(listing, link, answer);
-        await client.PostAsync("/api/account/data-exports", null);
-        await BuildExports();
-
-        var text = await (await client.GetAsync($"/api/account/data-exports/{await LinkTokenFor(member)}")).Content.ReadAsStringAsync();
-
-        Assert.DoesNotContain("PRIVATE-NOTE-ABOUT-THE-OWNER", text);
-        Assert.DoesNotContain("pastor@grace.example", text);
-        Assert.DoesNotContain("Pastor Okoro", text);
     }
 
     [Fact]
@@ -477,6 +460,7 @@ public sealed partial class AccountDataTests : IClassFixture<JubileeApiFactory>,
         Assert.DoesNotContain("joanna", erased.Email);
         Assert.Equal("Former", erased.FirstName);
         Assert.Null(erased.HomeChurch);
+        Assert.Null(erased.HomeChurchAddress);
         Assert.Equal("Former member", (await Read(db => db.Conversations.SingleAsync())).MemberName);
         Assert.Equal("Former member", (await Read(db => db.Messages.SingleAsync())).SenderName);
         Assert.Equal("Former member", (await Read(db => db.Requests.SingleAsync())).MemberName);

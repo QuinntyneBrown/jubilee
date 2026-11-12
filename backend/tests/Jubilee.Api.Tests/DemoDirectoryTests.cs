@@ -28,7 +28,7 @@ public class DemoDirectoryTests(SeededApiFactory factory) : IClassFixture<Seeded
     }
 
     [Fact]
-    public async Task L2_196_the_demo_rooms_and_rentals_has_a_space_for_every_term_newest_first()
+    public async Task L2_197_the_demo_rooms_and_rentals_has_a_space_for_every_term_newest_first()
     {
         var spaces = (await factory.GetJson("/api/categories/rooms-rentals/listings")).GetProperty("spaces");
 

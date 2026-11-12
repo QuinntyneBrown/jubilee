@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Jubilee.Api.Tests;
 
 // List a business: L2-005 AC2, L2-071 to L2-079, L2-132 and L2-133. A member fills in a draft, saves it
-// on the way and submits it; the listing then waits on its church reference. "Today" is Tuesday
+// on the way and submits it; the listing then goes to the verification team, ready to review. "Today" is Tuesday
 // 10 November 2026 (ListingMother.Now).
 public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
@@ -35,8 +35,6 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         string? tagline = "Unique & custom Christian apparel, artworks & gifts that bring joy",
         string? category = "shops",
         string? place = "Online · ships across Canada",
-        string? church = "Grace Toronto Church",
-        string? pastorEmail = "daniel.okoro@gracetoronto.example",
         bool agreed = true,
         object[]? items = null,
         string? key = null) => new()
@@ -47,8 +45,6 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
             ["categorySlug"] = category,
             ["highlight"] = null,
             ["place"] = place,
-            ["church"] = church,
-            ["pastorEmail"] = pastorEmail,
             ["agreed"] = agreed,
             ["items"] = items ?? [],
             ["idempotencyKey"] = key ?? Guid.NewGuid().ToString(),
@@ -89,7 +85,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
     public async Task L2_077_AC1_a_part_filled_form_is_saved_without_validation_and_loads_with_every_value()
     {
         var saved = await SaveNew(Joanna(), Body(
-            kind: "services", name: null, tagline: null, category: null, place: "GTA", church: null, pastorEmail: "not-an-email", agreed: false,
+            kind: "services", name: null, tagline: null, category: null, place: "GTA", agreed: false,
             items: [Item("Wedding day coverage", 220000, detail: "8 hours · two photographers")]));
 
         Assert.NotEqual(Guid.Empty, saved.GetProperty("id").GetGuid());
@@ -98,7 +94,6 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         Assert.Equal(saved.GetProperty("id").GetGuid(), loaded.GetProperty("id").GetGuid());
         Assert.Equal("services", loaded.GetProperty("kind").GetString());
         Assert.Equal("GTA", loaded.GetProperty("place").GetString());
-        Assert.Equal("not-an-email", loaded.GetProperty("pastorEmail").GetString());
         Assert.False(loaded.GetProperty("agreed").GetBoolean());
         var items = loaded.GetProperty("items").EnumerateArray().ToList();
         Assert.Equal("Wedding day coverage", items[0].GetProperty("name").GetString());
@@ -167,9 +162,9 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         Assert.Equal(HttpStatusCode.NoContent, (await Joanna().GetAsync("/api/listing-drafts/current")).StatusCode);
     }
 
-    // L2-078 AC1, L2-075 AC2: a valid draft becomes a listing waiting on its reference
+    // L2-078 AC1, L2-075 AC2: a valid draft, with no church and no pastor named, goes straight to the verification team
     [Fact]
-    public async Task L2_078_AC1_a_valid_submission_creates_a_listing_that_waits_on_its_reference()
+    public async Task L2_078_AC1_a_valid_submission_creates_a_listing_that_is_ready_to_review()
     {
         var draft = await SaveNew(Joanna(), Body(items: [Item("Faith heavyweight tee, charcoal"), Item("Gold cross stoneware mug", 2400)]));
         var id = draft.GetProperty("id").GetGuid();
@@ -181,11 +176,11 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         Assert.Equal("luzandre-com", body.GetProperty("slug").GetString());
         Assert.Equal("Luzandre.com", body.GetProperty("name").GetString());
         Assert.Equal("products", body.GetProperty("kind").GetString());
-        Assert.Equal("pending-reference", body.GetProperty("stage").GetString());
-        Assert.Equal("Grace Toronto Church", body.GetProperty("church").GetString());
-        Assert.Equal("daniel.okoro@gracetoronto.example", body.GetProperty("pastorEmail").GetString());
+        Assert.Equal("ready-to-review", body.GetProperty("stage").GetString());
+        Assert.False(body.TryGetProperty("church", out _));
+        Assert.False(body.TryGetProperty("pastorEmail", out _));
         var listing = await ListingOf("luzandre-com");
-        Assert.Equal(ListingStage.PendingReference, listing.Stage);
+        Assert.Equal(ListingStage.ReadyToReview, listing.Stage);
         Assert.Equal("member|joanna", listing.OwnerId);
         Assert.Equal(ListingKind.Shop, listing.Kind);
         Assert.Equal("shops", listing.CategorySlug);
@@ -197,6 +192,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
             Assert.Equal(["Faith heavyweight tee, charcoal", "Gold cross stoneware mug"], products.Select(p => p.Name));
             Assert.Equal(3400, products[0].PriceCents);
             Assert.Equal(0, await db.ListingDrafts.CountAsync());
+            Assert.Equal(ListingMother.Now, (await db.ListingSubmissions.AsNoTracking().SingleAsync()).ReadyAt);
         });
     }
 
@@ -261,16 +257,13 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         Assert.Equal("luzandre-com-2", (await Json(response)).GetProperty("slug").GetString());
     }
 
-    // L2-072 AC2, AC3, L2-074 AC2, L2-075 AC1, L2-078 AC2
+    // L2-072 AC2, AC3, L2-075 AC1, L2-078 AC2
     [Theory]
     [InlineData("name", null, "REQUIRED")]
     [InlineData("name", "   ", "REQUIRED")]
     [InlineData("tagline", null, "REQUIRED")]
     [InlineData("categorySlug", null, "REQUIRED")]
     [InlineData("categorySlug", "nonsense", "REQUIRED")]
-    [InlineData("church", null, "REQUIRED")]
-    [InlineData("pastorEmail", null, "INVALID")]
-    [InlineData("pastorEmail", "not-an-email", "INVALID")]
     [InlineData("agreed", false, "REQUIRED")]
     public async Task L2_078_AC2_an_invalid_submission_is_refused_with_a_code_for_each_field(string field, object? value, string code)
     {
@@ -288,13 +281,13 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
     [Fact]
     public async Task L2_078_AC2_every_invalid_field_is_named_at_once_and_the_draft_is_kept()
     {
-        var body = Body(name: null, pastorEmail: null, agreed: false);
+        var body = Body(name: null, tagline: null, agreed: false);
         var draft = await SaveNew(Joanna());
 
         var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), body);
 
         var errors = (await Json(response)).GetProperty("errors");
-        Assert.Equal(["agreed", "name", "pastorEmail"], errors.EnumerateObject().Select(p => p.Name).OrderBy(n => n));
+        Assert.Equal(["agreed", "name", "tagline"], errors.EnumerateObject().Select(p => p.Name).OrderBy(n => n));
         await _factory.WithDb(async db => Assert.Equal(1, await db.ListingDrafts.CountAsync()));
     }
 
@@ -317,26 +310,6 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         var response = await Submit(Joanna(), draft.GetProperty("id").GetGuid(), Body(tagline: new string('t', 90)));
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-    }
-
-    // L2-074 AC3
-    [Fact]
-    public async Task L2_074_AC3_the_reference_cannot_be_the_owner()
-    {
-        var joanna = Member.Join(EmailAddress.TryParse("joanna@example.com")!, "Joanna", "Adeyemi", null, "hash", ListingMother.Now);
-        joanna.ConfirmEmail();
-        await _factory.WithDb(async db =>
-        {
-            db.Members.Add(joanna);
-            await db.SaveChangesAsync();
-        });
-        var client = _factory.CreateMemberClient("Joanna Adeyemi", joanna.Id.ToString());
-        var draft = await SaveNew(client);
-
-        var response = await Submit(client, draft.GetProperty("id").GetGuid(), Body(pastorEmail: "Joanna@Example.com"));
-
-        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
-        Assert.Equal("OWN_EMAIL", (await Json(response)).GetProperty("errors").GetProperty("pastorEmail").GetString());
     }
 
     // L2-072 AC6
@@ -375,22 +348,6 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         return flags;
     }
 
-    // L2-074 AC4
-    [Fact]
-    public async Task L2_074_AC4_the_sixth_listing_to_name_the_same_reference_in_30_days_is_accepted_but_flagged()
-    {
-        for (var i = 1; i <= 6; i++)
-        {
-            var client = _factory.CreateMemberClient($"Owner {i}", $"member|owner{i}");
-            var draft = await SaveNew(client, Body(name: $"Business {i}"));
-            var response = await Submit(client, draft.GetProperty("id").GetGuid(), Body(name: $"Business {i}"));
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        }
-
-        Assert.Empty(await FlagsOf("business-5"));
-        Assert.Contains("REFERENCE_REUSED", await FlagsOf("business-6"));
-    }
-
     // L2-075 AC2
     [Fact]
     public async Task L2_075_AC2_the_agreement_is_recorded_with_the_time_and_the_version()
@@ -407,19 +364,14 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         });
     }
 
-    // L2-078 AC1: the reference request is queued
+    // L2-078 AC1: nobody outside Jubilee is written to about a submission
     [Fact]
-    public async Task L2_078_AC1_the_reference_is_e_mailed_privately_without_the_listing_details()
+    public async Task L2_078_AC1_a_submission_e_mails_no_third_party()
     {
-        var draft = await SaveNew(Joanna(), Body(items: [Item("Secret product", 9900)]));
-        await Submit(Joanna(), draft.GetProperty("id").GetGuid(), Body(items: [Item("Secret product", 9900)]));
+        var draft = await SaveNew(Joanna());
+        await Submit(Joanna(), draft.GetProperty("id").GetGuid());
 
-        OutboxMessage mail = default!;
-        await _factory.WithDb(async db => mail = await db.OutboxMessages.AsNoTracking().SingleAsync(m => m.ToAddress == "daniel.okoro@gracetoronto.example"));
-        Assert.Contains("Luzandre.com", mail.Subject);
-        Assert.Contains("/reference/", mail.TextBody);
-        Assert.DoesNotContain("Secret product", mail.TextBody);
-        Assert.DoesNotContain("Unique & custom", mail.TextBody);
+        await _factory.WithDb(async db => Assert.Empty(await db.OutboxMessages.AsNoTracking().Where(m => m.TextBody.Contains("/reference/")).ToListAsync()));
     }
 
     // L2-132
@@ -438,7 +390,7 @@ public sealed class ListingOnboardingTests : IClassFixture<JubileeApiFactory>, I
         await _factory.WithDb(async db =>
         {
             Assert.Equal(1, await db.Listings.CountAsync());
-            Assert.Equal(1, await db.OutboxMessages.CountAsync(m => m.ToAddress == "daniel.okoro@gracetoronto.example"));
+            Assert.Equal(1, await db.ListingSubmissions.CountAsync());
         });
     }
 

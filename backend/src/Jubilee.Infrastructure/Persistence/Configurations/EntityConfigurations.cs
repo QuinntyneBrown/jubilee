@@ -36,7 +36,7 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.MadeToOrder).HasMaxLength(200);
         builder.HasIndex(l => new { l.CategorySlug, l.Stage });
 
-        // A space's rental details are one JSON column; a business has none (ADR 0041).
+        // A space's rental details are one JSON column; a business has none (ADR 0042).
         builder.OwnsOne(l => l.Space, s =>
         {
             s.ToJson("Space");
@@ -281,6 +281,7 @@ public sealed class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.Property(m => m.FirstName).HasMaxLength(50).IsRequired();
         builder.Property(m => m.LastName).HasMaxLength(50).IsRequired();
         builder.Property(m => m.HomeChurch).HasMaxLength(100);
+        builder.Property(m => m.HomeChurchAddress).HasMaxLength(Member.MaxHomeChurchAddressLength);
         builder.Property(m => m.Phone).HasMaxLength(10);
         builder.Property(m => m.PostalCode).HasMaxLength(7);
         builder.Property(m => m.Pronouns).HasMaxLength(40);
@@ -503,14 +504,12 @@ public sealed class ListingDraftConfiguration : IEntityTypeConfiguration<Listing
         builder.Property(d => d.CategorySlug).HasMaxLength(60);
         builder.Property(d => d.Highlight).HasMaxLength(60);
         builder.Property(d => d.Place).HasMaxLength(200);
-        builder.Property(d => d.Church).HasMaxLength(200);
-        builder.Property(d => d.PastorEmail).HasMaxLength(254);
         builder.HasIndex(d => new { d.OwnerSubject, d.UpdatedAt });
         builder.HasIndex(d => d.UpdatedAt);
         builder.HasMany(d => d.Items).WithOne().HasForeignKey(i => i.ListingDraftId).OnDelete(DeleteBehavior.Cascade);
         builder.Navigation(d => d.Items).UsePropertyAccessMode(PropertyAccessMode.Field);
 
-        // A space draft keeps its rental details as one JSON column, like its listing (ADR 0041).
+        // A space draft keeps its rental details as one JSON column, like its listing (ADR 0042).
         builder.OwnsOne(d => d.Space, s =>
         {
             s.ToJson("Space");
@@ -540,9 +539,6 @@ public sealed class ListingSubmissionConfiguration : IEntityTypeConfiguration<Li
         builder.HasKey(s => s.Id);
         builder.Property(s => s.Id).ValueGeneratedNever();
         builder.Property(s => s.OwnerSubject).HasMaxLength(200).IsRequired();
-        builder.Property(s => s.Church).HasMaxLength(200).IsRequired();
-        builder.Property(s => s.PastorEmail).HasMaxLength(254).IsRequired();
-        builder.Property(s => s.PastorEmailKey).HasMaxLength(254).IsRequired();
         builder.Property(s => s.StatementVersion).HasMaxLength(20).IsRequired();
         builder.Property(s => s.IdempotencyKey).HasMaxLength(100).IsRequired();
         builder.Property(s => s.Flags).HasConversion(
@@ -553,40 +549,8 @@ public sealed class ListingSubmissionConfiguration : IEntityTypeConfiguration<Li
                 list => list.Aggregate(0, (hash, item) => HashCode.Combine(hash, item.GetHashCode())),
                 list => list.ToList()));
         builder.HasIndex(s => new { s.OwnerSubject, s.IdempotencyKey }).IsUnique();
-        builder.HasIndex(s => new { s.PastorEmailKey, s.SubmittedAt });
         builder.HasIndex(s => s.ListingId).IsUnique();
         builder.HasOne<Listing>().WithMany().HasForeignKey(s => s.ListingId).OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public sealed class ReferenceLinkConfiguration : IEntityTypeConfiguration<ReferenceLink>
-{
-    public void Configure(EntityTypeBuilder<ReferenceLink> builder)
-    {
-        builder.ToTable("ReferenceLinks");
-        builder.HasKey(l => l.Id);
-        builder.Property(l => l.Id).ValueGeneratedNever();
-        builder.Property(l => l.TokenHash).HasMaxLength(64).IsRequired();
-        builder.Property(l => l.ReferenceEmail).HasMaxLength(254).IsRequired();
-        builder.Property(l => l.Church).HasMaxLength(200).IsRequired();
-        builder.HasIndex(l => l.TokenHash).IsUnique();
-        builder.HasIndex(l => new { l.ListingId, l.IssuedAt });
-        builder.HasOne<Listing>().WithMany().HasForeignKey(l => l.ListingId).OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public sealed class ReferenceAnswerConfiguration : IEntityTypeConfiguration<ReferenceAnswer>
-{
-    public void Configure(EntityTypeBuilder<ReferenceAnswer> builder)
-    {
-        builder.ToTable("ReferenceAnswers");
-        builder.HasKey(a => a.Id);
-        builder.Property(a => a.Id).ValueGeneratedNever();
-        builder.Property(a => a.Name).HasMaxLength(200).IsRequired();
-        builder.Property(a => a.Role).HasMaxLength(200).IsRequired();
-        builder.Property(a => a.Note).HasMaxLength(1000);
-        builder.HasIndex(a => a.ListingId);
-        builder.HasOne<Listing>().WithMany().HasForeignKey(a => a.ListingId).OnDelete(DeleteBehavior.Cascade);
     }
 }
 

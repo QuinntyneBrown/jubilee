@@ -1,7 +1,7 @@
 import { parity } from '../../fixtures/parity';
 import { SpacePage } from '../../pages/space.page';
 
-// jb-included-list: what a space includes, each with a check (L2-204 AC1).
+// jb-included-list: what a space includes, each with a check (L2-205 AC1).
 parity('included-list', {
   cases: [
     {

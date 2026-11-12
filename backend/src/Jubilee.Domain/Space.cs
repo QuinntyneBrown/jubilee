@@ -1,6 +1,6 @@
 namespace Jubilee.Domain;
 
-/// <summary>How a space is rented (L2-196 AC1).</summary>
+/// <summary>How a space is rented (L2-197 AC1).</summary>
 public enum SpaceTerm
 {
     ShortStay = 0,
@@ -9,7 +9,7 @@ public enum SpaceTerm
     Roommate = 3,
 }
 
-/// <summary>The rules each term carries: price unit, minimum-stay choices, household and call to action (ADR 0041).</summary>
+/// <summary>The rules each term carries: price unit, minimum-stay choices, household and call to action (ADR 0042).</summary>
 public static class SpaceTerms
 {
     public const int MaxRent = 50_000;
@@ -23,11 +23,11 @@ public static class SpaceTerms
     /// <summary>The four terms in display order.</summary>
     public static IReadOnlyList<SpaceTerm> All { get; } = [SpaceTerm.ShortStay, SpaceTerm.LongTerm, SpaceTerm.Room, SpaceTerm.Roommate];
 
-    /// <summary>"The space" choices (L2-198 AC3).</summary>
+    /// <summary>"The space" choices (L2-199 AC3).</summary>
     public static IReadOnlyList<string> Places { get; } =
         ["Private room", "Basement apartment", "Guest suite", "Entire house", "Condo", "Event hall"];
 
-    /// <summary>"What's included" chips (L2-198 AC3).</summary>
+    /// <summary>"What's included" chips (L2-199 AC3).</summary>
     public static IReadOnlyList<string> Inclusions { get; } =
         ["Utilities", "Wi-Fi", "Laundry", "Furnished", "Parking", "Private bath", "Kitchen use", "Pets OK"];
 
@@ -36,7 +36,7 @@ public static class SpaceTerms
     /// <summary>"night" for a Short stay, otherwise "month".</summary>
     public static string Per(SpaceTerm term) => IsNightly(term) ? "night" : "month";
 
-    /// <summary>Nights for a Short stay, months otherwise (L2-198 AC2).</summary>
+    /// <summary>Nights for a Short stay, months otherwise (L2-199 AC2).</summary>
     public static IReadOnlyList<int> MinimumStayChoices(SpaceTerm term) => IsNightly(term) ? [1, 2, 3, 7] : [1, 4, 6, 12];
 
     /// <summary>"2 nights", "1 week", "Month to month", "4 months" or "12-month lease".</summary>
@@ -56,7 +56,7 @@ public static class SpaceTerms
 
     public static bool AsksForHousehold(SpaceTerm term) => term is SpaceTerm.Room or SpaceTerm.Roommate;
 
-    /// <summary>"Request to book", "Request a viewing" or "Meet the household" (L2-205 AC1).</summary>
+    /// <summary>"Request to book", "Request a viewing" or "Meet the household" (L2-206 AC1).</summary>
     public static string CallToAction(SpaceTerm term) => term switch
     {
         SpaceTerm.ShortStay => "Request to book",
@@ -64,12 +64,12 @@ public static class SpaceTerms
         _ => "Request a viewing",
     };
 
-    /// <summary>The "Staying" choices of a monthly request, in months (L2-205 AC4).</summary>
+    /// <summary>The "Staying" choices of a monthly request, in months (L2-206 AC4).</summary>
     public static IReadOnlyList<int> StayChoices { get; } = [1, 4, 6, 8, 12, 18];
 }
 
 /// <summary>
-/// When a renter may read a space's exact address (L2-207): their own space request, once the owner
+/// When a renter may read a space's exact address (L2-208): their own space request, once the owner
 /// confirmed it, and while it stays confirmed or completed. Computed on each read, never copied.
 /// </summary>
 public static class SpaceAddressRelease
@@ -79,8 +79,8 @@ public static class SpaceAddressRelease
 }
 
 /// <summary>
-/// The rental details of a space (L2-198). Owned by its listing or draft. The exact address is
-/// private: only the owner and the renter whose request the owner accepted ever read it (L2-207).
+/// The rental details of a space (L2-199). Owned by its listing or draft. The exact address is
+/// private: only the owner and the renter whose request the owner accepted ever read it (L2-208).
 /// </summary>
 public sealed class SpaceDetails
 {

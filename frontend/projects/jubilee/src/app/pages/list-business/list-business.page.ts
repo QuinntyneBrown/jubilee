@@ -74,8 +74,6 @@ type FieldName =
   | 'neighbourhood'
   | 'address'
   | 'household'
-  | 'church'
-  | 'pastorEmail'
   | 'agreed';
 
 /** The element each field's summary link and first-invalid focus go to. */
@@ -88,8 +86,6 @@ const FIELD_ID: Record<FieldName, string> = {
   neighbourhood: 'area',
   address: 'address',
   household: 'household',
-  church: 'ref-church',
-  pastorEmail: 'ref-email',
   agreed: 'agree',
 };
 
@@ -102,8 +98,6 @@ const FIELD_ORDER: FieldName[] = [
   'neighbourhood',
   'address',
   'household',
-  'church',
-  'pastorEmail',
   'agreed',
 ];
 const AUTOSAVE_MS = 10_000;
@@ -130,12 +124,6 @@ export function messageFor(field: FieldName, code: string, space = false): strin
       return spaceMessage(field, code);
     case 'categorySlug':
       return 'Choose a category.';
-    case 'church':
-      return 'Enter your church’s name.';
-    case 'pastorEmail':
-      return code === 'OWN_EMAIL'
-        ? 'Your reference must be someone other than you.'
-        : 'Enter your pastor’s e-mail address, like name@church.ca.';
     case 'agreed':
       return space
         ? 'Agree to the statement of faith and the rental terms to submit your space.'
@@ -145,13 +133,11 @@ export function messageFor(field: FieldName, code: string, space = false): strin
 
 /** The summary's shorter wording ("Enter your business name"). */
 function summaryFor(field: FieldName, code: string, space: boolean): string {
-  if (code.startsWith('TOO_LONG') || code === 'OWN_EMAIL') return messageFor(field, code, space);
+  if (code.startsWith('TOO_LONG')) return messageFor(field, code, space);
   const text = messageFor(field, code, space);
   switch (field) {
     case 'name':
       return space ? 'Enter a listing title' : 'Enter your business name';
-    case 'pastorEmail':
-      return 'Enter your pastor’s e-mail address';
     case 'agreed':
       return space
         ? 'Agree to the statement of faith and the rental terms'
@@ -220,12 +206,10 @@ export class ListBusinessPage {
   protected readonly tagline = signal('');
   protected readonly categorySlug = signal('shops');
   protected readonly place = signal('');
-  protected readonly church = signal('');
-  protected readonly pastorEmail = signal('');
   protected readonly agreed = signal(false);
   protected readonly items = signal<DraftItem[]>([]);
 
-  // A space (L2-197, L2-198), its fields held by the form the editor shares (L2-208).
+  // A space (L2-198, L2-199), its fields held by the form the editor shares (L2-209).
   private readonly space = new SpaceForm();
   protected readonly termChoices = TERM_CHOICES;
   protected readonly places = PLACES;
@@ -261,7 +245,7 @@ export class ListBusinessPage {
   protected readonly nightly = this.space.nightly;
   protected readonly minimumChoices = this.space.minimumChoices;
   protected readonly householdLabel = this.space.householdLabel;
-  /** How renters will see the space while it is written (L2-197 AC3). */
+  /** How renters will see the space while it is written (L2-198 AC3). */
   protected readonly spacePreview = computed(() => this.space.preview(this.name()));
   protected readonly placeLabel = computed(() =>
     this.isServices() ? 'Area you serve' : 'Store address',
@@ -282,7 +266,7 @@ export class ListBusinessPage {
     this.loading.set(true);
     this.loadFailed.set(false);
     const wanted = this.route.snapshot.queryParamMap.get('draft');
-    // /list?kind=space opens the space form (L2-197 AC2); a saved draft has the last word.
+    // /list?kind=space opens the space form (L2-198 AC2); a saved draft has the last word.
     if (this.route.snapshot.queryParamMap.get('kind') === 'space') this.kind.set('space');
     const source: Observable<ListingDraft | null> =
       wanted === 'new' ? of(null) : wanted ? this.api.get(wanted) : this.api.current();
@@ -305,8 +289,6 @@ export class ListBusinessPage {
     this.tagline.set(draft.tagline);
     this.categorySlug.set(draft.categorySlug ?? 'shops');
     this.place.set(draft.place ?? '');
-    this.church.set(draft.church);
-    this.pastorEmail.set(draft.pastorEmail);
     this.agreed.set(draft.agreed);
     this.items.set(draft.items);
     if (draft.space) this.space.apply(draft.space);
@@ -351,8 +333,6 @@ export class ListBusinessPage {
       categorySlug: this.isSpace() ? null : this.categorySlug() || null,
       highlight: null,
       place: this.isSpace() ? null : this.place().trim() || null,
-      church: this.church().trim(),
-      pastorEmail: this.pastorEmail().trim(),
       agreed: this.agreed(),
       items: this.isSpace() ? [] : this.items(),
       space: this.isSpace() ? this.space.body() : null,
@@ -408,9 +388,6 @@ export class ListBusinessPage {
     else if (tagline.length > TAGLINE_MAX) codes.tagline = `TOO_LONG:${tagline.length}`;
     if (this.isSpace()) Object.assign(codes, this.space.check());
     else if (!this.categorySlug()) codes.categorySlug = 'REQUIRED';
-    if (!this.church().trim()) codes.church = 'REQUIRED';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.pastorEmail().trim()))
-      codes.pastorEmail = 'INVALID';
     if (!this.agreed()) codes.agreed = 'REQUIRED';
     return codes;
   }

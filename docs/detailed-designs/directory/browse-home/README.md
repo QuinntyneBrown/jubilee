@@ -82,8 +82,8 @@ design introduces.
   or builds it: total count, featured businesses from `FeaturedSelector`, five
   shop products, and the groups from `DirectoryGrouping`.
 - **`PublicListingFilter`** — query filter that keeps only public listings. It
-  excludes the stages draft, pending reference, ready to review, needs a
-  decision and changes requested, and each paused, deleted or held listing
+  excludes the stages draft, ready to review, changes requested and
+  declined, and each paused, deleted or held listing
   (L2-028). Each public list and count in the slice applies it.
 - **`FeaturedSelector`** — application service in `Jubilee.Application`, because it queries the database. It returns the public listings of
   the current week's `FeaturedSlot` rows, up to five; when none is set it
@@ -125,7 +125,7 @@ works in the browser and the response stays cacheable. With no live space
 of "All {n} businesses", the chips list eleven categories with "Rooms &
 rentals" second, and the search placeholder reads "Plumber, lawyer, room to
 rent…". The shelf, the space card and the term filter are the feature
-[Browse spaces](../browse-spaces/README.md) (ADR 0041).
+[Browse spaces](../browse-spaces/README.md) (ADR 0042).
 
 ## Requirements
 
@@ -142,7 +142,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-106` | `L1-014` | The listings a verifier chooses as "Featured this week" shall show on the welcome and browse pages from the start date for 7 days, and a featured listing that is paused or removed shall be skipped. |
 | `L2-118` | `L1-016` | Each load-error state shall show a reference that the user can quote to support. |
 | `L2-156` | `L1-021` | Responses for the public directory and category pages shall be cached for up to 60 seconds and invalidated when a listing changes state. |
-| `L2-200` | `L1-028` | The browse home shall show "Rooms & places to stay" with "All {n}", a term filter and up to four space cards when a space is live, filter it by term without reloading, leave spaces out of "All {n} businesses", and use the placeholder "Plumber, lawyer, room to rent…". |
+| `L2-201` | `L1-028` | The browse home shall show "Rooms & places to stay" with "All {n}", a term filter and up to four space cards when a space is live, filter it by term without reloading, leave spaces out of "All {n} businesses", and use the placeholder "Plumber, lawyer, room to rent…". |
 
 ## Diagrams
 

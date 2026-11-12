@@ -30,11 +30,11 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> page : Open /c/rooms-rentals?term=short-stay
-page --> actor : Card skeletons (L2-201)
+page --> actor : Card skeletons (L2-202)
 page -> client : getCategory(rooms-rentals, term short-stay, page 1)
 client -> controller : GET /api/categories/rooms-rentals/listings?term=short-stay
 controller -> terms : ParseTerm("short-stay") in GetCategoryListingsQuery.FromUntrusted
-terms --> controller : ShortStay, or null for an unknown value (L2-201)
+terms --> controller : ShortStay, or null for an unknown value (L2-202)
 controller -> handler : Send GetCategoryListingsQuery with Term
 handler -> db : Public spaces of rooms-rentals (L2-028)
 db --> handler : Listings with the Space JSON column

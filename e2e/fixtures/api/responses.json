@@ -1230,92 +1230,13 @@
       "spaces": []
     }
   },
-  "GET /api/categories/legal-immigration/listings?sort=recommended&page=1": {
-    "status": 200,
-    "body": {
-      "category": {
-        "slug": "legal-immigration",
-        "name": "Legal & immigration"
-      },
-      "totalCount": 6,
-      "matchCount": 6,
-      "fact": null,
-      "filters": {
-        "offers": [],
-        "areas": []
-      },
-      "sort": "recommended",
-      "page": 1,
-      "pageSize": 16,
-      "pageCount": 1,
-      "businesses": [
-        {
-          "slug": "kevin-marshall-barrister-solicitor",
-          "name": "Kevin Marshall, Barrister & Solicitor",
-          "tagline": "Caring for you, so you can take care of what matters",
-          "highlight": "Free first call",
-          "categorySlug": "legal-immigration",
-          "verified": true,
-          "coverPhoto": null
-        },
-        {
-          "slug": "desloges-law-group",
-          "name": "Desloges Law Group",
-          "tagline": "Helping thousands of people from all over the world obtain legal status and make Canada their home.",
-          "highlight": "Immigration specialists",
-          "categorySlug": "legal-immigration",
-          "verified": true,
-          "coverPhoto": null
-        },
-        {
-          "slug": "kyl-law-firm",
-          "name": "KYL Law Firm",
-          "tagline": "Immigration and family matters, handled ethically and efficiently.",
-          "highlight": "Evening appointments",
-          "categorySlug": "legal-immigration",
-          "verified": true,
-          "coverPhoto": null
-        },
-        {
-          "slug": "law-office-of-denise-badley-castello",
-          "name": "Law Office of Denise Badley-Castello",
-          "tagline": "Legal Representation You Can Trust",
-          "highlight": "Free first call",
-          "categorySlug": "legal-immigration",
-          "verified": true,
-          "coverPhoto": null
-        },
-        {
-          "slug": "covenant-immigration-services",
-          "name": "Covenant Immigration Services",
-          "tagline": "Study permits, sponsorships and citizenship, one careful step at a time.",
-          "highlight": "Open Saturdays",
-          "categorySlug": "legal-immigration",
-          "verified": true,
-          "coverPhoto": null
-        },
-        {
-          "slug": "beacon-family-law",
-          "name": "Beacon Family Law",
-          "tagline": "Steady counsel for families in hard seasons.",
-          "highlight": "Free first call",
-          "categorySlug": "legal-immigration",
-          "verified": true,
-          "coverPhoto": null
-        }
-      ],
-      "suggestions": [],
-      "term": null,
-      "spaces": []
-    }
-  },
   "GET /api/categories/plumbers/listings?sort=recommended&page=1": {
     "status": 404,
     "body": {
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "74219df8acb8422ea8687b041555b609",
+      "correlationId": "2d1d6fb2c1bd4a698e5453b2f6c5f41f",
       "code": "category_not_found"
     }
   },
@@ -1510,7 +1431,7 @@
         {
           "heading": "How does a business get verified?",
           "anchor": "how-does-a-business-get-verified",
-          "body": "The owner names a pastor or elder. We e-mail that person a private form. When they confirm, our team reviews the listing and publishes it, usually within two business days."
+          "body": "The owner submits the listing and agrees to the statement of faith. The Jubilee verification team reviews it and publishes it, usually within two business days."
         },
         {
           "heading": "Does Jubilee take payment?",
@@ -1547,12 +1468,7 @@
         {
           "heading": "What we keep",
           "anchor": "what-we-keep",
-          "body": "- Your name, e-mail, and optional phone and neighbourhood.\n- Messages and requests you send, so both sides can see them.\n- For businesses: listing details and the church reference you name."
-        },
-        {
-          "heading": "Church references",
-          "anchor": "church-references",
-          "body": "A reference’s answer is seen only by the Jubilee verification team. It is never shown to the business owner or the public, and we delete it 90 days after a decision."
+          "body": "- Your name, e-mail, and optional phone, neighbourhood and home church name and address. Your home church is shown to no one.\n- Messages and requests you send, so both sides can see them.\n- For businesses: listing details."
         },
         {
           "heading": "Your choices",
@@ -1572,7 +1488,7 @@
     "body": {
       "slug": "statement-of-faith",
       "title": "Statement of faith",
-      "lead": "Jubilee is open to everyone as a customer. Businesses that list here agree to the commitments below, and a pastor or elder confirms them.",
+      "lead": "Jubilee is open to everyone as a customer. Businesses that list here agree to the commitments below, and every listing is verified before it goes live.",
       "version": 1,
       "publishedAt": "2026-11-02T17:00:00+00:00",
       "sections": [
@@ -1587,9 +1503,9 @@
           "body": "- We tell the truth about what we sell, what it costs and when it will be ready.\n- We treat every customer with the same care, whatever their background or belief.\n- We keep our word, and we put it right when we fall short.\n- We see profit as something to steward: for our families, our churches and our city."
         },
         {
-          "heading": "How a listing is confirmed",
-          "anchor": "how-a-listing-is-confirmed",
-          "body": "Each owner names a pastor or elder who knows them. We contact that person privately before the listing goes live. Read more in [Help](/help)."
+          "heading": "How a listing is verified",
+          "anchor": "how-a-listing-is-verified",
+          "body": "Each owner agrees to these commitments when listing. The Jubilee verification team reviews every listing before it goes live. Read more in [Help](/help)."
         }
       ]
     }
@@ -2234,7 +2150,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "c7a4c2b4db9c40e3a0020b7763d5abf4",
+      "correlationId": "7d66552f8f1646db972728fa72250e0b",
       "code": "sign_in_required"
     }
   },
@@ -2267,7 +2183,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-28T22:48:05.3717988+00:00",
+        "onJubileeSince": "2026-10-28T23:23:08.5992339+00:00",
         "replies": null
       },
       "services": [],
@@ -2344,7 +2260,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "2315fc02abb349e18665dc5c201478ed",
+      "correlationId": "84a83ade4e424ba5a1a21bdf51715cf1",
       "code": "listing_not_found"
     }
   },
@@ -2373,7 +2289,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-24T01:48:05.3717988+00:00",
+        "onJubileeSince": "2026-10-24T02:23:08.5992339+00:00",
         "replies": null
       },
       "services": [],
@@ -2429,7 +2345,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-28T21:48:05.3717988+00:00",
+        "onJubileeSince": "2026-10-28T22:23:08.5992339+00:00",
         "replies": null
       },
       "services": [],
@@ -2530,7 +2446,7 @@
       },
       "services": [
         {
-          "id": "3d723e6a-5f34-47b5-87fc-ff9dff78ebd8",
+          "id": "8c4b9276-72df-412f-9e21-290e64415a2d",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -2538,7 +2454,7 @@
           "action": "book"
         },
         {
-          "id": "89fe5e25-65e7-4dcb-9447-1fa45141c4d9",
+          "id": "19be9be5-d7b5-43be-988a-b5bb3fdc43ec",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -2546,7 +2462,7 @@
           "action": "book"
         },
         {
-          "id": "f995ead7-a42f-4b6b-8251-a2b74f07c35c",
+          "id": "5e54f851-de20-49d5-ba09-a7441b57e80e",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -2554,7 +2470,7 @@
           "action": "book"
         },
         {
-          "id": "5babec5d-becb-4447-b1e6-39d24f52be2e",
+          "id": "561ff23c-d1f2-4c30-99d5-ac48e66d00ac",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -2614,7 +2530,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-28T23:48:05.3717988+00:00",
+        "onJubileeSince": "2026-10-29T00:23:08.5992339+00:00",
         "replies": null
       },
       "services": [],
@@ -2715,7 +2631,7 @@
       },
       "services": [
         {
-          "id": "17bdcf14-1b0d-4284-9b32-2057e3142a9c",
+          "id": "1a5af464-e782-4df3-8500-1339e7f72577",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -2723,7 +2639,7 @@
           "action": "ask"
         },
         {
-          "id": "8fceb12f-4d7b-4c9f-a2d8-164f50932e9e",
+          "id": "4cb1118b-c2ee-4ab6-94e4-1fbc1955de5f",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -2810,7 +2726,7 @@
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "5d92af94-5dc0-4562-ba37-5bfb83bc1e66",
+      "id": "dfac16b4-05d4-42da-90f6-632f10ff0924",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -2882,7 +2798,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "c9cdbe2f-aba6-45bd-a4ad-98ff823d2292",
+      "id": "6dcb208f-7b7c-4969-a92f-f56f62031075",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -2987,7 +2903,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "a8d3cb0f-bd54-43a9-a3bc-ac25024e860e",
+      "id": "eaa365d0-3e77-4678-bcd0-17f6dd477ff3",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -3066,7 +2982,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "26c980c1b05a42e0a02f36c0f49047cd",
+      "correlationId": "6cb6cad6fc6c446e808cb09c7fc575ce",
       "code": "product_not_found"
     }
   },
@@ -3095,7 +3011,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T00:48:05.3717988+00:00",
+        "onJubileeSince": "2026-10-29T01:23:08.5992339+00:00",
         "replies": null
       },
       "services": [],
@@ -3171,7 +3087,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "5c0fac2b650140bba40fe0194cab5baa",
+      "correlationId": "806ad0a09a0746229f5eefc96cd459eb",
       "code": "sign_in_required"
     }
   },

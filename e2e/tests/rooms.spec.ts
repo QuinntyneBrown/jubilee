@@ -3,11 +3,11 @@ import { BrowsePage } from '../pages/browse.page';
 import { BusinessPage } from '../pages/business.page';
 import { CategoryPage } from '../pages/category.page';
 
-// Rooms and rentals in the directory: L2-200 (the shelf on Browse), L2-201 (the category page)
-// and L2-202 (the space card), against the recorded answers of the seeded API (ADR 0009): five
+// Rooms and rentals in the directory: L2-201 (the shelf on Browse), L2-202 (the category page)
+// and L2-203 (the space card), against the recorded answers of the seeded API (ADR 0009): five
 // spaces, one or more per term.
 
-test.describe('Rooms & places to stay on Browse (L2-200)', () => {
+test.describe('Rooms & places to stay on Browse (L2-201)', () => {
   test('AC1, AC2: after "Featured this week" it shows the newest four spaces and the term filter', async ({
     page,
     jb,
@@ -87,7 +87,7 @@ test.describe('Rooms & places to stay on Browse (L2-200)', () => {
   });
 });
 
-test.describe('the space card (L2-202)', () => {
+test.describe('the space card (L2-203)', () => {
   test('AC1, AC3: term, rent, title, two facts, neighbourhood and availability, named by its title', async ({
     page,
     jb,
@@ -122,7 +122,7 @@ test.describe('the space card (L2-202)', () => {
   });
 });
 
-test.describe('the "Rooms & rentals" category page (L2-201)', () => {
+test.describe('the "Rooms & rentals" category page (L2-202)', () => {
   test('AC1, AC4: spaces newest first under the term filter, no business filters, then the call to list', async ({
     page,
     jb,
