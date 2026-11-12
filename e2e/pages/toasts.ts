@@ -25,6 +25,13 @@ export class Toasts {
       .filter({ has: this.page.locator('.toast__title', { hasText: title }) });
   }
 
+  /** The danger toast with this title: something failed; it stays until dismissed. */
+  danger(title: string | RegExp): Locator {
+    return this.region
+      .locator('.toast.toast--danger')
+      .filter({ has: this.page.locator('.toast__title', { hasText: title }) });
+  }
+
   action(toast: Locator, label: string): Locator {
     return toast.getByRole('button', { name: label, exact: true });
   }

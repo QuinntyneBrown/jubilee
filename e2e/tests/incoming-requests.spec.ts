@@ -263,6 +263,113 @@ test.describe('respond to customer requests: confirm (L2-052)', () => {
   });
 });
 
+test.describe('respond to customer requests: the dialog was closed before the answer came (L2-052 AC5, AC7)', () => {
+  test('L2-052 AC5: a confirmation that fails after the dialog was closed is said in a danger toast, and "Try again" confirms it', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new ConfirmRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { confirm: 'fails', confirmDelayMs: 600 });
+    await jb.goto(PATH);
+
+    await requests.confirmButton('Samuel Park').click();
+    await dialog.confirm.click();
+    await dialog.escape();
+    await expect(dialog.root).toHaveCount(0);
+
+    const failed = toasts.danger('Couldn’t confirm the order');
+    await expect(failed).toContainText('Samuel’s request is still new. Try again.');
+    await expect(failed).toHaveRole('alert');
+    await expect(requests.row('Samuel Park')).toBeVisible();
+    expect(fake.confirms).toEqual([]);
+
+    fake.confirm = 'ok';
+    fake.confirmDelayMs = 0;
+    await toasts.action(failed, 'Try again').click();
+
+    await expect(failed).toHaveCount(0);
+    const confirmed = toasts.withTitle('Order confirmed');
+    await expect(confirmed).toContainText('Samuel has been told.');
+    await expect(toasts.action(confirmed, 'Undo')).toBeVisible();
+    expect(fake.confirms).toEqual([SAMUEL]);
+    await expect(requests.row('Samuel Park')).toHaveCount(0);
+  });
+
+  test('L2-052 AC5: "Try again" that fails again says so again, by the keyboard alone', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new ConfirmRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { confirm: 'fails', confirmDelayMs: 600 });
+    await jb.goto(PATH);
+
+    await requests.confirmButton('Samuel Park').click();
+    await dialog.confirm.click();
+    await dialog.escape();
+    const failed = toasts.danger('Couldn’t confirm the order');
+    await expect(failed).toBeVisible();
+    fake.confirmDelayMs = 0;
+
+    await toasts.action(failed, 'Try again').focus();
+    await page.keyboard.press('Enter');
+
+    await expect(failed).toHaveCount(1);
+    await expect(failed).toContainText('Samuel’s request is still new. Try again.');
+    expect(fake.confirms).toEqual([]);
+  });
+
+  test('L2-052 AC7: a confirmation that succeeds after the dialog was closed still shows its toast with Undo', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new ConfirmRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    const fake = await stubIncoming(page, { confirmDelayMs: 600 });
+    await jb.goto(PATH);
+
+    await requests.confirmButton('Samuel Park').click();
+    await dialog.confirm.click();
+    await dialog.escape();
+    await expect(dialog.root).toHaveCount(0);
+
+    const confirmed = toasts.withTitle('Order confirmed');
+    await expect(confirmed).toContainText('Samuel has been told.');
+    await expect(requests.row('Samuel Park')).toHaveCount(0);
+    await toasts.action(confirmed, 'Undo').click();
+    await expect(toasts.withTitle('Confirmation undone')).toBeVisible();
+    expect(fake.undos).toEqual([SAMUEL]);
+  });
+
+  test('L2-052 AC6: a request the customer cancelled is said in a toast when the dialog was already closed', async ({
+    page,
+    jb,
+  }) => {
+    const requests = new IncomingRequestsPage(page);
+    const dialog = new ConfirmRequestDialog(page);
+    const toasts = new Toasts(page);
+    await requests.setWidth(1280);
+    await stubIncoming(page, { confirm: 'cancelled', confirmDelayMs: 600 });
+    await jb.goto(PATH);
+
+    await requests.confirmButton('Samuel Park').click();
+    await dialog.confirm.click();
+    await dialog.escape();
+
+    const failed = toasts.danger('Couldn’t confirm the order');
+    await expect(failed).toContainText('Samuel Park cancelled this request.');
+    await expect(toasts.action(failed, 'Try again')).toHaveCount(0);
+    await expect(requests.row('Samuel Park')).toHaveCount(0);
+  });
+});
+
 test.describe('respond to customer requests: a cancelled request (L2-052 AC6)', () => {
   test('L2-052 AC6: when the customer cancelled a moment earlier the owner is told and nothing is confirmed', async ({
     page,

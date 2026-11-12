@@ -40,6 +40,8 @@ import { EMPTY, filter, interval, switchMap } from 'rxjs';
 import {
   ConfirmRequestData,
   ConfirmRequestDialog,
+  confirmConflict,
+  requestNoun,
 } from '../../dialogs/confirm-request/confirm-request.dialog';
 import {
   DeclineRequestData,
@@ -223,20 +225,54 @@ export class IncomingRequestsPage implements OnInit {
 
   protected openConfirm(row: IncomingRequestRow): void {
     const ref = this.dialog.open<RequestDecision, ConfirmRequestData>(ConfirmRequestDialog, {
-      data: { request: row },
+      data: {
+        request: row,
+        // The dialog was closed before the answer came: it is reported all the same (L2-052 AC5, AC7).
+        settled: (outcome) => {
+          if (outcome.confirmed) this.confirmed(row, outcome.decision);
+          else this.notConfirmed(row, outcome.conflict);
+        },
+      },
       ...this.dialogOptions(),
     });
     ref.closed.subscribe((decision) => {
-      this.refresh();
-      if (!decision) return;
-      const first = decision.customerFirstName;
-      this.toasts.show({
-        tone: 'success',
-        title: `${row.kindLabel} confirmed`,
-        text: `${first} has been told. Message them about payment and pickup.`,
-        durationMs: UNDO_MS,
-        action: { label: 'Undo', run: () => this.undo(row, first) },
-      });
+      if (decision) this.confirmed(row, decision);
+      else this.refresh();
+    });
+  }
+
+  private confirmed(row: IncomingRequestRow, decision: RequestDecision): void {
+    this.refresh();
+    const first = decision.customerFirstName;
+    this.toasts.show({
+      tone: 'success',
+      title: `${row.kindLabel} confirmed`,
+      text: `${first} has been told. Message them about payment and pickup.`,
+      durationMs: UNDO_MS,
+      action: { label: 'Undo', run: () => this.undo(row, first) },
+    });
+  }
+
+  /**
+   * The danger toast of a confirmation that failed with no dialog left to say so (L2-052 AC5). A
+   * request that can no longer be confirmed carries the server's sentence and nothing to try.
+   */
+  private notConfirmed(row: IncomingRequestRow, conflict: string | null): void {
+    this.refresh();
+    const first = row.customerName.split(' ')[0];
+    this.toasts.show({
+      tone: 'danger',
+      title: `Couldn’t confirm the ${requestNoun(row.kind)}`,
+      text: conflict ?? `${first}’s request is still new. Try again.`,
+      action:
+        conflict === null ? { label: 'Try again', run: () => this.confirmAgain(row) } : undefined,
+    });
+  }
+
+  private confirmAgain(row: IncomingRequestRow): void {
+    this.api.confirm(row.id).subscribe({
+      next: (decision) => this.confirmed(row, decision),
+      error: (error: unknown) => this.notConfirmed(row, confirmConflict(error)),
     });
   }
 

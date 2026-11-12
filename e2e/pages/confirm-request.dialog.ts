@@ -11,7 +11,7 @@ export class ConfirmRequestDialog {
   readonly confirm: Locator;
   readonly tryAgain: Locator;
 
-  constructor(page: Page) {
+  constructor(private readonly page: Page) {
     this.root = page.getByRole('dialog');
     this.title = this.root.locator('.dialog__title');
     this.description = this.root.locator('#dlg-desc');
@@ -22,5 +22,10 @@ export class ConfirmRequestDialog {
       name: /^Confirm (order|booking|quote request|request)$/,
     });
     this.tryAgain = this.root.getByRole('button', { name: 'Try again' });
+  }
+
+  /** Closes the dialog with the keyboard, as an owner who does not wait for the answer does. */
+  async escape(): Promise<void> {
+    await this.page.keyboard.press('Escape');
   }
 }
