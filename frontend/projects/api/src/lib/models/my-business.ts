@@ -15,7 +15,8 @@ export interface BusinessStats {
   openRequests: number;
   newSinceYesterday: number;
   unansweredMessages: number;
-  saved: number | null;
+  /** The members who saved the business; `change` is how many first did so in the last 7 days (L2-085 AC6). */
+  saved: BusinessStat;
 }
 
 export interface NeedsReply {
@@ -47,13 +48,28 @@ export interface BusinessVerification {
   declined: { reason: string; decidedAt: string } | null;
 }
 
+/** One entry of the switcher on My business (L2-079 AC4): a listing with its stage, or a draft not yet submitted. */
+export interface BusinessOption {
+  id: string;
+  name: string;
+  kind: 'listing' | 'draft';
+  /** "Live", "Paused", "Pending verification", "Changes requested", "Declined" or "Draft". */
+  stageLabel: string;
+  /** The listing the workspace shows. */
+  current: boolean;
+}
+
 export interface MyBusiness {
   state: BusinessState;
+  /** The owner's listings, then their drafts; empty for a member who owns nothing. */
+  businesses: BusinessOption[];
   listingId: string | null;
   name: string | null;
   slug: string | null;
   tagline: string | null;
   categorySlug: string | null;
+  /** The category as members read it, for example "Shops" (L2-086 AC4). */
+  categoryName: string | null;
   subtitle: string;
   paused: boolean;
   pausedAt: string | null;
@@ -114,6 +130,8 @@ export interface ListingChanges {
   hours: string;
   website: string;
   highlight: string;
+  /** The listing the editor opened, so a save after a switch in another tab is refused (ADR 0052). */
+  listingId?: string;
   /** A space's own fields (L2-209); omitted for a business. */
   space?: SpaceDraft;
 }

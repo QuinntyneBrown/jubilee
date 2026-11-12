@@ -1308,7 +1308,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "5f16cba999e34978bee9decf9972dc4f",
+      "correlationId": "ad0745ce02434fc88304e4451772e61d",
       "code": "category_not_found"
     }
   },
@@ -2239,7 +2239,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "7c93b89544e34ed7b5c819a250e6ade4",
+      "correlationId": "aba8455a366140d1a2740b07afc75232",
       "code": "sign_in_required"
     }
   },
@@ -2277,7 +2277,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T14:09:34.594342+00:00",
+        "onJubileeSince": "2026-10-29T15:12:47.855639+00:00",
         "replies": null
       },
       "services": [],
@@ -2346,7 +2346,8 @@
         }
       ],
       "openRequestId": null,
-      "repliesFast": false
+      "repliesFast": false,
+      "photos": []
     }
   },
   "GET /api/listings/bethel-gift-baskets": {
@@ -2355,7 +2356,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "46821fe2ebc74fd688045118f22e8e87",
+      "correlationId": "f396c67ac8824e96bc5758990dc4d09e",
       "code": "listing_not_found"
     }
   },
@@ -2385,7 +2386,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-24T17:09:34.594342+00:00",
+        "onJubileeSince": "2026-10-24T18:12:47.855639+00:00",
         "replies": null
       },
       "services": [],
@@ -2416,7 +2417,8 @@
       "space": null,
       "relatedSpaces": [],
       "openRequestId": null,
-      "repliesFast": false
+      "repliesFast": false,
+      "photos": []
     }
   },
   "GET /api/listings/east-york-roommate": {
@@ -2445,7 +2447,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T13:09:34.594342+00:00",
+        "onJubileeSince": "2026-10-29T14:12:47.855639+00:00",
         "replies": null
       },
       "services": [],
@@ -2514,7 +2516,8 @@
         }
       ],
       "openRequestId": null,
-      "repliesFast": false
+      "repliesFast": false,
+      "photos": []
     }
   },
   "GET /api/listings/legacy-financial": {
@@ -2548,7 +2551,7 @@
       },
       "services": [
         {
-          "id": "c65eb184-f956-4e68-a2ef-88356da3f028",
+          "id": "88138979-4727-4315-9da3-036e5752c5f2",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -2556,7 +2559,7 @@
           "action": "book"
         },
         {
-          "id": "62496fe5-0add-4a64-ae34-40a75462f29c",
+          "id": "de7942ad-2c34-4cd9-9171-8a715cb1d0a7",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -2564,7 +2567,7 @@
           "action": "book"
         },
         {
-          "id": "ffa53ca3-d004-46c0-bbae-d9765bb10c61",
+          "id": "ab085dca-04d6-4741-aab5-7cc7e3ff7e44",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -2572,7 +2575,7 @@
           "action": "book"
         },
         {
-          "id": "6ad682d3-f37c-40ba-b336-20b863026bf8",
+          "id": "fa1eab25-56e5-441e-bd51-444a8ff4a5d9",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -2607,7 +2610,8 @@
       "space": null,
       "relatedSpaces": [],
       "openRequestId": null,
-      "repliesFast": false
+      "repliesFast": false,
+      "photos": []
     }
   },
   "GET /api/listings/leslieville-family-room": {
@@ -2636,7 +2640,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T15:09:34.594342+00:00",
+        "onJubileeSince": "2026-10-29T16:12:47.855639+00:00",
         "replies": null
       },
       "services": [],
@@ -2705,7 +2709,8 @@
         }
       ],
       "openRequestId": null,
-      "repliesFast": false
+      "repliesFast": false,
+      "photos": []
     }
   },
   "GET /api/listings/luzandre": {
@@ -2739,7 +2744,7 @@
       },
       "services": [
         {
-          "id": "fc6db516-214d-4c24-b700-d04c6ed73541",
+          "id": "27793f7b-93b6-4552-9a7b-7fc3b86920f2",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -2747,7 +2752,7 @@
           "action": "ask"
         },
         {
-          "id": "9ab8a109-0fd7-4ecf-b85f-5ded6601f348",
+          "id": "ae155c40-f521-4198-9226-20e2dc2b9c04",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -2835,13 +2840,14 @@
       "space": null,
       "relatedSpaces": [],
       "openRequestId": null,
-      "repliesFast": false
+      "repliesFast": false,
+      "photos": []
     }
   },
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "0bb9b97d-da91-48da-b55c-61e75961651f",
+      "id": "39b6deec-665e-4c16-b022-45b03ddddcb4",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -2916,7 +2922,7 @@
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "492dae14-5320-42cc-ace8-2da910a0d2c0",
+      "id": "b9966e59-e59e-4011-9894-d7158fbb0d06",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -3024,7 +3030,7 @@
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "45ad42c6-5b41-440d-82c8-9e31150f8601",
+      "id": "8a639625-1fff-4295-a20f-9c6fd80dc140",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -3106,7 +3112,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "407e73d4631745928b5d71fca0b15882",
+      "correlationId": "20a0622963154d97a610737d76576cf5",
       "code": "product_not_found"
     }
   },
@@ -3136,7 +3142,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T16:09:34.594342+00:00",
+        "onJubileeSince": "2026-10-29T17:12:47.855639+00:00",
         "replies": null
       },
       "services": [],
@@ -3205,7 +3211,8 @@
         }
       ],
       "openRequestId": null,
-      "repliesFast": false
+      "repliesFast": false,
+      "photos": []
     }
   },
   "GET /api/saved": {
@@ -3213,7 +3220,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "6c32b0c267dd452995f6ee90bc4a3980",
+      "correlationId": "2fadd73207c140aa97f5f53c27cf9efa",
       "code": "sign_in_required"
     }
   },

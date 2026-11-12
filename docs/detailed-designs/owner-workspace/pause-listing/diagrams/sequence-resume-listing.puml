@@ -16,50 +16,57 @@ skinparam package {
 }
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
-  participant "VerificationBanner" as banner
-  participant "ListingsApi" as client
+  participant "MyBusinessPage" as page
+  participant "MyBusinessApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "OwnerListingController" as controller
+  participant "MyBusinessController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "ResumeListingCommandHandler" as handler
   participant "Listing" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
+  participant "DirectoryCacheInvalidationInterceptor" as interceptor
   database "Jubilee database" as db
+  database "Directory read cache" as cache
 end box
-box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcher" as outbox
-end box
-participant "Search index" as search
-actor -> banner : Press "Resume listing"
-banner -> client : Build typed request
-client -> controller : POST /api/owner/listings/{listingId}/resume
-controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
-controller -> handler : Send ResumeListingCommand
-handler -> db : Load listing
+actor -> page : Press "Resume listing" on the paused banner
+page -> page : Make the button busy; a second press sends nothing
+page -> client : resume()
+client -> controller : POST /api/my-business/resume
+controller -> handler : Send ResumeListingCommand(subject)
+handler -> db : Workspace.Owned: load the owner's listing, or 403 FORBIDDEN (L2-133)
 db --> handler : Listing with PausedAt
-handler -> entity : Resume(now) applies the 12 month rule (L2-096)
-alt Paused for under 12 months
-  entity --> handler : Stage Live
-  handler -> db : Save stage and ListingVisibilityChanged outbox message
-  db --> handler : Commit result
-  handler --> controller : ListingStageDto
-  controller --> client : 200 stage Live
-  client --> banner : Live
-  banner --> actor : Clear the paused banner
-  outbox -> db : Read ListingVisibilityChanged
-  db --> outbox : Pending message
-  outbox -> search : Add listing within 60 seconds (L2-096)
-  search --> outbox : Added
-else Paused for 12 months or more
-  entity --> handler : Stage ReadyToReview
-  handler -> db : Save stage in one unit of work
-  db --> handler : Commit result
-  handler --> controller : ListingStageDto
-  controller --> client : 200 stage ReadyToReview
-  client --> banner : Back in the verification queue
-  banner --> actor : Show the listing stage in the workspace header
+alt Listing is not paused
+  handler --> controller : ConflictException NOT_PAUSED
+  controller --> client : 409 ProblemDetails
+  client --> page : HttpErrorResponse
+  page --> actor : Show "We couldn’t resume it": "Your listing is still paused. Try again."
+else Listing is paused
+  handler -> entity : Resume(now)
+  alt Paused for under 365 days (L2-096 AC3)
+    entity --> handler : IsPaused false, PausedAt cleared; Stage stays Live
+    handler -> db : SaveChangesAsync
+    db --> handler : Commit result
+    interceptor -> cache : InvalidateAsync
+    handler --> controller : PauseResultDto(state live, needsReview false)
+    controller --> client : 200 OK
+    client --> page : PauseResult
+    page -> client : overview()
+    client --> page : MyBusiness with paused false
+    page --> actor : Toast "Listing resumed": "Members can find you again within a minute."; the banner clears
+  else Paused for 365 days or more (L2-096 AC4)
+    entity --> handler : Stage ReadyToReview, IsPaused false, PausedAt cleared
+    handler -> db : SaveChangesAsync
+    db --> handler : Commit result
+    interceptor -> cache : InvalidateAsync
+    handler --> controller : PauseResultDto(state ready-to-review, needsReview true)
+    controller --> client : 200 OK
+    client --> page : PauseResult
+    page -> client : overview()
+    client --> page : MyBusiness with state ready-to-review
+    page --> actor : Toast "Back in the verification queue" and "We’re reviewing {Business}"
+  end
 end
 @enduml

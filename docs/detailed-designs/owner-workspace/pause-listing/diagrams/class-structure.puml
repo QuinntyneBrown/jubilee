@@ -18,78 +18,102 @@ enum ListingStage {
   ReadyToReview
   ChangesRequested
   Live
-  Paused
-  OnHold
-  Removed
   Declined
 }
 
 class Listing {
   +Guid Id
-  +Guid OwnerId
+  +string Slug
   +string Name
+  +string? OwnerId
   +ListingStage Stage
-  +DateTimeOffset? ApprovedAt
+  +bool IsPaused
   +DateTimeOffset? PausedAt
-  +int MaxPauseMonths = 12
-  +Pause(now: DateTimeOffset): void
-  +Resume(now: DateTimeOffset): ListingStage
+  +DateTimeOffset? ApprovedAt
+  +DateTimeOffset? DeletedAt
+  +bool IsUnderModerationHold
+  +{static} TimeSpan PausedTooLong = 365 days
+  +Pause(now: DateTimeOffset?): void
+  +Resume(now: DateTimeOffset?): void
   +IsPublic(): bool
 }
 
+class PublicListingFilter <<static>> {
+  +{static} Expression<Func<Listing, bool>> Criteria
+  +{static} IsSatisfiedBy(listing: Listing): bool
+  +{static} WherePublic(listings: IQueryable<Listing>): IQueryable<Listing>
+}
+
 class PauseListingCommand {
-  +Guid ListingId
+  +string Subject
 }
 
 class ResumeListingCommand {
-  +Guid ListingId
+  +string Subject
 }
 
 class PauseListingCommandHandler {
-  +Handle(command: PauseListingCommand): Task<Result<ListingStageDto>>
+  +Handle(request: PauseListingCommand): Task<PauseResultDto>
 }
 
 class ResumeListingCommandHandler {
-  +Handle(command: ResumeListingCommand): Task<Result<ListingStageDto>>
+  +Handle(request: ResumeListingCommand): Task<PauseResultDto>
 }
 
-class ListingStageDto {
-  +Guid ListingId
-  +ListingStage Stage
+class PauseResultDto {
+  +bool Paused
   +DateTimeOffset? PausedAt
+  +string State
+  +bool NeedsReview
 }
 
-class OutboxMessage {
-  +Guid Id
-  +string Type
-  +string Payload
-  +DateTimeOffset OccurredAt
-  +DateTimeOffset? DispatchedAt
+class Workspace <<static>> {
+  +{static} Owned(db: IAppDbContext, subject: string): Task<Listing>
+  +{static} State(listing: Listing): string
 }
 
-class OutboxDispatcher {
-  +DispatchAsync(message: OutboxMessage): Task
+class ConflictException {
+  +string Code
 }
 
-interface IClock {
-  +Now(): DateTimeOffset
+class ForbiddenException {
+  +string Code
 }
 
-interface ISearchIndex {
-  +UpsertListingAsync(listingId: Guid): Task
-  +RemoveListingAsync(listingId: Guid): Task
+interface IDirectoryReadCache {
+  +{static} TimeSpan TimeToLive = 60 seconds
+  +GetOrCreateAsync<T>(key: string, build: Func<CancellationToken, Task<T>>): Task<T>
+  +Invalidate(): void
+  +InvalidateAsync(): Task
 }
+
+class DistributedDirectoryReadCache
+
+class DirectoryCacheInvalidationInterceptor {
+  +SavingChangesAsync(...): ValueTask<InterceptionResult<int>>
+  +SavedChangesAsync(...): ValueTask<int>
+}
+
+class PublicDirectoryCacheAttribute {
+  +{static} int MaxAgeSeconds = 60
+}
+
+class SessionAwareCacheAttribute
 
 Listing --> ListingStage : has
+PublicListingFilter ..> Listing : reads Stage, ApprovedAt, IsPaused, DeletedAt and the hold
 PauseListingCommandHandler ..> PauseListingCommand : handles
 ResumeListingCommandHandler ..> ResumeListingCommand : handles
-PauseListingCommandHandler --> Listing : pauses
-ResumeListingCommandHandler --> Listing : resumes
-PauseListingCommandHandler ..> IClock : reads time
-ResumeListingCommandHandler ..> IClock : reads time
-PauseListingCommandHandler ..> OutboxMessage : writes
-ResumeListingCommandHandler ..> OutboxMessage : writes
-PauseListingCommandHandler ..> ListingStageDto : returns
-OutboxDispatcher "1" --> "*" OutboxMessage : dispatches
-OutboxDispatcher ..> ISearchIndex : updates
+PauseListingCommandHandler ..> Workspace : finds the listing with
+ResumeListingCommandHandler ..> Workspace : finds the listing with
+PauseListingCommandHandler --> Listing : calls Pause
+ResumeListingCommandHandler --> Listing : calls Resume
+PauseListingCommandHandler ..> ConflictException : throws NOT_LIVE or ALREADY_PAUSED
+ResumeListingCommandHandler ..> ConflictException : throws NOT_PAUSED
+PauseListingCommandHandler ..> PauseResultDto : returns
+ResumeListingCommandHandler ..> PauseResultDto : returns
+Workspace ..> ForbiddenException : throws for no listing
+DistributedDirectoryReadCache ..|> IDirectoryReadCache
+DirectoryCacheInvalidationInterceptor ..> IDirectoryReadCache : invalidates after a save of a Listing
+SessionAwareCacheAttribute ..> PublicDirectoryCacheAttribute : reads MaxAgeSeconds
 @enduml

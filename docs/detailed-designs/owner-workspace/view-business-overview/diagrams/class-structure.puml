@@ -18,100 +18,160 @@ enum ListingStage {
   ReadyToReview
   ChangesRequested
   Live
-  Paused
-  OnHold
-  Removed
   Declined
 }
 
 class Listing {
   +Guid Id
-  +Guid OwnerId
+  +string Slug
   +string Name
+  +string? OwnerId
   +ListingStage Stage
-  +DateTimeOffset? LiveSince
-  +DateTimeOffset? LiveBannerSeenAt
-  +IsOwnedBy(memberId: Guid): bool
-  +AcknowledgeLiveBanner(now: DateTimeOffset): void
+  +bool IsPaused
+  +DateTimeOffset? PausedAt
+  +DateTimeOffset? ApprovedAt
+  +DateTimeOffset? WorkspaceChosenAt
+  +DateTimeOffset? AwayUntil
+  +DateTimeOffset CreatedAt
+  +ChooseForWorkspace(now: DateTimeOffset): void
 }
 
-class OwnerWorkspace {
+class ListingView {
+  +Guid Id
+  +Guid ListingId
+  +string VisitorKey
+  +DateTimeOffset ViewedAt
+  +{static} TimeSpan RepeatWindow = 30 minutes
+  +{static} Record(listingId: Guid, visitorKey: string, now: DateTimeOffset): ListingView
+}
+
+class SavedItem {
+  +string MemberSubject
+  +SavedItemKind Kind
+  +Guid TargetId
+  +DateTimeOffset SavedAt
+}
+
+class Workspace <<static>> {
+  +{static} TimeSpan JustApprovedFor = 7 days
+  +{static} OwnedBy(listings: IQueryable<Listing>, subject: string): Task<List<Listing>>
+  +{static} Current(owned: IReadOnlyList<Listing>): Listing?
+  +{static} Find(db: IAppDbContext, subject: string, track: bool): Task<Listing?>
+  +{static} Owned(db: IAppDbContext, subject: string): Task<Listing>
+  +{static} State(listing: Listing): string
+  +{static} StageLabel(listing: Listing): string
+  +{static} Subtitle(listing: Listing, submittedAt: DateTimeOffset?, now: DateTimeOffset): string
+}
+
+class MyBusinessDto {
+  +string State
   +Guid? ListingId
-  +string BusinessName
-  +ListingStage? Stage
-  +DateTimeOffset? LiveSince
-  +int NewRequestCount
-  +bool ShowLiveBanner
-  +StageDetail Detail
+  +string? Name
+  +string? Slug
+  +string? Tagline
+  +string? CategorySlug
+  +string? CategoryName
+  +string Subtitle
+  +bool Paused
+  +DateTimeOffset? PausedAt
+  +bool JustApproved
+  +int NewRequests
+  +OwnerVerificationDto? Verification
+  +DateTimeOffset? AwayUntil
 }
 
-class StageDetail {
-  +DateTimeOffset? SubmittedAt
-  +IReadOnlyList<string> RequestedChanges
-  +string ReviewerFirstName
-  +DateTimeOffset? ChangesRequestedAt
-}
-
-class BusinessOverview {
-  +OverviewStats Stats
-  +IReadOnlyList<RequestCard> NeedsReply
-  +ListingSummary Summary
-}
-
-class OverviewStats {
-  +int ListingViews7Days
-  +int ViewsChangePercent
+class MyBusinessStatsDto {
+  +StatDto Views
   +int OpenRequests
   +int NewSinceYesterday
   +int UnansweredMessages
-  +int SavedByMembers
-  +int SavedChangeThisWeek
+  +StatDto Saved
 }
 
-class ListingSummary {
-  +int ProductCount
-  +int SoldOutCount
-  +int ServiceCount
-  +DateTimeOffset? ApprovedAt
+class StatDto {
+  +int Value
+  +int Change
 }
 
-class RequestCard {
-  +Guid RequestId
-  +RequestType Type
-  +string Title
+class NeedsReplyDto {
+  +Guid Id
+  +string Kind
+  +string KindLabel
   +string CustomerName
+  +string Title
   +DateTimeOffset SentAt
 }
 
-class ListingViewDaily {
+class MyBusinessSummaryDto {
+  +int Products
+  +int SoldOut
+  +int Services
+  +string Verification
+}
+
+class BusinessOptionDto {
+  +Guid Id
+  +string Name
+  +string Kind
+  +string StageLabel
+  +bool Current
+}
+
+class GetMyBusinessQuery {
+  +string Subject
+}
+
+class GetMyBusinessQueryHandler {
+  +Handle(request: GetMyBusinessQuery): Task<MyBusinessDto>
+  -SavedByMembers(listingId: Guid, now: DateTimeOffset): Task<StatDto>
+}
+
+class ChooseBusinessBody {
   +Guid ListingId
-  +DateOnly Day
-  +int Count
-  +Increment(): void
 }
 
-class ListingViewRecorder {
-  +RecordAsync(listingId: Guid, viewer: ViewerContext): Task
+class ChooseBusinessCommand {
+  +string Subject
+  +Guid ListingId
 }
 
-class GetBusinessOverviewQueryHandler {
-  +Handle(query: GetBusinessOverviewQuery): Task<BusinessOverview>
+class ChooseBusinessCommandHandler {
+  +Handle(request: ChooseBusinessCommand): Task
 }
 
-class GetOwnerWorkspaceQueryHandler {
-  +Handle(query: GetOwnerWorkspaceQuery): Task<OwnerWorkspace>
+class ForbiddenException {
+  +string Code
+}
+
+class RecordListingViewCommand {
+  +string Slug
+  +Viewer Viewer
+  +string? ClientAddress
+  +string? UserAgent
+}
+
+class RecordListingViewCommandHandler {
+  +Handle(request: RecordListingViewCommand): Task
 }
 
 Listing --> ListingStage : has
-Listing "1" --> "*" ListingViewDaily : counted in
-OwnerWorkspace --> ListingStage : shows
-OwnerWorkspace *-- "0..1" StageDetail
-BusinessOverview *-- "1" OverviewStats
-BusinessOverview *-- "0..3" RequestCard
-BusinessOverview *-- "1" ListingSummary
-GetOwnerWorkspaceQueryHandler ..> OwnerWorkspace : returns
-GetOwnerWorkspaceQueryHandler ..> Listing : reads
-GetBusinessOverviewQueryHandler ..> BusinessOverview : returns
-GetBusinessOverviewQueryHandler ..> ListingViewDaily : sums 7 days
-ListingViewRecorder ..> ListingViewDaily : increments
+Listing "1" <-- "*" ListingView : counted for
+MyBusinessDto *-- "0..1" MyBusinessStatsDto : Stats
+MyBusinessStatsDto *-- "2" StatDto : Views and Saved
+MyBusinessDto *-- "0..3" NeedsReplyDto : NeedsReply
+MyBusinessDto *-- "0..1" MyBusinessSummaryDto : Summary
+MyBusinessDto *-- "*" BusinessOptionDto : Businesses
+GetMyBusinessQueryHandler ..> GetMyBusinessQuery : handles
+GetMyBusinessQueryHandler ..> Workspace : finds the listing shown with
+GetMyBusinessQueryHandler ..> MyBusinessDto : returns
+GetMyBusinessQueryHandler ..> ListingView : counts 14 days
+GetMyBusinessQueryHandler ..> SavedItem : groups by member
+ChooseBusinessBody ..> ChooseBusinessCommand : becomes
+ChooseBusinessCommandHandler ..> ChooseBusinessCommand : handles
+ChooseBusinessCommandHandler --> Listing : calls ChooseForWorkspace
+ChooseBusinessCommandHandler ..> ForbiddenException : throws for a listing of another member
+Workspace ..> Listing : picks by WorkspaceChosenAt
+Workspace ..> ForbiddenException : Owned throws for no listing
+RecordListingViewCommandHandler ..> RecordListingViewCommand : handles
+RecordListingViewCommandHandler ..> ListingView : adds
 @enduml

@@ -61,6 +61,16 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
     private static Task<HttpResponseMessage> AddPhoto(HttpClient client, ByteArrayContent file) =>
         client.PostAsync("/api/my-business/photos", new MultipartFormDataContent { { file, "file", "front.jpg" } });
 
+    // L2-086 AC4: the banner of a listing just approved names its category.
+    [Fact]
+    public async Task L2_086_AC4_the_overview_names_the_category_members_find_the_business_in()
+    {
+        var overview = await Json(await Naomi().GetAsync("/api/my-business"));
+
+        Assert.True(overview.GetProperty("justApproved").GetBoolean());
+        Assert.Equal("Shops", overview.GetProperty("categoryName").GetString());
+    }
+
     // L2-085
     [Fact]
     public async Task L2_085_the_overview_of_a_live_listing_shows_the_week_in_numbers()
@@ -87,6 +97,41 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal(1, overview.GetProperty("newRequests").GetInt32());
     }
 
+    // L2-085 AC2 and AC6: how many members saved the business or one of its products, and how many of them first did so this week
+    [Fact]
+    public async Task L2_085_AC6_saved_by_members_counts_each_member_once_with_those_who_first_saved_this_week()
+    {
+        var mug = Product.Create(_listing.Id, "mug", "Mug", 2400, false, TileTint.Gold, TileIcon.Mug, ListingMother.Now);
+        var other = ListingMother.Public("someone-else");
+        await _factory.Arrange(
+            mug,
+            other,
+            // Ruth saved the business a month ago and a product yesterday: one member, not new this week.
+            SavedItem.Business("member|ruth", _listing.Id, ListingMother.Now.AddDays(-30)),
+            SavedItem.Product("member|ruth", mug.Id, ListingMother.Now.AddDays(-1)),
+            // David saved the business eight days ago: not new this week.
+            SavedItem.Business("member|david", _listing.Id, ListingMother.Now.AddDays(-8)),
+            // Samuel saved the business six days ago and Esther a product today: both new this week.
+            SavedItem.Business("member|samuel", _listing.Id, ListingMother.Now.AddDays(-6)),
+            SavedItem.Product("member|esther", mug.Id, ListingMother.Now.AddHours(-1)),
+            // A save of another business is not counted.
+            SavedItem.Business("member|joanna", other.Id, ListingMother.Now.AddDays(-1)));
+
+        var saved = (await Json(await Naomi().GetAsync("/api/my-business"))).GetProperty("stats").GetProperty("saved");
+
+        Assert.Equal(4, saved.GetProperty("value").GetInt32());
+        Assert.Equal(2, saved.GetProperty("change").GetInt32());
+    }
+
+    [Fact]
+    public async Task L2_085_AC6_a_business_nobody_saved_shows_zero_and_no_change()
+    {
+        var saved = (await Json(await Naomi().GetAsync("/api/my-business"))).GetProperty("stats").GetProperty("saved");
+
+        Assert.Equal(0, saved.GetProperty("value").GetInt32());
+        Assert.Equal(0, saved.GetProperty("change").GetInt32());
+    }
+
     // L2-085 AC1, L2-086
     [Fact]
     public async Task L2_086_a_listing_that_is_not_live_shows_where_it_stands_and_no_numbers()
@@ -110,6 +155,122 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
 
         Assert.Equal("none", overview.GetProperty("state").GetString());
         Assert.Equal(JsonValueKind.Null, overview.GetProperty("listingId").ValueKind);
+    }
+
+    private async Task<Listing> SecondListing()
+    {
+        var second = ListingMother.NonPublic(NonPublicState.ReadyToReview, "laurent-photography", "media");
+        second.Reword("Laurent Photography", "Portraits and church events", "media", null);
+        second.AssignOwner(NaomiId);
+        await _factory.Arrange(second);
+        return second;
+    }
+
+    // L2-079 AC4: the switcher names each listing with its stage and each draft not yet submitted
+    [Fact]
+    public async Task L2_079_AC4_the_overview_names_each_of_the_owners_businesses_and_drafts()
+    {
+        var second = await SecondListing();
+        var draft = await Json(await Naomi().PostAsJsonAsync("/api/listing-drafts", new { kind = "services", name = "Laurent Studio", agreed = false }));
+        var someoneElses = ListingMother.Public("someone-else");
+        someoneElses.AssignOwner("member|joanna");
+        await _factory.Arrange(someoneElses);
+
+        var overview = await Json(await Naomi().GetAsync("/api/my-business"));
+
+        Assert.Equal("Luzandre.com", overview.GetProperty("name").GetString());
+        var businesses = overview.GetProperty("businesses").EnumerateArray().ToList();
+        Assert.Equal(
+            ["Luzandre.com|listing|Live|True", "Laurent Photography|listing|Pending verification|False", "Laurent Studio|draft|Draft|False"],
+            businesses.Select(b => $"{b.GetProperty("name").GetString()}|{b.GetProperty("kind").GetString()}|{b.GetProperty("stageLabel").GetString()}|{b.GetProperty("current").GetBoolean()}"));
+        Assert.Equal(_listing.Id, businesses[0].GetProperty("id").GetGuid());
+        Assert.Equal(second.Id, businesses[1].GetProperty("id").GetGuid());
+        Assert.Equal(draft.GetProperty("id").GetGuid(), businesses[2].GetProperty("id").GetGuid());
+    }
+
+    [Fact]
+    public async Task L2_079_AC4_an_owner_with_one_business_has_one_entry_and_a_paused_listing_says_so()
+    {
+        var naomi = Naomi();
+        await naomi.PostAsync("/api/my-business/pause", null);
+
+        var businesses = (await Json(await naomi.GetAsync("/api/my-business"))).GetProperty("businesses");
+
+        Assert.Equal(1, businesses.GetArrayLength());
+        Assert.Equal("Paused", businesses[0].GetProperty("stageLabel").GetString());
+        Assert.Empty((await Json(await Joanna().GetAsync("/api/my-business"))).GetProperty("businesses").EnumerateArray());
+    }
+
+    // L2-079 AC5: the choice moves every page of the workspace and is kept
+    [Fact]
+    public async Task L2_079_AC5_choosing_another_business_moves_the_whole_workspace_to_it_until_the_owner_chooses_again()
+    {
+        var second = await SecondListing();
+        var naomi = Naomi();
+        await _factory.Arrange(Request.AskForQuote(
+            "member|david", "David Chen", second.Id, null, "Church portraits", "Forty families", null, null, null, Guid.NewGuid().ToString(), ListingMother.Now.AddHours(-2)));
+
+        var chosen = await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = second.Id });
+
+        Assert.Equal(HttpStatusCode.NoContent, chosen.StatusCode);
+        var overview = await Json(await naomi.GetAsync("/api/my-business"));
+        Assert.Equal("Laurent Photography", overview.GetProperty("name").GetString());
+        Assert.Equal("ready-to-review", overview.GetProperty("state").GetString());
+        Assert.Equal(
+            ["Luzandre.com|False", "Laurent Photography|True"],
+            overview.GetProperty("businesses").EnumerateArray().Select(b => $"{b.GetProperty("name").GetString()}|{b.GetProperty("current").GetBoolean()}"));
+        Assert.Equal("Laurent Photography", (await Json(await naomi.GetAsync("/api/my-business/listing"))).GetProperty("name").GetString());
+        Assert.Equal("Laurent Photography", (await Json(await naomi.GetAsync("/api/my-business/products"))).GetProperty("business").GetString());
+        var requests = await Json(await naomi.GetAsync("/api/my-business/requests"));
+        Assert.Contains("Church portraits", requests.GetRawText());
+
+        _factory.Clock.Advance(TimeSpan.FromMinutes(1));
+        await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = _listing.Id });
+
+        Assert.Equal("Luzandre.com", (await Json(await naomi.GetAsync("/api/my-business"))).GetProperty("name").GetString());
+        Assert.DoesNotContain("Church portraits", (await Json(await naomi.GetAsync("/api/my-business/requests"))).GetRawText());
+    }
+
+    // L2-079 AC5, L2-133: the choice is the owner's own
+    [Fact]
+    public async Task L2_079_AC5_a_listing_of_another_member_cannot_be_chosen_and_nothing_changes()
+    {
+        var theirs = ListingMother.Public("someone-else");
+        theirs.AssignOwner("member|joanna");
+        await _factory.Arrange(theirs);
+        var naomi = Naomi();
+
+        var refused = await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = theirs.Id });
+        var unknown = await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = Guid.NewGuid() });
+        var extra = await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = _listing.Id, ownerId = "member|naomi" });
+        var visitor = await _factory.CreateClient().PutAsJsonAsync("/api/my-business/current", new { listingId = _listing.Id });
+
+        Assert.Equal(HttpStatusCode.Forbidden, refused.StatusCode);
+        Assert.Equal("FORBIDDEN", (await Json(refused)).GetProperty("code").GetString());
+        Assert.Equal(HttpStatusCode.Forbidden, unknown.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, extra.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, visitor.StatusCode);
+        Assert.Equal("Luzandre.com", (await Json(await naomi.GetAsync("/api/my-business"))).GetProperty("name").GetString());
+        await _factory.WithDb(async db => Assert.Null((await db.Listings.SingleAsync(l => l.Id == theirs.Id)).WorkspaceChosenAt));
+    }
+
+    // ADR 0052: a form opened on one business is not saved onto another after a switch in a second tab
+    [Fact]
+    public async Task L2_087_AC8_a_save_from_an_editor_opened_on_another_business_is_refused()
+    {
+        var second = await SecondListing();
+        var naomi = Naomi();
+        await naomi.PutAsJsonAsync("/api/my-business/current", new { listingId = second.Id });
+
+        var stale = await naomi.PutAsJsonAsync("/api/my-business/listing", new
+        {
+            listingId = _listing.Id, version = 0, name = "Luzandre.com", tagline = "Custom church team tees", category = "shops",
+            about = "We print.", where = "Leslieville", hours = "Mon to Fri, 10 to 6", website = "", highlight = "",
+        });
+
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+        Assert.Equal("LISTING_CHANGED", (await Json(stale)).GetProperty("code").GetString());
+        await _factory.WithDb(async db => Assert.Equal("Laurent Photography", (await db.Listings.SingleAsync(l => l.Id == second.Id)).Name));
     }
 
     // L2-097, L2-133
@@ -219,6 +380,55 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
         Assert.Equal(HttpStatusCode.OK, (await _factory.CreateClient().GetAsync($"/media/{key}/1280.webp")).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync($"/media/{key}/999.jpg")).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync("/media/not-a-key/640.jpg")).StatusCode);
+    }
+
+    // L2-221 AC1 and AC2: the public page gives the photos in the owner's order, with what a srcset needs
+    [Fact]
+    public async Task L2_221_the_public_page_gives_the_photos_in_the_owners_order_with_their_size_and_alt_text()
+    {
+        var naomi = Naomi();
+        var visitor = _factory.CreateClient();
+        // The page is read, and so cached, before any photo exists (L2-221 AC4).
+        Assert.Equal(0, (await _factory.GetJson("/api/listings/luzandre-com")).GetProperty("photos").GetArrayLength());
+
+        await AddPhoto(naomi, Photo(width: 800, height: 600));
+        var editor = await Json(await AddPhoto(naomi, Photo(width: 2000, height: 1000)));
+        var wide = editor.GetProperty("photos")[1];
+        await naomi.PutAsJsonAsync($"/api/my-business/photos/{wide.GetProperty("id").GetGuid()}/alt", new { alt = "The studio in Leslieville" });
+
+        // Each change of the photos reaches the cached page on the next request (ADR 0003).
+        var photos = (await Json(await visitor.GetAsync("/api/listings/luzandre-com"))).GetProperty("photos");
+        Assert.Equal(2, photos.GetArrayLength());
+        Assert.Equal("Luzandre.com photo 1", photos[0].GetProperty("alt").GetString());
+        Assert.Equal(800, photos[0].GetProperty("width").GetInt32());
+        Assert.Equal(600, photos[0].GetProperty("height").GetInt32());
+        Assert.Equal("The studio in Leslieville", photos[1].GetProperty("alt").GetString());
+        Assert.Equal(2000, photos[1].GetProperty("width").GetInt32());
+        Assert.Equal(wide.GetProperty("key").GetString(), photos[1].GetProperty("key").GetString());
+        Assert.False(photos[0].TryGetProperty("id", out _));
+
+        await naomi.PutAsJsonAsync($"/api/my-business/photos/{wide.GetProperty("id").GetGuid()}/position", new { position = 1 });
+        var moved = (await Json(await visitor.GetAsync("/api/listings/luzandre-com"))).GetProperty("photos");
+        Assert.Equal("The studio in Leslieville", moved[0].GetProperty("alt").GetString());
+        Assert.Equal("Luzandre.com photo 2", moved[1].GetProperty("alt").GetString());
+
+        await naomi.DeleteAsync($"/api/my-business/photos/{wide.GetProperty("id").GetGuid()}");
+        var left = (await Json(await visitor.GetAsync("/api/listings/luzandre-com"))).GetProperty("photos");
+        Assert.Equal(1, left.GetArrayLength());
+        Assert.Equal("Luzandre.com photo 1", left[0].GetProperty("alt").GetString());
+    }
+
+    // L2-221 AC5: the photos of a listing that is not public are its owner's preview only
+    [Fact]
+    public async Task L2_221_AC5_the_photos_of_a_paused_listing_are_given_to_its_owner_only()
+    {
+        var naomi = Naomi();
+        await AddPhoto(naomi, Photo());
+        await naomi.PostAsync("/api/my-business/pause", null);
+
+        Assert.Equal(HttpStatusCode.NotFound, (await _factory.CreateClient().GetAsync("/api/listings/luzandre-com")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await Joanna().GetAsync("/api/listings/luzandre-com")).StatusCode);
+        Assert.Equal(1, (await Json(await naomi.GetAsync("/api/listings/luzandre-com"))).GetProperty("photos").GetArrayLength());
     }
 
     [Fact]

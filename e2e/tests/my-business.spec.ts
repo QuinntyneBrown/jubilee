@@ -1,5 +1,12 @@
 import { expect, test } from '../fixtures/jb-test';
-import { stubMyBusiness } from '../fixtures/my-business';
+import { stubListingDrafts } from '../fixtures/listing-drafts';
+import {
+  LAURENT_PHOTOGRAPHY,
+  LAURENT_STUDIO,
+  OTHER_BUSINESSES,
+  stubMyBusiness,
+} from '../fixtures/my-business';
+import { ListBusinessPage } from '../pages/list-business.page';
 import { ConfirmRequestDialog } from '../pages/confirm-request.dialog';
 import { EditListingPage } from '../pages/edit-listing.page';
 import { ForbiddenPage } from '../pages/forbidden.page';
@@ -44,6 +51,28 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await expect(business.listingCard).toContainText('Verification');
     await expect(business.listingCard).toContainText('Verified Jun 2026');
     await expect(business.listingCard).not.toContainText('Church reference');
+  });
+
+  test('L2-085 AC2 and AC6: "Saved by members" shows the members who saved the business and how many are new this week', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    await stubMyBusiness(page);
+    await jb.goto(OVERVIEW);
+
+    await expect(business.stats).toHaveCount(4);
+    await expect(business.statValue('Saved by members')).toHaveText('28');
+    await expect(business.statNote('Saved by members')).toHaveText('↑ 4 this week');
+  });
+
+  test('L2-085 AC6: a week with no new save says so in words', async ({ page, jb }) => {
+    const business = new MyBusinessPage(page);
+    await stubMyBusiness(page, { saved: { value: 28, change: 0 } });
+    await jb.goto(OVERVIEW);
+
+    await expect(business.statValue('Saved by members')).toHaveText('28');
+    await expect(business.statNote('Saved by members')).toHaveText('None new this week');
   });
 
   test('L2-085: the requests that need a reply are listed and can be confirmed from here', async ({
@@ -104,7 +133,10 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
 
     await expect(business.subtitle).toHaveText('Changes requested · not public yet');
     await expect(business.alert.first()).toContainText('Your tagline mentions a discount code');
-    await expect(business.alert.first()).toContainText('Miriam from the verification team');
+    await expect(business.alert.first()).toContainText('Two changes needed before we can publish');
+    await expect(business.alert.first()).toContainText(
+      'Miriam from the verification team, Mon 9 Nov.',
+    );
     await expect(business.main.getByRole('link', { name: 'Edit listing' })).toBeVisible();
   });
 
@@ -115,7 +147,22 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await jb.goto(OVERVIEW);
 
     await expect(business.empty).toContainText('List your business free');
-    await expect(business.main.getByRole('link', { name: 'List your business' })).toBeVisible();
+    await expect(business.listYours).toBeVisible();
+    await expect(business.switcher).toHaveCount(0);
+    await expect(business.listAnother).toHaveCount(0);
+  });
+
+  test('L2-086 AC1: "List your business" opens the listing form', async ({ page, jb }) => {
+    const business = new MyBusinessPage(page);
+    const form = new ListBusinessPage(page);
+    await stubMyBusiness(page, { state: 'none' });
+    await stubListingDrafts(page);
+    await jb.goto(OVERVIEW);
+
+    await business.listYours.click();
+
+    await expect(page).toHaveURL(/\/list$/);
+    await expect(form.heading).toBeVisible();
   });
 
   test('L2-086: an overview that cannot load quotes the reference JB-BIZ-503 and tries again', async ({
@@ -152,9 +199,104 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await stubMyBusiness(page, { justApproved: true });
     await jb.goto(OVERVIEW);
 
-    await expect(business.liveBanner).toContainText('Luzandre.com is verified and live.');
+    await expect(business.liveBanner).toContainText(
+      'Luzandre.com is verified and live. Members can find you in Shops.',
+    );
     await business.liveBanner.getByRole('button', { name: 'Dismiss' }).click();
     await expect(business.liveBanner).toHaveCount(0);
+  });
+});
+
+test.describe('run a business listing: more than one business (L2-079)', () => {
+  test('AC4: an owner with one business sees "List another business" and no switcher', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    const form = new ListBusinessPage(page);
+    await stubMyBusiness(page);
+    await stubListingDrafts(page);
+    await jb.goto(OVERVIEW);
+
+    await expect(business.heading).toHaveText('Luzandre.com');
+    await expect(business.switcher).toHaveCount(0);
+    await business.listAnother.click();
+
+    await expect(page).toHaveURL(/\/list\?draft=new$/);
+    await expect(form.heading).toBeVisible();
+  });
+
+  test('AC4: the switcher names each business with its stage and each draft, with the one shown selected', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    await stubMyBusiness(page, { others: OTHER_BUSINESSES });
+    await jb.goto(OVERVIEW);
+
+    await expect(business.switcherOptions).toHaveText([
+      'Luzandre.com · Live',
+      'Laurent Photography · Pending verification',
+      'Laurent Studio · Draft',
+    ]);
+    await expect(business.switcher).toHaveValue('7c1d0000-0000-4000-8000-000000000001');
+    await expect(business.listAnother).toBeVisible();
+  });
+
+  test('AC5: choosing another business shows it and the select keeps focus', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    const fake = await stubMyBusiness(page, { others: OTHER_BUSINESSES });
+    await jb.goto(OVERVIEW);
+    await expect(business.heading).toHaveText('Luzandre.com');
+
+    await business.switcher.focus();
+    await business.chooseBusiness('Laurent Photography · Pending verification');
+
+    await expect(business.heading).toHaveText('Laurent Photography');
+    await expect(business.subtitle).toHaveText('Pending verification · submitted today');
+    await expect(business.switcher).toHaveValue(LAURENT_PHOTOGRAPHY);
+
+    // The select is a native control and keeps focus, so the keyboard goes on choosing from it.
+    await expect(business.switcher).toBeFocused();
+    await business.chooseBusiness('Luzandre.com · Live');
+    await expect(business.heading).toHaveText('Luzandre.com');
+    await expect(business.switcher).toBeFocused();
+    expect(fake.choices).toEqual([LAURENT_PHOTOGRAPHY, '7c1d0000-0000-4000-8000-000000000001']);
+  });
+
+  test('AC5: choosing a draft opens the listing form with that draft', async ({ page, jb }) => {
+    const business = new MyBusinessPage(page);
+    const form = new ListBusinessPage(page);
+    const fake = await stubMyBusiness(page, { others: OTHER_BUSINESSES });
+    await stubListingDrafts(page);
+    await jb.goto(OVERVIEW);
+
+    await business.chooseBusiness('Laurent Studio · Draft');
+
+    await expect(page).toHaveURL(new RegExp(`/list\\?draft=${LAURENT_STUDIO}$`));
+    await expect(form.heading).toBeVisible();
+    expect(fake.choices).toEqual([]);
+  });
+
+  test('AC5: a switch that fails says so and the business shown stays selected', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    const toasts = new Toasts(page);
+    await stubMyBusiness(page, { others: OTHER_BUSINESSES, choose: 'fails' });
+    await jb.goto(OVERVIEW);
+
+    await business.chooseBusiness('Laurent Photography · Pending verification');
+
+    await expect(toasts.danger('We couldn’t switch businesses')).toContainText(
+      'Luzandre.com is still shown. Try again.',
+    );
+    await expect(business.heading).toHaveText('Luzandre.com');
+    await expect(business.switcher).toHaveValue('7c1d0000-0000-4000-8000-000000000001');
   });
 });
 
@@ -495,11 +637,47 @@ test.describe('run a business listing: the editor (L2-087, L2-088)', () => {
     await expect(editor.success).toContainText('Your changes are live now.');
     await expect(editor.success.getByRole('link', { name: 'View public listing' })).toBeVisible();
     expect(fake.saves).toHaveLength(1);
+    // The save names the listing the editor opened (ADR 0052).
     expect(fake.saves[0]).toMatchObject({
+      listingId: '7c1d0000-0000-4000-8000-000000000001',
       version: 0,
       tagline: 'Church tees printed in Toronto',
       category: 'shops',
     });
+  });
+
+  test('L2-087 AC6: a new name is live at once and the owner is told the team will look again', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+
+    await editor.name.fill('Luzandre Print Co.');
+    await editor.save.click();
+
+    await expect(editor.success).toContainText('Your changes are live now.');
+    await expect(editor.success).toContainText(
+      'Because you changed the name or category, the verification team will take another look within two business days. Your listing stays live.',
+    );
+  });
+
+  test('L2-087 AC6: a save that changes neither the name nor the category promises no re-check', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+
+    await editor.tagline.fill('Church tees printed in Toronto');
+    await editor.save.click();
+
+    await expect(editor.success).toContainText('Your changes are live now.');
+    await expect(editor.success).not.toContainText('verification team');
   });
 
   test('L2-087: discarding puts the saved words back', async ({ page, jb }) => {
@@ -600,6 +778,88 @@ test.describe('run a business listing: photos (L2-088)', () => {
     await expect(editor.photoTiles.first()).toContainText('Cover');
     expect(fake.moves).toEqual([{ id: second, position: 1 }]);
     expect(fake.photos.find((item) => item.id === second)?.position).toBe(1);
+  });
+
+  test('L2-088 AC3: dragging a photo by its handle to the front makes it the cover', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    const fake = await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+    await editor.picker.setInputFiles(photo());
+    await editor.picker.setInputFiles(photo('back.png'));
+    await editor.picker.setInputFiles(photo('studio.png'));
+    await expect(editor.photoTiles).toHaveCount(3);
+    await editor.photoAlt(3).fill('The studio in Leslieville');
+    await editor.photoAlt(3).blur();
+    const third = fake.photos[2].id;
+
+    await editor.dragPhoto(3, 1);
+
+    await expect(editor.photoAlt(1)).toHaveValue('The studio in Leslieville');
+    await expect(editor.photoTiles.first()).toContainText('Cover');
+    expect(fake.moves).toEqual([{ id: third, position: 1 }]);
+  });
+
+  test('L2-088 AC3: a dragged photo goes back when the move fails, and the page says so', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    const fake = await stubMyBusiness(page, { move: 'fails' });
+    await jb.goto(EDITOR);
+    await editor.picker.setInputFiles(photo());
+    await editor.picker.setInputFiles(photo('back.png'));
+    await expect(editor.photoTiles).toHaveCount(2);
+    await editor.photoAlt(2).fill('The back of the tee');
+    await editor.photoAlt(2).blur();
+
+    await editor.dragPhoto(2, 1);
+
+    await expect(editor.photoError).toHaveText('We couldn’t change your photos. Try again.');
+    await expect(editor.photoAlt(2)).toHaveValue('The back of the tee');
+    expect(fake.moves).toHaveLength(1);
+  });
+
+  test('L2-088 AC3: a photo dropped where it was sends nothing', async ({ page, jb }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    const fake = await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+    await editor.picker.setInputFiles(photo());
+    await editor.picker.setInputFiles(photo('back.png'));
+    await expect(editor.photoTiles).toHaveCount(2);
+
+    await editor.dragPhoto(2, 2);
+
+    await expect(editor.photoTiles).toHaveCount(2);
+    expect(fake.moves).toEqual([]);
+  });
+
+  test('L2-088 AC3: the drag handle is for a pointer; the keyboard has the move buttons', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+    await editor.picker.setInputFiles(photo());
+    await editor.picker.setInputFiles(photo('back.png'));
+    await expect(editor.photoTiles).toHaveCount(2);
+
+    await expect(editor.dragHandle(1)).toHaveAttribute('aria-hidden', 'true');
+    await expect(editor.dragHandle(1)).toHaveAttribute('tabindex', '-1');
+    await editor.photoAlt(1).focus();
+    await page.keyboard.press('Tab');
+    // Photo 1 cannot move earlier, so the first stop after its description is "later".
+    await expect(editor.moveLater(1)).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(editor.moveEarlier(2)).toBeEnabled();
+    await expect(editor.photoHelp).toContainText('Drag a photo by its handle, or use the arrows');
   });
 
   test('L2-088 AC5: the owner describes a photo and can remove it', async ({ page, jb }) => {

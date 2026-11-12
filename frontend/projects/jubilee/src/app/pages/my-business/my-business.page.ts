@@ -27,6 +27,7 @@ import {
   CloseButton,
   Alert,
   RowListSkeleton,
+  Select,
   Skeleton,
   Avatar,
   initialsOf,
@@ -80,6 +81,7 @@ const UNDO_MS = 8000;
     CloseButton,
     Alert,
     RowListSkeleton,
+    Select,
     Skeleton,
     Avatar,
     Card,
@@ -141,6 +143,34 @@ export class MyBusinessPage implements OnInit {
     });
   }
 
+  /**
+   * The switcher (L2-079 AC5): a listing becomes the one the whole workspace shows; a draft opens
+   * the listing form. The select is never disabled or redrawn, so it keeps focus and the keyboard can go on choosing.
+   */
+  protected choose(business: MyBusiness, select: HTMLSelectElement): void {
+    const option = business.businesses.find((item) => item.id === select.value);
+    const shown = business.businesses.find((item) => item.current);
+    if (!option || option.current) return;
+    if (option.kind === 'draft') {
+      void this.router.navigate(['/list'], { queryParams: { draft: option.id } });
+      return;
+    }
+    this.api.choose(option.id).subscribe({
+      next: () => {
+        this.fetch();
+        this.navigation.load();
+      },
+      error: () => {
+        if (shown) select.value = shown.id;
+        this.toasts.show({
+          tone: 'danger',
+          title: 'We couldn’t switch businesses',
+          text: `${business.name} is still shown. Try again.`,
+        });
+      },
+    });
+  }
+
   protected sent(row: NeedsReply): string {
     return threadTime(row.sentAt, this.clock.now());
   }
@@ -156,6 +186,17 @@ export class MyBusinessPage implements OnInit {
   }
 
   /** "today", "yesterday" or "3 days ago": the end of the subtitle the API words. */
+  /** "Two changes needed before we can publish" (L2-086 AC3). */
+  protected changesHeading(count: number): string {
+    const words = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const needed = count === 1 ? 'change needed' : 'changes needed';
+    return count > 0
+      ? `${words[count] ?? count} ${needed} before we can publish`
+      : 'Changes needed before we can publish';
+  }
+
+  protected readonly day = dayLabel;
+
   protected submittedWords(business: MyBusiness): string {
     return business.subtitle.split('submitted ')[1] ?? 'recently';
   }

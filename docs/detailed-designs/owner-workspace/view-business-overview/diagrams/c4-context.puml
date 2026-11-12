@@ -3,12 +3,12 @@
 LAYOUT_WITH_LEGEND()
 title System Context — View the business overview
 
-Person(owner, "Owner", "Member who owns a business listing")
+Person(owner, "Owner", "Member who owns one or more business listings")
 Person(member, "Member", "Signed-in account holder who opens public listings")
 Person(visitor, "Visitor", "Anyone not signed in who opens public listings")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
 
-Rel(owner, jubilee, "Monitors the listing at /my-business using", "HTTPS")
+Rel(owner, jubilee, "Monitors the listing and chooses the business at /my-business using", "HTTPS")
 Rel(member, jubilee, "Opens the public listing - counted as a view", "HTTPS")
 Rel(visitor, jubilee, "Opens the public listing - counted as a view", "HTTPS")
 @enduml

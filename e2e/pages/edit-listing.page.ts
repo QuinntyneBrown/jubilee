@@ -26,6 +26,7 @@ export class EditListingPage extends ShellPage implements Screen {
   readonly preview: Locator;
   readonly photoTiles: Locator;
   readonly photoError: Locator;
+  readonly photoHelp: Locator;
   readonly picker: Locator;
   readonly addPhoto: Locator;
   readonly alert: Locator;
@@ -61,6 +62,9 @@ export class EditListingPage extends ShellPage implements Screen {
     this.preview = this.main.locator('aside[aria-labelledby="pv"] .biz-card');
     this.photoTiles = this.form.locator('fieldset ul > li').filter({ has: page.locator('.media') });
     this.photoError = this.form.locator('fieldset .field__error');
+    this.photoHelp = this.form
+      .locator('fieldset .field__help')
+      .filter({ hasText: 'Up to 6 photos' });
     this.picker = this.form.getByLabel('Choose a photo');
     this.addPhoto = this.form.getByRole('button', { name: 'Add photo' });
     this.alert = this.main.getByRole('alert');
@@ -81,6 +85,31 @@ export class EditListingPage extends ShellPage implements Screen {
     return field
       .locator('xpath=ancestor::div[contains(@class,"field")][1]')
       .locator('.field__error');
+  }
+
+  /** The handle a photo is dragged by: a pointer affordance, hidden from the keyboard and assistive technology. */
+  dragHandle(position: number): Locator {
+    return this.photoTiles.nth(position - 1).locator('[cdkDragHandle], .cdk-drag-handle');
+  }
+
+  /**
+   * Drags the photo at `from` by its handle and drops it on the photo at `to`, as a hand does: press,
+   * move in steps so the drag starts, release.
+   */
+  async dragPhoto(from: number, to: number): Promise<void> {
+    const handle = await this.dragHandle(from).boundingBox();
+    const target = await this.photoTiles.nth(to - 1).boundingBox();
+    if (!handle || !target)
+      throw new Error('The photo to drag, or the place to drop it, is not on screen.');
+    const start = { x: handle.x + handle.width / 2, y: handle.y + handle.height / 2 };
+    // The handle sits under the photo, so the pointer ends as far inside the target as it started in its own tile.
+    const source = await this.photoTiles.nth(from - 1).boundingBox();
+    const end = { x: target.x + (start.x - source!.x), y: target.y + (start.y - source!.y) };
+    await this.page.mouse.move(start.x, start.y);
+    await this.page.mouse.down();
+    await this.page.mouse.move(start.x + 8, start.y + 4, { steps: 4 });
+    await this.page.mouse.move(end.x, end.y, { steps: 12 });
+    await this.page.mouse.up();
   }
 
   photoAlt(position: number): Locator {

@@ -12,6 +12,8 @@ import {
 /** Contract of the owner's workspace (L2-085 to L2-088, L2-096). */
 export interface MyBusinessApi {
   overview(): Observable<MyBusiness>;
+  /** Chooses which of the owner's businesses the workspace shows from now on (L2-079 AC5). */
+  choose(listingId: string): Observable<void>;
   editor(): Observable<ListingEditor>;
   save(changes: ListingChanges): Observable<ListingEditor>;
   pause(): Observable<PauseResult>;
@@ -32,6 +34,10 @@ export class HttpMyBusinessApi implements MyBusinessApi {
 
   overview(): Observable<MyBusiness> {
     return this.http.get<MyBusiness>('/api/my-business');
+  }
+
+  choose(listingId: string): Observable<void> {
+    return this.http.put<void>('/api/my-business/current', { listingId });
   }
 
   editor(): Observable<ListingEditor> {

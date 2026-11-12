@@ -16,6 +16,40 @@ export interface FakePhoto {
   height: number;
 }
 
+/** One entry of the switcher on My business (L2-079 AC4). */
+export interface FakeBusinessOption {
+  id: string;
+  name: string;
+  kind: 'listing' | 'draft';
+  stageLabel: string;
+  current: boolean;
+  /** The state My business shows once this listing is chosen. */
+  state?: string;
+}
+
+export const LUZANDRE = '7c1d0000-0000-4000-8000-000000000001';
+export const LAURENT_PHOTOGRAPHY = '7c1d0000-0000-4000-8000-000000000002';
+export const LAURENT_STUDIO = '7c1d0000-0000-4000-8000-0000000000d1';
+
+/** Naomi's other business, waiting for verification, and a draft she has not submitted. */
+export const OTHER_BUSINESSES: FakeBusinessOption[] = [
+  {
+    id: LAURENT_PHOTOGRAPHY,
+    name: 'Laurent Photography',
+    kind: 'listing',
+    stageLabel: 'Pending verification',
+    current: false,
+    state: 'ready-to-review',
+  },
+  {
+    id: LAURENT_STUDIO,
+    name: 'Laurent Studio',
+    kind: 'draft',
+    stageLabel: 'Draft',
+    current: false,
+  },
+];
+
 export interface FakeBusiness {
   /** `fails` answers the overview with a 503; `forbidden` with a 403. */
   overview: Outcome | 'forbidden';
@@ -23,6 +57,8 @@ export interface FakeBusiness {
   /** `conflict` answers the save as if another tab had saved first (409). */
   save: Outcome | 'conflict';
   pause: Outcome;
+  /** How a change of a photo's place is answered. */
+  move: Outcome;
   resume: Outcome | 'review';
   /** How saving the away period is answered; `in-past` refuses the date (422). */
   away: Outcome | 'in-past';
@@ -33,8 +69,16 @@ export interface FakeBusiness {
   /** The refusal of the next photo upload, by the API's code; null accepts it. */
   photoRefusal: { status: number; code: string } | null;
   state: string;
+  /** The owner's other listings and drafts, after the one the fake describes (L2-079). */
+  others: FakeBusinessOption[];
+  /** How choosing another business is answered. */
+  choose: Outcome;
+  /** The listings chosen in the switcher, in order. */
+  choices: string[];
   paused: boolean;
   justApproved: boolean;
+  /** "Saved by members": the members who saved the business, and those who first did so this week (L2-085 AC6). */
+  saved: { value: number; change: number };
   version: number;
   photos: FakePhoto[];
   listing: {
@@ -114,14 +158,19 @@ export async function stubMyBusiness(
     editor: 'ok',
     save: 'ok',
     pause: 'ok',
+    move: 'ok',
     away: 'ok',
     awayUntil: null,
     aways: [],
     resume: 'ok',
     photoRefusal: null,
     state: 'live',
+    others: [],
+    choose: 'ok',
+    choices: [],
     paused: false,
     justApproved: false,
+    saved: { value: 28, change: 4 },
     version: 0,
     photos: [],
     listing: {
@@ -154,7 +203,7 @@ export async function stubMyBusiness(
       }));
 
   const editor = () => ({
-    id: '7c1d0000-0000-4000-8000-000000000001',
+    id: LUZANDRE,
     version: fake.version,
     slug: 'luzandre-com',
     stage: fake.state === 'paused' ? 'live' : fake.state,
@@ -162,8 +211,25 @@ export async function stubMyBusiness(
     ...fake.listing,
     categories: CATEGORIES,
     photos: photos(),
-    recheckRequested: false,
+    recheckRequested: recheck,
   });
+
+  let recheck = false;
+  let current = LUZANDRE;
+  const first = { name: fake.listing.name, state: fake.state };
+  const businesses = (): FakeBusinessOption[] => [
+    {
+      id: LUZANDRE,
+      name: first.name,
+      kind: 'listing',
+      stageLabel: fake.paused && current === LUZANDRE ? 'Paused' : 'Live',
+      current: current === LUZANDRE,
+    },
+    ...fake.others.map(({ state: _state, ...option }) => ({
+      ...option,
+      current: option.id === current,
+    })),
+  ];
 
   const overview = () => {
     if (fake.state === 'none') {
@@ -174,6 +240,7 @@ export async function stubMyBusiness(
         slug: null,
         tagline: null,
         categorySlug: null,
+        categoryName: null,
         subtitle: "You haven't listed a business yet",
         paused: false,
         pausedAt: null,
@@ -183,16 +250,19 @@ export async function stubMyBusiness(
         needsReply: [],
         summary: null,
         verification: null,
+        businesses: [],
       };
     }
     const live = fake.state === 'live' || fake.state === 'paused';
     return {
       state: fake.paused ? 'paused' : fake.state,
-      listingId: '7c1d0000-0000-4000-8000-000000000001',
+      listingId: current,
+      businesses: businesses(),
       name: fake.listing.name,
       slug: 'luzandre-com',
       tagline: fake.listing.tagline,
       categorySlug: fake.listing.categorySlug,
+      categoryName: fake.listing.categorySlug === 'rooms-rentals' ? 'Rooms & rentals' : 'Shops',
       subtitle: fake.paused
         ? 'Verified · paused, not public'
         : live
@@ -211,7 +281,7 @@ export async function stubMyBusiness(
             openRequests: 3,
             newSinceYesterday: 2,
             unansweredMessages: 1,
-            saved: null,
+            saved: fake.saved,
           }
         : null,
       needsReply: live
@@ -280,6 +350,17 @@ export async function stubMyBusiness(
     return route.fulfill({ json: overview() });
   });
 
+  await page.route(/\/api\/my-business\/current$/, (route: Route) => {
+    const { listingId } = route.request().postDataJSON() as { listingId: string };
+    fake.choices.push(listingId);
+    if (fake.choose === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
+    const chosen = fake.others.find((option) => option.id === listingId);
+    current = listingId;
+    fake.listing = { ...fake.listing, name: chosen?.name ?? first.name };
+    fake.state = chosen?.state ?? first.state;
+    return route.fulfill({ status: 204 });
+  });
+
   await page.route(/\/api\/my-business\/(listing|pause|resume|away|photos.*)$/, (route: Route) => {
     const request = route.request();
     const path = new URL(request.url()).pathname.replace('/api/my-business/', '');
@@ -302,6 +383,10 @@ export async function stubMyBusiness(
         );
       }
       fake.version += 1;
+      // A new name or category on a live listing asks the verification team to look again (L2-087 AC6).
+      recheck ||=
+        fake.state === 'live' &&
+        (body['name'] !== fake.listing.name || body['category'] !== fake.listing.categorySlug);
       fake.listing = {
         name: String(body['name']),
         tagline: String(body['tagline']),
@@ -376,6 +461,7 @@ export async function stubMyBusiness(
     const body = request.postDataJSON() as { position?: number; alt?: string };
     if (what === 'position') {
       fake.moves.push({ id, position: body.position! });
+      if (fake.move === 'fails') return route.fulfill(problem(500, { code: 'SERVER_ERROR' }));
       const ordered = photos();
       const moving = ordered.find((photo) => photo.id === id)!;
       ordered.splice(ordered.indexOf(moving), 1);

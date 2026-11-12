@@ -92,7 +92,19 @@
     @if (listing.space; as space) {
       <div class="split" style="margin-top: var(--space-2)">
         <div>
-          <div jb-media-tile [tint]="spaceTile(space).tint" [icon]="spaceTile(space).icon"></div>
+          @if (cover(); as cover) {
+            <div
+              jb-media-tile
+              [photoKey]="cover.key"
+              [photoAlt]="cover.alt"
+              [photoWidth]="cover.width"
+              [photoHeight]="cover.height"
+              sizes="(min-width: 64rem) 40rem, 100vw"
+              priority
+            ></div>
+          } @else {
+            <div jb-media-tile [tint]="spaceTile(space).tint" [icon]="spaceTile(space).icon"></div>
+          }
         </div>
         <div jb-detail-head class="split__sticky">
           <p jb-detail-head-kicker>
@@ -169,6 +181,7 @@
               }
             </dl>
           </section>
+          <ng-container [ngTemplateOutlet]="gallery" />
           @if (space.included.length || space.rules.length) {
             <div jb-section>
               <div class="form-grid form-grid--2">
@@ -228,7 +241,17 @@
     } @else {
       <div class="split" style="margin-top: var(--space-2)">
         <div>
-          @if (tile(); as media) {
+          @if (cover(); as cover) {
+            <div
+              jb-media-tile
+              [photoKey]="cover.key"
+              [photoAlt]="cover.alt"
+              [photoWidth]="cover.width"
+              [photoHeight]="cover.height"
+              sizes="(min-width: 64rem) 40rem, 100vw"
+              priority
+            ></div>
+          } @else if (tile(); as media) {
             <div jb-media-tile [tint]="media.tint" [icon]="media.icon" [tag]="media.label"></div>
           }
         </div>
@@ -412,6 +435,7 @@
               <p style="margin-top: var(--space-3)">{{ listing.about }}</p>
             </section>
           }
+          <ng-container [ngTemplateOutlet]="gallery" />
         </div>
         <div jb-section>
           <aside jb-card heading="Details" headingId="det">
@@ -467,3 +491,24 @@
     }
   }
 }
+<ng-template #gallery>
+  @let photos = galleryPhotos();
+  @if (photos.length) {
+    <section jb-section heading="Photos" headingId="photos">
+      <ul jb-card-grid columns="3">
+        @for (photo of photos; track photo.key) {
+          <li>
+            <div
+              jb-media-tile
+              [photoKey]="photo.key"
+              [photoAlt]="photo.alt"
+              [photoWidth]="photo.width"
+              [photoHeight]="photo.height"
+              sizes="(min-width: 64rem) 16rem, 50vw"
+            ></div>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</ng-template>

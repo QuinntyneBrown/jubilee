@@ -12,7 +12,11 @@ namespace Jubilee.Api.Controllers;
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record SaveListingBody(
     int Version, string? Name, string? Tagline, string? Category, string? About, string? Where, string? Hours, string? Website, string? Highlight,
-    SpaceDraftRequest? Space = null);
+    SpaceDraftRequest? Space = null, Guid? ListingId = null);
+
+/// <summary>The business the owner chooses in the switcher (L2-079 AC5).</summary>
+[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+public sealed record ChooseBusinessBody(Guid ListingId);
 
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 public sealed record MovePhotoBody(int Position);
@@ -32,7 +36,7 @@ public sealed class MyBusinessController(ISender sender) : ControllerBase
     private string Subject => User.ToViewer().Subject!;
 
     [HttpGet]
-    [ErrorReference("JB-BUS-503")]
+    [ErrorReference("JB-BIZ-503")]
     public Task<MyBusinessDto> Overview(CancellationToken cancellationToken) =>
         sender.Send(new GetMyBusinessQuery(Subject), cancellationToken);
 
@@ -46,8 +50,15 @@ public sealed class MyBusinessController(ISender sender) : ControllerBase
     public Task<ListingEditorDto> Save([FromBody] SaveListingBody body, CancellationToken cancellationToken) =>
         sender.Send(new SaveListingCommand(
             Subject, body.Version, body.Name, body.Tagline, body.Category, body.About, body.Where, body.Hours, body.Website, body.Highlight,
-            body.Space?.ToInput()),
+            body.Space?.ToInput(), body.ListingId),
             cancellationToken);
+
+    [HttpPut("current")]
+    public async Task<IActionResult> Choose([FromBody] ChooseBusinessBody body, CancellationToken cancellationToken)
+    {
+        await sender.Send(new ChooseBusinessCommand(Subject, body.ListingId), cancellationToken);
+        return NoContent();
+    }
 
     [HttpPost("pause")]
     public Task<PauseResultDto> Pause(CancellationToken cancellationToken) =>

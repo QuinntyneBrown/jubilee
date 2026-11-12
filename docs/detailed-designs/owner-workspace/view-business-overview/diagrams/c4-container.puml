@@ -4,15 +4,14 @@ LAYOUT_WITH_LEGEND()
 title Containers — View the business overview
 
 Person(owner, "Owner", "Monitors a business listing")
+Person(visitor, "Visitor or member", "Opens a public listing page")
 System_Boundary(jubilee, "Jubilee") {
-  Container(web, "Jubilee Web", "Angular single-page application", "Owner workspace shell and overview page")
-  Container(api, "Jubilee API", "ASP.NET Core", "Owner workspace queries and listing owner policy")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Listings, requests, messages, saved items and daily view counts")
-  ContainerDb(cache, "Cache", "Redis", "Sessions and 30 minute view keys")
+  Container(web, "Jubilee Web", "Angular single-page application", "My business page and the public listing page")
+  Container(api, "Jubilee API", "ASP.NET Core", "Overview query and choice of business and view counting")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings, drafts, requests, conversations, saved items and listing views")
 }
 Rel(owner, web, "Uses", "HTTPS")
-Rel(web, api, "Reads workspace and overview", "JSON/HTTPS")
-Rel(api, web, "Pushes request badge changes", "WebSocket")
-Rel(api, db, "Reads read models and writes view counts", "EF Core")
-Rel(api, cache, "Reads session and sets view keys", "Redis protocol")
+Rel(visitor, web, "Uses", "HTTPS")
+Rel(web, api, "Reads the overview and sends the chosen business and reports views", "JSON/HTTPS")
+Rel(api, db, "Reads the overview and writes WorkspaceChosenAt and ListingView rows", "EF Core")
 @enduml

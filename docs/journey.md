@@ -30,7 +30,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 12 | Verify a listing | Staff review submitted listings, then approve or request changes. | 10 | 85% |
 | 13 | Respond to customer requests | See incoming requests and confirm or decline each one. | 6 | 100% |
 | 14 | Track and cancel requests | Follow each request's progress and cancel an open one. | 6 | 89% |
-| 15 | Run a business listing | Monitor the listing, edit its details, pause or resume it. | 9 | 90% |
+| 15 | Run a business listing | Monitor the listing, edit its details, pause or resume it. | 9 | 100% |
 | 16 | Manage products and services | Add, edit, reorder and delete products and services. | 8 | 90% |
 | 17 | Stay notified | Receive events through the notification centre, toasts, banners and e-mail. | 9 | 89% |
 | 18 | Recover a forgotten password | Request a reset link by e-mail and set a new password. | 3 | 90% |

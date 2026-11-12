@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { RequiresConnection } from '../../directives/requires-connection';
 import { Dialog } from '@angular/cdk/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -13,7 +14,14 @@ import {
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { LISTINGS_API, ListingPage, ListingStatus, ReplyTimeBand, SpaceDetails } from 'api';
+import {
+  LISTINGS_API,
+  ListingPage,
+  ListingPagePhoto,
+  ListingStatus,
+  ReplyTimeBand,
+  SpaceDetails,
+} from 'api';
 import {
   BusinessCard,
   CountPipe,
@@ -125,6 +133,7 @@ const STATUS_WORDS: Record<ListingStatus, string> = {
 @Component({
   selector: 'jb-business-page',
   imports: [
+    NgTemplateOutlet,
     RequiresConnection,
     RouterLink,
     BusinessCard,
@@ -234,6 +243,18 @@ export class BusinessPage {
       text: `You’ll hear back in Messages, ${replies(listing)}. The exact address is shared once they accept.`,
     };
   });
+
+  /** The owner's photos, the cover first (L2-221). An answer from before photos were public has none. */
+  private readonly photos = computed<ListingPagePhoto[]>(() => {
+    const state = this.state();
+    return state.status === 'loaded' ? (state.value.photos ?? []) : [];
+  });
+
+  /** The cover stands in place of the tinted tile (L2-221 AC1). */
+  protected readonly cover = computed(() => this.photos()[0] ?? null);
+
+  /** The photos after the cover, shown under "Photos". */
+  protected readonly galleryPhotos = computed(() => this.photos().slice(1));
 
   protected readonly tile = computed(() => {
     const state = this.state();

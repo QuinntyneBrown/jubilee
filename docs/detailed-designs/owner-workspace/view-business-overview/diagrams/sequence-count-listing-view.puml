@@ -23,33 +23,31 @@ box "Backend — Jubilee API" #D1FADF
   participant "ListingsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetPublicListingQueryHandler" as handler
-  participant "ListingViewRecorder" as recorder
+  participant "RecordListingViewCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
   database "Jubilee database" as db
 end box
 actor -> page : Open /b/:slug
-page -> client : Load public listing
-client -> controller : GET /api/listings/{slug}
-controller -> handler : Send GetPublicListingQuery
-handler -> db : Load live listing
-db --> handler : Listing
-handler -> recorder : RecordAsync(listingId and viewer context)
-alt Viewer is the owner or a known bot
-  recorder -> recorder : Skip count (L2-085 exclusion)
-else Any other viewer
-  recorder -> cache : Set view:{listingId}:{visitorKey} if absent with 30 minute expiry
-  cache --> recorder : Key set or already present
-  opt Key newly set
-    recorder -> db : Increment ListingViewDaily for today
-    db --> recorder : Commit result
+page -> client : getListing(slug)
+client --> page : ListingPage
+page --> actor : Show the listing page
+page -> client : recordView(slug)
+client -> controller : POST /api/listings/{slug}/views
+controller -> handler : Send RecordListingViewCommand(slug, viewer, client address, user agent)
+handler -> db : Load the id and OwnerId of the public listing
+db --> handler : Listing, or none (404 listing_not_found)
+alt Caller is the owner, or the user agent matches KnownBot
+  handler -> handler : Count nothing (L2-085 AC5, L2-037 AC3)
+else Any other caller
+  handler -> handler : Visitor key: member:{subject}, or a SHA-256 hash of address and user agent
+  handler -> db : Any ListingView of this key in the last 30 minutes (ListingView.RepeatWindow)
+  db --> handler : Seen or not
+  opt Not seen
+    handler -> db : Add ListingView.Record(listingId, visitorKey, now) and save
+    db --> handler : Commit result
   end
 end
-recorder --> handler : Done
-handler --> controller : Public listing
-controller --> client : 200 listing
-client --> page : Listing
-page --> actor : Show the listing page
+handler --> controller : Done
+controller --> client : 204 No Content
 @enduml

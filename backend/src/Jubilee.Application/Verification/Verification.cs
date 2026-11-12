@@ -66,6 +66,12 @@ public static class BusinessDays
 }
 
 /// <summary>The writer of the audit log (L2-180 AC1). Records are only ever added.</summary>
+/// <summary>
+/// Where the verification team is told of a re-check (<c>Verification:TeamEmail</c>, else <c>Launch:TeamEmail</c>; null
+/// when nobody is told by e-mail) and the address of the admin application the e-mail links to (ADR 0052).
+/// </summary>
+public sealed record VerificationSettings(string? TeamEmail, string AdminBaseUrl);
+
 public static class AuditLog
 {
     public static void Record(

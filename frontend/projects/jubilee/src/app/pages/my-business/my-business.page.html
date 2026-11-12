@@ -37,7 +37,7 @@
       <div jb-empty-state icon="store" heading="List your business free">
         Tell members what you offer, submit it for verification, and you’re live once we approve it.
         It takes about ten minutes.
-        <a slot="actions" jb-button variant="primary" routerLink="/list-business">
+        <a slot="actions" jb-button variant="primary" routerLink="/list">
           <svg jb-icon name="plus"></svg>List your business
         </a>
         <a slot="actions" jb-button routerLink="/help">How verification works</a>
@@ -71,7 +71,7 @@
         <div jb-alert tone="success" banner>
           <span
             ><strong>{{ b.name }} is verified and live.</strong> Members can find you in
-            {{ b.categorySlug === 'shops' ? 'Shops' : 'the directory' }}.</span
+            {{ b.categoryName ?? 'the directory' }}.</span
           >
 
           <a slot="actions" [routerLink]="['/b', b.slug]">View listing</a>
@@ -84,6 +84,28 @@
           ></button>
         </div>
       }
+      <div class="cluster">
+        @if (b.businesses.length > 1) {
+          <label class="visually-hidden" for="business-switcher">Business</label>
+          <select
+            jb-select
+            #switcher
+            id="business-switcher"
+            controlSize="sm"
+            fit
+            (change)="choose(b, switcher.element)"
+          >
+            @for (option of b.businesses; track option.id) {
+              <option [value]="option.id" [selected]="option.current">
+                {{ option.name }} · {{ option.stageLabel }}
+              </option>
+            }
+          </select>
+        }
+        <a jb-button size="sm" variant="ghost" routerLink="/list" [queryParams]="{ draft: 'new' }">
+          <svg jb-icon name="plus"></svg>List another business
+        </a>
+      </div>
       <jb-workspace-header
         [heading]="b.name!"
         [subtitle]="b.subtitle"
@@ -119,9 +141,17 @@
               [value]="stats.unansweredMessages"
               note="Reply within a day to keep your badge"
             ></div>
-            @if (stats.saved !== null) {
-              <div jb-stat label="Saved by members" [value]="stats.saved" note="This week"></div>
-            }
+            <div
+              jb-stat
+              label="Saved by members"
+              [value]="stats.saved.value"
+              [note]="
+                stats.saved.change > 0
+                  ? '↑ ' + stats.saved.change + ' this week'
+                  : 'None new this week'
+              "
+              [trend]="stats.saved.change > 0 ? 'up' : null"
+            ></div>
           </div>
           <div class="split">
             <section
@@ -253,17 +283,11 @@
           </div>
         } @else {
           @if (b.state === 'changes-requested' && b.verification?.changesRequested; as changes) {
-            <div
-              jb-alert
-              tone="warning"
-              [heading]="
-                (changes.areas.length === 1 ? 'One change needed' : 'Changes needed') +
-                ' before we can publish'
-              "
-            >
+            <div jb-alert tone="warning" [heading]="changesHeading(changes.areas.length)">
               <div>
                 {{ changes.message }}
-                {{ changes.reviewerFirstName }} from the verification team.
+                {{ changes.reviewerFirstName }} from the verification team,
+                {{ day(changes.requestedAt) }}.
               </div>
 
               <a

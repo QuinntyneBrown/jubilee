@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Reorder listing photos
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "EditListingPage" as page
+  participant "MyBusinessApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "MyBusinessController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "MovePhotoCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+alt Pointer or touch
+  actor -> page : Drag a photo by its handle (cdkDragHandle) and drop it
+  alt Dropped where it was
+    page --> actor : Send nothing (L2-088 AC3)
+  else Dropped elsewhere
+    page -> page : drop(): show the new order at once and keep the order before
+    page -> client : movePhoto(id, new position)
+  end
+else Keyboard
+  actor -> page : Press "Move photo {n} earlier" or "Move photo {n} later"
+  page -> client : movePhoto(id, position - 1 or + 1)
+end
+client -> controller : PUT /api/my-business/photos/{id}/position { position }
+controller -> handler : Send MovePhotoCommand(subject, photoId, position)
+handler -> db : Workspace.Owned, then load the listing's photos in order
+db --> handler : Photos
+alt Photo is not one of the listing's
+  handler --> controller : NotFoundException photo_not_found
+  controller --> client : 404 ProblemDetails
+else
+  handler -> handler : Put the photo at the position and call MoveTo(1..n) on each
+  handler -> db : SaveChangesAsync; the cached public page is dropped
+  db --> handler : Commit result
+  handler --> controller : ListingEditorDto
+  controller --> client : 200 OK
+  client --> page : ListingEditor
+  page --> actor : Show the photos in the saved order; the first is tagged "Cover"
+end
+opt The move fails
+  client --> page : HttpErrorResponse
+  page -> page : After a drag, put the photos back in the order before
+  page --> actor : Show "We couldn’t change your photos. Try again."
+end
+@enduml

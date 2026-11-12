@@ -38,6 +38,14 @@ export class BusinessPage extends ShellPage implements Screen {
   readonly backLink: Locator;
   readonly mediaTile: Locator;
   readonly mediaLabel: Locator;
+  /** The cover photo in the tile at the head of the page (L2-221). */
+  readonly coverPhoto: Locator;
+  /** The WebP source of the cover's picture. */
+  readonly coverWebp: Locator;
+  /** "Photos": the photos after the cover. */
+  readonly photos: Locator;
+  readonly photoImages: Locator;
+  readonly photoWebpSources: Locator;
   /** The head of the page: kicker, name, what the business offers and its actions. */
   readonly detailHead: Locator;
   readonly kicker: Locator;
@@ -89,6 +97,11 @@ export class BusinessPage extends ShellPage implements Screen {
     this.backLink = this.main.locator('a.back-link');
     this.mediaTile = this.main.locator('.split .media').first();
     this.mediaLabel = this.mediaTile.locator('.media__tag');
+    this.coverPhoto = this.mediaTile.locator('img');
+    this.coverWebp = this.mediaTile.locator('picture > source[type="image/webp"]');
+    this.photos = this.main.getByRole('region', { name: 'Photos' });
+    this.photoImages = this.photos.locator('.media img');
+    this.photoWebpSources = this.photos.locator('.media picture > source[type="image/webp"]');
     this.detailHead = this.main.locator('.detail-head');
     this.kicker = this.main.locator('.detail-head__kicker');
     this.kickerIcon = this.kicker.locator('svg');

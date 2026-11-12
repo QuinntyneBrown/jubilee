@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Choose a business
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyBusinessPage" as page
+  participant "MyBusinessApi" as client
+  participant "NavigationStore" as nav
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "MyBusinessController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "ChooseBusinessCommandHandler" as handler
+  participant "Listing" as entity
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Choose an entry in the select "Business"
+alt Entry is a draft
+  page --> actor : Navigate to /list?draft={id} (L2-079 AC5)
+else Entry is a listing
+  page -> client : choose(listingId)
+  client -> controller : PUT /api/my-business/current { listingId }
+  controller -> controller : Read the subject; ChooseBusinessBody refuses unknown fields
+  controller -> handler : Send ChooseBusinessCommand(subject, listingId)
+  handler -> db : Load the listing by id, owner and not deleted
+  alt Listing is the caller's own
+    db --> handler : Listing
+    handler -> entity : ChooseForWorkspace(now)
+    entity --> handler : WorkspaceChosenAt stamped
+    handler -> db : SaveChangesAsync
+    db --> handler : Commit result
+    handler --> controller : Done
+    controller --> client : 204 No Content
+    client --> page : Chosen
+    page -> client : overview(), without the loading state
+    client --> page : MyBusiness of the chosen listing
+    page -> nav : load()
+    page --> actor : Show the chosen business; the select keeps focus
+  else Listing of another member (L2-133)
+    db --> handler : None
+    handler --> controller : ForbiddenException FORBIDDEN
+    controller --> client : 403 ProblemDetails
+    client --> page : HttpErrorResponse
+    page -> page : Set the select back to the business shown
+    page --> actor : Toast "We couldn’t switch businesses": "{Business} is still shown. Try again."
+  end
+end
+@enduml
