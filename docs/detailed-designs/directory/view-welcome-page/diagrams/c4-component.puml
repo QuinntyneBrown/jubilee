@@ -6,10 +6,10 @@ title Components — View welcome page
 
 Person(visitor, "Visitor", "Anyone not signed in")
 Container_Boundary(web, "Jubilee Web") {
-  Component(guard, "WelcomeRedirectGuard", "Angular route guard", "Sends a signed-in member to /")
+  Component(guard, "welcomeRedirectGuard", "Angular route guard", "Sends a signed-in member to /")
   Component(page, "WelcomePage", "Angular page", "Hero and categories and steps and featured and owner panel")
   Component(card, "BusinessCard", "Angular component", "One featured business with the Verified mark")
-  Component(client, "DirectoryApi", "Typed HTTP client", "getWelcome")
+  Component(client, "DirectoryApi", "Contract behind DIRECTORY_API", "getWelcome")
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "DirectoryController", "ASP.NET Core controller", "GET /api/directory/welcome for anonymous callers")
@@ -17,11 +17,9 @@ Container_Boundary(api, "Jubilee API") {
   Component(readCache, "IDirectoryReadCache", "Application service", "60 s read cache")
   Component(filter, "PublicListingFilter", "Query filter", "Verified and live listings only")
   Component(selector, "FeaturedSelector", "Domain service", "Current featured slots or most recently verified")
+  Component(invalidator, "DirectoryCacheInvalidationInterceptor", "EF Core SaveChangesInterceptor", "Removes cached directory entries after a save")
 }
-Container_Boundary(worker, "Jubilee Worker") {
-  Component(invalidator, "DirectoryCacheInvalidator", "Outbox handler", "Removes cached directory entries")
-}
-ContainerDb(cache, "Cache", "Redis", "Read cache")
+ContainerDb(cache, "Cache", "IDistributedCache: memory or Redis", "Read cache")
 ContainerDb(db, "Jubilee database", "SQL Server", "Listing and Category and FeaturedSlot")
 
 Rel(visitor, guard, "Opens /welcome")
@@ -36,5 +34,5 @@ Rel(handler, selector, "Selects 4 with")
 Rel(readCache, cache, "Stores")
 Rel(filter, db, "Queries", "EF Core")
 Rel(selector, db, "Queries", "EF Core")
-Rel(invalidator, cache, "Removes entries")
+Rel(invalidator, readCache, "Invalidates after a Listing, Product, Service or FeaturedSlot is saved")
 @enduml
