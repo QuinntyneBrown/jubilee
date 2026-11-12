@@ -37,8 +37,9 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | 82% |
 | 26 | Download data and delete account | Export personal data or permanently delete the account. | 5 | 83% |
 | 27 | Meet Jubilee on the marketing site | Read the marketing page, watch the pitch film, open the app or start listing. | 4 | 95% |
+| 28 | Rent a room or space | List a room, suite or hall; find spaces by term on Browse, the category and search; request one and let the owner confirm. | 19 | 100% |
 
-**Total: 168 days** for the 27 journeys, **83% complete** weighted by effort.
+**Total: 187 days** for the 28 journeys, **87% complete** weighted by effort.
 
 ## Notes
 

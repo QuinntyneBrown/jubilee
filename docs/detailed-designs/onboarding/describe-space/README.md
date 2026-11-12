@@ -50,13 +50,17 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
   name" as "Listing title" (hint "Say what it is and where: “Furnished room in
   Leslieville”.") and "One line on what you do" as "One line renters should
   know", hides "Category", the products, the services and the store address,
-  and shows the space fields. The page form holds the space fields in one
-  `FormGroup` named `space` beside the existing controls, so switching between
-  the three cards keeps each typed value (`L2-071`).
+  and shows the space fields. The space fields are signals held by one
+  **`SpaceForm`** (`jubilee/src/app/services/space-form.ts`) beside the page's
+  own, so switching between the three cards keeps each typed value
+  (`L2-071`). `SpaceForm` also holds the term rules, the checks, the body
+  sent to the API and the preview's view model, and the listing editor uses
+  the same class for a space (`L2-200`).
 - **Space fields** — composed from library components, no new presentation in
   the page:
-  - "How are you renting it?" — `jb-radio-group` of four `jb-choice-card`
-    radio cards in term order; Long term is chosen by default.
+  - "How are you renting it?" — a fieldset of four `jb-choice-card` radio
+    cards in `jb-choice-cards`, in term order; Long term is chosen by default.
+    "What do you offer?" lays its three cards out with `columns="3"`.
   - "Price per month" or "Price per night" — `jb-input-group` with a "$"
     prefix, whole dollars.
   - "Move-in date" or "Available" — `jb-input`, free text.
@@ -79,13 +83,14 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
     Long term, but its value stays in the form.
   - The note "Add photos from My business once you submit. The first photo is
     your cover." (`L2-190` AC11).
-- **`SpacePreview`** — the preview region headed "How renters see it". It
-  renders `jb-space-card` (`directory/browse-spaces`) from the form's values
+- **Preview** — the region headed "How renters see it". It renders
+  `jb-space-card-preview` (`directory/browse-spaces`) from `SpaceForm`'s values
   with the mark "Pending verification" and redraws without a server call
   (`L2-076`).
-- **`SpaceTermRules`** — pure helper in `frontend/projects/api/src/lib/`
-  mirroring `SpaceTerms`: labels, price unit, minimum-stay choices and whether
-  the household is asked, so the form relabels without a request.
+- **Term rules** — `SpaceForm` mirrors `SpaceTerms`: the price unit, the
+  minimum-stay choices and whether the household is asked, so the form
+  relabels without a request; the term badges and tiles come from
+  `space-terms.ts` in the components library.
 - **`ListingDraftsApi`** — typed HTTP client for the existing endpoints: `POST
   /api/listing-drafts` and `PUT /api/listing-drafts/{id}` save, `GET
   /api/listing-drafts/current` resumes and `POST
@@ -150,7 +155,11 @@ The feature extends the onboarding slice from `ListBusinessPage` to the
 The verification team's review (`L2-100`, `GET /api/admin/verifications/{id}`)
 has the kind `space` and a `space` object (`ReviewSpace`) with the term, rent,
 minimum stay, neighbourhood, the space, key facts, what's included, the
-household and the house rules, and no exact address (`L2-191` AC3). Approval makes the
+household and the house rules, and no exact address (`L2-191` AC3).
+`AdminVerificationPage` shows them in a card "The space" after the owner, with
+the caption "The exact address is never shown here; only the renter the owner
+accepts receives it.", and previews the space with `jb-space-card-preview`
+under "How renters see it". Approval makes the
 space live in "Rooms & rentals" and the rooms shelf (`L2-191` AC4).
 
 ### Open questions
@@ -209,8 +218,8 @@ database`.
 
 ### Components
 
-`ListBusinessPage` composes the space fields and `SpacePreview` and reads the
-term rules from `SpaceTermRules`. `ListingDraftsController` sends the save and
+`ListBusinessPage` composes the space fields and the preview, and holds them
+in `SpaceForm`. `ListingDraftsController` sends the save and
 submit commands, which use `Drafts.ValidateSpace`, `Drafts.SpaceFrom` and
 `SpaceTerms`.
 

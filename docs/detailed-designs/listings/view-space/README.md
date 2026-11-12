@@ -86,6 +86,14 @@ The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
 - **`SpaceTerms`** — supplies the price unit, the minimum-stay label and the
   call to action, so a change of term (`L2-200` AC3) reaches the page with no
   other change.
+- **`EditListingPage`** — the owner's editor at `/my-business/listing`. For a
+  space (`ListingEditorDto.Space`, with its exact address) it shows "Listing
+  title", "One line renters should know", "About" and the space fields of
+  List a space in place of "Category", "Hours", "Website" and "Highlight",
+  holds them in the shared `SpaceForm` (`onboarding/describe-space`), checks
+  them as when the space was listed, sends them as `space` in the save
+  (`SaveListingBody.Space`, the category staying `rooms-rentals`), and previews
+  the space with `jb-space-card-preview` under "How renters see it" (`L2-200`).
 
 ### Open questions
 

@@ -9,6 +9,7 @@
 | handle-incoming-requests | 5 days | 80% |
 | request-item | 4 days | 90% |
 | request-quote | 4 days | 90% |
+| request-space | 5 days | 100% |
 | track-requests | 5 days | 75% |
 
 book-meeting: backend (requests, availability, idempotent booking, calendar file) and the booking dialog are done with tests. Deferred: owner-set hours and slot length UI, the calendar download link on the request page (arrives with track-requests), reminders.
@@ -20,3 +21,5 @@ handle-incoming-requests, confirm-request, decline-request (ADR 0021): the owner
 track-requests, cancel-request (ADR 0022): the member's list and detail with the timeline, cancel with an 8-second undo, the booking completion and unanswered-request jobs, and polling for status changes are done with tests. Deferred: the real-time channel (L2-070), the cancellation card and owner notification (journey 17), the owner's "Mark fulfilled" control (journey 23), a chrome entry to the page (journey 20).
 
 request-item: the order request (delivery methods, free shipping, server-computed amounts, stock check at send, owner e-mail, idempotency) and its dialog on the product page are done with tests. Deferred: the order card in the conversation and the in-app notification (stay-notified, journey 17), stock reduction on confirm (L2-052, journey 13), tax (shown as "+ tax", never calculated; ADR 0017).
+
+request-space (ADR 0040): the request dialog by term with its checks, the owner's confirm and decline, and the exact address released only to the accepted member are done with tests. Excludes deferred work (see ADR 0040): payment, leases, calendars and double booking.

@@ -40,12 +40,16 @@ The feature extends the three directory slices (`directory/browse-home`,
   `/b/:slug`, so click, tap, Enter and Space open the space page. The link's
   accessible name is the title, and the term, rent and neighbourhood are text,
   never colour alone (`L2-194`). It takes a space card view model matching
-  `SpaceCardDto` and an optional `pending` input for the onboarding preview.
+  `SpaceCardDto`. Previews of a space that is not live use its sibling
+  **`jb-space-card-preview`** (`SpaceCardPreview`), which shares the card's
+  rules, follows nothing and is marked "Pending verification" until it is
+  `verified` (`onboarding/describe-space`).
 - **`jb-term-filter`** (`TermFilter`, `components/src/lib/term-filter/`) —
   the five toggle buttons with `aria-pressed`. It emits the chosen term's wire
   value or `null` for "Any length".
-- **`spaceAvailability`** — pure helper in `frontend/projects/api/src/lib/`
-  that turns the availability text into the card line: "Available now" when it
+- **`availability`** — pure helper in
+  `frontend/projects/components/src/lib/space-card/space-terms.ts`, beside the
+  term badges, tiles and `formatRent`, that turns the availability text into the card line: "Available now" when it
   is "Now", "From {text}" for a monthly term, and the text as given for a Short
   stay.
 - **`BrowsePage`** (`pages/browse/`) — after "Featured this week" it renders
@@ -96,7 +100,7 @@ The feature extends the three directory slices (`directory/browse-home`,
   address is not in the searched text. A space hit keeps
   `Kind` `business`, so it counts in "Businesses" (`L2-029` AC1), and carries
   `SearchHit.Space` (`SpaceCardDto`) so `SearchPage` renders it as a
-  `jb-space-card`. `DatabaseNameSearch`, the fallback, applies the same fields.
+  `jb-space-card` in a card grid above the rows of the businesses that match. `DatabaseNameSearch`, the fallback, applies the same fields.
 - **`PublicListingFilter`** — the same public-listing rule as every directory
   list; a space is never an exception.
 

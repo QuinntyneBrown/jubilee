@@ -17,8 +17,8 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ListBusinessPage" as page
-  participant "SpaceTermRules" as rules
-  participant "SpacePreview" as preview
+  participant "SpaceForm" as rules
+  participant "jb-space-card-preview" as preview
   participant "ListingDraftsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF

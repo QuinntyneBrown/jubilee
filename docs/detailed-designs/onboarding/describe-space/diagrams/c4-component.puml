@@ -4,9 +4,9 @@ LAYOUT_WITH_LEGEND()
 title Components — Describe a space
 
 Container_Boundary(web, "Jubilee Web") {
-  Component(page, "ListBusinessPage", "Angular page", "Third card A space; relabels the form and holds the space FormGroup")
-  Component(preview, "SpacePreview", "Page region", "How renters see it with jb-space-card marked Pending verification")
-  Component(rules, "SpaceTermRules", "Pure helper", "Labels, price unit, minimum-stay choices and household per term")
+  Component(page, "ListBusinessPage", "Angular page", "Third card A space; relabels the form; holds the space in SpaceForm")
+  Component(preview, "jb-space-card-preview", "Angular component", "How renters see it, marked Pending verification")
+  Component(rules, "SpaceForm", "Class", "The space fields, term rules, checks and body; shared with the listing editor")
   Component(client, "ListingDraftsApi", "Typed HTTP client", "Calls /api/listing-drafts")
 }
 Container_Boundary(api, "Jubilee API") {
