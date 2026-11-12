@@ -1,4 +1,5 @@
 using Jubilee.Application.Abstractions;
+using Jubilee.Application.Accounts;
 using Jubilee.Application.Errors;
 using Jubilee.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,9 @@ public static class ReviewWriting
 public static class ReviewRules
 {
     public const string NotFoundCode = "listing_not_found";
+    public const string NotEligibleCode = "NOT_ELIGIBLE";
+    public const string OwnListingCode = "OWN_LISTING";
+    public const string AlreadyReviewedCode = "ALREADY_REVIEWED";
 
     /// <summary>The listing whose reviews are asked for, as the caller may see it: public, or theirs or the team's to preview (L2-225 AC7).</summary>
     public static async Task<Listing> ListingAsync(IAppDbContext db, string slug, Viewer viewer, CancellationToken cancellationToken)
@@ -61,6 +65,47 @@ public static class ReviewRules
         }
 
         return await HasConfirmedRequestAsync(db, listing.Id, subject, cancellationToken) ? ReviewWriting.Eligible : ReviewWriting.NotEligible;
+    }
+
+    /// <summary>Refuses the owner, a member with no confirmed request and a member who has a review shown (L2-225 AC2, AC4, AC5).</summary>
+    public static async Task EnsureMayWriteAsync(IAppDbContext db, Listing listing, string subject, CancellationToken cancellationToken)
+    {
+        switch (await WritingAsync(db, listing, new Viewer(subject, false), cancellationToken))
+        {
+            case ReviewWriting.Owner:
+                throw new ForbiddenException(OwnListingCode, "You can't review your own business.");
+            case ReviewWriting.Written:
+                throw new ConflictException(AlreadyReviewedCode, "You have already reviewed this business.");
+            case ReviewWriting.NotEligible:
+                throw new ForbiddenException(NotEligibleCode, "You can review a business after it confirms a request of yours.");
+        }
+    }
+
+    /// <summary>The rating and the trimmed text, or HTTP 422 with a code per field (L2-237 AC4).</summary>
+    public static string Validate(int? rating, string? text, bool itemUnknown)
+    {
+        var errors = new Dictionary<string, string>();
+        if (!Review.IsRating(rating))
+        {
+            errors["rating"] = "RATING_REQUIRED";
+        }
+
+        if (itemUnknown)
+        {
+            errors["itemId"] = "ITEM_UNKNOWN";
+        }
+
+        var trimmed = text?.Trim() ?? string.Empty;
+        if (trimmed.Length < Review.MinTextLength)
+        {
+            errors["text"] = "TOO_SHORT";
+        }
+        else if (trimmed.Length > Review.MaxTextLength)
+        {
+            errors["text"] = "TOO_LONG";
+        }
+
+        return errors.Count > 0 ? throw new ValidationFailedException(errors) : trimmed;
     }
 
     /// <summary>Who the reply is from: the owner's name without credentials, or the listing's name (L2-228 AC5).</summary>
