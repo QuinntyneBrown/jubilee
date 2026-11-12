@@ -1,5 +1,5 @@
 // Acceptance tests of server.js, the host of the three sites (eng/azure/README.md). Run with
-// `node --test eng/azure/`. Each test starts server.js as App Service does, with its settings in
+// `node --test eng/azure/server.test.js`. Each test starts server.js as App Service does, with its settings in
 // the environment, against a stand-in for the Jubilee API. Nothing but Node's standard library.
 //
 // Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186; ADR 0040, ADR 0044, ADR 0046.

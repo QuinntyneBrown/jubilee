@@ -9,7 +9,7 @@
 //     the caller's address in X-Jubilee-Client-Address, proved by X-Jubilee-Proxy-Key (PROXY_KEY).
 //     See ADR 0040.
 // Unknown paths without a file extension answer index.html so the app's router can take them.
-// server.test.js beside this file holds its tests: `node --test eng/azure/`.
+// server.test.js beside this file holds its tests: `node --test eng/azure/server.test.js`.
 'use strict';
 
 const crypto = require('node:crypto');
