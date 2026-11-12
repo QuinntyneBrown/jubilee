@@ -211,9 +211,10 @@ export async function stubMyBusiness(
     ...fake.listing,
     categories: CATEGORIES,
     photos: photos(),
-    recheckRequested: false,
+    recheckRequested: recheck,
   });
 
+  let recheck = false;
   let current = LUZANDRE;
   const first = { name: fake.listing.name, state: fake.state };
   const businesses = (): FakeBusinessOption[] => [
@@ -380,6 +381,10 @@ export async function stubMyBusiness(
         );
       }
       fake.version += 1;
+      // A new name or category on a live listing asks the verification team to look again (L2-087 AC6).
+      recheck ||=
+        fake.state === 'live' &&
+        (body['name'] !== fake.listing.name || body['category'] !== fake.listing.categorySlug);
       fake.listing = {
         name: String(body['name']),
         tagline: String(body['tagline']),

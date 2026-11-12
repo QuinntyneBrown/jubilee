@@ -7,7 +7,7 @@ keeps the mocks' BEM classes and accessible state semantics.
 - **86 screens, 457 mocks:** 49 pages (288 states), 30 dialogs (132 states), 7 notifications (37 states).
 - Every mock is responsive (360, 768 and 1280 px), themed light and dark through tokens, and
   keyboard-accessible.
-- **19 e-mails** in [`emails/`](emails/index.html) (L2-179, ADR 0038): each as the HTML a mail
+- **20 e-mails** in [`emails/`](emails/index.html) (L2-179, ADR 0038): each as the HTML a mail
   client shows at 600 px, a dark rendition and its plain-text part. They are built from the layout
   the backend embeds by `node tools/email-mocks/build.mjs`; change the layout or the script, not
   the files. They are not screens, so they are not in `manifest.json` or the matrix below.

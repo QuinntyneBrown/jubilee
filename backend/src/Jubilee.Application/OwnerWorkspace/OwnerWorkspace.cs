@@ -330,7 +330,8 @@ public sealed record SaveListingCommand(
     string Subject, int Version, string? Name, string? Tagline, string? CategorySlug, string? About, string? Where,
     string? Hours, string? Website, string? Highlight, Onboarding.SpaceInput? Space = null, Guid? ListingId = null) : IRequest<ListingEditorDto>;
 
-public sealed class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<SaveListingCommand, ListingEditorDto>
+public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings account, VerificationSettings verification)
+    : IRequestHandler<SaveListingCommand, ListingEditorDto>
 {
     public async Task<ListingEditorDto> Handle(SaveListingCommand request, CancellationToken cancellationToken)
     {
@@ -426,6 +427,7 @@ public sealed class SaveListingCommandHandler(IAppDbContext db, TimeProvider clo
 
         var now = clock.GetUtcNow();
         var before = $"{listing.Name} | {listing.CategorySlug}";
+        var (oldName, oldCategory) = (listing.Name, listing.CategorySlug);
         var space = isSpace ? Onboarding.Drafts.SpaceFrom(request.Space) : null;
         var reworded = listing.Edit(
             name, tagline, request.CategorySlug!, request.About, space?.Neighbourhood ?? request.Where, hours, website, request.Highlight, now);
@@ -439,10 +441,49 @@ public sealed class SaveListingCommandHandler(IAppDbContext db, TimeProvider clo
             db.AuditRecords.Add(AuditRecord.Make(
                 request.Subject, listing.OwnerName ?? listing.Name, "listing.recheck-requested", "listing", listing.Id.ToString(),
                 before, $"{listing.Name} | {listing.CategorySlug}", "The name or category of a live listing changed.", now));
+            await TellOfRecheck(listing, oldName, oldCategory, now, cancellationToken);
         }
 
         await db.SaveChangesAsync(cancellationToken);
         return await Workspace.Editor(db, listing, cancellationToken);
+    }
+}
+
+public sealed partial class SaveListingCommandHandler
+{
+    /// <summary>
+    /// Tells the verification team and the owner that a live listing changed its name or category and is looked at
+    /// again within two business days (L2-087 AC6). The e-mails are saved with the change, so they are sent once or
+    /// the change is not saved; the outbox sends them.
+    /// </summary>
+    private async Task TellOfRecheck(Listing listing, string oldName, string oldCategory, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        static string CategoryName(string slug) => Category.Find(slug)?.Name ?? slug;
+        var owner = Guid.TryParse(listing.OwnerId, out var id)
+            ? await db.Members.AsNoTracking().SingleOrDefaultAsync(m => m.Id == id, cancellationToken)
+            : null;
+        var title = $"We’ll re-check {listing.Name}";
+        Notifications.NotificationRules.Tell(
+            db, listing.OwnerId, "listing", title, "Your change is live now. The verification team looks at the listing again within two business days.", "/my-business", now);
+        if (owner is not null)
+        {
+            db.OutboxMessages.Add(OutboxMessage.Email(
+                owner.Id,
+                owner.Email,
+                title,
+                $"Hi {owner.FirstName},\n\nYour change is live now. Because the name or category changed, the verification team looks at the listing again within two business days. You don’t need to do anything.\n\nSee it here: {account.PublicBaseUrl.TrimEnd('/')}/b/{listing.Slug}\n\nJubilee · Toronto's Christian marketplace\n",
+                now));
+        }
+
+        if (!string.IsNullOrWhiteSpace(verification.TeamEmail))
+        {
+            db.OutboxMessages.Add(OutboxMessage.Email(
+                null,
+                verification.TeamEmail.Trim(),
+                $"Re-check: {listing.Name} changed its name or category",
+                $"A live listing changed. The change is public now; look at the listing again within two business days.\n\nName: {oldName} → {listing.Name}\nCategory: {CategoryName(oldCategory)} → {CategoryName(listing.CategorySlug)}\nOwner: {owner?.DisplayName ?? listing.OwnerName ?? "Unknown"}\n\nThe listing: {verification.AdminBaseUrl.TrimEnd('/')}/verifications/{listing.Id}\n",
+                now));
+        }
     }
 }
 

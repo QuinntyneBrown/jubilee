@@ -641,6 +641,40 @@ test.describe('run a business listing: the editor (L2-087, L2-088)', () => {
     });
   });
 
+  test('L2-087 AC6: a new name is live at once and the owner is told the team will look again', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+
+    await editor.name.fill('Luzandre Print Co.');
+    await editor.save.click();
+
+    await expect(editor.success).toContainText('Your changes are live now.');
+    await expect(editor.success).toContainText(
+      'Because you changed the name or category, the verification team will take another look within two business days. Your listing stays live.',
+    );
+  });
+
+  test('L2-087 AC6: a save that changes neither the name nor the category promises no re-check', async ({
+    page,
+    jb,
+  }) => {
+    const editor = new EditListingPage(page);
+    await editor.setWidth(1280);
+    await stubMyBusiness(page);
+    await jb.goto(EDITOR);
+
+    await editor.tagline.fill('Church tees printed in Toronto');
+    await editor.save.click();
+
+    await expect(editor.success).toContainText('Your changes are live now.');
+    await expect(editor.success).not.toContainText('verification team');
+  });
+
   test('L2-087: discarding puts the saved words back', async ({ page, jb }) => {
     const editor = new EditListingPage(page);
     await editor.setWidth(1280);
