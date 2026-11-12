@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Write a review
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "WriteReviewPage", "Page container", "Rating, item, text, view and one idempotency key")
+  Component(subject, "jb-review-subject", "Library component", "Thumbnail, name and category or host")
+  Component(stars, "jb-star-scale", "Library component", "Five native radios named n of 5 and a word")
+  Component(chips, "jb-chip", "Library component", "Item choice with aria-pressed")
+  Component(field, "jb-field and jb-textarea", "Library component", "Tell others about it with the counter")
+  Component(posted, "jb-review-posted", "Library component", "Thanks, your review is live.")
+  Component(client, "ReviewsApi", "Service contract", "REVIEWS_API implemented by HttpReviewsApi")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ReviewsController", "ASP.NET Core controller", "GET reviews/new and POST reviews")
+  Component(form, "GetReviewFormQuery", "MediatR handler", "Listing, items and author name")
+  Component(write, "WriteReviewCommand", "MediatR handler", "Key, validation, eligibility, limit, store, notify")
+  Component(eligible, "ReviewEligibility", "Application rule", "Confirmed or completed request, not owner, no live review")
+  Component(tally, "ReviewTally", "Application rule", "Recounts Stars1 to Stars5 on Listing and Product")
+  Component(notify, "NotificationRules and EmailPolicy", "Application rules", "Tells the owner and queues the e-mail")
+}
+ComponentDb(db, "Jubilee database", "SQL Server", "Reviews, Requests, Listings, Products, Notifications, OutboxMessages")
+
+Rel(page, subject, "Composes")
+Rel(page, stars, "Composes")
+Rel(page, chips, "Composes")
+Rel(page, field, "Composes")
+Rel(page, posted, "Shows after posting")
+Rel(page, client, "Loads and posts through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, form, "Sends")
+Rel(ctrl, write, "Sends")
+Rel(form, eligible, "Applies")
+Rel(write, eligible, "Applies")
+Rel(write, tally, "Applies")
+Rel(write, notify, "Applies")
+Rel(write, db, "Saves in one transaction")
+@enduml

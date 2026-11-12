@@ -1,0 +1,77 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Edit and remove a review
+
+package "Jubilee Web" {
+  interface ReviewsApi {
+    +edit(id: string, request: WriteReviewRequest): Observable<ReviewItem>
+    +remove(id: string): Observable<void>
+  }
+  class EditReviewDialog {
+    #rating: Signal<number | null>
+    #itemId: Signal<string | null>
+    #text: Signal<string>
+    #view: Signal<'form' | 'busy' | 'failed'>
+    #save(): void
+  }
+  class EditReviewData {
+    +slug: string
+    +review: ReviewItem
+    +items: ReviewableItem[]
+    +itemLegend: 'service' | 'product' | null
+  }
+  class RemoveReviewDialog {
+    #busy: Signal<boolean>
+    #failed: Signal<boolean>
+    #remove(): void
+  }
+  class RemoveReviewData {
+    +reviewId: string
+    +name: string
+  }
+}
+
+package "Jubilee.Application.Reviews" {
+  class EditReviewCommand {
+    +Subject: string
+    +ReviewId: Guid
+    +Rating: int?
+    +ItemId: Guid?
+    +Text: string?
+  }
+  class RemoveReviewCommand {
+    +Subject: string
+    +ReviewId: Guid
+  }
+  class ReviewTally
+}
+
+package "Jubilee.Domain" {
+  class Review {
+    +EditedAt: DateTimeOffset?
+    +Edit(rating, item, text, now): void
+  }
+  class ReviewReport
+}
+
+EditReviewDialog --> EditReviewData
+EditReviewDialog --> ReviewsApi : REVIEWS_API
+RemoveReviewDialog --> RemoveReviewData
+RemoveReviewDialog --> ReviewsApi : REVIEWS_API
+EditReviewCommand ..> Review : Edit
+EditReviewCommand ..> ReviewTally
+RemoveReviewCommand ..> Review : deletes
+RemoveReviewCommand ..> ReviewReport : deletes
+RemoveReviewCommand ..> ReviewTally
+@enduml

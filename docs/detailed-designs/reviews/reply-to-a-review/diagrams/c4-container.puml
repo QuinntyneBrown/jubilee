@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Reply to a review
+
+Person(owner, "Owner", "Replies to a review")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Reply to {author} dialog on the listing page")
+  Container(api, "Jubilee API", "ASP.NET Core", "PUT /api/reviews/{id}/reply for the owner only")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Reviews, notifications, outbox")
+}
+System_Ext(mail, "E-mail service", "Delivers e-mail")
+Rel(owner, web, "Uses", "HTTPS")
+Rel(web, api, "Puts the reply", "JSON/HTTPS")
+Rel(api, db, "Stores the reply and the author's notification", "EF Core")
+Rel(worker, db, "Reads the outbox from", "EF Core")
+Rel(worker, mail, "Sends through")
+@enduml

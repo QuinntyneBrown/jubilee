@@ -1,0 +1,105 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Read reviews
+
+package "Jubilee Web (api library)" {
+  interface ReviewsApi {
+    +list(slug: string, product?: string): Observable<ListingReviews>
+  }
+  class ListingReviews {
+    +summary: ReviewSummary
+    +viewer: 'visitor' | 'member' | 'owner'
+    +writing: 'sign-in' | 'eligible' | 'not-eligible' | 'written' | 'owner'
+    +items: ReviewItem[]
+  }
+  class ReviewSummary {
+    +average: number
+    +count: number
+    +breakdown: number[5]
+  }
+  class ReviewItem {
+    +id: string
+    +author: string
+    +initials: string
+    +rating: number
+    +itemId: string | null
+    +itemName: string
+    +text: string
+    +createdAt: string
+    +editedAt: string | null
+    +mine: boolean
+    +reply: ReviewReply | null
+  }
+  class ReviewReply {
+    +from: string
+    +text: string
+    +at: string
+    +editedAt: string | null
+  }
+  class ReviewHelpers <<functions>> {
+    +sortReviews(items, sort, now): ReviewItem[]
+    +filterReviews(items, stars): ReviewItem[]
+  }
+}
+
+package "Jubilee Web (components)" {
+  class Reviews <<jb-reviews>> {
+    +reviews: ListingReviews
+    +name: string
+    #sort: Signal<ReviewSort>
+    #stars: Signal<number | null>
+    #all: Signal<boolean>
+    +write, edit, remove, reply, report: OutputEmitterRef
+  }
+  class RatingSummary <<jb-rating-summary>>
+  class ReviewView <<jb-review>>
+  class Stars <<jb-stars>>
+  class RatingInline <<jb-rating-inline>>
+}
+
+package "Jubilee.Application" {
+  class GetListingReviewsQuery {
+    +Slug: string
+    +Product: string?
+    +Subject: string?
+  }
+  class RatingDto {
+    +Average: decimal
+    +Count: int
+    +{static} From(stars): RatingDto?
+  }
+  class BusinessCardDto {
+    +Rating: RatingDto?
+  }
+  class ProductCardDto {
+    +Rating: RatingDto?
+  }
+  class SpaceCardDto {
+    +Rating: RatingDto?
+  }
+}
+
+ReviewsApi ..> ListingReviews
+ListingReviews *-- ReviewSummary
+ListingReviews *-- "0..*" ReviewItem
+ReviewItem *-- "0..1" ReviewReply
+Reviews ..> ReviewHelpers
+Reviews *-- RatingSummary
+Reviews *-- "0..*" ReviewView
+RatingSummary *-- Stars
+ReviewView *-- Stars
+BusinessCardDto --> RatingDto
+ProductCardDto --> RatingDto
+SpaceCardDto --> RatingDto
+@enduml

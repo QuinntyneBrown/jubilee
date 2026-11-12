@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Review data
+
+Person(author, "Author", "Owns their reviews")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Account page: download data, delete account")
+  Container(api, "Jubilee API", "ASP.NET Core", "Authorization, validation, limits, star counts, deletion and export")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Daily retention job and data export job")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Reviews, ReviewReports, star counts, audit records")
+}
+Rel(author, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(worker, db, "Deletes reviews taken down 12 months ago; builds exports", "EF Core")
+@enduml

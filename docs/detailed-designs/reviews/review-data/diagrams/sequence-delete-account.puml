@@ -1,0 +1,35 @@
+@startuml
+title UML sequence behaviour — Delete an account with reviews
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "DeleteAccountDialog" as dialog
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AccountController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "DeleteAccountCommand" as handler
+  participant "ReviewTally" as tally
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> dialog : Type DELETE and confirm (L2-017)
+dialog -> controller : DELETE /api/account
+controller -> handler : Send with the member of the session
+handler -> db : The member's reviews and the review reports they sent
+handler -> db : Remove the reviews (with their replies and the reports of them) and their reports
+loop Each listing and product touched
+  handler -> tally : Refresh(listing, product)
+  tally -> db : Set Stars1..Stars5
+end
+handler -> db : The rest of the deletion; SaveChanges, one transaction
+controller --> dialog : 204
+dialog --> actor : Welcome page with the confirmation toast
+note over db : The cards and summaries no longer count the reviews (L2-238 AC2)
+@enduml

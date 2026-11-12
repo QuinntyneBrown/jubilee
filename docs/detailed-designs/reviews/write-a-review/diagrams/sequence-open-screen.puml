@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Open the Write a review screen
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Member" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "WriteReviewPage" as page
+  participant "ReviewsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ReviewsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetReviewFormQuery" as handler
+  participant "ReviewEligibility" as rule
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /b/{slug}/review (memberGuard)
+page -> client : form(slug)
+client -> controller : GET /api/listings/{slug}/reviews/new
+controller -> handler : Send with the member of the session (L2-133)
+handler -> db : Load the public listing
+alt Not public
+  handler --> controller : 404
+  controller --> page : 404
+  page --> actor : Not-found page
+else Public
+  handler -> rule : EnsureMayWrite(listing, subject)
+  rule -> db : Requests of the member for the listing and their live review
+  alt Owner of the listing
+    rule --> controller : 403 OWN_LISTING
+    controller --> page : 403
+    page --> actor : "You can review {name} after they confirm a request of yours." and Back
+  else No confirmed or completed request
+    rule --> controller : 403 NOT_ELIGIBLE
+    controller --> page : 403
+    page --> actor : "You can review {name} after they confirm a request of yours." and Back (L2-225 AC2)
+  else Live review exists
+    rule --> controller : 409 ALREADY_REVIEWED
+    controller --> page : 409
+    page --> actor : Navigate to /b/{slug} (L2-225 AC5)
+  else Eligible
+    handler --> controller : Listing, items, legend, author name
+    controller --> page : 200 ReviewForm
+    page --> actor : How was it? with stars, items, text and Post review (L2-226)
+  end
+end
+@enduml

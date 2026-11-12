@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Read reviews
+
+Person(visitor, "Visitor", "Reads reviews and card ratings without a session")
+Person(member, "Member", "Reads reviews, sees their own first, filters and sorts")
+Person(owner, "Owner", "Reads the reviews of their listing and replies")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(visitor, jubilee, "Reads listings, products and cards in", "HTTPS")
+Rel(member, jubilee, "Reads and filters reviews in", "HTTPS")
+Rel(owner, jubilee, "Reads the reviews of their listing in", "HTTPS")
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Write a review
+
+Person(member, "Member", "Writes a review")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Write a review screen at /b/{slug}/review")
+  Container(api, "Jubilee API", "ASP.NET Core", "Checks eligibility and stores the review and the owner's notification")
+  Container(worker, "Jubilee Worker", ".NET worker service", "Dispatches the outbox e-mail")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Reviews, star counts, notifications, outbox")
+}
+System_Ext(mail, "E-mail service", "Delivers e-mail")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, api, "GET reviews/new and POST reviews with Idempotency-Key", "JSON/HTTPS")
+Rel(api, db, "Reads requests and writes the review in one transaction", "EF Core")
+Rel(worker, db, "Reads the outbox from", "EF Core")
+Rel(worker, mail, "Sends through")
+@enduml

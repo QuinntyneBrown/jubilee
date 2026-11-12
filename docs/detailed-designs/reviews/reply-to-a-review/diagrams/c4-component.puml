@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Reply to a review
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(page, "BusinessPage", "Page container", "Opens the dialog for the owner and reloads the reviews")
+  Component(section, "jb-reviews", "Library component", "Reply or Edit reply on each review for the owner")
+  Component(dialog, "ReplyReviewDialog", "CDK dialog", "Your reply, Post reply or Save reply")
+  Component(client, "ReviewsApi", "Service contract", "reply")
+  Component(item, "jb-notification-item", "Library component", "Kind review with the star icon")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ReviewsController", "ASP.NET Core controller", "PUT /api/reviews/{id}/reply")
+  Component(cmd, "ReplyToReviewCommand", "MediatR handler", "Owner only, validate, limit, Review.Reply")
+  Component(notify, "NotificationRules and EmailPolicy", "Application rules", "Tell the author and queue the e-mail on the first reply")
+}
+ComponentDb(db, "Jubilee database", "SQL Server", "Reviews, Notifications, OutboxMessages")
+
+Rel(section, page, "Emits reply to")
+Rel(page, dialog, "Opens")
+Rel(dialog, client, "Posts through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, cmd, "Sends")
+Rel(cmd, notify, "Applies")
+Rel(cmd, db, "Saves in one transaction")
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Review data
+
+Person(author, "Author", "Writes reviews, downloads their data, deletes their account")
+Person(reader, "Visitor or member", "Reads reviews under the shown name only")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+
+Rel(author, jubilee, "Writes, downloads and deletes in", "HTTPS")
+Rel(reader, jubilee, "Reads reviews in", "HTTPS")
+@enduml

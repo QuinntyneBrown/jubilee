@@ -1,0 +1,39 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Read reviews
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(business, "BusinessPage", "Page container", "Business, shop and space page; holds the reviews load state")
+  Component(product, "ProductPage", "Page container", "Reviews of one product")
+  Component(link, "jb-rating-link", "Library component", "Stars, average and n reviews under the name")
+  Component(reviews, "jb-reviews", "Library component", "Section, filter, sort, first three and Show all, empty state")
+  Component(summary, "jb-rating-summary", "Library component", "Average, stars, count, five bars, Verified note")
+  Component(review, "jb-review", "Library component", "One review with its actions and the reply")
+  Component(stars, "jb-stars", "Library component", "Five stars filled to a value")
+  Component(inline, "jb-rating-inline", "Library component", "Star, average and count on a card")
+  Component(cards, "jb-business-card, jb-space-card, jb-product-card", "Library components", "Cards of the directory")
+  Component(client, "ReviewsApi", "Service contract", "REVIEWS_API; sortReviews and filterReviews helpers")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ReviewsController", "ASP.NET Core controller", "GET reviews, AllowAnonymous")
+  Component(query, "GetListingReviewsQuery", "MediatR handler", "Summary, relation, writing state, items")
+  Component(dir, "Directory queries", "MediatR handlers", "Cards with RatingDto from star counts")
+}
+ComponentDb(db, "Jubilee database", "SQL Server", "Reviews, Listings, Products")
+
+Rel(business, link, "Composes")
+Rel(business, reviews, "Composes")
+Rel(product, reviews, "Composes")
+Rel(reviews, summary, "Composes")
+Rel(reviews, review, "Composes")
+Rel(summary, stars, "Composes")
+Rel(review, stars, "Composes")
+Rel(cards, inline, "Compose")
+Rel(business, client, "Loads through")
+Rel(product, client, "Loads through")
+Rel(client, ctrl, "GET", "JSON/HTTPS")
+Rel(ctrl, query, "Sends")
+Rel(query, db, "Reads")
+Rel(dir, db, "Reads")
+@enduml

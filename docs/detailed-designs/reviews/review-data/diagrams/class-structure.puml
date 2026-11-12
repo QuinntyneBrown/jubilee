@@ -1,0 +1,66 @@
+@startuml
+' --- shared skin header ---
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+' --------------------------
+title Class structure — Review data
+
+package "Jubilee.Domain" {
+  class Member {
+    +FirstName: string
+    +LastName: string
+  }
+  class Review {
+    +AuthorSubject: string
+    +AuthorName: string
+    +Initials: string
+    +TakenDownAt: DateTimeOffset?
+    +{static} ShownName(first, last): string
+  }
+  class ReviewReport
+  class Listing {
+    +Stars1..Stars5: int
+  }
+  class Product {
+    +Stars1..Stars5: int
+  }
+}
+
+package "Jubilee.Application" {
+  class ReviewTally {
+    +{static} Refresh(db, listingId, productId): Task
+  }
+  class RatingDto {
+    +Average: decimal
+    +Count: int
+    +{static} From(stars): RatingDto?
+    +{static} Summary(stars): ReviewSummaryDto
+  }
+  class DeleteAccountCommand
+  class DataExports
+  class ScheduledJobs {
+    +retention: deletes reviews taken down 12 months ago
+  }
+  class RateLimitedException
+}
+
+Review ..> Member : name frozen at writing
+ReviewReport --> Review
+ReviewTally ..> Listing
+ReviewTally ..> Product
+RatingDto ..> Listing : reads counts
+RatingDto ..> Product : reads counts
+DeleteAccountCommand ..> Review : deletes the member's
+DeleteAccountCommand ..> ReviewReport : deletes the member's
+DeleteAccountCommand ..> ReviewTally
+DataExports ..> Review : exports
+ScheduledJobs ..> Review : deletes
+@enduml

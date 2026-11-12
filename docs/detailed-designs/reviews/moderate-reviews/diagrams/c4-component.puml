@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Moderate reviews
+
+Container_Boundary(web, "Jubilee Web") {
+  Component(dialog, "ReportReviewDialog", "CDK dialog", "Reason, optional note, Send report")
+  Component(client, "ReviewsApi", "Service contract", "report with Idempotency-Key")
+}
+Container_Boundary(admin, "Jubilee Admin Web") {
+  Component(list, "AdminReportsPage", "Page container", "Reports with the type Review")
+  Component(detail, "AdminReportPage", "Page container", "The review, its reply and its reports")
+  Component(action, "ReportActionDialog", "CDK dialog", "Dismiss, message the reporter, take the review down")
+  Component(adminApi, "AdminApi", "Service contract", "Staff report endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "ReviewsController", "ASP.NET Core controller", "POST /api/reviews/{id}/reports")
+  Component(report, "ReportReviewCommand", "MediatR handler", "Key, reason, not own, limit, store")
+  Component(modCtrl, "AdminModerationController", "ASP.NET Core controller", "GET reports, GET report, POST action")
+  Component(store, "ReportStore", "Application", "Loads listing, conversation and review reports")
+  Component(apply, "ApplyReportActionCommand", "MediatR handler", "take-down: Review.TakeDown, resolve, recount, tell, audit")
+}
+ComponentDb(db, "Jubilee database", "SQL Server", "Reviews, ReviewReports, ReportActions, AuditRecords")
+
+Rel(dialog, client, "Sends through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, report, "Sends")
+Rel(report, db, "Saves")
+Rel(list, adminApi, "Lists through")
+Rel(detail, adminApi, "Opens through")
+Rel(detail, action, "Opens")
+Rel(action, adminApi, "Applies through")
+Rel(adminApi, modCtrl, "Calls", "JSON/HTTPS")
+Rel(modCtrl, store, "Uses")
+Rel(modCtrl, apply, "Sends")
+Rel(apply, db, "Saves in one transaction")
+@enduml

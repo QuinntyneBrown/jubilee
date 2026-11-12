@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — Edit and remove a review
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Author" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "BusinessPage" as page
+  participant "EditReviewDialog or RemoveReviewDialog" as dialog
+  participant "ReviewsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ReviewsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "EditReviewCommand or RemoveReviewCommand" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+== Edit ==
+actor -> page : Press "Edit" on Your review
+page -> dialog : Open "Edit your review" with the review
+actor -> dialog : Change the stars, the item or the text and press "Save changes"
+alt No star or fewer than 40 characters
+  dialog --> actor : Field messages, nothing sent (L2-232 AC2)
+else Valid
+  dialog --> actor : "Saving…" busy
+  dialog -> client : edit(id, request)
+  client -> controller : PUT /api/reviews/{id}
+  controller -> handler : Send with the member of the session
+  handler -> db : Live review with this id and this author?
+  alt Not the author's
+    handler --> controller : 404 REVIEW_NOT_FOUND (L2-232 AC6)
+  else The author's
+    handler -> handler : Validate, apply the hourly limit
+    handler -> db : Review.Edit sets EditedAt, keeps the reply; ReviewTally recounts; save
+    handler --> controller : ReviewItemDto
+  end
+  controller --> client : 200
+  client --> dialog : ReviewItem
+  dialog --> page : Close with the review
+  page -> client : list(slug)
+  page --> actor : "Edited" on the review, toast "Review updated", focus to Edit (L2-232 AC3)
+end
+== Remove ==
+actor -> page : Press "Remove" on Your review
+page -> dialog : Open "Remove your review?"
+actor -> dialog : Press "Remove review"
+dialog -> client : remove(id)
+client -> controller : DELETE /api/reviews/{id}
+controller -> handler : Send with the member of the session
+handler -> db : Delete the review and its reports; ReviewTally recounts; save
+controller --> client : 204
+dialog --> page : Close
+page -> client : list(slug)
+page --> actor : Review gone, Write a review offered, toast "Review removed", focus to the Reviews heading (L2-232 AC5)
+opt Fails
+  dialog --> actor : "We couldn’t save that" and what was typed kept (L2-232 AC4)
+end
+@enduml

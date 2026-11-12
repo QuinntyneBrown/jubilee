@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Read reviews
+
+Person(reader, "Visitor or member", "Reads reviews")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Web", "Angular single-page application", "Reviews section, rating under the name, card ratings")
+  Container(api, "Jubilee API", "ASP.NET Core", "GET /api/listings/{slug}/reviews (anonymous) and the directory queries")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Reviews and the star counts of listings and products")
+}
+Rel(reader, web, "Uses", "HTTPS")
+Rel(web, api, "Reads reviews and directory answers from", "JSON/HTTPS")
+Rel(api, db, "Reads live reviews and star counts from", "EF Core")
+@enduml

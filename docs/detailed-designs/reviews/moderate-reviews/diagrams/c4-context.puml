@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Moderate reviews
+
+Person(member, "Member or owner", "Reports a review that breaks the rules")
+Person(verifier, "Verification team", "Dismisses the report or takes the review down")
+Person(author, "Author", "Is told why the review was taken down")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace and its admin application")
+
+Rel(member, jubilee, "Reports a review in", "HTTPS")
+Rel(verifier, jubilee, "Handles review reports in the admin application", "HTTPS")
+Rel(jubilee, author, "Tells of the take-down and its reason", "Notification centre and e-mail")
+@enduml
