@@ -29,7 +29,7 @@ After the accountant and the mover both go well, Daniel opens `/list` on a Sunda
 | Business name | Okafor Web Studio |
 | One line on what you do | Fast, accessible websites for small businesses and churches. One developer, evenings. |
 | Category | Business & tech |
-| Area you serve | Downtown |
+| Area you serve | Toronto, remote |
 | Service 1 | "Website check-up", "45 minutes by video. Bring your site address.", Free, Book a time |
 | Service 2 | "Small business website", "Five pages, mobile first, two to four weeks.", Ask for a quote |
 | Service 3 | "Care plan", "Updates, backups and small edits, per month.", Fixed price $120, Ask for a quote |
@@ -55,8 +55,8 @@ In My business, under Listing, he adds:
   is: he invoices, he pays tax on it, and the accountant he found on Jubilee says so.
 - **Hours.** Bookable times come from the listing's hours, so he must publish his evenings. He
   would rather offer the times his calendar shows as free.
-- **"Area you serve".** His clients are anywhere; the work is remote. He picks Downtown because
-  that is where he lives.
+- **"Area you serve".** His clients are anywhere; the work is remote. The field is free text, so
+  he writes "Toronto, remote" and wonders which area chip on the category page will find him.
 - **Price.** He nearly leaves the care plan as "Ask", then decides a plain price is more honest.
 
 ## What the profile cannot say

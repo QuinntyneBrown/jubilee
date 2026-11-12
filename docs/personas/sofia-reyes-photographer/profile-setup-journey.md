@@ -26,7 +26,7 @@ happens". A daily summary at 7:00 a.m. is no use to someone who loses a date by 
 | Business name | Sofia Reyes Photography |
 | One line on what you do | Family, baptism and wedding photography across Toronto, from a home studio in Mimico. |
 | Category | Media |
-| Area you serve | Etobicoke |
+| Area you serve | Etobicoke studio; weddings across Toronto |
 | Service 1 | "Family session", "One hour, outdoors or at home. 40 edited photos.", Fixed price $350, Book a time |
 | Service 2 | "Baptism or first communion", "Church and family photos, about two hours.", Fixed price $450, Ask for a quote |
 | Service 3 | "Wedding day", "Full day. Second photographer on request.", Ask for a quote |
@@ -55,7 +55,8 @@ In My business, under Listing:
   She enters a wide window and expects to decline some times.
 - **"Book a time" for a baptism.** The parish sets the date, not her. She chooses "Ask for a
   quote" so that the family tells her the date first.
-- **Area.** She shoots weddings anywhere in the city. Etobicoke is where the studio is.
+- **Area.** She shoots weddings anywhere in the city and the studio is in Etobicoke. The field takes
+  her own words, so she says both.
 - **Prices.** She gives her own parish a lower price in person. She lists the full price and
   leaves the rest to conversation.
 

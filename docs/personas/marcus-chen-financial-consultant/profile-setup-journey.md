@@ -25,7 +25,7 @@ everything once, at 7:00 a.m., than be interrupted in a client meeting.
 | Business name | Chen Family Financial |
 | One line on what you do | Insurance, RESPs and retirement planning for families. Plain advice, no pressure. |
 | Category | Financial & insurance |
-| Area you serve | Scarborough |
+| Area you serve | Scarborough and North York |
 | Service 1 | "First meeting", "45 minutes, by video or in person in Agincourt.", Free, Book a time |
 | Service 2 | "Family protection review", "Life, disability and critical illness cover.", Free, Book a time |
 | Service 3 | "RESP set-up", "Bring ID for you and a birth certificate for each child.", Free, Book a time |

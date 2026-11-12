@@ -59,6 +59,15 @@ Themes that recur across the `feedback.md` files. They are observations, not req
   themselves in "Christian-owned business".
 - **Showing the work.** Six photos is few for a photographer, a designer or a maker, and a
   regulated professional has nowhere to state a licence (Marcus, Caleb).
+- **Gaps the personas found in the requirements.** Writing the journeys showed places where
+  [`../specs/L2.md`](../specs/L2.md) is silent, and the personas meet them as friction. The
+  service business page shows credential tags and "Languages" (L2-033), but no field in listing a
+  business or Edit listing collects them (L2-072, L2-087). The verification checklist asks for "At
+  least one photo of the products or work" (L2-100), but photos are added in Edit listing, not on
+  `/list`. No field says how an owner declares "Free quote", "Emergency calls" or "Open
+  Saturdays", or how a free-text "Area you serve" maps to the five area filters (L2-024). A shop
+  has nowhere to set its delivery methods (L2-046, L2-091). Confirming a "Request a viewing"
+  releases the exact address (L2-207, L2-208).
 - **Finding a space.** Spaces can be filtered by term only: a family that needs three bedrooms at
   a rent it can carry (André) has to open every card, and a renter cannot say what they need.
 - **Renting rightly.** Owners of spaces want to know what they may ask a renter and how to choose

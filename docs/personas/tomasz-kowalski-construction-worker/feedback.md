@@ -44,7 +44,7 @@ Thank you for this."
 | To know photos are expected | Photos are added from My business; the checklist asks for at least one | Ask for one photo on `/list`, or say on the confirmation that a photo is needed before approval |
 | To understand a change request | "{n} changes needed before we can publish" | Plainer words at the top, such as "Almost there. Add one thing and we can publish" |
 | To write less English | English only; a 1,500-character About | A few plain prompts for About ("Who are you?", "How do you work?") that an owner answers in a sentence each |
-| To say where he works | Five areas; none covers the west end of the old city | Review the areas against where owners say they work |
+| To say where he works | He types his area freely, but the five areas members filter by have none for the west end of the old city | Review the areas against where owners say they work |
 
 > These are a persona's suggestions, not requirements. Anything taken up needs a requirement in
 > `docs/specs/`, a detailed design and a mock before it is built, and must serve the mission.

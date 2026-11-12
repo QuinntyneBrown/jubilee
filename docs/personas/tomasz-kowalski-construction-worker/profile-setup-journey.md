@@ -26,7 +26,7 @@ At `/account/notifications` he changes nothing. "New messages" and "Request upda
 | Business name | Kowalski Brothers Decks & Renos |
 | One line on what you do | Decks, fences and small renovations on weekends. Two brothers, careful work, fair price. |
 | Category | Home & property |
-| Area you serve | Etobicoke |
+| Area you serve | Roncesvalles, west end, Etobicoke |
 | Service 1 | "Deck build or repair", "We come to measure first. Free.", Ask for a quote |
 | Service 2 | "Fence and gate", "Wood. Price after we see the yard.", Ask for a quote |
 | Service 3 | "Small renovation", "Basement framing, drywall, doors, trim.", Ask for a quote |
@@ -50,9 +50,9 @@ After the change request, in My business under Listing:
   Tomek. He and Marek choose a name that evening, and it is the first time the work has had one.
 - **The one line.** Ninety characters in English takes him fifteen minutes. The counter helps:
   he can see he is allowed to stop.
-- **Area you serve.** He lives near Roncesvalles and works across the west end. No area has that
-  name, so he picks Etobicoke, where most jobs have been.
-- **About.** 1,500 characters looks like an exam. He writes 370 and stops.
+- **Area you serve.** He lives near Roncesvalles and works across the west end. He types the
+  places in his own words; the areas members filter by have no name for the west end.
+- **About.** 1,500 characters looks like an exam. He writes about 300 and stops.
 - **Hours.** Saturday only looks small beside other listings. It is the truth, so he leaves it.
 
 ## What the profile cannot say
