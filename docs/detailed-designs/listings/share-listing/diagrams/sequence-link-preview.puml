@@ -15,41 +15,34 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 participant "Social or chat app" as app
-box "Backend — Jubilee API" #D1FADF
-  participant "ListingDocumentController" as controller
+box "App host" #E0F2FE
+  participant "server.js" as host
 end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "GetListingPreviewQueryHandler" as handler
-  participant "OpenGraphTagBuilder" as tags
+box "Backend — Jubilee API" #D1FADF
+  participant "SharePreviewController" as controller
+  participant "GetSharePreviewQueryHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
   database "Jubilee database" as db
 end box
-participant "Media storage" as media
-app -> controller : GET https://{host}/b/{slug}
-controller -> handler : Send GetListingPreviewQuery
-handler -> cache : Get preview by slug
-alt Cached within 60 seconds
-  cache --> handler : ListingPreview
-else Not cached
-  cache --> handler : Miss
-  handler -> db : Load name and tagline and cover photo of the live listing (L2-028)
+app -> host : GET https://{host}/b/{slug}\nUser-Agent: a link-preview fetcher
+alt User agent matches previewAgents
+  host -> controller : GET /api/listings/{slug}/social-preview
+  controller -> handler : Send GetSharePreviewQuery
+  handler -> db : Load the public listing (WherePublic, L2-028)
   db --> handler : Listing or none
-  opt Live listing found
-    handler -> cache : Store preview for 60 seconds
-    cache --> handler : Stored
+  alt Public listing
+    handler --> controller : Document with og:title, og:description, og:url, og:image (L2-038 AC4)
+    controller --> host : 200 text/html
+    host --> app : 200 the preview document
+    app -> host : GET /og-image.png
+    host --> app : 1200 × 630 PNG
+  else Not public or unknown
+    handler --> controller : NotFoundException
+    controller --> host : 404 problem details
+    host --> app : 404, no listing tags
   end
-end
-alt Live listing
-  handler --> controller : ListingPreview
-  controller -> tags : Build(preview)
-  tags --> controller : Encoded og:title and og:description and og:image and og:url (L2-038)
-  controller --> app : 200 application document with the Open Graph tags in the head
-  app -> media : GET the og:image URL
-  media --> app : Image
-else Listing not public or unknown
-  handler --> controller : NotFound
-  controller --> app : 404 application document without listing tags (L2-028)
+else Any other user agent (a browser, a search engine)
+  host --> app : 200 index.html (the app)
 end
 @enduml

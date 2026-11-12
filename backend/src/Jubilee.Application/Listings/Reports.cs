@@ -2,6 +2,7 @@ using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Directory;
 using Jubilee.Application.Errors;
+using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ public sealed record ReportedDto(Guid Id);
 public sealed record ReportListingCommand(string Subject, string Slug, string? Reason, string? Description, string? IdempotencyKey, string? ReporterName = null)
     : IRequest<ReportedDto>;
 
-public sealed class ReportListingCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<ReportListingCommand, ReportedDto>
+public sealed class ReportListingCommandHandler(IAppDbContext db, TimeProvider clock, VerificationSettings team) : IRequestHandler<ReportListingCommand, ReportedDto>
 {
     public const string OwnListingCode = "OWN_LISTING";
 
@@ -80,15 +81,48 @@ public sealed class ReportListingCommandHandler(IAppDbContext db, TimeProvider c
         var report = (await db.ListingReports.Where(r => r.ListingId == listing.Id && r.ReporterSubject == request.Subject)
             .Include(r => r.Entries).ToListAsync(cancellationToken))
             .OrderByDescending(r => r.CreatedAt).FirstOrDefault();
-        if (report is null || !report.AcceptsAdditionAt(now))
+        var added = report is not null && report.AcceptsAdditionAt(now);
+        if (!added)
         {
             report = ListingReport.Open(listing.Id, request.Subject, request.ReporterName ?? string.Empty, now);
             db.ListingReports.Add(report);
         }
 
-        db.ListingReportEntries.Add(report.Add(reason, description, key, now));
+        var entry = report!.Add(reason, description, key, now);
+        db.ListingReportEntries.Add(entry);
+        ReportSubmitted.Tell(db, team, listing, report, entry, added, now);
         await db.SaveChangesAsync(cancellationToken);
         return new ReportedDto(report.Id);
+    }
+}
+
+/// <summary>
+/// The verification team's notice of a report of a listing (L2-105 AC1, ADR 0055): "New report: {business}", or
+/// "More on a report: {business}" when the entry joined the reporter's report of the last 24 hours, with the reason
+/// in the dialog's words, the description and the report in the admin application. It never names the reporter.
+/// </summary>
+public static class ReportSubmitted
+{
+    public static readonly IReadOnlyDictionary<ReportReason, string> ReasonWords = new Dictionary<ReportReason, string>
+    {
+        [ReportReason.NotRealBusiness] = "It isn’t a real business",
+        [ReportReason.Misleading] = "The listing is misleading or out of date",
+        [ReportReason.BadExperience] = "I had a bad experience",
+        [ReportReason.Other] = "Something else",
+    };
+
+    public static void Tell(
+        IAppDbContext db, VerificationSettings team, Listing listing, ListingReport report, ListingReportEntry entry, bool added, DateTimeOffset now)
+    {
+        var subject = added ? $"More on a report: {listing.Name}" : $"New report: {listing.Name}";
+        var opening = added
+            ? "The member added to their report of a listing. Look at it within one business day."
+            : "A member reported a listing. Look at it within one business day.";
+        var body =
+            $"{opening}\n\nListing: {listing.Name}\nReason: {ReasonWords[entry.Reason]}\nWhat happened: {entry.Description}\n\n" +
+            $"Open the report: {VerificationTeam.AdminLink(team, $"/reports/{report.Id}")}\n\n" +
+            "The reporter's name is shown to verifiers in the admin application only.\n\nJubilee · Toronto's Christian marketplace\n";
+        VerificationTeam.Tell(db, team, subject, body, now, report.Id);
     }
 }
 

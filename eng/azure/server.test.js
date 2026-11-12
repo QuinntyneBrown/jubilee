@@ -2,7 +2,8 @@
 // `node --test eng/azure/server.test.js`. Each test starts server.js as App Service does, with its settings in
 // the environment, against a stand-in for the Jubilee API. Nothing but Node's standard library.
 //
-// Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186; ADR 0040, ADR 0044, ADR 0047.
+// Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186, L2-038 (AC4); ADR 0040, ADR 0044, ADR 0047,
+// ADR 0055.
 'use strict';
 
 const { test, after } = require('node:test');
@@ -82,7 +83,7 @@ async function host(settings) {
     env: { PATH: process.env.PATH, PORT: String(port), STATIC_ROOT: root, ...settings },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
-  const site = { port, log: '' };
+  const site = { port, root, log: '' };
   cleanups.push(() => child.kill());
   await new Promise((resolve, reject) => {
     child.on('exit', (code) => reject(new Error(`server.js stopped with ${code}: ${site.log}`)));
@@ -146,6 +147,118 @@ function marketingHost(api, more = {}) {
     ...more,
   }).then((site) => Object.assign(site, { dir }));
 }
+
+// ---- The link preview of a shared listing (L2-038 AC4, ADR 0055) ----
+
+const PREVIEW = '<!doctype html><title>Legacy Financial · Jubilee</title><meta property="og:image" content="https://app.jubilee.test/og-image.png">';
+const FETCHERS = {
+  Facebook: 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+  X: 'Twitterbot/1.0',
+  LinkedIn: 'LinkedInBot/1.0 (compatible; Mozilla/5.0; Apache-HttpClient +http://www.linkedin.com)',
+  WhatsApp: 'WhatsApp/2.23.20.0',
+  Slack: 'Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)',
+  Discord: 'Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)',
+  Telegram: 'TelegramBot (like TwitterBot)',
+  iMessage: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_1) AppleWebKit/601.2.4 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.4 facebookexternalhit/1.1 Facebot Twitterbot/1.0',
+};
+
+function previewApi() {
+  return standIn('127.0.0.1', (seen) =>
+    seen.url.endsWith('/social-preview') ? { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' }, body: PREVIEW } : { status: 404 },
+  );
+}
+
+for (const [app, agent] of Object.entries(FETCHERS)) {
+  test(`Given the app's host, when ${app}'s link-preview fetcher asks for /b/{slug}, then it gets the social preview of the API`, async () => {
+    const api = await previewApi();
+    const site = await host({ API_ORIGIN: api.origin });
+
+    const answer = await call(site, { path: '/b/legacy-financial', headers: { 'User-Agent': agent, Host: 'app.jubilee.test' } });
+
+    assert.equal(answer.status, 200);
+    assert.equal(answer.body, PREVIEW);
+    assert.match(answer.headers['content-type'], /^text\/html/);
+    assert.deepEqual(api.requests.map((r) => r.url), ['/api/listings/legacy-financial/social-preview']);
+    assert.equal(api.requests[0].headers.host, 'app.jubilee.test');
+  });
+}
+
+test('Given the app\'s host, when a browser asks for /b/{slug}, then it gets the app and the API is not called', async () => {
+  const api = await previewApi();
+  const site = await host({ API_ORIGIN: api.origin });
+
+  const answer = await call(site, {
+    path: '/b/legacy-financial',
+    headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36' },
+  });
+
+  assert.equal(answer.status, 200);
+  assert.equal(answer.body, '<!doctype html><title>Jubilee</title>');
+  assert.equal(api.requests.length, 0);
+});
+
+test('Given the app\'s host, when a search engine asks for /b/{slug}, then it gets the app, as a browser does', async () => {
+  const api = await previewApi();
+  const site = await host({ API_ORIGIN: api.origin });
+
+  const answer = await call(site, {
+    path: '/b/legacy-financial',
+    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' },
+  });
+
+  assert.equal(answer.body, '<!doctype html><title>Jubilee</title>');
+  assert.equal(api.requests.length, 0);
+});
+
+test('Given a link-preview fetcher, when it asks for a listing that is not public, then the API\'s 404 is relayed with no listing tags', async () => {
+  const api = await standIn('127.0.0.1', () => ({ status: 404, headers: { 'Content-Type': 'application/problem+json' }, body: '{"status":404}' }));
+  const site = await host({ API_ORIGIN: api.origin });
+
+  const answer = await call(site, { path: '/b/paused-one', headers: { 'User-Agent': FETCHERS.Slack } });
+
+  assert.equal(answer.status, 404);
+  assert.doesNotMatch(answer.body, /og:/);
+});
+
+test('Given a link-preview fetcher, when it asks for a page under a listing or another page, then it gets the app', async () => {
+  const api = await previewApi();
+  const site = await host({ API_ORIGIN: api.origin });
+
+  for (const path_ of ['/b/legacy-financial/p/a-product', '/b/', '/c/financial-insurance', '/b/legacy-financial/share']) {
+    const answer = await call(site, { path: path_, headers: { 'User-Agent': FETCHERS.Facebook } });
+    assert.equal(answer.body, '<!doctype html><title>Jubilee</title>', path_);
+  }
+  assert.equal(api.requests.length, 0);
+});
+
+test('Given a link-preview fetcher and a query string, when it asks for /b/{slug}, then the preview is of the slug alone', async () => {
+  const api = await previewApi();
+  const site = await host({ API_ORIGIN: api.origin });
+
+  await call(site, { path: '/b/legacy-financial?utm_source=whatsapp', headers: { 'User-Agent': FETCHERS.WhatsApp } });
+
+  assert.deepEqual(api.requests.map((r) => r.url), ['/api/listings/legacy-financial/social-preview']);
+});
+
+test('Given the marketing host, which forwards only /api/launch, when a link-preview fetcher asks for /b/{slug}, then it gets the page and the API is not called', async () => {
+  const api = await previewApi();
+  const site = await host({ API_ORIGIN: api.origin, API_PATHS: '/api/launch' });
+
+  const answer = await call(site, { path: '/b/legacy-financial', headers: { 'User-Agent': FETCHERS.Facebook } });
+
+  assert.equal(answer.body, '<!doctype html><title>Jubilee</title>');
+  assert.equal(api.requests.length, 0);
+});
+
+test('Given the app\'s public folder, when og-image.png is asked for, then it is served as a PNG', async () => {
+  const site = await host({});
+  fs.copyFileSync(path.join(__dirname, '..', '..', 'frontend', 'projects', 'jubilee', 'public', 'og-image.png'), path.join(site.root, 'og-image.png'));
+
+  const answer = await call(site, { path: '/og-image.png', headers: { 'User-Agent': FETCHERS.Facebook } });
+
+  assert.equal(answer.status, 200);
+  assert.equal(answer.headers['content-type'], 'image/png');
+});
 
 // ---- The Host of a forwarded request (ADR 0047) ----
 

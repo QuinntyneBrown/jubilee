@@ -1,0 +1,13 @@
+Subject: New report: Legacy Financial
+
+A member reported a listing. Look at it within one business day.
+
+Listing: Legacy Financial
+Reason: The listing is misleading or out of date
+What happened: The office address on the listing is closed; they moved last spring.
+
+Open the report: https://admin.jubilee.to/reports/3f9c2a71-8d4e-4b6a-9c15-2e7f0b8d41a6
+
+The reporter's name is shown to verifiers in the admin application only.
+
+Jubilee · Toronto's Christian marketplace

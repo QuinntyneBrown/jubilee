@@ -10,6 +10,8 @@ export class ShareListingDialog {
   readonly whatsapp: Locator;
   readonly more: Locator;
   readonly done: Locator;
+  /** The polite status that says the link was copied (L2-038 AC2). */
+  readonly status: Locator;
 
   constructor(page: Page) {
     this.root = page.getByRole('dialog');
@@ -20,5 +22,6 @@ export class ShareListingDialog {
     this.whatsapp = this.root.getByRole('link', { name: 'WhatsApp' });
     this.more = this.root.getByRole('button', { name: /^More/ });
     this.done = this.root.getByRole('button', { name: 'Done' });
+    this.status = this.root.getByRole('status');
   }
 }

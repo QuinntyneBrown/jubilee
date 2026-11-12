@@ -1,0 +1,112 @@
+WEBVTT
+
+00:00:00.525 --> 00:00:03.929
+Journey twenty-one: share or report a listing.
+
+00:00:03.929 --> 00:00:08.961
+Anyone can pass a listing on, and a member can privately report one.
+
+00:00:08.961 --> 00:00:13.845
+This run takes the journey from seventy-eight percent to complete.
+
+00:00:14.699 --> 00:00:18.810
+Anyone, signed in or not, presses Share on a listing.
+
+00:00:18.810 --> 00:00:24.240
+The dialog, Share Luzandre dot com, shows the listing's own link, with
+
+00:00:24.240 --> 00:00:26.723
+Copy, E-mail, WhatsApp and More.
+
+00:00:27.425 --> 00:00:32.643
+Copy puts the link on the clipboard. The button reads Copied for two
+
+00:00:32.643 --> 00:00:37.554
+seconds, and a polite status tells a screen reader: Link copied.
+
+00:00:37.554 --> 00:00:39.473
+Focus stays where it was.
+
+00:00:40.175 --> 00:00:45.554
+More appears only where the device has a share sheet, and opens it with
+
+00:00:45.554 --> 00:00:49.343
+the name and the link. Both cases now have a test.
+
+00:00:50.045 --> 00:00:55.316
+Done closes the dialog, and focus returns to Share, the control that
+
+00:00:55.316 --> 00:00:57.797
+opened it. Escape does the same.
+
+00:00:58.520 --> 00:01:01.555
+A pasted link builds a preview in a chat.
+
+00:01:01.555 --> 00:01:06.812
+This is the image every shared listing now carries: the Jubilee lockup,
+
+00:01:06.812 --> 00:01:08.960
+drawn from the design tokens.
+
+00:01:09.818 --> 00:01:14.483
+The app's host now tells a link-preview fetcher from a browser.
+
+00:01:14.483 --> 00:01:19.297
+WhatsApp, Facebook, Slack and the others get the business's name,
+
+00:01:19.297 --> 00:01:22.778
+tagline and that image. A browser gets the app.
+
+00:01:23.756 --> 00:01:28.979
+Reporting needs an account. A visitor who presses Report this listing is
+
+00:01:28.979 --> 00:01:33.404
+asked to join or sign in first, and comes back to the report.
+
+00:01:34.234 --> 00:01:39.076
+Joanna, signed in, opens the report. Reports are private.
+
+00:01:39.076 --> 00:01:44.767
+She chooses: the listing is misleading or out of date, and writes a
+
+00:01:44.767 --> 00:01:48.250
+sentence. The counter shows what is left.
+
+00:01:48.953 --> 00:01:52.596
+On its way, the form is read-only and busy.
+
+00:01:52.596 --> 00:01:55.985
+A second press, or Escape, does nothing.
+
+00:01:56.686 --> 00:02:00.006
+The server answers, and the dialog thanks her.
+
+00:02:00.006 --> 00:02:05.059
+Her report is private, and the verification team reviews it within one
+
+00:02:05.059 --> 00:02:05.998
+business day.
+
+00:02:08.146 --> 00:02:13.077
+In the same transaction as the report, the team is e-mailed: New report,
+
+00:02:13.077 --> 00:02:17.735
+with the business, the reason, what happened and a link to it in the
+
+00:02:17.735 --> 00:02:20.338
+admin application. Never the reporter.
+
+00:02:21.196 --> 00:02:26.271
+Tests prove each criterion: the share sheet, the announcement, focus,
+
+00:02:26.271 --> 00:02:30.611
+the busy dialog, and a report that fails after ten seconds.
+
+00:02:30.611 --> 00:02:34.804
+API tests prove the e-mail; host tests prove the preview.
+
+00:02:35.665 --> 00:02:40.971
+Journey twenty-one is complete, with no migration and no new setting.
+
+00:02:40.971 --> 00:02:46.201
+Left for the owner: the visual, responsive and accessibility sweeps.

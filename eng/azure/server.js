@@ -8,7 +8,8 @@
 //   - the admin application: static files, and /api sent to https://app.jubilee.to (API_ORIGIN) with
 //     the caller's address in X-Jubilee-Client-Address, proved by X-Jubilee-Proxy-Key (PROXY_KEY).
 //     See ADR 0040.
-// Unknown paths without a file extension answer index.html so the app's router can take them.
+// Unknown paths without a file extension answer index.html so the app's router can take them, except
+// that a link-preview fetcher's /b/{slug} is answered with the API's social preview (ADR 0055).
 // server.test.js beside this file holds its tests: `node --test eng/azure/server.test.js`.
 'use strict';
 
@@ -43,6 +44,27 @@ const keptPaths = ['/api/launch/notifications', '/api/launch/businesses'];
 const maxBody = 16 * 1024;
 const maxKept = 1000;
 const retentionMs = 365 * 24 * 60 * 60 * 1000;
+
+// Link-preview fetchers of chat and social apps (L2-038 AC4, ADR 0055). They run no script, so a
+// shared /b/{slug} is answered with the API's social preview, which carries the Open Graph tags.
+// iMessage names itself facebookexternalhit and Twitterbot. A search engine is not listed: it runs
+// the app, and is given what a browser is given.
+const previewAgents =
+  /facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|Discordbot|TelegramBot|Pinterest|redditbot|SkypeUriPreview|Applebot|Bluesky|Cardyb|Mastodon|Embedly|Iframely/i;
+
+// The API path of the social preview, when this request is a link-preview fetcher's /b/{slug} on a
+// host that forwards that path to the API (the app's host); otherwise null.
+function previewPath(req) {
+  if (!api || (req.method !== 'GET' && req.method !== 'HEAD')) {
+    return null;
+  }
+  const listing = /^\/b\/([^/.?]{1,200})\/?$/.exec((req.url || '/').split('?')[0]);
+  if (!listing || !previewAgents.test(String(req.headers['user-agent'] || ''))) {
+    return null;
+  }
+  const target = `/api/listings/${listing[1]}/social-preview`;
+  return forwarded(target) ? target : null;
+}
 
 function forwarded(urlPath) {
   return apiPaths.some((prefix) => urlPath === prefix || urlPath.startsWith(prefix + '/'));
@@ -143,14 +165,14 @@ function unavailable(res) {
   res.end(JSON.stringify({ status: 503, title: 'Jubilee is starting.', code: 'UNAVAILABLE' }));
 }
 
-function proxy(req, res) {
+function proxy(req, res, upstreamPath = req.url) {
   // Beside the API (the app's host) the headers pass unchanged: Host stays the public host, and
   // X-Forwarded-For / -Proto are the ones App Service wrote, so the API sees the caller and HTTPS.
   // A caller's own X-Jubilee-Proxy-Key and X-Jubilee-Client-Address pass too: the API believes
   // the address only with the right key, compared in fixed time, and removes both either way.
   const headers = stamp({ ...req.headers }, callerAddress(req));
   const client = api.protocol === 'https:' ? https : http;
-  const upstream = client.request(upstreamOptions(req.method, req.url, headers), (answer) => {
+  const upstream = client.request(upstreamOptions(req.method, upstreamPath, headers), (answer) => {
     res.writeHead(answer.statusCode || 502, answer.headers);
     answer.pipe(res);
   });
@@ -479,7 +501,8 @@ const server = http.createServer((req, res) => {
     }
     return keepDir && req.method === 'POST' && keptPaths.includes(urlPath) ? submit(req, res, urlPath) : proxy(req, res);
   }
-  return serve(req, res);
+  const preview = previewPath(req);
+  return preview ? proxy(req, res, preview) : serve(req, res);
 });
 // /api/events is a long-lived stream; never cut a request short.
 server.requestTimeout = 0;

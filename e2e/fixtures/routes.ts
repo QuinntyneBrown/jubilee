@@ -446,6 +446,16 @@ export const routes = {
     mock: 'dialogs/book-meeting/default.html',
     who: 'member',
   },
+  'share-listing': {
+    app: '/b/legacy-financial/share',
+    mock: 'dialogs/share-listing/default.html',
+    who: 'member',
+  },
+  'report-listing': {
+    app: '/b/legacy-financial/report',
+    mock: 'dialogs/report-listing/default.html',
+    who: 'member',
+  },
   'request-quote': {
     app: '/b/luzandre/quote',
     mock: 'dialogs/request-quote/default.html',

@@ -18,6 +18,9 @@ Journey 21 (L2-038 share, L2-039 report) lets anyone share a listing's link and 
 
 ## Deferred
 
+ADR 0055 has since built the first two of these: the app's host sends link-preview fetchers to the preview, with `og-image.png`, and `ReportSubmitted` e-mails the team of a report.
+
+
 - The `og-image.png` asset and hosting that routes link-preview crawlers of `/b/{slug}` to the preview endpoint.
 - The `ReportSubmitted` notification to the verification team: no team address is configured.
 - The moderation queue that reads these reports (journey 25).

@@ -5,6 +5,7 @@ import {
   Component,
   ElementRef,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -88,6 +89,11 @@ export class ReportListingDialog {
   protected readonly remaining = computed(() => MAX - this.description().length);
   protected readonly failure = signal({ title: '', text: '' });
   private readonly key = newKey();
+
+  constructor() {
+    // A busy dialog does not close on Escape or a click outside (L2-130 AC1, L2-127 AC1).
+    effect(() => (this.ref.disableClose = this.busy()));
+  }
 
   protected send(): void {
     if (this.busy()) return;

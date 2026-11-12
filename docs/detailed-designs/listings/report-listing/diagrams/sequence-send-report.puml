@@ -20,61 +20,58 @@ box "Frontend — Jubilee Web" #E0F2FE
   participant "ReportsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "IdempotencyMiddleware" as idem
-  participant "ReportsController" as controller
+  participant "ListingReportsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "ReportListingCommandHandler" as handler
-  participant "Report" as entity
+  participant "ListingReport" as entity
+  participant "ReportSubmitted" as notice
+  participant "VerificationTeam" as team
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
   database "Jubilee database" as db
 end box
+participant "OutboxDispatcherJob" as job
 actor -> dialog : Press "Report this listing"
 alt Visitor without a session
-  dialog --> actor : Open the sign-in prompt (L2-039)
+  dialog --> actor : Open the sign-in prompt (L2-039 AC6)
 else Signed-in member
   dialog --> actor : Show "Report {business}" with "What's wrong?" and "Tell us what happened"
-  actor -> dialog : Choose a reason and type a description and press "Send report"
-  dialog -> dialog : Check reason and description
+  actor -> dialog : Choose a reason, type a description, press "Send report"
   alt Reason missing or description empty
-    dialog --> actor : Show the errors under the fields and focus the first invalid field (L2-126)
+    dialog --> actor : Errors under the fields; focus on the first invalid field (L2-126)
   else Form valid
-    dialog -> client : createReport(slug, reason, description, idempotency key)
-    client -> idem : POST /api/listings/{slug}/reports
-    idem -> cache : Look up the Idempotency-Key (L2-132)
-    cache --> idem : Record or none
-    alt Key seen within 24 hours
-      idem --> client : Original response
+    dialog --> actor : Fields read-only, "Send report" busy, "Cancel" disabled (L2-127 AC1)
+    dialog -> client : report(slug, body, key of this dialog)
+    client -> controller : POST /api/listings/{slug}/reports, Idempotency-Key
+    controller -> handler : Send ReportListingCommand (member from the session, L2-133)
+    handler -> db : Entry with this reporter and key?
+    alt Key seen before
+      handler --> controller : The first report's id (L2-132)
     else New key
-      idem -> controller : Pass the request
-      controller -> controller : Authenticate the session and check the CSRF token (L2-133)
-      controller -> handler : Send ReportListingCommand
-      handler -> handler : Validate reason and description of at most 2,000 characters
-      handler -> db : Load Listing and the reporter's open Report created within 24 hours
-      db --> handler : Listing and Report or none
-      alt Report by this member exists within 24 hours
-        handler -> entity : AddEntry(reason, description, now) (L2-039)
-        entity --> handler : Entry added to the first report
-      else No recent report
-        handler -> entity : Create(listing, reporter, reason, description, now)
-        entity --> handler : Report with status Open
+      handler -> handler : Reason, description of at most 2,000 characters (422)
+      handler -> db : Public listing; not the caller's own (403); at most 10 entries an hour (429)
+      handler -> db : The reporter's latest report of this listing
+      alt Created within 24 hours
+        handler -> entity : Add(reason, description, key, now) (L2-039 AC5)
+      else None, or older
+        handler -> entity : Open(listing, reporter, name, now) and Add(...)
       end
-      handler -> db : Save the report and a ReportSubmitted outbox message in one transaction
-      db --> handler : Commit result
-      handler --> controller : Report identifier
-      controller --> idem : 201 Created
-      idem -> cache : Store the response for 24 hours
-      cache --> idem : Stored
-      idem --> client : 201 Created
+      handler -> notice : Tell(listing, report, entry, now)
+      notice -> team : Tell("New report: {business}" or "More on a report: {business}", body)
+      team -> db : Add OutboxMessage to the team's address, if one is set
+      handler -> db : SaveChanges: report, entry and e-mail in one transaction
+      handler --> controller : ReportedDto(id)
     end
+    controller --> client : 201 Created
     client --> dialog : Success
-    dialog --> actor : Show "Thanks for telling us." and the private-report confirmation (L2-039)
+    dialog --> actor : "Thanks for telling us" and the private-report confirmation (L2-039 AC3)
   end
 end
 opt Submission fails or takes longer than 10 seconds
   client --> dialog : Error or timeout
-  dialog --> actor : Show the failed state with the input kept (L2-128)
+  dialog --> actor : Failed state with the input kept; a retry reuses the key (L2-127 AC2, L2-128)
 end
+job -> db : Due OutboxMessage rows
+job --> actor : (to the team) New report: {business} with the link to /reports/{id} (L2-105 AC1)
 @enduml

@@ -477,15 +477,12 @@ public sealed partial class SaveListingCommandHandler
                 now));
         }
 
-        if (!string.IsNullOrWhiteSpace(verification.TeamEmail))
-        {
-            db.OutboxMessages.Add(OutboxMessage.Email(
-                null,
-                verification.TeamEmail.Trim(),
-                $"Re-check: {listing.Name} changed its name or category",
-                $"A live listing changed. The change is public now; look at the listing again within two business days.\n\nName: {oldName} → {listing.Name}\nCategory: {CategoryName(oldCategory)} → {CategoryName(listing.CategorySlug)}\nOwner: {owner?.DisplayName ?? listing.OwnerName ?? "Unknown"}\n\nThe listing: {verification.AdminBaseUrl.TrimEnd('/')}/verifications/{listing.Id}\n",
-                now));
-        }
+        VerificationTeam.Tell(
+            db,
+            verification,
+            $"Re-check: {listing.Name} changed its name or category",
+            $"A live listing changed. The change is public now; look at the listing again within two business days.\n\nName: {oldName} → {listing.Name}\nCategory: {CategoryName(oldCategory)} → {CategoryName(listing.CategorySlug)}\nOwner: {owner?.DisplayName ?? listing.OwnerName ?? "Unknown"}\n\nThe listing: {VerificationTeam.AdminLink(verification, $"/verifications/{listing.Id}")}\n",
+            now);
     }
 }
 

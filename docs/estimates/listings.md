@@ -2,16 +2,16 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| report-listing | 2 days | 90% |
+| report-listing | 2 days | 100% |
 | save-listing | 3 days | 100% |
-| share-listing | 3 days | 70% |
+| share-listing | 3 days | 100% |
 | view-business-page | 3 days | 100% |
 | view-product | 5 days | 100% |
 | view-space | 4 days | 100% |
 
 save-listing (ADR 0027, ADR 0054): the saved list, save and unsave of businesses, products and spaces, the hearts on the business and product pages and on the business, product and space cards of Browse, a category, search, a shop and the listing and product pages (`jb-saveable`, busy while the server answers), Undo and the offline and limit messages, the return from sign-in for a page and for a card, clearing the store when no member is signed in, the saved page with its empty, error, loading and unavailable states, the Saved link of the account menu and the owner's count are done with tests (`saved.spec.ts`, `card-hearts.spec.ts`, `SavedTests`, the parity spec `saveable.spec.ts`). Nothing is left.
 
-report-listing and share-listing (ADR 0029): the report dialog (reason, description with counter, retry with the same key, validation, 429 and offline messages, sign-in prompt for a visitor), the private report store with the 24-hour addition window, rate limit and idempotency, the share dialog (Copy, E-mail, WhatsApp, More) and the social preview endpoint are done with tests. Deferred: the `og-image.png` asset, crawler routing of `/b/{slug}` to the preview, and the team notification e-mail.
+report-listing and share-listing (ADR 0029, ADR 0055): the report dialog (reason, description stopped at 2,000 characters with its counter, the in-flight state that does not close on Escape, the 10-second timeout, retry with the same key, validation, 429, lost-connection and offline messages, sign-in prompt for a visitor), the private report store with the 24-hour addition window, rate limit and idempotency, the team's e-mail of a report through the outbox (`ReportSubmitted`, `VerificationTeam`), the share dialog (Copy with its polite announcement, E-mail, WhatsApp, More… and the return of focus), the social preview endpoint, the app host's routing of link-preview fetchers of `/b/{slug}` to it and `og-image.png` are done with tests (`share-report.spec.ts`, `ReportListingTests`, `ReportNoticeTests`, `eng/azure/server.test.js`). Nothing is left.
 
 view-space (ADR 0042): the space page with its booking card and bar, facts, rows, inclusions, rules, household, host and related spaces, and the owner's editing of a space (L2-209) are done with tests. Excludes deferred work (see ADR 0042): hourly rent.
 

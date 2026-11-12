@@ -38,6 +38,91 @@ test.describe('share a listing (L2-038)', () => {
     await expect(share.copy).toHaveText('Copy', { timeout: 5000 });
   });
 
+  test('AC2: the copy is announced politely as "Link copied" and focus stays on Copy', async ({
+    page,
+    jb,
+    context,
+  }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    const business = new BusinessPage(page);
+    const share = new ShareListingDialog(page);
+    await business.setWidth(1280);
+    await jb.goto('/b/luzandre');
+    await business.shareLink.first().click();
+    await expect(share.status).toHaveText('');
+    await share.copy.click();
+
+    await expect(share.status).toHaveText('Link copied');
+    await expect(share.status).toHaveAttribute('aria-live', 'polite');
+    await expect(share.copy).toBeFocused();
+  });
+
+  test('AC3: "More…" opens the device share sheet with the business and the link', async ({
+    page,
+    jb,
+  }) => {
+    await page.addInitScript(() => {
+      const shared: ShareData[] = [];
+      Object.assign(window, { jbShared: shared });
+      Object.defineProperty(Navigator.prototype, 'share', {
+        configurable: true,
+        value: async (data: ShareData) => {
+          shared.push(data);
+        },
+      });
+    });
+    const business = new BusinessPage(page);
+    const share = new ShareListingDialog(page);
+    await business.setWidth(1280);
+    await jb.goto('/b/luzandre');
+    await business.shareLink.first().click();
+    await share.more.click();
+
+    const shared = await page.evaluate(
+      () => (window as unknown as { jbShared: ShareData[] }).jbShared,
+    );
+    expect(shared).toHaveLength(1);
+    expect(shared[0].title).toMatch(/ on Jubilee$/);
+    expect(shared[0].url).toMatch(/\/b\/luzandre$/);
+  });
+
+  test('AC3: without the Web Share API, "More…" is hidden', async ({ page, jb }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(Navigator.prototype, 'share', { configurable: true, value: undefined });
+    });
+    const business = new BusinessPage(page);
+    const share = new ShareListingDialog(page);
+    await business.setWidth(1280);
+    await jb.goto('/b/luzandre');
+    await business.shareLink.first().click();
+
+    await expect(share.title).toBeVisible();
+    await expect(share.more).toHaveCount(0);
+  });
+
+  test('L2-130 AC2: closing with "Done" or Escape returns focus to "Share"', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    const share = new ShareListingDialog(page);
+    await business.setWidth(1280);
+    await jb.goto('/b/luzandre');
+    await business.shareLink.first().click();
+    await share.done.click();
+
+    await expect(share.title).toBeHidden();
+    await expect(business.shareLink.first()).toBeFocused();
+    await expect(page).toHaveURL(/\/b\/luzandre$/);
+
+    await page.keyboard.press('Enter');
+    await expect(share.title).toBeVisible();
+    await page.keyboard.press('Escape');
+
+    await expect(share.title).toBeHidden();
+    await expect(business.shareLink.first()).toBeFocused();
+  });
+
   test('closing the dialog returns to the listing', async ({ page, jb }) => {
     const business = new BusinessPage(page);
     const share = new ShareListingDialog(page);
@@ -118,6 +203,101 @@ test.describe('report a listing (L2-039)', () => {
     await expect(report.title).toHaveText('Thanks for telling us');
     expect(fake.keys).toHaveLength(2);
     expect(fake.keys[0]).toBe(fake.keys[1]);
+  });
+
+  test('L2-127 AC1: while the report is on its way the form is read-only and a second press sends nothing', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    const report = new ReportListingDialog(page);
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    const fake = await stubReports(page, { hold: true });
+    await jb.goto('/b/luzandre');
+    await business.reportLink.click();
+    await report.reason(/misleading/).click();
+    await report.description.fill('The hours are wrong.');
+    await report.send.click();
+
+    await expect(report.send).toHaveAttribute('aria-busy', 'true');
+    await expect(report.send).toHaveText(/Send report/);
+    await expect(report.description).toHaveAttribute('readonly', '');
+    for (const radio of await report.reasons.all()) await expect(radio).toBeDisabled();
+    await expect(report.cancel).toBeDisabled();
+    await report.send.dispatchEvent('click');
+    await page.keyboard.press('Escape');
+    await expect(report.title).toHaveText(/^Report /);
+    expect(fake.bodies).toHaveLength(1);
+
+    fake.release();
+    await expect(report.title).toHaveText('Thanks for telling us');
+    expect(fake.bodies).toHaveLength(1);
+  });
+
+  test('L2-127 AC2: a report not answered within 10 seconds fails and keeps what was typed', async ({
+    page,
+    jb,
+  }) => {
+    await page.clock.install();
+    const business = new BusinessPage(page);
+    const report = new ReportListingDialog(page);
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    await stubReports(page, { hold: true });
+    await jb.goto('/b/luzandre');
+    await business.reportLink.click();
+    await report.reason(/bad experience/).click();
+    await report.description.fill('Never delivered.');
+    await report.send.click();
+    await expect(report.send).toHaveAttribute('aria-busy', 'true');
+
+    await page.clock.runFor(9_000);
+    await expect(report.alert).toHaveCount(0);
+    await page.clock.runFor(1_500);
+
+    await expect(report.alert).toContainText('We couldn’t send that');
+    await expect(report.alert).toContainText('It took too long');
+    await expect(report.description).toHaveValue('Never delivered.');
+    await expect(report.reason(/bad experience/)).toBeChecked();
+    await expect(report.send).not.toHaveAttribute('aria-busy', 'true');
+  });
+
+  test('L2-128 AC2: a lost connection says so and keeps what was typed', async ({ page, jb }) => {
+    const business = new BusinessPage(page);
+    const report = new ReportListingDialog(page);
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    await stubReports(page, { mode: 'dropped' });
+    await jb.goto('/b/luzandre');
+    await business.reportLink.click();
+    await report.reason(/real business/).click();
+    await report.description.fill('No such shop at that address.');
+    await report.send.click();
+
+    await expect(report.alert).toContainText(
+      'Your connection dropped before it reached us. Nothing was sent and what you typed is still here. Try again.',
+    );
+    await expect(report.description).toHaveValue('No such shop at that address.');
+  });
+
+  test('AC4: the description stops at 2,000 characters and the counter says none are left', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    const report = new ReportListingDialog(page);
+    await business.setWidth(1280);
+    await jb.signInAs('member');
+    await stubReports(page);
+    await jb.goto('/b/luzandre');
+    await business.reportLink.click();
+    await report.description.fill('a'.repeat(1999));
+    await report.description.press('End');
+    await report.description.pressSequentially('bc');
+
+    await expect(report.description).toHaveValue('a'.repeat(1999) + 'b');
+    await expect(report.counter).toHaveText('0 characters left');
   });
 
   test('AC5: too many reports in an hour asks the member to wait', async ({ page, jb }) => {
