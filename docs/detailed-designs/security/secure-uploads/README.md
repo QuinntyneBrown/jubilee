@@ -64,8 +64,9 @@ The slice runs from the Angular upload control to the media store.
   (`Jubilee.Application/Messaging/ImageSanitizer.cs`). `Sanitize` refuses more
   than `5 MB` (`MaxBytes`), reads the leading bytes and accepts only the JPEG
   signature (`FF D8`) and the PNG signature (`89 50 4E 47 0D 0A 1A 0A`). The
-  declared content type and the file name are ignored. It reads the width from
-  the image header and refuses more than 8,000 pixels (`MaxWidth`). It then
+  declared content type and the file name are ignored. It reads the width and
+  the height from the image header and refuses more than 8,000 pixels on either
+  side (`MaxWidth`, `MaxHeight`). It then
   writes the image again without anything that is not picture data: EXIF, XMP,
   ICC and comment segments of a JPEG; text and time chunks of a PNG. It answers
   a `SanitizedImage` with the `ContentType`, the bytes and an `ImageProblem`
