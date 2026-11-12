@@ -29,11 +29,16 @@ a real scanner in a test.
 ## Decision
 
 - **The away notice is a toast and a line, both with the day.** When a member opens a conversation
-  with an owner who is away, and when they send a message in it, an info toast says
+  with an owner who is away, an info toast says
   "{Owner first name} is away until {day}" with "They’ll see your message when they’re back." The
   line above the messages stays and gains the day. {day} is the weekday when the owner is back
   within the next six days and the short date after that, in Toronto time (`awayDay` in the `api`
-  library). One away toast shows at a time: sending again while it is up shows no second one. The
+  library). The toast is said once for a return day while the conversation stays open. A first
+  version showed it at every send; the toast then sat over "Send" on a short screen and, paused
+  under the pointer, never left, so the next message could not be sent by pointer (CI found it).
+  "Or sends a message" in the criterion is now the case it was written for: the away period
+  became known while the conversation was open (a reply or a request refreshed it), and the next
+  message sent shows the toast. The
   API does not change; `awayUntil` already says the day, and the page compares it with the clock
   each time, so nothing is shown once the day has come. Jubilee does not know whether an owner is
   a man or a woman; the requirement's "He’ll" became "They’ll", as the line already said.

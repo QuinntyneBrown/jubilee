@@ -231,10 +231,12 @@ ADR 0050.
   no request-card message.
 - **Away notice** — `Listing.AwayUntil` holds the instant the owner is back, and
   `ConversationDto.AwayUntil` carries it to the member while it is in the future.
-  When the member opens the conversation, and after each send the server
-  confirms, `ConversationPage` shows the info toast "{Owner first name} is away
-  until {day}" with "They’ll see your message when they’re back." One away toast
-  shows at a time: sending again while it is up shows no second one. Above the
+  When the member opens the conversation, `ConversationPage` shows the info
+  toast "{Owner first name} is away until {day}" with "They’ll see your message
+  when they’re back." It is shown once for a return day while the conversation
+  stays open: a toast at every send would sit over "Send" (ADR 0050). When the
+  away period becomes known while the conversation is open, the next send the
+  server confirms shows it. Above the
   messages a line says "{Owner} is away until {day} and will reply when they’re
   back." `awayDay(iso, now)` in
   `frontend/projects/api/src/lib/helpers/message-time.ts` writes {day}: the
@@ -271,7 +273,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-057` | `L1-009` | The page `/messages/:id` shall show one conversation with a composer. Opening it shall mark its messages read for the viewer. A request between the same member and business shall appear as a card at the time it was sent, showing its present status. A reply that arrives while the conversation is open shall appear within 2 seconds without a reload and be announced politely, with no toast. With more than 50 messages, "Show earlier messages" shall load the 50 before them and keep the message the member was reading where it was. |
 | `L2-058` | `L1-009` | A sent message shall appear at once marked "Sending…" and show its time once the server confirms it. A failed message shall keep its text and offer "Try again" and "Delete", and a retry shall reuse the same idempotency key so the message is never duplicated. |
 | `L2-060` | `L1-009` | A member may attach one JPG or PNG photo of up to 5 MB to a message, with or without text; a larger photo shall be shrunk on the device before sending. A photo shall be scanned for malware before it is stored, and only a stored photo shall be put in a message or opened. A stored attachment shall be retrievable only by the conversation's participants through signed URLs valid for 5 minutes, and an expired URL shall be renewed for a participant. A retry shall not store the photo or the message twice. |
-| `L2-062` | `L1-009` | When an owner has set an away period with a return date, a member who opens the conversation or sends a message in it shall see the toast "{Owner first name} is away until {day}" and a line above the messages, with the weekday within the next six days and the short date after that. The toast shall not be stacked. No notice shall be shown after the return date. The owner shall set, change and clear the period on My business, with a return date from tomorrow to one year ahead. |
+| `L2-062` | `L1-009` | When an owner has set an away period with a return date, a member who opens the conversation, or sends a message in a conversation that was open when the away period became known, shall see the toast "{Owner first name} is away until {day}" and a line above the messages, with the weekday within the next six days and the short date after that. The toast shall not be stacked. No notice shall be shown after the return date. The owner shall set, change and clear the period on My business, with a return date from tomorrow to one year ahead. |
 | `L2-070` | `L1-010` | A notification, message or request event for a user shall reach that user's open signed-in page within 2 seconds at the 95th percentile over a persistent connection (WebSocket or server-sent events). After a reconnect, the events missed since the last received event ID shall be delivered and nothing shall be shown twice. A client shall receive only events addressed to its authenticated user. |
 | `L2-120` | `L1-017` | A message written while offline shall be stored on the device marked "Waiting to send" and sent in order when the connection returns, each with its idempotency key. A message with a photo shall not be put in the queue: its bubble shall say "Not sent. Check your connection." and "Try again" shall send it once. |
 | `L2-005` | `L1-001` | Until the e-mail is confirmed, a member may browse, search and save but shall not message, book, request or list a business. |
@@ -339,7 +341,8 @@ conversation again and announces the new message politely.
 The page shows the pending message before the request completes. On failure the
 member retries with the same idempotency key, and the unique
 `(SenderSubject, IdempotencyKey)` index guarantees one stored message. A
-confirmed send to an owner who is away shows the away toast, one at a time.
+confirmed send shows the away toast only when the member has not been told of
+that return day in this visit.
 
 ![Sequence diagram for sending a message and retrying](diagrams/sequence-send-message.png)
 

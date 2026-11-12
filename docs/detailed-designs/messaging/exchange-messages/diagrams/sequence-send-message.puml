@@ -55,7 +55,7 @@ controller --> client : 201 Created
 alt response received
   client --> page : Confirmed message
   page --> member : Replace "Sending…" with the time
-  opt awayUntil is later than the clock and no away toast is showing
+  opt awayUntil is later than the clock and that day was not said in this visit
     page --> member : Info toast "{Owner first name} is away until {day}" (L2-062)
   end
 else request fails

@@ -192,8 +192,8 @@ export class ConversationPage implements OnInit {
   /** The day the owner is back, while they are away; null once that day has come (L2-062). */
   protected readonly awayUntil = computed(() => this.awayDayOf(this.conversation()));
 
-  /** The away toast that is showing, so that a second one is never put on top of it. */
-  private awayToast: number | null = null;
+  /** The return day the member has been told of in this visit: it is said once (L2-062 AC1). */
+  private awayTold: string | null = null;
 
   protected readonly entries = computed<Entry[]>(() => {
     const now = this.clock.now();
@@ -273,6 +273,7 @@ export class ConversationPage implements OnInit {
   protected open(): void {
     this.state.set({ status: 'loading' });
     this.outgoing.set([]);
+    this.awayTold = null;
     this.api.open(this.id()).subscribe({
       next: (conversation) => {
         this.messages.set(conversation.messages);
@@ -329,15 +330,17 @@ export class ConversationPage implements OnInit {
   }
 
   /**
-   * The toast of L2-062 AC1, when the conversation opens and when a message is sent: the owner is
-   * away until a day. Nothing is said once that day has come (AC2), and never twice at once.
+   * The toast of L2-062 AC1: the owner is away until a day. It is shown when the conversation
+   * opens, or at the next message sent when the away period became known while it was open, and
+   * once only: a toast at every send would sit over "Send". Nothing is said once the day has
+   * come (AC2).
    */
   private tellAway(): void {
     const conversation = this.conversation();
     const day = this.awayDayOf(conversation);
-    if (!conversation || !day) return;
-    if (this.toasts.toasts().some((toast) => toast.id === this.awayToast)) return;
-    this.awayToast = this.toasts.show({
+    if (!conversation || !day || conversation.awayUntil === this.awayTold) return;
+    this.awayTold = conversation.awayUntil;
+    this.toasts.show({
       tone: 'info',
       title: `${this.firstName()} is away until ${day}`,
       text: 'They’ll see your message when they’re back.',

@@ -608,7 +608,7 @@ test.describe('an owner who is away (L2-062)', () => {
     await expect(conversation.away).toContainText('is away until Mon 23 Nov');
   });
 
-  test('AC1: sending a message shows the toast again, and never two at once', async ({
+  test('AC1: the toast is shown once for a visit: sending does not repeat it, opening again does', async ({
     page,
     jb,
   }) => {
@@ -622,18 +622,20 @@ test.describe('an owner who is away (L2-062)', () => {
     await toasts.dismiss(toast).click();
     await expect(toast).toHaveCount(0);
 
+    // The toast is gone, so "Send" is free to press, and sending brings no second toast.
     await conversation.composer.fill('No rush, see you when you’re back.');
     await conversation.send.click();
-    await expect(conversation.bubbles).toHaveCount(4);
-    await expect(toast).toHaveCount(1);
-
     await conversation.composer.fill('One more thing.');
     await conversation.send.click();
     await expect(conversation.bubbles).toHaveCount(5);
+    await expect(toast).toHaveCount(0);
+    await expect(conversation.away).toContainText('is away until Thursday');
+
+    await jb.goto('/messages/c-legacy');
     await expect(toast).toHaveCount(1);
   });
 
-  test('AC1: by keyboard, Enter sends and the toast says the owner is away', async ({
+  test('AC1: an owner who goes away while the conversation is open is named by a toast when the next message is sent, by keyboard', async ({
     page,
     jb,
   }) => {
@@ -641,15 +643,30 @@ test.describe('an owner who is away (L2-062)', () => {
     const toasts = new Toasts(page);
     await conversation.setWidth(360);
     await jb.signInAs('member');
-    await stubMessaging(page, { awayUntil: THURSDAY });
+    const fake = await stubMessaging(page, { live: true });
     await jb.goto('/messages/c-legacy');
+    await expect(conversation.bubbles).toHaveCount(3);
     const toast = toasts.withTitle('Trevor is away until Thursday');
-    await toasts.dismiss(toast).click();
 
-    await conversation.composer.fill('Thank you');
+    // Trevor sets an away period and writes once more; the open conversation reads itself again.
+    fake.awayUntil = THURSDAY;
+    fake.arrive('I’m away from tomorrow, back Thursday.');
+    await expect(conversation.bubbles).toHaveCount(4);
+    await expect(conversation.away).toContainText('is away until Thursday');
+    await expect(toast).toHaveCount(0);
+
+    await conversation.composer.fill('Thank you, enjoy the break.');
     await conversation.composer.press('Enter');
 
+    await expect(conversation.bubbles).toHaveCount(5);
     await expect(toast).toHaveCount(1);
+    await expect(toast).toContainText('They’ll see your message when they’re back.');
+
+    await toasts.dismiss(toast).click();
+    await conversation.composer.fill('See you Thursday.');
+    await conversation.composer.press('Enter');
+    await expect(conversation.bubbles).toHaveCount(6);
+    await expect(toast).toHaveCount(0);
   });
 
   test('AC2: once the day has come, opening and sending show no away notice', async ({
@@ -673,7 +690,7 @@ test.describe('an owner who is away (L2-062)', () => {
     await expect(conversation.away).toHaveCount(0);
   });
 
-  test('AC2: the day comes while the conversation is open, and the next message shows no toast', async ({
+  test('AC2: the day comes before the next message is sent, and it shows no toast', async ({
     page,
     jb,
   }) => {
@@ -681,17 +698,21 @@ test.describe('an owner who is away (L2-062)', () => {
     const toasts = new Toasts(page);
     await conversation.setWidth(1280);
     await jb.signInAs('member');
-    await stubMessaging(page, { awayUntil: THURSDAY });
+    const fake = await stubMessaging(page, { live: true });
     await jb.goto('/messages/c-legacy');
-    const toast = toasts.withTitle(/is away/);
-    await toasts.dismiss(toast).click();
+    await expect(conversation.bubbles).toHaveCount(3);
+    // The away period becomes known while the conversation is open, so no toast has been shown.
+    fake.awayUntil = THURSDAY;
+    fake.arrive('I’m away from tomorrow, back Thursday.');
+    await expect(conversation.away).toContainText('is away until Thursday');
+    // Thursday, 9:00 a.m.: Trevor is back.
     await page.clock.setFixedTime(new Date('2026-11-12T14:00:00Z'));
 
     await conversation.composer.fill('Welcome back');
     await conversation.send.click();
 
-    await expect(conversation.bubbles).toHaveCount(4);
-    await expect(toast).toHaveCount(0);
+    await expect(conversation.bubbles).toHaveCount(5);
+    await expect(toasts.withTitle(/is away/)).toHaveCount(0);
   });
 
   test('L2-055 AC3: a first message to an owner who is away opens the conversation, which says so', async ({
