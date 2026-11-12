@@ -1,4 +1,5 @@
-// Block: mkt-card, the business card with a photo. The host is the link.
+// Block: mkt-card, the business card with a photo. The host is the link, or the div of a card
+// that leads nowhere.
 //
 // It reads the marketing page's grounds: --jb-mkt-paper, --jb-mkt-accent, --jb-mkt-accent-text.
 :host {
@@ -29,7 +30,8 @@
   transition: transform 300ms ease-out;
 }
 
-:host(:hover) .mkt-card__photo {
+// Only a card that is a link answers the pointer.
+:host(a:hover) .mkt-card__photo {
   transform: scale(1.03);
 }
 

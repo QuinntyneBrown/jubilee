@@ -57,6 +57,12 @@
   gap: var(--space-4) var(--space-8);
 }
 
+.mkt-heading__eyebrow {
+  display: flex;
+  margin-bottom: var(--space-5);
+}
+
+.mkt-heading__eyebrow:empty,
 .mkt-heading__actions:empty,
 .mkt-heading__aside:empty {
   display: none;

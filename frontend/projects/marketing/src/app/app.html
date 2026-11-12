@@ -1,9 +1,9 @@
 <a jb-skip-link>Skip to content</a>
 <header jb-marketing-nav linksLabel="Sections" [links]="sections">
   <a slot="brand" jb-lockup size="sm" href="#top" aria-label="Jubilee home"></a>
-  <a slot="action" jb-marketing-button variant="pill" [href]="browseUrl">
-    Open Jubilee
-    <svg jb-icon name="arrow-up-right"></svg>
+  <a slot="action" jb-marketing-button variant="pill" href="#notify">
+    Launching soon
+    <svg jb-icon name="arrow-down"></svg>
   </a>
 </header>
 <main id="main" tabindex="-1">
@@ -14,13 +14,14 @@
       headingId="top-title"
       text="Toronto’s Christian businesses,"
       accent="in one place."
-      lead="Jubilee is where Toronto’s Christian community finds shops, advisors and trades it can trust. Every business is verified before it appears, so you can shop, hire and recommend with confidence."
+      lead="Jubilee is where Toronto’s Christian community will find shops, advisors and trades it can trust. Every business is verified before it appears. We are launching soon."
       leadWidth="wide"
-      note="Free for members · Every business verified"
+      note="Not open yet · Free for members at launch"
     >
-      <a slot="actions" jb-marketing-button [href]="browseUrl">
-        Start browsing
-        <svg jb-icon name="arrow-up-right"></svg>
+      <p slot="eyebrow" jb-launch-badge>Launching soon</p>
+      <a slot="actions" jb-marketing-button href="#notify">
+        Tell me when it launches
+        <svg jb-icon name="arrow-down"></svg>
       </a>
       <a slot="actions" jb-marketing-link iconSize="sm" href="#film">
         Watch the film
@@ -29,13 +30,13 @@
     </jb-marketing-heading>
     <div
       jb-app-glimpse
-      label="A glimpse of the app"
+      label="A preview of the app"
       [search]="glimpse.search"
       [caption]="glimpse.caption"
       [results]="glimpse.results"
     >
       <p jb-floating-note tone="trust" icon="verified">Verified by the Jubilee team</p>
-      <p jb-floating-note tone="reply" icon="message">WaterWorks replied in 12 min</p>
+      <p jb-floating-note tone="reply" icon="message">Message a business directly</p>
     </div>
   </section>
 
@@ -71,19 +72,8 @@
   <jb-inside-the-app />
   <jb-for-businesses />
 
-  <section jb-marketing-section layout="closing" aria-labelledby="closing-title">
-    <jb-marketing-heading
-      size="closing"
-      headingId="closing-title"
-      text="Your community is"
-      accent="open for business."
-    >
-      <a slot="actions" jb-marketing-button [href]="browseUrl">
-        Start browsing
-        <svg jb-icon name="arrow-up-right"></svg>
-      </a>
-    </jb-marketing-heading>
-  </section>
+  <jb-business-pre-registration />
+  <jb-launch-notification />
 </main>
 <footer jb-marketing-footer>
   <span slot="brand" jb-lockup size="xs" onInk role="img" aria-label="Jubilee"></span>

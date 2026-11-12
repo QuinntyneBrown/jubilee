@@ -1,18 +1,21 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 
-/** The marketing site's one page (L2-183 to L2-186). */
+/** The marketing site's one page, in its launching-soon state (L2-183 to L2-186, L2-215 to L2-217). */
 export class MarketingHomePage implements Screen {
   readonly main: Locator;
   readonly topBar: Locator;
   readonly lockup: Locator;
   readonly sectionLinks: Locator;
-  readonly openJubilee: Locator;
+  /** The link in the top bar's place for an action (L2-215 AC2). */
+  readonly launchingSoon: Locator;
 
   readonly opening: Locator;
   readonly heading: Locator;
   readonly lead: Locator;
-  readonly startBrowsing: Locator;
+  /** The label above the heading (L2-215 AC1). */
+  readonly badge: Locator;
+  readonly tellMe: Locator;
   readonly watchTheFilm: Locator;
   readonly note: Locator;
 
@@ -43,7 +46,6 @@ export class MarketingHomePage implements Screen {
   readonly how: Locator;
   readonly steps: Locator;
   readonly inside: Locator;
-  readonly seeAll: Locator;
   readonly cards: Locator;
   readonly featuredCards: Locator;
   readonly cardNames: Locator;
@@ -54,9 +56,13 @@ export class MarketingHomePage implements Screen {
   readonly cardVerifiedIcons: Locator;
   readonly forBusinesses: Locator;
   readonly points: Locator;
-  readonly listYourBusiness: Locator;
-  readonly closing: Locator;
-  readonly closingStartBrowsing: Locator;
+  readonly sendDetails: Locator;
+  /** "Be listed on launch day.": the business pre-registration (L2-216). */
+  readonly preRegister: Locator;
+  readonly preRegisterHeading: Locator;
+  /** "Jubilee is launching soon.": the launch notification (L2-217). */
+  readonly notify: Locator;
+  readonly notifyHeading: Locator;
   readonly footer: Locator;
   /** The lockup that signs the footer. */
   readonly footerLockup: Locator;
@@ -79,16 +85,17 @@ export class MarketingHomePage implements Screen {
     this.topBar = page.locator('header.mkt-nav');
     this.lockup = this.topBar.getByRole('link', { name: 'Jubilee home' });
     this.sectionLinks = this.topBar.getByRole('navigation', { name: 'Sections' }).getByRole('link');
-    this.openJubilee = this.topBar.getByRole('link', { name: 'Open Jubilee' });
+    this.launchingSoon = this.topBar.getByRole('link', { name: 'Launching soon' });
 
     this.opening = this.main.locator('section#top');
     this.heading = this.opening.getByRole('heading', { level: 1 });
     this.lead = this.opening.locator('h1 + p');
-    this.startBrowsing = this.opening.getByRole('link', { name: 'Start browsing' });
+    this.badge = this.opening.locator('.mkt-badge');
+    this.tellMe = this.opening.getByRole('link', { name: 'Tell me when it launches' });
     this.watchTheFilm = this.opening.getByRole('link', { name: 'Watch the film' });
     this.note = this.opening.locator('.mkt-hero__note, .mkt-heading__note');
 
-    this.glimpse = this.opening.getByRole('group', { name: 'A glimpse of the app' });
+    this.glimpse = this.opening.getByRole('group', { name: 'A preview of the app' });
     this.glimpseSearch = this.glimpse.locator('.mkt-glimpse__search');
     this.glimpseCaption = this.glimpse.locator('.mkt-glimpse__caption');
     this.glimpseNames = this.glimpse.locator('.mkt-glimpse__name');
@@ -115,9 +122,8 @@ export class MarketingHomePage implements Screen {
     this.steps = this.how.locator('.mkt-step');
     this.stepList = this.how.locator('.mkt-steps');
     this.inside = this.main.locator('section#inside');
-    this.seeAll = this.inside.getByRole('link', { name: /^See all/ });
-    this.cards = this.inside.locator('a.mkt-card');
-    this.featuredCards = this.inside.locator('a.mkt-card--featured');
+    this.cards = this.inside.locator('.mkt-card');
+    this.featuredCards = this.inside.locator('.mkt-card--featured');
     this.cardNames = this.cards.locator('.mkt-card__name');
     this.cardTags = this.cards.locator('.mkt-card__tag');
     this.cardTaglines = this.cards.locator('.mkt-card__tagline');
@@ -127,20 +133,20 @@ export class MarketingHomePage implements Screen {
     this.forBusinesses = this.main.locator('section#businesses');
     this.points = this.forBusinesses.locator('.mkt-points > li');
     this.pointList = this.forBusinesses.locator('.mkt-points');
-    this.listYourBusiness = this.forBusinesses.getByRole('link', {
-      name: 'List your business free',
+    this.sendDetails = this.forBusinesses.getByRole('link', {
+      name: 'Send your business’s details',
     });
-    this.closing = this.main.locator(
-      'section.mkt-closing, section[aria-labelledby="closing-title"] > .mkt-section__inner',
-    );
-    this.closingStartBrowsing = this.closing.getByRole('link', { name: 'Start browsing' });
+    this.preRegister = this.main.locator('section#pre-register');
+    this.preRegisterHeading = this.preRegister.getByRole('heading', { level: 2 });
+    this.notify = this.main.locator('section#notify');
+    this.notifyHeading = this.notify.getByRole('heading', { level: 2 });
     this.footer = page.locator('footer.mkt-footer');
     this.footerLockup = this.footer.getByRole('img', { name: 'Jubilee' });
     this.headings = this.main.getByRole('heading', { level: 2 });
     this.openingHeading = this.opening.locator('.mkt-hero__text, .mkt-heading');
     this.filmHeading = this.film.getByRole('heading', { level: 2 });
     this.whyHeading = this.why.locator('.mkt-why__inner > div, .mkt-heading');
-    this.howHeading = this.how.getByRole('heading', { level: 2 });
+    this.howHeading = this.how.locator('.mkt-how__text, .mkt-heading__text');
     this.insideHeading = this.inside.locator('.mkt-inside__head, .mkt-heading');
     this.forBusinessesHeading = this.forBusinesses.locator(
       '.mkt-owners__inner > div, .mkt-heading',
@@ -177,6 +183,18 @@ export class MarketingHomePage implements Screen {
   /** The requests the page made for the film itself. */
   filmRequests(): string[] {
     return this.requests.filter((url) => url.endsWith('.mp4'));
+  }
+
+  /** The address of every link on the page, as the browser resolves it. */
+  linkAddresses(): Promise<string[]> {
+    return this.page
+      .getByRole('link')
+      .evaluateAll((links) => links.map((link) => (link as HTMLAnchorElement).href));
+  }
+
+  /** Everything the page says, as one text. */
+  async words(): Promise<string> {
+    return (await this.page.locator('body').innerText()).replace(/\s+/g, ' ');
   }
 
   /** The requests the page made to the Jubilee API. */
@@ -268,7 +286,8 @@ export class MarketingHomePage implements Screen {
       { name: 'marketing-how', locator: this.how },
       { name: 'marketing-inside', locator: this.inside },
       { name: 'marketing-for-businesses', locator: this.forBusinesses },
-      { name: 'marketing-closing', locator: this.closing },
+      { name: 'marketing-pre-register', locator: this.preRegister },
+      { name: 'marketing-notify', locator: this.notify },
       { name: 'marketing-footer', locator: this.footer },
     ];
   }

@@ -66,6 +66,7 @@ export * from './lib/item-list/item-list-item';
 export * from './lib/item-list/item-list-name';
 export * from './lib/list/list';
 export * from './lib/lockup/lockup';
+export * from './lib/launch-badge/launch-badge';
 export * from './lib/marketing-nav/marketing-footer';
 export * from './lib/marketing-nav/marketing-nav';
 export * from './lib/marketing-section/marketing-heading';

@@ -1,11 +1,9 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { environment } from '../environments/environment';
-import { APP_URL } from './app-url';
 
-/** Composition root. The site is static: no router, no session and no HTTP client (ADR 0013). */
+/**
+ * Composition root. The site has no router and no session. While Jubilee is launching soon it
+ * knows no address of the app: no element of the page links to it (L2-215 AC6, ADR 0044).
+ */
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-    { provide: APP_URL, useValue: environment.appUrl },
-  ],
+  providers: [provideBrowserGlobalErrorListeners()],
 };

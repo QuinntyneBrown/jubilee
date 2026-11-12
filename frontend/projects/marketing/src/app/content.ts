@@ -47,9 +47,6 @@ export const FILM = {
 export const MISSION =
   'Abiding in Jesus and for love of Him, Jubilee equips Christian business people in Toronto to prosper with purpose and resource His Kingdom.';
 
-/** The number of verified businesses the page speaks of. */
-export const BUSINESS_COUNT = 47;
-
 const GLIMPSE_RESULTS: readonly MarketingBusiness[] = [
   {
     name: 'WaterWorks Plumbing & Drains',
@@ -77,10 +74,13 @@ const GLIMPSE_RESULTS: readonly MarketingBusiness[] = [
   },
 ];
 
-/** The glimpse of the app beside the opening: a search and the four businesses it found. */
+/**
+ * The preview of the app beside the opening: a search and four businesses. It states no count of
+ * businesses: before launch there is none to state (L2-183 AC2).
+ */
 export const GLIMPSE = {
   search: 'Home repairs near Leslieville',
-  caption: 'Home & property · 11 verified',
+  caption: 'Home & property · a preview',
   results: GLIMPSE_RESULTS,
 } as const;
 
