@@ -121,7 +121,10 @@ commands and handlers in `Jubilee.Application`, EF configurations and a migratio
   each 5 per address per hour (`RateLimits:LaunchSignUpsPerHour`,
   `RateLimits:LaunchPreRegistrationsPerHour`). A request over the limit answers 429
   `rate_limited` with `Retry-After` (`L2-137` AC1). The address is the one the marketing host
-  states in `X-Jubilee-Client-Address`, believed only with the proxy key.
+  states in `X-Jubilee-Client-Address`, believed only with the proxy key. A kept submission
+  (`ProxiedSubmission.Kept`, so only with the proxy key) has no limiter (`L2-218` AC9): each
+  time it is sent again would otherwise count against the visitor's address, and five attempts
+  while the API was slow would hold the submission back for an hour.
 - **`LaunchRetentionJob`** — background service in `Jubilee.Worker`. Once a day it sends
   `PurgeLaunchDataCommand` and logs the two counts and nothing else (`L2-148` AC5).
 - **`jubilee launch list --kind notifications|businesses`** — command of `Jubilee.Cli`. It sends
@@ -221,7 +224,10 @@ Each changed component keeps its look where it was already used.
   that host in `Host`, with or without `PROXY_KEY`: App Service's front end routes by it, and a
   request still addressed to `www.jubilee.to` would come back to the marketing site. Forwarding
   to the API beside it on loopback (`127.0.0.1`, `localhost`, `::1`), as the app's host does,
-  keeps the public host.
+  keeps the public host. A caller's own `X-Jubilee-Received-At` and `X-Jubilee-Kept` are
+  removed by a proxy that forwards to another host or holds a key, because that proxy vouches
+  for what it forwards. The app's host does neither: it passes both on, as it passes the key,
+  and the API believes them only with the key (`L2-218` AC9).
 - **Kept submissions** (`L2-218` AC8, AC9, ADR 0047) — with `KEEP_DIR` set, `server.js` handles
   `POST /api/launch/notifications` and `POST /api/launch/businesses` itself. It reads the body
   (at most 16 KB), notes the received time, and sends it to the API with
@@ -244,6 +250,8 @@ Each changed component keeps its look where it was already used.
   logs the count. Anything else ends the round, and the next one starts a minute later. A file
   12 months old is deleted unsent. Sending again is idempotent: a sign-up is a quiet duplicate
   and a pre-registration is recognised by its received time. No log line holds personal data.
+  The API does not count a kept submission against the rate limit of its address, so 429 is
+  not expected here; it ends the round like any other fault if it comes.
 - **Settings** — `eng/azure/deploy.sh` applies them on every deployment, each only when its
   value differs, and never prints a value: on `jubilee-to-www` `API_ORIGIN`
   (`https://app.jubilee.to`), `API_PATHS` (`/api/launch`), `KEEP_DIR` (`/home/data/launch-kept`)

@@ -72,6 +72,15 @@ depends on a step someone must remember.
     round. A file 12 months old is deleted unsent, so the retention of L2-218 holds here too.
   - At most 1,000 are kept. Past that the API's own answer is relayed, so a flood cannot fill
     the disk.
+  - The API does not count a kept submission against the rate limit of its address. On the
+    first deployment of this decision the plan's one B1 worker was at 100 % CPU for 13 minutes
+    while its three sites restarted; the API did not answer in 8 seconds, the first real
+    sign-up was kept, and the five times it was sent again used up the hour's limit of the
+    visitor's address, which held it back for an hour. Sending again is the marketing host's
+    doing, and the number of kept submissions is already bounded.
+  - The app's host runs the same `server.js` in front of the API on loopback. It passes
+    `X-Jubilee-Received-At` and `X-Jubilee-Kept` on unchanged, as it passes the proxy key; only
+    a proxy that forwards to another host or holds a key removes a caller's own.
   - No log line holds any part of a submission.
 - **The received time is the consent time.** The proxy states it in `X-Jubilee-Received-At` on
   every submission, first attempt or not, and marks one sent again with `X-Jubilee-Kept: true`.

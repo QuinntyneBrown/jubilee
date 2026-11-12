@@ -57,7 +57,7 @@ loop Each kept submission
   else
     proxy -> middleware : POST again with X-Jubilee-Received-At and X-Jubilee-Kept: true
     middleware -> middleware : Believe both only with the proxy key; remove them from the request
-    middleware -> controller : Run the action; no bot challenge for a kept submission
+    middleware -> controller : Run the action; no rate limit and no bot challenge for a kept submission
     controller -> handler : Send the command with ReceivedAt
     handler -> db : Find the same sign-up (e-mail key) or pre-registration (e-mail key, name, received time)
     alt Already stored

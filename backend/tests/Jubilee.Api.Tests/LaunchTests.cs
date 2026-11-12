@@ -226,6 +226,61 @@ public sealed class LaunchRateLimitTests(FiveLaunchSubmissionsFactory factory) :
         // The limit is of the sign-ups only.
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/launch")).StatusCode);
     }
+
+    /// <summary>A sign-up as the marketing host's proxy sends it for a caller at one address.</summary>
+    private Task<HttpResponseMessage> FromTheProxy(string email, bool kept, string key = JubileeApiFactory.StaffProxyKey)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/launch/notifications") { Content = JsonContent.Create(new { email, consent = true }) };
+        request.Headers.Add("X-Jubilee-Proxy-Key", key);
+        request.Headers.Add("X-Jubilee-Client-Address", "203.0.113.77");
+        request.Headers.Add("X-Jubilee-Received-At", "2026-01-01T00:00:00.000Z");
+        if (kept)
+        {
+            request.Headers.Add("X-Jubilee-Kept", "true");
+        }
+
+        return factory.CreateClient().SendAsync(request);
+    }
+
+    // L2-218 AC9
+    // Given an address has used its five sign-ups of the hour, when the marketing host sends again a sign-up it
+    // kept for that address, then it is stored: a kept submission is not counted, because sending it again is the
+    // marketing host's doing, not the visitor's. The same request without the proxy's key is still refused.
+    [Fact]
+    public async Task L2_218_AC9_a_kept_submission_is_not_counted_against_the_limit_of_its_address()
+    {
+        for (var i = 0; i < 5; i++)
+        {
+            Assert.Equal(HttpStatusCode.Accepted, (await FromTheProxy($"first{i}@example.com", kept: false)).StatusCode);
+        }
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, (await FromTheProxy("sixth@example.com", kept: false)).StatusCode);
+
+        Assert.Equal(HttpStatusCode.Accepted, (await FromTheProxy("kept@example.com", kept: true)).StatusCode);
+        Assert.Contains(await factory.Query(db => db.LaunchSubscribers.Select(s => s.Email).ToListAsync()), email => email == "kept@example.com");
+    }
+
+    // L2-218 AC9
+    // Given a caller that marks its own sign-ups as kept without the proxy's key, when it passes the limit of its
+    // address, then it is refused like anyone else.
+    [Fact]
+    public async Task L2_218_AC9_a_kept_mark_without_the_proxy_key_is_counted()
+    {
+        var client = factory.CreateClient();
+        HttpResponseMessage? last = null;
+        for (var i = 0; i < 6; i++)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/launch/businesses")
+            {
+                Content = JsonContent.Create(new { businessName = $"B{i}", contactName = "C", email = "o@example.com", category = "shops", area = "A", description = "D", consent = true }),
+            };
+            request.Headers.Add("X-Jubilee-Proxy-Key", "not-the-key");
+            request.Headers.Add("X-Jubilee-Kept", "true");
+            last = await client.SendAsync(request);
+        }
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, last!.StatusCode);
+    }
 }
 
 public sealed class LaunchSignUpTeamEmailTests(LaunchTeamEmailFactory factory) : IClassFixture<LaunchTeamEmailFactory>, IAsyncLifetime
