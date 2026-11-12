@@ -133,7 +133,10 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
 
     await expect(business.subtitle).toHaveText('Changes requested · not public yet');
     await expect(business.alert.first()).toContainText('Your tagline mentions a discount code');
-    await expect(business.alert.first()).toContainText('Miriam from the verification team');
+    await expect(business.alert.first()).toContainText('Two changes needed before we can publish');
+    await expect(business.alert.first()).toContainText(
+      'Miriam from the verification team, Mon 9 Nov.',
+    );
     await expect(business.main.getByRole('link', { name: 'Edit listing' })).toBeVisible();
   });
 
@@ -196,7 +199,9 @@ test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-0
     await stubMyBusiness(page, { justApproved: true });
     await jb.goto(OVERVIEW);
 
-    await expect(business.liveBanner).toContainText('Luzandre.com is verified and live.');
+    await expect(business.liveBanner).toContainText(
+      'Luzandre.com is verified and live. Members can find you in Shops.',
+    );
     await business.liveBanner.getByRole('button', { name: 'Dismiss' }).click();
     await expect(business.liveBanner).toHaveCount(0);
   });

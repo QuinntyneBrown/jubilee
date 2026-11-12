@@ -36,7 +36,7 @@ public sealed class MyBusinessController(ISender sender) : ControllerBase
     private string Subject => User.ToViewer().Subject!;
 
     [HttpGet]
-    [ErrorReference("JB-BUS-503")]
+    [ErrorReference("JB-BIZ-503")]
     public Task<MyBusinessDto> Overview(CancellationToken cancellationToken) =>
         sender.Send(new GetMyBusinessQuery(Subject), cancellationToken);
 

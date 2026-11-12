@@ -240,6 +240,7 @@ export async function stubMyBusiness(
         slug: null,
         tagline: null,
         categorySlug: null,
+        categoryName: null,
         subtitle: "You haven't listed a business yet",
         paused: false,
         pausedAt: null,
@@ -261,6 +262,7 @@ export async function stubMyBusiness(
       slug: 'luzandre-com',
       tagline: fake.listing.tagline,
       categorySlug: fake.listing.categorySlug,
+      categoryName: fake.listing.categorySlug === 'rooms-rentals' ? 'Rooms & rentals' : 'Shops',
       subtitle: fake.paused
         ? 'Verified · paused, not public'
         : live

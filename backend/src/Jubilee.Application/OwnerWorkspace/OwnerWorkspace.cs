@@ -33,6 +33,7 @@ public sealed record MyBusinessDto(
     string? Slug,
     string? Tagline,
     string? CategorySlug,
+    string? CategoryName,
     string Subtitle,
     bool Paused,
     DateTimeOffset? PausedAt,
@@ -205,7 +206,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
         var listing = Workspace.Current(owned);
         if (listing is null)
         {
-            return new MyBusinessDto("none", null, null, null, null, null, "You haven't listed a business yet", false, null, false, 0, null, [], null, null, null);
+            return new MyBusinessDto("none", null, null, null, null, null, null, "You haven't listed a business yet", false, null, false, 0, null, [], null, null, null);
         }
 
         var drafts = (await db.ListingDrafts.AsNoTracking().Where(d => d.OwnerSubject == request.Subject).ToListAsync(cancellationToken))
@@ -269,6 +270,7 @@ public sealed class GetMyBusinessQueryHandler(IAppDbContext db, IMediator mediat
             listing.Slug,
             listing.Tagline,
             listing.CategorySlug,
+            Category.Find(listing.CategorySlug)?.Name,
             subtitle,
             listing.IsPaused,
             listing.PausedAt,

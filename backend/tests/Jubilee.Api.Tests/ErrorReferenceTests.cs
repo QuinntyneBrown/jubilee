@@ -44,6 +44,19 @@ public class ErrorReferenceTests : IClassFixture<JubileeApiFactory>, IAsyncLifet
         Assert.False(response.Headers.CacheControl?.Public ?? false);
     }
 
+    // L2-086 / L2-118: the owner's overview quotes the reference its page and its mock show.
+    [Fact]
+    public async Task L2_118_AC2_my_business_that_cannot_be_served_answers_503_with_the_reference_of_its_page()
+    {
+        _factory.Database.Unavailable = true;
+
+        var response = await _factory.CreateMemberClient("Naomi Laurent", "member|naomi").GetAsync("/api/my-business");
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
+        Assert.Equal("JB-BIZ-503", json.GetProperty("reference").GetString());
+    }
+
     [Theory]
     [InlineData("/api/directory/home", "JB-DIR-503")]
     [InlineData("/api/categories/media/listings", "JB-CAT-503")]

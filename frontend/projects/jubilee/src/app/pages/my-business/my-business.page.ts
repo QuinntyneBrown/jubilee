@@ -186,6 +186,17 @@ export class MyBusinessPage implements OnInit {
   }
 
   /** "today", "yesterday" or "3 days ago": the end of the subtitle the API words. */
+  /** "Two changes needed before we can publish" (L2-086 AC3). */
+  protected changesHeading(count: number): string {
+    const words = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const needed = count === 1 ? 'change needed' : 'changes needed';
+    return count > 0
+      ? `${words[count] ?? count} ${needed} before we can publish`
+      : 'Changes needed before we can publish';
+  }
+
+  protected readonly day = dayLabel;
+
   protected submittedWords(business: MyBusiness): string {
     return business.subtitle.split('submitted ')[1] ?? 'recently';
   }

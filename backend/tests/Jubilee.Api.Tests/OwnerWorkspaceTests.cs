@@ -61,6 +61,16 @@ public sealed class OwnerWorkspaceTests : IClassFixture<JubileeApiFactory>, IAsy
     private static Task<HttpResponseMessage> AddPhoto(HttpClient client, ByteArrayContent file) =>
         client.PostAsync("/api/my-business/photos", new MultipartFormDataContent { { file, "file", "front.jpg" } });
 
+    // L2-086 AC4: the banner of a listing just approved names its category.
+    [Fact]
+    public async Task L2_086_AC4_the_overview_names_the_category_members_find_the_business_in()
+    {
+        var overview = await Json(await Naomi().GetAsync("/api/my-business"));
+
+        Assert.True(overview.GetProperty("justApproved").GetBoolean());
+        Assert.Equal("Shops", overview.GetProperty("categoryName").GetString());
+    }
+
     // L2-085
     [Fact]
     public async Task L2_085_the_overview_of_a_live_listing_shows_the_week_in_numbers()

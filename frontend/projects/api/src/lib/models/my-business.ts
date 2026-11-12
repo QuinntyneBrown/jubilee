@@ -68,6 +68,8 @@ export interface MyBusiness {
   slug: string | null;
   tagline: string | null;
   categorySlug: string | null;
+  /** The category as members read it, for example "Shops" (L2-086 AC4). */
+  categoryName: string | null;
   subtitle: string;
   paused: boolean;
   pausedAt: string | null;
