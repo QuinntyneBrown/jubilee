@@ -66,8 +66,8 @@ commands and handlers in `Jubilee.Application`, EF configurations and a migratio
   is set, adds an `OutboxMessage` e-mail "New business pre-registration: {business name}" with
   the details in the same save (`L2-216` AC10, ADR 0038). It adds nothing to the directory and
   creates no listing, draft or account (`L2-216` AC9).
-- **`LaunchSettings`** — options bound from the `Launch` section: `TeamEmail` (`Launch:TeamEmail`),
-  optional. Without it nothing is queued and the CLI is the only way to read a pre-registration.
+- **`LaunchSettings`** — a record with `TeamEmail`, read once from `Launch:TeamEmail` by the
+  Infrastructure composition, optional. Without it nothing is queued and the CLI is the only way to read a pre-registration.
 - **Validation failures** — each handler collects one code per field and throws the existing
   `ValidationFailedException`, which the API answers as 422 ProblemDetails with the code
   `validation_failed` and the codes per field; nothing is stored (`L2-136`, ADR 0012). Text is
