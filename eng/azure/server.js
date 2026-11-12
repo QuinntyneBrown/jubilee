@@ -3,7 +3,7 @@
 //   - the marketing site: static files, and only /api/launch (API_PATHS) sent to https://app.jubilee.to
 //     (API_ORIGIN) with the caller's address, proved by PROXY_KEY, as for the admin host. ADR 0044.
 //     A launch submission the API cannot take is kept in KEEP_DIR, answered 202 and sent again
-//     until the API accepts it. ADR 0046;
+//     until the API accepts it. ADR 0047;
 //   - the app: static files, and /api sent to the Jubilee API running beside it (API_ORIGIN);
 //   - the admin application: static files, and /api sent to https://app.jubilee.to (API_ORIGIN) with
 //     the caller's address in X-Jubilee-Client-Address, proved by X-Jubilee-Proxy-Key (PROXY_KEY).
@@ -30,10 +30,10 @@ const apiPaths = (process.env.API_PATHS || '/api')
   .map((entry) => entry.trim().replace(/\/+$/, ''))
   .filter(Boolean);
 // The API is on another host unless it runs beside this server, as on the app's host. A request
-// sent to another host always names that host: App Service's front end routes by it (ADR 0046).
+// sent to another host always names that host: App Service's front end routes by it (ADR 0047).
 const remote = api !== null && !['127.0.0.1', 'localhost', '[::1]'].includes(api.hostname);
 
-// Kept submissions (L2-218 AC8 and AC9, ADR 0046): the folder, how long the API has to answer
+// Kept submissions (L2-218 AC8 and AC9, ADR 0047): the folder, how long the API has to answer
 // before a submission is kept (inside the page's 10 seconds), and how often the kept ones are sent
 // again.
 const keepDir = process.env.KEEP_DIR ? path.resolve(process.env.KEEP_DIR) : null;
@@ -110,7 +110,7 @@ function callerAddress(req) {
 // What the API is told of a forwarded request. On another host, Host names the API. With the proxy
 // key the API is told who the caller is and that this proxy says so, in place of anything the
 // caller sent (ADR 0040). The two headers of a launch submission are this proxy's to state, never
-// the caller's (ADR 0046).
+// the caller's (ADR 0047).
 function stamp(headers, address) {
   delete headers['x-jubilee-received-at'];
   delete headers['x-jubilee-kept'];
@@ -161,7 +161,7 @@ function proxy(req, res) {
   req.pipe(upstream);
 }
 
-// ---- Launch submissions: kept when the API cannot take them (ADR 0046) ----
+// ---- Launch submissions: kept when the API cannot take them (ADR 0047) ----
 
 // Sends one submission to the API and resolves with its whole answer. Rejects when the API cannot
 // be reached or takes longer than keepAfterMs.

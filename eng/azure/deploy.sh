@@ -7,7 +7,7 @@
 # Add --migrate to apply the EF Core migrations first (the API never applies them itself), and
 # --seed to add the demo directory as well.
 #
-# Every deployment also applies the app settings the launching-soon forms need (ADR 0046) and
+# Every deployment also applies the app settings the launching-soon forms need (ADR 0047) and
 # fails unless the marketing host forwards /api/launch and nothing else. No setting is made by hand.
 set -euo pipefail
 
@@ -132,7 +132,7 @@ az webapp deploy -g "$GROUP" -n "$APP_APP" --src-path "$work/app.zip" --type zip
 
 echo "== The settings of the launching-soon forms"
 # After the packages are in place, so a restart that a changed setting causes starts the new code
-# (ADR 0046). The marketing host proves itself to the API with the key the admin host uses; when
+# (ADR 0047). The marketing host proves itself to the API with the key the admin host uses; when
 # there is none yet, one is made and set on the three App Services together.
 key=$(setting "$APP_APP" StaffAccess__ProxyKey)
 if [[ -z "$key" ]]; then
@@ -165,7 +165,7 @@ fi
 
 echo "== Checking the marketing host"
 # The forms of the launching-soon page reach the API, and no other /api path does (ADR 0044,
-# ADR 0046). The marketing host may still be restarting with its settings, so it is asked again.
+# ADR 0047). The marketing host may still be restarting with its settings, so it is asked again.
 forms=
 other=
 for attempt in $(seq 1 40); do

@@ -23,7 +23,7 @@ jobs:
         run: ./eng/Test-Backend.ps1
 
   hosting:
-    # eng/azure/server.js serves the three sites; its tests need Node and nothing else (ADR 0046).
+    # eng/azure/server.js serves the three sites; its tests need Node and nothing else (ADR 0047).
     name: Hosting server tests
     runs-on: ubuntu-latest
     steps:

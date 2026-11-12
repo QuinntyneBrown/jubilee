@@ -222,7 +222,7 @@ Each changed component keeps its look where it was already used.
   request still addressed to `www.jubilee.to` would come back to the marketing site. Forwarding
   to the API beside it on loopback (`127.0.0.1`, `localhost`, `::1`), as the app's host does,
   keeps the public host.
-- **Kept submissions** (`L2-218` AC8, AC9, ADR 0046) — with `KEEP_DIR` set, `server.js` handles
+- **Kept submissions** (`L2-218` AC8, AC9, ADR 0047) — with `KEEP_DIR` set, `server.js` handles
   `POST /api/launch/notifications` and `POST /api/launch/businesses` itself. It reads the body
   (at most 16 KB), notes the received time, and sends it to the API with
   `X-Jubilee-Received-At`, waiting 8 seconds at most, which is inside the page's 10.
@@ -362,7 +362,7 @@ found with the design.
 | Does `APP_URL` stay, unused? | No. The token, `app-url.ts` and the environment files are removed: a token nothing injects is dead code, and "no link to the app" is easier to keep true when the page does not know the app's address. |
 | Is an invalid submission 400 or 422? | 422 `validation_failed` with a code per field, as everywhere in the API (ADR 0012). A failed challenge is 422 with `challenge: CHALLENGE_FAILED`, and a limit is 429 `rate_limited` with `Retry-After`. |
 | How does the Jubilee team read the submissions? | With `jubilee launch list --kind notifications\|businesses`, and by an e-mail per pre-registration and per new sign-up to `Launch:TeamEmail`, which the deployment sets. No screen and no endpoint returns them. |
-| What does a visitor see when Jubilee cannot be reached? | Never an error. The marketing host keeps what the API cannot take and answers 202; when the page cannot reach the marketing host it says "Still sending." and tries again every 5 seconds (ADR 0046). |
+| What does a visitor see when Jubilee cannot be reached? | Never an error. The marketing host keeps what the API cannot take and answers 202; when the page cannot reach the marketing host it says "Still sending." and tries again every 5 seconds (ADR 0047). |
 | Where is a kept submission held? | One file each in `/home/data/launch-kept` on the marketing host, App Service's persistent storage. A queue or a second database would be one more resource to run for a state that should be rare and short. |
 | Which time is the consent time of a kept submission? | The time the marketing host received it, stated in `X-Jubilee-Received-At` and believed only with the proxy key. |
 | Is a kept submission asked for the bot challenge again? | No. Its token has expired, so the API skips the challenge for a submission the marketing host's proxy marks as kept; the per-address limit still counts it. |

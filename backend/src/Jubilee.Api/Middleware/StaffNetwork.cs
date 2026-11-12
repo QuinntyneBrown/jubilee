@@ -59,11 +59,11 @@ public sealed class StaffNetworks
 /// headers are removed from every request, so nothing after this sees a caller's own copy (L2-192 AC4).
 /// The marketing host's proxy also states when it received a launch submission
 /// (<c>X-Jubilee-Received-At</c>) and that it kept one and sends it again (<c>X-Jubilee-Kept</c>);
-/// they are believed and removed the same way (L2-218 AC9, ADR 0046).
+/// they are believed and removed the same way (L2-218 AC9, ADR 0047).
 /// </summary>
 /// <summary>
 /// What the marketing host's proxy said of a launch submission, present only when it proved itself:
-/// when it received it, and whether it kept it and is sending it again (ADR 0046).
+/// when it received it, and whether it kept it and is sending it again (ADR 0047).
 /// </summary>
 public sealed record ProxiedSubmission(DateTimeOffset? ReceivedAt, bool Kept);
 

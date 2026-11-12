@@ -2,7 +2,7 @@
 // `node --test eng/azure/server.test.js`. Each test starts server.js as App Service does, with its settings in
 // the environment, against a stand-in for the Jubilee API. Nothing but Node's standard library.
 //
-// Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186; ADR 0040, ADR 0044, ADR 0046.
+// Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186; ADR 0040, ADR 0044, ADR 0047.
 'use strict';
 
 const { test, after } = require('node:test');
@@ -147,7 +147,7 @@ function marketingHost(api, more = {}) {
   }).then((site) => Object.assign(site, { dir }));
 }
 
-// ---- The Host of a forwarded request (ADR 0046) ----
+// ---- The Host of a forwarded request (ADR 0047) ----
 
 test('Given an API on another host and no proxy key, when /api is forwarded, then Host names the API, not the public host', async () => {
   const api = await standIn('127.0.0.2', () => ({ status: 200, headers: { 'Content-Type': 'application/json' }, body: '{}' }));

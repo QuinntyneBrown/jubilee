@@ -1,7 +1,7 @@
 name: Check a launch sign-up
 
 # Says whether one address is among the launch notification sign-ups in production, without
-# showing the list (eng/azure/README.md, ADR 0046). Started by hand from the Actions tab. It reads
+# showing the list (eng/azure/README.md, ADR 0047). Started by hand from the Actions tab. It reads
 # and changes no data; the reading is written to the audit log (L2-218 AC4).
 on:
   workflow_dispatch:

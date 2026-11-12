@@ -1,7 +1,7 @@
 #!/bin/bash
 # Says whether a launch notification sign-up reached the production database, without showing the
 # list: it prints the number of sign-ups and whether one address is among them, and nothing else
-# (ADR 0046). The workflow "Check a launch sign-up" runs it; so can anyone with az signed in:
+# (ADR 0047). The workflow "Check a launch sign-up" runs it; so can anyone with az signed in:
 #
 #   bash eng/azure/check-launch.sh someone@example.com
 #

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Launch;
 
-/// <summary>Where the team hears of a pre-registration and of a new sign-up (<c>Launch:TeamEmail</c>); null when nobody is told by e-mail (ADR 0044, ADR 0046).</summary>
+/// <summary>Where the team hears of a pre-registration and of a new sign-up (<c>Launch:TeamEmail</c>); null when nobody is told by e-mail (ADR 0044, ADR 0047).</summary>
 public sealed record LaunchSettings(string? TeamEmail);
 
 /// <summary>"Send my details" (L2-216): an owner's business, before launch. It lists and verifies nothing.</summary>

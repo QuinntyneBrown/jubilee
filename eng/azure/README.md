@@ -65,7 +65,7 @@ While Jubilee is launching soon the marketing page sends two forms, the launch n
 the business pre-registration, to `/api/launch` on its own origin (ADR 0044). `server.js` on
 `jubilee-to-www` forwards that prefix, and nothing else of `/api`, to the app's host, as the admin
 host forwards its calls. Everything this needs is done by the Deploy workflow on every
-deployment (ADR 0046); there is no step to run by hand.
+deployment (ADR 0047); there is no step to run by hand.
 
 - **The migrations.** `deploy.sh --migrate` applies `AddLaunchSubscribers` and
   `AddBusinessPreRegistrations` with the rest.

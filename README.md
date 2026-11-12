@@ -154,7 +154,7 @@ npm run start:marketing --prefix frontend
 
 A form that cannot reach the API shows no error: it says "Still sending." and sends again every
 5 seconds. In production the marketing host keeps what the API cannot take and sends it again
-(ADR 0046); `node --test eng/azure/server.test.js` runs the tests of that host's `server.js`.
+(ADR 0047); `node --test eng/azure/server.test.js` runs the tests of that host's `server.js`.
 
 The team is e-mailed each pre-registration and each new sign-up when `Launch:TeamEmail` is set,
 and reads what the forms collected with the CLI; each run is audited:

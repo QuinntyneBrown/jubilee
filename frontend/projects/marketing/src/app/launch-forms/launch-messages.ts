@@ -39,7 +39,7 @@ function answered(error: unknown): boolean {
 }
 
 /**
- * Keeps a send going until Jubilee answers it (ADR 0046). A send that cannot be made, is not
+ * Keeps a send going until Jubilee answers it (ADR 0047). A send that cannot be made, is not
  * answered within 10 seconds or is answered with a fault is no error for the visitor: `waiting` is
  * called, so the form can say it is still sending, and the same send is made again 5 seconds
  * later, for as long as it takes. Only 422 and 429 end it as an error.
