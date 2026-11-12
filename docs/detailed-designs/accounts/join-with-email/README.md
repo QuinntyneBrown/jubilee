@@ -258,9 +258,10 @@ browser and adds no message to the sequence (`L2-187`).
 "Send it again" supersedes the earlier link and issues a new one valid for 24
 hours. Resends and changes of an unconfirmed address share one limit of 5 per
 member per hour (`L2-137`). `OutboxDispatcherJob` sends the new e-mail after
-the commit. The success state of `JoinPage` shows "We couldn’t send it. Try
-again in a moment." for a resend that fails for any reason; the banner and the
-waiting page of the confirm e-mail feature name the limit and the wait
-(`L2-005`).
+the commit. When the limit is reached, the success state of `JoinPage` shows
+"You’re doing that a lot. Try again in {n} minutes." with the wait of
+`Retry-After`, as the banner and the waiting page of the confirm e-mail feature
+do (`L2-005`); a resend that fails for another reason shows "We couldn’t send
+it. Try again in a moment."
 
 ![Sequence diagram for sending the confirmation e-mail again](diagrams/sequence-resend-confirmation.png)
