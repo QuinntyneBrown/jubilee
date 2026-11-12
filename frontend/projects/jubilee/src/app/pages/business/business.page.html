@@ -59,7 +59,31 @@
     @let hasServices = listing.services.length > 0;
     @let hasProducts = listing.products.length > 0;
     @let isOwner = listing.viewerRelation === 'owner';
-    @if (isOwner) {
+    @let preview = listing.status !== 'live';
+    @let isMember = !isOwner && !preview;
+    @if (preview) {
+      <div
+        jb-alert
+        tone="warning"
+        [heading]="
+          isOwner
+            ? 'Preview: members can’t see this page yet'
+            : 'Preview: this listing is not public'
+        "
+      >
+        <div>
+          {{ statusWords(listing.status) }}.
+          {{
+            isOwner
+              ? 'Only you and the Jubilee verification team can open it.'
+              : 'Only its owner and the Jubilee verification team can open it.'
+          }}
+        </div>
+        @if (isOwner) {
+          <a slot="actions" routerLink="/my-business">Go to My business</a>
+        }
+      </div>
+    } @else if (isOwner) {
       <div jb-alert heading="This is how members see your listing">
         <div>It’s live and verified. Changes you make are published straight away.</div>
         <a slot="actions" routerLink="/my-business">Go to My business</a>
@@ -72,7 +96,10 @@
         </div>
         <div jb-detail-head class="split__sticky">
           <p jb-detail-head-kicker>
-            <svg jb-icon name="verified"></svg>Verified host · {{ space.neighbourhood }}
+            @if (listing.verified) {
+              <svg jb-icon name="verified"></svg>Verified host ·
+            }
+            {{ space.neighbourhood }}
           </p>
           <h1>{{ listing.name }}</h1>
           <p class="lead">{{ listing.tagline }}</p>
@@ -88,7 +115,7 @@
                 ><svg jb-icon name="edit"></svg>Edit listing</a
               >
             }
-            @if (!isOwner && !listing.openRequestId) {
+            @if (isMember && !listing.openRequestId) {
               <a
                 slot="action"
                 jbRequiresConnection
@@ -99,7 +126,7 @@
                 >{{ space.callToAction }}</a
               >
             }
-            @if (!isOwner) {
+            @if (isMember) {
               <a
                 jbRequiresConnection
                 jb-button
@@ -111,7 +138,7 @@
                 ><svg jb-icon name="message"></svg
               ></a>
             }
-            @if (!isOwner) {
+            @if (isMember) {
               <button
                 #spaceSaveButton
                 jbRequiresConnection
@@ -206,7 +233,13 @@
           }
         </div>
         <div jb-detail-head class="split__sticky">
-          <p jb-verified-business-label [category]="listing.category"></p>
+          @if (listing.verified) {
+            <p jb-verified-business-label [category]="listing.category"></p>
+          } @else {
+            <p jb-detail-head-kicker>
+              <a [routerLink]="['/c', listing.category.slug]">{{ listing.category.name }}</a>
+            </p>
+          }
           <h1>{{ listing.name }}</h1>
           @if (listing.ownerName) {
             <p>
@@ -229,7 +262,7 @@
               <a jb-button iconOnly [routerLink]="link('share')" aria-label="Share listing"
                 ><svg jb-icon name="share"></svg
               ></a>
-            } @else {
+            } @else if (isMember) {
               @if (isShop && hasProducts) {
                 <a jb-button variant="primary" size="lg" [routerLink]="[]" fragment="products"
                   ><svg jb-icon name="bag"></svg>Shop products</a
@@ -406,7 +439,7 @@
         </section>
       }
     }
-    @if (!isOwner) {
+    @if (isMember) {
       <p class="text-caption" style="margin-top: var(--space-8)">
         <a
           style="display: inline-flex; gap: var(--space-1); align-items: center"
@@ -416,7 +449,7 @@
       </p>
     }
     @if (listing.space; as space) {
-      @if (!isOwner && !listing.openRequestId) {
+      @if (isMember && !listing.openRequestId) {
         <jb-booking-bar [rent]="space.rent" [per]="space.per">
           <a
             jbRequiresConnection

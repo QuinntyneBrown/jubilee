@@ -55,6 +55,13 @@ export interface SpaceDetails {
   callToAction: string;
 }
 
+/**
+ * Where a listing stands for the public (L2-219): `live`, or why its page is a preview that only
+ * its owner and the verification team can open.
+ */
+export type ListingStatus =
+  'live' | 'draft' | 'ready-to-review' | 'changes-requested' | 'declined' | 'paused' | 'on-hold';
+
 /** `GET /api/listings/{slug}`: the listing page of one business (L2-033, L2-034). */
 export interface ListingPage {
   slug: string;
@@ -63,6 +70,7 @@ export interface ListingPage {
   category: CategoryLink;
   verified: boolean;
   stage: string;
+  status: ListingStatus;
   viewerRelation: ViewerRelation;
   ownerName: string | null;
   tagline: string;

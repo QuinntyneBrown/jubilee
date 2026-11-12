@@ -12,6 +12,29 @@ public enum ViewerRelation
     Verifier = 3,
 }
 
+/// <summary>
+/// Where a listing stands for the public (L2-219 AC2): "live" for a public listing, otherwise the
+/// first reason it is not public. The browser turns it into words.
+/// </summary>
+public static class ListingStatus
+{
+    public const string Live = "live";
+
+    public static string Of(Listing listing) => listing switch
+    {
+        _ when listing.IsPublic() => Live,
+        { IsUnderModerationHold: true } => "on-hold",
+        { Stage: ListingStage.Live, IsPaused: true } => "paused",
+        { Stage: ListingStage.Draft } => "draft",
+        { Stage: ListingStage.ReadyToReview } => "ready-to-review",
+        { Stage: ListingStage.ChangesRequested } => "changes-requested",
+        { Stage: ListingStage.Declined } => "declined",
+
+        // Live without an approval: it waits for the verification team like a submitted listing.
+        _ => "ready-to-review",
+    };
+}
+
 /// <summary>One row of "Services" or "Custom work" (L2-033 AC2).</summary>
 public sealed record ServiceRowDto(Guid Id, string Name, string Detail, string PriceKind, int? PriceCents, string Action)
 {
@@ -82,6 +105,7 @@ public sealed record ListingPageDto(
     CategoryLinkDto Category,
     bool Verified,
     string Stage,
+    string Status,
     string ViewerRelation,
     string? OwnerName,
     string Tagline,

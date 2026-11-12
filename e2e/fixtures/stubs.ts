@@ -351,6 +351,15 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ...listing,
         viewerRelation: 'owner',
       }));
+    case 'business-preview':
+      // The owner's preview of a listing the verification team sent back (L2-219).
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        viewerRelation: 'owner',
+        verified: false,
+        stage: 'changes-requested',
+        status: 'changes-requested',
+      }));
     case 'shop-loading':
       return page.route(luzandre, pending);
     case 'shop-error':

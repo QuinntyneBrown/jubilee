@@ -1,5 +1,6 @@
 import { parity } from '../../fixtures/parity';
 import { BrowsePage } from '../../pages/browse.page';
+import { BusinessPage } from '../../pages/business.page';
 import { RequestDetailPage } from '../../pages/request-detail.page';
 
 // jb-alert: tones with a heading, and the banner under the top bar with its actions.
@@ -18,6 +19,12 @@ parity('alert', {
       route: 'request-detail.confirmed',
       screen: (page) => new RequestDetailPage(page),
       region: (screen: RequestDetailPage) => screen.callout,
+    },
+    {
+      name: 'warning',
+      route: 'business.preview',
+      screen: (page) => new BusinessPage(page),
+      region: (screen: BusinessPage) => screen.previewBanner,
     },
     {
       name: 'banner',

@@ -29,12 +29,13 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
         var slug = request.Slug.Trim().ToLowerInvariant();
         var viewer = request.Viewer;
 
-        // The owner and the verification team see the listing whatever its stage, uncached; the
-        // relation comes from the session, never from the client (L2-133).
+        // The owner and the verification team see the listing whatever its stage, uncached, as a
+        // preview with its status (L2-219); the relation comes from the session, never from the
+        // client (L2-133). A deleted listing has nothing to preview.
         if (viewer.Subject is { } subject)
         {
             var ownerId = await db.Listings.AsNoTracking()
-                .Where(l => l.Slug == slug)
+                .Where(l => l.Slug == slug && l.DeletedAt == null)
                 .Select(l => l.OwnerId)
                 .SingleOrDefaultAsync(cancellationToken);
             var relation = ownerId == subject ? ViewerRelation.Owner
@@ -42,7 +43,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
                 : ViewerRelation.Member;
             if (relation != ViewerRelation.Member)
             {
-                var listing = await db.Listings.AsNoTracking().SingleOrDefaultAsync(l => l.Slug == slug, cancellationToken)
+                var listing = await db.Listings.AsNoTracking().SingleOrDefaultAsync(l => l.Slug == slug && l.DeletedAt == null, cancellationToken)
                     ?? throw NotFound();
                 return await BuildAsync(listing, cancellationToken) with { ViewerRelation = Wire(relation) };
             }
@@ -113,6 +114,7 @@ public sealed class GetListingPageQueryHandler(IAppDbContext db, IDirectoryReadC
             CategoryLinkDto.From(category),
             VerifiedListingSpecification.IsSatisfiedBy(listing),
             WireValues.Of(listing.Stage),
+            ListingStatus.Of(listing),
             Wire(ViewerRelation.Visitor),
             listing.OwnerName,
             listing.Tagline,
