@@ -42,12 +42,13 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 24 | Use Jubilee offline | Browse cached pages and queue messages on poor connections. | 7 | 83% |
 | 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | 82% |
 | 26 | Download data and delete account | Export personal data or permanently delete the account. | 5 | 83% |
-| 27 | Meet Jubilee on the marketing site | Read the marketing page, watch the pitch film, open the app or start listing. | 4 | 95% |
+| 27 | Meet Jubilee on the marketing site | Read the marketing page and watch the pitch film. Its links to the app and to listing (L2-185) are suspended while Jubilee is launching soon; journey 31 takes their place until launch. | 4 | 95% |
 | 28 | Rent a room or space | List a room, suite or hall; find spaces by term on Browse, the category and search; request one and let the owner confirm. | 19 | 100% |
 | 29 | Give feedback | Rate Jubilee, report a bug or send kudos from any screen, answer a check-in, and follow past feedback. | 9 | 97% |
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
+| 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 95% |
 
-**Total: 210 days** for the 29 journeys, **90% complete** weighted by effort.
+**Total: 217 days** for the 30 journeys, **90% complete** weighted by effort.
 
 ## Notes
 
