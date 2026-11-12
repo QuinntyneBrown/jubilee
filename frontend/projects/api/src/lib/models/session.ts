@@ -17,7 +17,6 @@ export type SessionDto =
       emailStatus?: 'unconfirmed' | 'confirmed';
       emailBounced?: boolean;
       agreementRequired?: boolean;
-      isVerifier?: boolean;
       otherSessionCount?: number;
     };
 
@@ -30,8 +29,6 @@ export interface Member {
   emailConfirmed: boolean;
   emailBounced: boolean;
   agreementRequired: boolean;
-  /** On the Jubilee verification team (L2-098). */
-  isVerifier: boolean;
 }
 
 /** The body of `POST /api/session`. */

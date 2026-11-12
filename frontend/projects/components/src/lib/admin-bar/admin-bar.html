@@ -1,0 +1,42 @@
+<a jb-lockup onInk class="topbar__brand" aria-label="jubilee admin" routerLink="/verifications"
+  ><span class="admin-bar__tag" aria-hidden="true">admin</span></a
+>
+@if (staff(); as staff) {
+  @if (verifier()) {
+    <nav class="admin-bar__nav" aria-label="Staff">
+      <a
+        class="nav-link"
+        routerLink="/verifications"
+        [attr.aria-current]="current() === 'verifications' ? 'page' : null"
+        >Verifications
+        @if (staff.verificationCount > 0) {
+          <span
+            jb-badge
+            [count]="staff.verificationCount"
+            [label]="staff.verificationCount + ' ready to review'"
+          ></span>
+        }
+      </a>
+      <a
+        class="nav-link"
+        routerLink="/reports"
+        [attr.aria-current]="current() === 'reports' ? 'page' : null"
+        >Reports</a
+      >
+      <a
+        class="nav-link"
+        routerLink="/featured"
+        [attr.aria-current]="current() === 'featured' ? 'page' : null"
+        >Featured</a
+      >
+    </nav>
+  }
+  <span class="topbar__spacer"></span>
+  <span class="admin-bar__staff">
+    <span class="admin-bar__name">{{ staff.displayName }}</span>
+    <span class="admin-bar__role">{{ roleNames() }}</span>
+  </span>
+  <button jb-button variant="ghost" size="sm" type="button" (click)="signOut.emit()">
+    Sign out
+  </button>
+}

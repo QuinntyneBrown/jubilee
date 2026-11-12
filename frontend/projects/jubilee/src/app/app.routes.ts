@@ -3,7 +3,6 @@ import { ChromeSection } from 'components';
 import { guestGuard } from './guards/guest.guard';
 import { memberGuard } from './guards/member.guard';
 import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
-import { verifierGuard } from './guards/verifier.guard';
 import { welcomeRedirectGuard } from './guards/welcome-redirect.guard';
 
 /**
@@ -193,50 +192,17 @@ export const routes: Routes = [
     title: 'Requests · Jubilee',
   },
   {
-    path: 'admin/verifications',
-    pathMatch: 'full',
-    loadComponent: () =>
-      import('./pages/admin-verifications/admin-verifications.page').then(
-        (m) => m.AdminVerificationsPage,
-      ),
-    canActivate: [verifierGuard],
-    data: data({ shell: 'app', page: 'admin-verifications', section: 'verifications' }),
-    title: 'Verification queue · Jubilee',
-  },
-  {
-    path: 'admin/verifications/:id',
-    loadComponent: () =>
-      import('./pages/admin-verification/admin-verification.page').then(
-        (m) => m.AdminVerificationPage,
-      ),
-    canActivate: [verifierGuard],
-    data: data({ shell: 'app', page: 'admin-verification', section: 'verifications' }),
-    title: 'Review a listing · Jubilee',
-  },
-  {
-    path: 'admin/reports',
-    pathMatch: 'full',
-    loadComponent: () =>
-      import('./pages/admin-reports/admin-reports.page').then((m) => m.AdminReportsPage),
-    canActivate: [verifierGuard],
-    data: data({ shell: 'app', page: 'admin-reports', section: 'verifications' }),
-    title: 'Reports · Jubilee',
-  },
-  {
-    path: 'admin/reports/:id',
-    loadComponent: () =>
-      import('./pages/admin-report/admin-report.page').then((m) => m.AdminReportPage),
-    canActivate: [verifierGuard],
-    data: data({ shell: 'app', page: 'admin-report', section: 'verifications' }),
-    title: 'Review a report · Jubilee',
-  },
-  {
-    path: 'admin/featured',
-    loadComponent: () =>
-      import('./pages/admin-featured/admin-featured.page').then((m) => m.AdminFeaturedPage),
-    canActivate: [verifierGuard],
-    data: data({ shell: 'app', page: 'admin-featured', section: 'verifications' }),
-    title: 'Featured this week · Jubilee',
+    // The verification team's screens moved to the admin application (L2-194).
+    path: 'admin',
+    children: [
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./pages/admin-moved/admin-moved.page').then((m) => m.AdminMovedPage),
+        data: data({ shell: 'app', page: 'admin-moved' }),
+        title: 'This page has moved · Jubilee',
+      },
+    ],
   },
   {
     path: 'error',

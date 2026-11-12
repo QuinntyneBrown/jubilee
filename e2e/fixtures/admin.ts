@@ -1,7 +1,8 @@
 import type { Page, Route } from '@playwright/test';
+import { type FakeStaff, miriam, type StaffMember, stubStaff } from './staff';
 
-// A stand-in for the verification team's endpoints (L2-098 to L2-104) and for the session of a team
-// member. The requests the app makes are kept so a test can prove what it sent (ADR 0009).
+// A stand-in for the verification team's endpoints (L2-098 to L2-104) and for the staff session of
+// a team member in the admin application (L2-190). The requests the app makes are kept so a test can prove what it sent (ADR 0009).
 
 export type AdminOutcome = 'ok' | 'fails';
 
@@ -21,6 +22,8 @@ export interface FakeAdmin {
   approvals: { id: string; note: string | null }[];
   changeRequests: { id: string; areas: string[]; message: string }[];
   declines: { id: string; reason: string }[];
+  /** The staff session the admin application reads. */
+  staff: FakeStaff;
 }
 
 const problem = (status: number, body: object) => ({
@@ -111,18 +114,10 @@ const CHECKS = [
   ['category', 'Category fits what they offer'],
 ] as const;
 
-export const esther = {
-  signedIn: true,
-  firstName: 'Esther',
-  displayName: 'Esther Mensah',
-  initials: 'EM',
-  isVerifier: true,
-};
-
 export async function stubAdmin(
   page: Page,
-  initial: Partial<FakeAdmin> = {},
-  member = esther,
+  initial: Partial<Omit<FakeAdmin, 'staff'>> = {},
+  staff: StaffMember = miriam,
 ): Promise<FakeAdmin> {
   const fake: FakeAdmin = {
     queue: 'ok',
@@ -137,22 +132,11 @@ export async function stubAdmin(
     approvals: [],
     changeRequests: [],
     declines: [],
+    staff: undefined as unknown as FakeStaff,
     ...initial,
   };
 
-  await page.route('**/api/session', (r) => r.fulfill({ json: member }));
-  await page.route('**/api/me/navigation', (r) =>
-    r.fulfill({
-      json: {
-        unreadConversationCount: 2,
-        unreadNotificationCount: 3,
-        newRequestCount: 0,
-        ownsListing: false,
-        isVerifier: member.isVerifier,
-        verificationCount: member.isVerifier ? 2 : 0,
-      },
-    }),
-  );
+  fake.staff = await stubStaff(page, staff);
 
   const review = () => ({
     id: LISTING_ID,

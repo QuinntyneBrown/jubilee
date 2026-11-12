@@ -1,9 +1,9 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { ShellPage } from './shell.page';
+import { AdminShellPage } from './admin-shell.page';
 
-/** `/admin/verifications`: the verification team's queue (L2-099). */
-export class AdminVerificationsPage extends ShellPage implements Screen {
+/** `/verifications` of the admin application: the verification team's queue (L2-099). */
+export class AdminVerificationsPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly subtitle: Locator;
   readonly tabsList: Locator;

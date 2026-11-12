@@ -6,7 +6,7 @@ import {
   stubUnhandled,
 } from '../fixtures/errors';
 import { expect, test } from '../fixtures/jb-test';
-import { stubAdmin, esther } from '../fixtures/admin';
+import { stubMyBusiness } from '../fixtures/my-business';
 import { Toasts } from '../pages/toasts';
 import { BrowsePage } from '../pages/browse.page';
 import { BusinessPage } from '../pages/business.page';
@@ -187,15 +187,15 @@ test.describe('forbidden: ask for access (L2-114)', () => {
     const forbidden = new ForbiddenPage(page);
     const toasts = new Toasts(page);
     await forbidden.setWidth(1280);
-    await stubAdmin(page, {}, { ...esther, isVerifier: false });
+    await stubMyBusiness(page, { overview: 'forbidden' });
     const help = await stubHelp(page);
-    await jb.goto('/admin/verifications');
+    await jb.goto('/my-business');
     await forbidden.askForAccess.click();
 
     await expect(toasts.withTitle('We’ve passed your request to the team.')).toBeVisible();
     await expect(forbidden.askForAccess).toHaveText('Requested ✓');
     await expect(forbidden.askForAccess).toBeDisabled();
-    expect(help.bodies).toEqual([{ url: '/admin/verifications' }]);
+    expect(help.bodies).toEqual([{ url: '/my-business' }]);
     expect(help.keys[0]).toBeTruthy();
   });
 
@@ -206,9 +206,9 @@ test.describe('forbidden: ask for access (L2-114)', () => {
     const forbidden = new ForbiddenPage(page);
     const toasts = new Toasts(page);
     await forbidden.setWidth(1280);
-    await stubAdmin(page, {}, { ...esther, isVerifier: false });
+    await stubMyBusiness(page, { overview: 'forbidden' });
     const help = await stubHelp(page, { failures: 1 });
-    await jb.goto('/admin/verifications');
+    await jb.goto('/my-business');
     await forbidden.askForAccess.click();
 
     const failed = toasts.withTitle('We couldn’t send your request.');

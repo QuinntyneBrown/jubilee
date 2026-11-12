@@ -1,9 +1,9 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
-import { ShellPage } from './shell.page';
+import { AdminShellPage } from './admin-shell.page';
 
-/** `/admin/reports/:id`: one report and the actions on it (L2-105). */
-export class AdminReportPage extends ShellPage implements Screen {
+/** `/reports/:id` of the admin application: one report and the actions on it (L2-105). */
+export class AdminReportPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly subtitle: Locator;
   readonly report: Locator;

@@ -24,43 +24,51 @@ on its own host (ADR 0040).
 - **`admin` application** — Angular application at `frontend/projects/admin`,
   served by `npm run start:admin` on port 4202 with `/api` sent to the local
   API. `app.config.ts` is its composition root: it provides the router, the
-  HTTP client with the anti-CSRF interceptor, the CDK dialog, and the API
+  HTTP client (whose built-in XSRF handling copies the `XSRF-TOKEN` cookie into
+  the `X-XSRF-TOKEN` header) with `sessionExpiredInterceptor`, and the API
   tokens `ADMIN_API` and `STAFF_SESSION_API` from the `api` library.
-- **`AdminRoot`** — the application's root container. It renders `jb-skip-link`,
-  `jb-admin-bar`, the routed page in `main` and `jb-toast-region`. Route data
-  (`shell`: `admin` or `bare`; `page`) picks the chrome and is stamped on
-  `<body data-page>`. The sign-in screens use the `bare` shell.
+- **`App`** — the application's root container (`jb-root`). It renders
+  `jb-skip-link`, `jb-admin-bar`, the routed page in `main` and
+  `jb-toast-region`. Route data (`shell`: `admin` or `bare`; `page`; `section`;
+  `verifier`) picks the chrome and is stamped on `<body data-page>`. The
+  sign-in screens use the `bare` shell. On a screen marked `verifier`, a staff
+  member without the `verifier` role sees `AdminOnlyPage` in place of the
+  router outlet, so the screen is never loaded and its endpoint never called
+  (`L2-188` criterion 4).
 - **`jb-admin-bar`** — presentation component in `frontend/projects/components`
-  (`admin-bar.ts`, `.html`, `.scss`). Inputs: the staff member (`name`,
-  `roles`), the current section, and `verificationCount`. It shows the lockup
+  (`admin-bar.ts`, `.html`, `.scss`). Inputs: `staff` (`displayName`, `roles`,
+  `verificationCount`) and `current`, the section. It shows the lockup
   with the tag "admin", the links "Verifications {n}", "Reports" and "Featured"
   to a staff member with the `verifier` role (none otherwise), marks the
   current link with `aria-current="page"` and the underline, shows the name and
   role ("Verifier", "Administrator" or both) from 768 px, and emits `signOut`
   from its "Sign out" button. Under 768 px the navigation is one row under the
   lockup that scrolls sideways.
-- **`StaffSessionService`** — root service. `load()` reads
+- **`StaffSessionService`** — root service. `resolve()` reads
   `GET /api/staff/session` once at start-up and holds the staff member
   (display name, initials, e-mail, roles, `verificationCount`) as a signal, or
-  `null`.
-- **`staffGuard`** — functional route guard on every screen. Without a staff
-  session it sends the browser to `/sign-in?returnUrl={path}`; a staff member
-  without the `verifier` role is let through to the screen, which renders the
-  `NoAccessState` instead of its content (`L2-188` criterion 4).
-- **`sessionExpiryInterceptor`** — HTTP interceptor. A 401 with `code`
+  `null`; `refused` is true when the API answered 403 `NETWORK_NOT_ALLOWED`
+  (`L2-192` criterion 6). `signOut()` calls `DELETE /api/staff/session`.
+- **`staffGuard`** — functional guard on every screen (`canActivateChild`).
+  Without a staff session it sends the browser to `/sign-in?returnUrl={path}`.
+  **`signedOutGuard`** on the sign-in screens sends a staff member who is
+  already signed in to the screen asked for (`L2-189` criterion 7).
+- **`AdminOnlyPage`** — "Nothing here for your role", with "Sign out".
+- **`sessionExpiredInterceptor`** — HTTP interceptor. A 401 with `code`
   `SESSION_EXPIRED` clears the staff session and navigates to
   `/session-expired`; a 401 `sign_in_required` navigates to `/sign-in`.
-- **Moved pages** — `VerificationQueuePage` (`/verifications`),
-  `VerificationReviewPage` (`/verifications/:id`), `ReportsPage` (`/reports`),
-  `ReportPage` (`/reports/:id`) and `FeaturedPage` (`/featured`) move unchanged
-  in behaviour from the app, with their dialogs `approve-listing`,
+- **Moved pages** — `AdminVerificationsPage` (`/verifications`),
+  `AdminVerificationPage` (`/verifications/:id`), `AdminReportsPage`
+  (`/reports`), `AdminReportPage` (`/reports/:id`) and `AdminFeaturedPage`
+  (`/featured`) move unchanged in behaviour from the app, with their dialogs `approve-listing`,
   `request-changes`, `decline-listing` and `report-action`. The "Verification
   team" tabs under each title give way to the admin bar's navigation. `/`
-  redirects to `/verifications`; any other path renders `NotFoundState`
+  redirects to `/verifications`; any other path renders `NotFoundPage`
   ("We couldn't find that page." with "Go to the verification queue").
-- **Shared helpers** — `ClockService`, `LoadState` with `errorReference`, the
-  message-time formatters and `ToastService` move from the app to the `api`
-  library, so that both applications import them.
+- **Shared helpers** — `ClockService`, `LoadState` with `errorReference` and the
+  message-time formatters move from the app to the `api` library, and
+  `ToastService` with `jb-toast-region` to the `components` library, so that both
+  applications import them.
 - **`AdminMovedPage`** — the one page the app keeps under `/admin/**`. It shows
   "This page has moved" with "Open the admin application", whose address is
   `ADMIN_URL` (a per-environment token, `https://admin.jubilee.to` in
@@ -99,8 +107,8 @@ to `Jubilee API`; `Jubilee Web` keeps only the moved page.
 
 ### Components
 
-`AdminRoot` composes `jb-admin-bar` and the routed pages; `staffGuard` and
-`StaffSessionService` decide what a caller sees.
+`App` composes `jb-admin-bar` and the routed pages; `staffGuard`,
+`signedOutGuard` and `StaffSessionService` decide what a caller sees.
 
 ![C4 component view for the admin application](diagrams/c4-component.png)
 

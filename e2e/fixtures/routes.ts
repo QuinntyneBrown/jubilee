@@ -125,7 +125,9 @@ export type StubName =
   | 'account-data-requested'
   | 'data-download-done'
   | 'data-download-unavailable'
-  | 'forbidden';
+  | 'staff-signed-out'
+  | 'staff-network-refused'
+  | 'staff-admin-only';
 
 export interface ScreenRoute {
   app: string;
@@ -138,7 +140,7 @@ export interface ScreenRoute {
    */
   via?: string;
   /** The marketing site (ADR 0013): `app` is a path of that site, not of the app. */
-  site?: 'marketing';
+  site?: 'marketing' | 'admin';
 }
 
 export const routes = {
@@ -884,100 +886,182 @@ export const routes = {
     stub: 'services-error',
   },
   'admin-verifications': {
-    app: '/admin/verifications',
+    app: '/verifications',
     mock: 'pages/admin-verifications/default.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'admin-queue',
   },
   'admin-verifications.empty': {
-    app: '/admin/verifications',
+    app: '/verifications',
     mock: 'pages/admin-verifications/empty.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'admin-queue-empty',
   },
   'admin-verifications.error': {
-    app: '/admin/verifications',
+    app: '/verifications',
     mock: 'pages/admin-verifications/error.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'admin-queue-error',
   },
   'admin-verification': {
-    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
     mock: 'pages/admin-verification/default.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'admin-review',
   },
   'admin-verification.approved': {
-    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
     mock: 'pages/admin-verification/approved.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'admin-review-approved',
   },
   'admin-verification.changes-requested': {
-    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
     mock: 'pages/admin-verification/changes-requested.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'admin-review-changes-requested',
   },
   'admin-verification.error': {
-    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    app: '/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
     mock: 'pages/admin-verification/error.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'admin-review-error',
   },
   'admin-reports': {
-    app: '/admin/reports',
+    app: '/reports',
     mock: 'pages/admin-reports/default.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'moderation-reports',
   },
   'admin-reports.empty': {
-    app: '/admin/reports',
+    app: '/reports',
     mock: 'pages/admin-reports/empty.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'moderation-reports-empty',
   },
   'admin-reports.error': {
-    app: '/admin/reports',
+    app: '/reports',
     mock: 'pages/admin-reports/error.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'moderation-reports-error',
   },
   'admin-report': {
-    app: '/admin/reports/5b0c7a10-2d4e-4f6a-8b1c-0123456789ab',
+    app: '/reports/5b0c7a10-2d4e-4f6a-8b1c-0123456789ab',
     mock: 'pages/admin-report/default.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'moderation-report',
   },
   'admin-report.conversation': {
-    app: '/admin/reports/6c1d8b21-3e5f-4a7b-9c2d-123456789abc',
+    app: '/reports/6c1d8b21-3e5f-4a7b-9c2d-123456789abc',
     mock: 'pages/admin-report/conversation.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'moderation-report-conversation',
   },
   'admin-report.error': {
-    app: '/admin/reports/5b0c7a10-2d4e-4f6a-8b1c-0123456789ab',
+    app: '/reports/5b0c7a10-2d4e-4f6a-8b1c-0123456789ab',
     mock: 'pages/admin-report/error.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'moderation-report-error',
   },
   'admin-featured': {
-    app: '/admin/featured',
+    app: '/featured',
     mock: 'pages/admin-featured/default.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'moderation-featured',
   },
   'admin-featured.error': {
-    app: '/admin/featured',
+    app: '/featured',
     mock: 'pages/admin-featured/error.html',
-    who: 'member',
+    who: 'visitor',
+    site: 'admin',
     stub: 'moderation-featured-error',
+  },
+  'admin-sign-in': {
+    app: '/sign-in',
+    mock: 'pages/admin-sign-in/default.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'staff-signed-out',
+  },
+  'admin-sign-in.second-factor-missing': {
+    app: '/sign-in?error=second-factor',
+    mock: 'pages/admin-sign-in/second-factor-missing.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'staff-signed-out',
+  },
+  'admin-sign-in.not-staff': {
+    app: '/sign-in?error=not-staff',
+    mock: 'pages/admin-sign-in/not-staff.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'staff-signed-out',
+  },
+  'admin-sign-in.error': {
+    app: '/sign-in?error=sso',
+    mock: 'pages/admin-sign-in/error.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'staff-signed-out',
+  },
+  'admin-sign-in.network-refused': {
+    app: '/sign-in',
+    mock: 'pages/admin-sign-in/network-refused.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'staff-network-refused',
+  },
+  'admin-sign-in.signed-out': {
+    app: '/signed-out',
+    mock: 'pages/admin-sign-in/signed-out.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'staff-signed-out',
+  },
+  'admin-sign-in.session-expired': {
+    app: '/session-expired',
+    mock: 'pages/admin-sign-in/session-expired.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'staff-signed-out',
+  },
+  'admin-shell.admin-only': {
+    app: '/verifications',
+    mock: 'pages/admin-shell/admin-only.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'staff-admin-only',
+  },
+  'admin-shell.not-found': {
+    app: '/no-such-page',
+    mock: 'pages/admin-shell/not-found.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'admin-queue',
+  },
+  'admin-moved': {
+    app: '/admin/verifications/3f1d2c4e-7a55-4c0e-9d3a-0a1b2c3d4e5f',
+    mock: 'pages/admin-moved/default.html',
+    who: 'member',
   },
   forbidden: {
     app: '/forbidden',
     mock: 'pages/forbidden/default.html',
     who: 'member',
-    stub: 'forbidden',
   },
   'not-found': { app: '/no-such-page', mock: 'pages/not-found/default.html', who: 'member' },
   'marketing-home': {

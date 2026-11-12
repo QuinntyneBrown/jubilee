@@ -598,32 +598,30 @@ test.describe('the account menu (L2-019)', () => {
     await expect(menu.item('Your account')).toBeFocused();
   });
 
-  test('AC3: an owner sees My business and a verifier sees the Verification queue', async ({
-    page,
-    jb,
-  }) => {
+  test('AC3: an owner sees My business', async ({ page, jb }) => {
     const menu = new AccountMenuDialog(page);
     const account = new AccountPage(page);
     await account.setWidth(1280);
     await jb.signInAs('member', { ownsListing: true });
-    await page.route('**/api/session', (route) =>
-      route.fulfill({
-        json: {
-          signedIn: true,
-          firstName: 'Joanna',
-          displayName: 'Joanna Adeyemi',
-          initials: 'JA',
-          isVerifier: true,
-        },
-      }),
-    );
     await jb.goto('/');
 
     await account.avatar.click();
 
     await expect(menu.item('My business')).toBeVisible();
     await expect(menu.item('List your business')).toHaveCount(0);
-    await expect(menu.item('Verification queue')).toBeVisible();
+  });
+
+  test('AC4, L2-194 AC1: no entry of the menu leads to an admin screen', async ({ page, jb }) => {
+    const menu = new AccountMenuDialog(page);
+    const account = new AccountPage(page);
+    await account.setWidth(1280);
+    await jb.signInAs('member');
+    await jb.goto('/');
+
+    await account.avatar.click();
+
+    await expect(menu.items.first()).toBeVisible();
+    await expect(menu.item('Verification queue')).toHaveCount(0);
   });
 
   test('a link in the menu goes to its page and closes the menu', async ({ page, jb }) => {

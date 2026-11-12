@@ -9,7 +9,6 @@ export interface AccountMenuData {
   initials: string;
   email: string;
   ownsListing: boolean;
-  isVerifier: boolean;
 }
 
 /**

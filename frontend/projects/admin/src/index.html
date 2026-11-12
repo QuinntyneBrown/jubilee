@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <title>Jubilee admin</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="The Jubilee verification team’s workspace." />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="jubilee-icon.svg" />
+    <script>
+      // ThemeBootScript: apply a saved theme before first paint; with none, follow the device.
+      try {
+        var t = localStorage.getItem('jubilee-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <jb-root></jb-root>
+  </body>
+</html>

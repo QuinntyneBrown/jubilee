@@ -96,8 +96,6 @@ export class App {
       ownsListing: summary.ownsListing,
       unreadConversationCount: summary.unreadConversationCount,
       unreadNotificationCount: summary.unreadNotificationCount,
-      isVerifier: member.isVerifier,
-      verificationCount: summary.verificationCount ?? 0,
     };
   });
 
@@ -189,7 +187,6 @@ export class App {
         initials: member.initials,
         email: member.email,
         ownsListing: summary.ownsListing,
-        isVerifier: member.isVerifier,
       },
       ariaLabelledBy: 'dlg-title',
       ariaModal: true,
