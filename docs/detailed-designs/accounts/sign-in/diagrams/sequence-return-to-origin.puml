@@ -18,10 +18,9 @@ actor "Visitor" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "BusinessPage" as origin
   participant "SignInRequiredDialog" as dialog
-  participant "PendingActionService" as pending
   participant "SignInPage" as page
   participant "SessionService" as session
-  participant "SavedApi" as saved
+  participant "SavedStore" as saved
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "SessionController" as controller
@@ -29,29 +28,28 @@ box "Backend — Jubilee API" #D1FADF
 end box
 
 actor -> origin : Press "Message" on Legacy Financial
-origin -> session : Read signed-in state
-session --> origin : Not signed in
-origin -> dialog : Open for action Message
+origin -> origin : Navigate to /b/legacy-financial/message
+origin -> session : member()
+session --> origin : No member
+origin -> dialog : Open with returnUrl /b/legacy-financial/message
 dialog --> actor : Show "Join to message Legacy Financial" with "Sign in" and "Join free" (L2-012)
 actor -> dialog : Press "Sign in"
-dialog -> pending : remember(kind - targetId - returnPath)
-pending --> dialog : Stored for this tab
-dialog -> page : Navigate to /sign-in?returnUrl=/b/legacy-financial
+dialog -> page : Navigate to /sign-in?returnUrl=/b/legacy-financial/message
+page -> page : sanitiseReturnUrl - accept only a same-origin relative path - otherwise use / (L2-012)
 actor -> page : Sign in
-page -> controller : POST /api/session
-controller --> page : 200 with session cookie
-page -> session : Set signed-in member
+page -> session : signIn(request)
+session -> controller : POST /api/session
+controller --> session : 200 with session cookie and SessionDto
 session --> page : Member set
-page -> pending : resume()
-pending -> pending : Accept only a same-origin relative path - otherwise use / (L2-012)
-pending -> origin : Navigate to the return path
-alt action is Save
-  origin -> saved : save(targetId)
-  saved -> savedCtrl : PUT /api/saved/{targetId}
+page -> origin : Navigate to the return path
+alt return path ends in ?save=1
+  origin -> saved : save(target) unless already saved
+  saved -> savedCtrl : PUT /api/saved/businesses/{slug}
   savedCtrl --> saved : 204 No Content
   saved --> origin : Saved
+  origin -> origin : Remove save from the address
   origin --> actor : Show the item as saved (L2-012)
-else action is Message - Book - Ask or Order
-  origin --> actor : Open the dialog for the started action (L2-012)
+else return path names message - book - quote or request
+  origin --> actor : Open the dialog of the started action (L2-012)
 end
 @enduml

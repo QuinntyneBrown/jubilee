@@ -6,11 +6,9 @@ Person(member, "Member", "Signs in again after the session ended")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Saves drafts in browser storage and shows /session-expired and restores drafts")
   Container(api, "Jubilee API", "ASP.NET Core", "Authenticates the session cookie and answers 401 when the session ended")
-  ContainerDb(cache, "Cache", "Redis", "Server-side sessions with their expiry")
-  ContainerDb(db, "Jubilee database", "SQL Server", "Members and credentials")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Members - credentials and the Sessions table")
 }
 Rel(member, web, "Uses", "HTTPS")
 Rel(web, api, "Calls", "JSON/HTTPS")
-Rel(api, cache, "Reads and creates sessions", "Redis protocol")
-Rel(api, db, "Reads the member at sign-in", "EF Core")
+Rel(api, db, "Reads and creates sessions and reads the member at sign-in", "EF Core")
 @enduml

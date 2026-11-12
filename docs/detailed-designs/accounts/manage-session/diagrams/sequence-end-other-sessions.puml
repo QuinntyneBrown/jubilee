@@ -17,37 +17,52 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "AccountPage" as page
-  participant "AccountApi" as client
+  participant "SignOutOthersDialog" as dialog
+  participant "SessionService" as session
+  participant "HttpSessionApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "SessionController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "ISessionStore" as store
+  participant "OtherSessionCountQueryHandler" as count
+  participant "EndOtherSessionsCommandHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
+  database "Jubilee database" as db
 end box
 
 actor -> page : Open /account
-page -> client : getSession()
-client -> controller : GET /api/session
-controller -> store : CountForMember(memberId)
-store -> cache : Read the per-member session index
-cache --> store : Session identifiers
-store --> controller : Count
-controller --> client : 200 with other session count
-client --> page : SessionView
-page --> actor : Show "Signed in on this phone and 1 other device" (L2-011)
-actor -> page : Choose to end all other sessions
-page -> client : endOtherSessions()
+page -> session : otherSessionCount()
+session --> page : 1 (from GET /api/session)
+page --> actor : Show "Signed in on this phone and 1 other device" and "Sign out of other devices" (L2-011)
+actor -> page : Press "Sign out of other devices"
+page -> dialog : Open
+dialog --> actor : Ask "Sign out of your other devices?" with "Keep them signed in" and "Sign out of other devices"
+actor -> dialog : Press "Sign out of other devices"
+dialog -> session : signOutOthers()
+session -> client : signOutOthers()
 client -> controller : DELETE /api/session/others
-controller -> controller : Authenticate session and check anti-CSRF token (L2-135)
-controller -> store : EndOthers(memberId, currentSessionId)
-store -> cache : Delete every other session of the member
-cache --> store : Deleted count
-store --> controller : Count ended
-controller --> client : 200 with other session count 0
-client --> page : Updated SessionView
-page --> actor : Show that only this device is signed in
+controller -> controller : Authenticate the session and check the anti-CSRF token (L2-135)
+controller -> handler : Send EndOtherSessionsCommand(memberId, sid)
+handler -> db : End every other session row of the member
+db --> handler : Commit result
+handler --> controller : Done
+controller --> client : 204 No Content
+alt request succeeds
+  session -> client : getSession()
+  client -> controller : GET /api/session
+  controller -> count : Send OtherSessionCountQuery(memberId, sid)
+  count -> db : Read the member's other rows that are not ended
+  db --> count : Rows
+  count --> controller : 0
+  controller --> client : 200 with otherSessionCount 0
+  client --> session : SessionDto
+  session --> dialog : Count read again
+  dialog --> page : Close with success
+  page --> actor : Show the toast "Your other devices were signed out" and "Signed in on this phone only" (L2-011)
+else request fails
+  session --> dialog : Error
+  dialog --> actor : Stay open with "We couldn’t sign out your other devices. Try again."
+end
 @enduml

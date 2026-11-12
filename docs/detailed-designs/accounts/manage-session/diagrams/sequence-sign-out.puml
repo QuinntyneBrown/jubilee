@@ -17,18 +17,17 @@ skinparam package {
 actor "Member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "SignOutDialog" as dialog
-  participant "AccountApi" as client
+  participant "DraftRegistry" as drafts
   participant "SessionService" as session
+  participant "HttpSessionApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "CsrfMiddleware" as csrf
   participant "SessionController" as controller
-end box
-box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "ISessionStore" as store
+  participant "DatabaseTicketStore" as store
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
+  database "Jubilee database" as db
 end box
 
 actor -> dialog : Choose "Sign out" in the account menu
@@ -36,18 +35,21 @@ dialog --> actor : Ask "Sign out of Jubilee?" with "Stay signed in" and "Sign ou
 alt member presses "Stay signed in"
   dialog --> actor : Close the dialog and return focus
 else member presses "Sign out"
-  dialog -> client : signOut()
+  dialog -> drafts : saveAll() - keep unsent drafts on the device (L2-011)
+  drafts --> dialog : Saved
+  dialog -> session : signOut()
+  session -> client : signOut()
   client -> csrf : DELETE /api/session
-  csrf -> csrf : Check anti-CSRF token bound to the session (L2-135)
+  csrf -> csrf : Compare the X-XSRF-TOKEN header with the XSRF-TOKEN cookie (L2-135)
   csrf -> controller : Forward request
-  controller -> store : End(currentSessionId, SignedOut)
-  store -> cache : Delete this session only (L2-011)
-  cache --> store : Deleted
+  controller -> store : SignOutAsync - RemoveAsync(key)
+  store -> db : End this session only (L2-011)
+  db --> store : Commit result
   store --> controller : Ended
-  controller --> client : 204 No Content with cleared cookie
-  client --> dialog : Signed out
-  dialog -> session : Clear the signed-in member and keep drafts on the device (L2-011)
-  session --> dialog : Cleared
+  controller --> client : 204 No Content with removed cookie
+  client --> session : Signed out
+  session -> session : Clear the signed-in member
+  session --> dialog : Signed out
   dialog --> actor : Navigate to /welcome
 end
 @enduml

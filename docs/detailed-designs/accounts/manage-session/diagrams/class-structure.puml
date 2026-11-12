@@ -13,48 +13,56 @@ skinparam class {
 ' --------------------------
 title Class structure — Manage session
 
-enum SessionEndReason {
-  SignedOut
-  AbsoluteLifetime
-  Inactivity
-  PasswordChanged
-  EndedFromOtherDevice
+enum SessionKind {
+  Member
+  Staff
 }
 
-class Session {
-  +string Id
-  +Guid MemberId
+class MemberSession {
+  +Guid Id
+  +string KeyHash
+  +SessionKind Kind
+  +Guid? MemberId
+  +byte[] Ticket
   +bool Persistent
-  +string CsrfToken
-  +string DeviceLabel
   +DateTimeOffset CreatedAt
   +DateTimeOffset LastActivityAt
+  +DateTimeOffset? EndedAt
+  +{static} Start(id, memberId, keyHash, ticket, persistent, now): MemberSession
   +Touch(now: DateTimeOffset): void
+  +End(now: DateTimeOffset): void
+  +Replace(ticket: byte[]): void
 }
 
-class SessionPolicy {
+class SessionPolicy <<static>> {
   +TimeSpan AbsoluteLifetime = 30 days
   +TimeSpan IdleTimeout = 12 hours
-  +IsExpired(session: Session, now: DateTimeOffset): bool
-  +CookieMaxAge(session: Session): TimeSpan?
+  +IsExpired(session: MemberSession, now: DateTimeOffset): bool
 }
 
-interface ISessionStore {
-  +Create(memberId: Guid, persistent: bool): Task<Session>
-  +Find(sessionId: string): Task<Session>
-  +Touch(session: Session): Task
-  +End(sessionId: string, reason: SessionEndReason): Task
-  +EndOthers(memberId: Guid, keepSessionId: string): Task<int>
-  +EndAllForMember(memberId: Guid): Task
-  +CountForMember(memberId: Guid): Task<int>
+interface ITicketStore {
+  +StoreAsync(ticket: AuthenticationTicket): Task<string>
+  +RenewAsync(key: string, ticket: AuthenticationTicket): Task
+  +RetrieveAsync(key: string): Task<AuthenticationTicket?>
+  +RemoveAsync(key: string): Task
 }
 
-class RedisSessionStore {
-  -GenerateId(): string
+class DatabaseTicketStore {
+  +{static} string SessionIdClaim = "sid"
 }
 
-class SessionAuthenticationMiddleware {
-  +InvokeAsync(context: HttpContext): Task
+class MemberSessionCookie {
+  +{static} string PrefixedName = "__Host-jubilee.session"
+  +{static} string DevelopmentName = "jubilee.session"
+  +bool HostPrefix
+  +string Name
+  +CookieSecurePolicy SecurePolicy
+}
+
+class CsrfToken <<static>> {
+  +string Cookie = "XSRF-TOKEN"
+  +string Header = "X-XSRF-TOKEN"
+  +Issue(context: HttpContext): void
 }
 
 class CsrfMiddleware {
@@ -62,37 +70,81 @@ class CsrfMiddleware {
 }
 
 class SessionController {
-  +Get(): Task<SessionView>
-  +SignOut(): Task<IActionResult>
-  +EndOthers(): Task<IActionResult>
+  +Get(): Task<SessionDto>
+  +SignIn(request: SignInRequest): Task<IActionResult>
+  +EndSession(): Task<IActionResult>
+  +SignOutOthers(): Task<IActionResult>
 }
 
-class SessionView {
+class SessionDto {
+  +bool SignedIn
+  +string? FirstName
+  +string? DisplayName
+  +string? Initials
+  +string? Email
+  +string? EmailStatus
+  +int? OtherSessionCount
+}
+
+class OtherSessionCountQuery {
   +Guid MemberId
-  +string FirstName
-  +string EmailStatus
-  +int OtherSessionCount
-  +string CsrfToken
+  +Guid? CurrentSessionId
 }
 
-class DraftStore <<TypeScript>> {
-  +save(memberId: string, key: string, draft: unknown): void
-  +restore(memberId: string, key: string): unknown
-  +discard(memberId: string, key: string): void
+class EndOtherSessionsCommand {
+  +Guid MemberId
+  +Guid? CurrentSessionId
 }
 
-class SessionExpiredInterceptor <<TypeScript>> {
-  +intercept(request: HttpRequest, next: HttpHandlerFn): Observable<HttpEvent>
+interface SessionApi <<TypeScript>> {
+  +getSession(): Observable<SessionDto>
+  +signIn(request: SignInRequest): Observable<SessionDto>
+  +signOut(): Observable<void>
+  +signOutOthers(): Observable<void>
 }
 
-RedisSessionStore ..|> ISessionStore
-ISessionStore --> "*" Session : stores
-ISessionStore ..> SessionEndReason : records
-SessionPolicy ..> Session : evaluates
-SessionAuthenticationMiddleware ..> ISessionStore : uses
-SessionAuthenticationMiddleware ..> SessionPolicy : uses
-CsrfMiddleware ..> Session : reads CsrfToken
-SessionController ..> ISessionStore : uses
-SessionController ..> SessionView : returns
-SessionExpiredInterceptor ..> DraftStore : uses
+class HttpSessionApi <<TypeScript>>
+
+class SessionService <<TypeScript>> {
+  +member: Signal<Member | null>
+  +otherSessionCount: Signal<number>
+  +resolve(): Observable<SessionState>
+  +signIn(request: SignInRequest): Observable<SessionState>
+  +signOut(): Observable<void>
+  +signOutOthers(): Observable<void>
+  +expire(): void
+}
+
+class SignOutDialog <<TypeScript>> {
+  #confirm(): void
+}
+
+class SignOutOthersDialog <<TypeScript>> {
+  #confirm(): void
+}
+
+class DraftRegistry <<TypeScript>> {
+  +saveAll(): void
+}
+
+class "sessionExpiredInterceptor" as interceptor <<TypeScript function>>
+
+DatabaseTicketStore ..|> ITicketStore
+DatabaseTicketStore --> "*" MemberSession : stores
+DatabaseTicketStore ..> SessionPolicy : uses
+SessionPolicy ..> MemberSession : evaluates
+MemberSession --> SessionKind : has
+CsrfMiddleware ..> CsrfToken : reads cookie and header names
+CsrfMiddleware ..> MemberSessionCookie : reads the cookie name
+SessionController ..> SessionDto : returns
+SessionController ..> OtherSessionCountQuery : sends
+SessionController ..> EndOtherSessionsCommand : sends
+SessionController ..> CsrfToken : issues
+HttpSessionApi ..|> SessionApi
+SessionService ..> SessionApi : uses
+SignOutDialog ..> SessionService : signOut
+SignOutDialog ..> DraftRegistry : saveAll
+SignOutOthersDialog ..> SessionService : signOutOthers
+interceptor ..> DraftRegistry : saveAll
+interceptor ..> SessionService : expire
 @enduml

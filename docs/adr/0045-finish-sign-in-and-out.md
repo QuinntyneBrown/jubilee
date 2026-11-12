@@ -25,9 +25,9 @@ native controls bound to signals with `ngModel`.
   (`jbDraft`, on a `<form>`) is a `DraftSource`: its snapshot is the value of every named control
   except passwords, files, hidden fields and buttons, and its restore writes the values back and
   dispatches the browser's own `input` and `change` events, so the page's signals follow as if the
-  member had typed. A source that is not a form (the message composer) registers a `DraftSource`
-  of its own. `DraftRegistry` holds the sources of the page on screen; `DraftStore` keeps what they
-  return.
+  member had typed. Every form a member writes in carries it, the conversation's composer
+  included; a source that is not a form may implement `DraftSource` itself. `DraftRegistry` holds
+  the sources of the page on screen; `DraftStore` keeps what they return.
 - **Drafts are saved at two moments, not as the member types:** when the API answers 401
   `SESSION_EXPIRED` (the interceptor, before it leaves the page) and when the member confirms
   "Sign out". A form with nothing typed leaves no draft.

@@ -17,39 +17,38 @@ skinparam package {
 actor "Visitor" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "SignInPage" as page
-  participant "AccountApi" as client
+  participant "SessionService" as session
+  participant "HttpSessionApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "RateLimitMiddleware" as limit
   participant "SessionController" as controller
+  participant "DatabaseTicketStore" as tickets
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "SignInCommandHandler" as handler
-  participant "ISignInAttemptTracker" as tracker
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
-  database "Cache" as cache
 end box
 
 actor -> page : Enter e-mail and password and press "Log in"
 page -> page : Check e-mail format and set the busy state (L2-006)
-page -> client : signIn(email, password, keepSignedIn)
-client -> limit : POST /api/session
-limit -> cache : Read failure counter for the IP (L2-007)
-alt 20 failures from the IP within 15 minutes
-  cache --> limit : Limit reached
-  limit --> client : 429 with Retry-After
+page -> session : signIn(request)
+session -> client : signIn(request)
+client -> controller : POST /api/session
+controller -> handler : Send SignInCommand with the caller's address
+handler -> db : Count SignInFailure rows of the address in 15 minutes (L2-007)
+db --> handler : Times of the failures
+alt 20 failures from the address
+  handler --> controller : Outcome AddressBlocked
+  controller --> client : 429 with code rate_limited and Retry-After
   client --> page : Rate-limit error
   page --> actor : Show "You're doing that a lot. Try again in {n} minutes."
-else within the IP limit
-  cache --> limit : Below limit
-  limit -> controller : Forward request
-  controller -> handler : Send SignInCommand
-  handler -> tracker : IsLocked(emailKey)
-  tracker --> handler : Lock state
-  alt account locked
-    handler --> controller : Outcome Locked
+else within the address limit
+  handler -> db : Count SignInFailure rows of the account key in 15 minutes
+  db --> handler : Times of the failures
+  alt 5 failures for the account
+    handler --> controller : Outcome AccountLocked
     controller --> client : 429 with code SIGN_IN_LOCKED and Retry-After
     client --> page : Locked
     page --> actor : Show "Too many tries. Wait 15 minutes or reset your password." (L2-007)
@@ -58,24 +57,27 @@ else within the IP limit
     db --> handler : Member or nothing
     handler -> handler : Verify password with Argon2id - or a dummy hash when no member (L2-141)
     alt wrong password or no account
-      handler -> tracker : RecordFailure(emailKey, ip)
-      tracker --> handler : Attempt state
+      handler -> db : Add a SignInFailure row
       opt fifth failure within 15 minutes for an existing account
-        handler -> db : Save SignInBlockedEmailRequested outbox message (L2-007)
-        db --> handler : Commit result
+        handler -> db : Add the lock-out e-mail OutboxMessage (L2-007)
       end
+      handler -> db : Save changes in one unit of work
+      db --> handler : Commit result
       handler --> controller : Outcome InvalidCredentials
       controller --> client : 401 with code INVALID_CREDENTIALS
       client --> page : Invalid credentials
       page --> actor : Show "That password doesn't match this e-mail. Try again or reset it." and keep the e-mail
     else password matches
-      handler -> tracker : Reset(emailKey) (L2-007)
-      tracker --> handler : Counter cleared
-      handler -> cache : Create Session with a new identifier (L2-010)
-      cache --> handler : Session
-      handler --> controller : Outcome SignedIn
-      controller --> client : 200 with session cookie and member summary
-      client --> page : Signed-in member
+      handler -> db : Remove the SignInFailure rows of the account (L2-007)
+      db --> handler : Commit result
+      handler --> controller : Outcome SignedIn with the member
+      controller -> tickets : SignInMemberAsync - StoreAsync(ticket)
+      tickets -> db : Add a MemberSession row with a new identifier (L2-010)
+      db --> tickets : Commit result
+      tickets --> controller : New random key for the cookie
+      controller --> client : 200 with session cookie - XSRF-TOKEN cookie and SessionDto
+      client --> session : SessionDto
+      session --> page : Member set
       page --> actor : Show "Welcome back, {first name}" and go to the return path or /
     end
   end
