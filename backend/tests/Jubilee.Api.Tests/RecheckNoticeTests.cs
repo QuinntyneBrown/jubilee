@@ -71,7 +71,8 @@ public sealed class RecheckNoticeTests(VerificationTeamEmailFactory factory) : I
             Assert.Contains(
                 "Your change is live now. Because the name or category changed, the verification team looks at the listing again within two business days. You don’t need to do anything.",
                 mail.TextBody);
-            Assert.Contains("https://jubilee.test/b/luzandre-com", mail.TextBody);
+            // The address follows the new name (L2-113 AC2).
+            Assert.Contains("https://jubilee.test/b/luzandre-print-co", mail.TextBody);
             var notice = await db.Notifications.AsNoTracking().SingleAsync(n => n.MemberSubject == _naomi.Id.ToString());
             Assert.Equal("listing", notice.Kind);
             Assert.Equal("We’ll re-check Luzandre Print Co.", notice.Title);

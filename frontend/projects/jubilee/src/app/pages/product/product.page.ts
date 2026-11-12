@@ -156,8 +156,14 @@ export class ProductPage {
   constructor() {
     this.hearts.attach();
     const params = this.route.paramMap.subscribe((map) => {
-      this.slug.set(map.get('slug') ?? '');
-      this.productSlug.set(map.get('product') ?? '');
+      const slug = map.get('slug') ?? '';
+      const product = map.get('product') ?? '';
+      // The address was moved to the shop's current slug below: the product is already here.
+      const moved =
+        slug === this.slug() && product === this.productSlug() && this.state().status === 'loaded';
+      if (moved) return;
+      this.slug.set(slug);
+      this.productSlug.set(product);
       this.load();
     });
     const urls = this.route.url.subscribe((segments) =>
@@ -210,6 +216,15 @@ export class ProductPage {
     this.state.set({ status: 'loading' });
     this.request = this.api.getProduct(this.slug(), this.productSlug()).subscribe({
       next: (product) => {
+        // An old link of a renamed shop was redirected to its current slug (L2-113 AC2).
+        if (product.shop.slug !== this.slug()) {
+          const from = `/b/${this.slug()}/`;
+          this.slug.set(product.shop.slug);
+          void this.router.navigateByUrl(
+            this.router.url.replace(from, `/b/${product.shop.slug}/`),
+            { replaceUrl: true },
+          );
+        }
         this.hints.remember(product.shop.slug, 'shop', product.shop.name);
         this.hints.rememberProducts(product.more);
         this.alertRequested.set(product.stockAlertRequested);

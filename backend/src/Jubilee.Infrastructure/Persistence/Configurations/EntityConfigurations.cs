@@ -117,6 +117,17 @@ public sealed class AccessRequestConfiguration : IEntityTypeConfiguration<Access
     }
 }
 
+public sealed class ListingSlugConfiguration : IEntityTypeConfiguration<ListingSlug>
+{
+    public void Configure(EntityTypeBuilder<ListingSlug> builder)
+    {
+        builder.ToTable("ListingSlugs");
+        builder.HasKey(s => s.Slug);
+        builder.Property(s => s.Slug).HasMaxLength(120);
+        builder.HasIndex(s => s.ListingId);
+    }
+}
+
 public sealed class ContentVersionConfiguration : IEntityTypeConfiguration<ContentVersion>
 {
     public void Configure(EntityTypeBuilder<ContentVersion> builder)

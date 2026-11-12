@@ -2,6 +2,7 @@ import {
   BACK_BY,
   UNHANDLED_REFERENCE,
   stubHelp,
+  stubKeptSlug,
   stubMaintenance,
   stubUnhandled,
 } from '../fixtures/errors';
@@ -13,6 +14,7 @@ import { BusinessPage } from '../pages/business.page';
 import { ForbiddenPage } from '../pages/forbidden.page';
 import { MaintenancePage } from '../pages/maintenance.page';
 import { NotFoundPage } from '../pages/not-found.page';
+import { ProductPage } from '../pages/product.page';
 import { ReportListingDialog } from '../pages/report-listing.dialog';
 import { ServerErrorPage } from '../pages/server-error.page';
 
@@ -117,6 +119,30 @@ test.describe('not found (L2-113)', () => {
 
     await expect(notFound.heading).toHaveText('We can’t find that page');
     await expect(page).toHaveURL(/\/reference\/0123456789abcdef$/);
+  });
+
+  test('L2-113 AC2: an old link of a renamed listing shows the listing at its current address', async ({
+    page,
+    jb,
+  }) => {
+    const business = new BusinessPage(page);
+    await stubKeptSlug(page, 'legacy-financial-group', 'legacy-financial');
+    await jb.goto('/b/legacy-financial-group');
+
+    await expect(business.heading).toHaveText('Legacy Financial');
+    await expect(page).toHaveURL(/\/b\/legacy-financial$/);
+  });
+
+  test('L2-113 AC2: an old link of a product of a renamed shop shows the product at its current address', async ({
+    page,
+    jb,
+  }) => {
+    const product = new ProductPage(page);
+    await stubKeptSlug(page, 'luzandre-print-co', 'luzandre');
+    await jb.goto('/b/luzandre-print-co/p/faith-heavyweight-tee-charcoal');
+
+    await expect(product.heading).toBeVisible();
+    await expect(page).toHaveURL(/\/b\/luzandre\/p\/faith-heavyweight-tee-charcoal$/);
   });
 });
 

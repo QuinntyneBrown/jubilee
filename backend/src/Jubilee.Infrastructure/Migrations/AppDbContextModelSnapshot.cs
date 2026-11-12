@@ -1154,6 +1154,25 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("ListingReportEntries", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.ListingSlug", b =>
+                {
+                    b.Property<string>("Slug")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<Guid>("ListingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("RetiredAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Slug");
+
+                    b.HasIndex("ListingId");
+
+                    b.ToTable("ListingSlugs", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.ListingSubmission", b =>
                 {
                     b.Property<Guid>("Id")
