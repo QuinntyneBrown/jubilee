@@ -1,0 +1,7 @@
+// Block: score-rows. The host is the list.
+:host {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: var(--border-width-hairline) solid var(--color-border-default);
+}

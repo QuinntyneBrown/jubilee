@@ -1,0 +1,16 @@
+<legend class="visually-hidden">{{ legend() }}</legend>
+@for (score of scores; track score) {
+  <label class="score-scale__option">
+    <input
+      #radio
+      type="radio"
+      [name]="name()"
+      [value]="score"
+      [checked]="value() === score"
+      [disabled]="disabled()"
+      (click)="pressed(score, radio)"
+      (change)="valueChange.emit(score)"
+    />
+    <span>{{ score }}</span>
+  </label>
+}

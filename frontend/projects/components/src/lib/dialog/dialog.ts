@@ -19,7 +19,8 @@ import { IconName } from '../icon/icons';
  * `descriptionId`, which the opener names in `ariaLabelledBy` and `ariaDescribedBy`.
  *
  * The frame is a bottom sheet under 640 px and a centred panel from there; `anchored` hangs it
- * under the avatar at the right of the top bar instead (the account menu).
+ * under the avatar at the right of the top bar instead (the account menu), and `corner` sets it
+ * in the bottom right corner as a narrow card (the feedback panel).
  */
 @Component({
   selector: 'jb-dialog',
@@ -28,6 +29,7 @@ import { IconName } from '../icon/icons';
   host: {
     class: 'dialog',
     '[class.dialog--anchored]': 'anchored()',
+    '[class.dialog--corner]': 'corner()',
     '(click)': 'clicked($event)',
   },
   templateUrl: './dialog.html',
@@ -42,6 +44,8 @@ export class DialogFrame {
   /** Work is under way: the close button is disabled. */
   readonly busy = input(false, { transform: booleanAttribute });
   readonly anchored = input(false, { transform: booleanAttribute });
+  /** From 640 px the panel is a narrow card in the bottom right corner (the feedback panel). */
+  readonly corner = input(false, { transform: booleanAttribute });
   readonly titleId = input('dlg-title');
   readonly descriptionId = input('dlg-desc');
   /** The close button was pressed. */

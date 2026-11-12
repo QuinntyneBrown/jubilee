@@ -31,9 +31,11 @@ import {
   DescriptionList,
   DescriptionItem,
   Price,
+  MomentCheck,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { newKey } from 'api';
+import { momentCheckIn } from '../../services/moment-check-in';
 
 export interface RequestItemData {
   shopSlug: string;
@@ -82,11 +84,14 @@ function money(cents: number): string {
     DescriptionList,
     DescriptionItem,
     Price,
+    MomentCheck,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './request-item.dialog.html',
 })
 export class RequestItemDialog implements OnInit {
+  /** The one question of the confirmation (L2-211). */
+  protected readonly checkIn = momentCheckIn('request-sent');
   private readonly ref = inject<DialogRef<void>>(DialogRef);
   private readonly api = inject(REQUESTS_API);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);

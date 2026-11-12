@@ -80,6 +80,14 @@ export const routes: Routes = [
     data: data({ shell: 'app', page: 'product', section: 'browse' }),
     title: 'Product · Jubilee',
   },
+  { path: 'feedback', pathMatch: 'full', redirectTo: 'feedback/rate' },
+  {
+    path: 'feedback/:tab',
+    loadComponent: () => import('./pages/feedback/feedback.page').then((m) => m.FeedbackPage),
+    canActivate: [memberGuard],
+    data: data({ shell: 'app', page: 'feedback' }),
+    title: 'Feedback · Jubilee',
+  },
   {
     path: 'saved',
     loadComponent: () => import('./pages/saved/saved.page').then((m) => m.SavedPage),

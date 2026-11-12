@@ -19,6 +19,16 @@
     </span>
   }
   @if (view() === 'success') {
+    <div jb-dialog-body>
+      <div
+        jb-moment-check
+        question="How easy was it to send your request?"
+        [score]="checkIn.score()"
+        [thanked]="checkIn.thanked()"
+        (scoreChange)="checkIn.choose($event)"
+        (sent)="checkIn.send($event)"
+      ></div>
+    </div>
     <div jb-dialog-footer>
       <a jb-button [routerLink]="['/b', opts?.shop?.slug]" (click)="close()">Keep shopping</a>
       <a

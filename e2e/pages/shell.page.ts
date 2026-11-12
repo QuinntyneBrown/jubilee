@@ -28,6 +28,10 @@ export class ShellPage {
   readonly avatar: Locator;
   readonly footer: Locator;
   readonly tabBar: Locator;
+  /** The way into the feedback panel, at the bottom right of every member screen (L2-210). */
+  readonly feedbackLauncher: Locator;
+  /** The word in the launcher, which a phone hides. */
+  readonly feedbackLauncherLabel: Locator;
   /** The banner between the top bar and the page: verify e-mail, or the connection. */
   readonly chromeBanner: Locator;
   /** The frame of a page on the bare shell: its brand link, its card and the line under it. */
@@ -54,6 +58,8 @@ export class ShellPage {
     this.avatar = this.topBar.locator('.avatar');
     this.footer = page.locator('footer.footer');
     this.tabBar = page.getByRole('navigation', { name: 'Primary, phone' });
+    this.feedbackLauncher = page.locator('button.feedback-launcher');
+    this.feedbackLauncherLabel = this.feedbackLauncher.locator('.feedback-launcher__label');
     this.chromeBanner = page.locator('.alert.banner');
     this.frameBrand = this.main.locator('.auth-brand');
     this.frameCard = this.main.locator('.auth-card');

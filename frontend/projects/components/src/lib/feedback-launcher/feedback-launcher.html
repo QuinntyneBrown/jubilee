@@ -1,0 +1,9 @@
+<button
+  #button
+  class="feedback-launcher"
+  type="button"
+  aria-label="Give feedback"
+  (click)="opened.emit(button)"
+>
+  <svg jb-icon name="feedback"></svg><span class="feedback-launcher__label">Feedback</span>
+</button>

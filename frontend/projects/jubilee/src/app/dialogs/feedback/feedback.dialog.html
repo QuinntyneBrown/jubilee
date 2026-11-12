@@ -1,0 +1,137 @@
+<jb-dialog
+  corner
+  tone="success"
+  [heading]="heading()"
+  [icon]="view() === 'sent' ? 'check' : null"
+  [description]="view() === 'sent' ? thanks() : null"
+  [busy]="busy()"
+  (closed)="close()"
+  (outsideClick)="close()"
+>
+  @if (view() === 'sent') {
+    <div jb-dialog-footer>
+      <button jb-button variant="primary" block type="button" cdkFocusInitial (click)="close()">
+        Done
+      </button>
+    </div>
+  } @else {
+    <form jb-dialog-body class="stack" id="feedback-form" novalidate (ngSubmit)="send()">
+      @if (view() === 'failed') {
+        <div jb-alert tone="danger" [heading]="failure().title" role="alert">
+          <div>{{ failure().text }}</div>
+        </div>
+      }
+      <div
+        jb-tab-list
+        look="segmented"
+        label="Kind of feedback"
+        panelPrefix="feedback-panel-"
+        [items]="tabs"
+        [selected]="tab()"
+        [disabled]="busy()"
+        (selectedChange)="choose($event)"
+      ></div>
+      <div
+        class="stack"
+        role="tabpanel"
+        [id]="'feedback-panel-' + tab()"
+        [attr.aria-labelledby]="'tab-' + tab()"
+      >
+        @switch (tab()) {
+          @case ('rate') {
+            <fieldset
+              jb-star-scale
+              legend="How’s Jubilee working for you so far?"
+              controlId="feedback-rating"
+              [words]="words"
+              [value]="rating()"
+              [disabled]="busy()"
+              (valueChange)="rating.set($event)"
+            ></fieldset>
+            <div jb-field label="Your note" labelHidden controlId="feedback-note">
+              <textarea
+                jb-textarea
+                name="note"
+                rows="3"
+                [attr.maxlength]="noteMax"
+                [placeholder]="ratingPrompt()"
+                [disabled]="busy()"
+                [ngModel]="ratingNote()"
+                (ngModelChange)="ratingNote.set($event)"
+              ></textarea>
+            </div>
+          }
+          @case ('bug') {
+            <div
+              jb-field
+              label="What went wrong?"
+              controlId="feedback-bug"
+              hintAfter
+              [hint]="'We’ll attach: ' + screen + ' · your browser and device · version ' + version"
+            >
+              <textarea
+                jb-textarea
+                name="happened"
+                rows="4"
+                [attr.maxlength]="noteMax"
+                [disabled]="busy()"
+                [ngModel]="happened()"
+                (ngModelChange)="happened.set($event)"
+              ></textarea>
+            </div>
+          }
+          @case ('kudos') {
+            <fieldset jb-field label="What made your day?">
+              <div class="cluster">
+                @for (chip of kudosChips; track chip.value) {
+                  <button
+                    jb-chip
+                    type="button"
+                    [selected]="chips().includes(chip.value)"
+                    [disabled]="busy()"
+                    (click)="toggle(chip.value)"
+                  >
+                    {{ chip.label }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+            <div jb-field label="Your note" labelHidden controlId="feedback-kudos-note">
+              <textarea
+                jb-textarea
+                name="kudosNote"
+                rows="3"
+                placeholder="Say more, or name someone who helped (optional)"
+                [attr.maxlength]="noteMax"
+                [disabled]="busy()"
+                [ngModel]="kudosNote()"
+                (ngModelChange)="kudosNote.set($event)"
+              ></textarea>
+            </div>
+          }
+        }
+      </div>
+    </form>
+    <div jb-dialog-footer>
+      <a
+        jb-button
+        variant="link"
+        slot="start"
+        [routerLink]="['/feedback', tab()]"
+        (click)="close()"
+      >
+        Full form<svg jb-icon size="sm" name="arrow-up-right"></svg>
+      </a>
+      <button
+        jb-button
+        variant="primary"
+        type="submit"
+        form="feedback-form"
+        [busy]="busy()"
+        [disabled]="!canSend()"
+      >
+        {{ sendLabel() }}
+      </button>
+    </div>
+  }
+</jb-dialog>

@@ -42,6 +42,8 @@ export class Field {
 
   /** Without a label the field only lays out what it holds (a loading placeholder). */
   readonly label = input<string | null>(null);
+  /** The label names the control without being shown: the placeholder asks the question. */
+  readonly labelHidden = input(false, { transform: booleanAttribute });
   readonly hint = input<string | null>(null);
   /** The hint stands under the control instead of above it. */
   readonly hintAfter = input(false, { transform: booleanAttribute });

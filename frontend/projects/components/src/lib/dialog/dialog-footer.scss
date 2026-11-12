@@ -10,3 +10,13 @@
   bottom: 0;
   background: var(--color-bg-surface-raised);
 }
+
+// What a footer keeps at its leading edge (the "Full form" link of the feedback panel).
+.dialog__footer-start {
+  margin-inline-end: auto;
+  align-self: center;
+}
+
+.dialog__footer-start:empty {
+  display: none;
+}

@@ -1,0 +1,32 @@
+// Block: score-rows, its row. The host is the list item: the scale is under the text below
+// 40rem and beside it from there.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+  border-bottom: var(--border-width-hairline) solid var(--color-border-default);
+}
+
+.score-rows__text {
+  min-width: 0;
+}
+
+.score-rows__name {
+  font: var(--text-label);
+  font-size: var(--font-size-md);
+}
+
+.score-rows__detail {
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+@media (min-width: 40rem) {
+  :host {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+}

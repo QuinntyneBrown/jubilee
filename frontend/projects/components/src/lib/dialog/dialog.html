@@ -2,6 +2,7 @@
   class="dialog__panel"
   [class.dialog__panel--sm]="size() === 'sm'"
   [class.dialog__panel--lg]="size() === 'lg'"
+  [class.dialog__panel--corner]="corner()"
 >
   <div class="dialog__header">
     @if (icon(); as icon) {

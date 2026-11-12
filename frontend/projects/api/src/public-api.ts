@@ -48,3 +48,5 @@ export * from './lib/models/profile';
 export * from './lib/helpers/clock.service';
 export * from './lib/helpers/load-state';
 export * from './lib/helpers/message-time';
+export * from './lib/api/feedback-api';
+export * from './lib/models/feedback';

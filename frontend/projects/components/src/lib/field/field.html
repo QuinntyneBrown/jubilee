@@ -12,7 +12,7 @@
   @if (group) {
     <legend class="field__label">{{ label }} <ng-container [ngTemplateOutlet]="mark" /></legend>
   } @else {
-    <label class="field__label" [for]="controlId()"
+    <label class="field__label" [class.visually-hidden]="labelHidden()" [for]="controlId()"
       >{{ label }} <ng-container [ngTemplateOutlet]="mark"
     /></label>
   }

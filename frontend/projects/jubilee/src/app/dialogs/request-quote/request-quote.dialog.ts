@@ -21,10 +21,12 @@ import {
   DialogFrame,
   DialogBody,
   DialogFooter,
+  MomentCheck,
 } from 'components';
 import { TimeoutError, timeout } from 'rxjs';
 import { ClockService } from 'api';
 import { isoDay, newKey } from 'api';
+import { momentCheckIn } from '../../services/moment-check-in';
 
 export interface RequestQuoteData {
   slug: string;
@@ -56,11 +58,14 @@ const SUBMIT_TIMEOUT_MS = 10_000;
     DialogFrame,
     DialogBody,
     DialogFooter,
+    MomentCheck,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './request-quote.dialog.html',
 })
 export class RequestQuoteDialog implements OnInit {
+  /** The one question of the confirmation (L2-211). */
+  protected readonly checkIn = momentCheckIn('request-sent');
   private readonly ref = inject<DialogRef<void>>(DialogRef);
   private readonly api = inject(REQUESTS_API);
   private readonly clock = inject(ClockService);

@@ -1,0 +1,35 @@
+<p class="moment-check__question">{{ question() }}</p>
+<fieldset
+  jb-score-scale
+  wide
+  [legend]="legend()"
+  [value]="score()"
+  (valueChange)="choose($event)"
+></fieldset>
+<p class="moment-check__ends" aria-hidden="true">
+  <span>{{ low }}</span
+  ><span>{{ high }}</span>
+</p>
+@if (score() !== null) {
+  <div class="moment-check__follow-up">
+    @if (thanked()) {
+      <p class="moment-check__thanks" role="status">
+        <svg jb-icon size="sm" name="check"></svg>Thanks, that helps us.
+      </p>
+    } @else {
+      <div jb-field label="What got in the way?" optional [controlId]="noteId">
+        <textarea
+          #text
+          jb-textarea
+          rows="2"
+          [attr.maxlength]="noteMax()"
+          [value]="note()"
+          (input)="note.set(text.element.value)"
+        ></textarea>
+      </div>
+      <div class="moment-check__actions">
+        <button jb-button type="button" (click)="sent.emit(note())">Send</button>
+      </div>
+    }
+  </div>
+}

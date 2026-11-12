@@ -1,0 +1,66 @@
+<h2 class="feedback-history__heading" [id]="headingId()">Your feedback</h2>
+@switch (state()) {
+  @case ('loading') {
+    <ul class="feedback-history__list" aria-busy="true" aria-label="Loading your feedback">
+      @for (placeholder of placeholders; track placeholder) {
+        <li class="feedback-history__item">
+          <span jb-skeleton shape="circle" class="feedback-history__placeholder"></span>
+          <div class="feedback-history__body">
+            <span jb-skeleton shape="text" width="70"></span>
+            <span jb-skeleton shape="text" width="50"></span>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+  @case ('error') {
+    <div class="feedback-history__error">
+      <div jb-alert tone="danger" role="alert" heading="We couldn’t load your feedback.">
+        <button
+          slot="actions"
+          jb-button
+          variant="link"
+          size="sm"
+          type="button"
+          (click)="retry.emit()"
+        >
+          Try again
+        </button>
+      </div>
+    </div>
+  }
+  @default {
+    @if (items().length === 0) {
+      <p class="feedback-history__empty">
+        Nothing yet. What you send shows up here, with our reply.
+      </p>
+    } @else {
+      <ul class="feedback-history__list">
+        @for (item of items(); track item.id) {
+          <li class="feedback-history__item">
+            <span class="feedback-history__icon" aria-hidden="true">
+              <svg jb-icon size="sm" [name]="kinds[item.kind].icon"></svg>
+            </span>
+            <div class="feedback-history__body">
+              <p class="feedback-history__title">
+                <span class="visually-hidden">{{ kinds[item.kind].label }}: </span>{{ item.title }}
+              </p>
+              <p class="feedback-history__meta">
+                <time [attr.datetime]="item.dateTime">{{ item.date }}</time> ·
+                @if (item.reference; as reference) {
+                  {{ reference }} ·
+                }
+                <span class="feedback-history__status">{{ item.status }}</span>
+              </p>
+              @if (item.reply; as reply) {
+                <p class="feedback-history__reply">
+                  <span class="visually-hidden">Reply from Jubilee: </span>{{ reply }}
+                </p>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  }
+}

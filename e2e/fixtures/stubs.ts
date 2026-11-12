@@ -11,6 +11,7 @@ import { stubIncoming } from './incoming-requests';
 import { stubCatalogue } from './catalogue';
 import { stubProfile } from './profile';
 import { stubSaved } from './saved';
+import { stubFeedback } from './feedback';
 import { stubPasswordReset } from './password-reset';
 import { NOTIFICATIONS, stubNotifications } from './notifications';
 import { SUITE, stubMyBusiness } from './my-business';
@@ -415,6 +416,20 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
       return void (await stubProfile(page, { confirm: 'expired' }));
     case 'confirm-email-change-in-use':
       return void (await stubProfile(page, { confirm: 'email-in-use' }));
+    case 'feedback':
+      return void (await stubFeedback(page));
+    case 'feedback-empty':
+      return void (await stubFeedback(page, { history: [] }));
+    case 'feedback-loading':
+      return void (await stubFeedback(page, { history: 'loading' }));
+    case 'feedback-error':
+      return void (await stubFeedback(page, { history: 'error' }));
+    case 'feedback-no-business':
+      return void (await stubFeedback(page, { businesses: [] }));
+    case 'feedback-check-in':
+      // The listing is submitted, then the question is answered.
+      await stubListingDrafts(page);
+      return void (await stubFeedback(page));
     case 'saved':
       return void (await stubSaved(page));
     case 'saved-empty':

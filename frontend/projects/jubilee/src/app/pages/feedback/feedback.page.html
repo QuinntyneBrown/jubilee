@@ -1,0 +1,314 @@
+@let found = problems();
+<a jb-back-link routerLink="/">Back</a>
+@if (view() !== 'sent') {
+  <jb-page-header
+    heading="Help us make Jubilee better"
+    subtitle="Rate it, tell us what’s broken, or tell us what’s working. Someone on our team in Toronto reads every note."
+  >
+  </jb-page-header>
+}
+<div class="split">
+  @if (view() === 'sent') {
+    <div>
+      <div jb-empty-state icon="check" [level]="1" [heading]="confirmation().heading">
+        {{ confirmation().text }}
+        <a slot="actions" jb-button variant="primary" routerLink="/">Back to Jubilee</a>
+      </div>
+    </div>
+  } @else {
+    <div>
+      <div
+        jb-tab-list
+        look="segmented"
+        size="lg"
+        label="Kind of feedback"
+        panelPrefix="feedback-panel-"
+        [items]="tabs"
+        [selected]="tab()"
+        [disabled]="busy()"
+        (selectedChange)="choose($event)"
+      ></div>
+      <div
+        jb-section
+        role="tabpanel"
+        [id]="'feedback-panel-' + tab()"
+        [attr.aria-labelledby]="'tab-' + tab()"
+      >
+        <form class="form measure-narrow" novalidate (submit)="$event.preventDefault(); submit()">
+          @if (view() === 'failed') {
+            <div jb-alert tone="danger" [heading]="failure().title" role="alert">
+              <div>{{ failure().text }}</div>
+            </div>
+          }
+          @switch (tab()) {
+            @case ('rate') {
+              <fieldset
+                jb-star-scale
+                size="lg"
+                required
+                legend="Overall, how’s Jubilee working for you?"
+                controlId="feedback-overall"
+                [words]="words"
+                [value]="rating()"
+                [disabled]="busy()"
+                [error]="found.rating"
+                (valueChange)="rating.set($event); problems.set({})"
+              ></fieldset>
+              <fieldset
+                jb-field
+                label="And each part of it"
+                hint="Skip any you haven’t used."
+                controlId="feedback-areas"
+              >
+                <ul jb-score-rows>
+                  @for (area of areas; track area.key) {
+                    <li jb-score-row [heading]="area.name" [detail]="area.detail">
+                      <fieldset
+                        jb-score-scale
+                        clearable
+                        [legend]="area.name + ', from 1 to 5'"
+                        [name]="'feedback-area-' + area.key"
+                        [value]="scores()[area.key] ?? null"
+                        [disabled]="busy()"
+                        (valueChange)="score(area.key, $event)"
+                      ></fieldset>
+                    </li>
+                  }
+                </ul>
+              </fieldset>
+              <div
+                jb-field
+                label="What would make it better?"
+                optional
+                controlId="feedback-better"
+                [error]="found.note"
+              >
+                <textarea
+                  jb-textarea
+                  name="better"
+                  rows="4"
+                  [attr.maxlength]="noteMax"
+                  [disabled]="busy()"
+                  [ngModel]="better()"
+                  (ngModelChange)="better.set($event)"
+                ></textarea>
+              </div>
+            }
+            @case ('bug') {
+              <div
+                jb-field
+                label="Where did it happen?"
+                required
+                controlId="feedback-where"
+                [error]="found.where"
+              >
+                <select
+                  jb-select
+                  name="where"
+                  required
+                  [disabled]="busy()"
+                  [ngModel]="where()"
+                  (ngModelChange)="where.set($event)"
+                >
+                  <option value="">Choose a place</option>
+                  @for (place of places; track place.value) {
+                    <option [value]="place.value">{{ place.label }}</option>
+                  }
+                </select>
+              </div>
+              <div class="form-grid form-grid--2">
+                <div
+                  jb-field
+                  label="What happened?"
+                  required
+                  controlId="feedback-happened"
+                  [error]="found.happened"
+                >
+                  <textarea
+                    jb-textarea
+                    name="happened"
+                    rows="4"
+                    required
+                    [attr.maxlength]="answerMax"
+                    [disabled]="busy()"
+                    [ngModel]="happened()"
+                    (ngModelChange)="happened.set($event)"
+                  ></textarea>
+                </div>
+                <div
+                  jb-field
+                  label="What did you expect?"
+                  optional
+                  controlId="feedback-expected"
+                  [error]="found.expected"
+                >
+                  <textarea
+                    jb-textarea
+                    name="expected"
+                    rows="4"
+                    [attr.maxlength]="answerMax"
+                    [disabled]="busy()"
+                    [ngModel]="expected()"
+                    (ngModelChange)="expected.set($event)"
+                  ></textarea>
+                </div>
+              </div>
+              <fieldset jb-field label="How often?" optional controlId="feedback-often">
+                <div class="cluster">
+                  @for (option of frequencies; track option.value) {
+                    <button
+                      jb-chip
+                      type="button"
+                      [selected]="frequency() === option.value"
+                      [disabled]="busy()"
+                      (click)="often(option.value)"
+                    >
+                      {{ option.label }}
+                    </button>
+                  }
+                </div>
+              </fieldset>
+              <fieldset
+                jb-field
+                label="Screenshots"
+                hint="Optional, but they help us fix it faster."
+                controlId="feedback-shots"
+              >
+                <div
+                  jb-file-list
+                  label="Add screenshots"
+                  listLabel="Screenshots added"
+                  accept="image/jpeg,image/png"
+                  multiple
+                  [files]="screenshots()"
+                  [full]="screenshotsFull()"
+                  [disabled]="busy()"
+                  [error]="screenshotError()"
+                  (added)="addScreenshots($event)"
+                  (removed)="removeScreenshot($event)"
+                ></div>
+                <span jb-field-help id="feedback-shots-attached"
+                  >We’ll also attach your browser and device and the app’s version ({{
+                    version
+                  }}).</span
+                >
+              </fieldset>
+            }
+            @case ('kudos') {
+              <fieldset
+                jb-field
+                label="Who’s it for?"
+                controlId="feedback-for"
+                hintAfter
+                [hint]="noBusiness() ? 'Send a request or a message to a business first.' : null"
+              >
+                <jb-choice-cards>
+                  <jb-choice-card
+                    name="feedback-for"
+                    heading="The Jubilee team"
+                    icon="users"
+                    [checked]="!forBusiness()"
+                    [disabled]="busy()"
+                    (selected)="forBusiness.set(false); problems.set({})"
+                    >Something about the app itself.</jb-choice-card
+                  >
+                  <jb-choice-card
+                    name="feedback-for"
+                    heading="A business"
+                    icon="store"
+                    [checked]="forBusiness()"
+                    [disabled]="busy() || noBusiness()"
+                    (selected)="forBusiness.set(true)"
+                    >Someone you hired or bought from.</jb-choice-card
+                  >
+                </jb-choice-cards>
+              </fieldset>
+              @if (forBusiness()) {
+                <div
+                  jb-field
+                  label="Which one?"
+                  required
+                  controlId="feedback-which"
+                  [error]="found.business"
+                >
+                  <select
+                    jb-select
+                    name="business"
+                    required
+                    [disabled]="busy()"
+                    [ngModel]="business()"
+                    (ngModelChange)="business.set($event)"
+                  >
+                    <option value="">Choose a business</option>
+                    @for (option of businesses() ?? []; track option.slug) {
+                      <option [value]="option.slug">{{ option.name }}</option>
+                    }
+                  </select>
+                </div>
+              }
+              <fieldset
+                jb-field
+                id="feedback-stood-group"
+                label="What stood out?"
+                controlId="feedback-stood"
+                [error]="found.chips"
+              >
+                <div class="cluster">
+                  @for (chip of kudosChips; track chip.value) {
+                    <button
+                      jb-chip
+                      type="button"
+                      [selected]="chips().includes(chip.value)"
+                      [disabled]="busy()"
+                      (click)="toggle(chip.value)"
+                    >
+                      {{ chip.label }}
+                    </button>
+                  }
+                </div>
+              </fieldset>
+              <div jb-field label="Your note" controlId="feedback-note" [error]="found.note">
+                <textarea
+                  jb-textarea
+                  name="note"
+                  rows="4"
+                  [attr.maxlength]="noteMax"
+                  [disabled]="busy()"
+                  [ngModel]="note()"
+                  (ngModelChange)="note.set($event)"
+                ></textarea>
+              </div>
+              @if (forBusiness()) {
+                <jb-checkbox
+                  controlId="feedback-consent"
+                  [disabled]="busy()"
+                  [checked]="showOnPage()"
+                  (checkedChange)="showOnPage.set($event)"
+                  >Jubilee may show this on their page with my first name</jb-checkbox
+                >
+              }
+            }
+          }
+          <jb-checkbox
+            controlId="feedback-contact"
+            [disabled]="busy()"
+            [checked]="mayContact()"
+            (checkedChange)="mayContact.set($event)"
+            >You can message me about this</jb-checkbox
+          >
+          <div class="form-actions form-actions--bordered">
+            <button jb-button variant="primary" size="lg" type="submit" [busy]="busy()">
+              {{ busy() ? 'Sending…' : submitLabel() }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+  <section
+    jb-feedback-history
+    [state]="historyState()"
+    [items]="history()"
+    (retry)="loadHistory()"
+  ></section>
+</div>
