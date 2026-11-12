@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jubilee.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261112003228_RemoveChurchReferenceAddHomeChurchAddress")]
+    [Migration("20261112013438_RemoveChurchReferenceAddHomeChurchAddress")]
     partial class RemoveChurchReferenceAddHomeChurchAddress
     {
         /// <inheritdoc />
@@ -1053,6 +1053,11 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
                     b.Property<DateTimeOffset>("LastActivityAt")
                         .HasColumnType("datetimeoffset");
 
@@ -1061,6 +1066,9 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<bool>("Persistent")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("StaffMemberId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("Ticket")
                         .IsRequired()
@@ -1072,6 +1080,8 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsUnique();
 
                     b.HasIndex("MemberId");
+
+                    b.HasIndex("StaffMemberId");
 
                     b.ToTable("Sessions", (string)null);
                 });
@@ -1763,6 +1773,42 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("Address", "At");
 
                     b.ToTable("SignInFailures", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.StaffMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("ObjectId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("Roles")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenantId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "ObjectId")
+                        .IsUnique()
+                        .HasFilter("[ObjectId] IS NOT NULL");
+
+                    b.ToTable("StaffMembers", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.StockAlert", b =>
