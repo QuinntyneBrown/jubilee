@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ACCOUNT_API } from 'api';
+import { ACCOUNT_API, isRateLimited, tryAgainIn } from 'api';
 import { AuthLayout, EmptyState, Icon, Button } from 'components';
 import { openChangeUnconfirmedEmail } from '../../dialogs/change-unconfirmed-email/change-unconfirmed-email.dialog';
 import { ReturnAfterJoinService } from '../../services/return-after-join.service';
@@ -50,7 +50,8 @@ export class VerifyEmailPage implements OnInit {
   private readonly returnAfterJoin = inject(ReturnAfterJoinService);
   /** Where the member was going when they were asked to join, if this browser remembers (L2-012 AC5). */
   protected readonly returnPath = signal<string | null>(this.returnAfterJoin.peek());
-  protected readonly sendFailed = signal(false);
+  /** Why "Send it again" sent nothing: the hourly limit (L2-005 AC5), or a failure. */
+  protected readonly sendProblem = signal<string | null>(null);
 
   ngOnInit(): void {
     if (this.token) {
@@ -88,13 +89,20 @@ export class VerifyEmailPage implements OnInit {
   }
 
   protected resend(): void {
-    this.sendFailed.set(false);
+    this.sendProblem.set(null);
     this.api.resendConfirmation().subscribe({
       next: () => {
         this.sent.set(true);
         this.view.set({ kind: 'pending' });
       },
-      error: () => this.sendFailed.set(true),
+      error: (error: unknown) => {
+        this.sent.set(false);
+        this.sendProblem.set(
+          isRateLimited(error)
+            ? `You’re doing that a lot. ${tryAgainIn(error)}`
+            : 'We couldn’t send it. Try again in a moment.',
+        );
+      },
     });
   }
 }

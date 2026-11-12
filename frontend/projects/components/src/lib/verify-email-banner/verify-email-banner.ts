@@ -4,7 +4,8 @@ import { Button } from '../button/button';
 import { CloseButton } from '../button/close-button';
 
 /** The states of the banner that asks an unconfirmed member to confirm the address (L2-005). */
-export type VerifyEmailBannerState = 'persistent' | 'sent' | 'bounced' | 'expired' | 'confirmed';
+export type VerifyEmailBannerState =
+  'persistent' | 'sent' | 'limited' | 'bounced' | 'expired' | 'confirmed';
 
 /**
  * The verify-e-mail banner. It carries no dismiss control while the address is unconfirmed.
@@ -23,6 +24,8 @@ export class VerifyEmailBanner {
   readonly state = input<VerifyEmailBannerState>('persistent');
   readonly email = input.required<string>();
   readonly busy = input(false);
+  /** When the member may ask for a link again, in the `limited` state: "Try again in 42 minutes." (L2-005 AC5). */
+  readonly wait = input('');
   readonly resend = output<void>();
   /** "Change e-mail" was pressed; carries the button, for focus to return to. */
   readonly changeEmail = output<HTMLElement>();
@@ -36,6 +39,7 @@ export class VerifyEmailBanner {
       case 'confirmed':
         return 'success';
       case 'expired':
+      case 'limited':
         return 'warning';
       default:
         return 'info';

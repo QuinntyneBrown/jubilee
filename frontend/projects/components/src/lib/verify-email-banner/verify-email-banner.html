@@ -14,6 +14,9 @@
         typo.</span
       >
     }
+    @case ('limited') {
+      <span><strong>You’re doing that a lot.</strong> {{ wait() }}</span>
+    }
     @case ('expired') {
       <span><strong>Your confirmation link expired.</strong> Links work for 24 hours.</span>
     }
@@ -49,7 +52,7 @@
       {{ state() === 'expired' ? 'Send a new link' : 'Send it again' }}
     </button>
   }
-  @if (state() === 'persistent') {
+  @if (state() === 'persistent' || state() === 'limited') {
     <button
       #change
       slot="actions"

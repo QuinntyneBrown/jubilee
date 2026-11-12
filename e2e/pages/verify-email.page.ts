@@ -10,6 +10,8 @@ export class VerifyEmailPage extends ShellPage implements Screen {
   readonly sendNewLink: Locator;
   readonly useAnother: Locator;
   readonly status: Locator;
+  /** What stopped "Send it again": the hourly limit, or a failure. */
+  readonly problem: Locator;
   /** The spinner shown while the link is checked. */
   readonly spinner: Locator;
   readonly errorState: Locator;
@@ -26,6 +28,7 @@ export class VerifyEmailPage extends ShellPage implements Screen {
     this.sendNewLink = this.main.getByRole('button', { name: 'Send a new link' });
     this.useAnother = this.main.getByRole('button', { name: 'Use another e-mail' });
     this.status = this.main.getByRole('status');
+    this.problem = this.main.locator('p[role="alert"]');
     this.spinner = this.main.locator('.spinner');
     this.errorState = this.main.getByRole('alert');
     this.errorReference = this.errorState.locator('code');

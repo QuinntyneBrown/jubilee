@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ACCOUNT_API, JoinRequest } from 'api';
+import { ACCOUNT_API, JoinRequest, isRateLimited, tryAgainIn } from 'api';
 import {
   AuthLayout,
   AuthLink,
@@ -230,7 +230,14 @@ export class JoinPage {
   protected resend(): void {
     this.api.resendConfirmation().subscribe({
       next: () => this.resent.set(true),
-      error: () => this.notice.set('We couldn’t send it. Try again in a moment.'),
+      error: (error: unknown) => {
+        this.resent.set(false);
+        this.notice.set(
+          isRateLimited(error)
+            ? `You’re doing that a lot. ${tryAgainIn(error)}`
+            : 'We couldn’t send it. Try again in a moment.',
+        );
+      },
     });
   }
 

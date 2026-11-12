@@ -3,6 +3,7 @@ import { expect, test } from '../fixtures/jb-test';
 import {
   stubConfirmation,
   stubResend,
+  stubResendLimited,
   stubSession,
   stubUnconfirmedEmailChange,
   unconfirmedSession,
@@ -752,6 +753,56 @@ test.describe('restricted until the address is confirmed (L2-005)', () => {
     await banner.sendAgain.click();
 
     await expect(banner.banner).toContainText('We sent a new link');
+  });
+
+  test('AC5: past the hourly limit the banner sends nothing more and says how long to wait', async ({
+    page,
+    jb,
+  }) => {
+    await stubResendLimited(page);
+    const banner = new VerifyEmailBannerRegion(page);
+    await jb.open('verify-email-banner');
+
+    await banner.sendAgain.click();
+
+    await expect(banner.banner).toContainText('You’re doing that a lot.');
+    await expect(banner.banner).toContainText('Try again in 42 minutes.');
+    await expect(banner.banner).not.toContainText('We sent a new link');
+    await expect(banner.sendAgain).toHaveCount(0);
+    await expect(banner.changeEmail).toBeVisible();
+    await expect(banner.dismiss).toHaveCount(0);
+  });
+
+  test('AC5: past the hourly limit the waiting page says how long to wait', async ({
+    page,
+    jb,
+  }) => {
+    await stubResendLimited(page);
+    const verify = new VerifyEmailPage(page);
+    await jb.open('verify-email');
+
+    await verify.sendAgain.click();
+
+    await expect(verify.problem).toHaveText('You’re doing that a lot. Try again in 42 minutes.');
+    await expect(verify.status).toHaveCount(0);
+  });
+
+  test('AC5: past the hourly limit "Check your e-mail" says how long to wait', async ({
+    page,
+    jb,
+  }) => {
+    await stubJoin(page, 201, { email: valid.email });
+    await stubResendLimited(page);
+    const join = new JoinPage(page);
+    await jb.open('sign-up');
+    await join.fill(valid);
+    await join.createAccount.click();
+
+    await join.sendAgain.click();
+
+    await expect(join.resendProblem).toHaveText(
+      'You’re doing that a lot. Try again in 42 minutes.',
+    );
   });
 
   test('AC3: an address that bounced says so and offers to change it', async ({ page, jb }) => {

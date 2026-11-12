@@ -807,3 +807,8 @@ export async function stubUnconfirmedEmailChange(
 export function stubResend(page: Page, status = 202): Promise<unknown> {
   return page.route('**/api/account/confirmation/resend', (route) => route.fulfill({ status }));
 }
+
+/** Answers "Send it again" past the hourly limit: 429 with 42 minutes to wait (L2-005 AC5). */
+export function stubResendLimited(page: Page): Promise<unknown> {
+  return page.route('**/api/account/confirmation/resend', limited);
+}

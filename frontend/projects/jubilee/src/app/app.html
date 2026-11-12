@@ -16,6 +16,7 @@
     [state]="bannerState()"
     [email]="member.email"
     [busy]="resending()"
+    [wait]="resendWait()"
     (resend)="resend()"
     (changeEmail)="changeEmail($event)"
   ></div>

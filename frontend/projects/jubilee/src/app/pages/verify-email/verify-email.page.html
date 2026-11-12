@@ -71,8 +71,8 @@
       @if (sent()) {
         <p class="text-muted" role="status">We sent a new link to {{ member()?.email }}.</p>
       }
-      @if (sendFailed()) {
-        <p class="text-muted" role="alert">We couldn’t send it. Try again in a moment.</p>
+      @if (sendProblem(); as problem) {
+        <p class="text-muted" role="alert">{{ problem }}</p>
       }
     }
   }

@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { ACCOUNT_API } from 'api';
+import { ACCOUNT_API, isRateLimited, tryAgainIn } from 'api';
 import {
   ChromeMember,
   ConnectionBanner,
@@ -110,8 +110,16 @@ export class App {
   });
   private readonly resent = signal(false);
   protected readonly resending = signal(false);
+  /** "Try again in 42 minutes.", once the resend limit was reached (L2-005 AC5). */
+  protected readonly resendWait = signal('');
   protected readonly bannerState = computed<VerifyEmailBannerState>(() =>
-    this.unconfirmed()?.emailBounced ? 'bounced' : this.resent() ? 'sent' : 'persistent',
+    this.unconfirmed()?.emailBounced
+      ? 'bounced'
+      : this.resendWait()
+        ? 'limited'
+        : this.resent()
+          ? 'sent'
+          : 'persistent',
   );
 
   /** Shown once when the address was unconfirmed and now is, until it is dismissed (L2-005 AC4, L2-067 AC2). */
@@ -176,7 +184,10 @@ export class App {
         this.resent.set(true);
         this.resending.set(false);
       },
-      error: () => this.resending.set(false),
+      error: (error: unknown) => {
+        if (isRateLimited(error)) this.resendWait.set(tryAgainIn(error));
+        this.resending.set(false);
+      },
     });
   }
 
