@@ -39,6 +39,9 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
 
     public FakeGoogle Google { get; } = new();
 
+    /// <summary>The staff directory (Entra ID) staff sign in at (L2-189).</summary>
+    public FakeStaffDirectory StaffDirectory { get; } = new();
+
     /// <summary>The maintenance switch. Off at the start of every test; <see cref="Reset"/> turns it off.</summary>
     public FakeMaintenance Maintenance { get; } = new();
 
@@ -55,6 +58,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("RateLimits:ReferenceLinksPerMinute", "100000");
         builder.UseSetting("Email:WebhookSecret", "test-webhook-secret");
         builder.UseSetting("App:PublicBaseUrl", "https://jubilee.test");
+        builder.UseSetting("StaffSignIn:PublicBaseUrl", "https://admin.jubilee.test");
         ConfigureSettings(builder);
         builder.ConfigureServices(services =>
         {
@@ -76,6 +80,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             services.AddSingleton<Jubilee.Application.Maintenance.IMaintenanceState>(Maintenance);
             services.RemoveAll<Jubilee.Application.Abstractions.IMediaStore>();
             services.AddSingleton<Jubilee.Application.Abstractions.IMediaStore>(Media);
+            services.RemoveAll<Jubilee.Application.Staff.IStaffIdentityClient>();
+            services.AddSingleton<Jubilee.Application.Staff.IStaffIdentityClient>(StaffDirectory);
             services.RemoveAll<Jubilee.Application.Accounts.IEmailSender>();
             services.AddSingleton<Jubilee.Application.Accounts.IEmailSender>(Emails);
             services.RemoveAll<Jubilee.Application.Accounts.IBreachedPasswordChecker>();
@@ -126,6 +132,13 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
     }
 
     /// <summary>Runs <paramref name="work"/> against the database in its own scope.</summary>
+    public async Task<T> Query<T>(Func<AppDbContext, Task<T>> query)
+    {
+        T result = default!;
+        await WithDb(async db => result = await query(db));
+        return result;
+    }
+
     public async Task WithDb(Func<AppDbContext, Task> work)
     {
         using var scope = Services.CreateScope();
@@ -185,6 +198,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.OutboxMessages);
             db.RemoveRange(db.Sessions);
             db.RemoveRange(db.SignInFailures);
+            db.RemoveRange(db.StaffMembers);
             db.RemoveRange(db.LinkTokens);
             db.RemoveRange(db.PasswordResetRequests);
             db.RemoveRange(db.Members);

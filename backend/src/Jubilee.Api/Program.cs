@@ -9,6 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// The development staff identity signs anyone in with a second factor; it never runs outside Development (ADR 0040).
+if (string.Equals(builder.Configuration["StaffSignIn:Provider"], "Development", StringComparison.OrdinalIgnoreCase)
+    && !builder.Environment.IsDevelopment())
+{
+    throw new InvalidOperationException(
+        $"StaffSignIn:Provider=Development is only allowed in the Development environment, not {builder.Environment.EnvironmentName}.");
+}
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();

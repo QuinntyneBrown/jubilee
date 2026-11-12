@@ -100,3 +100,57 @@ public sealed class RestrictedController : ControllerBase
     [HttpPost("save")]
     public IActionResult Save() => Ok();
 }
+
+/// <summary>The staff directory (Entra ID) as the tests need it: records what was sent, returns the identity set.</summary>
+public sealed class FakeStaffDirectory : Jubilee.Application.Staff.IStaffIdentityClient
+{
+    private readonly ConcurrentDictionary<string, (string Nonce, string Challenge)> _sent = new();
+
+    public const string Tenant = "11111111-2222-3333-4444-555555555555";
+
+    public string TenantId => Tenant;
+
+    /// <summary>The identity the directory returns for the next code.</summary>
+    public Jubilee.Application.Staff.StaffIdentity Identity { get; set; } = Esther();
+
+    /// <summary>When set, redeeming the code fails as a provider error or an invalid token would.</summary>
+    public bool Fails { get; set; }
+
+    public Uri LastUrl { get; private set; } = new("https://login.microsoftonline.com/");
+
+    public string? LastRedirectUri { get; private set; }
+
+    public static Jubilee.Application.Staff.StaffIdentity Esther(string[]? methods = null, string tenant = Tenant, string objectId = "oid-esther") =>
+        new(tenant, objectId, "esther@jubilee.to", "Esther Mensah", methods ?? ["pwd", "mfa"]);
+
+    public Uri BuildAuthorizationUrl(string redirectUri, string state, string nonce, string codeChallenge)
+    {
+        _sent[state] = (nonce, codeChallenge);
+        LastRedirectUri = redirectUri;
+        LastUrl = new Uri(
+            $"https://login.microsoftonline.com/{Tenant}/oauth2/authorize?state={state}&nonce={nonce}&code_challenge={codeChallenge}&code_challenge_method=S256&prompt=login");
+        return LastUrl;
+    }
+
+    public Task<Jubilee.Application.Staff.StaffIdentity> RedeemAsync(
+        string redirectUri, string code, string codeVerifier, string nonce, CancellationToken cancellationToken)
+    {
+        var challenge = Convert.ToBase64String(SHA256.HashData(Encoding.ASCII.GetBytes(codeVerifier)))
+            .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+        var sent = _sent.Values.FirstOrDefault(s => s.Nonce == nonce);
+        if (Fails || sent.Challenge != challenge)
+        {
+            throw new InvalidOperationException("The sign-in could not be redeemed.");
+        }
+
+        return Task.FromResult(Identity);
+    }
+
+    public string QueryValue(string name) => HttpUtility.ParseQueryString(LastUrl.Query)[name]!;
+
+    public void Reset()
+    {
+        Identity = Esther();
+        Fails = false;
+    }
+}
