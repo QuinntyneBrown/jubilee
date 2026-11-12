@@ -62,6 +62,8 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("ConnectionStrings:Jubilee", _storeName);
         builder.UseSetting("RateLimits:DirectoryReadsPerMinute", "100000");
         builder.UseSetting("RateLimits:JoinsPerHour", "100000");
+        builder.UseSetting("RateLimits:LaunchSignUpsPerHour", "100000");
+        builder.UseSetting("RateLimits:LaunchPreRegistrationsPerHour", "100000");
         builder.UseSetting("Email:WebhookSecret", "test-webhook-secret");
         builder.UseSetting("App:PublicBaseUrl", "https://jubilee.test");
         builder.UseSetting("StaffSignIn:PublicBaseUrl", "https://admin.jubilee.test");
@@ -208,6 +210,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.Sessions);
             db.RemoveRange(db.SignInFailures);
             db.RemoveRange(db.StaffMembers);
+            db.RemoveRange(db.LaunchSubscribers);
             db.RemoveRange(db.LinkTokens);
             db.RemoveRange(db.PasswordResetRequests);
             db.RemoveRange(db.Members);

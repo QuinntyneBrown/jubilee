@@ -724,6 +724,21 @@ public sealed class StaffMemberConfiguration : IEntityTypeConfiguration<StaffMem
     }
 }
 
+public sealed class LaunchSubscriberConfiguration : IEntityTypeConfiguration<LaunchSubscriber>
+{
+    public void Configure(EntityTypeBuilder<LaunchSubscriber> builder)
+    {
+        builder.ToTable("LaunchSubscribers");
+        builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id).ValueGeneratedNever();
+        builder.Property(s => s.Email).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.Property(s => s.EmailKey).HasMaxLength(EmailAddress.MaxLength).IsRequired();
+        builder.HasIndex(s => s.EmailKey).IsUnique();
+        builder.Property(s => s.FirstName).HasMaxLength(LaunchSubscriber.MaxFirstNameLength);
+        builder.HasIndex(s => s.CreatedAt);
+    }
+}
+
 public sealed class SignInFailureConfiguration : IEntityTypeConfiguration<SignInFailure>
 {
     public void Configure(EntityTypeBuilder<SignInFailure> builder)

@@ -341,6 +341,9 @@ public enum ConsentMethod
     SettingsSwitch = 0,
     UnsubscribeLink = 1,
     OneClickUnsubscribe = 2,
+
+    /// <summary>A checkbox ticked on a form of the marketing site (L2-218 AC1).</summary>
+    MarketingSiteForm = 3,
 }
 
 /// <summary>

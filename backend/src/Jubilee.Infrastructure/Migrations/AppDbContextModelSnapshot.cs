@@ -566,6 +566,44 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("FeedbackScreenshots", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.LaunchSubscriber", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ConsentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("ConsentedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("EmailKey")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("EmailKey")
+                        .IsUnique();
+
+                    b.ToTable("LaunchSubscribers", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.LinkToken", b =>
                 {
                     b.Property<Guid>("Id")

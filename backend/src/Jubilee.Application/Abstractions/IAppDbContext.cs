@@ -84,5 +84,7 @@ public interface IAppDbContext
 
     DbSet<StaffMember> StaffMembers { get; }
 
+    DbSet<LaunchSubscriber> LaunchSubscribers { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
