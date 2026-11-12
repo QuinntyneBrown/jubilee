@@ -91,19 +91,27 @@ export async function stubSession(
   return fake;
 }
 
-/** Answers every call that matches with 401 `SESSION_EXPIRED`, as the API does once a session has ended (L2-116). */
+/**
+ * Answers every call that matches with 401 `SESSION_EXPIRED`, as the API does once a session has
+ * ended (L2-116). `laterBy` holds back every answer after the first, for calls that are refused
+ * one after another.
+ */
 export async function refuseAsExpired(
   page: Page,
   url: string | RegExp,
-): Promise<{ count: number }> {
-  const seen = { count: 0 };
-  await page.route(url, (route) => {
-    seen.count++;
-    return route.fulfill({
+  laterBy = 0,
+): Promise<{ count: number; answered: number }> {
+  const seen = { count: 0, answered: 0 };
+  await page.route(url, async (route) => {
+    if (seen.count++ > 0 && laterBy > 0) {
+      await new Promise((resolve) => setTimeout(resolve, laterBy));
+    }
+    await route.fulfill({
       status: 401,
       contentType: 'application/problem+json',
       body: JSON.stringify({ title: 'Sign in to continue.', status: 401, code: 'SESSION_EXPIRED' }),
     });
+    seen.answered++;
   });
   return seen;
 }
