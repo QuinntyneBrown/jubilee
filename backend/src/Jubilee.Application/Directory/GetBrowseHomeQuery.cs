@@ -29,7 +29,9 @@ public sealed class GetBrowseHomeQueryHandler(
         var groups = await grouping.BuildAsync(cancellationToken);
         var rooms = await RoomsShelfAsync(cancellationToken);
 
-        return new BrowseHomeDto(count, CategoryLinkDto.All, [.. featured.Select(BusinessCardDto.From)], products, groups, rooms);
+        var fast = await Requests.ResponseTimes.FastListings(db, cancellationToken);
+
+        return new BrowseHomeDto(count, CategoryLinkDto.All, [.. featured.Select(l => BusinessCardDto.From(l, fast))], products, groups, rooms);
     }
 
     /// <summary>The newest four spaces overall and of each term (L2-201 AC1, AC3), newest first.</summary>

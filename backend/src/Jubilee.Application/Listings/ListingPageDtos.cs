@@ -120,4 +120,5 @@ public sealed record ListingPageDto(
     IReadOnlyList<BusinessCardDto> Related,
     SpacePageDto? Space,
     IReadOnlyList<SpaceCardDto> RelatedSpaces,
-    Guid? OpenRequestId = null);
+    Guid? OpenRequestId = null,
+    bool RepliesFast = false);

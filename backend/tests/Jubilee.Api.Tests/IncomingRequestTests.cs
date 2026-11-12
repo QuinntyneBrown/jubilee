@@ -487,6 +487,51 @@ public sealed class IncomingRequestTests : IClassFixture<JubileeApiFactory>, IAs
         Assert.True((await _factory.GetJson("/api/my-business/requests", Naomi())).GetProperty("repliesFast").GetBoolean());
     }
 
+    // L2-054 AC1, AC3: members see the badge on the listing page and on the business card
+    [Fact]
+    public async Task L2_054_AC1_a_business_that_replies_fast_says_so_on_its_listing_page_and_its_card_and_AC3_another_does_not()
+    {
+        await _factory.Arrange(ListingMother.Public("christian-bookstores", "shops", "Christian Bookstores"));
+        await AnswerQuickly();
+        await Recompute();
+
+        var page = await _factory.GetJson("/api/listings/luzandre-com");
+        var neighbour = await _factory.GetJson("/api/listings/christian-bookstores");
+        var cards = (await _factory.GetJson("/api/categories/shops/listings")).GetProperty("businesses").EnumerateArray()
+            .ToDictionary(card => card.GetProperty("slug").GetString()!, card => card.GetProperty("repliesFast").GetBoolean());
+
+        Assert.True(page.GetProperty("repliesFast").GetBoolean());
+        Assert.False(neighbour.GetProperty("repliesFast").GetBoolean());
+        var related = Assert.Single(neighbour.GetProperty("related").EnumerateArray());
+        Assert.Equal("luzandre-com", related.GetProperty("slug").GetString());
+        Assert.True(related.GetProperty("repliesFast").GetBoolean());
+        Assert.True(cards["luzandre-com"]);
+        Assert.False(cards["christian-bookstores"]);
+    }
+
+    // L2-054 AC2: once the median is a day or more, members no longer see it
+    [Fact]
+    public async Task L2_054_AC2_the_badge_leaves_the_listing_page_when_the_median_reaches_a_day()
+    {
+        await AnswerQuickly();
+        await Recompute();
+        await _factory.WithDb(async db =>
+        {
+            foreach (var minute in new[] { 1, 2, 3, 4 })
+            {
+                var slow = Order($"member|slow{minute}", "Slow Customer", 1, ListingMother.Now.AddMinutes(minute), null);
+                db.Requests.Add(slow);
+                slow.Confirm(NaomiId, slow.CreatedAt.AddDays(3));
+            }
+
+            await db.SaveChangesAsync();
+        });
+        _factory.Clock.Advance(TimeSpan.FromHours(2));
+        await Recompute();
+
+        Assert.False((await _factory.GetJson("/api/listings/luzandre-com")).GetProperty("repliesFast").GetBoolean());
+    }
+
     private async Task<int> Recompute()
     {
         await using var scope = _factory.Services.CreateAsyncScope();

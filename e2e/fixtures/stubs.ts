@@ -352,6 +352,15 @@ export async function applyStub(page: Page, name: StubName): Promise<unknown> {
         ...listing,
         viewerRelation: 'owner',
       }));
+    case 'business-replies-fast':
+      // The seeded businesses have answered nobody yet; the badge comes from a month of quick answers (L2-054).
+      return patchListing(page, legacyFinancial, (listing) => ({
+        ...listing,
+        repliesFast: true,
+        related: (listing['related'] as Record<string, unknown>[]).map((card) =>
+          card['slug'] === 'deeks-insurance' ? { ...card, repliesFast: true } : card,
+        ),
+      }));
     case 'business-preview':
       // The owner's preview of a listing the verification team sent back (L2-219).
       return patchListing(page, legacyFinancial, (listing) => ({

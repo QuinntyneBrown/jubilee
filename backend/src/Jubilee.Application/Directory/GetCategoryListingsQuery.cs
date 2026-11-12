@@ -71,6 +71,7 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
             }
         }
 
+        var fast = await Requests.ResponseTimes.FastListings(db, cancellationToken);
         return new CategoryPageResult(
             CategoryLinkDto.From(category),
             totalCount,
@@ -81,7 +82,7 @@ public sealed class GetCategoryListingsQueryHandler(IAppDbContext db, IDirectory
             window.Page,
             PageWindow.PageSize,
             window.PageCount,
-            [.. listings.Select(BusinessCardDto.From)],
+            [.. listings.Select(l => BusinessCardDto.From(l, fast))],
             suggestions,
             Term: null,
             Spaces: []);

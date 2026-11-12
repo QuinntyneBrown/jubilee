@@ -35,6 +35,7 @@ public sealed class GetSavedListQueryHandler(IAppDbContext db) : IRequestHandler
         var listings = (await db.Listings.AsNoTracking().Where(l => listingIds.Contains(l.Id)).ToListAsync(cancellationToken))
             .ToDictionary(l => l.Id);
 
+        var fast = await Requests.ResponseTimes.FastListings(db, cancellationToken);
         var items = new List<SavedItemDto>();
         foreach (var row in rows)
         {
@@ -47,7 +48,7 @@ public sealed class GetSavedListQueryHandler(IAppDbContext db) : IRequestHandler
                 }
 
                 var open = listing.IsPublic();
-                items.Add(new SavedItemDto(row.Id, "business", listing.Name, row.SavedAt, open, open ? BusinessCardDto.From(listing) : null, null));
+                items.Add(new SavedItemDto(row.Id, "business", listing.Name, row.SavedAt, open, open ? BusinessCardDto.From(listing, fast) : null, null));
             }
             else
             {

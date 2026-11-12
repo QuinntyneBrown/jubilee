@@ -23,6 +23,7 @@ public sealed class GetWelcomeQueryHandler(
     {
         var count = await db.Listings.WherePublic().WhereBusiness().CountAsync(cancellationToken);
         var featured = await featuredSelector.SelectAsync(clock.GetUtcNow(), FeaturedLimit, cancellationToken);
-        return new WelcomeDto(count, CategoryLinkDto.All, [.. featured.Select(BusinessCardDto.From)]);
+        var fast = await Requests.ResponseTimes.FastListings(db, cancellationToken);
+        return new WelcomeDto(count, CategoryLinkDto.All, [.. featured.Select(l => BusinessCardDto.From(l, fast))]);
     }
 }

@@ -90,4 +90,6 @@ export interface ListingPage {
   relatedSpaces: SpaceCard[];
   /** The member's open request on this space, when they have one (L2-206). */
   openRequestId?: string | null;
+  /** The business carries the "Replies fast" badge (L2-054); never a space. */
+  repliesFast: boolean;
 }
