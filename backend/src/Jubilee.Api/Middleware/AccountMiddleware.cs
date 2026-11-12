@@ -17,7 +17,6 @@ public static class CsrfToken
 {
     public const string Cookie = "XSRF-TOKEN";
     public const string Header = "X-XSRF-TOKEN";
-    public const string SessionCookie = "jubilee.session";
 
     public static void Issue(HttpContext context) =>
         context.Response.Cookies.Append(
@@ -30,13 +29,13 @@ public static class CsrfToken
 /// Refuses a state-changing request that carries a session cookie but not the matching anti-CSRF
 /// token (403). Requests without a session cookie have nothing to forge.
 /// </summary>
-public sealed class CsrfMiddleware(RequestDelegate next)
+public sealed class CsrfMiddleware(RequestDelegate next, Sessions.MemberSessionCookie sessionCookie)
 {
     public async Task InvokeAsync(HttpContext context)
     {
         var unsafeMethod = HttpMethods.IsPost(context.Request.Method) || HttpMethods.IsPut(context.Request.Method)
             || HttpMethods.IsPatch(context.Request.Method) || HttpMethods.IsDelete(context.Request.Method);
-        var hasSession = context.Request.Cookies.ContainsKey(CsrfToken.SessionCookie)
+        var hasSession = context.Request.Cookies.ContainsKey(sessionCookie.Name)
             || context.Request.Cookies.ContainsKey(Sessions.StaffSession.CookieName);
         if (unsafeMethod && hasSession)
         {

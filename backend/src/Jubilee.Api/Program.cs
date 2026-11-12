@@ -43,13 +43,18 @@ builder.Services.AddSwaggerGen();
 // has ended is told so (401 SESSION_EXPIRED) and the cookie is removed; a caller who never had one is
 // told to sign in. Either way the answer is a status code, never a redirect.
 builder.Services.AddSingleton<DatabaseTicketStore>();
+// The cookie is __Host-jubilee.session everywhere but on a developer's machine (L2-135 AC1, ADR 0045).
+var sessionCookie = new MemberSessionCookie(builder.Configuration, builder.Environment);
+builder.Services.AddSingleton(sessionCookie);
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.Cookie.Name = "jubilee.session";
+        options.Cookie.Name = sessionCookie.Name;
         options.Cookie.HttpOnly = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = sessionCookie.SecurePolicy;
+        options.Cookie.Path = "/";
         options.ExpireTimeSpan = Jubilee.Domain.SessionPolicy.AbsoluteLifetime;
         options.SlidingExpiration = false;
         options.Events.OnRedirectToLogin = async context =>
@@ -57,7 +62,8 @@ builder.Services
             var ended = context.Request.Cookies.ContainsKey(options.Cookie.Name!);
             if (ended)
             {
-                context.Response.Cookies.Delete(options.Cookie.Name!);
+                // Removed with the attributes it was set with: a browser drops a __Host- cookie only then.
+                options.CookieManager.DeleteCookie(context.HttpContext, options.Cookie.Name!, options.Cookie.Build(context.HttpContext));
             }
 
             await ProblemWriter.WriteAsync(
