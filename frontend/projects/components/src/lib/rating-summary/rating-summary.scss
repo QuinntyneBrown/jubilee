@@ -1,0 +1,135 @@
+// Block: rating-summary. The host is the summary. Each bar is a toggle (aria-pressed) that
+// filters the list to its stars.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.rating-summary__score {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.rating-summary__average {
+  margin: 0;
+  font-family: var(--font-family-display);
+  font-weight: var(--font-weight-bold);
+  font-stretch: var(--font-stretch-wide);
+  font-size: var(--font-size-5xl);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-summary__detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-bottom: var(--space-1);
+}
+
+.rating-summary__count {
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.rating-summary__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rating-summary__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--target-comfortable);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-fg-default);
+  font: var(--text-body-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+
+  &:hover,
+  &[aria-pressed='true'] {
+    background: var(--color-bg-subtle);
+  }
+}
+
+.rating-summary__bar-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: none;
+  min-width: 2.25rem;
+  color: var(--color-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-summary__bar[aria-pressed='true'] .rating-summary__bar-label,
+.rating-summary__bar[aria-pressed='true'] .rating-summary__bar-count {
+  color: var(--color-fg-default);
+  font-weight: var(--font-weight-semibold);
+}
+
+.rating-summary__track {
+  flex: 1;
+  height: var(--space-2);
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-subtle-hover);
+}
+
+.rating-summary__fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+}
+
+.rating-summary__bar-count {
+  flex: none;
+  min-width: 2rem;
+  text-align: right;
+  color: var(--color-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-summary__note {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--color-fg-muted);
+}
+
+.rating-summary__note-icon {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  flex: none;
+  margin-top: var(--space-0-5);
+  color: var(--color-success-icon);
+}
+
+@media (forced-colors: active) {
+  .rating-summary__fill {
+    background: CanvasText;
+  }
+
+  .rating-summary__bar[aria-pressed='true'] {
+    outline: var(--border-width-thick) solid Highlight;
+  }
+}

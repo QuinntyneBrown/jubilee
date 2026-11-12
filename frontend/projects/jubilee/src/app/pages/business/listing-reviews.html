@@ -1,0 +1,97 @@
+<section
+  jb-reviews
+  [state]="status()"
+  [name]="name()"
+  [average]="store.summary().average"
+  [count]="store.summary().count"
+  [breakdown]="store.summary().breakdown"
+  [mine]="mine()"
+  [items]="shown()"
+  [more]="store.more()"
+  [stars]="store.stars()"
+  [sort]="store.sort()"
+  [notice]="notice()"
+  [invite]="invite()"
+  [reference]="reference()"
+  [actions]="actions"
+  (starsChange)="store.filter($event)"
+  (sortChange)="sortBy($event)"
+  (showAll)="showAll()"
+  (retry)="store.reload()"
+>
+  @if (canWrite()) {
+    <a
+      jb-button
+      slot="action"
+      jbRequiresConnection
+      [attr.href]="writeHref()"
+      (click)="write($event)"
+      ><svg jb-icon name="edit"></svg>Write a review</a
+    >
+  }
+  @if (canWrite()) {
+    <a
+      jb-button
+      slot="empty-action"
+      jbRequiresConnection
+      [attr.href]="writeHref()"
+      (click)="write($event)"
+      ><svg jb-icon name="edit"></svg>Write a review</a
+    >
+  }
+</section>
+
+<ng-template #actions let-item>
+  @if (item.source.mine) {
+    @if (changes()) {
+      <button
+        #editButton
+        jb-button
+        size="sm"
+        type="button"
+        jbRequiresConnection
+        (click)="edit(item.source, editButton.element)"
+      >
+        Edit
+      </button>
+      <button
+        #removeButton
+        jb-button
+        size="sm"
+        type="button"
+        jbRequiresConnection
+        (click)="remove(item.source, removeButton.element)"
+      >
+        Remove
+      </button>
+    }
+  } @else if (viewer() !== 'visitor') {
+    @if (viewer() === 'owner') {
+      <button
+        #replyButton
+        jb-button
+        size="sm"
+        type="button"
+        jbRequiresConnection
+        (click)="reply(item.source, replyButton.element)"
+        [attr.aria-label]="
+          (item.source.reply ? 'Edit reply to ' : 'Reply to ') + item.source.author
+        "
+      >
+        {{ item.source.reply ? 'Edit reply' : 'Reply' }}
+      </button>
+    }
+    <button
+      #reportButton
+      jb-button
+      variant="ghost"
+      size="sm"
+      type="button"
+      jbRequiresConnection
+      (click)="report(item.source, reportButton.element)"
+      [attr.aria-label]="'Report ' + item.source.author + '’s review'"
+    >
+      <svg jb-icon name="flag"></svg>Report
+    </button>
+  }
+</ng-template>

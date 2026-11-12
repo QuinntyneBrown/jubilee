@@ -1,0 +1,47 @@
+@let review = data.review;
+<jb-dialog
+  [heading]="heading"
+  description="Your reply is public. Everyone who reads the review reads it too."
+  icon="reply"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  <form jb-dialog-body class="stack" id="reply-review-form" novalidate (ngSubmit)="post()">
+    @if (view() === 'failed') {
+      <div jb-alert tone="danger" [heading]="failure().title" role="alert">
+        @if (failure().text) {
+          <div>{{ failure().text }}</div>
+        }
+      </div>
+    }
+    <div class="stack">
+      <div class="cluster">
+        <span
+          jb-stars
+          size="sm"
+          [value]="review.rating"
+          [label]="review.rating + ' out of 5 stars'"
+        ></span>
+        <span class="text-caption text-muted">{{ review.itemName }}</span>
+      </div>
+      <p>{{ review.text }}</p>
+    </div>
+    <div jb-field label="Your reply" controlId="rr-text" [counter]="counter()" [error]="problem()">
+      <textarea
+        jb-textarea
+        name="text"
+        rows="4"
+        [attr.maxlength]="max"
+        [readOnly]="busy()"
+        [ngModel]="text()"
+        (ngModelChange)="text.set($event)"
+      ></textarea>
+    </div>
+  </form>
+  <div jb-dialog-footer>
+    <button jb-button type="button" [disabled]="busy()" (click)="close()">Cancel</button>
+    <button jb-button variant="primary" type="submit" form="reply-review-form" [busy]="busy()">
+      {{ editing ? 'Save reply' : 'Post reply' }}
+    </button>
+  </div>
+</jb-dialog>

@@ -1,0 +1,48 @@
+<header class="review__head">
+  <span class="review__avatar" aria-hidden="true">{{ review().initials }}</span>
+  <div class="review__who">
+    <h3 class="review__author" [id]="headingId">
+      {{ review().author }}
+      @if (mine()) {
+        <span class="review__label">Your review</span>
+      }
+    </h3>
+    <p class="review__meta">
+      @if (mine()) {
+        Posted
+      }
+      {{ review().date }}
+      @if (review().edited) {
+        · Edited
+      }
+    </p>
+  </div>
+</header>
+<div class="review__rating">
+  <span
+    jb-stars
+    size="sm"
+    [value]="review().rating"
+    [label]="review().rating + ' out of 5 stars'"
+  ></span>
+  <span class="review__item">{{ review().itemName }}</span>
+  <span class="review__verified"
+    ><svg jb-icon name="verified" class="review__verified-icon"></svg>Verified</span
+  >
+</div>
+<p class="review__text">{{ review().text }}</p>
+@if (review().reply; as reply) {
+  <div class="review__reply">
+    <p class="review__reply-head">
+      Response from {{ reply.from }}
+      <span class="review__reply-date"
+        >· {{ reply.date }}
+        @if (reply.edited) {
+          · Edited
+        }
+      </span>
+    </p>
+    <p class="review__reply-text">{{ reply.text }}</p>
+  </div>
+}
+<div class="review__actions"><ng-content select="[slot=actions]" /></div>

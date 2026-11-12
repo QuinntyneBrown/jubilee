@@ -18,6 +18,8 @@ export class BusinessCard {
   readonly categoryLabel: Locator;
   /** The heart beside the card's link (`jb-saveable`, L2-041 AC7). */
   readonly heart: Locator;
+  /** "★ 4.6 (5)", from three reviews (L2-230). */
+  readonly rating: Locator;
 
   constructor(readonly root: Locator) {
     this.name = root.locator('.biz-card__name');
@@ -29,6 +31,7 @@ export class BusinessCard {
     this.mediaTile = root.locator('.media');
     this.categoryLabel = root.locator('.media__tag');
     this.heart = heartOf(root);
+    this.rating = root.locator('.rating-inline');
   }
 
   /** Number of text lines the tagline occupies. */

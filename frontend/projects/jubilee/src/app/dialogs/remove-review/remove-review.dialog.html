@@ -1,0 +1,36 @@
+<jb-dialog
+  heading="Remove your review?"
+  description="Your review of {{
+    data.listingName
+  }} will be taken off their page. You can write a new one later."
+  icon="trash"
+  tone="danger"
+  size="sm"
+  [busy]="busy()"
+  (closed)="close()"
+>
+  @if (view() === 'failed') {
+    <div jb-dialog-body class="stack">
+      <div jb-alert tone="danger" [heading]="failure().title" role="alert">
+        @if (failure().text) {
+          <div>{{ failure().text }}</div>
+        }
+      </div>
+    </div>
+  }
+  <div jb-dialog-footer>
+    <button jb-button type="button" cdkFocusInitial [disabled]="busy()" (click)="close()">
+      Cancel
+    </button>
+    <button
+      jb-button
+      variant="danger"
+      type="button"
+      [disabled]="busy()"
+      [busy]="busy()"
+      (click)="remove()"
+    >
+      Remove review
+    </button>
+  </div>
+</jb-dialog>

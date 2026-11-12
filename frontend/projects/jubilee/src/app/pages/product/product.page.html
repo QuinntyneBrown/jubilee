@@ -65,6 +65,20 @@
             <svg jb-icon name="heart"></svg>
           </button>
         </div>
+        @let summary = reviews.summary();
+        @if (reviews.state().status === 'loaded') {
+          @if (summary.count) {
+            <a
+              jb-rating-link
+              [average]="summary.average"
+              [count]="summary.count"
+              routerLink="."
+              fragment="reviews"
+            ></a>
+          } @else {
+            <p jb-rating-link [average]="0" [count]="0"></p>
+          }
+        }
         <p>
           <span jb-price size="lg" [amount]="product.priceCents" [perUnit]="product.perUnit"></span>
           @if (product.deliveryLine) {
@@ -107,6 +121,13 @@
         }
       </div>
     </div>
+    <jb-listing-reviews
+      [slug]="product.shop.slug"
+      [name]="product.shop.name"
+      [itemId]="product.id"
+      [invite]="'Bought ' + product.name + '?'"
+      [changes]="false"
+    />
     @if (product.more.length) {
       <section
         jb-section

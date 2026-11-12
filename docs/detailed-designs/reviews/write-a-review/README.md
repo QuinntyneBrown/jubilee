@@ -52,7 +52,7 @@ only (ADR 0035).
   - `404` shows the not-found page, as the listing page does.
 - **Form** — composed of existing and new `jb-*` components:
   - `jb-back-link` "Back to {name}" (a space: "Back to listing").
-  - `jb-review-subject` (new): a 48 px rounded thumbnail (cover photo or the
+  - `jb-review-subject` (new): a 48 px rounded thumbnail (the
     category tile), the listing's name and, under it, the category or, for a
     space, "Hosted by {owner name}".
   - The heading "How was it?".
@@ -101,7 +101,7 @@ only (ADR 0035).
   require a member session; the member is taken from the session, never from
   the body (`L2-133`). The body refuses unknown fields (`L2-136`).
 - **`GetReviewFormQuery`** (`Jubilee.Application/Reviews/`) — answers the
-  listing (slug, name, kind, category name and slug, owner name, cover photo),
+  listing (slug, name, kind, category name and slug, owner name),
   the items and their legend (`service`, `product` or none) and the author's
   name, after `ReviewEligibility` agrees.
 - **`ReviewEligibility`** — the rule of `L2-225`: the listing is public; the

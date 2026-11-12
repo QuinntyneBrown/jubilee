@@ -40,7 +40,8 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
     '[class.btn--sm]': 'size() === "sm"',
     '[class.btn--lg]': 'size() === "lg"',
     '[class.btn--icon]': 'iconOnly()',
-    '[class.btn--block]': 'block()',
+    '[class.btn--block]': 'block() === true',
+    '[class.btn--block-narrow]': 'block() === "narrow"',
     '[attr.aria-busy]': 'busy() ? "true" : null',
   },
   templateUrl: './button.html',
@@ -51,8 +52,11 @@ export class Button {
   readonly size = input<ButtonSize>('md');
   /** A square button that holds one icon and no text. */
   readonly iconOnly = input(false, { transform: booleanAttribute });
-  /** Fills the width of its container. */
-  readonly block = input(false, { transform: booleanAttribute });
+  /** Fills the width of its container; 'narrow' fills it on a phone only, up to 640px. */
+  readonly block = input(false, {
+    transform: (value: boolean | string | null | undefined): boolean | 'narrow' =>
+      value === 'narrow' ? 'narrow' : booleanAttribute(value),
+  });
   /** True while the action the button started is running. */
   readonly busy = input(false, { transform: booleanAttribute });
 

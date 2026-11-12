@@ -1,0 +1,31 @@
+// Block: rating-link. The host is the link to the Reviews section, or the plain line
+// "No reviews yet" (.rating-link--none).
+:host {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  min-height: var(--target-comfortable);
+  font: var(--text-body-sm);
+  color: var(--color-fg-default);
+  text-decoration: none;
+}
+
+.rating-link__average {
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-link__count {
+  color: var(--color-fg-muted);
+  text-underline-offset: 0.15em;
+}
+
+:host(a:hover) .rating-link__count {
+  color: var(--color-fg-default);
+  text-decoration: underline;
+}
+
+:host(.rating-link--none) {
+  color: var(--color-fg-muted);
+}

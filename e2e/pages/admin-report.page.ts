@@ -8,6 +8,11 @@ export class AdminReportPage extends AdminShellPage implements Screen {
   readonly subtitle: Locator;
   readonly report: Locator;
   readonly conversation: Locator;
+  /** The reported review as it stands (L2-236 AC2). */
+  readonly review: Locator;
+  /** Every report of the reported review. */
+  readonly reviewReports: Locator;
+  readonly resolve: Locator;
   readonly history: Locator;
   readonly resolvedNotice: Locator;
   readonly alert: Locator;
@@ -20,6 +25,9 @@ export class AdminReportPage extends AdminShellPage implements Screen {
     this.subtitle = this.main.locator('.subtitle');
     this.report = this.main.locator('section[aria-labelledby="rep"]');
     this.conversation = this.main.locator('section[aria-labelledby="conv"]');
+    this.review = this.main.locator('section[aria-labelledby="rv"]');
+    this.reviewReports = this.main.locator('section[aria-labelledby="reps"]');
+    this.resolve = this.main.locator('section[aria-labelledby="act"]');
     this.history = this.main.locator('section[aria-labelledby="hist"]');
     this.resolvedNotice = this.main.locator('.alert[role="status"]');
     this.alert = this.main.getByRole('alert');
@@ -29,6 +37,11 @@ export class AdminReportPage extends AdminShellPage implements Screen {
 
   action(name: string): Locator {
     return this.main.getByRole('button', { name, exact: true });
+  }
+
+  /** The buttons of the Resolve section, in order. */
+  get actions(): Locator {
+    return this.resolve.getByRole('button');
   }
 
   async ready(): Promise<void> {

@@ -40,6 +40,7 @@ const ICON: Record<NotificationKind, IconName> = {
   reminder: 'calendar',
   business: 'store',
   product: 'bag',
+  review: 'star',
 };
 
 /** The notification centre at /notifications (L2-064): the member's events of the last 90 days, newest first. */

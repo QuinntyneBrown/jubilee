@@ -1,0 +1,151 @@
+@let current = state();
+@if (posted(); as review) {
+  <div
+    jb-review-posted
+    [name]="form()?.listing?.name ?? ''"
+    [rating]="review.rating"
+    [word]="word()"
+    [itemName]="review.itemName"
+    [text]="review.text"
+  >
+    <a slot="actions" jb-button variant="primary" [routerLink]="['/b', slug]">{{
+      space() ? 'See it on the listing' : 'See it on their page'
+    }}</a>
+    <a slot="actions" jb-button routerLink="/">Back to browse</a>
+  </div>
+} @else {
+  @switch (current.status) {
+    @case ('loading') {
+      <h1 class="visually-hidden">Loading the review form</h1>
+      <p class="visually-hidden" role="status">Loading…</p>
+      <div class="stack" aria-hidden="true">
+        <span jb-skeleton shape="text" width="30"></span>
+        <span jb-skeleton shape="h1" width="50"></span>
+        <span jb-skeleton shape="text"></span>
+        <span jb-skeleton shape="text" width="70"></span>
+      </div>
+    }
+    @case ('error') {
+      <div jb-empty-state error icon="alert" heading="We couldn’t load the review form" [level]="1">
+        If it keeps happening, tell us and quote <code>{{ current.reference }}</code
+        >.
+        <button slot="actions" jb-button variant="primary" type="button" (click)="retry()">
+          Try again
+        </button>
+      </div>
+    }
+    @case ('refused') {
+      <a jb-back-link [routerLink]="['/b', slug]">Back to {{ current.name }}</a>
+      <div
+        jb-empty-state
+        icon="star"
+        [level]="1"
+        [heading]="'You can review ' + current.name + ' after they confirm a request of yours.'"
+      >
+        <a slot="actions" jb-button variant="primary" [routerLink]="['/b', slug]"
+          >Back to {{ current.name }}</a
+        >
+      </div>
+    }
+    @case ('loaded') {
+      @let review = current.value;
+      @let found = problems();
+      <a jb-back-link [routerLink]="['/b', slug]">{{ back() }}</a>
+      <div class="stack">
+        <div
+          jb-review-subject
+          [name]="review.listing.name"
+          [meta]="meta()"
+          [categorySlug]="review.listing.categorySlug"
+        ></div>
+        <h1>How was it?</h1>
+      </div>
+      <form class="form" novalidate (ngSubmit)="post()">
+        @if (failure(); as failure) {
+          <div jb-alert tone="danger" role="alert" [heading]="failure.title">
+            <div>{{ failure.text }}</div>
+            @if (failure.reason) {
+              <div class="text-caption">{{ failure.reason }}</div>
+            }
+          </div>
+        }
+        <fieldset
+          jb-star-scale
+          legend="Your rating"
+          controlId="rv-rating"
+          size="lg"
+          [words]="words"
+          [value]="rating()"
+          [disabled]="busy()"
+          [error]="found.rating"
+          (valueChange)="chooseRating($event)"
+        ></fieldset>
+        @if (review.items.length > 1) {
+          <fieldset
+            jb-field
+            [label]="legend()"
+            controlId="rv-item"
+            id="rv-item"
+            [error]="found.itemId"
+          >
+            <div jb-chip-row plain>
+              @for (item of review.items; track item.id) {
+                <jb-chip-option
+                  name="rv-item"
+                  [value]="item.id"
+                  [checked]="itemId() === item.id"
+                  [disabled]="busy()"
+                  (selected)="chooseItem(item.id)"
+                  >{{ item.name }}</jb-chip-option
+                >
+              }
+            </div>
+          </fieldset>
+        } @else if (found.itemId) {
+          <p class="text-muted" role="alert">{{ found.itemId }}</p>
+        }
+        <div
+          jb-field
+          label="Tell others about it"
+          controlId="rv-text"
+          [hint]="prompt()"
+          [counter]="counter()"
+          [counterInvalid]="!!found.text"
+          [error]="found.text"
+        >
+          <textarea
+            jb-textarea
+            name="text"
+            rows="6"
+            placeholder="Say what happened, as you would tell a friend."
+            [attr.maxlength]="max"
+            [readOnly]="busy()"
+            [ngModel]="text()"
+            (ngModelChange)="text.set($event)"
+          ></textarea>
+        </div>
+        <div class="stack stack--sm">
+          <p class="text-muted">
+            Your review will show as Verified because {{ review.listing.name }} confirmed your
+            request on Jubilee. It posts under your first name and last initial:
+            {{ review.authorName }}
+          </p>
+          <p class="text-muted">
+            Keep to what happened to you: no private details of anyone and no advertising.
+          </p>
+        </div>
+        <button
+          jb-button
+          variant="primary"
+          size="lg"
+          block="narrow"
+          type="submit"
+          jbRequiresConnection
+          [busy]="busy()"
+        >
+          {{ busy() ? 'Posting…' : 'Post review' }}
+        </button>
+      </form>
+    }
+  }
+}

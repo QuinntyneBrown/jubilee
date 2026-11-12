@@ -1,0 +1,11 @@
+<span
+  class="review-subject__media"
+  [class.review-subject__media--green]="tile().tint === 'green'"
+  [class.review-subject__media--gold]="tile().tint === 'gold'"
+  [class.review-subject__media--blue]="tile().tint === 'blue'"
+  ><svg jb-icon [name]="tile().icon" class="review-subject__icon"></svg
+></span>
+<div class="review-subject__text">
+  <p class="review-subject__name">{{ name() }}</p>
+  <p class="review-subject__meta">{{ meta() }}</p>
+</div>

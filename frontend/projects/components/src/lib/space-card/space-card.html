@@ -11,6 +11,9 @@
   {{ rent() }} <span class="space-card__unit">/ {{ space().per }}</span>
 </p>
 <h3 class="space-card__title" [id]="id + '-t'">{{ space().name }}</h3>
+@if (space().rating; as rating) {
+  <span jb-rating-inline [average]="rating.average" [count]="rating.count"></span>
+}
 @if (facts()) {
   <p class="space-card__facts">{{ facts() }}</p>
 }

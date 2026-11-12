@@ -1,0 +1,145 @@
+<div class="reviews__head">
+  <h2 class="reviews__title" tabindex="-1" [id]="headingId">Reviews</h2>
+  @if (state() === 'ready' && !empty()) {
+    <ng-content select="[slot=action]" />
+  }
+</div>
+@if (state() === 'ready' && !empty()) {
+  @if (notice(); as notice) {
+    <p class="reviews__notice">{{ notice }}</p>
+  }
+}
+@switch (state()) {
+  @case ('loading') {
+    <p class="visually-hidden" role="status">Loading the reviews…</p>
+    <div class="reviews__body" aria-hidden="true">
+      <div class="reviews__summary reviews__skeleton">
+        <span jb-skeleton shape="h1" width="50"></span>
+        <span jb-skeleton shape="text" width="70"></span>
+        @for (bar of [1, 2, 3, 4, 5]; track bar) {
+          <span jb-skeleton shape="text"></span>
+        }
+      </div>
+      <div class="reviews__main">
+        <ul class="reviews__list">
+          @for (row of [1, 2, 3]; track row) {
+            <li>
+              <div class="reviews__skeleton">
+                <span jb-skeleton shape="avatar"></span>
+                <span jb-skeleton shape="text" width="50"></span>
+                <span jb-skeleton shape="text"></span>
+                <span jb-skeleton shape="text" width="70"></span>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+  @case ('error') {
+    <div
+      jb-alert
+      tone="danger"
+      role="alert"
+      heading="We couldn’t load the reviews."
+      class="reviews__error"
+    >
+      The rest of the page still works. If it keeps happening, tell us and quote
+      <code>{{ reference() }}</code
+      >.
+      <button slot="actions" jb-button size="sm" type="button" (click)="retry.emit()">
+        <svg jb-icon name="refresh"></svg>Try again
+      </button>
+    </div>
+  }
+  @default {
+    @if (empty()) {
+      <div class="reviews__empty">
+        <div>
+          <p class="reviews__empty-title">No reviews yet</p>
+          <p class="reviews__empty-text">
+            {{ invite() ?? 'Worked with ' + name() + '?' }} Your review helps the next family
+            decide.
+          </p>
+          @if (notice(); as notice) {
+            <p class="reviews__empty-text">{{ notice }}</p>
+          }
+        </div>
+        <ng-content select="[slot=empty-action]" />
+      </div>
+    } @else {
+      <div class="reviews__body">
+        <div class="reviews__summary">
+          <div
+            jb-rating-summary
+            [average]="average()"
+            [count]="count()"
+            [breakdown]="breakdown()"
+            [name]="name()"
+            [selected]="stars()"
+            (selectedChange)="starsChange.emit($event)"
+          ></div>
+        </div>
+        <div class="reviews__main">
+          @if (mine(); as item) {
+            <div class="reviews__mine">
+              <article jb-review [review]="item.review" mine>
+                <ng-container
+                  ngProjectAs="[slot=actions]"
+                  [ngTemplateOutlet]="actions()"
+                  [ngTemplateOutletContext]="{ $implicit: item }"
+                />
+              </article>
+            </div>
+          }
+          <div class="reviews__toolbar">
+            <p class="reviews__filter">
+              @if (stars(); as stars) {
+                Showing {{ items().length }} {{ reviewsWord(items().length) }} with {{ stars }}
+                stars
+                <button class="reviews__clear" type="button" (click)="starsChange.emit(null)">
+                  Clear
+                </button>
+              } @else {
+                Tap a star bar to filter
+              }
+            </p>
+            <div class="reviews__sort">
+              <label class="visually-hidden" [for]="sortId">Sort reviews</label>
+              <select jb-select fit [id]="sortId" (change)="onSort($event)">
+                @for (option of sorts; track option.value) {
+                  <option [value]="option.value" [selected]="option.value === sort()">
+                    {{ option.label }}
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+          @if (items().length === 0) {
+            <p class="reviews__none">No {{ stars() }}-star reviews written up yet.</p>
+          } @else {
+            <ul class="reviews__list">
+              @for (item of items(); track item.id) {
+                <li>
+                  <article jb-review [review]="item.review">
+                    <ng-container
+                      ngProjectAs="[slot=actions]"
+                      [ngTemplateOutlet]="actions()"
+                      [ngTemplateOutletContext]="{ $implicit: item }"
+                    />
+                  </article>
+                </li>
+              }
+            </ul>
+          }
+          @if (more(); as more) {
+            <button jb-button class="reviews__more" type="button" (click)="showAll.emit()">
+              Show all {{ more }} reviews
+            </button>
+          }
+          <p class="visually-hidden" role="status">{{ status() }}</p>
+        </div>
+      </div>
+    }
+  }
+}

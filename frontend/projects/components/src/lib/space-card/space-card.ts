@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Icon } from '../icon/icon';
 import { MediaTile } from '../media-tile/media-tile';
+import { RatingInline } from '../rating-inline/rating-inline';
 import { availability, formatRent, SpaceTermValue, TERM_BADGES, TERM_TILES } from './space-terms';
 
 /** What a space card shows (L2-203). It never holds an exact address. */
@@ -13,6 +14,8 @@ export interface SpaceCardView {
   neighbourhood: string;
   available: string;
   coverPhoto?: string | null;
+  /** The average and count from three reviews; absent below three (L2-230). */
+  rating?: { average: number; count: number } | null;
 }
 
 let nextId = 0;
@@ -24,7 +27,7 @@ let nextId = 0;
  */
 @Component({
   selector: 'a[jb-space-card]',
-  imports: [Icon, MediaTile],
+  imports: [Icon, MediaTile, RatingInline],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'space-card',

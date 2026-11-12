@@ -3,6 +3,7 @@ import { IconName } from '../icon/icons';
 import { TileTint } from '../media-tile/category-tile';
 import { MediaTile } from '../media-tile/media-tile';
 import { Price } from '../price/price';
+import { RatingInline } from '../rating-inline/rating-inline';
 
 /**
  * What a product card shows (L2-027): photo or tile, product name, shop name and price, and
@@ -15,12 +16,14 @@ export interface ProductCardView {
   perUnit: boolean;
   tile: { tint: TileTint; icon: IconName };
   soldOut?: boolean;
+  /** The average and count from three reviews; absent below three (L2-230). */
+  rating?: { average: number; count: number } | null;
 }
 
 /** The product card: `<a jb-product-card [product]="p" [routerLink]="…"></a>`. */
 @Component({
   selector: 'a[jb-product-card]',
-  imports: [MediaTile, Price],
+  imports: [MediaTile, Price, RatingInline],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'biz-card product-card' },
   templateUrl: './product-card.html',

@@ -114,6 +114,9 @@
             {{ space.neighbourhood }}
           </p>
           <h1>{{ listing.name }}</h1>
+          @if (!preview) {
+            <ng-container [ngTemplateOutlet]="rating" />
+          }
           <p class="lead">{{ listing.tagline }}</p>
           <div
             jb-booking-card
@@ -220,6 +223,16 @@
           ></section>
         </aside>
       </div>
+      @if (!preview) {
+        <jb-listing-reviews
+          [slug]="listing.slug"
+          [name]="listing.name"
+          [invite]="listing.space ? 'Stayed with this host?' : null"
+          [space]="!!listing.space"
+          [items]="reviewItems(listing)"
+          itemLegend="service"
+        />
+      }
       @if (listing.relatedSpaces.length) {
         <section
           jb-section
@@ -273,6 +286,9 @@
             </p>
           }
           <h1>{{ listing.name }}</h1>
+          @if (!preview) {
+            <ng-container [ngTemplateOutlet]="rating" />
+          }
           @if (listing.ownerName) {
             <p>
               <strong>{{ listing.ownerName }}</strong>
@@ -465,6 +481,16 @@
           </aside>
         </div>
       </div>
+      @if (!preview) {
+        <jb-listing-reviews
+          [slug]="listing.slug"
+          [name]="listing.name"
+          [invite]="listing.space ? 'Stayed with this host?' : null"
+          [space]="!!listing.space"
+          [items]="reviewItems(listing)"
+          itemLegend="service"
+        />
+      }
       @if (listing.related.length) {
         <section
           jb-section
@@ -522,6 +548,22 @@
     }
   }
 }
+<ng-template #rating>
+  @let summary = reviews.summary();
+  @if (reviews.state().status === 'loaded') {
+    @if (summary.count) {
+      <a
+        jb-rating-link
+        [average]="summary.average"
+        [count]="summary.count"
+        routerLink="."
+        fragment="reviews"
+      ></a>
+    } @else {
+      <p jb-rating-link [average]="0" [count]="0"></p>
+    }
+  }
+</ng-template>
 <ng-template #gallery>
   @let photos = galleryPhotos();
   @if (photos.length) {

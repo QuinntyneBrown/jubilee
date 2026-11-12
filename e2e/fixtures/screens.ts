@@ -3,6 +3,7 @@ import { AdminFeaturedPage } from '../pages/admin-featured.page';
 import { AdminMovedPage } from '../pages/admin-moved.page';
 import { AdminReportPage } from '../pages/admin-report.page';
 import { AdminReportsPage } from '../pages/admin-reports.page';
+import { TakeDownScreen } from '../pages/report-action.dialog';
 import { AdminShellPage } from '../pages/admin-shell.page';
 import { AdminSignInPage } from '../pages/admin-sign-in.page';
 import { AdminVerificationPage } from '../pages/admin-verification.page';
@@ -254,6 +255,8 @@ export const screens: {
   { key: 'admin-report', screen: (page) => new AdminReportPage(page) },
   { key: 'admin-report.conversation', screen: (page) => new AdminReportPage(page) },
   { key: 'admin-report.error', screen: (page) => new AdminReportPage(page) },
+  { key: 'admin-report.review', screen: (page) => new AdminReportPage(page) },
+  { key: 'report-action.take-down', screen: (page) => new TakeDownScreen(page) },
   { key: 'admin-featured', screen: (page) => new AdminFeaturedPage(page) },
   { key: 'admin-featured.error', screen: (page) => new AdminFeaturedPage(page) },
   { key: 'forbidden', screen: (page) => new ForbiddenPage(page) },

@@ -31,6 +31,17 @@ export type StubName =
   | 'business-photos'
   | 'business-preview'
   | 'business-replies-fast'
+  | 'reviews-member'
+  | 'reviews-empty'
+  | 'reviews-mine'
+  | 'reviews-owner'
+  | 'reviews-loading'
+  | 'reviews-error'
+  | 'reviews-not-eligible'
+  | 'write-review'
+  | 'write-review-single-item'
+  | 'write-review-space'
+  | 'write-review-not-eligible'
   | 'shop-loading'
   | 'shop-error'
   | 'shop-empty'
@@ -168,6 +179,7 @@ export type StubName =
   | 'moderation-reports-error'
   | 'moderation-report'
   | 'moderation-report-conversation'
+  | 'moderation-report-review'
   | 'moderation-report-error'
   | 'moderation-featured'
   | 'moderation-featured-error'
@@ -636,6 +648,67 @@ export const routes = {
     app: '/b/legacy-financial',
     mock: 'pages/business/default.html',
     who: 'member',
+    stub: 'reviews-member',
+  },
+  'business.reviews-empty': {
+    app: '/b/deeks-insurance',
+    mock: 'pages/business/reviews-empty.html',
+    who: 'member',
+    stub: 'reviews-empty',
+  },
+  'business.reviews-mine': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/reviews-mine.html',
+    who: 'member',
+    stub: 'reviews-mine',
+  },
+  'business.reviews-owner': {
+    app: '/b/luzandre',
+    mock: 'pages/business/reviews-owner.html',
+    who: 'member',
+    stub: 'reviews-owner',
+  },
+  'business.reviews-loading': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/reviews-loading.html',
+    who: 'member',
+    stub: 'reviews-loading',
+  },
+  'business.reviews-error': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/reviews-error.html',
+    who: 'member',
+    stub: 'reviews-error',
+  },
+  'business.reviews-not-eligible': {
+    app: '/b/legacy-financial',
+    mock: 'pages/business/reviews-not-eligible.html',
+    who: 'member',
+    stub: 'reviews-not-eligible',
+  },
+  'write-review': {
+    app: '/b/legacy-financial/review',
+    mock: 'pages/write-review/default.html',
+    who: 'member',
+    stub: 'write-review',
+  },
+  'write-review.single-item': {
+    app: '/b/deeks-insurance/review',
+    mock: 'pages/write-review/single-item.html',
+    who: 'member',
+    stub: 'write-review-single-item',
+  },
+  'write-review.space': {
+    app: '/b/roncesvalles-guest-suite/review',
+    mock: 'pages/write-review/space.html',
+    who: 'member',
+    stub: 'write-review-space',
+  },
+  'write-review.not-eligible': {
+    app: '/b/luzandre/review',
+    mock: 'pages/write-review/not-eligible.html',
+    who: 'member',
+    stub: 'write-review-not-eligible',
   },
   'business.loading': {
     app: '/b/legacy-financial',
@@ -1454,6 +1527,21 @@ export const routes = {
     who: 'visitor',
     site: 'admin',
     stub: 'moderation-report-conversation',
+  },
+  'admin-report.review': {
+    app: '/reports/7d2e9c32-4f60-4b8c-8d3e-23456789abcd',
+    mock: 'pages/admin-report/review.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'moderation-report-review',
+  },
+  // The report of a review with "Take the review down" opened; the screen opens it.
+  'report-action.take-down': {
+    app: '/reports/7d2e9c32-4f60-4b8c-8d3e-23456789abcd',
+    mock: 'dialogs/report-action/take-down.html',
+    who: 'visitor',
+    site: 'admin',
+    stub: 'moderation-report-review',
   },
   'admin-report.error': {
     app: '/reports/5b0c7a10-2d4e-4f6a-8b1c-0123456789ab',

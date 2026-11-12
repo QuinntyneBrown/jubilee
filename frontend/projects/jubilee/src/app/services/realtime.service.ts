@@ -17,6 +17,7 @@ const OPEN: Record<NotificationKind, string> = {
   account: 'View account',
   business: 'View business',
   product: 'View in shop',
+  review: 'View reviews',
 };
 
 /**

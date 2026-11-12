@@ -6,6 +6,9 @@
   [tag]="product().soldOut ? 'Sold out' : ''"
 ></div>
 <h3 class="biz-card__name">{{ product().name }}</h3>
+@if (product().rating; as rating) {
+  <span jb-rating-inline [average]="rating.average" [count]="rating.count"></span>
+}
 @if (showShop()) {
   <p class="biz-card__tagline">{{ product().shopName }}</p>
 }

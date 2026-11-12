@@ -54,3 +54,5 @@ export * from './lib/api/feedback-api';
 export * from './lib/models/feedback';
 export * from './lib/api/launch-api';
 export * from './lib/models/launch';
+export * from './lib/api/reviews-api';
+export * from './lib/models/reviews';

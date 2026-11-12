@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { BusinessCard, heartOf } from './business-card';
+import { ReviewsRegion } from './reviews.region';
 import { ShellPage } from './shell.page';
 
 /** One row of "Services" or "Custom work" (`li.row`). */
@@ -94,9 +95,12 @@ export class BusinessPage extends ShellPage implements Screen {
   readonly errorReference: Locator;
   readonly tryAgain: Locator;
   readonly errorBackToBrowse: Locator;
+  /** The rating under the name and the "Reviews" section (L2-228). */
+  readonly reviews: ReviewsRegion;
 
   constructor(page: Page) {
     super(page);
+    this.reviews = new ReviewsRegion(page);
     this.backLink = this.main.locator('a.back-link');
     this.mediaTile = this.main.locator('.split .media').first();
     this.mediaLabel = this.mediaTile.locator('.media__tag');

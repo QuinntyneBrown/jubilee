@@ -237,4 +237,27 @@ test.describe('stay notified (L2-064 to L2-070)', () => {
     });
     await expect(toasts.action(toasts.withTitle(MESSAGE), 'View request')).toBeVisible();
   });
+
+  test('L2-234 AC1 and AC5: a new review has the star icon and opens the listing', async ({
+    page,
+    jb,
+  }) => {
+    const centre = new NotificationsPage(page);
+    const review = {
+      id: 'c3000000-0000-4000-8000-0000000000aa',
+      kind: 'review' as const,
+      title: 'New review of Legacy Financial',
+      detail: 'Joanna A. gave it 5 of 5 stars for Discovery meeting.',
+      target: '/b/legacy-financial',
+      at: '2026-11-10T14:30:00Z',
+      read: false,
+    };
+    await stubNotifications(page, { items: [review] });
+    await jb.signInAs('member');
+    await jb.goto('/notifications');
+
+    await expect(centre.item(review.title)).toContainText(review.detail);
+    await expect(centre.starIcon(review.title)).toHaveCount(1);
+    await expect(centre.link(review.title)).toHaveAttribute('href', '/b/legacy-financial');
+  });
 });

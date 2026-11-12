@@ -33,6 +33,7 @@ import {
   ProductRequestView,
   ProductSelection,
   Saveable,
+  RatingLink,
 } from 'components';
 import { CardHearts } from '../../services/card-hearts';
 import { Subscription } from 'rxjs';
@@ -46,6 +47,8 @@ import { LoadState, errorReference } from 'api';
 import { SavedStore } from '../../services/saved.store';
 import { PendingActionService } from '../../services/pending-action.service';
 import { SessionService } from '../../services/session.service';
+import { ListingReviewsStore } from '../../services/listing-reviews.store';
+import { ListingReviews } from '../business/listing-reviews';
 
 /**
  * The product page at /b/:slug/p/:product (L2-035): the product with its options, quantity and
@@ -72,7 +75,10 @@ import { SessionService } from '../../services/session.service';
     DescriptionItem,
     Price,
     CardGrid,
+    RatingLink,
+    ListingReviews,
   ],
+  providers: [ListingReviewsStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './product.page.html',
@@ -89,6 +95,8 @@ export class ProductPage {
   private readonly pending = inject(PendingActionService);
   private readonly dialog = inject(Dialog);
   private readonly savedStore = inject(SavedStore);
+  /** The product's reviews: the rating under the name and the "Reviews" section (L2-231). */
+  protected readonly reviews = inject(ListingReviewsStore);
   private request?: Subscription;
   private composeRef?: { close: () => void };
   /** The page has gone: a dialog that closes after it must not change the address. */
@@ -240,6 +248,7 @@ export class ProductPage {
             .subscribe({ next: () => this.alertRequested.set(true) });
         }
         this.title.setTitle(`${product.name} · Jubilee`);
+        this.reviews.load(product.shop.slug, this.productSlug());
       },
       error: (error: unknown) => {
         // A product that is missing or of a shop that is not public is the not-found page.
