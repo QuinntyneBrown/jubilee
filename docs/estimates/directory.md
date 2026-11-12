@@ -3,9 +3,11 @@
 | Design | Effort | Complete |
 |---|---|---|
 | browse-category | 4 days | 100% |
-| browse-home | 5 days | 90% |
+| browse-home | 5 days | 100% |
 | browse-spaces | 5 days | 100% |
 | search-directory | 4 days | 85% |
-| view-welcome-page | 4 days | 90% |
+| view-welcome-page | 4 days | 100% |
 
 browse-spaces (ADR 0042): the rooms shelf on Browse and the Rooms & rentals category with the term filter, the space card, and spaces in search are done with tests. Excludes deferred work (see ADR 0042): hourly rent and the sign-up intents.
+
+browse-home, view-welcome-page (ADR 0003): the directory read cache is removed by `DirectoryCacheInvalidationInterceptor`, which is the designed path; a pause, an approval and a featured week reach the cached pages on the next request and within 60 seconds otherwise, with tests. Nothing is left.
