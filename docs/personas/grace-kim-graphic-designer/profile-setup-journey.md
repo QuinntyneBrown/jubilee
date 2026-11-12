@@ -25,7 +25,7 @@ she wants to see who else is joining, and chooses "As it happens".
 | Business name | Grace Kim Design |
 | One line on what you do | Brand identity and print design for small businesses, churches and non-profits. |
 | Category | Media. She hesitates between "Media" and "Business & tech": branding is a business service, but her neighbours in "Media" are the photographers she works with. |
-| Area you serve | North York. She works by video with clients anywhere in the city, and the field has no way to say "all of Toronto". |
+| Area you serve | "All of Toronto, by video". The field is free text, so she can say it; she wonders which of the five area chips will then find her. |
 
 Services:
 

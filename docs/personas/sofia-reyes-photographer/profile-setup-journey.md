@@ -38,7 +38,7 @@ In My business, under Listing:
   baby after a baptism. Then a family on the lakeshore at Humber Bay, a first communion
   procession, a wedding portrait, a newborn at home, and three cousins laughing. She writes alt
   text for each, for example "A grandmother holds her newly baptised granddaughter at the font."
-- **About:** "I'm Sofia. I have photographed families in Toronto for fourteen years, the last
+- **About:** "I'm Sofia. I have photographed families in Toronto for seventeen years, the last
   nine from my home studio in Mimico. I photograph baptisms, first communions, family sessions
   and weddings, in churches of every tradition. I am a mother of two, so I know how to get a
   six-year-old to stand still, and when to stop asking. I ask for a deposit to hold your date and

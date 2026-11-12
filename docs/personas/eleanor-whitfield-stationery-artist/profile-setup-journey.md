@@ -34,11 +34,12 @@ Products, each added with "Add a product":
 | Watercolour greeting cards, set of 5 | 22.00 | 12 | Five different flowers from my garden, blank inside, with envelopes. |
 | Hand-lettered Scripture card | 6.00 | 40 | One verse, lettered by hand in ink, with envelope. Choose from eight verses. |
 | Watercolour notepad, 50 sheets | 12.00 | 20 | A painted border on every sheet. |
-| Christmas cards, set of 8 | 30.00 | 0 | Added in November. Until then: "0 shows as sold out." |
+| Christmas cards, set of 8 | 30.00 | 15 | Three designs: a star, a stable and a winter street. |
+| Easter cards, set of 6 | 24.00 | 0 | Not painted until February. The hint says "0 shows as sold out." |
 
 She uses the product options for the eight verses of the Scripture card, and is pleased that it
-works. The Christmas cards trouble her: she can hide them only by setting the stock to 0, which
-says "Sold out" in March about cards she has not painted yet.
+works. Each product gets its own photo. The Easter cards trouble her: she can list them early only
+with the stock at 0, which says "Sold out" in November about cards she has not painted yet.
 
 ## After she is verified, in My business
 

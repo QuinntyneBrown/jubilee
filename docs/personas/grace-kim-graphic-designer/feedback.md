@@ -44,7 +44,7 @@ Back to [Grace Kim](README.md).
 | The right category | One category per listing; she is between "Media" and "Business & tech". | Allow a second category, or add "Design" as a visible grouping inside one of them. |
 | Meeting other owners | Jubilee connects a member with a business; there is no owners' gathering, group or introduction. | A way for owners to say they are open to collaborating, and for owners to find one another by trade. This serves "together" in the pitch. |
 | Honest prices without awkwardness | A service is "Free", "Fixed price" or “Ask”; nothing explains the price. | A short optional pricing note on the listing, and guidance in "Tips for business owners" on charging fairly within the church. |
-| Serving the whole city | "Area you serve" speaks in districts. | An "All of Toronto" or "Works remotely" choice. |
+| Serving the whole city | "Area you serve" is free text, but the area chips members filter by are five districts. | An "All of Toronto" or "Works remotely" filter. |
 
 > These are a persona's suggestions, not requirements. Anything taken up needs a requirement in
 > `docs/specs/`, a detailed design and a mock before it is built, and must serve the mission.

@@ -24,7 +24,7 @@ writes to it as she would write a note to the parish office: politely, in full s
 
 **Report a bug.** Sent from the panel. "What went wrong?"
 
-> My Christmas cards say "Sold out" in the spring. They are not sold out, they are not made yet.
+> My Easter cards say "Sold out" in November. They are not sold out, they are not made yet.
 > I do not know if this is a fault or if I have done something wrong. I am sorry to trouble you.
 
 **Rate: 5 stars, "Love it".**
