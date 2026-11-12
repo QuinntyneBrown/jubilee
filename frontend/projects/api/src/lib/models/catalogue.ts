@@ -21,6 +21,8 @@ export interface OwnerProduct {
   options: OwnerProductOption[];
   /** Orders asked for it, all time. */
   requests: number;
+  /** What the save that returned this row did to the stock; a listed row says `none` (L2-036 AC3). */
+  stockChange: 'none' | 'became-sold-out' | 'back-in-stock';
 }
 
 export interface OwnerProducts {

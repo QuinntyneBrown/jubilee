@@ -44,6 +44,14 @@ public static class WireValues
         _ => value.ToString().ToLowerInvariant(),
     };
 
+    /// <summary>"none", "became-sold-out" or "back-in-stock" (L2-036).</summary>
+    public static string Of(StockChange value) => value switch
+    {
+        StockChange.BecameSoldOut => "became-sold-out",
+        StockChange.BackInStock => "back-in-stock",
+        _ => "none",
+    };
+
     public static string Of(ListingKind value) => value switch
     {
         ListingKind.Shop => "shop",

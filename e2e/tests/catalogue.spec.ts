@@ -128,6 +128,68 @@ test.describe('manage products (L2-089 to L2-091, L2-095, L2-127, L2-130, L2-132
     await expect(products.summary).toHaveText('4 products · 2 sold out');
   });
 
+  test('L2-036 AC3: setting the stock to 0 tells the owner the product is sold out', async ({
+    page,
+    jb,
+  }) => {
+    const products = new MyProductsPage(page);
+    const editor = new ProductEditorDialog(page);
+    const toasts = new Toasts(page);
+    await products.setWidth(1280);
+    await stubCatalogue(page);
+    await jb.goto(PRODUCTS);
+
+    await products.edit(MORNING).click();
+    await editor.stock.fill('0');
+    await editor.submit.click();
+
+    const toast = toasts.warning(`“${MORNING}” is sold out`);
+    await expect(toast).toContainText('Members can still ask to be told when it’s back.');
+    await expect(toasts.dismiss(toast)).toBeVisible();
+    // It takes the place of the toast that confirms the save
+    await expect(toasts.withTitle('Product updated')).toHaveCount(0);
+    await expect(products.status(MORNING)).toHaveText('Sold out');
+  });
+
+  test('L2-036 AC3: a product added with a stock of 0 is told as sold out', async ({ page, jb }) => {
+    const products = new MyProductsPage(page);
+    const editor = new ProductEditorDialog(page);
+    const toasts = new Toasts(page);
+    await products.setWidth(1280);
+    await stubCatalogue(page);
+    await jb.goto(PRODUCTS);
+
+    await products.add.click();
+    await editor.name.fill('Olive wood cross');
+    await editor.price.fill('18.50');
+    await editor.stock.fill('0');
+    await editor.submit.click();
+
+    await expect(toasts.warning('“Olive wood cross” is sold out')).toBeVisible();
+    await expect(toasts.withTitle('Product added')).toHaveCount(0);
+  });
+
+  test('L2-036 AC3: a save that leaves stock, or brings it back, confirms the save as before', async ({
+    page,
+    jb,
+  }) => {
+    const products = new MyProductsPage(page);
+    const editor = new ProductEditorDialog(page);
+    const toasts = new Toasts(page);
+    await products.setWidth(1280);
+    await stubCatalogue(page);
+    await jb.goto(PRODUCTS);
+
+    // The tee is sold out; Naomi restocks it
+    await products.edit(TEE).click();
+    await editor.stock.fill('12');
+    await editor.submit.click();
+
+    await expect(toasts.withTitle('Product updated')).toContainText(`“${TEE}” is updated.`);
+    await expect(toasts.warning(/is sold out/)).toHaveCount(0);
+    await expect(products.summary).toHaveText('4 products');
+  });
+
   test('L2-091 AC3: a missing name and a bad price are explained and nothing is sent', async ({
     page,
     jb,

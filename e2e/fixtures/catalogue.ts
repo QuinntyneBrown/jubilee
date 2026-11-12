@@ -135,6 +135,7 @@ export async function stubCatalogue(
     icon: 'bag',
     optionName: null,
     options: [],
+    stockChange: 'none',
   });
 
   const products = () => ({
@@ -217,15 +218,23 @@ export async function stubCatalogue(
         problem(409, { code: 'PRODUCT_LIMIT', detail: 'You can list up to 100 products.' }),
       );
     }
+    // What the save did to the stock, as the API says it (L2-036 AC3).
+    const stockChange = (before: number | null, after: number | null) =>
+      before !== 0 && after === 0
+        ? 'became-sold-out'
+        : before === 0 && after !== 0
+          ? 'back-in-stock'
+          : 'none';
     if (method === 'PUT') {
       const row = fake.productRows.find((item) => item.id === id)!;
+      const change = stockChange(row.stock, body.stock);
       Object.assign(row, {
         name: body.name,
         priceCents: cents(body.price),
         stock: body.stock,
         description: body.description || null,
       });
-      return route.fulfill({ json: productView(row) });
+      return route.fulfill({ json: { ...productView(row), stockChange: change } });
     }
     next += 1;
     const created = product(next, body.name, cents(body.price), {
@@ -233,7 +242,10 @@ export async function stubCatalogue(
       description: body.description || null,
     });
     fake.productRows.push(created);
-    return route.fulfill({ status: 201, json: productView(created) });
+    return route.fulfill({
+      status: 201,
+      json: { ...productView(created), stockChange: stockChange(null, created.stock) },
+    });
   });
 
   await page.route(/\/api\/my-business\/services(\/.*)?$/, async (route: Route) => {

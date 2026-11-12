@@ -12,7 +12,11 @@ namespace Jubilee.Application.OwnerWorkspace;
 
 public sealed record OwnerProductOptionDto(string Label, int? Stock);
 
-/// <summary>One row of the owner's products (L2-089).</summary>
+/// <summary>
+/// One row of the owner's products (L2-089). <paramref name="StockChange"/> is what a save did to
+/// the stock ("none", "became-sold-out" or "back-in-stock"), for the owner's toast (L2-036 AC3);
+/// a row that is only listed says "none".
+/// </summary>
 public sealed record ProductRowDto(
     Guid Id,
     string Slug,
@@ -27,7 +31,8 @@ public sealed record ProductRowDto(
     int MinimumQuantity,
     string? OptionName,
     IReadOnlyList<OwnerProductOptionDto> Options,
-    int Requests);
+    int Requests,
+    string StockChange);
 
 public sealed record ProductsDto(string Business, string Slug, string Subtitle, bool Live, int Total, int SoldOut, int Max, IReadOnlyList<ProductRowDto> Rows);
 
@@ -89,7 +94,7 @@ internal static partial class CatalogueRules
         return slug.Length == 0 ? "product" : slug.Length > 100 ? slug[..100].TrimEnd('-') : slug;
     }
 
-    public static ProductRowDto Row(Product product, int requests) => new(
+    public static ProductRowDto Row(Product product, int requests, StockChange change = StockChange.None) => new(
         product.Id,
         product.Slug,
         product.Name,
@@ -103,7 +108,8 @@ internal static partial class CatalogueRules
         product.MinimumQuantity,
         product.OptionName,
         [.. product.OrderedOptions.Select(o => new OwnerProductOptionDto(o.Label, o.Stock))],
-        requests);
+        requests,
+        WireValues.Of(change));
 
     public static OwnerServiceRowDto Row(Service service) => new(
         service.Id,
@@ -247,7 +253,7 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
             Apply(created, request, options);
             db.Products.Add(created);
             await db.SaveChangesAsync(cancellationToken);
-            return CatalogueRules.Row(created, 0);
+            return CatalogueRules.Row(created, 0, created.ChangeSince(false));
         }
 
         var product = await db.Products.SingleOrDefaultAsync(p => p.Id == request.Id && p.ListingId == listing.Id && !p.IsDeleted, cancellationToken)
@@ -255,14 +261,15 @@ public sealed class SaveProductCommandHandler(IAppDbContext db, TimeProvider clo
         var wasSoldOut = product.IsSoldOut;
         product.Revise(name, cents!.Value, description);
         Apply(product, request, options);
-        if (product.ChangeSince(wasSoldOut) == StockChange.BackInStock)
+        var change = product.ChangeSince(wasSoldOut);
+        if (change == StockChange.BackInStock)
         {
             // The members who asked are told with the change that brought the product back (L2-036 AC4).
             await Listings.StockAlertNotifier.TellAsync(db, settings, product, now, cancellationToken);
         }
 
         await db.SaveChangesAsync(cancellationToken);
-        return CatalogueRules.Row(product, counts.GetValueOrDefault(product.Id));
+        return CatalogueRules.Row(product, counts.GetValueOrDefault(product.Id), change);
     }
 
     private static void Apply(Product product, SaveProductCommand request, IReadOnlyList<OwnerProductOptionDto> options)
