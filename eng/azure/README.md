@@ -50,7 +50,8 @@ certificates for the four host names.
 | `Email__ConnectionString`, `Email__From`, `Email__WebhookSecret` | set by `configure-email.sh` (see "E-mail" below); without the first, no e-mail leaves |
 
 | `StaffSignIn__TenantId`, `StaffSignIn__ClientId`, `StaffSignIn__ClientSecret`, `StaffSignIn__PublicBaseUrl` | staff sign-in (see "The admin application" below) |
-| `StaffAccess__AllowedNetworks`, `StaffAccess__ProxyKey` | the networks the staff endpoints answer, and the key of the admin host's proxy; without the first, every staff endpoint is refused |
+| `StaffAccess__AllowedNetworks`, `StaffAccess__ProxyKey` | the networks the staff endpoints answer, and the key of the admin host's and the marketing host's proxy; without the first, every staff endpoint is refused |
+| `Launch__TeamEmail` | where each pre-registration and each new launch sign-up is e-mailed; set by `deploy.sh` (see "The launching-soon forms" below) |
 
 Not configured yet, so this feature is off: the bot challenge of the join form (Cloudflare
 Turnstile). It needs a Turnstile widget for `app.jubilee.to` and two settings: `BotChallenge__SiteKey`
@@ -63,36 +64,47 @@ site key the form sends a token nobody checks, and with only the secret every jo
 While Jubilee is launching soon the marketing page sends two forms, the launch notification and
 the business pre-registration, to `/api/launch` on its own origin (ADR 0044). `server.js` on
 `jubilee-to-www` forwards that prefix, and nothing else of `/api`, to the app's host, as the admin
-host forwards its calls. Until the settings below are made the page shows, and its forms say they
-could not be sent. None of this is done by the workflows, and nothing here was run yet.
+host forwards its calls. Everything this needs is done by the Deploy workflow on every
+deployment (ADR 0046); there is no step to run by hand.
 
-1. **Migrate.** Run the Deploy workflow with migrations, or `bash eng/azure/deploy.sh --migrate`:
-   `AddLaunchSubscribers` and `AddBusinessPreRegistrations` add the two tables.
-2. **The settings of `jubilee-to-www`:**
+- **The migrations.** `deploy.sh --migrate` applies `AddLaunchSubscribers` and
+  `AddBusinessPreRegistrations` with the rest.
+- **The settings.** `deploy.sh` sets each of these when its value differs, and prints names only:
 
-   | Setting | Value |
-   |---|---|
-   | `API_ORIGIN` | `https://app.jubilee.to` |
-   | `API_PATHS` | `/api/launch` (any other `/api` path answers 404 on this host) |
-   | `PROXY_KEY` | the key of `StaffAccess__ProxyKey` on `jubilee-to-app`, so the API counts the limits of five an hour per visitor's address, not per host |
+  | App Service | Setting | Value |
+  |---|---|---|
+  | `jubilee-to-www` | `API_ORIGIN` | `https://app.jubilee.to` |
+  | `jubilee-to-www` | `API_PATHS` | `/api/launch` (any other `/api` path answers 404 on this host) |
+  | `jubilee-to-www` | `PROXY_KEY` | the key of `StaffAccess__ProxyKey` on `jubilee-to-app`, so the API counts the limits of five an hour per visitor's address, not per host, and believes the time a submission was received |
+  | `jubilee-to-www` | `KEEP_DIR` | `/home/data/launch-kept` (persistent storage) |
+  | `jubilee-to-app` | `Launch__TeamEmail` | `quinntynebrown@gmail.com` (`LAUNCH_TEAM_EMAIL` in `deploy.sh`) |
 
-   The key only lets a proxy state the caller's address; the staff endpoints still answer only the
-   allowed networks, and this host never forwards them. Rotating the key now means setting three
-   App Services at once.
-3. **Optional: the team's address.** `Launch__TeamEmail` on `jubilee-to-app` is where each business
-   pre-registration is e-mailed. Without it nothing is sent and the team reads the
-   pre-registrations with the CLI only.
-4. **Reading the submissions.** In Cloud Shell, with the connection string as in `deploy.sh`:
-   `dotnet run --project backend/src/Jubilee.Cli -- launch list --kind notifications` (or
-   `--kind businesses`) prints CSV; each run is written to the audit log. The rows are deleted 12
-   months after they were sent.
-5. **The bot challenge.** When the Turnstile keys are set (above), the widget must also list
-   `jubilee.to` and `www.jubilee.to`; the page then loads Cloudflare's script for the challenge.
-6. **Check.** `curl -s https://www.jubilee.to/api/launch` answers `{}` (or the site key), and
-   `curl -s -o /dev/null -w '%{http_code}' https://www.jubilee.to/api/session` answers `404`.
+  When `jubilee-to-app` has no `StaffAccess__ProxyKey`, the script makes one and sets it on the
+  three App Services. The key only lets a proxy state the caller's address and, for a launch
+  submission, when it was received; the staff endpoints still answer only the allowed networks,
+  and this host never forwards them. Rotating the key means removing `StaffAccess__ProxyKey` from
+  `jubilee-to-app` and deploying.
+- **The check.** After the health check `deploy.sh` asks `https://www.jubilee.to/api/launch` for
+  200 and `https://www.jubilee.to/api/session` for 404. The deployment fails if either differs.
+- **The team's e-mail.** Each business pre-registration and each new launch notification sign-up
+  queues one e-mail to `Launch__TeamEmail` in the outbox, which the worker sends (see "E-mail").
+  A repeat sign-up of a known address e-mails no one.
+- **A submission the API cannot take.** When the API is restarting, down or slow, `server.js`
+  keeps the submission as one file in `KEEP_DIR`, answers the visitor 202, and sends it to the API
+  again every minute until it is accepted; then the file is removed. The row's consent time is
+  the time the marketing host received it. The container log says `Kept a launch submission (n
+  waiting).` and `Sent n kept launch submissions (n waiting).`, with no personal data. Files 12
+  months old are deleted unsent.
+- **Reading the submissions.** `jubilee launch list --kind notifications` (or `--kind businesses`)
+  prints CSV to whoever holds the connection string; each run is written to the audit log. The
+  rows are deleted 12 months after they were sent. To check that one sign-up arrived without
+  reading the list, start the workflow "Check a launch sign-up" from the Actions tab with the
+  address: it prints the number of rows and whether that address is among them, and nothing else.
+- **The bot challenge.** When the Turnstile keys are set (above), the widget must also list
+  `jubilee.to` and `www.jubilee.to`; the page then loads Cloudflare's script for the challenge.
 
-At launch, revert the marketing site's commits of ADR 0044 and remove `API_PATHS`, `API_ORIGIN`
-and `PROXY_KEY` from `jubilee-to-www`.
+At launch, revert the marketing site's commits of ADR 0044 and remove the four settings of
+`jubilee-to-www` from `deploy.sh` and from the App Service, once `KEEP_DIR` is empty.
 
 ## The admin application
 
@@ -150,7 +162,8 @@ step 6; it prints the two DNS records and is run again once they are published. 
    `az webapp log tail -n jubilee-to-app` shows a refused staff request as `Failed authorization`
    or `NETWORK_NOT_ALLOWED`.
 
-Rotating the proxy key means setting the new value on both App Services at once. Revoking a staff
+Rotating the proxy key means setting the new value on the three App Services at once; removing
+`StaffAccess__ProxyKey` from `jubilee-to-app` and deploying does that. Revoking a staff
 member's roles (`jubilee staff revoke`) ends their staff sessions.
 
 ## Google sign-in
@@ -245,8 +258,8 @@ large mailing. Rotating the key is `az communication regenerate-key` followed by
 
 Every push to `main` is deployed by [`.github/workflows/deploy.yml`](../../.github/workflows/deploy.yml)
 once CI has passed on it. The workflow applies new EF Core migrations, builds and packages the
-three sites, deploys them and waits for the
-health check. It can also be started by hand from the
+three sites, sets the settings of the launching-soon forms, deploys the sites, waits for the
+health check and checks that the marketing host forwards `/api/launch` and nothing else. It can also be started by hand from the
 Actions tab.
 
 The workflow signs in to Azure with OpenID Connect, so the repository holds no password. It needs
