@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -10,6 +11,7 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ACCOUNT_API } from 'api';
 import { AuthLayout, EmptyState, Icon, Button } from 'components';
+import { openChangeUnconfirmedEmail } from '../../dialogs/change-unconfirmed-email/change-unconfirmed-email.dialog';
 import { ReturnAfterJoinService } from '../../services/return-after-join.service';
 import { SessionService } from '../../services/session.service';
 
@@ -35,6 +37,7 @@ export class VerifyEmailPage implements OnInit {
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
+  private readonly dialog = inject(Dialog);
   private readonly token = inject(ActivatedRoute).snapshot.paramMap.get('token');
 
   protected readonly view = signal<View>({ kind: 'pending' });
@@ -77,6 +80,11 @@ export class VerifyEmailPage implements OnInit {
       },
       error: () => this.view.set({ kind: 'error' }),
     });
+  }
+
+  /** "Use another e-mail" (L2-004 AC5): the address is replaced in a dialog. */
+  protected useAnother(opener: HTMLElement): void {
+    openChangeUnconfirmedEmail(this.dialog, opener);
   }
 
   protected resend(): void {

@@ -58,7 +58,15 @@
         <button slot="actions" jb-button variant="primary" type="button" (click)="resend()">
           Send it again
         </button>
-        <a slot="actions" jb-button routerLink="/account">Use another e-mail</a>
+        <button
+          #another
+          slot="actions"
+          jb-button
+          type="button"
+          (click)="useAnother(another.element)"
+        >
+          Use another e-mail
+        </button>
       </div>
       @if (sent()) {
         <p class="text-muted" role="status">We sent a new link to {{ member()?.email }}.</p>

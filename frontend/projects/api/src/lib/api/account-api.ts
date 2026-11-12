@@ -7,6 +7,8 @@ import { ConfirmEmailResponse, JoinRequest, JoinResponse } from '../models/accou
 export interface AccountApi {
   join(request: JoinRequest): Observable<JoinResponse>;
   resendConfirmation(): Observable<void>;
+  /** "Use another e-mail": replaces the unconfirmed address and sends it a new link (L2-004 AC5). */
+  changeUnconfirmedEmail(email: string): Observable<void>;
   confirmEmail(token: string): Observable<ConfirmEmailResponse>;
   acceptAgreement(): Observable<void>;
 }
@@ -23,6 +25,10 @@ export class HttpAccountApi implements AccountApi {
 
   resendConfirmation(): Observable<void> {
     return this.http.post<void>('/api/account/confirmation/resend', {});
+  }
+
+  changeUnconfirmedEmail(email: string): Observable<void> {
+    return this.http.put<void>('/api/account/unconfirmed-email', { email });
   }
 
   confirmEmail(token: string): Observable<ConfirmEmailResponse> {

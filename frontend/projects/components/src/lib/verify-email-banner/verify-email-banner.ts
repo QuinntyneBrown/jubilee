@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Alert, AlertTone } from '../alert/alert';
-import { RouterLink } from '@angular/router';
 import { Button } from '../button/button';
 import { CloseButton } from '../button/close-button';
 
@@ -10,11 +9,12 @@ export type VerifyEmailBannerState = 'persistent' | 'sent' | 'bounced' | 'expire
 /**
  * The verify-e-mail banner. It carries no dismiss control while the address is unconfirmed.
  *
- *     <div jb-verify-email-banner state="persistent" [email]="address" (resend)="send()"></div>
+ *     <div jb-verify-email-banner state="persistent" [email]="address" (resend)="send()"
+ *       (changeEmail)="open($event)"></div>
  */
 @Component({
   selector: 'div[jb-verify-email-banner]',
-  imports: [Alert, RouterLink, Button, CloseButton],
+  imports: [Alert, Button, CloseButton],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './verify-email-banner.html',
   styleUrl: './verify-email-banner.scss',
@@ -24,6 +24,8 @@ export class VerifyEmailBanner {
   readonly email = input.required<string>();
   readonly busy = input(false);
   readonly resend = output<void>();
+  /** "Change e-mail" was pressed; carries the button, for focus to return to. */
+  readonly changeEmail = output<HTMLElement>();
   /** Only the success state can be dismissed. */
   readonly dismiss = output<void>();
 

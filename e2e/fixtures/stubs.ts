@@ -759,6 +759,50 @@ export function stubConfirmation(page: Page, body: unknown, status = 200): Promi
   );
 }
 
+/** What the change of an unconfirmed address is answered with (L2-004 AC5, AC9, AC10). */
+export type UnconfirmedEmailChange =
+  'replaced' | 'in-use' | 'limited' | 'invalid' | 'fail' | 'hang';
+
+/**
+ * Answers "Use another e-mail" and keeps the bodies it was sent. The API answers 204 whether or not
+ * the address was free (L2-141 AC1); only `replaced` changes the address the session then reports.
+ */
+export async function stubUnconfirmedEmailChange(
+  page: Page,
+  outcome: UnconfirmedEmailChange = 'replaced',
+): Promise<Record<string, unknown>[]> {
+  const seen: Record<string, unknown>[] = [];
+  await page.route('**/api/account/unconfirmed-email', async (route) => {
+    const body = route.request().postDataJSON() as Record<string, unknown>;
+    seen.push(body);
+    switch (outcome) {
+      case 'replaced':
+        await stubSession(page, { ...unconfirmedSession, email: String(body['email']) });
+        return route.fulfill({ status: 204 });
+      case 'in-use':
+        return route.fulfill({ status: 204 });
+      case 'limited':
+        return limited(route);
+      case 'invalid':
+        return route.fulfill({
+          status: 422,
+          contentType: 'application/problem+json',
+          body: JSON.stringify({
+            title: 'Fix the highlighted fields.',
+            status: 422,
+            code: 'validation_failed',
+            errors: { email: 'EMAIL_INVALID' },
+          }),
+        });
+      case 'fail':
+        return failed(route);
+      case 'hang':
+        return;
+    }
+  });
+  return seen;
+}
+
 /** Answers "Send it again" (the resend of the confirmation link). */
 export function stubResend(page: Page, status = 202): Promise<unknown> {
   return page.route('**/api/account/confirmation/resend', (route) => route.fulfill({ status }));

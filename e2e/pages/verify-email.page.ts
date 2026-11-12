@@ -24,7 +24,7 @@ export class VerifyEmailPage extends ShellPage implements Screen {
     this.text = this.main.locator('.empty__text');
     this.sendAgain = this.main.getByRole('button', { name: 'Send it again' });
     this.sendNewLink = this.main.getByRole('button', { name: 'Send a new link' });
-    this.useAnother = this.main.getByRole('link', { name: 'Use another e-mail' });
+    this.useAnother = this.main.getByRole('button', { name: 'Use another e-mail' });
     this.status = this.main.getByRole('status');
     this.spinner = this.main.locator('.spinner');
     this.errorState = this.main.getByRole('alert');
@@ -55,7 +55,7 @@ export class VerifyEmailBannerRegion {
   constructor(page: Page) {
     this.banner = page.locator('.alert.banner');
     this.sendAgain = this.banner.getByRole('button', { name: /^Send (it again|a new link)$/ });
-    this.changeEmail = this.banner.getByRole('link', { name: 'Change e-mail' });
+    this.changeEmail = this.banner.getByRole('button', { name: 'Change e-mail' });
     this.dismiss = this.banner.getByRole('button', { name: 'Dismiss' });
   }
 }

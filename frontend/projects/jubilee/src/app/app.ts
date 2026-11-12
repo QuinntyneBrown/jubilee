@@ -26,6 +26,7 @@ import {
 import { filter, map, startWith } from 'rxjs';
 import { JbRouteData } from './app.routes';
 import { AccountMenuData, AccountMenuDialog } from './dialogs/account-menu/account-menu.dialog';
+import { openChangeUnconfirmedEmail } from './dialogs/change-unconfirmed-email/change-unconfirmed-email.dialog';
 import type { FeedbackDialogData } from './dialogs/feedback/feedback.dialog';
 import { ConnectionService, STATUS_URL } from './services/offline/connection.service';
 import { QueueDrainer } from './services/offline/queue-drainer';
@@ -177,6 +178,11 @@ export class App {
       },
       error: () => this.resending.set(false),
     });
+  }
+
+  /** "Change e-mail" in the banner (L2-004 AC5): the unconfirmed address is replaced in a dialog. */
+  protected changeEmail(opener: HTMLElement): void {
+    openChangeUnconfirmedEmail(this.dialog, opener);
   }
 
   /** The account menu from the avatar (L2-019); focus returns to the avatar when it closes. */
