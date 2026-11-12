@@ -83,6 +83,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<ListingSubmission> ListingSubmissions => Set<ListingSubmission>();
 
+    public DbSet<StatementAgreement> StatementAgreements => Set<StatementAgreement>();
+
     public DbSet<ReviewTick> ReviewTicks => Set<ReviewTick>();
 
     public DbSet<ListingDecision> ListingDecisions => Set<ListingDecision>();

@@ -3,6 +3,7 @@ using Jubilee.Api.Errors;
 using Jubilee.Api.Middleware;
 using Jubilee.Api.Sessions;
 using Jubilee.Application.Accounts;
+using Jubilee.Application.Onboarding;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -107,7 +108,7 @@ public sealed class SessionController(ISender sender, IGoogleIdentityClient goog
             var others = Guid.TryParse(subject, out var memberId)
                 ? await sender.Send(new OtherSessionCountQuery(memberId, CurrentSessionId()), cancellationToken)
                 : 0;
-            return ToDto(account, others);
+            return ToDto(account, others) with { StatementDue = await StatementDue(subject!, cancellationToken) };
         }
 
         var displayName = (User.FindFirst("name")?.Value ?? User.Identity.Name ?? string.Empty).Trim();
@@ -121,8 +122,12 @@ public sealed class SessionController(ISender sender, IGoogleIdentityClient goog
         };
 
         return new SessionDto(true, firstName, displayName, initials.ToUpperInvariant(), null, "confirmed", false, false, 0, User.ToViewer().IsVerifier,
-            google.IsConfigured);
+            google.IsConfigured, StatementDue: subject is null ? null : await StatementDue(subject, cancellationToken));
     }
+
+    /// <summary>The agreement the owner owes to an updated statement of faith, if any (L2-075 AC3).</summary>
+    private Task<StatementDueDto?> StatementDue(string subject, CancellationToken cancellationToken) =>
+        sender.Send(new GetStatementDueQuery(subject), cancellationToken);
 }
 
 public sealed record SessionDto(
@@ -137,7 +142,8 @@ public sealed record SessionDto(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? OtherSessionCount,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] bool? IsVerifier = null,
     bool GoogleSignIn = false,
-    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? BotChallengeSiteKey = null)
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? BotChallengeSiteKey = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] StatementDueDto? StatementDue = null)
 {
     /// <summary>A visitor. <paramref name="googleSignIn"/> says whether the Google buttons can be shown (L2-003 AC5).</summary>
     public static SessionDto Visitor(bool googleSignIn, string? botChallengeSiteKey = null) =>

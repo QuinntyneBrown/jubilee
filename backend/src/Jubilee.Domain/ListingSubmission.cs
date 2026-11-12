@@ -1,10 +1,56 @@
 namespace Jubilee.Domain;
 
-/// <summary>The statement of faith an owner agrees to when listing (L2-075).</summary>
+/// <summary>
+/// The statement of faith an owner agrees to when listing (L2-075). The statement is a page of the app,
+/// so a new version ships with the code: changing <see cref="Version"/> asks every owner whose latest
+/// agreement is earlier to agree again within <see cref="DaysToAgree"/> days (ADR 0018).
+/// </summary>
 public static class StatementOfFaith
 {
     /// <summary>The date the statement was last updated; recorded with each agreement.</summary>
     public const string Version = "2026-11-02";
+
+    /// <summary>How long an owner has to agree to a new version before their live listings are paused (L2-075 AC6).</summary>
+    public const int DaysToAgree = 30;
+
+    /// <summary>The date of <see cref="Version"/>.</summary>
+    public static DateOnly UpdatedOn { get; } = DateOnly.ParseExact(Version, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+
+    /// <summary>The last day to agree to <see cref="Version"/>: 30 days after it.</summary>
+    public static DateOnly AgreeBy { get; } = UpdatedOn.AddDays(DaysToAgree);
+
+    /// <summary>Whether the 30 days have passed on <paramref name="now"/>, read in Toronto.</summary>
+    public static bool IsOverdue(DateTimeOffset now) => TorontoClock.Today(now) > AgreeBy;
+
+    /// <summary>Whether <paramref name="latest"/>, the newest version an owner agreed to, is earlier than the current one. Versions are ISO dates, so they compare as text.</summary>
+    public static bool IsDue(string? latest) => latest is not null && string.CompareOrdinal(latest, Version) < 0;
+}
+
+/// <summary>
+/// An owner's agreement to a version of the statement of faith made outside a submission, when the
+/// statement was updated (L2-075 AC4). One per owner and version.
+/// </summary>
+public sealed class StatementAgreement
+{
+    private StatementAgreement()
+    {
+    }
+
+    public Guid Id { get; private set; }
+
+    public string OwnerSubject { get; private set; } = string.Empty;
+
+    public string Version { get; private set; } = string.Empty;
+
+    public DateTimeOffset AgreedAt { get; private set; }
+
+    public static StatementAgreement Record(string ownerSubject, string version, DateTimeOffset now) => new()
+    {
+        Id = Guid.NewGuid(),
+        OwnerSubject = ownerSubject,
+        Version = version,
+        AgreedAt = now,
+    };
 }
 
 /// <summary>

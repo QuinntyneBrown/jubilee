@@ -2154,6 +2154,32 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("StaffMembers", (string)null);
                 });
 
+            modelBuilder.Entity("Jubilee.Domain.StatementAgreement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AgreedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("OwnerSubject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerSubject", "Version")
+                        .IsUnique();
+
+                    b.ToTable("StatementAgreements", (string)null);
+                });
+
             modelBuilder.Entity("Jubilee.Domain.StockAlert", b =>
                 {
                     b.Property<Guid>("Id")

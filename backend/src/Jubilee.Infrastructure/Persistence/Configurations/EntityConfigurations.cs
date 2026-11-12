@@ -685,6 +685,21 @@ public sealed class ResponseTimeStatConfiguration : IEntityTypeConfiguration<Res
     }
 }
 
+public sealed class StatementAgreementConfiguration : IEntityTypeConfiguration<StatementAgreement>
+{
+    public void Configure(EntityTypeBuilder<StatementAgreement> builder)
+    {
+        builder.ToTable("StatementAgreements");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.OwnerSubject).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.Version).HasMaxLength(20).IsRequired();
+
+        // One agreement per owner and version, however often "I agree" is pressed (L2-075 AC4).
+        builder.HasIndex(a => new { a.OwnerSubject, a.Version }).IsUnique();
+    }
+}
+
 public sealed class JobRunConfiguration : IEntityTypeConfiguration<JobRun>
 {
     public void Configure(EntityTypeBuilder<JobRun> builder)
