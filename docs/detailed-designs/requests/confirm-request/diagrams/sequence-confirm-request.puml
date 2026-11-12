@@ -18,10 +18,11 @@ actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "IncomingRequestsPage" as page
   participant "ConfirmRequestDialog" as dialog
-  participant "RequestsApi" as client
+  participant "IncomingRequestsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "IncomingRequestsController" as controller
+  participant "EventsController" as events
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "ConfirmRequestCommandHandler" as handler
@@ -36,39 +37,71 @@ box "Backend — Jubilee Worker" #D1FADF
 end box
 actor "Member" as member
 actor -> page : Press "Confirm" on a new request
-page -> dialog : Open with customer, order, needed by and total
-dialog --> actor : Ask "Confirm {customer}'s order?" with focus on "Not yet" (L2-129)
-actor -> dialog : Press "Confirm order"
+page -> dialog : Open with ConfirmRequestData: customer, request, when or needed by, and total
+dialog --> actor : Ask "Confirm {customer}’s {noun}?" with focus on "Not yet" (L2-129)
+actor -> dialog : Press "Confirm {noun}"
 dialog -> client : confirm(requestId)
 client -> controller : POST /api/my-business/requests/{id}/confirm
-controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
-controller -> handler : Send ConfirmRequestCommand
-handler -> db : Load request with row version, and product for an order
+controller -> controller : Authenticate the session cookie
+controller -> handler : Send ConfirmRequestCommand(subject, requestId)
+handler -> db : IncomingRules.OwnedRequest: load request with transitions and its listing (L2-133)
 db --> handler : Current state
-handler -> entity : Apply L2-052 confirm: New to Confirmed (L2-043)
 alt status is New
-  entity --> handler : Status Confirmed, RequestTransition with UndoableUntil
-  opt request type is Order
-    handler -> product : ReduceStock(option, quantity) (L2-052)
-    product --> handler : Stock reduced
+  opt request kind is Order
+    handler -> db : Load the product
+    db --> handler : Product
+    handler -> product : ReduceStock(optionLabel, quantity) (L2-052)
+    product --> handler : Stock reduced, or InsufficientStockException
   end
-  handler -> db : Save request, stock, conversation card and outbox messages in one unit of work
-  db --> handler : Commit result
-  handler --> controller : ConfirmResult
-  controller --> client : 200 OK
-  client --> dialog : Confirmed
-  dialog --> actor : Close and show toast "Order confirmed. {Customer} has been told." with "Undo"
-  outbox -> db : Read outbox messages whose NotBefore has passed
-  db --> outbox : Messages
-  outbox --> member : In-app notification, real-time event and e-mail
+  alt not an order, or stock covers the quantity or is not tracked
+    handler -> entity : Confirm(actor, now): New to Confirmed (L2-043)
+    entity --> handler : Status Confirmed, RequestTransition with UndoableUntil
+    handler -> handler : TellCustomer: message keyed request:{id}:confirmed; QueueEmail: Notification and e-mail held for 8 seconds
+    handler -> db : Save request, stock, message, Notification and OutboxMessage in one SaveChangesAsync
+    db --> handler : Commit result
+    handler --> controller : RequestDecisionDto with UndoUntil
+    controller --> client : 200 OK
+    alt dialog is still open
+      client --> dialog : RequestDecision
+      dialog --> page : Close with the decision
+    else dialog was closed with Escape before the answer came
+      client --> dialog : RequestDecision
+      dialog --> page : ConfirmRequestData.settled with the decision (L2-052)
+    end
+    page -> page : Read the list again
+    page --> actor : Show toast "{Type} confirmed. {Customer} has been told." with "Undo" for 8 seconds
+    events -> db : Read the member's new notifications
+    events --> member : notification event on the open page (L2-070)
+    outbox -> db : Read outbox messages whose NextAttemptAt has passed
+    db --> outbox : Messages
+    outbox --> member : E-mail "{Business} confirmed your {noun}"
+  else stock is below the quantity
+    handler --> controller : ConflictException with the available count
+    controller --> client : 409 INSUFFICIENT_STOCK
+    client --> dialog : Conflict
+    dialog --> actor : Show the server's sentence with "Nothing was confirmed." (L2-052)
+  end
 else customer cancelled a moment earlier
-  entity --> handler : InvalidTransitionException
-  handler --> controller : Conflict with current status Cancelled
+  handler --> controller : IncomingRules.Invalid with requestStatus cancelled
   controller --> client : 409 INVALID_TRANSITION
-  client --> dialog : Cancelled by customer
-  dialog --> actor : Show "{Customer} cancelled this request." and confirm nothing (L2-052)
+  alt dialog is still open
+    client --> dialog : Conflict
+    dialog --> actor : Show "{Customer} cancelled this request." and confirm nothing (L2-052)
+  else dialog was closed with Escape before the answer came
+    client --> dialog : Conflict
+    dialog --> page : ConfirmRequestData.settled with the server's sentence
+    page --> actor : Show the sentence in a danger toast with no action
+  end
 else request fails or connection drops
-  client --> dialog : Error
-  dialog --> actor : Show "We couldn't confirm it. The request is still new." with "Try again" (L2-128)
+  alt dialog is still open
+    client --> dialog : Error
+    dialog --> actor : Show "We couldn’t confirm it. The request is still new." with "Try again" (L2-128)
+  else dialog was closed with Escape before the answer came
+    client --> dialog : Error
+    dialog --> page : ConfirmRequestData.settled with the failure
+    page --> actor : Show danger toast "Couldn’t confirm the {noun}" with "Try again" until dismissed (L2-052)
+    actor -> page : Press "Try again"
+    page -> client : confirm(requestId), the same request
+  end
 end
 @enduml

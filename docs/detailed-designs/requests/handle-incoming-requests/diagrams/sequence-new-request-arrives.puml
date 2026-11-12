@@ -18,13 +18,16 @@ actor "Member" as member
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "IncomingRequestsPage" as page
-  participant "IncomingRequestsStore" as store
-  participant "RealtimeClient" as rt
+  participant "IncomingRequestsApi" as client
+  participant "RealtimeService" as rt
+  participant "EventsApi" as stream
+  participant "NavigationStore" as nav
   participant "ToastService" as toast
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "RequestsController" as controller
-  participant "EventsHub" as hub
+  participant "IncomingRequestsController" as incoming
+  participant "EventsController" as events
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "Create request handler" as handler
@@ -32,27 +35,39 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcherJob" as outbox
-end box
-member -> controller : POST /api/requests/bookings, quotes or orders
+member -> controller : POST /api/requests/bookings, quotes, orders or spaces
 controller -> handler : Send the create command
-handler -> db : Save Request with status New and RequestCreatedEvent in one unit of work (L2-043)
+handler -> handler : NotificationRules.Tell(owner, kind request, target /my-business/requests)
+handler -> db : Save Request with status New, the owner's Notification and the e-mail OutboxMessage in one SaveChangesAsync (L2-043)
 db --> handler : Commit result
-handler --> controller : RequestCreatedResult
+handler --> controller : BookedRequestDto
 controller --> member : 201 Created
-outbox -> db : Read pending outbox messages
-db --> outbox : RequestCreatedEvent
-outbox -> hub : Publish to the listing's owner and co-owners only (L2-070)
-hub -> rt : request.created event with row data
-rt -> store : Apply event
-store -> store : Insert row at the top of New and increase the counts
-store --> page : Updated rows and "Requests" tab count
-page --> actor : Row appears at the top within 5 seconds (L2-051)
-rt -> toast : Show request toast
-toast --> actor : "New {type} request. {Customer} asked for {summary}."
+alt event stream is connected
+  events -> db : Read the owner's new notifications and badge counts
+  db --> events : Notification and NavigationSummary
+  events --> stream : notification event with its event ID, to the owner only (L2-070)
+  stream --> rt : { type: 'notification', id, item }
+  rt -> rt : Skip an event ID already seen; leave the toast of a request notification for this page to the page
+  rt --> page : received emits the notification of kind request for /my-business/requests
+  events --> stream : counts event with newRequestCount
+  stream --> rt : { type: 'counts', counts }
+  rt -> nav : apply(counts)
+  nav --> page : newRequestCount changed
+else event stream cannot connect
+  stream --> rt : { type: 'connection', connected: false }
+  rt --> page : connected is false
+  page -> page : Ask every 5 seconds until connected is true again (L2-051)
+end
+page -> client : list(tab), without the loading state
+client -> incoming : GET /api/my-business/requests?tab=
+incoming --> client : 200 OK with rows and counts
+client --> page : IncomingRequests
+page -> page : Find each New request it had not seen
+page --> actor : Row appears at the top within 5 seconds and the counts increase (L2-051)
+page -> toast : show(info)
+toast --> actor : "New {type} request. {Customer} asked for {summary}." once
 opt connection dropped and reconnects
-  rt -> hub : Reconnect with last received event ID
-  hub --> rt : Missed events, none twice (L2-070)
+  stream -> events : Reconnect with Last-Event-ID
+  events --> stream : Missed notifications, none twice (L2-070)
 end
 @enduml

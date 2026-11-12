@@ -16,15 +16,15 @@ skinparam package {
 }
 actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
+  participant "IncomingRequestsPage" as page
   participant "DeclineRequestDialog" as dialog
-  participant "RequestsApi" as client
+  participant "IncomingRequestsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "IncomingRequestsController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "DeclineRequestCommandHandler" as handler
-  participant "Request" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
@@ -35,26 +35,40 @@ client -> controller : POST /api/my-business/requests/{id}/decline
 alt connection drops or the server fails
   controller --> client : No response or 5xx ProblemDetails
   client --> dialog : Error
-  dialog --> actor : Show "We couldn't send your decline. The request is still new and your note is kept. Try again." (L2-128)
+  dialog --> actor : Show "We couldn’t send your decline. The request is still new and your note is kept. Try again." (L2-128)
   actor -> dialog : Press "Decline request" again
   dialog -> client : decline(requestId, same reason and message)
   client -> controller : POST /api/my-business/requests/{id}/decline
   controller --> client : Result of the retry
   client --> dialog : Result
-else caller is not the owner or a co-owner
-  controller -> controller : Apply ListingOwnerPolicy (L2-133)
-  controller --> client : 403 ProblemDetails
-  client --> dialog : Forbidden
-  dialog --> actor : Close and show the forbidden page
+else body carries a field it may not set, such as status
+  controller --> client : 400 ProblemDetails (L2-133)
+  client --> dialog : Error
+  dialog --> actor : Show the failure alert and keep the reason and the message
+else request belongs to another business
+  controller -> handler : Send DeclineRequestCommand
+  handler -> db : IncomingRules.OwnedRequest: load request and its listing
+  db --> handler : Listing of another owner
+  handler --> controller : ForbiddenException (L2-133)
+  controller --> client : 403 ProblemDetails, code FORBIDDEN
+  client --> dialog : Error
+  dialog --> actor : Show the failure alert; nothing is declined
+else reason or message refused by the server
+  controller -> handler : Send DeclineRequestCommand
+  handler --> controller : ValidationFailedException, reason INVALID or message REQUIRED or TOO_LONG
+  controller --> client : 422 with per-field code
+  client --> dialog : Error
+  dialog --> actor : Show the failure alert and keep the reason and the message
 else request is no longer New
   controller -> handler : Send DeclineRequestCommand
-  handler -> db : Load request
-  db --> handler : Current state
-  handler -> entity : Decline(actor, reason, message, now)
-  entity --> handler : InvalidTransitionException, request unchanged (L2-043)
-  handler --> controller : Conflict with current status
-  controller --> client : 409 INVALID_TRANSITION
-  client --> dialog : Current status
-  dialog --> actor : Close and reload the row
+  handler -> db : IncomingRules.OwnedRequest: load request and its listing
+  db --> handler : Current state, for example Cancelled
+  handler --> controller : IncomingRules.Invalid, request unchanged (L2-043)
+  controller --> client : 409 INVALID_TRANSITION with the sentence and requestStatus
+  client --> dialog : Conflict
+  dialog --> page : Close with the server's sentence (L2-053)
+  page -> client : list(tab), without the loading state
+  client --> page : IncomingRequests
+  page --> actor : Show danger toast "Request not declined" with "{Customer} cancelled this request."
 end
 @enduml

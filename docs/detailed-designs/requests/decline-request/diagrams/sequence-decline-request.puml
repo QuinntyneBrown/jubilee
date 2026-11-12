@@ -18,10 +18,11 @@ actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "IncomingRequestsPage" as page
   participant "DeclineRequestDialog" as dialog
-  participant "RequestsApi" as client
+  participant "IncomingRequestsApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
   participant "IncomingRequestsController" as controller
+  participant "EventsController" as events
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "DeclineRequestCommandHandler" as handler
@@ -35,8 +36,8 @@ box "Backend — Jubilee Worker" #D1FADF
 end box
 actor "Member" as member
 actor -> page : Press "Decline" on a new request
-page -> dialog : Open with customer and type
-dialog --> actor : Ask "Decline {customer}'s {type}?" with focus on "Keep request" (L2-129)
+page -> dialog : Open with DeclineRequestData: the request row
+dialog --> actor : Ask "Decline {customer}’s {type}?" with "Keep request" and "Decline request" (L2-129)
 actor -> dialog : Choose a reason, write a message, press "Decline request"
 dialog -> dialog : Require a message of at most 1,000 characters (L2-053)
 alt message is empty
@@ -44,21 +45,27 @@ alt message is empty
 else message present
   dialog -> client : decline(requestId, reason, message)
   client -> controller : POST /api/my-business/requests/{id}/decline
-  controller -> controller : Authenticate, apply ListingOwnerPolicy (L2-133), validate the command
-  controller -> handler : Send DeclineRequestCommand
-  handler -> db : Load request and conversation
+  controller -> controller : Authenticate the session cookie; DeclineRequestBody refuses unknown fields
+  controller -> handler : Send DeclineRequestCommand(subject, requestId, reason, message)
+  handler -> db : IncomingRules.OwnedRequest: load request with transitions and its listing (L2-133)
   db --> handler : Current state
-  handler -> entity : Apply L2-053 decline: New to Declined (L2-043)
+  handler -> handler : Check the message (1 to 1,000 characters) and the reason (one of Request.DeclineReasons)
+  handler -> entity : Decline(actor, now, reason, message): New to Declined (L2-043)
   entity --> handler : Status Declined, reason and message stored, RequestTransition recorded
-  handler -> db : Save request, decline card and outbox messages in one unit of work
+  handler -> handler : TellCustomer: message keyed request:{id}:declined; QueueEmail: Notification and e-mail
+  handler -> db : Save request, message, Notification and OutboxMessage in one SaveChangesAsync
   db --> handler : Commit result
-  handler --> controller : Status Declined
+  handler --> controller : RequestDecisionDto
   controller --> client : 200 OK
-  client --> dialog : Declined
-  dialog --> page : Close and move the row to Declined
-  page --> actor : Show updated tabs and counts
-  outbox -> db : Read pending outbox messages
+  client --> dialog : RequestDecision
+  dialog --> page : Close with the decision
+  page -> client : list(tab), without the loading state
+  client --> page : IncomingRequests with the row under Declined
+  page --> actor : Show updated tabs and counts and the toast "{Type} declined. {Customer} has been told and can reply in Messages."
+  events -> db : Read the member's new notifications
+  events --> member : notification event on the open page (L2-070)
+  outbox -> db : Read due outbox messages
   db --> outbox : Messages
-  outbox --> member : Notification, e-mail and decline message on the request and in the conversation
+  outbox --> member : E-mail "{Business} declined your {noun}" with the decline message
 end
 @enduml
