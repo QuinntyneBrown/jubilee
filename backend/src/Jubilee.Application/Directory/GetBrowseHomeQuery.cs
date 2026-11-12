@@ -78,7 +78,10 @@ public sealed class GetBrowseHomeQueryHandler(
                 x.Product.PriceCents,
                 x.Product.IsPerUnit,
                 new ProductTileDto(WireValues.Of(x.Product.TileTint), WireValues.Of(x.Product.TileIcon)),
-                x.Product.IsSoldOut)),
+                x.Product.IsSoldOut)
+            {
+                Rating = Reviews.CardRatingDto.From(x.Product.Stars),
+            }),
         ];
     }
 }

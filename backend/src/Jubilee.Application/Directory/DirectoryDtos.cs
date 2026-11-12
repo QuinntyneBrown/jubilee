@@ -1,3 +1,4 @@
+using Jubilee.Application.Reviews;
 using Jubilee.Domain;
 
 namespace Jubilee.Application.Directory;
@@ -32,7 +33,13 @@ public sealed record BusinessCardDto(
         listing.CategorySlug,
         VerifiedListingSpecification.IsSatisfiedBy(listing),
         CoverPhoto: null, // Photo upload arrives with the listing form; cards show the category tile.
-        RepliesFast: listing.Kind != ListingKind.Space && fast.Contains(listing.Id));
+        RepliesFast: listing.Kind != ListingKind.Space && fast.Contains(listing.Id))
+    {
+        Rating = CardRatingDto.From(listing.Stars),
+    };
+
+    /// <summary>The average and count from <see cref="StarCounts.CardMinimum"/> reviews; null below (L2-230).</summary>
+    public CardRatingDto? Rating { get; init; }
 }
 
 /// <summary>
@@ -62,8 +69,14 @@ public sealed record SpaceCardDto(
             [.. space.Facts.Take(2)],
             space.Neighbourhood,
             space.Available,
-            CoverPhoto: null);
+            CoverPhoto: null)
+        {
+            Rating = CardRatingDto.From(listing.Stars),
+        };
     }
+
+    /// <summary>The average and count from <see cref="StarCounts.CardMinimum"/> reviews; null below (L2-230).</summary>
+    public CardRatingDto? Rating { get; init; }
 }
 
 public sealed record WelcomeDto(
@@ -92,7 +105,13 @@ public sealed record ProductCardDto(
         product.PriceCents,
         product.IsPerUnit,
         new ProductTileDto(WireValues.Of(product.TileTint), WireValues.Of(product.TileIcon)),
-        product.IsSoldOut);
+        product.IsSoldOut)
+    {
+        Rating = CardRatingDto.From(product.Stars),
+    };
+
+    /// <summary>The average and count of the reviews about the product, from three (L2-230 AC2).</summary>
+    public CardRatingDto? Rating { get; init; }
 }
 
 /// <summary>The compact one-line entry inside a category group (L2-027 AC3).</summary>
