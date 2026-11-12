@@ -27,6 +27,7 @@ public static class WorkerHost
         builder.Services.AddHostedService<MeetingReminderJob>();
         builder.Services.AddHostedService<DailySummaryJob>();
         builder.Services.AddHostedService<NewBusinessNoteJob>();
+        builder.Services.AddHostedService<OwnerTipJob>();
         builder.Services.AddHostedService<UnansweredRequestJob>();
         builder.Services.AddHostedService<MaintenanceWatcherJob>();
         builder.Services.AddHostedService<DataExportJob>();
@@ -503,6 +504,44 @@ public sealed class NewBusinessNoteJob(IServiceScopeFactory scopes, ILogger<NewB
         catch (OperationCanceledException)
         {
             logger.LogInformation("The new business note job is stopping.");
+        }
+    }
+}
+
+/// <summary>
+/// Every hour: once it is 7:00 a.m. in Toronto on the first day of a month, sends each owner who turned
+/// on "Tips for business owners" the next tip of the series (L2-223). One instance sends a month's tips
+/// and records its success (L2-182 AC1 and AC3).
+/// </summary>
+public sealed class OwnerTipJob(IServiceScopeFactory scopes, ILogger<OwnerTipJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
+        try
+        {
+            do
+            {
+                try
+                {
+                    await using var scope = scopes.CreateAsyncScope();
+                    var sent = await scope.ServiceProvider.GetRequiredService<MediatR.ISender>()
+                        .Send(new Jubilee.Application.Notifications.SendOwnerTipsCommand(), stoppingToken);
+                    if (sent is { } count)
+                    {
+                        logger.LogInformation("Queued {Count} tips for business owners.", count);
+                    }
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    logger.LogError(exception, "The tips for business owners could not be sent. They will be tried again.");
+                }
+            }
+            while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogInformation("The owner tip job is stopping.");
         }
     }
 }
