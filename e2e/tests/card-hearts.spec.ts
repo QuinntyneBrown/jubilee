@@ -5,6 +5,9 @@ import { BusinessPage } from '../pages/business.page';
 import { CategoryPage } from '../pages/category.page';
 import { ProductPage } from '../pages/product.page';
 import { SearchPage } from '../pages/search.page';
+import { AccountMenuRegion, SignInPage } from '../pages/sign-in.page';
+import { WelcomePage } from '../pages/welcome.page';
+import { PASSWORD, naomiSession, stubSession } from '../fixtures/session';
 import { SignInRequiredDialog } from '../pages/sign-in-required.dialog';
 import { Toasts } from '../pages/toasts';
 
@@ -262,5 +265,41 @@ test.describe('a visitor presses the heart on a card (L2-041 AC9, L2-012 AC4)', 
     await jb.goto('/c/home-property');
     await expect(new CategoryPage(page).card(0).heart).toBeVisible();
     expect(fake.calls).toEqual([]);
+  });
+});
+
+test.describe('signing out clears the saved list from the device (L2-041 AC10)', () => {
+  test('AC10: after sign-out no heart shows the list, and the next member gets their own', async ({
+    page,
+    jb,
+  }) => {
+    const browse = new BrowsePage(page);
+    const menu = new AccountMenuRegion(page);
+    const welcome = new WelcomePage(page);
+    const signIn = new SignInPage(page);
+    await browse.setWidth(1280);
+    const session = await stubSession(page, { signedIn: true });
+    const fake = await stubSaved(page, {
+      items: [savedBusiness('legacy-financial', 'Legacy Financial')],
+    });
+    await jb.goto('/');
+    await expect(browse.featuredCard(0).heart).toHaveAttribute('aria-pressed', 'true');
+
+    await browse.avatar.click();
+    await menu.signOut.click();
+    await menu.confirmSignOut.click();
+    await expect.poll(() => browse.dataPage()).toBe('welcome');
+
+    // Back to Browse without reloading the app: the heart is a visitor's, unpressed.
+    await welcome.browseBusinesses.click();
+    await expect(browse.featuredCard(0).heart).toHaveAttribute('aria-pressed', 'false');
+
+    // Naomi signs in on the same device: her own list is read again from the server.
+    fake.items = [savedBusiness('luzandre', 'Luzandre.com')];
+    session.member = naomiSession;
+    await browse.signInLink.click();
+    await signIn.signInWith(naomiSession.email, PASSWORD);
+    await expect(browse.featuredCard(1).heart).toHaveAttribute('aria-pressed', 'true');
+    await expect(browse.featuredCard(0).heart).toHaveAttribute('aria-pressed', 'false');
   });
 });

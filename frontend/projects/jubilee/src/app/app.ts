@@ -33,6 +33,7 @@ import { QueueDrainer } from './services/offline/queue-drainer';
 import { ClockService } from 'api';
 import { NavigationStore } from './services/navigation.store';
 import { RealtimeService } from './services/realtime.service';
+import { SavedStore } from './services/saved.store';
 import { SessionService } from './services/session.service';
 import { ToastRegion } from 'components';
 
@@ -62,6 +63,7 @@ export class App {
   protected readonly session = inject(SessionService);
   private readonly navigation = inject(NavigationStore);
   private readonly realtime = inject(RealtimeService);
+  private readonly saved = inject(SavedStore);
   private readonly account = inject(ACCOUNT_API);
   private readonly dialog = inject(Dialog);
   protected readonly connection = inject(ConnectionService);
@@ -150,6 +152,11 @@ export class App {
     effect(() => {
       if (this.session.member()) this.realtime.start();
       else this.realtime.stop();
+    });
+    // Nothing of a member's saved list stays on the device once no member is signed in: after
+    // sign-out, after the server ended the session, and for a visitor (L2-041 AC10).
+    effect(() => {
+      if (!this.session.member()) this.saved.reset();
     });
     effect(() => {
       const unconfirmed = this.unconfirmed() !== null;

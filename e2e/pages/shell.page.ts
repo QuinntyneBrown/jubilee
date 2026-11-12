@@ -26,6 +26,8 @@ export class ShellPage {
   readonly searchLink: Locator;
   readonly notifications: Locator;
   readonly avatar: Locator;
+  /** "Sign in" in a visitor's top bar (L2-022 AC3). */
+  readonly signInLink: Locator;
   readonly footer: Locator;
   readonly tabBar: Locator;
   /** The way into the feedback panel, at the bottom right of every member screen (L2-210). */
@@ -56,6 +58,7 @@ export class ShellPage {
     this.searchLink = this.topBar.getByRole('link', { name: 'Search', exact: true });
     this.notifications = this.topBar.getByRole('link', { name: /^Notifications/ });
     this.avatar = this.topBar.locator('.avatar');
+    this.signInLink = this.topBar.getByRole('link', { name: 'Sign in', exact: true });
     this.footer = page.locator('footer.footer');
     this.tabBar = page.getByRole('navigation', { name: 'Primary, phone' });
     this.feedbackLauncher = page.locator('button.feedback-launcher');
