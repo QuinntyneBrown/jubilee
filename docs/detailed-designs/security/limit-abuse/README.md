@@ -77,7 +77,7 @@ and the outbox in the `Jubilee database`.
   `Member.SuspendNewConversations`.
 - **`MessagingRestriction`** — value on `Member` that records the suspension,
   its start time and its review state. `StartConversationCommandHandler`
-  refuses a suspended member with `403`. The verification team lifts or
+  refuses a suspended member with `403`. The Jubilee team lifts or
   confirms the restriction.
 - **`ISecurityEventLog`** — records each rate-limit trip with time, actor, IP
   address and outcome (L2-143).
@@ -149,6 +149,6 @@ e-mail.
 ### Behaviour — suspend a member after spam reports
 
 The third spam report from a different business within 7 days suspends the
-member's ability to start conversations until the verification team reviews it.
+member's ability to start conversations until the Jubilee team reviews it.
 
 ![Sequence diagram for suspending a member after spam reports](diagrams/sequence-suspend-after-spam-reports.png)

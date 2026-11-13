@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace, in which members message verified
+Jubilee is Toronto's Christian marketplace, in which members message
 businesses and send them booking, quote and order requests. The notifications
 subsystem tells members and owners about events that concern them. This feature
 covers the e-mail channel: deciding whether an event produces an e-mail,
@@ -14,7 +14,7 @@ business owners.
 The terms below are local to this feature.
 
 - **category** — group of e-mails a member can turn on or off: "New messages" (`messages`), "Request updates" (`requests`), "Meeting reminders" (`reminders`), "New businesses" (`new-businesses`), "Tips for business owners" (`tips`)
-- **transactional e-mail** — e-mail without a category, sent regardless of preferences: confirmation, reset, verification decisions
+- **transactional e-mail** — e-mail without a category, sent regardless of preferences: confirmation, reset, a listing taken down by the Jubilee team
 - **promotional e-mail** — e-mail of the categories "New businesses" and "Tips for business owners", sent only with consent (L2-149)
 - **outbox** — table of `OutboxMessage` rows, each one e-mail waiting to be sent by `Jubilee Worker`
 - **held row** — outbox row marked `HeldForSummary`, which waits for the daily summary and is never sent itself
@@ -141,8 +141,9 @@ controller and one page. No event handler, presence record or cache takes part
 - **`SendNewBusinessNotesCommandHandler`** and **`NewBusinessNoteJob`** — job
   `new-business-note`, Monday 7:00 a.m. in Toronto. Each member with
   `EmailNewBusinesses` on and a confirmed address gets one e-mail "New on
-  Jubilee this week" that lists the public listings approved in the last
-  `7 days` (`Covers`) in the categories `BrowsedCategories` returns for the
+  Jubilee this week" ("These businesses joined Jubilee this week in categories
+  you’ve browsed.") that lists the public listings published (`PublishedAt`) in
+  the last `7 days` (`Covers`) in the categories `BrowsedCategories` returns for the
   member, each with its name, category and link. A member with none, and the
   owner of a listing for that listing, gets no e-mail (L2-222).
 - **`OwnerTips`**, **`SendOwnerTipsCommandHandler`** and **`OwnerTipJob`** —
@@ -171,7 +172,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-061` | `L1-009` | A member may mute a conversation so that no e-mail is sent about new replies in it while in-app unread counts still update. Unmuting shall resume the e-mails. |
 | `L2-149` | `L1-020` | Promotional e-mails ("New businesses", "Tips for business owners") shall go only to members who opted in, shall identify Jubilee with a mailing address and shall include an unsubscribe. While no mailing address is configured, no promotional e-mail shall be sent. |
 | `L2-182` | `L1-025` | Each scheduled job shall be idempotent, shall run at most once per schedule across instances, shall record its last success, and shall compute reminder and summary times in America/Toronto. |
-| `L2-222` | `L1-010` | A member who turned on "New businesses" shall hear of newly verified businesses in the categories they have browsed: in the app as each one is approved, and by e-mail in one weekly note on Monday at 7:00 a.m. in Toronto. |
+| `L2-222` | `L1-010` | A member who turned on "New businesses" shall hear of newly published businesses in the categories they have browsed: in the app as each one is published, and by e-mail in one weekly note on Monday at 7:00 a.m. in Toronto. |
 | `L2-223` | `L1-010` | An owner who turned on "Tips for business owners" shall get a short series of tips, one a month, each sent once, at 7:00 a.m. in Toronto on the first day of a month. |
 | `L2-224` | `L1-010` | The link in the footer of a notification e-mail shall open `/unsubscribe/{token}`, which turns the e-mail's category off and says so without sign-in. |
 

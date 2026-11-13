@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Containers — Enforce data visibility
 
 Person(owner, "Owner", "Reads requests sent to the business")
-Person(verifier, "Verification team member", "Reviews listings and reports")
+Person(moderator, "Jubilee team member", "Reviews listings and reports")
 Person(engineer, "On-call engineer", "Requests time-limited database access")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Renders only the fields the API returns for the caller")
@@ -15,7 +15,7 @@ System_Ext(observability, "Observability platform", "Analytics and logs - vendor
 System_Ext(broker, "Privileged access broker", "Just-in-time database grants - vendor TO SUPPLY")
 
 Rel(owner, web, "Uses", "HTTPS")
-Rel(verifier, web, "Uses", "HTTPS")
+Rel(moderator, web, "Uses", "HTTPS")
 Rel(web, api, "Calls", "JSON/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core over TLS")
 Rel(api, observability, "Forwards allow-listed analytics events to", "HTTPS")

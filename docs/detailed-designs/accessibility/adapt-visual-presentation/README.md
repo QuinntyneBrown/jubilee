@@ -54,7 +54,7 @@ shared components, and checks that run in the CI pipeline.
   `--color-fg-on-accent` (ink) as text and `--color-accent-border` as edge. A
   style lint rule rejects `--color-accent`, `--color-accent-hover` and
   `--color-accent-active` as the value of `color`.
-- **`StatusBadge`** — component for verified, unread, error and sold out. Its
+- **`StatusBadge`** — component for live, unread, error and sold out. Its
   `label` input is mandatory and it accepts an icon; colour is added on top.
   No status exists as a coloured dot alone.
 - **Reduced-motion tokens** — under `prefers-reduced-motion: reduce`, the
@@ -94,7 +94,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-160` | `L1-022` | Every text and background pair in both themes shall meet 4.5:1 for normal text and 3:1 for large text and UI components. The gold accent shall never be used for text, gold controls shall carry ink text and the darker `--color-accent-border` edge, and every status (verified, unread, error, sold out) shall be conveyed by text or icon as well as colour. |
+| `L2-160` | `L1-022` | Every text and background pair in both themes shall meet 4.5:1 for normal text and 3:1 for large text and UI components. The gold accent shall never be used for text, gold controls shall carry ink text and the darker `--color-accent-border` edge, and every status (live, unread, error, sold out) shall be conveyed by text or icon as well as colour. |
 | `L2-161` | `L1-022` | Under `prefers-reduced-motion: reduce` the app shall remove animations or reduce them to fades under 100 ms. At 200 % browser zoom and at 400 % zoom at 1280 px (320 CSS px reflow) all content and functions shall remain available without horizontal scrolling, except tables, which scroll within their region; in Windows forced-colours mode buttons, inputs, cards and chips shall keep visible borders and primary buttons shall use system Highlight colours; and text spacing overrides (line height 1.5, letter spacing 0.12 em) shall clip no text. |
 | `L2-170` | `L1-024` | The app shall follow `prefers-color-scheme` when no preference is saved, shall switch between Light, Dark and System without reload and before first paint, and both themes shall meet `L2-160`. |
 

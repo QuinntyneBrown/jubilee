@@ -1,6 +1,6 @@
 // Acceptance Test
 // Traces to: L2-194
-// Description: the app after the verification team's screens moved to the admin application: no
+// Description: the app after the Jubilee team's screens moved to the admin application: no
 // admin link in its chrome, and old /admin links say where the screens went.
 import { ADMIN_URL, expect, test } from '../fixtures/jb-test';
 import { AdminMovedPage } from '../pages/admin-moved.page';
@@ -25,12 +25,12 @@ test.describe('the app after the move (L2-194)', () => {
     await jb.goto('/');
 
     await expect(moved.tab('Browse')).toBeVisible();
-    await expect(moved.tab(/Verif/)).toHaveCount(0);
+    await expect(moved.tab(/Verif|Listings/)).toHaveCount(0);
   });
 
   const screens = [
-    [`/admin/verifications/${LISTING_ID}`, `/verifications/${LISTING_ID}`],
-    ['/admin/verifications', '/verifications'],
+    [`/admin/verifications/${LISTING_ID}`, `/listings/${LISTING_ID}`],
+    ['/admin/verifications', '/listings'],
     ['/admin/reports', '/reports'],
     [
       '/admin/reports/5b0c7a10-2d4e-4f6a-8b1c-0123456789ab',
@@ -49,7 +49,7 @@ test.describe('the app after the move (L2-194)', () => {
 
       await expect(screen.heading).toHaveText('This page has moved');
       await expect(screen.text).toHaveText(
-        'The verification team’s screens are now in the admin application. It opens only on a Jubilee staff network.',
+        'The Jubilee team’s screens are now in the admin application. It opens only on a Jubilee staff network.',
       );
       await expect(screen.openAdmin).toHaveAttribute('href', `${ADMIN_URL}${moved}`);
     });
@@ -67,7 +67,7 @@ test.describe('the app after the move (L2-194)', () => {
     await expect(page).not.toHaveURL(/\/admin/);
   });
 
-  test('AC3: any other path under /admin opens the queue of the admin application', async ({
+  test('AC3: any other path under /admin opens the listings of the admin application', async ({
     page,
     jb,
   }) => {
@@ -76,6 +76,6 @@ test.describe('the app after the move (L2-194)', () => {
     await jb.goto('/admin/team/settings');
 
     await expect(screen.heading).toHaveText('This page has moved');
-    await expect(screen.openAdmin).toHaveAttribute('href', `${ADMIN_URL}/verifications`);
+    await expect(screen.openAdmin).toHaveAttribute('href', `${ADMIN_URL}/listings`);
   });
 });

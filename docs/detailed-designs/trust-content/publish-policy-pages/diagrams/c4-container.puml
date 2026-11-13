@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Containers — Publish policy pages
 
 Person(visitor, "Visitor", "Reads policy pages")
-Person(admin, "Verification team member", "Publishes policy text")
+Person(admin, "Jubilee administrator", "Publishes policy text")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Statement of faith, terms, privacy and help pages")
   Container(api, "Jubilee API", "ASP.NET Core", "Content read and publish endpoints")

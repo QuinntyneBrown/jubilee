@@ -64,7 +64,7 @@ class StatusBadge {
 }
 
 enum StatusKind {
-  Verified
+  Live
   Unread
   Error
   SoldOut

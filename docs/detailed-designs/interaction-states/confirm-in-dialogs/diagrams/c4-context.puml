@@ -5,10 +5,10 @@ title System Context — Confirm in dialogs
 
 Person(member, "Member", "Cancels requests. Deletes the account. Signs out")
 Person(owner, "Owner", "Confirms and declines requests. Deletes products and services. Pauses the listing")
-Person(verifier, "Verification team member", "Approves listings and requests changes")
+Person(moderator, "Jubilee team member", "Takes down a listing that misrepresents a business")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace. Asks for confirmation before each consequential action")
 
 Rel(member, jubilee, "Confirms consequential actions in")
 Rel(owner, jubilee, "Confirms consequential actions in")
-Rel(verifier, jubilee, "Confirms consequential actions in")
+Rel(moderator, jubilee, "Confirms consequential actions in")
 @enduml

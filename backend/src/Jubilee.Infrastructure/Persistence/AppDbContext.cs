@@ -87,10 +87,6 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<StatementAgreement> StatementAgreements => Set<StatementAgreement>();
 
-    public DbSet<ReviewTick> ReviewTicks => Set<ReviewTick>();
-
-    public DbSet<ListingDecision> ListingDecisions => Set<ListingDecision>();
-
     public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
 
     public DbSet<ResponseTimeStat> ResponseTimeStats => Set<ResponseTimeStat>();

@@ -765,13 +765,6 @@ namespace Jubilee.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<DateTimeOffset?>("ApprovedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("ApprovedBy")
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
-
                     b.Property<int>("AreasServed")
                         .HasColumnType("int");
 
@@ -865,7 +858,7 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("PausedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset?>("RecheckRequestedAt")
+                    b.Property<DateTimeOffset?>("PublishedAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<double>("RecommendedScore")
@@ -889,6 +882,17 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.Property<string>("Tagline")
                         .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TakedownReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTimeOffset?>("TakenDownAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TakenDownByName")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -916,67 +920,6 @@ namespace Jubilee.Infrastructure.Migrations
                     b.HasIndex("CategorySlug", "Stage");
 
                     b.ToTable("Listings", (string)null);
-                });
-
-            modelBuilder.Entity("Jubilee.Domain.ListingDecision", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Areas")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset>("DecidedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DecidedBy")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("DecidedByName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("Kind")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ListingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<DateTimeOffset?>("ResolvedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("SnapshotAbout")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SnapshotCategory")
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.Property<string>("SnapshotName")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("SnapshotTagline")
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
-
-                    b.Property<string>("Ticked")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ListingId", "DecidedAt");
-
-                    b.ToTable("ListingDecisions", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.ListingDraft", b =>
@@ -1990,40 +1933,6 @@ namespace Jubilee.Infrastructure.Migrations
                     b.ToTable("ResponseTimeStats", (string)null);
                 });
 
-            modelBuilder.Entity("Jubilee.Domain.ReviewTick", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Item")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
-
-                    b.Property<Guid>("ListingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("TickedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("TickedBy")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("TickedByName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ListingId", "Item")
-                        .IsUnique();
-
-                    b.ToTable("ReviewTicks", (string)null);
-                });
-
             modelBuilder.Entity("Jubilee.Domain.SavedItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2359,15 +2268,6 @@ namespace Jubilee.Infrastructure.Migrations
                     b.Navigation("Space");
                 });
 
-            modelBuilder.Entity("Jubilee.Domain.ListingDecision", b =>
-                {
-                    b.HasOne("Jubilee.Domain.Listing", null)
-                        .WithMany()
-                        .HasForeignKey("ListingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Jubilee.Domain.ListingDraft", b =>
                 {
                     b.OwnsOne("Jubilee.Domain.SpaceDetails", "Space", b1 =>
@@ -2558,15 +2458,6 @@ namespace Jubilee.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("Jubilee.Domain.ResponseTimeStat", b =>
-                {
-                    b.HasOne("Jubilee.Domain.Listing", null)
-                        .WithMany()
-                        .HasForeignKey("ListingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Jubilee.Domain.ReviewTick", b =>
                 {
                     b.HasOne("Jubilee.Domain.Listing", null)
                         .WithMany()

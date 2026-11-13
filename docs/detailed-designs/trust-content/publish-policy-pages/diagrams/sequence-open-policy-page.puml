@@ -30,7 +30,7 @@ box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Cache" as cache
   database "Jubilee database" as db
 end box
-actor -> page : Open /help#how-does-a-business-get-verified
+actor -> page : Open /help#how-does-jubilee-keep-listings-honest
 page -> client : Load published content for help
 client -> controller : GET /api/content/help
 controller -> handler : Send GetPublishedContentQuery

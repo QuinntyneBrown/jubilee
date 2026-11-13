@@ -10,10 +10,10 @@
       }
       @case ('loaded') {
         @if (state.value.liveBusinessCount > 0) {
-          {{ state.value.liveBusinessCount | jbCount }} verified businesses — shops, advisors,
-          trades and more.
+          {{ state.value.liveBusinessCount | jbCount }} businesses — shops, advisors, trades and
+          more.
         } @else {
-          The first verified businesses are on their way.
+          The first businesses are on their way.
         }
       }
     }
@@ -70,7 +70,7 @@
       @if (directory.liveBusinessCount === 0) {
         <div jb-empty-state icon="store" heading="No businesses are listed yet">
           Jubilee has just opened in Toronto. Be the first: list your business free and you’re live
-          once we verify you.
+          as soon as you publish it.
           <a slot="actions" jb-button variant="primary" routerLink="/list"
             ><svg jb-icon name="plus"></svg>List your business</a
           >

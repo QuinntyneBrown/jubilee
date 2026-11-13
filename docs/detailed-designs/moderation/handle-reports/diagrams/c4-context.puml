@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Handle reports
+Person(moderator, "Jubilee team member", "Reviews reports within one business day")
+Person(member, "Member", "Reported a listing or a conversation")
+Person(owner, "Owner", "Owns the reported listing and never learns who reported it")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(email, "E-mail provider", "Delivers messages to the reporter and the owner")
+
+Rel(member, jubilee, "Sends a private report in", "HTTPS")
+Rel(moderator, jubilee, "Reviews and resolves reports in", "HTTPS")
+Rel(jubilee, owner, "Tells of a hold or a removal")
+Rel(jubilee, email, "Sends e-mail via")
+Rel(email, member, "Delivers moderator questions to")
+Rel(email, owner, "Delivers moderator messages to")
+@enduml

@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Containers — Report a conversation
 
 Person(member, "Member or Owner", "Mutes and reports and may block")
-Person(verifier, "Verification team member", "Reviews reports")
+Person(moderator, "Jubilee team member", "Reviews reports")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Conversation page with menu and report dialog")
   Container(admin, "Jubilee Admin", "Angular single-page application", "Reports list and report page with the reported conversation")
@@ -13,7 +13,7 @@ System_Boundary(jubilee, "Jubilee") {
 }
 
 Rel(member, web, "Uses", "HTTPS")
-Rel(verifier, admin, "Uses with a staff session", "HTTPS")
+Rel(moderator, admin, "Uses with a staff session", "HTTPS")
 Rel(web, api, "Calls mute and report endpoints", "JSON/HTTPS")
 Rel(admin, api, "Calls /api/admin/reports", "JSON/HTTPS")
 Rel(api, db, "Reads and writes", "EF Core")

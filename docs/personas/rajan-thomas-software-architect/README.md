@@ -33,7 +33,7 @@ discount. He is looking for a reason to trust someone before the first meeting.
 
 ## What worries him
 
-- That "Verified" is a badge with little behind it.
+- That a listing is only its owner's own words, with nothing checked behind them.
 - What Jubilee keeps about him, who on staff can read it, and whether deleting means deleting.
 - That fellow feeling stands in for due diligence. A shared faith is not a reference.
 

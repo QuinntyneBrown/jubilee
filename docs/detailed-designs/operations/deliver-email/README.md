@@ -3,7 +3,7 @@
 ## Overview
 
 Jubilee is Toronto's Christian marketplace. It sends e-mail for account security
-(confirmation and reset links), for verification decisions and
+(confirmation and reset links), for a listing taken down by the Jubilee team and
 for the notifications a member has turned on. This feature covers the delivery path shared by
 each of those: how an e-mail leaves the system, how a failed send is retried, and how the
 system reacts when an address stops accepting mail.

@@ -21,9 +21,9 @@ evening with Mark on the phone.
 | 6 | On `/list?kind=space`, chooses "Room" | "A private room in a home you live in." and the field "Who lives in the home" | Friction: she stops here for ten minutes (see [profile setup](profile-setup-journey.md)) |
 | 7 | Reaches "Exact address" | "Only the renter whose request you accept sees it." | She reads it aloud to Mark twice. Then she types it |
 | 8 | Presses "Save draft" and sleeps on it | The draft is kept; it had been saving as she typed | Next morning it is all still there. She trusts it a little more |
-| 9 | Ticks the agreement and presses "Submit for verification" | "I agree to Jubilee’s statement of faith, and confirm I’m allowed to rent this space and will follow Ontario’s tenancy rules." then "Nothing more to do right now. We'll e-mail you the moment you're live." | Friction: "Ontario’s tenancy rules." Which rules? She ticks it and is uneasy at having promised something she has not read |
+| 9 | Ticks the agreement and presses "Publish listing" | "I agree to Jubilee’s statement of faith, and confirm I’m allowed to rent this space and will follow Ontario’s tenancy rules." then "Sunny room in a quiet East York home is live. Renters can find it in Rooms & rentals now." | Friction: "Ontario’s tenancy rules." Which rules? She ticks it and is uneasy at having promised something she has not read |
 | 10 | Adds three photos from My business with Anita's help on a video call | "Up to 6 photos, JPG or PNG, 5 MB each. The first is your cover." | She leaves out any photo that shows the front of the house |
-| 11 | Two days later she is live; that week a nursing student sends "Request a viewing" | "Request a viewing · Sunny room in a quiet East York home", "Move in Fri 1 Jan · 4 months", "Decline" and "Confirm" | First valuable moment, and a fright: "Confirm" reads "Grace gets your exact address when you confirm." She wanted to talk first |
+| 11 | That week a nursing student sends "Request a viewing" | "Request a viewing · Sunny room in a quiet East York home", "Move in Fri 1 Jan · 4 months", "Decline" and "Confirm" | First valuable moment, and a fright: "Confirm" reads "Grace gets your exact address when you confirm." She wanted to talk first |
 
 ## Where it could go wrong
 

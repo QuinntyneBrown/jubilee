@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Verifier" as verifier
+actor "Owner" as owner
 actor "Member" as member
 box "Frontend — Jubilee Web" #E0F2FE
   participant "RealtimeService" as rt
@@ -24,16 +24,15 @@ box "Backend — Jubilee API" #D1FADF
   participant "EventsController" as events
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "ApproveListingCommandHandler" as handler
+  participant "PublishListingCommandHandler" as handler
   participant "NewBusinessNotifier" as notifier
   participant "NotificationRules" as rules
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-verifier -> handler : ApproveListingCommand
-handler -> rules : Tell(owner, "listing", ...) for the owner (L2-064)
-opt first approval of the listing
+owner -> handler : PublishListingCommand (POST /api/listing-drafts/{id}/publish)
+opt the listing is published (ADR 0057)
   handler -> notifier : TellAsync(listing)
   notifier -> db : BrowsedCategories.MembersAsync, then members with EmailNewBusinesses on, except the owner (L2-222)
   db --> notifier : Members
@@ -42,7 +41,7 @@ opt first approval of the listing
   end
 end
 rules -> db : Add Notification rows
-handler -> db : Save the state change and the notifications in one save
+handler -> db : Save the published listing and the notifications in one save
 db --> handler : Commit result
 events -> db : Read the member's notifications newer than the cursor
 db --> events : New notification

@@ -116,7 +116,7 @@ decision (ADR 0043):
 | Frame | Product | Why |
 |---|---|---|
 | "Rooms & rentals", "Request to rent", "rental", "host", "space" | "business", "request", "listing" | The specifications have no rentals; the words are those of `docs/specs/` |
-| Four rating areas named for rentals | "Finding businesses", "Listing your business", "Messages and requests", "Trust and verification" | The product's real areas |
+| Four rating areas named for rentals | "Finding businesses", "Listing your business", "Messages and requests", "Trust and safety" | The product's real areas |
 | "Logged as JB-1042. We'll message you in Jubilee when it's fixed." | "Logged as {reference}. Follow it under Your feedback." | Telling the member about a status change is deferred; the reference is real |
 | "We've passed your note to Legacy Financial. It will appear on their page once they've seen it." and "Show this on their Jubilee page with my first name" | "Thank you. We've kept your note for {business}." and "Jubilee may show this on their page with my first name" | Showing kudos on a business page is deferred; the consent is stored |
 | "Include a screenshot of this screen" in the panel | absent; the page's "Add screenshots" stays | A page cannot capture itself reliably on every phone browser |
@@ -125,6 +125,12 @@ decision (ADR 0043):
 | The panel has no scrim from 768 px | the panel is a modal dialog with the scrim at every width | One dialog behaviour, focus held inside (L2-160) |
 
 ## Known differences
+
+**No Verified mark (ADR 0057).** Jubilee ships without listing verification, so the "Verified"
+marks the captures show (a tick and the word "Verified" beside a business or host name, or a
+count of "verified businesses") are intentionally not built: the design system, the mocks and
+the app show the same layout without them. The captures are kept as captured; where a parity
+crop includes such a mark, the spec carries it as `knownDifference`.
 
 Where the design system and the mocks differ from the reference, the difference is listed here
 and the parity spec carries it as `knownDifference`, so the comparison is reported as a known
@@ -159,7 +165,7 @@ it changes how the product looks, which a component move must not do.
 | House rules (`space-short-stay-1280.png`) | a lighter rule beside each line, wider spacing | `--color-border-strong`, `--space-2` between rules |
 | Household (`space-room-1280.png`) | each member listed with an initial | the household as the owner wrote it, one text (L2-199) |
 | Host card (`space-short-stay-1280.png`) | a 362 px side column, the name in Inter | the split’s wider side column, the name in `--text-h4` |
-| Space card preview (`list-a-space-1280.png`) | a photo, “From Mar 1”, nothing marked pending | the tinted tile by term until the owner adds photos, “Pending verification” until approved (L2-198 AC3) |
+| Space card preview (`list-a-space-1280.png`) | a photo, “From Mar 1”, nothing marked pending | the tinted tile by term until the owner adds photos, “Not published yet” until the owner publishes it (L2-198 AC3) |
 
 ## Refreshing
 

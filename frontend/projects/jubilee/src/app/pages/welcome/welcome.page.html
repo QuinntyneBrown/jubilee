@@ -5,8 +5,8 @@
 >
   <ng-container ngProjectAs="[slot=lead]">
     @if (welcome(); as welcome) {
-      {{ welcome.liveBusinessCount | jbCount }} verified businesses — shops, advisors, trades and
-      more. Free to join, free to list.
+      {{ welcome.liveBusinessCount | jbCount }} businesses — shops, advisors, trades and more. Free
+      to join, free to list.
     } @else {
       Shops, advisors, trades and more. Free to join, free to list.
     }
@@ -27,8 +27,8 @@
   <section jb-section heading="How Jubilee works" headingId="how">
     <ol jb-steps>
       <li jb-step heading="Find someone you can trust">
-        Search or browse by category. Every listing is a Christian-owned business verified by the
-        Jubilee verification team.
+        Search or browse by category. Every listing is a Christian-owned business whose owner agreed
+        to Jubilee’s statement of faith.
       </li>
       <li jb-step heading="Ask, book or order">
         Message the owner, book a meeting, ask for a quote or request a product. The business
@@ -63,7 +63,7 @@
       jb-band
       heading="Own a business?"
       headingId="own"
-      text="List it free. Tell us what you offer, submit it for verification, and you are live once we approve it."
+      text="List it free. Tell us what you offer, agree to the statement of faith and publish. You are live straight away."
     >
       <a
         jb-button

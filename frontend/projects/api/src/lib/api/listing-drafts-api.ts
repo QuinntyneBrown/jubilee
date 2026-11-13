@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, InjectionToken, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ListingDraft, ListingDraftBody, SubmittedListing } from '../models/listing-drafts';
+import { ListingDraft, ListingDraftBody, PublishedListing } from '../models/listing-drafts';
 
 /** Contract of the endpoints behind "List your business" (L2-071 to L2-079). */
 export interface ListingDraftsApi {
@@ -10,7 +10,8 @@ export interface ListingDraftsApi {
   get(id: string): Observable<ListingDraft>;
   create(body: ListingDraftBody): Observable<ListingDraft>;
   save(id: string, body: ListingDraftBody): Observable<ListingDraft>;
-  submit(id: string, body: ListingDraftBody): Observable<SubmittedListing>;
+  /** Publishes the draft: the listing is live at once (L2-078). */
+  publish(id: string, body: ListingDraftBody): Observable<PublishedListing>;
 }
 
 export const LISTING_DRAFTS_API = new InjectionToken<ListingDraftsApi>('LISTING_DRAFTS_API');
@@ -35,7 +36,7 @@ export class HttpListingDraftsApi implements ListingDraftsApi {
     return this.http.put<ListingDraft>(`/api/listing-drafts/${id}`, body);
   }
 
-  submit(id: string, body: ListingDraftBody): Observable<SubmittedListing> {
-    return this.http.post<SubmittedListing>(`/api/listing-drafts/${id}/submit`, body);
+  publish(id: string, body: ListingDraftBody): Observable<PublishedListing> {
+    return this.http.post<PublishedListing>(`/api/listing-drafts/${id}/publish`, body);
   }
 }

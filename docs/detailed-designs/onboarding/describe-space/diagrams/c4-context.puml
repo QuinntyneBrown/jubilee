@@ -4,11 +4,11 @@ LAYOUT_WITH_LEGEND()
 title System Context — Describe a space
 
 Person(member, "Member", "Lists a room, suite, apartment, house or hall to rent")
-Person(team, "Verification team", "Reviews the space without its exact address")
-System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
+Person(team, "Jubilee team", "Sees the published space without its exact address")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
 System_Ext(email, "E-mail provider", "Tells the owner when the space is live")
 
-Rel(member, jubilee, "Chooses A space, fills in the space fields and submits")
-Rel(team, jubilee, "Reviews and approves the space")
+Rel(member, jubilee, "Chooses A space, fills in the space fields and publishes")
+Rel(team, jubilee, "Opens the published space in the admin application")
 Rel(jubilee, email, "Sends the decision e-mail", "HTTPS")
 @enduml

@@ -75,10 +75,6 @@ public interface IAppDbContext
 
     DbSet<StatementAgreement> StatementAgreements { get; }
 
-    DbSet<ReviewTick> ReviewTicks { get; }
-
-    DbSet<ListingDecision> ListingDecisions { get; }
-
     DbSet<AuditRecord> AuditRecords { get; }
 
     DbSet<ResponseTimeStat> ResponseTimeStats { get; }

@@ -6,13 +6,13 @@ title System Context — Authorize requests
 Person(visitor, "Visitor", "Anyone not signed in")
 Person(member, "Member", "Signed-in account holder")
 Person(owner, "Owner", "Member who owns one or more listings")
-Person(verifier, "Verification team member", "Reviews listings and reports")
+Person(moderator, "Jubilee team member", "Reviews listings and reports")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace. Checks role and object ownership on every API call")
 System_Ext(obs, "Observability platform", "Receives security events for failed authorization")
 
 Rel(visitor, jubilee, "Reads public pages of")
 Rel(member, jubilee, "Reads and changes own objects in")
 Rel(owner, jubilee, "Manages own listings in")
-Rel(verifier, jubilee, "Reviews listings in")
+Rel(moderator, jubilee, "Reviews listings in")
 Rel(jubilee, obs, "Sends security events to", "HTTPS")
 @enduml

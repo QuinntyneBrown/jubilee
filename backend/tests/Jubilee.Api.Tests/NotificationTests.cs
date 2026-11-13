@@ -237,28 +237,19 @@ public sealed class NotificationTests : IClassFixture<JubileeApiFactory>, IAsync
         Assert.Empty(Titles(await Json(await Joanna().GetAsync("/api/notifications"))));
     }
 
-    // L2-064 AC6: listing verified, changes requested
+    // L2-064 AC6: the owner is told when the Jubilee team takes the listing down (ADR 0057)
     [Fact]
-    public async Task L2_064_AC6_the_owner_is_told_when_the_listing_is_verified_and_when_changes_are_requested()
+    public async Task L2_064_AC6_the_owner_is_told_when_the_listing_is_taken_down()
     {
-        var verifier = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
-        var approved = ListingMother.NonPublic(NonPublicState.ReadyToReview, "ready-co", "shops");
-        approved.AssignOwner(JoannaId);
-        var changes = ListingMother.NonPublic(NonPublicState.ReadyToReview, "changes-co", "shops");
-        changes.AssignOwner(JoannaId);
-        await _factory.Arrange(
-            approved,
-            changes,
-            ListingSubmission.Record(approved.Id, JoannaId, Guid.NewGuid().ToString(), [], ListingMother.Now),
-            ListingSubmission.Record(changes.Id, JoannaId, Guid.NewGuid().ToString(), [], ListingMother.Now));
+        var team = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
+        var listing = ListingMother.Public("taken-co", "shops", "Taken Co");
+        listing.AssignOwner(JoannaId);
+        await _factory.Arrange(listing);
 
-        var approve = await verifier.PostAsJsonAsync($"/api/admin/verifications/{approved.Id}/approve", new { note = "Reviewed with the owner." });
-        var ask = await verifier.PostAsJsonAsync($"/api/admin/verifications/{changes.Id}/request-changes", new { areas = new[] { "tagline" }, message = "Remove the discount code." });
+        var response = await team.PostAsJsonAsync($"/api/admin/listings/{listing.Id}/take-down", new { reason = "It is not the business it says it is." });
 
-        Assert.True(approve.IsSuccessStatusCode, await approve.Content.ReadAsStringAsync());
-        Assert.True(ask.IsSuccessStatusCode, await ask.Content.ReadAsStringAsync());
+        Assert.True(response.IsSuccessStatusCode, await response.Content.ReadAsStringAsync());
         var titles = Titles(await Json(await Joanna().GetAsync("/api/notifications")));
-        Assert.Contains(titles, t => t.Contains("is verified and live"));
-        Assert.Contains(titles, t => t.StartsWith("Changes needed for"));
+        Assert.Contains("We’ve taken down Taken Co", titles);
     }
 }

@@ -16,7 +16,7 @@ public class WelcomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task L2_020_AC1_welcome_counts_the_live_verified_businesses()
+    public async Task L2_020_AC1_welcome_counts_the_live_businesses()
     {
         await _factory.Arrange(
             ListingMother.Public("a", "shops"),
@@ -88,7 +88,7 @@ public class WelcomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
         Assert.Equal("Build a Legacy. Protect a Legacy. Leave a Legacy.", card.GetProperty("tagline").GetString());
         Assert.Equal("Free first meeting", card.GetProperty("highlight").GetString());
         Assert.Equal("financial-insurance", card.GetProperty("categorySlug").GetString());
-        Assert.True(card.GetProperty("verified").GetBoolean()); // L2-111 AC1
+        Assert.False(card.TryGetProperty("verified", out _)); // ADR 0057: no listing is called verified
         Assert.Equal(JsonValueKind.Null, card.GetProperty("coverPhoto").ValueKind);
         Assert.Equal(JsonValueKind.Null, featured[1].GetProperty("highlight").ValueKind);
     }
@@ -108,7 +108,7 @@ public class WelcomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
         var json = await _factory.GetJson("/api/directory/welcome");
 
         // With a current slot only the chosen listing is featured; otherwise the fallback leads
-        // with the most recently verified listing.
+        // with the most recently published listing.
         Assert.Equal(featured ? ["chosen"] : ["recent", "chosen"], json.GetProperty("featured").Slugs());
     }
 
@@ -130,7 +130,6 @@ public class WelcomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     [InlineData(NonPublicState.Paused)]
     [InlineData(NonPublicState.Deleted)]
     [InlineData(NonPublicState.UnderModerationHold)]
-    [InlineData(NonPublicState.ChangesRequested)]
     public async Task L2_106_AC2_a_featured_listing_that_is_no_longer_public_is_skipped(NonPublicState state)
     {
         var first = ListingMother.Public("first");
@@ -149,7 +148,7 @@ public class WelcomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task L2_021_AC7_with_no_featured_slot_the_most_recently_verified_businesses_are_shown()
+    public async Task L2_021_AC7_with_no_featured_slot_the_most_recently_published_businesses_are_shown()
     {
         await _factory.Arrange(
             ListingMother.Public("oldest", approvedAt: ListingMother.Now.AddDays(-50)),
@@ -166,8 +165,6 @@ public class WelcomeTests : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 
     [Theory]
     [InlineData(NonPublicState.Draft)]
-    [InlineData(NonPublicState.ReadyToReview)]
-    [InlineData(NonPublicState.ChangesRequested)]
     [InlineData(NonPublicState.Paused)]
     [InlineData(NonPublicState.Deleted)]
     [InlineData(NonPublicState.UnderModerationHold)]

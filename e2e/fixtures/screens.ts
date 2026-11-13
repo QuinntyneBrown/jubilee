@@ -5,8 +5,8 @@ import { AdminReportPage } from '../pages/admin-report.page';
 import { AdminReportsPage } from '../pages/admin-reports.page';
 import { AdminShellPage } from '../pages/admin-shell.page';
 import { AdminSignInPage } from '../pages/admin-sign-in.page';
-import { AdminVerificationPage } from '../pages/admin-verification.page';
-import { AdminVerificationsPage } from '../pages/admin-verifications.page';
+import { AdminListingPage } from '../pages/admin-listing.page';
+import { AdminListingsPage } from '../pages/admin-listings.page';
 import { BrowsePage } from '../pages/browse.page';
 import { BusinessLoadingScreen, BusinessPage } from '../pages/business.page';
 import { CategoryFiltersScreen, CategoryPage } from '../pages/category.page';
@@ -150,8 +150,6 @@ export const screens: {
   { key: 'incoming-requests.error', screen: (page) => new IncomingRequestsPage(page) },
   { key: 'my-business', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.away', screen: (page) => new MyBusinessPage(page) },
-  { key: 'my-business.pending', screen: (page) => new MyBusinessPage(page) },
-  { key: 'my-business.changes-requested', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.empty', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.error', screen: (page) => new MyBusinessPage(page) },
   { key: 'my-business.paused', screen: (page) => new MyBusinessPage(page) },
@@ -237,17 +235,13 @@ export const screens: {
   { key: 'admin-shell.admin-only', screen: (page) => new AdminShellPage(page) },
   { key: 'admin-shell.not-found', screen: (page) => new AdminShellPage(page) },
   { key: 'admin-moved', screen: (page) => new AdminMovedPage(page) },
-  { key: 'admin-verifications', screen: (page) => new AdminVerificationsPage(page) },
-  { key: 'admin-verifications.empty', screen: (page) => new AdminVerificationsPage(page) },
-  { key: 'admin-verifications.error', screen: (page) => new AdminVerificationsPage(page) },
-  { key: 'admin-verification', screen: (page) => new AdminVerificationPage(page) },
-  { key: 'admin-verification.approved', screen: (page) => new AdminVerificationPage(page) },
-  {
-    key: 'admin-verification.changes-requested',
-    screen: (page) => new AdminVerificationPage(page),
-  },
-  { key: 'admin-verification.space', screen: (page) => new AdminVerificationPage(page) },
-  { key: 'admin-verification.error', screen: (page) => new AdminVerificationPage(page) },
+  { key: 'admin-listings', screen: (page) => new AdminListingsPage(page) },
+  { key: 'admin-listings.empty', screen: (page) => new AdminListingsPage(page) },
+  { key: 'admin-listings.error', screen: (page) => new AdminListingsPage(page) },
+  { key: 'admin-listing', screen: (page) => new AdminListingPage(page) },
+  { key: 'admin-listing.taken-down', screen: (page) => new AdminListingPage(page) },
+  { key: 'admin-listing.space', screen: (page) => new AdminListingPage(page) },
+  { key: 'admin-listing.error', screen: (page) => new AdminListingPage(page) },
   { key: 'admin-reports', screen: (page) => new AdminReportsPage(page) },
   { key: 'admin-reports.empty', screen: (page) => new AdminReportsPage(page) },
   { key: 'admin-reports.error', screen: (page) => new AdminReportsPage(page) },

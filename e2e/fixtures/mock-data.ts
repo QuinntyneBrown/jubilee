@@ -81,7 +81,6 @@ function businessCards(html: string) {
       tagline: text(first(card, /biz-card__tagline">(.*?)<\/p>/s)),
       highlight: perk ? text(perk[1]) : null,
       categorySlug: shortLabels[text(first(card, /media__tag">(.*?)<\/span>/s))],
-      verified: card.includes('class="verified"'),
       coverPhoto: null,
     };
   });
@@ -128,14 +127,13 @@ export function browseHomeFromMock(state: 'default' | 'edge') {
           slug: `${slugify(rowName)}-${index + 1}`,
           name: rowName,
           tagline: text(first(row, /dir-row__tagline[^>]*>(.*?)<\/span>/s)),
-          verified: row.includes('Verified'),
         };
       }),
     };
   });
 
   return {
-    liveBusinessCount: count(first(html, /hero__sub">([\d,]+) verified/)),
+    liveBusinessCount: count(first(html, /hero__sub">([\d,]+) businesses/)),
     categories,
     featured: businessCards(between(html, 'id="feat"', '</section>')),
     products,
@@ -148,7 +146,7 @@ export function browseHomeFromMock(state: 'default' | 'edge') {
 /** The category answer that renders `pages/category/long.html`: page 1 of a long category. */
 export function categoryPageFromMock(state: 'long') {
   const html = read(`pages/category/${state}.html`);
-  const totalCount = count(first(html, /class="subtitle">([\d,]+) verified/));
+  const totalCount = count(first(html, /class="subtitle">([\d,]+) businesses/));
   const pageSize = 16;
   return {
     category: { slug: 'home-property', name: 'Home & property' },

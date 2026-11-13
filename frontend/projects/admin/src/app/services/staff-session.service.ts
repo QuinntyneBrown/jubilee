@@ -31,8 +31,8 @@ export class StaffSessionService {
     );
   }
 
-  get isVerifier(): boolean {
-    return this.staff()?.roles.includes('verifier') ?? false;
+  get isModerator(): boolean {
+    return this.staff()?.roles.includes('moderator') ?? false;
   }
 
   /** The session ended on the server (L2-190 AC3): forget the staff member. */

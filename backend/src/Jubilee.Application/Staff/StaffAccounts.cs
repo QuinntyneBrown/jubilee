@@ -15,9 +15,9 @@ internal static class StaffCommandRules
 
     public static StaffRoles Role(string? raw) => raw?.Trim().ToLowerInvariant() switch
     {
-        "verifier" => StaffRoles.Verifier,
+        "moderator" => StaffRoles.Moderator,
         "admin" => StaffRoles.Admin,
-        _ => throw new StaffCommandException("Role must be verifier or admin."),
+        _ => throw new StaffCommandException("Role must be moderator or admin."),
     };
 
     public static string Describe(StaffMember account) =>

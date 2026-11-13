@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Jubilee.Application.Listings;
 
 /// <summary>The shop that sells a product, as the product page names it.</summary>
-public sealed record ProductShopDto(string Slug, string Name, bool Verified);
+public sealed record ProductShopDto(string Slug, string Name);
 
 /// <summary>One option; <see cref="MaxQuantity"/> bounds the quantity without revealing the stock (L2-035 AC3).</summary>
 public sealed record ProductOptionDto(string Label, int MaxQuantity);
@@ -91,7 +91,7 @@ public sealed class GetProductPageQueryHandler(IAppDbContext db, IDirectoryReadC
             product.IsPerUnit,
             product.DeliveryLine,
             new ProductTileDto(WireValues.Of(product.TileTint), WireValues.Of(product.TileIcon)),
-            new ProductShopDto(shop.Slug, shop.Name, VerifiedListingSpecification.IsSatisfiedBy(shop)),
+            new ProductShopDto(shop.Slug, shop.Name),
             product.Description,
             [.. product.OrderedAttributes.Select(a => new ProductAttributeDto(a.Label, a.Value))],
             product.OptionName,

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. A *shop* is a listing that sells physical items. A
 *product* is one item of a shop, with a name, a price in Canadian dollars, an
 optional photo and an optional stock count. Members do not pay through Jubilee;

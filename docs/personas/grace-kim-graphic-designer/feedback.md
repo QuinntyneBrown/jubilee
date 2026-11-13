@@ -27,7 +27,7 @@ Back to [Grace Kim](README.md).
 > device supplies, so my listing looks different on my laptop and my phone. The marketing site
 > does not have this problem. Small thing. I notice small things for a living.
 
-**Moment check-in after submitting her listing: 4 of 5.** No note asked for at 4.
+**Moment check-in after publishing her listing: 4 of 5.** No note asked for at 4.
 
 **Rate: 3 stars, "Okay".**
 

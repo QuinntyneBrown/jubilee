@@ -156,7 +156,9 @@ test.describe('report a listing (L2-039)', () => {
     await report.send.click();
 
     await expect(report.title).toHaveText('Thanks for telling us');
-    await expect(report.thanks).toContainText('private');
+    await expect(report.thanks).toContainText(
+      'Your report is private. Our team reviews it within one business day and may e-mail you with a question.',
+    );
     expect(fake.bodies).toEqual([{ reason: 'misleading', description: 'The hours are wrong.' }]);
     expect(fake.keys).toHaveLength(1);
     expect(fake.keys[0]).toBeTruthy();

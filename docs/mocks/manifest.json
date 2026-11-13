@@ -545,37 +545,27 @@
     },
     {
       "id": "feedback",
-      "kind": "page",
-      "title": "Feedback",
-      "route": "/feedback/:tab",
+      "kind": "dialog",
+      "title": "Feedback panel",
+      "opens_from": "browse",
       "requirements": [
-        "L2-212",
-        "L2-213"
+        "L2-210"
       ],
       "states": [
         "default",
-        "rate-invalid",
+        "rate-chosen",
         "bug",
-        "bug-invalid",
-        "bug-screenshots",
+        "bug-ready",
         "kudos",
-        "kudos-business",
-        "kudos-no-business",
-        "kudos-invalid",
-        "sending",
+        "kudos-ready",
+        "busy",
         "failed",
         "sent-rating",
         "sent-bug",
-        "sent-kudos-team",
-        "sent-kudos-business",
-        "history-empty",
-        "history-loading",
-        "history-error"
+        "sent-kudos"
       ],
       "not_applicable": {
-        "loading": "The form needs no data and shows at once; only Your feedback loads, and that is the state history-loading.",
-        "empty": "The only collection is Your feedback; with nothing in it the page is the state history-empty.",
-        "error": "The form cannot fail to load; a failed load of Your feedback is the state history-error and a failed send is the state failed."
+        "invalid": "The send button is disabled until there is something to send, so the panel has nothing to mark invalid."
       }
     },
     {
@@ -617,8 +607,6 @@
         "loading",
         "empty",
         "error",
-        "pending",
-        "changes-requested",
         "away",
         "businesses",
         "statement-due",
@@ -745,10 +733,10 @@
       }
     },
     {
-      "id": "admin-verifications",
+      "id": "admin-listings",
       "kind": "page",
-      "title": "Verification queue",
-      "route": "/verifications (admin application)",
+      "title": "Listings",
+      "route": "/listings (admin application)",
       "states": [
         "default",
         "loading",
@@ -758,21 +746,19 @@
       ]
     },
     {
-      "id": "admin-verification",
+      "id": "admin-listing",
       "kind": "page",
-      "title": "Verify listing",
-      "route": "/verifications/:id (admin application)",
+      "title": "Listing",
+      "route": "/listings/:id (admin application)",
       "states": [
         "default",
         "loading",
         "error",
-        "approved",
-        "changes-requested",
-        "space",
-        "no-items"
+        "taken-down",
+        "space"
       ],
       "not_applicable": {
-        "empty": "A review page shows one listing; it has no collection that could be empty."
+        "empty": "The page shows one listing; it has no collection that could be empty."
       }
     },
     {
@@ -1118,58 +1104,16 @@
       ]
     },
     {
-      "id": "approve-listing",
+      "id": "take-down-listing",
       "kind": "dialog",
-      "title": "Approve listing",
-      "opens_from": "admin-verification",
+      "title": "Take down listing",
+      "opens_from": "admin-listing",
       "states": [
         "default",
-        "busy",
-        "failed",
-        "note-required"
-      ],
-      "not_applicable": {
-        "invalid": "This dialog has no inputs to validate."
-      }
-    },
-    {
-      "id": "request-changes",
-      "kind": "dialog",
-      "title": "Request changes",
-      "opens_from": "admin-verification",
-      "states": [
-        "default",
-        "busy",
         "invalid",
-        "failed"
-      ]
-    },
-    {
-      "id": "decline-listing",
-      "kind": "dialog",
-      "title": "Decline listing",
-      "opens_from": "admin-verification",
-      "states": [
-        "default",
         "busy",
-        "invalid",
-        "failed"
+        "error"
       ]
-    },
-    {
-      "id": "statement-agreement",
-      "kind": "dialog",
-      "title": "Statement of faith agreement",
-      "opens_from": "my-business",
-      "states": [
-        "default",
-        "busy",
-        "failed",
-        "lapsed"
-      ],
-      "not_applicable": {
-        "invalid": "This dialog has no inputs to validate."
-      }
     },
     {
       "id": "sign-out",
@@ -1298,17 +1242,19 @@
       ]
     },
     {
-      "id": "verification-banner",
+      "id": "listing-banner",
       "kind": "notification",
-      "title": "Verification banner",
+      "title": "Listing banner",
       "opens_from": "my-business",
       "states": [
-        "info",
-        "success",
-        "warning",
-        "danger",
-        "persistent"
-      ]
+        "persistent",
+        "success"
+      ],
+      "not_applicable": {
+        "info": "The listing banner has one lasting condition, a paused listing, which is the persistent state; there is no neutral message to give.",
+        "warning": "A paused listing is the persistent state; nothing else about a live listing needs the owner's attention in a banner.",
+        "danger": "Nothing about a listing fails in a way a banner must hold: a failed pause or resume is said in its dialog, and a takedown is e-mailed and notified."
+      }
     },
     {
       "id": "verify-email-banner",
@@ -1390,6 +1336,21 @@
         "done",
         "unavailable"
       ]
+    },
+    {
+      "id": "statement-agreement",
+      "kind": "dialog",
+      "title": "Statement of faith agreement",
+      "opens_from": "my-business",
+      "states": [
+        "default",
+        "busy",
+        "failed",
+        "lapsed"
+      ],
+      "not_applicable": {
+        "invalid": "This dialog has no inputs to validate."
+      }
     }
   ]
 }

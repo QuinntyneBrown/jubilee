@@ -22,7 +22,7 @@ test.describe('product page (L2-035)', () => {
     await expect(product.heading).toHaveText('Faith heavyweight tee, charcoal');
     await expect(product.price).toHaveText('$34');
     await expect(product.deliveryLine).toHaveText('· plus $9 shipping, or free pickup');
-    await expect(product.soldBy).toHaveText(/Sold by Luzandre\.com\s*Verified/);
+    await expect(product.soldBy).toHaveText('Sold by Luzandre.com');
     await expect(product.shopLink).toHaveAttribute('href', '/b/luzandre');
     await expect(product.optionGroup.locator('legend')).toHaveText('Size');
     await expect(product.optionGroup.locator('label.chip')).toHaveText([

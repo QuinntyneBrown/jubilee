@@ -151,7 +151,10 @@ test.describe('manage products (L2-089 to L2-091, L2-095, L2-127, L2-130, L2-132
     await expect(products.status(MORNING)).toHaveText('Sold out');
   });
 
-  test('L2-036 AC3: a product added with a stock of 0 is told as sold out', async ({ page, jb }) => {
+  test('L2-036 AC3: a product added with a stock of 0 is told as sold out', async ({
+    page,
+    jb,
+  }) => {
     const products = new MyProductsPage(page);
     const editor = new ProductEditorDialog(page);
     const toasts = new Toasts(page);

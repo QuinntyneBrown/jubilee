@@ -62,7 +62,7 @@ export class ReportActionDialog {
       case 'message-reporter':
         return {
           title: 'Message the reporter',
-          text: 'Sent to the member who reported, in the name of the Jubilee verification team. The report stays in review.',
+          text: 'Sent to the member who reported, in the name of the Jubilee team. The report stays in review.',
           cta: 'Send message',
           danger: false,
           messages: true,
@@ -70,7 +70,7 @@ export class ReportActionDialog {
       case 'message-owner':
         return {
           title: 'Message the owner',
-          text: 'Sent in the name of the Jubilee verification team. The owner is never told who reported the listing.',
+          text: 'Sent in the name of the Jubilee team. The owner is never told who reported the listing.',
           cta: 'Send message',
           danger: false,
           messages: true,

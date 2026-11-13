@@ -63,7 +63,7 @@ public sealed class EventsController(IServiceScopeFactory scopes, TimeProvider c
                     }
 
                     var counts = await scope.ServiceProvider.GetRequiredService<ISender>()
-                        .Send(new GetNavigationSummaryQuery(subject, viewer.IsVerifier), cancellationToken);
+                        .Send(new GetNavigationSummaryQuery(subject, viewer.IsModerator), cancellationToken);
                     if (counts != last)
                     {
                         last = counts;

@@ -23,6 +23,31 @@ One folder per video. The text files are the source; the media is generated from
 | 17 | [Journey 21: Share or report a listing](17-journey-21-share-or-report-listing/README.md) | 2:47 | The demo of journey 21: the share dialog with its link, "Copied ✓" and the polite "Link copied", More… where the device has a share sheet, and focus back on Share; `og-image.png`, the image of every shared listing; a visitor asked to join before reporting; a member's report, read-only and busy while it is on its way, then thanked. Cards say how the app's host answers link-preview fetchers, what the team's e-mail of a report holds, what the tests prove and what is left for the owner. |
 | 18 | [Journey 23: Recover from errors](18-journey-23-recover-from-errors/README.md) | 2:31 | The demo of journey 23: an old link of a renamed listing opens the listing at its current address; an address that is no page shows the not-found page; the static maintenance and server error pages the app's host serves when the app cannot answer; a member without a listing on the owner's workspace asks for access. Cards say how a listing's slug follows its name, how the host gives every page load its status, what the team's e-mail of an access request holds, what the tests prove and what is left for the owner. |
 
+### Out of date since Jubilee ships without verification (ADR 0057)
+
+Jubilee no longer verifies businesses, and no page, e-mail or film may say a business is verified.
+These rendered films (MP4, MP3 and, where they have them, `captions.vtt` and `timing.js`) were
+made before that decision and still show or say it. They need rebuilding before they are shown
+again:
+
+- **02 The Jubilee plan.** Scene 02 said "vouched for by a pastor" under "Vouched for." with the
+  seal ringed "Verified by the Jubilee team". Its source (`narration.json`, `script.md`, `film.js`,
+  `README.md`) and the shared seal in `assets/pitch.js` are updated; regenerate the voice, then
+  the MP4.
+- **03 Journey 1, 04 Journey 3, 05 Journey 2 and 12 Journey 15.** Demos of runs made before the
+  decision. They say "verified businesses", "the verification team", "a verifier's approval",
+  "Pending verification" and (12) the re-check of a renamed listing, which is removed. Their
+  narration is left as the record of what those runs built and proved; re-record each from the
+  app once the code ships without verification, and rewrite its narration then.
+- **06, 07, 09, 10, 11 and 13.** Demos recorded from the app while every public listing carried
+  the "Verified" mark and the line "Verified Christian business · {category}". Their narration
+  says nothing of verification, but listing pages and cards in passing may show the mark; check
+  the frames and re-record before showing them.
+
+Film 01 (Meet Jubilee) builds its own seal with the design's ring text and claims no verification.
+Film 08 (Join Jubilee) shows only joining and the e-mail confirmation, which is not business
+verification.
+
 ## How a pitch film is built
 
 ```
@@ -185,7 +210,7 @@ film time: the page plays live against the MP3, and the builder seeks it frame b
 | `S.rise(at)` | Fade and 24 px rise for supporting text and UI. |
 | `S.drawnMark(size, { draw, bar })`, `S.wordmark(size, p)` | The J mark drawing itself and the "jubilee" wordmark rising letter by letter. |
 | `S.wipe(p)` | The gold crossbar wipe: 0 off left, 0.5 covering, 1 off right. Marks a change of act. |
-| `S.seal(size, spin)` | The "verified by the Jubilee team" seal. |
+| `S.seal(size, spin)` | The Jubilee seal: the J mark in a ring of "Fruit that will last · Resource the Kingdom · In Jesus’ name". |
 | `S.aurora(intensity, { horizon, colors })` | The WebGL aurora background. |
 | `S.confetti(bursts, count)` | Canvas confetti, solved in closed form so any frame draws alone. |
 

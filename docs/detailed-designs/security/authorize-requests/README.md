@@ -2,9 +2,9 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses that members message, book and order from. Each
-person acts in one of five roles: visitor, member, owner of a listing, verifier
+person acts in one of five roles: visitor, member, owner of a listing, moderator
 and admin. This feature is the server-side rule that decides, for each call to
 the `Jubilee API`, whether the caller may perform the action on the specific
 object named in the request.
@@ -32,8 +32,9 @@ behaviour described here.
 The slice runs from the Angular route guards to the MediatR pipeline and the
 automated test suite.
 
-- **`AuthGuard`, `OwnerGuard`, `VerifierGuard`** — Angular route guards in
-  `Jubilee Web`. They redirect a caller who lacks the role for a route. They are
+- **`AuthGuard`, `OwnerGuard`** — Angular route guards in `Jubilee Web`; the
+  app has no staff guard, since the staff screens are in the admin application
+  (`admin/run-admin-application`). They redirect a caller who lacks the role for a route. They are
   a convenience and carry no security weight.
 - **`SessionAuthenticationMiddleware`** — middleware in `Jubilee.Api`. It
   resolves the session cookie to an `ICurrentCaller`, or to an anonymous caller
@@ -41,7 +42,7 @@ automated test suite.
 - **`ICurrentCaller`** — scoped service that exposes `MemberId`, `Role`
   (`MemberRole`) and `IsAuthenticated` to policies and authorizers.
 - **`EndpointPolicy`** — enumeration of the role policies an endpoint may
-  declare: `Public`, `MemberOnly`, `ListingOwner`, `Verifier`, `Admin`. Each
+  declare: `Public`, `MemberOnly`, `ListingOwner`, `Moderator`, `Admin`. Each
   controller action carries exactly one `[RequirePolicy(EndpointPolicy.X)]`
   attribute.
 - **`DenyByDefaultPolicy`** — the ASP.NET Core fallback authorization policy. An
@@ -61,7 +62,7 @@ automated test suite.
   (`403`).
 - **`StrictRequestBinder`** — JSON binding configuration for request bodies.
   Each endpoint binds to a request record that lists only the fields the caller
-  may set. A body that names any other field, for example `status`, `verified`,
+  may set. A body that names any other field, for example `status`, `stage`,
   `role`, `ownerId` or `price` on a request, is rejected with `400` before the
   command is built.
 - **`ISecurityEventLog`** — application service that records an

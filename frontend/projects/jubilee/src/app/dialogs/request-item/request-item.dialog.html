@@ -2,7 +2,7 @@
 @let est = estimate();
 <jb-dialog
   [heading]="view() === 'success' ? 'Request sent to ' + opts?.shop?.name : 'Request this item'"
-  [icon]="view() === 'success' ? 'verified' : 'bag'"
+  [icon]="view() === 'success' ? 'check-circle' : 'bag'"
   [busy]="busy()"
   (closed)="close()"
   (outsideClick)="close()"

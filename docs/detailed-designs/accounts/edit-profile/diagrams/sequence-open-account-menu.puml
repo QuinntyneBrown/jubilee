@@ -37,7 +37,7 @@ actor -> bar : Press the avatar
 bar -> menu : Open (L2-019)
 menu -> session : Read SessionMember
 session --> menu : Initials, full name, e-mail, role
-menu -> menu : Build links: "My business" for an owner, "Verification queue" for a verifier
+menu -> menu : Build links: "My business" for an owner, no admin link for anyone (L2-194)
 alt Viewport 640 px or wider
   menu --> actor : Show the menu anchored under the avatar
   actor -> menu : Arrow keys move between items

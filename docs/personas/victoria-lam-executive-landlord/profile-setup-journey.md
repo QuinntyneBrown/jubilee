@@ -38,7 +38,7 @@ closest choice for a duplex unit, and key facts "3 bedrooms", "Upper two floors"
 - **The price of the duplex.** The market rent is about $3,400. She wants to offer it at $2,600 to
   a family who needs it. If she types 2600, everyone sees a low rent and the unit goes to whoever
   asks first, not to the family she has in mind. If she types 3400, that family never asks. She
-  types 3400, dislikes it, and saves the draft without submitting.
+  types 3400, dislikes it, and saves the draft without publishing.
 - **Short stay for the furnished condo.** A space has exactly one term. She would need a second
   listing for the same unit, her building restricts short rentals, and she has no listings to
   spare. She drops the idea.

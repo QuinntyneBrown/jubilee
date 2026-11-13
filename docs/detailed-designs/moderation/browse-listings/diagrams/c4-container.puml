@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Browse listings
+Person(moderator, "Jubilee team member", "Looks through published listings")
+System_Boundary(jubilee, "Jubilee") {
+  Container(web, "Jubilee Admin Web", "Angular single-page application", "Listings page and the admin bar")
+  Container(api, "Jubilee API", "ASP.NET Core", "Admin endpoints under /api/admin for staff sessions with the moderator role")
+  ContainerDb(db, "Jubilee database", "SQL Server", "Listings - staff accounts and sessions")
+}
+Rel(moderator, web, "Uses", "HTTPS")
+Rel(web, api, "Calls", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml

@@ -55,8 +55,8 @@ number; everything else is “Ask”.
 ## What the profile cannot say
 
 - That he is a mechanic, in the one place members look first: the category.
-- That he is licensed. There is no licence or credential field, so it sits in the About text where
-  nobody verifies it.
+- That he is licensed. There is no licence or credential field, so it sits in the About text as his
+  word and nothing more.
 - That he takes emergency calls. Members can filter by "Emergency calls", but no field on `/list`
   or "Edit listing" let him say it.
 - That he replies late. The away status needs a return date; it cannot say "I answer after 10 p.m."

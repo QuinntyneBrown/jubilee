@@ -193,7 +193,7 @@ export const routes: Routes = [
     title: 'Requests · Jubilee',
   },
   {
-    // The verification team's screens moved to the admin application (L2-194).
+    // The Jubilee team's screens moved to the admin application (L2-194).
     path: 'admin',
     children: [
       {

@@ -52,7 +52,7 @@ public class CategoryListingsTests : IClassFixture<JubileeApiFactory>, IAsyncLif
         Assert.Equal("Tagline of waterworks", card.GetProperty("tagline").GetString());
         Assert.Equal("Free quote", card.GetProperty("highlight").GetString());
         Assert.Equal("home-property", card.GetProperty("categorySlug").GetString());
-        Assert.True(card.GetProperty("verified").GetBoolean()); // L2-111 AC1
+        Assert.False(card.TryGetProperty("verified", out _)); // ADR 0057: no listing is called verified
         Assert.Equal(JsonValueKind.Null, card.GetProperty("coverPhoto").ValueKind);
     }
 
@@ -232,7 +232,7 @@ public class CategoryListingsTests : IClassFixture<JubileeApiFactory>, IAsyncLif
     }
 
     [Fact]
-    public async Task L2_025_AC2_newest_orders_by_date_verified_newest_first()
+    public async Task L2_025_AC2_newest_orders_by_date_published_newest_first()
     {
         var slow = Home("old-but-complete", approvedDaysAgo: 30);
         var recent = ListingMother.Public(
@@ -347,8 +347,6 @@ public class CategoryListingsTests : IClassFixture<JubileeApiFactory>, IAsyncLif
 
     [Theory]
     [InlineData(NonPublicState.Draft)]
-    [InlineData(NonPublicState.ReadyToReview)]
-    [InlineData(NonPublicState.ChangesRequested)]
     [InlineData(NonPublicState.Paused)]
     [InlineData(NonPublicState.Deleted)]
     [InlineData(NonPublicState.UnderModerationHold)]

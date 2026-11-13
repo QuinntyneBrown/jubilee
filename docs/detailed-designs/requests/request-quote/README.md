@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace. A member finds a verified business and asks it for something without
+Jubilee is Toronto's Christian marketplace. A member finds a business and asks it for something without
 paying through the platform. A *request* is that ask. It has one of four kinds (booking, quote, order, space) and
 follows one lifecycle shared by the member and the owner. This feature covers the quote kind.
 

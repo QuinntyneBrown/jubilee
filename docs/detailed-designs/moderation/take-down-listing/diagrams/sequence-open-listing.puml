@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Open a listing in the admin application
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Jubilee team member" as actor
+box "Frontend — Jubilee Admin Web" #E0F2FE
+  participant "AdminListingPage" as page
+  participant "AdminApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "AdminListingsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "GetAdminListingQueryHandler" as qh
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /listings/:id
+page -> client : listing(id)
+client -> controller : GET /api/admin/listings/{id}
+controller -> controller : Authenticate the staff session and apply RequiresModerator (L2-098)
+controller -> qh : Send GetAdminListingQuery(Reviewer, ListingId)
+qh -> db : Load the listing (Live, published, not deleted or taken down), owner, count of other listings, submission flags
+alt no such published listing
+  qh --> controller : NotFound listing_not_found
+  controller --> client : 404 ProblemDetails
+else listing found
+  db --> qh : Listing state
+  qh --> controller : AdminListingDto
+  controller --> client : 200 AdminListingDto
+  client --> page : AdminListing
+  alt TakenDown is set
+    page --> actor : Show "Taken down {date} by {name}." with the reason and no action (L2-100 AC5)
+  else IsOwnListing
+    page --> actor : Show "This is your own listing" and no action (L2-098 AC5)
+  else listing is published
+    page --> actor : Show "{category} · published {when} · {status}", "Take down listing", Owner card, flags and "How members see it" (L2-100)
+  end
+end
+opt request fails
+  controller --> client : 503 ProblemDetails with JB-ADM-502
+  client --> page : Load error
+  page --> actor : Show "We couldn’t load this listing" with JB-ADM-502, "Try again" and "Back to listings"
+end
+@enduml

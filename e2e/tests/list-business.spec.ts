@@ -34,7 +34,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
 
     await expect(list.heading).toHaveText('List your business');
     await expect(list.intro).toHaveText(
-      'Free for Christian-owned businesses in Toronto. Every listing is verified before it goes live.',
+      'Free for Christian-owned businesses in Toronto. Your listing goes live as soon as you publish it.',
     );
     // L2-071: nobody is asked for a church or a pastor.
     await expect(list.legends).toHaveText(['What do you offer?', 'Products']);
@@ -68,10 +68,10 @@ test.describe('list your business (L2-071 to L2-079)', () => {
       'A short green line on your card, like “Free first meeting”. 30 characters at most.',
     );
     // With no highlight the card has only its mark.
-    await expect(list.previewPerks).toHaveText(['Pending verification']);
+    await expect(list.previewPerks).toHaveText(['Not published yet']);
 
     await list.highlight.fill('Ships across Canada');
-    await expect(list.previewPerks).toHaveText(['Ships across Canada', 'Pending verification']);
+    await expect(list.previewPerks).toHaveText(['Ships across Canada', 'Not published yet']);
 
     await list.highlight.fill('Ships across Canada and the United States');
     await expect(list.highlight).toHaveValue('Ships across Canada and the Un');
@@ -97,7 +97,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await jb.goto('/list');
 
     await expect(list.highlight).toHaveValue('Ships across Canada');
-    await expect(list.previewPerks).toHaveText(['Ships across Canada', 'Pending verification']);
+    await expect(list.previewPerks).toHaveText(['Ships across Canada', 'Not published yet']);
   });
 
   test('the draft left earlier is restored', async ({ page, jb }) => {
@@ -142,7 +142,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
 
     await list.addItem.click();
     await expect(editor.title).toHaveText('Add a product');
-    await expect(editor.note).toHaveText('Nothing is public until your listing is verified.');
+    await expect(editor.note).toHaveText('Nothing is public until your listing is published.');
     await editor.submit.click();
     await expect(editor.errors).toHaveText([
       'Enter a name for the product.',
@@ -197,7 +197,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
 
     await list.addItem.click();
     await expect(editor.title).toHaveText('Add a service');
-    await expect(editor.note).toHaveText('Nothing is public until your listing is verified.');
+    await expect(editor.note).toHaveText('Nothing is public until your listing is published.');
     await editor.name.fill('Engagement session');
     await editor.detail.fill('45 min · In person or video');
     await editor.pricing.selectOption('ask');
@@ -278,7 +278,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await list.saveDraft.click();
 
     await expect(list.saved).toContainText('Draft saved');
-    await expect(list.saved).toContainText('nothing is public until you submit');
+    await expect(list.saved).toContainText('nothing is public until you publish');
     expect(fake.creates).toHaveLength(1);
     expect(fake.creates[0].name).toBe('Luzandre.com');
   });
@@ -308,7 +308,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await jb.goto('/list');
     await list.tagline.fill('Christian apparel & gifts');
 
-    await list.submit.click();
+    await list.publish.click();
 
     await expect(list.summary).toBeFocused();
     await expect(list.summary).toContainText('Fix 2 things to continue');
@@ -318,10 +318,10 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     ]);
     await expect(list.fieldError).toHaveText([
       'Enter your business name as customers know it.',
-      'Agree to the statement of faith to submit your listing.',
+      'Agree to the statement of faith to publish your listing.',
     ]);
     await expect(list.tagline).toHaveValue('Christian apparel & gifts');
-    expect(fake.submits).toHaveLength(0);
+    expect(fake.publishes).toHaveLength(0);
 
     await list.summaryLinks.first().click();
     await expect(list.name).toBeFocused();
@@ -336,12 +336,12 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await list.fillValid();
     await list.tagline.fill('x'.repeat(95));
 
-    await list.submit.click();
+    await list.publish.click();
 
     await expect(list.fieldError).toHaveText(['Shorten this to 90 characters. It has 95.']);
   });
 
-  test('a valid listing is submitted and the next steps are shown', async ({ page, jb }) => {
+  test('L2-078 AC1: a valid listing is published and live straight away', async ({ page, jb }) => {
     const list = new ListBusinessPage(page);
     await list.setWidth(1280);
     await jb.signInAs('member');
@@ -349,28 +349,19 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await jb.goto('/list');
     await list.fillValid();
 
-    await list.submit.click();
+    await list.publish.click();
 
-    await expect(list.doneHeading).toHaveText('Luzandre.com is in for verification');
-    await expect(list.doneText).toHaveText(
-      'Nothing more to do right now. We’ll e-mail you the moment you’re live.',
-    );
-    await expect(list.timeline).toHaveCount(3);
-    await expect(list.timeline).toContainText([
-      'You submitted Luzandre.com',
-      'We review your listing',
-      'You’re live',
-    ]);
-    await expect(list.timeline.nth(1)).toContainText('Within two business days');
-    await expect(list.timeline.nth(2)).toContainText(
-      'We e-mail you the moment members can find you',
-    );
+    await expect(list.doneHeading).toHaveText('Luzandre.com is live');
+    await expect(list.doneText).toHaveText('Members can find you in Shops now.');
+    await expect(list.timeline).toHaveCount(0);
+    await expect(list.viewPublicListing).toHaveAttribute('href', '/b/luzandre-com');
     await expect(list.goToMyBusiness).toHaveAttribute('href', '/my-business');
-    expect(fake.submits).toHaveLength(1);
-    expect(fake.submits[0].idempotencyKey).toMatch(/^[\w-]{8,}$/);
-    expect(fake.submits[0].agreed).toBe(true);
-    expect(fake.submits[0]).not.toHaveProperty('church');
-    expect(fake.submits[0]).not.toHaveProperty('pastorEmail');
+    await expect(list.addMore).toHaveText('Add more products');
+    expect(fake.publishes).toHaveLength(1);
+    expect(fake.publishes[0].idempotencyKey).toMatch(/^[\w-]{8,}$/);
+    expect(fake.publishes[0].agreed).toBe(true);
+    expect(fake.publishes[0]).not.toHaveProperty('church');
+    expect(fake.publishes[0]).not.toHaveProperty('pastorEmail');
   });
 
   test('while submitting the button is busy and the fields are locked', async ({ page, jb }) => {
@@ -381,13 +372,13 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await jb.goto('/list');
     await list.fillValid();
 
-    await list.submit.click();
+    await list.publish.click();
 
-    await expect(list.submit).toHaveAttribute('aria-busy', 'true');
+    await expect(list.publish).toHaveAttribute('aria-busy', 'true');
     await expect(list.name).toHaveAttribute('readonly', '');
   });
 
-  test('L2-127 AC2: a submission that takes longer than 10 seconds fails and can be tried again', async ({
+  test('L2-127 AC2: publishing that takes longer than 10 seconds fails and can be tried again', async ({
     page,
     jb,
   }) => {
@@ -399,12 +390,12 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await jb.goto('/list');
     await list.fillValid();
 
-    await list.submit.click();
-    await expect(list.submit).toHaveAttribute('aria-busy', 'true');
+    await list.publish.click();
+    await expect(list.publish).toHaveAttribute('aria-busy', 'true');
     await page.clock.fastForward(10_500);
 
     await expect(list.alert).toContainText('We couldn’t save that. Try again.');
-    await expect(list.submit).not.toHaveAttribute('aria-busy', 'true');
+    await expect(list.publish).not.toHaveAttribute('aria-busy', 'true');
     await expect(list.name).not.toHaveAttribute('readonly', '');
   });
 
@@ -416,7 +407,7 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await jb.goto('/list');
     await list.fillValid();
 
-    await list.submit.click();
+    await list.publish.click();
 
     await expect(list.fieldError).toHaveText(['Shorten this to 90 characters. It has 94.']);
     await expect(list.summary).toBeFocused();
@@ -430,12 +421,15 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await jb.goto('/list');
     await list.fillValid();
 
-    await list.submit.click();
+    await list.publish.click();
 
     await expect(list.alert).toContainText('You can list up to 5 businesses.');
   });
 
-  test('an unconfirmed e-mail can write a draft but not submit', async ({ page, jb }) => {
+  test('L2-071 AC5: an unconfirmed e-mail can write a draft but not publish', async ({
+    page,
+    jb,
+  }) => {
     const list = new ListBusinessPage(page);
     await list.setWidth(1280);
     await jb.signInAs('member');
@@ -443,8 +437,8 @@ test.describe('list your business (L2-071 to L2-079)', () => {
     await stubListingDrafts(page);
     await jb.goto('/list');
 
-    await expect(list.confirmNotice).toBeVisible();
-    await expect(list.submit).toBeDisabled();
+    await expect(list.confirmNotice).toContainText('Confirm your e-mail to publish.');
+    await expect(list.publish).toBeDisabled();
     await expect(list.saveDraft).toBeEnabled();
   });
 

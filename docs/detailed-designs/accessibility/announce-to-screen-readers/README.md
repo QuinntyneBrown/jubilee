@@ -60,8 +60,8 @@ two test suites plus a release checklist that hold the pages to the rules.
 - **`Icon`** — the only way to render an icon. Its inputs are a union: either
   `label`, which renders `role="img"` with that accessible name, or
   `decorative`, which renders `aria-hidden="true"`. A template that supplies
-  neither does not compile. The verified mark, the unread marker and the sold
-  out marker always take `label`.
+  neither does not compile. The unread marker, the sold out marker and the
+  "replies fast" marker always take `label`.
 - **`CountBadge`** — badge with `count` and `context` inputs. The visible
   digits are `aria-hidden`; `accessibleName()` returns the context and count
   together, for example "Messages, 2 unread" and "Notifications, 3 unread".
@@ -93,14 +93,14 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-157` | `L1-022` | Every screen and state in the mock manifest shall show zero serious or critical violations when scanned with axe-core in CI, and every primary task shall be completable in a manual audit of each release with NVDA on Windows, VoiceOver on macOS and iOS, and TalkBack on Android. Every page shall have a unique, descriptive `<title>` ("{Page} · Jubilee"), one `h1`, a logical heading order and landmark regions, with `lang="en-CA"` set on `html`. |
-| `L2-159` | `L1-022` | The system shall announce status changes (saved, copied, sending, message received, loading) through a polite live region and errors through an assertive one. Icons that carry meaning (verified, unread, sold out) shall have a text alternative, decorative icons shall be `aria-hidden`, and count badges shall include context ("Messages, 2 unread"). |
+| `L2-159` | `L1-022` | The system shall announce status changes (saved, copied, sending, message received, loading) through a polite live region and errors through an assertive one. Icons that carry meaning (unread, sold out, replies fast) shall have a text alternative, decorative icons shall be `aria-hidden`, and count badges shall include context ("Messages, 2 unread"). |
 | `L2-066` | `L1-010` | An error (danger) toast shall be announced assertively (`role="alert"`) and shall never auto-dismiss; other toasts shall use a polite live region. |
 
 ## Diagrams
 
 ### System context
 
-Members, visitors and verification team members reach Jubilee through a screen
+Members, visitors and Jubilee team members reach Jubilee through a screen
 reader, which reads the structure and live regions Jubilee exposes. The CI
 pipeline scans each screen and state.
 

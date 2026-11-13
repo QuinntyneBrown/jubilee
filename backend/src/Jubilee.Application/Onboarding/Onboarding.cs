@@ -143,7 +143,7 @@ public sealed record DraftItemInput(
     bool? OffersInPerson = null,
     string? InPersonPlace = null);
 
-public sealed record SubmittedListingDto(
+public sealed record PublishedListingDto(
     Guid ListingId, string Slug, string Name, string Kind, string Stage, DateTimeOffset SubmittedAt);
 
 public static class Drafts
@@ -295,12 +295,12 @@ public sealed class SaveListingDraftCommandHandler(IAppDbContext db, TimeProvide
     }
 }
 
-/// <summary>Submits a draft for verification (L2-078): it becomes a listing the verification team can review straight away.</summary>
-public sealed record SubmitListingCommand(string Subject, string Name, Guid DraftId, DraftInput Input, string? IdempotencyKey)
-    : IRequest<SubmittedListingDto>;
+/// <summary>Publishes a draft (L2-078): it becomes a live listing at once; nobody verifies it first (ADR 0057).</summary>
+public sealed record PublishListingCommand(string Subject, string Name, Guid DraftId, DraftInput Input, string? IdempotencyKey)
+    : IRequest<PublishedListingDto>;
 
-public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimeProvider clock)
-    : IRequestHandler<SubmitListingCommand, SubmittedListingDto>
+public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeProvider clock)
+    : IRequestHandler<PublishListingCommand, PublishedListingDto>
 {
     public const int MaxTaglineLength = 90;
 
@@ -319,7 +319,7 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
     [GeneratedRegex(@"\b(code|coupon|promo)\b\s*:?\s*[A-Z0-9]{4,}|\d+\s*%\s*off", RegexOptions.IgnoreCase)]
     private static partial Regex Discount();
 
-    public async Task<SubmittedListingDto> Handle(SubmitListingCommand command, CancellationToken cancellationToken)
+    public async Task<PublishedListingDto> Handle(PublishListingCommand command, CancellationToken cancellationToken)
     {
         var key = string.IsNullOrWhiteSpace(command.IdempotencyKey) ? Guid.NewGuid().ToString() : command.IdempotencyKey.Trim();
         var earlier = await db.ListingSubmissions.AsNoTracking()
@@ -388,7 +388,7 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
         // The public place of a space is its neighbourhood; the exact address stays in its details (L2-208).
         listing.Describe(new ListingProfile(command.Name, [], null, space?.Neighbourhood ?? input.Place?.Trim(), null, null, null, null));
         listing.SetHighlight(space is null ? ListingDraft.Cut(input.Highlight, ListingDraft.MaxHighlightLength) : null);
-        listing.MoveTo(ListingStage.ReadyToReview);
+        listing.Publish(now);
         db.Listings.Add(listing);
         if (space is null)
         {
@@ -403,11 +403,13 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
         submission.MarkReady(now);
         db.ListingSubmissions.Add(submission);
         db.ListingDrafts.Remove(draft);
+        // Members who asked to hear of new businesses in this category are told now (L2-222 AC1).
+        await Notifications.NewBusinessNotifier.TellAsync(db, listing, now, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
         return Result(listing, submission);
     }
 
-    private static SubmittedListingDto Result(Listing listing, ListingSubmission submission) => new(
+    private static PublishedListingDto Result(Listing listing, ListingSubmission submission) => new(
         listing.Id,
         listing.Slug,
         listing.Name,

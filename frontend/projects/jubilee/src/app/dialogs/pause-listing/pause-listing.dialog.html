@@ -2,9 +2,7 @@
   heading="Pause {{ data.business }}?"
   description="Your listing is hidden from browse and search until you resume it. Your {{
     data.openRequests
-  }} open {{
-    data.openRequests === 1 ? 'request' : 'requests'
-  }} and your messages stay. You keep your verified status."
+  }} open {{ data.openRequests === 1 ? 'request' : 'requests' }} and your messages stay."
   icon="alert"
   tone="danger"
   [busy]="busy()"

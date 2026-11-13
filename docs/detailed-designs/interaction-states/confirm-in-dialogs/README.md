@@ -17,8 +17,8 @@ Four terms are used throughout:
 - **bottom sheet** — dialog layout anchored to the bottom edge of a narrow viewport, with a sticky footer for its buttons
 
 The consequential actions are: delete account, product or service; cancel,
-confirm or decline a request; pause a listing; approve a listing; request
-changes; sign out. Each confirmation dialog states the consequence with real
+confirm or decline a request; pause a listing; take down a listing (Jubilee
+team); sign out. Each confirmation dialog states the consequence with real
 counts and names, and the safe choice holds focus when the dialog opens. A
 dialog for an irreversible action says "This can't be undone." A reversible
 action instead produces a success toast that carries "Undo".
@@ -106,7 +106,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-A `Member`, an `Owner` and a `Verification team member` each confirm
+A `Member`, an `Owner` and a `Jubilee team member` each confirm
 consequential actions. No external system takes part in the dialog pattern.
 
 ![C4 system context for confirming in dialogs](diagrams/c4-context.png)

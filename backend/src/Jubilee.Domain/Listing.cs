@@ -59,9 +59,6 @@ public sealed class Listing
     /// <summary>The business's website (L2-087); null when it has none.</summary>
     public string? Website { get; private set; }
 
-    /// <summary>When a change of name or category asked the verification team to look again (L2-087 AC6).</summary>
-    public DateTimeOffset? RecheckRequestedAt { get; private set; }
-
     /// <summary>
     /// When the owner last chose this listing in the switcher of My business (L2-079 AC5); null until they choose.
     /// The owner's workspace shows the listing chosen last.
@@ -70,16 +67,19 @@ public sealed class Listing
 
     public void ChooseForWorkspace(DateTimeOffset now) => WorkspaceChosenAt = now;
 
-    /// <summary>A listing paused this long needs verifying again before it is public (L2-096 AC4).</summary>
-    public static readonly TimeSpan PausedTooLong = TimeSpan.FromDays(365);
-
     public DateTimeOffset? DeletedAt { get; private set; }
 
     public bool IsUnderModerationHold { get; private set; }
 
-    public DateTimeOffset? ApprovedAt { get; private set; }
+    /// <summary>When the owner published the listing (L2-078); null while it is a draft.</summary>
+    public DateTimeOffset? PublishedAt { get; private set; }
 
-    public string? ApprovedBy { get; private set; }
+    /// <summary>When the Jubilee team took the listing down, who did and why (L2-101); null unless it was taken down.</summary>
+    public DateTimeOffset? TakenDownAt { get; private set; }
+
+    public string? TakenDownByName { get; private set; }
+
+    public string? TakedownReason { get; private set; }
 
     public OfferFilter Offers { get; private set; }
 
@@ -92,12 +92,6 @@ public sealed class Listing
     public double RecommendedScore { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
-
-    /// <summary>
-    /// True only for a listing the verification team approved and that is currently live. Not
-    /// stored: it shares its definition with <see cref="VerifiedListingSpecification"/>.
-    /// </summary>
-    public bool IsVerified => VerifiedListingSpecification.IsSatisfiedBy(this);
 
     public static Listing Create(string slug, string name, string tagline, string categorySlug, DateTimeOffset now)
     {
@@ -121,19 +115,18 @@ public sealed class Listing
     }
 
     /// <summary>
-    /// A public listing: verified and live, not paused, not deleted and not under a moderation
+    /// A public listing: published and live, not paused, not deleted and not under a moderation
     /// hold (L2-028). Shares its definition with <see cref="PublicListingFilter"/>.
     /// </summary>
     public bool IsPublic() => PublicListingFilter.IsSatisfiedBy(this);
 
     /// <summary>
-    /// The verification team's approval. The only code that sets <see cref="ApprovedAt"/>; it
-    /// also makes the listing live.
+    /// The owner publishes the listing: it is live at once and nobody verifies it first (L2-078, ADR 0057).
+    /// With <see cref="Approve"/>, the only code that sets <see cref="PublishedAt"/>.
     /// </summary>
-    public void Approve(string approvedBy, DateTimeOffset now)
+    public void Publish(DateTimeOffset now)
     {
-        ApprovedAt = now;
-        ApprovedBy = approvedBy;
+        PublishedAt = now;
         Stage = ListingStage.Live;
         RefreshRecommendedScore(now);
     }
@@ -148,7 +141,7 @@ public sealed class Listing
         About = about;
     }
 
-    /// <summary>Moves the listing to a stage before live. Only <see cref="Approve"/> makes it live.</summary>
+    /// <summary>Moves the listing to a stage before live. Only <see cref="Publish"/> makes it live.</summary>
     public void MoveTo(ListingStage stage)
     {
         if (stage == ListingStage.Live)
@@ -175,7 +168,7 @@ public sealed class Listing
         StatementLapsedAt = now;
     }
 
-    /// <summary>The owner agreed: a listing the job paused is live again at once, without new verification (L2-075 AC6).</summary>
+    /// <summary>The owner agreed: a listing the job paused is live again at once (L2-075 AC6).</summary>
     public void ResumeAfterStatement()
     {
         if (StatementLapsedAt is null)
@@ -188,14 +181,9 @@ public sealed class Listing
         PausedAt = null;
     }
 
-    /// <summary>Takes the listing off pause. After a year it goes back to the verification queue (L2-096 AC4).</summary>
-    public void Resume(DateTimeOffset? now = null)
+    /// <summary>Takes the listing off pause; however long it was paused, it is public again (L2-096 AC3, ADR 0057).</summary>
+    public void Resume()
     {
-        if (IsPaused && now is { } at && PausedAt is { } since && at - since >= PausedTooLong)
-        {
-            Stage = ListingStage.ReadyToReview;
-        }
-
         IsPaused = false;
         PausedAt = null;
     }
@@ -205,7 +193,7 @@ public sealed class Listing
 
     /// <summary>
     /// The owner's edit of the listing's page (L2-087). Returns true when the name or category changed,
-    /// which asks the verification team to look again.
+    /// which the audit log records (L2-087 AC6); nothing is re-checked (ADR 0057).
     /// </summary>
     public bool Edit(string name, string tagline, string categorySlug, string? about, string? where, string? hours, string? website, string? highlight, DateTimeOffset now)
     {
@@ -225,10 +213,6 @@ public sealed class Listing
         Website = Clean(website);
         Highlight = Clean(highlight);
         Version++;
-        if (reworded && Stage == ListingStage.Live)
-        {
-            RecheckRequestedAt = now;
-        }
 
         RefreshRecommendedScore(now);
         return reworded;
@@ -249,6 +233,20 @@ public sealed class Listing
     }
 
     public void Delete(DateTimeOffset now) => DeletedAt ??= now;
+
+    /// <summary>The Jubilee team takes the listing off Jubilee because it misrepresents a business (L2-101).</summary>
+    public void TakeDown(string byName, string reason, DateTimeOffset now)
+    {
+        if (TakenDownAt is not null)
+        {
+            throw new InvalidOperationException("This listing was already taken down.");
+        }
+
+        TakenDownAt = now;
+        TakenDownByName = byName;
+        TakedownReason = reason;
+        Delete(now);
+    }
 
     public void PlaceModerationHold() => IsUnderModerationHold = true;
 
@@ -332,5 +330,5 @@ public sealed class Listing
     /// <summary>Recomputes the stored <see cref="RecommendedScore"/> as of <paramref name="now"/>.</summary>
     public void RefreshRecommendedScore(DateTimeOffset now) =>
         RecommendedScore = Domain.RecommendedScore.Compute(
-            Tagline, Highlight, Offers, AreasServed, MedianResponseMinutes, ApprovedAt, now);
+            Tagline, Highlight, Offers, AreasServed, MedianResponseMinutes, PublishedAt, now);
 }

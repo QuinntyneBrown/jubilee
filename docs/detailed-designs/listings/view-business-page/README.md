@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace. Each verified business has one
+Jubilee is Toronto's Christian marketplace. Each live business has one
 public page at `/b/:slug`, called its listing page. The listing page is where a
 visitor or member reads what the business offers and starts a booking, a quote
 request, an order or a message. This feature covers the listing page in its two
@@ -20,9 +20,9 @@ The feature uses the following local terms.
 
 - **listing** — public record of one business, addressed by its slug
 - **listing kind** — main offer of a listing, either `Services` or `Shop`
-- **viewer relation** — relation of the person viewing to the listing: visitor, member, owner or verifier
-- **listing status** — where a listing stands for the public: live, or the reason it is not public (draft, pending verification, changes requested, declined, paused, on hold)
-- **preview** — the listing page of a listing that is not public, as its owner and the verification team see it
+- **viewer relation** — relation of the person viewing to the listing: visitor, member, owner or moderator
+- **listing status** — where a listing stands for the public: live, or the reason it is not public (draft, paused, on hold)
+- **preview** — the listing page of a listing that is not public, as its owner and the Jubilee team see it
 - **reply-time band** — text for the "Replies" detail, derived from the median first-reply time of the business over the last 90 days
 - **listing view** — one counted visit to a listing page, used in the owner's statistics
 
@@ -40,8 +40,9 @@ scheduled job.
   business layout or the shop layout (the space layout is the feature
   [View a space](../view-space/README.md)). It is one page that composes `jb-*`
   components of the `components` library; it declares no component of its own
-  (ADR 0035). It renders "Back to browse" and the line "Verified Christian
-  business · {category}". On failure it shows "We couldn't load this business"
+  (ADR 0035). It renders "Back to browse" and the line above the name with the
+  category only, for example "Financial & insurance"; there is no "Verified"
+  mark (ADR 0057). On failure it shows "We couldn't load this business"
   or "We couldn't load this shop" with the reference `JB-BIZ-503`.
 - **Service business layout** — the name, the owner's name with credentials,
   the tagline, credential tags, the highlight, and one `ServiceRow`
@@ -74,22 +75,21 @@ scheduled job.
   `BusinessCard` components and a "See all" link to `/c/:category`. The section
   is omitted when the API returns no related listing.
 - **Owner banner** — `jb-alert` shown when the viewer relation is owner and the
-  listing is public: "This is how members see your listing. It's live and
-  verified. Changes you make are published straight away." with "Go to My
+  listing is public: "This is how members see your listing. It's live.
+  Changes you make are published straight away." with "Go to My
   business". In this view the page replaces "Book a meeting" and "Message" with
   "Edit listing" and hides save and report (`L2-037`).
 - **Preview banner** — `jb-alert` with the warning tone, shown in place of the
   owner banner when `status` is not `live` (`pages/business/preview.html`,
   `L2-219`). For the owner it is titled "Preview: members can't see this page
-  yet" and reads "{status}. Only you and the Jubilee verification team can open
-  it." with "Go to My business"; "Edit listing" stays. For the verification team
+  yet" and reads "{status}. Only you and the Jubilee team can open
+  it." with "Go to My business"; "Edit listing" stays. For the Jubilee team
   it is titled "Preview: this listing is not public" and reads "{status}. Only
-  its owner and the Jubilee verification team can open it."; the member
+  its owner and the Jubilee team can open it."; the member
   actions, share and "Report this listing" are not shown. The status is said in
-  the words of the owner workspace: "Draft · not submitted yet", "Pending
-  verification", "Changes requested · not public yet", "Declined · not public",
-  "Verified · paused, not public", "On hold while we look into a report · not
-  public". The page records a listing view only for a public listing.
+  the words of the owner workspace: "Draft · not published yet", "Paused · not
+  public" or "On hold while we look into a report · not public". The line above
+  the name gives the category only, as on the public page. The page records a listing view only for a public listing.
 - **`ListingsApi`** — contract (`LISTINGS_API`) and typed Angular HTTP client
   (`HttpListingsApi`) for `GET /api/listings/{slug}` and
   `POST /api/listings/{slug}/views`.
@@ -104,19 +104,19 @@ scheduled job.
   `Product` rows, evaluates `ListingVisibilityPolicy`, selects the related
   listings, and returns a `ListingPageDto` that carries the `ViewerRelation`,
   the `Stage` and the `Status`. Public responses are kept by
-  `IDirectoryReadCache` for at most 60 seconds; owner and verifier responses
+  `IDirectoryReadCache` for at most 60 seconds; owner and moderator responses
   bypass the cache.
 - **Visibility** — decided in the handler with `PublicListingFilter`, the one
-  definition of a public listing (verified and live, not paused, not deleted,
+  definition of a public listing (live, not paused, not deleted,
   not under a moderation hold). A listing that is not public resolves to not
-  found, except for its owner and the verification team, who receive the
+  found, except for its owner and the Jubilee team, who receive the
   preview. A deleted listing is not found for everyone. The server decides the
   viewer relation from the session, never from the client: the owner is the
-  member whose subject is `Listing.OwnerId`, and the verification team holds
-  the `verifier` role (ADR 0007).
+  member whose subject is `Listing.OwnerId`, and the Jubilee team holds
+  the `moderator` role (ADR 0007).
 - **`ListingStatus`** — the wire value of `ListingPageDto.Status`: `live` for a
-  public listing, otherwise the first that applies of `on-hold`, `paused`,
-  `draft`, `ready-to-review`, `changes-requested`, `declined`. The browser
+  public listing, otherwise the first that applies of `on-hold`, `paused` and
+  `draft`. The browser
   turns it into words.
 - **Related listings selection** — query for up to two other live listings in
   the same category, excluding the current listing. The two are the first in
@@ -161,8 +161,8 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | `L2-034` | `L1-005` | The page `/b/:slug` shall present a business whose main offer is products, with its header, product cards, Custom work, About, Details and related businesses. |
 | `L2-037` | `L1-005` | An owner who opens their own live listing shall see an owner banner and "Edit listing" in place of the member actions, with save and report hidden, and the visit shall not count as a listing view. |
 | `L2-040` | `L1-005` | A listing page shall show up to two other live businesses of the same category, never the current one, and shall omit the section when the category has no other live business. |
-| `L2-219` | `L1-005` | The owner and the verification team shall see a listing that is not public as a preview that gives its status. |
-| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
+| `L2-219` | `L1-005` | The owner and the Jubilee team shall see a listing that is not public as a preview that gives its status. |
+| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are live and not paused, deleted or under a moderation hold. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API endpoint; no check shall rely on the client hiding a control. |
 | `L2-205` | `L1-028` | `/b/:slug` for a space shall show the space page and never send the exact address to anyone but the owner. |

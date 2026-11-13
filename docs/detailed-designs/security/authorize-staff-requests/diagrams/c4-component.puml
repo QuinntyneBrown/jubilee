@@ -5,9 +5,9 @@ title Components — Authorize staff requests
 
 Container_Boundary(api, "Jubilee API") {
   Component(authn, "Authentication", "ASP.NET Core", "Default scheme - member cookie; Staff scheme - staff cookie")
-  Component(policies, "StaffPolicies", "Authorization policies", "Verifier and Admin - Staff scheme only - role claim")
+  Component(policies, "StaffPolicies", "Authorization policies", "Moderator and Admin - Staff scheme only - role claim")
   Component(challenge, "StaffChallenge", "Cookie events", "401 or 403 STAFF_SESSION_REQUIRED - 403 FORBIDDEN")
-  Component(controllers, "Admin controllers", "ASP.NET Core controllers", "RequiresVerifier - RequiresAdmin")
+  Component(controllers, "Admin controllers", "ASP.NET Core controllers", "RequiresModerator - RequiresAdmin")
   Component(store, "StaffTicketStore", "ITicketStore", "Staff sessions by key within Kind staff")
 }
 ContainerDb(db, "Jubilee database", "SQL Server", "Sessions")

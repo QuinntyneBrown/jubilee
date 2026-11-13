@@ -18,8 +18,8 @@ public sealed class ListingConfiguration : IEntityTypeConfiguration<Listing>
         builder.Property(l => l.Tagline).HasMaxLength(200).IsRequired();
         builder.Property(l => l.Highlight).HasMaxLength(60);
         builder.Property(l => l.CategorySlug).HasMaxLength(40).IsRequired();
-        builder.Property(l => l.ApprovedBy).HasMaxLength(120);
-        builder.Ignore(l => l.IsVerified);
+        builder.Property(l => l.TakenDownByName).HasMaxLength(200);
+        builder.Property(l => l.TakedownReason).HasMaxLength(1000);
         builder.Ignore(l => l.ReplyTimeBand);
         builder.Property(l => l.Kind).HasConversion<string>().HasMaxLength(16);
         builder.Property(l => l.OwnerName).HasMaxLength(200);
@@ -627,41 +627,6 @@ internal static class StringLists
                 (a, b) => a != null && b != null && a.SequenceEqual(b),
                 list => list.Aggregate(0, (hash, item) => HashCode.Combine(hash, item.GetHashCode())),
                 list => list.ToList()));
-}
-
-public sealed class ReviewTickConfiguration : IEntityTypeConfiguration<ReviewTick>
-{
-    public void Configure(EntityTypeBuilder<ReviewTick> builder)
-    {
-        builder.ToTable("ReviewTicks");
-        builder.HasKey(t => t.Id);
-        builder.Property(t => t.Id).ValueGeneratedNever();
-        builder.Property(t => t.Item).HasMaxLength(40).IsRequired();
-        builder.Property(t => t.TickedBy).HasMaxLength(200).IsRequired();
-        builder.Property(t => t.TickedByName).HasMaxLength(200).IsRequired();
-        builder.HasIndex(t => new { t.ListingId, t.Item }).IsUnique();
-        builder.HasOne<Listing>().WithMany().HasForeignKey(t => t.ListingId).OnDelete(DeleteBehavior.Cascade);
-    }
-}
-
-public sealed class ListingDecisionConfiguration : IEntityTypeConfiguration<ListingDecision>
-{
-    public void Configure(EntityTypeBuilder<ListingDecision> builder)
-    {
-        builder.ToTable("ListingDecisions");
-        builder.HasKey(d => d.Id);
-        builder.Property(d => d.Id).ValueGeneratedNever();
-        builder.Property(d => d.DecidedBy).HasMaxLength(200).IsRequired();
-        builder.Property(d => d.DecidedByName).HasMaxLength(200).IsRequired();
-        builder.Property(d => d.Note).HasMaxLength(2000);
-        builder.Property(d => d.SnapshotName).HasMaxLength(200);
-        builder.Property(d => d.SnapshotTagline).HasMaxLength(400);
-        builder.Property(d => d.SnapshotCategory).HasMaxLength(60);
-        StringLists.Store(builder.Property(d => d.Areas));
-        StringLists.Store(builder.Property(d => d.Ticked));
-        builder.HasIndex(d => new { d.ListingId, d.DecidedAt });
-        builder.HasOne<Listing>().WithMany().HasForeignKey(d => d.ListingId).OnDelete(DeleteBehavior.Cascade);
-    }
 }
 
 public sealed class AuditRecordConfiguration : IEntityTypeConfiguration<AuditRecord>

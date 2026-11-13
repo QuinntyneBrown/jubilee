@@ -178,8 +178,6 @@ export class MarketingHomePage implements Screen {
   readonly cardTags: Locator;
   readonly cardTaglines: Locator;
   readonly cardHighlights: Locator;
-  readonly cardVerified: Locator;
-  readonly cardVerifiedIcons: Locator;
   readonly forBusinesses: Locator;
   readonly points: Locator;
   readonly sendDetails: Locator;
@@ -258,8 +256,6 @@ export class MarketingHomePage implements Screen {
     this.cardTags = this.cards.locator('.mkt-card__tag');
     this.cardTaglines = this.cards.locator('.mkt-card__tagline');
     this.cardHighlights = this.cards.locator('.mkt-card__highlight');
-    this.cardVerified = this.cards.locator('.mkt-card__verified');
-    this.cardVerifiedIcons = this.cardVerified.locator('svg');
     this.forBusinesses = this.main.locator('section#businesses');
     this.points = this.forBusinesses.locator('.mkt-points > li');
     this.pointList = this.forBusinesses.locator('.mkt-points');

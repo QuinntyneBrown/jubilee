@@ -43,9 +43,9 @@ attention to an API or a calendar feed long before I would care about anything c
 | Meetings in his own calendar, kept up to date | "Add to calendar" downloads one `.ics` file per confirmed booking | A private calendar feed address per member and per listing that calendars can subscribe to, so a changed time changes everywhere |
 | Availability that matches his real week | Bookable times come from the listing's hours | Let an owner set bookable times per service, or block out dates, apart from the public hours |
 | Requests in the tools he already uses | In-app, e-mail, toasts and banners | A documented read-only feed or webhook of an owner's own incoming requests |
-| To show the range of his work | Six photos and one Website field | A few labelled links (portfolio, case study) checked by the verification team like the tagline |
-| To be found by skill | Keyword search over businesses and services; no tags | Let an owner add a few skills to the listing, reviewed by the verification team like the tagline |
-| To know what "Verified" covers | A Help answer and a checklist he cannot see | Show on each listing what the verification team checked and when |
+| To show the range of his work | Six photos and one Website field | A few labelled links (portfolio, case study), flagged for the Jubilee team like a link in the tagline |
+| To be found by skill | Keyword search over businesses and services; no tags | Let an owner add a few skills to the listing, flagged for the Jubilee team like the tagline |
+| To know who stands behind a listing | A Help answer: owners agree to deal honestly, and the Jubilee team takes down listings that misrepresent a business | Show on each listing since when it has been live and that its owner agreed to the statement of faith |
 
 > These are a persona's suggestions, not requirements. Anything taken up needs a requirement in
 > `docs/specs/`, a detailed design and a mock before it is built, and must serve the mission.

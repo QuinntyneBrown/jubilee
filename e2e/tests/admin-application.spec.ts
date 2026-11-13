@@ -8,16 +8,16 @@ import { ADMIN_URL, expect, test } from '../fixtures/jb-test';
 import { miriam, stubStaff } from '../fixtures/staff';
 import { AdminShellPage } from '../pages/admin-shell.page';
 import { AdminSignInPage } from '../pages/admin-sign-in.page';
-import { AdminVerificationsPage } from '../pages/admin-verifications.page';
+import { AdminListingsPage } from '../pages/admin-listings.page';
 
 test.describe('the admin application (L2-188)', () => {
-  test('AC2: the root opens the verification queue', async ({ page, jb }) => {
-    const queue = new AdminVerificationsPage(page);
+  test('AC2: the root opens the listings', async ({ page, jb }) => {
+    const listings = new AdminListingsPage(page);
     await stubAdmin(page);
     await jb.gotoAdmin('/');
 
-    await expect(page).toHaveURL(`${ADMIN_URL}/verifications`);
-    await expect(queue.heading).toHaveText('Verification queue');
+    await expect(page).toHaveURL(`${ADMIN_URL}/listings`);
+    await expect(listings.heading).toHaveText('Listings');
   });
 
   test('AC3: the admin bar shows the lockup and tag, the staff navigation, the name and role, and Sign out', async ({
@@ -31,21 +31,21 @@ test.describe('the admin application (L2-188)', () => {
 
     await expect(shell.brand).toContainText('jubilee');
     await expect(shell.tag).toHaveText('admin');
-    await expect(shell.navLink(/^Verifications/)).toBeVisible();
+    await expect(shell.navLink('Listings')).toBeVisible();
     await expect(shell.navLink('Reports')).toHaveAttribute('aria-current', 'page');
     await expect(shell.navLink('Featured')).not.toHaveAttribute('aria-current', 'page');
     await expect(shell.staffName).toHaveText('Miriam Castillo');
-    await expect(shell.staffRole).toHaveText('Verifier');
+    await expect(shell.staffRole).toHaveText('Moderator');
     await expect(shell.signOut).toBeVisible();
   });
 
   test('AC3: a staff member with both roles is shown with both', async ({ page, jb }) => {
     const shell = new AdminShellPage(page);
     await shell.setWidth(1280);
-    await stubModeration(page, {}, { ...miriam, roles: ['verifier', 'admin'] });
+    await stubModeration(page, {}, { ...miriam, roles: ['moderator', 'admin'] });
     await jb.gotoAdmin('/featured');
 
-    await expect(shell.staffRole).toHaveText('Verifier · Administrator');
+    await expect(shell.staffRole).toHaveText('Moderator · Administrator');
   });
 
   test('AC5: without a staff session a screen sends the browser to sign in, keeping where it was going', async ({
@@ -60,7 +60,7 @@ test.describe('the admin application (L2-188)', () => {
     await expect(signIn.heading).toHaveText('Sign in to the admin application');
   });
 
-  test('an unknown address says the page was not found and offers the queue', async ({
+  test('AC7: an unknown address says the page was not found and offers the listings', async ({
     page,
     jb,
   }) => {
@@ -69,8 +69,8 @@ test.describe('the admin application (L2-188)', () => {
     await jb.gotoAdmin('/no-such-page');
 
     await expect(shell.statusHeading).toHaveText('We couldn’t find that page.');
-    await shell.statusAction('Go to the verification queue').click();
-    await expect(page).toHaveURL(`${ADMIN_URL}/verifications`);
+    await shell.statusAction('Go to listings').click();
+    await expect(page).toHaveURL(`${ADMIN_URL}/listings`);
   });
 });
 
@@ -85,7 +85,7 @@ test.describe('staff sign-in through single sign-on (L2-189)', () => {
 
     await expect(signIn.heading).toHaveText('Sign in to the admin application');
     await expect(signIn.lead).toHaveText(
-      'For the Jubilee verification team and administrators. You’ll sign in with your Jubilee staff account and confirm it with a second factor.',
+      'For the Jubilee team and administrators. You’ll sign in with your Jubilee staff account and confirm it with a second factor.',
     );
     await expect(signIn.signIn).toHaveText('Sign in with your staff account');
     await expect(signIn.frameFoot).toHaveText('Members sign in at app.jubilee.to.');
@@ -169,12 +169,12 @@ test.describe('staff sign-in through single sign-on (L2-189)', () => {
     page,
     jb,
   }) => {
-    const queue = new AdminVerificationsPage(page);
+    const listings = new AdminListingsPage(page);
     await stubAdmin(page);
-    await jb.gotoAdmin('/sign-in?returnUrl=%2Fverifications');
+    await jb.gotoAdmin('/sign-in?returnUrl=%2Flistings');
 
-    await expect(page).toHaveURL(`${ADMIN_URL}/verifications`);
-    await expect(queue.heading).toHaveText('Verification queue');
+    await expect(page).toHaveURL(`${ADMIN_URL}/listings`);
+    await expect(listings.heading).toHaveText('Listings');
   });
 });
 
@@ -184,7 +184,7 @@ test.describe('the staff session (L2-190)', () => {
     const signIn = new AdminSignInPage(page);
     await shell.setWidth(1280);
     const fake = await stubAdmin(page);
-    await jb.gotoAdmin('/verifications');
+    await jb.gotoAdmin('/listings');
 
     await shell.signOut.click();
 
@@ -268,7 +268,7 @@ test.describe('the network restriction (L2-192)', () => {
   }) => {
     const signIn = new AdminSignInPage(page);
     await stubStaff(page, 'network-refused');
-    await jb.gotoAdmin('/verifications');
+    await jb.gotoAdmin('/listings');
 
     await expect(signIn.alert).toContainText('You’re not on an allowed network.');
     await expect(signIn.signIn).toHaveCount(0);

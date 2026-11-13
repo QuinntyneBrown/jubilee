@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. *Site chrome* — frame of navigation that surrounds
 the content of every app page — consists of four parts: a skip link, a top bar, a
 bottom tab bar on small screens, and a footer. This feature covers that frame.

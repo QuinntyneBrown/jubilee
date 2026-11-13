@@ -4,7 +4,7 @@ import { IconName } from '../icon/icons';
 
 /**
  * A note that floats over a corner of a `jb-app-glimpse`:
- * `<p jb-floating-note tone="trust" icon="verified">Verified by the Jubilee team</p>`.
+ * `<p jb-floating-note tone="trust" icon="check-circle">Every owner agrees to our statement of faith</p>`.
  * `trust` sits over the top corner on the heading accent, `reply` over the bottom corner on gold.
  * The icon is decorative; the words carry the note.
  */

@@ -14,7 +14,7 @@ skinparam package {
   FontColor #101828
   BackgroundColor #F9FAFB
 }
-actor "Verification team member" as actor
+actor "Jubilee team member" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "ReportReviewPage" as page
   participant "AdminApi" as client
@@ -33,7 +33,7 @@ end box
 actor -> page : Open a reported conversation
 page -> client : Request the conversation for the report
 client -> controller : GET /api/admin/reports/{reportId}/conversation
-controller -> controller : Authenticate and apply L2-133 verifier policy
+controller -> controller : Authenticate and apply L2-133 moderator policy
 controller -> behavior : Send GetReportedConversationQuery with reason ReportId
 alt reason is missing or names no open report
   behavior --> controller : Validation failure
@@ -56,7 +56,7 @@ else reason is valid
     db --> handler : Conversation
     handler --> behavior : ReportedConversationDto
     behavior --> controller : ReportedConversationDto
-    controller --> client : 200 conversation for audience Verifier
+    controller --> client : 200 conversation for audience Moderator
     client --> page : Typed conversation
     page --> actor : Show the reported conversation
   end

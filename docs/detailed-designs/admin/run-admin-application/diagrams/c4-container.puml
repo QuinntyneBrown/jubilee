@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Run the admin application
 
-Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(staff, "Staff member", "Moderator or administrator on an allowed network")
 Person(member, "Member", "Uses the app")
 System_Boundary(j, "Jubilee") {
   Container(admin, "Jubilee Admin Web", "Angular SPA on admin.jubilee.to", "Staff sign-in and the five staff screens")

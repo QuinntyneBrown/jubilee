@@ -1,7 +1,7 @@
 namespace Jubilee.Domain;
 
 /// <summary>
-/// A listing the verification team chose as "Featured this week": shown from
+/// A listing the Jubilee team chose as "Featured this week": shown from
 /// <see cref="StartsOn"/> for <see cref="DurationDays"/> days, counted in America/Toronto (L2-106).
 /// </summary>
 public sealed class FeaturedSlot

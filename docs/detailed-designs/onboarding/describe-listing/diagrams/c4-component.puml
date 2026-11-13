@@ -9,7 +9,7 @@ Container_Boundary(web, "Jubilee Web") {
   Component(cards, "ChoiceCards", "jb-choice-cards", "Products or Services or A space")
   Component(product, "ProductEditorDialog", "Angular CDK dialog", "With data.draft it closes with a DraftItem and calls no API")
   Component(service, "ServiceEditorDialog", "Angular CDK dialog", "With data.draft it closes with a DraftItem and calls no API")
-  Component(preview, "BusinessCardPreview", "jb-business-card-preview", "How members see you card with the highlight and Pending verification")
+  Component(preview, "BusinessCardPreview", "jb-business-card-preview", "How members see you card with the highlight and Not published yet")
   Component(client, "ListingDraftsApi", "Service contract (LISTING_DRAFTS_API)", "Calls /api/listing-drafts")
 }
 Container_Boundary(api, "Jubilee API") {

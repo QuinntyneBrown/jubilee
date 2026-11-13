@@ -190,7 +190,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-A member sends feedback to Jubilee and reads their own. The verification team
+A member sends feedback to Jubilee and reads their own. The Jubilee team
 does not take part yet: reading and answering feedback is deferred.
 
 ![C4 system context for receiving and storing feedback](diagrams/c4-context.png)

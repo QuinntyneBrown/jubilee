@@ -15,7 +15,7 @@ test.describe('space page (L2-205)', () => {
 
     await expect(space.backLink).toHaveText('Back to rentals');
     await expect(space.backLink).toHaveAttribute('href', '/c/rooms-rentals');
-    await expect(space.kicker).toHaveText('Verified host · Roncesvalles');
+    await expect(space.kicker).toHaveText('Roncesvalles');
     await expect(space.heading).toHaveText('Guest suite near Roncesvalles');
     await expect(space.line).toHaveText(
       'Private suite for visiting family, conferences or a weekend away',
@@ -35,7 +35,7 @@ test.describe('space page (L2-205)', () => {
     await expect(space.ruleItems).toHaveText(['Check-in after 3 pm', 'No parties', 'No smoking']);
     await expect(space.household).toHaveCount(0);
     await expect(space.hostName).toHaveText('Paul & Marta Kowalski');
-    await expect(space.hostVerified).toHaveText('Verified by Jubilee');
+    await expect(space.hostCard).not.toContainText('Verified');
     await expect(space.hostAbout).toContainText('Ten minutes’ walk to High Park');
     await expect(space.moreCards).toHaveCount(4);
     await expect(space.moreCard(0).title).toHaveText(

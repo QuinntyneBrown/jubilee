@@ -39,7 +39,7 @@ public sealed class GetBrowseHomeQueryHandler(
     {
         // The term is inside the JSON column, so the category's public spaces are picked in memory.
         var spaces = (await db.Listings.AsNoTracking().WherePublic().WhereSpace()
-                .OrderByDescending(l => l.ApprovedAt)
+                .OrderByDescending(l => l.PublishedAt)
                 .ThenBy(l => l.SortName)
                 .ToListAsync(cancellationToken))
             .Where(l => l.Space is not null)

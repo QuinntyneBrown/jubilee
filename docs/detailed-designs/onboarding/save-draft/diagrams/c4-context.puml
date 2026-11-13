@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title System Context — Save a draft
 
 Person(owner, "Member", "Fills in the listing form over more than one visit")
-System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
 System_Ext(email, "E-mail provider", "Delivers the notice that an idle draft is about to be deleted")
 
 Rel(owner, jubilee, "Saves and reopens a listing draft")

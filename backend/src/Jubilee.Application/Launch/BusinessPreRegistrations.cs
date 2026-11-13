@@ -10,7 +10,7 @@ namespace Jubilee.Application.Launch;
 /// <summary>Where the team hears of a pre-registration and of a new sign-up (<c>Launch:TeamEmail</c>); null when nobody is told by e-mail (ADR 0044, ADR 0047).</summary>
 public sealed record LaunchSettings(string? TeamEmail);
 
-/// <summary>"Send my details" (L2-216): an owner's business, before launch. It lists and verifies nothing.</summary>
+/// <summary>"Send my details" (L2-216): an owner's business, before launch. It lists nothing.</summary>
 public sealed record PreRegisterBusinessCommand(
     string? BusinessName, string? ContactName, string? Email, string? Phone, string? Category, string? Area, string? Website,
     string? Description, bool Consent, DateTimeOffset? ReceivedAt = null) : IRequest;
@@ -139,7 +139,7 @@ public sealed partial class PreRegisterBusinessCommandHandler(IAppDbContext db, 
         + $"Area of Toronto: {sent.Area}\n"
         + $"Website or social link: {sent.Website ?? "not given"}\n\n"
         + $"About the business:\n{sent.Description}\n\n"
-        + "They agreed to be contacted about listing this business. It is not listed or verified: verification still applies.\n\n"
+        + "They agreed to be contacted about listing this business. It is not listed yet: the owner publishes the listing once Jubilee opens.\n\n"
         + "Jubilee · Toronto's Christian marketplace\n";
 
     [GeneratedRegex(@"\D")]

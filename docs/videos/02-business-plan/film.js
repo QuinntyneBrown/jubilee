@@ -52,7 +52,7 @@ ${fadeIn(S)}
 ${wipeOut(S)}
 </div>`;
 
-  // ── S02 · Vouched for · 0:08–0:16 ───────────────────────────────────────────────────────────────────
+  // ── S02 · Dealing honestly · 0:08–0:16 ──────────────────────────────────────────────────────────
   const TILES = [
     { src: PHOTO.owner, x: 960, y: 0, at: 0.5, pos: '50% 30%' },
     { src: PHOTO.plumbing, x: 1440, y: 0, at: 0.8, pos: '50% 50%' },
@@ -67,7 +67,7 @@ ${TILES.map((p) => `<div class="a" style="left:${p.x}px;top:${p.y}px;width:480px
     el.style.opacity = Math.min(1, p * 4);
     el.style.transform = `scale(${lerp(1.25, 1, s)}) rotate(${lerp(-18, -6, s)}deg)`;
   })}>${S.seal(300, 10)}</div>
-<h1 class="a d" style="left:120px;bottom:120px;font-size:86px;font-weight:700;line-height:0.98;letter-spacing:-0.035em">${S.words(3.0, 'Christian-owned.')}<br>${S.words(4.2, '', { accent: 'Vouched for.' })}</h1>
+<h1 class="a d" style="left:120px;bottom:120px;font-size:86px;font-weight:700;line-height:0.98;letter-spacing:-0.035em">${S.words(3.0, 'Christian-owned.')}<br>${S.words(4.2, '', { accent: 'Dealing honestly.' })}</h1>
 ${wipeIn(S)}
 </div>`;
 

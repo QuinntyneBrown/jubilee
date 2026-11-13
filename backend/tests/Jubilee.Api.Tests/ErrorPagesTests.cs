@@ -227,14 +227,14 @@ public sealed partial class ErrorPagesTests : IClassFixture<JubileeApiFactory>, 
     {
         var client = AsJoanna();
 
-        var response = await client.PostAsJsonAsync("/api/help/access-requests", new { url = "/admin/verifications?stage=ready" });
+        var response = await client.PostAsJsonAsync("/api/help/access-requests", new { url = "/admin/reports?status=open" });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var stored = await Read(db => db.AccessRequests.SingleAsync());
         Assert.Equal("member|joanna", stored.MemberSubject);
-        Assert.Equal("/admin/verifications?stage=ready", stored.Url);
+        Assert.Equal("/admin/reports?status=open", stored.Url);
         // Still refused where it was refused before.
-        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/admin/verifications")).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/admin/listings")).StatusCode);
     }
 
     [Fact]

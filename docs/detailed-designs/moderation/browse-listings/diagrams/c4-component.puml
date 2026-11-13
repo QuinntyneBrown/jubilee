@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse listings
+Container_Boundary(web, "Jubilee Admin Web") {
+  Component(guard, "staffGuard", "Angular route guard", "Admits a staff session - sends others to staff sign-in")
+  Component(page, "AdminListingsPage", "Angular page", "Shows summary line and search and listings table")
+  Component(bar, "jb-admin-bar", "components library", "Shows Listings - Reports - Featured")
+  Component(client, "AdminApi", "Typed HTTP client", "Calls the /api/admin endpoints")
+}
+Container_Boundary(api, "Jubilee API") {
+  Component(ctrl, "AdminListingsController", "ASP.NET Core controller", "Exposes GET /api/admin/listings")
+  Component(policy, "RequiresModerator", "Staff authorization policy", "Requires a staff session with the moderator role")
+  Component(qh, "GetAdminListingsQueryHandler", "MediatR handler", "Builds rows and status and flags and the summary counts")
+}
+ContainerDb(db, "Jubilee database", "SQL Server", "Listings and staff sessions")
+
+Rel(guard, page, "Activates")
+Rel(page, bar, "Is shown under")
+Rel(page, client, "Loads the listings through")
+Rel(client, ctrl, "Calls", "JSON/HTTPS")
+Rel(ctrl, policy, "Applies")
+Rel(policy, db, "Reads the staff session from", "EF Core")
+Rel(ctrl, qh, "Sends GetAdminListingsQuery")
+Rel(qh, db, "Reads published listings", "EF Core")
+@enduml

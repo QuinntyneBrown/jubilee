@@ -475,8 +475,6 @@ button.avatar { border: 0; padding: 0; cursor: pointer; }
 .price--lg { font-size: var(--font-size-2xl); }
 .price { font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .perk { color: var(--color-success-fg); font-weight: var(--font-weight-semibold); }
-.verified { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--color-fg-muted); }
-.verified .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
 .back-link { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--target-comfortable); font: var(--text-body-sm); color: var(--color-fg-muted); text-decoration: none; }
 .back-link:hover, .back-link[data-state="hover"] { color: var(--color-fg-default); text-decoration: underline; }
 .link--standalone { display: inline-flex; align-items: center; gap: var(--space-1); min-height: var(--target-min); font: var(--text-label); }
@@ -615,7 +613,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .dir-row:active, .dir-row[data-state="active"] { background: var(--color-bg-subtle-hover); }
 .dir-row__body { flex: 1; min-width: 0; }
 .dir-row__name { display: flex; align-items: center; gap: var(--space-2); font: var(--text-label); font-size: var(--font-size-md); }
-.dir-row__name .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
 .dir-row__tagline { display: block; font: var(--text-body-sm); color: var(--color-fg-muted); }
 .dir-row > .icon { color: var(--color-fg-subtle); }
 .dir-more { display: inline-flex; align-items: center; min-height: var(--target-comfortable); font: var(--text-label); }
@@ -630,7 +627,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 }
 .detail-head { display: flex; flex-direction: column; gap: var(--space-3); }
 .detail-head__kicker { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); font: var(--text-body-sm); color: var(--color-fg-muted); }
-.detail-head__kicker .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
 .detail-head__actions { display: flex; gap: var(--space-2); align-items: center; }
 .detail-head__actions .btn--primary { flex: 1; }
 .tag { display: inline-flex; align-items: center; padding: var(--space-1) var(--space-3); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-bg-surface); font: var(--text-body-sm); font-weight: var(--font-weight-medium); }
@@ -1060,8 +1056,6 @@ a[data-state="hover"] { color: var(--color-fg-link-hover); text-decoration-thick
 .host-card { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-5); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-xl); background: var(--color-bg-surface); }
 .host-card__label { font: var(--text-body-sm); color: var(--color-fg-muted); }
 .host-card__name { font: var(--text-h4); font-size: var(--font-size-lg); }
-.host-card__verified { display: inline-flex; align-items: center; gap: var(--space-1); font: var(--text-caption); color: var(--color-fg-muted); }
-.host-card__verified .icon { width: var(--icon-size-sm); height: var(--icon-size-sm); color: var(--color-success-icon); }
 .host-card__about { margin-top: var(--space-2); }
 
 /* Booking card: the rent, the minimum stay and the one thing to do. The request itself is a dialog. */

@@ -20,7 +20,7 @@ box "Backend — Jubilee API" #ECFDF3
   participant "StaffNetworkMiddleware" as net
   participant "Staff endpoint" as ep
 end box
-actor -> front : GET admin.jubilee.to/api/admin/verifications
+actor -> front : GET admin.jubilee.to/api/admin/listings
 front -> front : Access restriction - allow-list (L2-192)
 front -> proxy : X-Forwarded-For ends with the staff address
 proxy -> appfront : X-Jubilee-Client-Address = staff address - X-Jubilee-Proxy-Key

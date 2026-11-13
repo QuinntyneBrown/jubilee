@@ -34,7 +34,8 @@ says of links to the app describes the launched state, which returns at launch.
 - **`Lockup`** (`jb-lockup`) — the mark and wordmark at a given size, on cream or on ink. The
   wordmark is Archivo 700 at 110% width with −0.03em tracking, as everywhere in Jubilee.
 - **`HeroVisual`** (`jb-hero-visual`) — the glimpse of the app in the opening: a search field,
-  four verified businesses and the two floating notes.
+  four businesses and the two floating notes ("Every owner agrees to our statement of faith"
+  and "Message a business directly"); it states no count of businesses.
 - **`PitchVideo`** (`jb-pitch-video`) — the player. Before play it shows the still, the play
   button and the film's length; the `<video>` element has `preload="none"`, so the film is not
   fetched. Play, or a chapter, hides the still, turns the browser's controls on, seeks to the
@@ -43,7 +44,7 @@ says of links to the app describes the launched state, which returns at launch.
 - **`Benefits`**, **`HowItWorks`**, **`InsideTheApp`**, **`ForBusinesses`** — the four content
   sections. `InsideTheApp` renders five `MarketingBusinessCard`s, the first one featured.
 - **`MarketingBusinessCard`** (`a[jb-marketing-business-card]`) — a photo card for a business:
-  category or "Shop", name, tagline, highlight and the Verified mark.
+  category or "Shop", name, tagline and highlight; it carries no "Verified" mark (ADR 0057).
 - **`content.ts`** — the page's listings: the five cards, the four search results and the
   count of businesses. They are editorial content taken from the design reference, not read
   from the directory.

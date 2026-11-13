@@ -69,7 +69,7 @@ public sealed class ReportListingTests : IClassFixture<JubileeApiFactory>, IAsyn
 
     // L2-039 AC3
     [Fact]
-    public async Task L2_039_AC3_a_valid_report_is_stored_for_the_verification_team()
+    public async Task L2_039_AC3_a_valid_report_is_stored_for_the_jubilee_team()
     {
         await ArrangeListing();
 

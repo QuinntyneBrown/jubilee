@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Icon } from '../icon/icon';
 
-/** One business in the glimpse's results. Every one is verified, and the row says so. */
+/** One business in the glimpse's results. */
 export interface AppGlimpseResult {
   name: string;
   tagline: string;
@@ -14,8 +14,8 @@ export interface AppGlimpseResult {
  * corners, `jb-floating-note`s.
  *
  *     <div jb-app-glimpse label="A glimpse of the app" search="Home repairs near Leslieville"
- *          caption="Home & property · 11 verified" [results]="results">
- *       <p jb-floating-note tone="trust" icon="verified">Verified by the Jubilee team</p>
+ *          caption="Home & property · a preview" [results]="results">
+ *       <p jb-floating-note tone="trust" icon="check-circle">Every owner agrees to our statement of faith</p>
  *     </div>
  *
  * It is a picture of the app, not a part of it: nothing in it can be used. It reads the

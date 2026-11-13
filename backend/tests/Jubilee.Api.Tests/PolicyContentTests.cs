@@ -30,7 +30,7 @@ public sealed class PolicyContentTests : IClassFixture<JubileeApiFactory>, IAsyn
     };
 
     [Theory]
-    [InlineData("statement-of-faith", "Statement of faith", "How a listing is verified")]
+    [InlineData("statement-of-faith", "Statement of faith", "How listings stay honest")]
     [InlineData("terms", "Terms of use", "Requests and payment")]
     [InlineData("privacy", "Privacy", "Your choices")]
     [InlineData("help", "Help", "How do I report a listing?")]
@@ -53,9 +53,25 @@ public sealed class PolicyContentTests : IClassFixture<JubileeApiFactory>, IAsyn
 
         var sections = page.GetProperty("sections").EnumerateArray().ToList();
         Assert.Equal(
-            ["How does a business get verified?", "Does Jubilee take payment?", "Is it free?", "Who can see my messages?", "How do I report a listing?"],
+            ["How does Jubilee keep listings honest?", "Does Jubilee take payment?", "Is it free?", "Who can see my messages?", "How do I report a listing?"],
             sections.Select(s => s.GetProperty("heading").GetString()));
-        Assert.Equal("how-does-a-business-get-verified", sections[0].GetProperty("anchor").GetString());
+        Assert.Equal("how-does-jubilee-keep-listings-honest", sections[0].GetProperty("anchor").GetString());
+        Assert.Equal(
+            "Every owner agrees to Jubilee's statement of faith and to deal honestly with every customer when they list. If a listing isn't honest about its business, report it from the listing page: the Jubilee team reads every report and takes down listings that misrepresent a business.",
+            sections[0].GetProperty("body").GetString());
+    }
+
+    // ADR 0057: no policy page says that Jubilee verifies a listing
+    [Theory]
+    [InlineData("statement-of-faith")]
+    [InlineData("terms")]
+    [InlineData("privacy")]
+    [InlineData("help")]
+    public async Task No_policy_page_claims_that_a_listing_is_verified(string slug)
+    {
+        var page = await _factory.CreateClient().GetStringAsync($"/api/content/{slug}");
+
+        Assert.DoesNotContain("verif", page, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

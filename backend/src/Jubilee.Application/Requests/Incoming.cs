@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Application.Requests;
 
-public sealed record OwnerListingDto(string Name, string Slug, bool Verified);
+public sealed record OwnerListingDto(string Name, string Slug);
 
 public sealed record RequestCountsDto(int New, int Confirmed, int Declined, int All);
 
@@ -273,7 +273,7 @@ public sealed class ListIncomingRequestsQueryHandler(IAppDbContext db, TimeProvi
             IncomingRules.Total(r),
             IncomingRules.When(r))).ToList();
         return new IncomingRequestsDto(
-            new OwnerListingDto(listing.Name, listing.Slug, VerifiedListingSpecification.IsSatisfiedBy(listing)), tab, counts, repliesFast, rows);
+            new OwnerListingDto(listing.Name, listing.Slug), tab, counts, repliesFast, rows);
     }
 }
 

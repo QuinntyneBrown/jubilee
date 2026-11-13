@@ -1357,7 +1357,7 @@ test.describe('report a conversation (L2-063)', () => {
 
     await expect(dialog.title).toHaveText('Report this conversation');
     await expect(dialog.description).toHaveText(
-      'Reports are private. Our verification team reads this conversation only while the report is open.',
+      'Reports are private. Our team reads this conversation only while the report is open.',
     );
     await expect(dialog.counter).toHaveText('1,000 characters left');
     await expect(dialog.block).not.toBeChecked();
@@ -1431,7 +1431,7 @@ test.describe('report a conversation (L2-063)', () => {
 
     await expect(dialog.title).toHaveText('Thanks for telling us');
     await expect(dialog.description).toHaveText(
-      'Your report is private. Our verification team reviews it within one business day. Legacy Financial is blocked.',
+      'Your report is private. Our team reviews it within one business day. Legacy Financial is blocked.',
     );
     expect(fake.reports).toEqual([
       { reason: 'He asks for a deposit by e-transfer before we have met.', block: true },
@@ -1462,7 +1462,7 @@ test.describe('report a conversation (L2-063)', () => {
     await dialog.send.click();
     await expect(dialog.title).toHaveText('Thanks for telling us');
     await expect(dialog.description).toHaveText(
-      'Your report is private. Our verification team reviews it within one business day.',
+      'Your report is private. Our team reviews it within one business day.',
     );
     expect(fake.reports).toEqual([{ reason: 'Spam, three times a day.', block: false }]);
   });

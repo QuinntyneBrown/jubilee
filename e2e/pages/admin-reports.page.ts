@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 import type { Region, Screen } from '../fixtures/visual';
 import { AdminShellPage } from './admin-shell.page';
 
-/** `/reports` of the admin application: the reports waiting for the verification team (L2-105). */
+/** `/reports` of the admin application: the reports waiting for the Jubilee team (L2-105). */
 export class AdminReportsPage extends AdminShellPage implements Screen {
   readonly heading: Locator;
   readonly subtitle: Locator;

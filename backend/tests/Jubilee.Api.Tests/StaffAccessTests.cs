@@ -26,12 +26,8 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     /// <summary>Every admin-only endpoint, as (method, path, body).</summary>
     public static TheoryData<string, string> Endpoints => new()
     {
-        { "GET", "/api/admin/verifications" },
-        { "GET", $"/api/admin/verifications/{Any}" },
-        { "PUT", $"/api/admin/verifications/{Any}/checklist" },
-        { "POST", $"/api/admin/verifications/{Any}/approve" },
-        { "POST", $"/api/admin/verifications/{Any}/request-changes" },
-        { "POST", $"/api/admin/verifications/{Any}/decline" },
+        { "GET", "/api/admin/listings" },
+        { "GET", $"/api/admin/listings/{Any}" },
         { "GET", "/api/admin/audit" },
         { "GET", "/api/admin/reports" },
         { "POST", $"/api/admin/reports/{Any}/open" },
@@ -67,7 +63,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [MemberData(nameof(Endpoints))]
     public async Task L2_191_AC2_a_member_session_is_refused_whatever_role_it_carries(string method, string path)
     {
-        foreach (var role in new string?[] { null, "verifier", "admin" })
+        foreach (var role in new string?[] { null, "moderator", "admin" })
         {
             var member = _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna", role);
 
@@ -80,48 +76,48 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
 
     // L2-191 AC2: nothing happens
     [Fact]
-    public async Task L2_191_AC2_a_member_session_that_claims_the_verifier_role_changes_nothing()
+    public async Task L2_191_AC2_a_member_session_that_claims_the_moderator_role_changes_nothing()
     {
-        var listing = ListingMother.NonPublic(NonPublicState.ReadyToReview, "ready-co", "shops");
+        var listing = ListingMother.Public("ready-co", "shops");
         await _factory.Arrange(listing);
-        var member = _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna", "verifier");
+        var member = _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna", "moderator");
 
-        await member.PostAsJsonAsync($"/api/admin/verifications/{listing.Id}/approve", new { note = "x" });
+        await member.PostAsJsonAsync($"/api/admin/listings/{listing.Id}/take-down", new { reason = "x" });
 
         await _factory.WithDb(async db =>
-            Assert.Equal(ListingStage.ReadyToReview, (await db.Listings.FindAsync(listing.Id))!.Stage));
+            Assert.Null((await db.Listings.FindAsync(listing.Id))!.DeletedAt));
     }
 
     // L2-191 AC2, L2-143 AC1
     [Fact]
     public async Task L2_191_AC2_the_refusal_of_a_member_session_is_logged_as_a_failed_authorization()
     {
-        await _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna").GetAsync("/api/admin/verifications");
+        await _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna").GetAsync("/api/admin/listings");
 
         var entry = Assert.Single(_factory.Logs.Entries, e => e.Message.Contains("Failed authorization"));
         Assert.Contains("STAFF_SESSION_REQUIRED", entry.Message);
         Assert.Contains("member|joanna", entry.Message);
-        Assert.Contains("/api/admin/verifications", entry.Message);
+        Assert.Contains("/api/admin/listings", entry.Message);
     }
 
     // L2-191 AC3
     [Fact]
-    public async Task L2_191_AC3_a_staff_session_with_the_verifier_role_reaches_the_queue()
+    public async Task L2_191_AC3_a_staff_session_with_the_moderator_role_reaches_the_queue()
     {
-        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
-        var response = await esther.GetAsync("/api/admin/verifications");
+        var response = await esther.GetAsync("/api/admin/listings");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     // L2-191 AC3
     [Fact]
-    public async Task L2_191_AC3_a_staff_session_without_the_verifier_role_is_forbidden_from_the_verification_endpoints()
+    public async Task L2_191_AC3_a_staff_session_without_the_moderator_role_is_forbidden_from_the_jubilee_team_endpoints()
     {
         var ada = _factory.CreateStaffClient("Ada Admin", "staff|ada", "admin");
 
-        var response = await ada.GetAsync("/api/admin/verifications");
+        var response = await ada.GetAsync("/api/admin/listings");
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         Assert.Equal("FORBIDDEN", await Code(response));
@@ -131,7 +127,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [Fact]
     public async Task L2_191_AC3_a_staff_session_without_the_admin_role_is_forbidden_from_the_administrator_endpoints()
     {
-        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
         var ada = _factory.CreateStaffClient("Ada Admin", "staff|ada", "admin");
 
         var refused = await esther.GetAsync("/api/admin/audit");
@@ -146,7 +142,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [Fact]
     public async Task L2_191_AC4_a_staff_session_is_never_a_member_session()
     {
-        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
         var response = await esther.GetAsync("/api/me/navigation");
 
@@ -157,7 +153,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [Fact]
     public async Task L2_191_a_staff_write_without_the_anti_csrf_token_is_refused()
     {
-        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
         var request = new HttpRequestMessage(HttpMethod.Put, "/api/admin/featured-weeks/2026-11-16")
         {
             Content = JsonContent.Create(new { listingIds = Array.Empty<Guid>() }),
@@ -182,7 +178,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
         Assert.Equal("AA", session.GetProperty("initials").GetString());
         Assert.Equal("staff|ada@jubilee.test", session.GetProperty("email").GetString());
         Assert.Equal(["admin"], session.GetProperty("roles").EnumerateArray().Select(r => r.GetString()));
-        Assert.Equal(0, session.GetProperty("verificationCount").GetInt32());
+        Assert.False(session.TryGetProperty("verificationCount", out _));
     }
 
     // L2-190 AC7, L2-191 AC4
@@ -190,7 +186,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     public async Task L2_190_AC7_without_a_staff_session_the_staff_session_endpoint_answers_401()
     {
         var anonymous = await _factory.CreateClient().GetAsync("/api/staff/session");
-        var member = await _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna", "verifier").GetAsync("/api/staff/session");
+        var member = await _factory.CreateMemberClient("Joanna Adeyemi", "member|joanna", "moderator").GetAsync("/api/staff/session");
 
         Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
         Assert.Equal("sign_in_required", await Code(anonymous));
@@ -201,12 +197,12 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [Fact]
     public async Task L2_190_AC2_a_staff_session_ends_after_30_minutes_without_a_request()
     {
-        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
         _factory.Clock.Advance(TimeSpan.FromMinutes(29));
         var active = await esther.GetAsync("/api/staff/session");
         _factory.Clock.Advance(TimeSpan.FromMinutes(31));
-        var ended = await esther.GetAsync("/api/admin/verifications");
+        var ended = await esther.GetAsync("/api/admin/listings");
 
         Assert.Equal(HttpStatusCode.OK, active.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, ended.StatusCode);
@@ -217,7 +213,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [Fact]
     public async Task L2_190_AC2_a_staff_session_ends_8_hours_after_sign_in_however_active()
     {
-        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
 
         for (var i = 0; i < 16; i++)
         {
@@ -239,7 +235,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
         var client = _factory.CreateHttpsClient();
 
         var response = await client.PostAsJsonAsync(
-            "/api/test/staff-sessions", new TestStaffSessionController.Body("Esther Mensah", "member|esther", ["verifier"]));
+            "/api/test/staff-sessions", new TestStaffSessionController.Body("Esther Mensah", "member|esther", ["moderator"]));
 
         var cookie = Assert.Single(response.Headers.GetValues("Set-Cookie"), c => c.StartsWith("__Host-jubilee.staff=", StringComparison.Ordinal));
         Assert.Contains("path=/", cookie, StringComparison.OrdinalIgnoreCase);
@@ -254,7 +250,7 @@ public sealed class StaffAccessTests : IClassFixture<JubileeApiFactory>, IAsyncL
     [Fact]
     public async Task L2_190_AC4_signing_out_ends_the_staff_session_on_the_server()
     {
-        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "verifier");
+        var esther = _factory.CreateStaffClient("Esther Mensah", "member|esther", "moderator");
         var cookie = (await esther.GetAsync("/api/staff/session")).RequestMessage!.Headers.GetValues("Cookie").Single();
 
         var signOut = await esther.DeleteAsync("/api/staff/session");

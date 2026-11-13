@@ -29,7 +29,7 @@ push to his phone than an e-mail, and looks for that choice.
 | House rules | No smoking; Quiet after 11 on weeknights; Guests are fine, tell me first; We split the cleaning |
 | Who you are, and who you’re looking for | "I'm Josh, 21, third-year engineering. I study late, cook a lot of rice and play guitar, with headphones after ten. I'm part of a Christian fellowship on campus. Looking for a student or new grad who's easy to live with and pays on time. Hydro is split, about $40 each." |
 
-Photos, added after submitting: the bedroom (cover), the window, the kitchen, the bathroom, the
+Photos, added after publishing: the bedroom (cover), the window, the kitchen, the bathroom, the
 front door of the building. He skips the alt text until the hint reminds him, then writes "Empty
 bedroom with a double bed frame, a desk and a north window."
 

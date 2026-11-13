@@ -1,0 +1,100 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Take down a listing
+enum ListingStage {
+  Draft = 0
+  Live = 5
+}
+class Listing {
+  +Guid Id
+  +string? OwnerId
+  +string Name
+  +ListingStage Stage
+  +DateTimeOffset? PublishedAt
+  +bool IsPaused
+  +bool IsUnderModerationHold
+  +DateTimeOffset? TakenDownAt
+  +string? TakenDownByName
+  +string? TakedownReason
+  +DateTimeOffset? DeletedAt
+  +TakeDown(byName: string, reason: string, now: DateTimeOffset): void
+  +Delete(now: DateTimeOffset): void
+}
+class ListingSubmission {
+  +Guid ListingId
+  +IReadOnlyList<string> Flags
+}
+class AdminListingDto {
+  +Guid Id
+  +string Slug
+  +string Name
+  +string Tagline
+  +string? About
+  +string Kind
+  +string CategorySlug
+  +string CategoryName
+  +DateTimeOffset? PublishedAt
+  +string Status
+  +string StatusLabel
+  +AdminListingOwner Owner
+  +IReadOnlyList<string> Flags
+  +bool IsOwnListing
+  +AdminTakedownDto? TakenDown
+  +AdminListingSpace? Space
+}
+class AdminListingOwner {
+  +string Name
+  +string Email
+  +bool EmailConfirmed
+  +DateTimeOffset MemberSince
+  +int OtherListings
+}
+class AdminTakedownDto {
+  +DateTimeOffset At
+  +string ByName
+  +string Reason
+}
+class Reviewer {
+  +string Subject
+  +string Name
+}
+class TakeDownListingCommand {
+  +Reviewer Reviewer
+  +Guid ListingId
+  +string? Reason
+}
+class TakeDownListingCommandHandler {
+  +MaxReasonLength = 1000
+  +Handle(command: TakeDownListingCommand): Task<AdminListingDto>
+}
+class NotificationRules <<static>> {
+  +Tell(db, memberSubject, kind, title, detail, target, now): void
+}
+class OutboxMessage {
+  +Email(memberId, to, subject, textBody, now): OutboxMessage
+}
+class AuditLog <<static>> {
+  +Record(db, actor, action, targetType, targetId, before, after, reason, now): void
+}
+
+TakeDownListingCommandHandler ..> TakeDownListingCommand : handles
+TakeDownListingCommandHandler --> Listing : loads / takes down
+TakeDownListingCommandHandler ..> NotificationRules : tells the owner "listing-removed"
+TakeDownListingCommandHandler ..> OutboxMessage : e-mails the reason
+TakeDownListingCommandHandler ..> AuditLog : records listing.taken-down
+TakeDownListingCommandHandler --> AdminListingDto : returns
+TakeDownListingCommand --> Reviewer
+Listing --> ListingStage
+ListingSubmission ..> Listing : flags
+AdminListingDto *-- AdminListingOwner
+AdminListingDto *-- "0..1" AdminTakedownDto
+@enduml

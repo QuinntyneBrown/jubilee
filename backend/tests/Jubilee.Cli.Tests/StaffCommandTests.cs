@@ -31,13 +31,13 @@ public sealed class StaffCommandTests
     [Fact]
     public async Task L2_193_AC1_grant_creates_the_staff_account_with_the_role_and_is_safe_to_run_again()
     {
-        Assert.Equal(0, await Run("staff", "grant", "--email", "Esther@Jubilee.to", "--role", "verifier"));
-        Assert.Equal(0, await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "verifier"));
+        Assert.Equal(0, await Run("staff", "grant", "--email", "Esther@Jubilee.to", "--role", "moderator"));
+        Assert.Equal(0, await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "moderator"));
         Assert.Equal(0, await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "admin"));
 
         var account = await Account("esther@jubilee.to");
         Assert.NotNull(account);
-        Assert.Equal(StaffRoles.Verifier | StaffRoles.Admin, account.Roles);
+        Assert.Equal(StaffRoles.Moderator | StaffRoles.Admin, account.Roles);
         Assert.Equal(1, await Query(db => db.StaffMembers.CountAsync()));
     }
 
@@ -45,7 +45,7 @@ public sealed class StaffCommandTests
     [Fact]
     public async Task L2_193_AC2_revoke_removes_the_role_and_ends_every_staff_session_of_the_account()
     {
-        await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "verifier");
+        await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "moderator");
         var staffId = (await Account("esther@jubilee.to"))!.Id;
         await Query(async db =>
         {
@@ -54,7 +54,7 @@ public sealed class StaffCommandTests
             return await db.SaveChangesAsync();
         });
 
-        Assert.Equal(0, await Run("staff", "revoke", "--email", "esther@jubilee.to", "--role", "verifier"));
+        Assert.Equal(0, await Run("staff", "revoke", "--email", "esther@jubilee.to", "--role", "moderator"));
 
         Assert.Equal(StaffRoles.None, (await Account("esther@jubilee.to"))!.Roles);
         var sessions = await Query(db => db.Sessions.ToListAsync());
@@ -66,23 +66,24 @@ public sealed class StaffCommandTests
     [Fact]
     public async Task L2_193_AC3_list_prints_each_account_and_its_roles()
     {
-        await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "verifier");
+        await Run("staff", "grant", "--email", "esther@jubilee.to", "--role", "moderator");
         await Run("staff", "grant", "--email", "ada@jubilee.to", "--role", "admin");
-        await Run("staff", "grant", "--email", "ada@jubilee.to", "--role", "verifier");
+        await Run("staff", "grant", "--email", "ada@jubilee.to", "--role", "moderator");
         _output.GetStringBuilder().Clear();
 
         Assert.Equal(0, await Run("staff", "list"));
 
         var lines = _output.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        Assert.Contains("ada@jubilee.to: verifier, admin", lines);
-        Assert.Contains("esther@jubilee.to: verifier", lines);
+        Assert.Contains("ada@jubilee.to: moderator, admin", lines);
+        Assert.Contains("esther@jubilee.to: moderator", lines);
     }
 
     // L2-193 AC4
     [Theory]
-    [InlineData("esther@jubilee.to", "owner", "Role must be verifier or admin.")]
-    [InlineData("not-an-address", "verifier", "That is not an e-mail address.")]
-    [InlineData("", "verifier", "That is not an e-mail address.")]
+    [InlineData("esther@jubilee.to", "owner", "Role must be moderator or admin.")]
+    [InlineData("esther@jubilee.to", "verifier", "Role must be moderator or admin.")]
+    [InlineData("not-an-address", "moderator", "That is not an e-mail address.")]
+    [InlineData("", "moderator", "That is not an e-mail address.")]
     public async Task L2_193_AC4_an_unknown_role_or_a_bad_address_changes_nothing_and_says_why(string email, string role, string message)
     {
         Assert.Equal(1, await Run("staff", "grant", "--email", email, "--role", role));

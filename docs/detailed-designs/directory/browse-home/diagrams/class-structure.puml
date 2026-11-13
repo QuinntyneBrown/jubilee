@@ -16,13 +16,7 @@ title Class structure — Browse home
 
 enum ListingStage {
   Draft
-  ReadyToReview
-  ChangesRequested
   Live
-  Paused
-  OnHold
-  Removed
-  Declined
 }
 
 class Listing {
@@ -33,7 +27,7 @@ class Listing {
   +string? Highlight
   +Guid CategoryId
   +ListingStage Stage
-  +DateTime? VerifiedAt
+  +DateTime? PublishedAt
   +bool IsOnHold
   +bool IsDeleted
   +IsPublic(): bool
@@ -73,7 +67,6 @@ class BusinessCardDto {
   +string CategoryLabel
   +string? Highlight
   +string? CoverPhotoUrl
-  +bool Verified
 }
 
 class ProductCardDto {
@@ -98,7 +91,6 @@ class DirectoryRowDto {
   +string Slug
   +string Name
   +string Tagline
-  +bool Verified
 }
 
 GetBrowseHomeQueryHandler ..> BrowseHomeDto : returns

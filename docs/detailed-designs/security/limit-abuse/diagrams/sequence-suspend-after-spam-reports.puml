@@ -42,7 +42,7 @@ policy --> handler : True when 3 different businesses reported (L2-137)
 opt Third different business within 7 days
   handler -> entity : SuspendNewConversations(now)
   entity --> handler : MessagingRestriction pending review
-  handler -> db : Write review task for the verification team to outbox
+  handler -> db : Write review task for the Jubilee team to outbox
 end
 handler -> db : Save changes in one unit of work
 db --> handler : Commit result

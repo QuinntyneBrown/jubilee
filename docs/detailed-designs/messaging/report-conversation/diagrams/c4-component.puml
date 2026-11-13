@@ -16,7 +16,7 @@ Container_Boundary(adminapp, "Jubilee Admin") {
 }
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "ConversationsController", "ASP.NET Core controller", "Exposes mute and report under /api/conversations/{id}")
-  Component(admin, "AdminReportsController", "ASP.NET Core controller", "Exposes /api/admin/reports to a staff session of the verification team")
+  Component(admin, "AdminReportsController", "ASP.NET Core controller", "Exposes /api/admin/reports to a staff session of the Jubilee team")
   Component(mute, "SetConversationMutedCommandHandler", "MediatR handler", "Mutes or unmutes for one side")
   Component(report, "ReportConversationCommandHandler", "MediatR handler", "Files at most one unresolved report and 10 a day and the optional block")
   Component(send, "SendMessageCommandHandler", "MediatR handler", "Stores a blocked business's message hidden from the member")

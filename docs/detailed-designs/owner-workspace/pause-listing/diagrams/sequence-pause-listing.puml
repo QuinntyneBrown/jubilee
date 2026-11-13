@@ -50,11 +50,11 @@ alt Listing is not live, or is already paused
   dialog --> actor : Show "We couldn’t pause it": "Your listing is still live. Try again." (L2-096 AC5)
 else Listing is live and not paused
   handler -> entity : Pause(now)
-  entity --> handler : IsPaused true, PausedAt recorded; Stage and ApprovedAt kept (L2-096)
+  entity --> handler : IsPaused true, PausedAt recorded; Stage and PublishedAt kept (L2-096)
   handler -> db : SaveChangesAsync
   db --> handler : Commit result
   interceptor -> cache : InvalidateAsync: replace the version of every entry
-  handler --> controller : PauseResultDto(paused, pausedAt, state paused, needsReview false)
+  handler --> controller : PauseResultDto(paused, pausedAt, state paused)
   controller --> client : 200 OK
   client --> dialog : PauseResult
   dialog --> page : Close with the result

@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Containers — Report a listing
 
 Person(member, "Member", "Reports a listing")
-Person(verifier, "Verification team member", "Reviews reports")
+Person(moderator, "Jubilee team member", "Reviews reports")
 System_Ext(mail, "E-mail service", "Delivers e-mail")
 System_Boundary(jubilee, "Jubilee") {
   Container(web, "Jubilee Web", "Angular single-page application", "Report dialog on the listing page")
@@ -18,6 +18,6 @@ Rel(web, api, "Posts the report to", "JSON/HTTPS")
 Rel(api, db, "Writes the report and the outbox message in", "EF Core")
 Rel(worker, db, "Reads the outbox from", "EF Core")
 Rel(worker, mail, "Sends New report: {business} through")
-Rel(mail, verifier, "Delivers to the team's address")
-Rel(verifier, admin, "Opens /reports/{id} in")
+Rel(mail, moderator, "Delivers to the team's address")
+Rel(moderator, admin, "Opens /reports/{id} in")
 @enduml

@@ -79,12 +79,12 @@ export interface ListingDraftBody {
   idempotencyKey: string | null;
 }
 
-/** `POST /api/listing-drafts/{id}/submit`: the listing is now with the verification team. */
-export interface SubmittedListing {
+/** `POST /api/listing-drafts/{id}/publish`: the listing is live straight away (L2-078, ADR 0057). */
+export interface PublishedListing {
   listingId: string;
   slug: string;
   name: string;
   kind: OfferKind;
-  stage: 'ready-to-review';
+  stage: 'live';
   submittedAt: string;
 }

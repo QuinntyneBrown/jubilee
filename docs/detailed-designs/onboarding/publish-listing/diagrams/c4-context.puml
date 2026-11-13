@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Publish a listing
+
+Person(owner, "Owner", "Member who publishes one or more business listings")
+Person(member, "Member", "Finds the published listing")
+Person(team, "Jubilee team member", "Sees the owner's other listings and drafts")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
+System_Ext(email, "E-mail provider", "Delivers the notice that a listing is paused until the owner agrees")
+
+Rel(owner, jubilee, "Publishes a listing, agrees to the statement of faith and starts further listings")
+Rel(member, jubilee, "Finds the listing in public lists within 60 seconds")
+Rel(team, jubilee, "Opens a listing and sees the owner's other listings")
+Rel(jubilee, email, "Sends the paused notice via")
+Rel(email, owner, "Delivers the notice to")
+@enduml

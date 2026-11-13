@@ -17,7 +17,7 @@ enum DataAudience {
   NoOne
   Self
   RequestBusiness
-  Verifier
+  Moderator
   Public
 }
 

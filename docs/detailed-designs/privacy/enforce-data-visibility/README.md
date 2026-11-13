@@ -2,9 +2,9 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace. Members browse verified businesses,
-send requests and exchange messages; owners answer them; the verification team
-reviews listings and reports. Each of these people sees a different part of a
+Jubilee is Toronto's Christian marketplace. Members browse businesses, send requests
+and exchange messages; owners answer them; the Jubilee team looks after
+listings and reports. Each of these people sees a different part of a
 member's personal data, and most see none of it. This feature is the set of
 mechanisms that decide, on the server, which personal field reaches which
 reader, and that record each occasion on which staff look at personal data.
@@ -15,21 +15,21 @@ The design uses four local terms.
   e-mail address, phone, postal code, home church, home church address, message
   content
 - **audience** — class of reader a response is built for: the member
-  themselves, the business that received a request, a verifier, or the public
+  themselves, the business that received a request, a moderator, or the public
 - **area label** — neighbourhood plus the first three characters of a postal
   code, for example "East York, M4C"
-- **access reason** — report ID or listing ID that justifies a verifier's view
+- **access reason** — report ID or listing ID that justifies a moderator's view
   of personal data
 
 The visibility rules of `L2-145` are fixed. A member's home church and home
-church address are shown to no one, the verification team included, and feed
+church address are shown to no one, the Jubilee team included, and feed
 recommendations only. A member's phone reaches one business,
 on the one request that carried it. A member's e-mail address never reaches a
 business. A postal code reaches a business only as an area label. Public pages
 and the public API carry no member personal data other than the business
 details an owner chose to publish.
 
-`L2-150` adds the rules for staff and for measurement. A verifier's view of a
+`L2-150` adds the rules for staff and for measurement. A moderator's view of a
 member's personal data or of a reported conversation is written to the audit
 log with its access reason. Engineers hold no standing access to production
 databases. Analytics carry no names, e-mail addresses, phone numbers or message
@@ -46,7 +46,7 @@ behaviour for staff queries, and an allow-list for analytics.
   and `Member.HomeChurchAddress` carry `NoOne`; `Member.Email` and `Member.PostalCode` carry `Self`;
   `Request.ContactPhone` carries `RequestBusiness`.
 - **`DataAudience`** — enumeration of readers: `NoOne`, `Self`,
-  `RequestBusiness`, `Verifier`, `Public`.
+  `RequestBusiness`, `Moderator`, `Public`.
 - **`AudienceJsonModifier`** — `System.Text.Json` contract modifier registered
   in `Jubilee.Api`. Each controller action declares its response audience; the
   modifier omits every annotated property that audience may not read. The
@@ -102,7 +102,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-145` | `L1-020` | The system shall show a member's home church and home church address to no one and use them only for recommendations, shall show a member's phone only to the business that received a request and only on that request, shall never show a member's e-mail address to a business, and shall show businesses at most the neighbourhood and first three characters of a postal code. Public pages and public APIs shall contain no member personal data other than an owner's chosen public business details. |
-| `L2-150` | `L1-020` | The system shall record in the audit log, with the reason (report ID or listing ID), each verifier view of a member's personal data or a reported conversation. Engineer access to production databases shall be just-in-time, time-limited and logged, and analytics shall contain no names, e-mails, phone numbers or message content and shall use no third-party advertising trackers. |
+| `L2-150` | `L1-020` | The system shall record in the audit log, with the reason (report ID or listing ID), each moderator view of a member's personal data or a reported conversation. Engineer access to production databases shall be just-in-time, time-limited and logged, and analytics shall contain no names, e-mails, phone numbers or message content and shall use no third-party advertising trackers. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API endpoint before doing anything, and no check shall rely on the client hiding a control. |
 | `L2-180` | `L1-025` | The system shall store an append-only audit record of actor, action, target, time, before and after values, and reason for each sensitive action, including staff access to personal data. |
 
@@ -110,7 +110,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 ### System context
 
-Members, owners, visitors and verifiers each read Jubilee through a different
+Members, owners, visitors and moderators each read Jubilee through a different
 audience. An on-call engineer reaches the database only through the privileged
 access broker, and analytics leave Jubilee without personal data.
 

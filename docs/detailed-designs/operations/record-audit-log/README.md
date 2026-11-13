@@ -2,12 +2,12 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace. A small verification team approves listings,
+Jubilee is Toronto's Christian marketplace. A small Jubilee team takes down listings that misrepresent a business,
 resolves reports, places listings on hold, removes listings, selects featured businesses and
 can read personal data while doing so. This feature keeps a permanent record of each such
 action, so that a later question about who did what, when and why has an answer.
 
-Three terms recur. *sensitive action* — one of: a verification decision, a report resolution,
+Three terms recur. *sensitive action* — one of: a takedown of a listing, a report resolution,
 a hold or removal of a listing, a role change, staff access to personal data, an account
 deletion, a featured selection. *audit entry* — one stored record of a sensitive action with
 its actor, action, target, time, before and after values, and reason. *append-only* —
@@ -28,7 +28,8 @@ and the search.
   `TargetType`, `TargetId`, `OccurredAt`, `BeforeJson`, `AfterJson`, `Reason` and
   `CorrelationId`. It has no public setter and no method that changes state. The actor is
   stored as an identifier, without a name or an e-mail address.
-- **`AuditAction`** — enumeration of the sensitive actions: `VerificationDecision`,
+- **`AuditAction`** — enumeration of the sensitive actions: `ListingTakedown` (written as
+  `listing.taken-down`, ADR 0057),
   `ReportResolution`, `ListingHold`, `ListingRemoval`, `RoleChange`, `PersonalDataAccess`,
   `AccountDeletion`, `FeaturedSelection`.
 - **`IAuditLog`** and **`AuditLog`** — application service and its implementation.
@@ -72,14 +73,14 @@ level-1 (L1) requirement, cited by identifier.
 |-------|--------------|-------------|
 | `L2-180` | `L1-025` | Sensitive actions shall produce an append-only audit record that stores actor, action, target, time, before and after values, and reason. Audit records shall not be editable or deletable through the application, shall be kept for 2 years, and shall be searchable by an admin by actor, target or date range within 2 seconds. |
 | `L2-133` | `L1-019` | Each API endpoint shall check the caller's role and ownership of the specific object on the server before doing anything, and no check shall rely on the client hiding a control. |
-| `L2-150` | `L1-020` | Each view of a member's personal data or of a reported conversation by a verifier shall be recorded in the audit log with the reason (report ID or listing ID). |
+| `L2-150` | `L1-020` | Each view of a member's personal data or of a reported conversation by a moderator shall be recorded in the audit log with the reason (report ID or listing ID). |
 | `L2-098` | `L1-014` | Only a holder of the `admin` role shall grant or remove roles, and each role change shall be written to the audit log. |
 
 ## Diagrams
 
 ### System context
 
-Verification team members and members take the sensitive actions inside Jubilee, and an
+Jubilee team members and members take the sensitive actions inside Jubilee, and an
 admin searches the resulting audit log. The feature involves no external system.
 
 ![C4 system context for recording the audit log](diagrams/c4-context.png)

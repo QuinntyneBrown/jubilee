@@ -123,7 +123,7 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#when">When to use</a></li><li><a href="#structure">Structure</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Four collection shapes cover every list in the mocks. <a href="../components/business-card.html">Card grids</a> (<code>.card-grid</code> of <code>.biz-card</code>/<code>.product-card</code>) for browsing; <b>rows</b> (<code>.rows</code>/<code>.row</code>, see <a href="../components/list.html">List</a>) for requests where each item carries a status and actions; <b>lists</b> for the inbox (<a href="../components/message-thread.html">Message thread</a>) and notifications (<a href="../components/notification-item.html">Notification item</a>); and the <a href="../components/table.html">Table</a> for owners and the verification team comparing several attributes. <a href="../components/directory-row.html">Directory row</a>s list the directory by category.</p>
+      <p>Four collection shapes cover every list in the mocks. <a href="../components/business-card.html">Card grids</a> (<code>.card-grid</code> of <code>.biz-card</code>/<code>.product-card</code>) for browsing; <b>rows</b> (<code>.rows</code>/<code>.row</code>, see <a href="../components/list.html">List</a>) for requests where each item carries a status and actions; <b>lists</b> for the inbox (<a href="../components/message-thread.html">Message thread</a>) and notifications (<a href="../components/notification-item.html">Notification item</a>); and the <a href="../components/table.html">Table</a> for owners and the Jubilee team comparing several attributes. <a href="../components/directory-row.html">Directory row</a>s list the directory by category.</p>
       <ul>
         <li><b>Status is a badge with a word</b>: Confirmed, Awaiting reply, Declined, Completed, Sold out, Listed. Colour backs it up, never replaces it.</li>
         <li><b>Actions name their row</b>: "Confirm request from Samuel Park", "Edit Gold cross stoneware mug".</li>
@@ -135,7 +135,7 @@
         <tr><td>Businesses and products to discover</td><td>Card grid</td><td>People choose by picture, name and tagline</td><td><a href="../../mocks/pages/browse/default.html">browse</a>, <a href="../../mocks/pages/shop/default.html">shop</a></td></tr>
         <tr><td>A member’s requests; a business’s incoming requests</td><td>Rows with status badge or actions</td><td>One decision per item: open it, confirm or decline</td><td><a href="../../mocks/pages/requests/default.html">requests</a>, <a href="../../mocks/pages/incoming-requests/default.html">incoming-requests</a></td></tr>
         <tr><td>Conversations and notifications</td><td>List of whole-item links</td><td>Read and open; unread is the only state</td><td><a href="../../mocks/pages/messages/default.html">messages</a>, <a href="../../mocks/pages/notifications/default.html">notifications</a></td></tr>
-        <tr><td>Products or services an owner manages; the verification queue</td><td>Table</td><td>Compare price, status and counts across items; sort</td><td><a href="../../mocks/pages/my-products/default.html">my-products</a>, <a href="../../mocks/pages/admin-verifications/default.html">admin-verifications</a></td></tr>
+        <tr><td>Products or services an owner manages; the listings in the admin application</td><td>Table</td><td>Compare price, status and counts across items; sort</td><td><a href="../../mocks/pages/my-products/default.html">my-products</a>, <a href="../../mocks/pages/admin-listings/default.html">admin-listings</a></td></tr>
         <tr><td>Key facts about one thing</td><td><a href="../components/description-list.html">Description list</a> (<code>.dl</code>)</td><td>Label and value pairs, not a collection</td><td><a href="../../mocks/pages/request-detail/default.html">request-detail</a></td></tr>
       </tbody></table></div>
     </section>
@@ -184,7 +184,7 @@
         <tr><td>Filtered to nothing</td><td>Compact empty under the filter with "Show all"</td><td><a href="../../mocks/pages/incoming-requests/no-results.html">incoming-requests/no-results</a></td></tr>
         <tr><td>Error</td><td><code>.empty--error</code> replaces the collection; the header and filters stay</td><td><a href="../../mocks/pages/my-products/error.html">my-products/error</a></td></tr>
         <tr><td>Long</td><td>Pagination with the range in words; 16 cards a page</td><td><a href="../../mocks/pages/category/long.html">category/long</a></td></tr>
-        <tr><td>Sorted</td><td><code>aria-sort</code> on the header, arrow after its label; one sorted column at a time</td><td><a href="../../mocks/pages/admin-verifications/default.html">admin-verifications</a></td></tr>
+        <tr><td>Sorted</td><td><code>aria-sort</code> on the header, arrow after its label; one sorted column at a time</td><td><a href="../../mocks/pages/admin-listings/default.html">admin-listings</a></td></tr>
         <tr><td>Unread / new</td><td>Accent-subtle background and bold title, plus hidden "Unread." text</td><td><a href="../../mocks/pages/notifications/default.html">notifications</a></td></tr>
         <tr><td>Selected</td><td><code>aria-selected="true"</code> or <code>aria-current</code>: accent-subtle background (open conversation)</td><td><a href="../../mocks/pages/conversation/default.html">conversation</a></td></tr>
       </tbody></table></div>
@@ -196,9 +196,9 @@
         </tbody>
       </table></div>
       <div class="ds-example"><div class="ds-example__canvas">
-        <div class="table-wrap" style="width: 100%; position: relative;"><table class="table"><caption class="visually-hidden">Verification queue row states</caption>
+        <div class="table-wrap" style="width: 100%; position: relative;"><table class="table"><caption class="visually-hidden">Listings row states</caption>
           <thead><tr><th scope="col">Business</th><th scope="col">Owner</th><th scope="col">Row state</th></tr></thead>
-          <tbody><tr><td>Luzandre.com</td><td>Naomi Laurent</td><td>Default</td></tr><tr data-state="hover"><td>Laurent Photography</td><td>Naomi Laurent</td><td>Hover</td></tr><tr aria-selected="true"><td>Park Insurance Brokers</td><td>Samuel Park</td><td>Selected</td></tr></tbody>
+          <tbody><tr><td>Luzandre.com</td><td>Naomi Laurent</td><td>Default</td></tr><tr data-state="hover"><td>Okafor &amp; Sons Furniture</td><td>Tobe Okafor</td><td>Hover</td></tr><tr aria-selected="true"><td>Park Insurance Brokers</td><td>Samuel Park</td><td>Selected</td></tr></tbody>
         </table></div>
       </div>
         <div class="ds-example__caption"><span>Table rows: hover is the subtle background, selected the accent-subtle background.</span></div></div>
@@ -206,7 +206,7 @@
     <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
       <ul>
         <li>Card grids are two columns on phones and up to four from 1024px (<code>.card-grid</code>, gap <code>--space-6</code>/<code>--space-4</code>).</li>
-        <li>Tables scroll horizontally inside <code>.table-wrap</code>; the first column holds the name so it is visible first. Keep tables to five columns; the verification queue’s six is the maximum.</li>
+        <li>Tables scroll horizontally inside <code>.table-wrap</code>; the first column holds the name so it is visible first. Keep tables to five columns, as the Listings table does; six is the maximum.</li>
         <li>Rows stack below 640px (<code>.row--stack</code>): actions move under the body and share the width.</li>
         <li>The inbox is a list and a conversation side by side from 768px; on phones the list is the page and a conversation opens on its own with a back link.</li>
         <li>Filter tabs scroll horizontally; their counts never wrap under the label.</li>
@@ -253,7 +253,7 @@
       <ul>
         <li>Row titles are the thing requested, as the member wrote it or as the catalogue names it: "Kitchen drain is slow and gurgling", "Custom church team tee × 24".</li>
         <li>Metadata order: kind · counterpart · time. "Order · Samuel Park · 8:15 a.m." Then the second line of detail.</li>
-        <li>Status words are past participles or short phrases, never codes: Confirmed, Declined, Cancelled, Awaiting reply, Ready to review.</li>
+        <li>Status words are past participles or short phrases, never codes: Confirmed, Declined, Cancelled, Awaiting reply, On hold.</li>
         <li>Column headers are nouns in sentence case. Numbers right-aligned; prices with $ and no decimals unless cents exist.</li>
       </ul>
     </section>
@@ -269,7 +269,7 @@
       <p>Extracted from these mocks:</p>
       <ul>
         <li><a href="../../mocks/pages/my-products/default.html">pages/my-products/default</a> (table with row actions)</li>
-        <li><a href="../../mocks/pages/admin-verifications/default.html">pages/admin-verifications/default</a> (sortable queue)</li>
+        <li><a href="../../mocks/pages/admin-listings/default.html">pages/admin-listings/default</a> (sortable table)</li>
         <li><a href="../../mocks/pages/incoming-requests/default.html">pages/incoming-requests/default</a> (rows with actions)</li>
         <li><a href="../../mocks/pages/requests/default.html">pages/requests/default</a> (rows with status)</li>
         <li><a href="../../mocks/pages/notifications/default.html">pages/notifications/default</a> (unread list)</li>

@@ -101,7 +101,7 @@ export const ICONS = {
     ),
   ],
   user: [circle(12, 8, 4), path('M4 21a8 8 0 0 1 16 0')],
-  verified: [circle(12, 12, 9), path('m8 12 3 3 5-6')],
+  'check-circle': [circle(12, 12, 9), path('m8 12 3 3 5-6')],
   trash: [path('M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13')],
   wrench: [path('M14 6a4 4 0 0 0 5 5l-9 9a2 2 0 0 1-3-3l9-9zM14 6l3-3')],
 } as const satisfies Record<string, readonly IconShape[]>;

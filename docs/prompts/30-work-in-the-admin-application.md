@@ -4,7 +4,7 @@
 
 Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there (`frontend/projects/admin/src/app/`, `frontend/projects/jubilee/src/app/pages/admin-moved`; ADR 0040).
 
-Roles: Verification team, Administrator. Journey 30 in `docs/journey.md`, recorded at 92% complete on 12 November 2026. This prompt takes it to 100%.
+Roles: Jubilee team (moderators), Administrator. Journey 30 in `docs/journey.md`, recorded at 92% complete on 12 November 2026. This prompt takes it to 100%.
 
 What is left, from an audit of the code and its tests against the acceptance criteria:
 
@@ -13,6 +13,7 @@ What is left, from an audit of the code and its tests against the acceptance cri
 - `L2-192` AC5: the host's access restrictions are an owner step; the API restriction is tested.
 - `L2-188` AC6: the sweeps for the admin screens are written and not run (the owner's).
 - `L2-098` AC4 and `L2-180`: a role change by `jubilee staff` writes no audit record.
+- ADR 0057: the staff role `verifier` is renamed `moderator` ("Moderator") on the wire, in the admin bar and in `jubilee staff grant --role moderator|admin` (the stored flag keeps its value); the navigation reads "Listings", "Reports", "Featured"; `/` opens `/listings`; the app's old `/admin/verifications` links lead to `/listings`; `GET /api/staff/session` no longer counts a queue.
 - Check every criterion of `L2-188` to `L2-195` for a test and close what you find.
 
 The audit read test titles and spot-checked assertions. Verify each gap against the code before you plan, and treat any other acceptance criterion of the requirements below that has no implementation or no acceptance test as part of this work.
@@ -158,7 +159,7 @@ These need the repository owner. Prepare everything in the repository that they 
 
 ## Deferred (out of scope)
 
-- The verification, moderation and policy screens themselves (journeys 12, 25 and 22).
+- The listings, moderation and policy screens themselves (journeys 12, 25 and 22).
 
 ## Done means
 

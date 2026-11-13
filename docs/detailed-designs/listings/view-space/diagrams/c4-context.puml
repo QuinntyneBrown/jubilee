@@ -6,7 +6,7 @@ title System Context — View a space
 Person(visitor, "Visitor", "Opens a space page without signing in")
 Person(member, "Member", "Opens a space page as a possible renter")
 Person(owner, "Owner", "Host of the space")
-System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
 
 Rel(visitor, jubilee, "Reads the space and is asked to sign in for an action")
 Rel(member, jubilee, "Reads the space and starts a request, a message or a save")

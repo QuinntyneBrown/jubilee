@@ -21,9 +21,9 @@ Sunday telephone call from Ottawa, says, "Mum, open it now, while I'm on the lin
 | 5 | Sees "Check your e-mail" and does not know where her e-mail is. | The confirmation link, which works once, for 24 hours. | Friction: Claire talks her to the Mail icon. Without the call she would have stopped here. |
 | 6 | Presses "List your business" after confirming. | "E-mail confirmed", then `/list`: "What do you offer?" | She chooses "Products" at once. That one is clear. |
 | 7 | Reaches "Store address" and stops. | The field for a shop's address. | Friction, and the worst of it. She has no store. She does not want her house shown. She presses "Save draft" and rings off. |
-| 8 | Comes back on Tuesday, having written to the help address and been answered. Finishes the form, adds three products, submits. | "Draft saved." with her values restored; then "We review your listing. Within two business days". | The draft being there, exactly as she left it, earns her trust more than anything else. |
+| 8 | Comes back on Tuesday, having written to the help address and been answered. Finishes the form, adds three products, presses "Publish listing". | "Draft saved." with her values restored; then "Whitfield Cards & Lettering is live. Members can find you in Shops now." | The draft being there, exactly as she left it, earns her trust more than anything else. |
 | 9 | Answers "How easy was it to list your business?" | Scores 1 to 5; a low score asks "What got in the way?" | Scores it 3 and writes: "I work from home and was not sure about the address." |
-| 10 | Receives the e-mail that she is live. | "Whitfield Cards & Lettering is verified and live. Members can find you in Shops." | She telephones Claire. |
+| 10 | Presses "View public listing". | Her shop page, as members see it. | She telephones Claire. |
 | 11 | Gets her first order request: two sets of greeting cards, to be posted to Etobicoke. Confirms it. | The request, then "Order confirmed. {Customer} has been told. Message him about payment and pickup." | The first valuable moment, and a puzzle: now what? She writes a careful message asking for an e-transfer and a postal address. |
 
 ## Where it could go wrong

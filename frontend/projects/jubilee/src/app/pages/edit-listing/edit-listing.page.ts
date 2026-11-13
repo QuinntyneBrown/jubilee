@@ -138,7 +138,7 @@ export class EditListingPage implements OnInit {
     this.summary().map((item) => ({ id: this.idOf(item.field), text: item.text })),
   );
   protected readonly saving = signal<Saving>('idle');
-  protected readonly saved = signal<{ recheck: boolean } | null>(null);
+  protected readonly saved = signal(false);
   protected readonly failure = signal<'conflict' | 'failed' | null>(null);
   protected readonly photoError = signal<string | null>(null);
   protected readonly photoBusy = signal(false);
@@ -187,7 +187,6 @@ export class EditListingPage implements OnInit {
     tagline: this.draft().tagline,
     highlight: this.draft().highlight || null,
     categorySlug: this.draft().category || 'shops',
-    verified: this.editor()?.stage === 'live',
   }));
   /** How renters see the space as the owner edits it (L2-209, L2-198 AC3). */
   protected readonly spacePreview = computed(() => this.space.preview(this.draft().name));
@@ -248,12 +247,12 @@ export class EditListingPage implements OnInit {
 
   protected set(field: DraftField, value: string): void {
     this.draft.update((draft) => ({ ...draft, [field]: value }));
-    this.saved.set(null);
+    this.saved.set(false);
   }
 
   /** Called on every change of a space field. */
   protected touched(field?: SpaceField): void {
-    this.saved.set(null);
+    this.saved.set(false);
     if (field && this.errors()[field]) {
       this.errors.update((errors) => ({ ...errors, [field]: undefined }));
     }
@@ -343,7 +342,7 @@ export class EditListingPage implements OnInit {
   protected save(): void {
     const editor = this.editor();
     if (!editor || this.busy()) return;
-    this.saved.set(null);
+    this.saved.set(false);
     this.failure.set(null);
     const problems = this.check();
     this.show(problems);
@@ -368,7 +367,7 @@ export class EditListingPage implements OnInit {
       next: (next) => {
         this.saving.set('idle');
         this.adopt(next);
-        this.saved.set({ recheck: next.recheckRequested && this.renamed(editor, next) });
+        this.saved.set(true);
       },
       error: (error: unknown) => {
         this.saving.set('idle');
@@ -385,10 +384,6 @@ export class EditListingPage implements OnInit {
         }
       },
     });
-  }
-
-  private renamed(before: ListingEditor, after: ListingEditor): boolean {
-    return before.name !== after.name || before.categorySlug !== after.categorySlug;
   }
 
   private show(problems: { field: FieldName; message: string; summary: string }[]): void {
@@ -416,7 +411,7 @@ export class EditListingPage implements OnInit {
   }
 
   protected dismissSaved(): void {
-    this.saved.set(null);
+    this.saved.set(false);
   }
 
   protected idOf(field: FieldName): string {

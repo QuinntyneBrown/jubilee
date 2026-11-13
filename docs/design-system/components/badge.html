@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Badge — Jubilee design system</title>
-<meta name="description" content="Badges label status (Listed, Sold out, Awaiting reply) and counts (2 unread). Five tones, solid, count and the Verified mark, both themes.">
+<meta name="description" content="Badges label status (Listed, Sold out, Awaiting reply) and counts (2 unread). Five tones, solid and count, both themes.">
 <link rel="stylesheet" href="../tokens/tokens.css">
 <link rel="stylesheet" href="../assets/components.css">
 <link rel="stylesheet" href="../assets/ds.css">
@@ -118,17 +118,16 @@
     <header class="ds-header">
       <p class="ds-kicker">Component · Data display</p>
       <h1>Badge</h1>
-      <p class="ds-lead">Badges are small, quiet labels for status and counts: a product that is sold out, a request awaiting reply, two unread messages. The Verified mark is a sibling that sits beside every verified business.</p>
+      <p class="ds-lead">Badges are small, quiet labels for status and counts: a product that is sold out, a request awaiting reply, two unread messages.</p>
       <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill"><code>&lt;span&gt;</code></span><span class="ds-pill">727 uses in the mocks</span></div>
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
       <p>Use a badge for a one- or two-word status of a record, or a count on a navigation item. Badges are not buttons; to filter by a status use a <a href="../components/chip.html">Chip</a>. For a message about the page, use an <a href="../components/alert.html">Alert and banner</a>.</p>
       <ul>
-        <li><b>Tones</b>: neutral (<code>.badge</code>) for finished or inactive states ("Completed", "Cancelled"); info for "Ready to review"; success for "Listed", "Confirmed" and, on a listing page and a business card, "Replies fast" (<code>L2-054</code>); warning for "Sold out", "Awaiting reply"; danger for "Declined".</li>
+        <li><b>Tones</b>: neutral (<code>.badge</code>) for finished or inactive states ("Completed", "Cancelled"); info for "In review"; success for "Listed", "Confirmed" and, on a listing page and a business card, "Replies fast" (<code>L2-054</code>); warning for "Sold out", "Awaiting reply"; danger for "Declined".</li>
         <li><b>Solid</b> (<code>.badge--solid</code>): gold with ink text for a rare highlight ("New"). At most one per card.</li>
         <li><b>Count</b> (<code>.badge--count</code>): a gold pill with tabular figures on tabs, the tab bar and icon buttons; carries an <code>aria-label</code> such as "2 unread".</li>
-        <li><b>Verified</b> (<code>.verified</code>): not a pill but a success check icon and the word "Verified" in muted text, beside a business name.</li>
       </ul>
     </section>
     <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
@@ -147,7 +146,7 @@
     <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
       <div class="ds-example"><div class="ds-example__canvas">
         <span class="badge">Completed</span>
-        <span class="badge badge--info">Ready to review</span>
+        <span class="badge badge--info">In review</span>
         <span class="badge badge--success">Listed</span>
         <span class="badge badge--warning">Sold out</span>
         <span class="badge badge--danger">Declined</span>
@@ -155,7 +154,7 @@
       </div>
         <div class="ds-example__caption"><span>Neutral, info, success, warning, danger and solid.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="badge"&gt;Completed&lt;/span&gt;
-&lt;span class="badge badge--info"&gt;Ready to review&lt;/span&gt;
+&lt;span class="badge badge--info"&gt;In review&lt;/span&gt;
 &lt;span class="badge badge--success"&gt;Listed&lt;/span&gt;
 &lt;span class="badge badge--warning"&gt;Sold out&lt;/span&gt;
 &lt;span class="badge badge--danger"&gt;Declined&lt;/span&gt;
@@ -166,15 +165,9 @@
       </div>
         <div class="ds-example__caption"><span>Counts on a tab and standalone. On an icon button the count goes into the button’s label instead.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="tabs" role="tablist" aria-label="Inbox"&gt;&lt;button class="tab" role="tab" type="button" aria-selected="true"&gt;Messages &lt;span class="badge badge--count" aria-label="2 unread"&gt;2&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;&lt;a class="btn btn--ghost btn--icon" href="../../mocks/pages/notifications/default.html" aria-label="Notifications, 3 unread"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0"/&gt;&lt;/svg&gt;&lt;/a&gt;&lt;span class="badge badge--count" aria-label="4 waiting"&gt;4&lt;/span&gt;&lt;span class="badge badge--count" aria-label="12 unread"&gt;12&lt;/span&gt;</code></pre></details></div>
-      <h3>Verified</h3>
-      <div class="ds-example"><div class="ds-example__canvas">
-<span class="verified"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Verified</span><p class="detail-head__kicker">Sold by <a href="../../mocks/pages/shop/default.html">Luzandre.com</a><span class="verified"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Verified</span></p>
-      </div>
-        <div class="ds-example__caption"><span><code>.verified</code> on its own and in a product’s kicker. In dense rows the word can be visually hidden but must stay in the markup.</span></div>
-        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;span class="verified"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m8 12 3 3 5-6"/&gt;&lt;/svg&gt;Verified&lt;/span&gt;&lt;p class="detail-head__kicker"&gt;Sold by &lt;a href="../../mocks/pages/shop/default.html"&gt;Luzandre.com&lt;/a&gt;&lt;span class="verified"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;circle cx="12" cy="12" r="9"/&gt;&lt;path d="m8 12 3 3 5-6"/&gt;&lt;/svg&gt;Verified&lt;/span&gt;&lt;/p&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
-      <p>One size: 20px (<code>--badge-height</code>), with an 8px dot. Counts are at least 20px wide so single digits stay round. Verified follows the surrounding text size with a 16px icon.</p>
+      <p>One size: 20px (<code>--badge-height</code>), with an 8px dot. Counts are at least 20px wide so single digits stay round.</p>
     </section>
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>Badges are not interactive: no hover, focus, active or disabled. They inherit nothing from the element they sit on except position. The matrix shows each tone in the contexts where it appears.</p>
@@ -182,7 +175,7 @@
         <thead><tr><th scope="col">Variant</th><th scope="col">On surface</th><th scope="col">In a row</th><th scope="col">In a selected tab</th></tr></thead>
         <tbody>
           <tr><th scope="row">Neutral</th><td><span class="badge">Completed</span></td><td><div class="row__meta">Quote · WaterWorks · <span class="badge">Completed</span></div></td><td><div class="tabs" role="tablist" aria-label="Requests"><button class="tab" role="tab" type="button" aria-selected="true">Requests <span class="badge">Completed</span></button></div></td></tr>
-          <tr><th scope="row">Info</th><td><span class="badge badge--info">Ready to review</span></td><td><div class="row__meta">Quote · WaterWorks · <span class="badge badge--info">Ready to review</span></div></td><td><div class="tabs" role="tablist" aria-label="Requests"><button class="tab" role="tab" type="button" aria-selected="true">Requests <span class="badge badge--info">Ready to review</span></button></div></td></tr>
+          <tr><th scope="row">Info</th><td><span class="badge badge--info">In review</span></td><td><div class="row__meta">Quote · WaterWorks · <span class="badge badge--info">In review</span></div></td><td><div class="tabs" role="tablist" aria-label="Requests"><button class="tab" role="tab" type="button" aria-selected="true">Requests <span class="badge badge--info">In review</span></button></div></td></tr>
           <tr><th scope="row">Success</th><td><span class="badge badge--success">Listed</span></td><td><div class="row__meta">Quote · WaterWorks · <span class="badge badge--success">Listed</span></div></td><td><div class="tabs" role="tablist" aria-label="Requests"><button class="tab" role="tab" type="button" aria-selected="true">Requests <span class="badge badge--success">Listed</span></button></div></td></tr>
           <tr><th scope="row">Warning</th><td><span class="badge badge--warning">Sold out</span></td><td><div class="row__meta">Quote · WaterWorks · <span class="badge badge--warning">Sold out</span></div></td><td><div class="tabs" role="tablist" aria-label="Requests"><button class="tab" role="tab" type="button" aria-selected="true">Requests <span class="badge badge--warning">Sold out</span></button></div></td></tr>
           <tr><th scope="row">Danger</th><td><span class="badge badge--danger">Declined</span></td><td><div class="row__meta">Quote · WaterWorks · <span class="badge badge--danger">Declined</span></div></td><td><div class="tabs" role="tablist" aria-label="Requests"><button class="tab" role="tab" type="button" aria-selected="true">Requests <span class="badge badge--danger">Declined</span></button></div></td></tr>
@@ -192,8 +185,8 @@
       </table></div>
       <h3>Both themes</h3>
       <div class="ds-themes">
-        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><span class="badge">Completed</span><span class="badge badge--info">Ready to review</span><span class="badge badge--success">Listed</span><span class="badge badge--warning">Sold out</span><span class="badge badge--danger">Declined</span><span class="badge badge--solid">New</span><span class="badge badge--count" aria-label="2 unread">2</span><span class="verified"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Verified</span></div></div>
-        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><span class="badge">Completed</span><span class="badge badge--info">Ready to review</span><span class="badge badge--success">Listed</span><span class="badge badge--warning">Sold out</span><span class="badge badge--danger">Declined</span><span class="badge badge--solid">New</span><span class="badge badge--count" aria-label="2 unread">2</span><span class="verified"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Verified</span></div></div>
+        <div data-theme="light"><div class="ds-example__canvas" style="padding: 0;"><span class="badge">Completed</span><span class="badge badge--info">In review</span><span class="badge badge--success">Listed</span><span class="badge badge--warning">Sold out</span><span class="badge badge--danger">Declined</span><span class="badge badge--solid">New</span><span class="badge badge--count" aria-label="2 unread">2</span></div></div>
+        <div data-theme="dark"><div class="ds-example__canvas" style="padding: 0;"><span class="badge">Completed</span><span class="badge badge--info">In review</span><span class="badge badge--success">Listed</span><span class="badge badge--warning">Sold out</span><span class="badge badge--danger">Declined</span><span class="badge badge--solid">New</span><span class="badge badge--count" aria-label="2 unread">2</span></div></div>
       </div>
       <p>Counts update in place; announce changes through the page’s live region ("New message from Legacy Financial"), not by making the badge live.</p>
     </section>
@@ -219,7 +212,7 @@
       <h3>Focus</h3>
       <p>None of its own. When a badge sits in a focusable tab or button, that control’s focus ring surrounds both.</p>
       <h3>Labelling</h3>
-      <p>Status badges read as their text. Count badges set <code>aria-label="N unread"</code>; on icon-only buttons put the count in the button label ("Notifications, 3 unread") and hide the dot. The Verified icon is <code>aria-hidden</code>; the word "Verified" (visible or visually hidden) is what is read.</p>
+      <p>Status badges read as their text. Count badges set <code>aria-label="N unread"</code>; on icon-only buttons put the count in the button label ("Notifications, 3 unread") and hide the dot.</p>
       <h3>Contrast</h3>
       <div class="ds-themes">
         <div data-theme="light"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
@@ -229,7 +222,6 @@
         <div class="ds-pair"><span>Warning</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-warning-bg" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Danger</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-danger-bg" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Solid and count</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Verified icon on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-icon|--color-bg-surface" data-min="3"></span></div>
         </div></div>
         <div data-theme="dark"><div class="ds-example__canvas ds-example__canvas--stack" style="padding: 0; gap: var(--space-2);">
         <div class="ds-pair"><span>Neutral</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-subtle" data-min="4.5"></span></div>
@@ -238,7 +230,6 @@
         <div class="ds-pair"><span>Warning</span><span class="ds-pair__ratio" data-contrast="--color-warning-fg|--color-warning-bg" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Danger</span><span class="ds-pair__ratio" data-contrast="--color-danger-fg|--color-danger-bg" data-min="4.5"></span></div>
         <div class="ds-pair"><span>Solid and count</span><span class="ds-pair__ratio" data-contrast="--color-fg-on-accent|--color-accent" data-min="4.5"></span></div>
-        <div class="ds-pair"><span>Verified icon on surface</span><span class="ds-pair__ratio" data-contrast="--color-success-icon|--color-bg-surface" data-min="3"></span></div>
         </div></div>
       </div>
       <h3>Motion</h3>
@@ -251,7 +242,6 @@
         <li>One or two words, a state not an instruction: "Sold out", "Awaiting reply", "Listed". Written in sentence case; CSS uppercases it.</li>
         <li>Pick the tone from what the person should feel: success when done well, warning when someone needs to act, danger when something stopped. Neutral when it is simply over.</li>
         <li>Counts above 99 show "99+" with the full number in the <code>aria-label</code>.</li>
-        <li>"Verified" is the only word for a business the verification team has approved. Do not use "Trusted" or "Approved".</li>
       </ul>
     </section>
     <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
@@ -272,29 +262,23 @@
           <tr><td>Warning</td><td><code>--color-warning-bg</code> / <code>--color-warning-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-warning-fg" data-swatch></i><span data-token="--color-warning-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-warning-bg" data-swatch></i><span data-token="--color-warning-bg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-warning-fg" data-swatch></i><span data-token="--color-warning-fg"></span></span></td></tr>
           <tr><td>Danger</td><td><code>--color-danger-bg</code> / <code>--color-danger-fg</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-bg" data-swatch></i><span data-token="--color-danger-bg"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-danger-fg" data-swatch></i><span data-token="--color-danger-fg"></span></span></td></tr>
           <tr><td>Solid and count</td><td><code>--color-accent</code> / <code>--color-fg-on-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span> <span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-on-accent" data-swatch></i><span data-token="--color-fg-on-accent"></span></span></td></tr>
-          <tr><td>Verified icon</td><td><code>--color-success-icon</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-success-icon" data-swatch></i><span data-token="--color-success-icon"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-success-icon" data-swatch></i><span data-token="--color-success-icon"></span></span></td></tr>
           <tr><td>Height</td><td><code>--badge-height</code></td><td colspan="2"><span data-token="--badge-height"></span></td></tr>
           <tr><td>Dot</td><td><code>--indicator-size</code></td><td colspan="2"><span data-token="--indicator-size"></span></td></tr>
           <tr><td>Padding</td><td><code>--space-2</code></td><td colspan="2"><span data-token="--space-2"></span></td></tr>
           <tr><td>Radius</td><td><code>--radius-full</code></td><td colspan="2"><span data-token="--radius-full"></span></td></tr>
           <tr><td>Type</td><td><code>--text-overline</code></td><td colspan="2"><span data-token="--text-overline"></span></td></tr>
           <tr><td>Tracking</td><td><code>--letter-spacing-wide</code></td><td colspan="2"><span data-token="--letter-spacing-wide"></span></td></tr>
-          <tr><td>Verified icon size</td><td><code>--icon-size-sm</code></td><td colspan="2"><span data-token="--icon-size-sm"></span></td></tr>
         </tbody>
       </table></div>
     </section>
     <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
       <pre><code>&lt;span class="badge badge--success"&gt;Listed&lt;/span&gt;
-&lt;span class="badge badge--count" aria-label="2 unread"&gt;2&lt;/span&gt;
-&lt;span class="verified"&gt;
-  &lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;…&lt;/svg&gt;Verified
-&lt;/span&gt;</code></pre>
+&lt;span class="badge badge--count" aria-label="2 unread"&gt;2&lt;/span&gt;</code></pre>
       <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody>
         <tr><td><code>.badge</code></td><td>Neutral status badge with dot.</td></tr>
         <tr><td><code>.badge--info</code> <code>--success</code> <code>--warning</code> <code>--danger</code></td><td>Tone.</td></tr>
         <tr><td><code>.badge--solid</code></td><td>Gold highlight.</td></tr>
         <tr><td><code>.badge--count</code></td><td>Gold count pill, no dot; needs <code>aria-label</code>.</td></tr>
-        <tr><td><code>.verified</code></td><td>Check icon plus "Verified".</td></tr>
       </tbody></table></div>
     </section>
     <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
@@ -302,11 +286,10 @@
       <ul>
         <li><a href="../../mocks/pages/my-products/default.html">pages/my-products/default</a> (Listed and Sold out)</li>
         <li><a href="../../mocks/pages/business/replies-fast.html">pages/business/replies-fast</a> (Replies fast, on the page and on a card)</li>
-        <li><a href="../../mocks/pages/admin-verification/default.html">pages/admin-verification/default</a> (Ready to review)</li>
+        <li><a href="../../mocks/pages/admin-reports/default.html">pages/admin-reports/default</a> (In review)</li>
         <li><a href="../../mocks/pages/messages/default.html">pages/messages/default</a> (count badges)</li>
         <li><a href="../../mocks/pages/request-detail/cancelled.html">pages/request-detail/cancelled</a> (neutral Cancelled)</li>
         <li><a href="../../mocks/notifications/request-toast/warning.html">notifications/request-toast/warning</a> (tab totals as neutral badges)</li>
-        <li><a href="../../mocks/pages/business/default.html">pages/business/default</a> (Verified)</li>
       </ul>
       <p>Drift fixed during extraction: the badge height was 22px with a 6px dot; it is now <code>--badge-height</code> (20px) and <code>--indicator-size</code> (8px). Tab totals in the request-toast mocks used neutral <code>.badge</code> for numbers ("Bookings • 1") with no noun; they should be <code>.badge--count</code> with an <code>aria-label</code>, or plain text in the tab label. Several badges had a stray trailing space in the class (<code>class="badge "</code>). <code>.badge--solid</code> is defined but used in no mock.</p>
     </section>

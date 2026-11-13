@@ -3,32 +3,29 @@ import type { Page, Route } from '@playwright/test';
 // The staff session of the admin application (L2-190) and staff sign-in (L2-189), answered at the
 // network edge (ADR 0009): the admin application sees exactly what these endpoints return.
 
-export type StaffRole = 'verifier' | 'admin';
+export type StaffRole = 'moderator' | 'admin';
 
 export interface StaffMember {
   displayName: string;
   initials: string;
   email: string;
   roles: StaffRole[];
-  verificationCount: number;
 }
 
-/** Miriam Castillo of the verification team, as the mocks show her. */
+/** Miriam Castillo of the Jubilee team, as the mocks show her. */
 export const miriam: StaffMember = {
   displayName: 'Miriam Castillo',
   initials: 'MC',
   email: 'miriam@jubilee.to',
-  roles: ['verifier'],
-  verificationCount: 2,
+  roles: ['moderator'],
 };
 
-/** Daniel Osei, an administrator without the verifier role (L2-188 AC4). */
+/** Daniel Osei, an administrator without the moderator role (L2-188 AC4). */
 export const daniel: StaffMember = {
   displayName: 'Daniel Osei',
   initials: 'DO',
   email: 'daniel@jubilee.to',
   roles: ['admin'],
-  verificationCount: 0,
 };
 
 /** What `GET /api/staff/session` answers: a staff member, no session, or a refused network (L2-192). */

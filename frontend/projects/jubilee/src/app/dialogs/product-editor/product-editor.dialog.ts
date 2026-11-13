@@ -79,7 +79,7 @@ export class ProductEditorDialog {
   protected readonly editing = this.product !== null;
   /** When what is saved becomes public. */
   protected readonly note = this.data.draft
-    ? 'Nothing is public until your listing is verified.'
+    ? 'Nothing is public until your listing is published.'
     : 'Changes show on your public listing as soon as you save.';
   protected readonly view = signal<View>('form');
   protected readonly busy = computed(() => this.view() === 'busy');

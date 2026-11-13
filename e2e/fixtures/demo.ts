@@ -105,7 +105,8 @@ export class Demo {
         k.style.cssText = 'font-weight:700;font-size:28px;letter-spacing:-0.03em;color:#e0b354;';
         const h = document.createElement('div');
         h.textContent = heading as string;
-        h.style.cssText = 'font-weight:700;font-size:54px;line-height:1.08;letter-spacing:-0.02em;max-width:1000px;';
+        h.style.cssText =
+          'font-weight:700;font-size:54px;line-height:1.08;letter-spacing:-0.02em;max-width:1000px;';
         card.append(k, h);
         for (const line of body as string[]) {
           const p = document.createElement('div');
@@ -143,8 +144,16 @@ function drawPointer(): void {
       (e) => (dot.style.transform = `translate(${e.clientX}px,${e.clientY}px)`),
       true,
     );
-    document.addEventListener('mousedown', () => (dot.style.background = 'rgba(224,179,84,.95)'), true);
-    document.addEventListener('mouseup', () => (dot.style.background = 'rgba(224,179,84,.55)'), true);
+    document.addEventListener(
+      'mousedown',
+      () => (dot.style.background = 'rgba(224,179,84,.95)'),
+      true,
+    );
+    document.addEventListener(
+      'mouseup',
+      () => (dot.style.background = 'rgba(224,179,84,.55)'),
+      true,
+    );
   };
   if (document.documentElement) attach();
   document.addEventListener('DOMContentLoaded', attach);

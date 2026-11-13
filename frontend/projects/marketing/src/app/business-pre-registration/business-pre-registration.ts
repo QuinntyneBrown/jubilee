@@ -134,7 +134,7 @@ function websiteValid(website: string): boolean {
 
 /**
  * "Be listed on launch day.": an owner sends their business's details before launch, so that the
- * Jubilee team can prepare the listing (L2-216). Sending lists and verifies nothing.
+ * Jubilee team can prepare the listing (L2-216). Sending lists nothing.
  */
 @Component({
   selector: 'jb-business-pre-registration',

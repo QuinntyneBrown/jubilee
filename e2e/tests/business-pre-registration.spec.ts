@@ -159,7 +159,7 @@ test.describe('business pre-registration (L2-216)', () => {
     });
     await expect(form.confirmationHeading).toHaveText('Thank you. We have your details.');
     await expect(form.confirmation).toContainText(
-      'The Jubilee team will be in touch at naomi@luzandre.com before launch. Your business is not listed or verified yet: every business is verified before it appears.',
+      'The Jubilee team will be in touch at naomi@luzandre.com before launch. Your business is not listed yet.',
     );
     await expect(form.form).toHaveCount(0);
     await expect.poll(() => form.hasFocus(form.confirmation)).toBe(true);

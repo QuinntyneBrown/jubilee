@@ -3,7 +3,7 @@
 ## Overview
 
 Jubilee is Toronto's Christian marketplace. Two moments matter most to a member:
-sending a request to a business and submitting a listing for verification. Right
+sending a request to a business and publishing a listing. Right
 after either, the confirmation asks one question about how easy it was. This
 feature covers that question, the follow-up for a low score and the way the
 answer is stored.
@@ -43,7 +43,7 @@ The feature is a vertical slice from four confirmations to the `Feedback` table.
   (`frontend/projects/jubilee/src/app/dialogs/book-meeting/`, `request-quote/`,
   `request-item/`) render `jb-moment-check` with the question "How easy was it
   to send your request?" and the moment `request-sent`.
-- **Placement after a listing** — the submitted view of `ListBusinessPage`
+- **Placement after a listing** — the published view of `ListBusinessPage`
   (`frontend/projects/jubilee/src/app/pages/list-business/`) renders
   `jb-moment-check` with the question "How easy was it to list your business?"
   and the moment `listing-submitted`.

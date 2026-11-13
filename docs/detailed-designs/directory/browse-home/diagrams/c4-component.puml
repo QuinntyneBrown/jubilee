@@ -15,8 +15,8 @@ Container_Boundary(web, "Jubilee Web") {
 Container_Boundary(api, "Jubilee API") {
   Component(ctrl, "DirectoryController", "ASP.NET Core controller", "GET /api/directory/home for anonymous callers")
   Component(handler, "GetBrowseHomeQueryHandler", "MediatR handler", "Builds the BrowseHomeDto")
-  Component(filter, "PublicListingFilter", "Query filter", "Verified and live listings only")
-  Component(selector, "FeaturedSelector", "Domain service", "Featured slots or most recently verified")
+  Component(filter, "PublicListingFilter", "Query filter", "Live listings that are not paused or deleted or held")
+  Component(selector, "FeaturedSelector", "Domain service", "Featured slots or most recently published")
   Component(grouping, "DirectoryGrouping", "Domain service", "Counts and first four per category")
   Component(readCache, "IDirectoryReadCache", "Application service", "60 s read cache")
   Component(invalidator, "DirectoryCacheInvalidationInterceptor", "EF Core SaveChangesInterceptor", "Removes cached directory entries after a save")

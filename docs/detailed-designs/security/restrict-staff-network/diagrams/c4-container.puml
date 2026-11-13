@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Restrict staff access by network
 
-Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(staff, "Staff member", "Moderator or administrator on an allowed network")
 Person_Ext(other, "Caller off the list", "Outside the allow-list")
 System_Boundary(j, "Jubilee") {
   Container(adminhost, "Admin host", "App Service jubilee-to-admin - server.js", "Access restrictions - proxies /api with the proxy key")

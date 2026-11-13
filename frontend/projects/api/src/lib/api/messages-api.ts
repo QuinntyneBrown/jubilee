@@ -29,7 +29,7 @@ export interface MessagesApi {
   attachmentLink(id: string, attachmentId: string): Observable<AttachmentLink>;
   /** Stops, or resumes, the e-mails about new replies in a conversation (L2-061). */
   mute(id: string, muted: boolean): Observable<void>;
-  /** Reports a conversation to the verification team; a member may block the business with it (L2-063). */
+  /** Reports a conversation to the Jubilee team; a member may block the business with it (L2-063). */
   report(id: string, reason: string, block: boolean): Observable<void>;
 }
 

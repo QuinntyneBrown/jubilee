@@ -29,7 +29,7 @@ export interface IncomingCounts {
 
 /** The answer of `GET /api/my-business/requests`. */
 export interface IncomingRequests {
-  listing: { name: string; slug: string; verified: boolean };
+  listing: { name: string; slug: string };
   tab: IncomingTab;
   counts: IncomingCounts;
   repliesFast: boolean;

@@ -50,7 +50,7 @@ public sealed class LaunchController(ISender sender, IBotChallengeVerifier bot, 
         return Accepted();
     }
 
-    /// <summary>202 with no body. Nothing is listed, drafted or verified by it (L2-216 AC9).</summary>
+    /// <summary>202 with no body. Nothing is listed or drafted by it (L2-216 AC9).</summary>
     [HttpPost("businesses")]
     [EnableRateLimiting(LaunchRateLimit.PreRegistrations)]
     [ErrorReference("JB-LAUNCH-503")]

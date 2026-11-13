@@ -59,9 +59,9 @@ public sealed class GetDocumentStatusQueryHandler(IAppDbContext db) : IRequestHa
             return Ok;
         }
 
-        // The owner and the verification team may open a listing that is not public, as its preview (L2-219).
+        // The owner and the Jubilee team may open a listing that is not public, as its preview (L2-219).
         if (viewer.Subject is { } subject && await db.Listings.AsNoTracking()
-                .AnyAsync(l => l.Slug == slug && l.DeletedAt == null && (l.OwnerId == subject || viewer.IsVerifier), cancellationToken))
+                .AnyAsync(l => l.Slug == slug && l.DeletedAt == null && (l.OwnerId == subject || viewer.IsModerator), cancellationToken))
         {
             return Ok;
         }

@@ -1,0 +1,88 @@
+@startuml
+title UML sequence behaviour — Publish a listing
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "ListBusinessPage" as page
+  participant "ListingDraftsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingDraftsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "PublishListingCommandHandler" as handler
+  participant "Listing" as entity
+  participant "ListingSubmission" as submission
+  participant "NewBusinessNotifier" as notifier
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Press "Publish listing"
+page -> page : Validate every field in the browser (L2-126)
+alt Three fields invalid
+  page --> actor : Show "Fix 3 things to continue" and move focus to the summary (L2-078)
+else Form valid
+  page -> page : Make fields read-only and the button busy (L2-127)
+  page -> client : publish(draftId, values with idempotencyKey from newKey())
+  client -> controller : POST /api/listing-drafts/{id}/publish
+  controller -> controller : Authenticate and apply RequiresConfirmedEmail
+  alt E-mail not confirmed
+    controller --> client : 403 EMAIL_UNCONFIRMED (L2-005)
+  else Confirmed
+    controller -> handler : Send PublishListingCommand
+    handler -> db : Find a ListingSubmission of this owner with this key (L2-132)
+    alt Key already used
+      handler --> controller : PublishedListingDto of the listing published then
+      controller --> client : 201 Created
+    else First request
+      handler -> db : Load the caller's ListingDraft (404 draft_not_found otherwise)
+      handler -> handler : Check name, tagline, category or space, and the agreement (L2-072, L2-075)
+      alt Validation fails on the server
+        handler -> db : Save what was typed to the draft
+        handler --> controller : ValidationFailed with per-field codes
+        controller --> client : 422 ProblemDetails
+      else Valid
+        handler -> handler : Raise CONTACT_IN_TEXT when the name or tagline holds contact details or a code (L2-072)
+        handler -> entity : Create with a unique slug, set kind, owner, place and highlight
+        handler -> entity : Publish(now)
+        entity --> handler : Stage Live and PublishedAt set (L2-078)
+        handler -> handler : AddItems creates each Product or Service, or DescribeSpace (L2-073)
+        handler -> submission : Record(listingId, subject, key, flags, now) with StatementOfFaith.Version (L2-075)
+        handler -> notifier : TellAsync(listing) tells members who browsed the category (L2-222)
+        handler -> db : Save listing, items or space, ListingSubmission and notifications; remove the draft
+        db --> handler : Commit result
+        handler --> controller : PublishedListingDto (Stage live)
+        controller --> client : 201 Created
+      end
+    end
+  end
+  client --> page : Result or ProblemDetails
+  alt Published
+    page --> actor : Show "{Business} is live. Members can find you in {category} now." with "View public listing"
+  else 422
+    page --> actor : Restore the editable form with the field errors
+  else Other failure or no answer within 10 seconds
+    page --> actor : Show "We couldn't publish your listing. Your draft is saved. Try again." (L2-127)
+  end
+end
+note over handler, db
+  The save drops the directory read cache; public directory responses
+  are cached for at most 60 seconds, so public lists show the listing
+  within 60 seconds (L2-028). Nobody verifies the listing first and no
+  e-mail is sent (ADR 0041, ADR 0057).
+end note
+@enduml

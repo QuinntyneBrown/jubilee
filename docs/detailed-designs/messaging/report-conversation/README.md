@@ -2,20 +2,20 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace, in which a member and a verified
+Jubilee is Toronto's Christian marketplace, in which a member and a
 business talk in a private conversation. Conversations are private by default:
 only the two participants read them. This feature covers the conversation menu
 and the safety controls around that privacy: muting a conversation, reporting it
-to the verification team, blocking the business, limiting staff access to
+to the Jubilee team, blocking the business, limiting staff access to
 reported conversations, and rendering message text safely.
 
 The terms below are local to this feature.
 
-- **report** — record in which one participant asks the verification team to review a conversation
+- **report** — record in which one participant asks the Jubilee team to review a conversation
 - **open report** — report whose status is `Open` or `InReview`
 - **block** — instruction from the member that stops the business's later messages from reaching the member
 - **conversation menu** — menu opened by "More" in the header of an open conversation
-- **staff read** — access to conversation content by a verification team member
+- **staff read** — access to conversation content by a Jubilee team member
 
 Either participant may report. The report attaches the conversation, and a
 member may block the business in the same step. The business is not told about
@@ -23,7 +23,7 @@ the block: its next message is answered as if it were delivered, is stored, and
 is never shown to the member or counted as unread (ADR 0014).
 
 Staff access follows the statement on the help page: "Our team reads a
-conversation only when one of you reports it." A verification team member can
+conversation only when one of you reports it." A Jubilee team member can
 read a conversation only through its report, and only while that report is
 open; each staff read is recorded in the audit log with the report as its
 reason. Review and resolution of reports belong to the administration subsystem
@@ -52,7 +52,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0051.
   of `jb-dialog`, `jb-field`, `jb-textarea`, `jb-checkbox`, `jb-alert` and
   `jb-button`, and opened by "Report conversation" in the conversation menu. It
   is titled "Report this conversation" and says "Reports are private. Our
-  verification team reads this conversation only while the report is open." It
+  team reads this conversation only while the report is open." It
   has one required field, "Tell us what happened", of at most 1,000 characters
   with a counter. A member also sees the checkbox "Block {business}" with "They
   won't be told. Their messages will stop reaching you."; an owner does not.
@@ -62,7 +62,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0051.
 - **Dialog states** — an empty description shows "Add a sentence or two so we
   know what to check." under the field, focus moves to the field and nothing is
   sent. On success the dialog says "Thanks for telling us. Your report is
-  private. Our verification team reviews it within one business day." and, when
+  private. Our team reviews it within one business day." and, when
   the member blocked the business, "{Business} is blocked." On failure, or when
   no answer comes within 10 seconds, the dialog keeps what was typed and "Send
   report" tries again. A `429` shows "You’re doing that a lot. Try again in
@@ -89,7 +89,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0051.
   still be applied (L2-137, ADR 0051).
 - **`ConversationReport`** — domain entity. It holds the conversation, the
   reporter, the reason and a `ReportStatus` of `Open`, `InReview` or `Resolved`.
-  The verification team sees it in the same list as listing reports (ADR 0033).
+  The Jubilee team sees it in the same list as listing reports (ADR 0033).
 - **Block** — `Conversation.BlockedByMember`, a flag set by `Conversation.Block`.
   Only the member can block; an owner's `block` value is ignored.
 - **`SendMessageCommandHandler`** — the send handler from `exchange-messages`.
@@ -99,7 +99,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0051.
   nobody is told (ADR 0014). A block does not hide request cards (ADR 0039).
 - **`AdminReportsController`** — ASP.NET Core controller for
   `/api/admin/reports`, used by the admin application (ADR 0040). It carries
-  `[RequiresVerifier]`: only a staff session of the verification team reaches
+  `[RequiresModerator]`: only a staff session of the Jubilee team reaches
   it, and a member session is refused with `403` and code
   `STAFF_SESSION_REQUIRED`. A report is read with
   `POST /api/admin/reports/{id}/open`.
@@ -111,7 +111,7 @@ decisions behind it are recorded in ADR 0014, ADR 0039 and ADR 0051.
   conversation. Nothing in the admin API reads a conversation by its own id, and
   staff calling `/api/conversations/{id}` receive `404` like anyone who is not a
   participant, so a conversation without an open report cannot be read. A
-  verifier cannot open a report about their own listing (`403`, code
+  moderator cannot open a report about their own listing (`403`, code
   `OWN_LISTING`).
 - **`AuditLog.Record`** — writes an `AuditRecord` with the actor, the action
   `conversation.viewed`, the report as target and "Report {id}" as the reason
@@ -137,11 +137,11 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-061` | `L1-009` | "More" in the header of an open conversation shall open a menu with "Mute" (or "Unmute") and "Report conversation" that works by touch and by keyboard. Muting shall stop e-mail about new replies, show a toast with "Undo", and show "Muted" in the header. |
-| `L2-063` | `L1-009` | Either participant may report a conversation to the verification team with the conversation attached, and may block the other side. A message from a blocked business shall be refused without telling the business it was blocked. Staff shall not read conversation content without an open report on that conversation. Links in message text shall be rendered as text with `rel="nofollow noopener noreferrer"` and never as raw HTML. A participant with a report on the conversation that is still open shall not file a second one; a block chosen with it shall still apply. |
+| `L2-063` | `L1-009` | Either participant may report a conversation to the Jubilee team with the conversation attached, and may block the other side. A message from a blocked business shall be refused without telling the business it was blocked. Staff shall not read conversation content without an open report on that conversation. Links in message text shall be rendered as text with `rel="nofollow noopener noreferrer"` and never as raw HTML. A participant with a report on the conversation that is still open shall not file a second one; a block chosen with it shall still apply. |
 | `L2-132` | `L1-018` | Each create request shall carry a client-generated idempotency key. A report of a conversation shall carry no key: a participant has at most one report open on a conversation, so a repeat files nothing new. |
 | `L2-133` | `L1-019` | The server shall check the caller's role and ownership of the specific object on every API call before doing anything else. |
 | `L2-137` | `L1-019` | The server shall answer 429 with `Retry-After` past 10 reports per member per day, and the UI shall show "You're doing that a lot. Try again in {n} minutes." |
-| `L2-150` | `L1-020` | When a verifier views a reported conversation, the access shall be recorded in the audit log with the reason (report ID). |
+| `L2-150` | `L1-020` | When a moderator views a reported conversation, the access shall be recorded in the audit log with the reason (report ID). |
 | `L2-180` | `L1-025` | Each sensitive action, including staff access to personal data, shall produce an append-only audit record of actor, action, target, time, before and after values, and reason. |
 
 ## Diagrams
@@ -149,7 +149,7 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 ### System context
 
 Members and owners mute and report through Jubilee, and a member may block a
-business. Verification team members
+business. Jubilee team members
 read reported conversations through Jubilee. The feature involves no external
 system.
 
@@ -189,7 +189,7 @@ The member or owner opens the dialog from the conversation menu. The handler
 verifies the caller is a participant, files the report unless the caller already
 has an unresolved one on the conversation or has reached the daily limit,
 applies the block when a member chose it, and commits both. The report then
-appears in the verification team's list (ADR 0033).
+appears in the Jubilee team's list (ADR 0033).
 
 ![Sequence diagram for reporting and blocking](diagrams/sequence-report-and-block.png)
 
@@ -203,7 +203,7 @@ of a block; the message is stored hidden and never reaches the member.
 
 ### Behaviour — staff read of a reported conversation
 
-A verifier opens a report in the admin application. While the report is not
+A moderator opens a report in the admin application. While the report is not
 resolved the handler returns the conversation and appends an `AuditRecord`.
 Once it is resolved the answer carries no conversation, and an id that is not a
 report answers `404`.

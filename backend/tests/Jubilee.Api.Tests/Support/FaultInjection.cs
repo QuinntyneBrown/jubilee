@@ -105,10 +105,6 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<StatementAgreement> StatementAgreements => Use(inner.StatementAgreements);
 
-    public DbSet<ReviewTick> ReviewTicks => Use(inner.ReviewTicks);
-
-    public DbSet<ListingDecision> ListingDecisions => Use(inner.ListingDecisions);
-
     public DbSet<AuditRecord> AuditRecords => Use(inner.AuditRecords);
 
     public DbSet<ResponseTimeStat> ResponseTimeStats => Use(inner.ResponseTimeStats);

@@ -34,7 +34,7 @@ export * from './lib/api/admin-api';
 export * from './lib/models/moderation';
 export * from './lib/models/account-data';
 export * from './lib/api/account-data-api';
-export * from './lib/models/verification';
+export * from './lib/models/admin-listings';
 export * from './lib/api/incoming-requests-api';
 export * from './lib/models/incoming-requests';
 export * from './lib/api/my-business-api';

@@ -11,7 +11,7 @@ team or for a business.
 The terms below are local to this feature.
 
 - **feedback page** — page "Help us make Jubilee better" at `/feedback/rate`, `/feedback/bug` and `/feedback/kudos`
-- **area** — one of the four parts of Jubilee a rating may score: finding businesses, listing a business, messages and requests, trust and verification
+- **area** — one of the four parts of Jubilee a rating may score: finding businesses, listing a business, messages and requests, trust and safety
 - **place** — one of seven fixed answers to "Where did it happen?" in a bug report
 - **frequency** — optional answer to "How often?": just once, sometimes or every time
 - **screenshot** — JPEG or PNG picture of 5 MB or less that a member adds to a bug report; a report carries at most three
@@ -60,7 +60,7 @@ The feature is a vertical slice from the page to `FeedbackController`.
   one `jb-score-scale` for each of "Finding businesses" ("Browse, search and
   categories"), "Listing your business" ("Creating and editing a listing"),
   "Messages and requests" ("Meetings, quotes and order requests") and "Trust and
-  verification" ("Verification and verified marks"); and the note "What
+  safety" ("Reports and honest listings"); and the note "What
   would make it better?". Pressing the chosen score of an area again clears it.
   The submit button reads "Send feedback".
 - **"Report a bug" form** — "Where did it happen?" as a `jb-radio-group` of the

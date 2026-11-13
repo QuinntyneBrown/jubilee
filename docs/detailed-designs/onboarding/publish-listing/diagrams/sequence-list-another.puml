@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — List another business
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Owner" as actor
+box "Frontend — Jubilee Web" #E0F2FE
+  participant "MyBusinessPage" as page
+  participant "ListBusinessPage" as list
+  participant "ListingDraftsApi" as client
+end box
+box "Backend — Jubilee API" #D1FADF
+  participant "ListingDraftsController" as controller
+end box
+box "Backend — Jubilee Application and Domain" #ECFDF3
+  participant "SaveListingDraftCommandHandler" as handler
+end box
+box "Backend — Jubilee Infrastructure" #FFF4E5
+  database "Jubilee database" as db
+end box
+actor -> page : Open /my-business
+page --> actor : Switcher from MyBusinessDto.Businesses, each "{Business} · {stage}", and "List another business" (L2-079)
+actor -> page : Choose "List another business"
+page -> list : Open /list?draft=new
+list -> client : create(values)
+client -> controller : POST /api/listing-drafts
+controller -> controller : Authenticate session
+controller -> handler : Send SaveListingDraftCommand with no ID
+handler -> db : Count the owner's listings not deleted and their drafts
+db --> handler : Count
+alt Owner already has 5 (L2-079)
+  handler --> controller : Conflict LISTING_LIMIT
+  controller --> client : 409 ProblemDetails
+  client --> list : Limit reached
+  list --> actor : Show "You can list up to 5 businesses. Write to help@jubilee.example for more."
+else Fewer than 5
+  handler -> db : Insert a ListingDraft
+  db --> handler : Commit result
+  handler --> controller : ListingDraftDto
+  controller --> client : 201 Created
+  client --> list : New draft
+  list --> actor : The form for the new business
+end
+note over page
+  The switcher then names the draft as "{name} · Draft".
+  Choosing a listing sends PUT /api/my-business/current,
+  which stamps Listing.WorkspaceChosenAt (ADR 0052).
+end note
+@enduml

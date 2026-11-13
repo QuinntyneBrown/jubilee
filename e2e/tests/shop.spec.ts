@@ -13,7 +13,7 @@ test.describe('shop page (L2-034)', () => {
     await jb.open('shop');
     await expect(page).toHaveTitle('Luzandre.com · Jubilee');
 
-    await expect(shop.kicker).toHaveText('Verified Christian business · Shops');
+    await expect(shop.kicker).toHaveText('Shops');
     await expect(shop.heading).toHaveText('Luzandre.com');
     await expect(shop.ownerName).toHaveCount(0);
     await expect(shop.tagline).toHaveText(

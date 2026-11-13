@@ -1,6 +1,6 @@
 # 0018. Listing onboarding decisions
 
-Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed. Submit no longer takes a church or a pastor's e-mail, queues no e-mail to a pastor, sets no `REFERENCE_REUSED` flag and creates the listing at Ready to review, not `PendingReference`. The design `name-church-reference` is deleted. The rest stands. Amended again 12 November 2026 (see "Amendment: finishing the journey"): the deferrals of the last point are reversed.
+Status: accepted. Amended by ADR 0041, 12 November 2026: the church reference is removed. Submit no longer takes a church or a pastor's e-mail, queues no e-mail to a pastor, sets no `REFERENCE_REUSED` flag and creates the listing at Ready to review, not `PendingReference`. The design `name-church-reference` is deleted. The rest stands. Amended again 12 November 2026 (see "Amendment: finishing the journey"): the deferrals of the last point are reversed. Superseded in part by ADR 0057, 12 November 2026: Jubilee ships without verification; a listing goes live when its owner publishes it, there is no Verified mark, and the verification team is the Jubilee team (`moderator` role).
 
 ## Context
 

@@ -2,7 +2,7 @@ import { chipCategories as categories } from '../fixtures/categories';
 import { expect, test } from '../fixtures/jb-test';
 import { WelcomePage } from '../pages/welcome.page';
 
-// Welcome page: L2-020, with L2-106 (featured), L2-027 and L2-111 (card rules, verified mark).
+// Welcome page: L2-020, with L2-106 (featured) and L2-027 (card rules); no Verified mark (ADR 0057).
 // The default state runs against the recorded answers of the seeded API (ADR 0009): the mocks' catalogue of 47 businesses.
 
 test.describe('welcome page (L2-020)', () => {
@@ -17,7 +17,7 @@ test.describe('welcome page (L2-020)', () => {
     await expect(welcome.tagline).toHaveText('Toronto’s Christian marketplace');
     await expect(welcome.heading).toHaveText('Do business with Toronto’s Christian community.');
     await expect(welcome.countLine).toHaveText(
-      '47 verified businesses — shops, advisors, trades and more. Free to join, free to list.',
+      '47 businesses — shops, advisors, trades and more. Free to join, free to list.',
     );
     await expect(welcome.joinFree).toHaveAttribute('href', '/join');
     await expect(welcome.browseBusinesses).toHaveAttribute('href', '/');
@@ -43,7 +43,7 @@ test.describe('welcome page (L2-020)', () => {
       'Keep wealth working for the kingdom',
     ]);
     await expect(welcome.stepList).toContainText(
-      'Every listing is a Christian-owned business verified by the Jubilee verification team.',
+      'Every listing is a Christian-owned business whose owner agreed to Jubilee’s statement of faith.',
     );
     // Up to four featured businesses (L2-106: the first four of this week's slots) with "Browse all {n}"
     await expect(welcome.featuredCards).toHaveCount(4);
@@ -55,21 +55,21 @@ test.describe('welcome page (L2-020)', () => {
     await expect(welcome.browseAll).toHaveAttribute('href', '/');
     // The "Own a business?" panel
     await expect(welcome.ownABusiness).toContainText(
-      'List it free. Tell us what you offer, submit it for verification, and you are live once we approve it.',
+      'List it free. Tell us what you offer, agree to the statement of faith and publish. You are live straight away.',
     );
     await expect(welcome.listYourBusiness).toHaveAttribute('href', '/join?returnUrl=%2Flist');
   });
 
   test('AC3: the count shown is the count the directory reports', async ({ page, jb }) => {
     const welcome = new WelcomePage(page);
-    // Given the directory now holds 1,204 live verified businesses
+    // Given the directory now holds 1,204 live businesses
     await page.route('**/api/directory/welcome', (route) =>
       route.fulfill({ json: { liveBusinessCount: 1204, categories, featured: [] } }),
     );
     await jb.open('welcome');
     // Then the count follows it, with a thousands separator (L2-027 AC4)
     await expect(welcome.countLine).toHaveText(
-      '1,204 verified businesses — shops, advisors, trades and more. Free to join, free to list.',
+      '1,204 businesses — shops, advisors, trades and more. Free to join, free to list.',
     );
     // And with nothing to feature the section is left out
     await expect(welcome.featured).toHaveCount(0);
@@ -97,7 +97,7 @@ test.describe('welcome page (L2-020)', () => {
 });
 
 test.describe('featured business cards', () => {
-  test('L2-027 AC1 and L2-111: a card has a category tile, name, tagline, highlight and the Verified mark', async ({
+  test('L2-027 AC1: a card has a category tile, name, tagline and highlight, and no Verified mark', async ({
     page,
     jb,
   }) => {
@@ -110,9 +110,8 @@ test.describe('featured business cards', () => {
     await expect(card.name).toHaveText('Legacy Financial');
     await expect(card.tagline).toHaveText('Build a Legacy. Protect a Legacy. Leave a Legacy.');
     await expect(card.highlight).toHaveText('Free first meeting');
-    // L2-111 AC2: an icon and the text, never colour alone
-    await expect(card.verifiedMark).toHaveText('Verified');
-    await expect(card.verifiedIcon).toBeVisible();
+    // ADR 0057: no card calls a business verified
+    await expect(card.root).not.toContainText('Verified');
   });
 
   test('L2-027 AC2 and L2-106 AC1: a long name wraps whole, its tagline is clamped, and fewer than four are shown as they are', async ({
@@ -136,7 +135,6 @@ test.describe('featured business cards', () => {
                 'Individual, couple and family psychotherapy for every season of life, in person in Scarborough and online across Ontario, with evening and Saturday appointments for working families.',
               highlight: null,
               categorySlug: 'health-family',
-              verified: true,
               coverPhoto: null,
             },
           ],
@@ -151,7 +149,6 @@ test.describe('featured business cards', () => {
     await expect(card.name).toHaveText(name);
     expect(await card.nameIsTruncated()).toBe(false);
     expect(await card.taglineLines()).toBe(2);
-    await expect(card.verifiedMark).toHaveText('Verified');
     expect(await welcome.overflowsHorizontally()).toBe(false);
   });
 });

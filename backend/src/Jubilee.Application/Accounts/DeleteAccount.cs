@@ -1,8 +1,8 @@
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Directory;
 using Jubilee.Application.Errors;
+using Jubilee.Application.Moderation;
 using Jubilee.Application.Requests;
-using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

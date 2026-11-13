@@ -2,7 +2,7 @@
 
 ## Overview
 
-Jubilee is Toronto's Christian marketplace: a directory of verified
+Jubilee is Toronto's Christian marketplace: a directory of
 Christian-owned businesses. A *space* is a listing for a room, suite,
 apartment, house or hall that an owner rents out, in the category "Rooms &
 rentals" and under one *term* ("Short stay", "Long term", "Room" or
@@ -35,7 +35,7 @@ The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
   shared. The space layout composes library components only:
   - "Back to rentals" linking to `/c/rooms-rentals`;
   - the cover photo or the category media tile;
-  - "Verified host · {neighbourhood}", the title and the line;
+  - the neighbourhood alone above the title (for example "Roncesvalles"), the title and the line; no "Verified" mark (ADR 0057);
   - `jb-space-booking-card`;
   - the space (for example "Guest suite") with its key facts as a
     `jb-list`;
@@ -43,7 +43,7 @@ The feature is a read slice from `BusinessPage` in `Jubilee Web` to the
     and "Rent" ("$120 per night");
   - "What’s included" and "House rules" as lists;
   - "Who lives here" with the household text, for a Room or Roommate only;
-  - the host card: "Your host", the owner's name, "Verified by Jubilee" and the about text when given;
+  - the host card: "Your host", the owner's name and the about text when given;
   - "More rooms & rentals" with up to four other live spaces as
     `jb-space-card` items (`directory/browse-spaces`).
   A part with nothing in it (no key facts, nothing included, no rules) is left
@@ -119,11 +119,11 @@ requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-205` | `L1-028` | `/b/:slug` for a space shall show "Back to rentals", the cover, "Verified host · {neighbourhood}", the title, the line, the booking card, the space with its key facts, the rows Available, Minimum stay, Neighbourhood and Rent, what's included, house rules, the household for a Room or Roommate, the host card and "More rooms & rentals"; it shall leave out empty parts, show a bottom bar under 768 px, and never send the exact address to anyone but the owner. |
+| `L2-205` | `L1-028` | `/b/:slug` for a space shall show "Back to rentals", the cover, the neighbourhood, the title, the line, the booking card, the space with its key facts, the rows Available, Minimum stay, Neighbourhood and Rent, what's included, house rules, the household for a Room or Roommate, the host card and "More rooms & rentals"; it shall leave out empty parts, show a bottom bar under 768 px, and never send the exact address to anyone but the owner. |
 | `L2-206` | `L1-028` | The booking card shall show the rent, the minimum stay, the term's call to action, "Message host", save and "You won’t pay anything until the host accepts.", prompt a visitor to sign in, and show "Sent to {host first name}" in place of the call to action while the member has an open request. |
-| `L2-208` | `L1-028` | No public endpoint shall return the exact address of a space to a visitor, a member or the verification team. |
+| `L2-208` | `L1-028` | No public endpoint shall return the exact address of a space to a visitor, a member or the Jubilee team. |
 | `L2-012` | `L1-001` | When a visitor tries an action that needs an account, the system shall prompt them to join or sign in and bring them straight back. |
-| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are verified and not paused, deleted or under a moderation hold. |
+| `L2-028` | `L1-003` | Browse, category, search, featured and related lists shall show only listings that are live and not paused, deleted or under a moderation hold. |
 | `L2-037` | `L1-005` | An owner who opens their own live listing shall see an owner banner and "Edit listing" in place of the member actions. |
 | `L2-118` | `L1-016` | Every load-error state shall show a reference that the user can quote to support. |
 

@@ -6,7 +6,7 @@ title System Context — Browse spaces
 Person(visitor, "Visitor", "Finds spaces without signing in")
 Person(member, "Member", "Finds spaces to rent")
 Person(owner, "Owner", "Rents out a live space")
-System(jubilee, "Jubilee", "Toronto's Christian marketplace of verified Christian-owned businesses")
+System(jubilee, "Jubilee", "Toronto's Christian marketplace of Christian-owned businesses")
 
 Rel(visitor, jubilee, "Browses the rooms shelf, Rooms & rentals and search")
 Rel(member, jubilee, "Browses and filters spaces by term")

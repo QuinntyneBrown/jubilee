@@ -29,10 +29,6 @@ end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
-box "Backend — Jubilee Worker" #D1FADF
-  participant "OutboxDispatcherJob" as outbox
-end box
-actor "Verification team" as team
 actor -> page : Press "Save listing"
 page -> page : check(): name, line, hours and website
 alt Browser finds problems
@@ -60,23 +56,14 @@ else Draft passes
     handler -> entity : Edit(name, tagline, category, about, where, hours, website, highlight, now)
     entity --> handler : Version + 1; true when the name or category changed
     opt Name or category changed on a live listing (L2-087 AC6)
-      entity -> entity : Stamp RecheckRequestedAt
-      handler -> handler : Add AuditRecord listing.recheck-requested with the old and new values
-      handler -> handler : TellOfRecheck: Notification and e-mail to the owner, e-mail to VerificationSettings.TeamEmail
+      handler -> handler : Add AuditRecord listing.renamed with the old and new values; nobody is e-mailed or notified (ADR 0057)
     end
-    handler -> db : Save listing, audit record, Notification and OutboxMessages in one SaveChangesAsync
+    handler -> db : Save listing and audit record in one SaveChangesAsync
     db --> handler : Commit result
     handler --> controller : ListingEditorDto
     controller --> client : 200 OK
     client --> page : ListingEditor
     page --> actor : Show "Listing updated": "Your changes are live now." with "View public listing" (L2-087 AC5)
-    opt A re-check was asked
-      page --> actor : Add "the verification team will take another look within two business days. Your listing stays live."
-      outbox -> db : Read due outbox messages
-      db --> outbox : Messages
-      outbox --> actor : E-mail "We’ll re-check {Business}"
-      outbox --> team : E-mail "Re-check: {Business} changed its name or category" with the old and new values and the admin link
-    end
   end
 end
 @enduml

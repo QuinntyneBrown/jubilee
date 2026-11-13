@@ -7,7 +7,7 @@ her own in brackets.
 
 ## Feedback Miriam might send
 
-**Moment check-in after submitting her listing: 2 of 5.** Under "What got in the way?":
+**Moment check-in after publishing her listing: 2 of 5.** Under "What got in the way?":
 
 > No place for food. I did not know if I am allowed to sell from my kitchen. Nobody says yes or
 > no.
@@ -45,7 +45,7 @@ her own in brackets.
 | Need | Today | Suggestion |
 |---|---|---|
 | A place for food | Eleven categories; no food or catering category. She is in "Community". | Add a food and catering category. |
-| A clear word on home kitchens | Verification checks honest words, a photo and the category. Nothing asks or says anything about food rules. | A short plain help page for people who sell food from home, pointing to the public health authority, and say in "How verification works" what is and is not checked. |
+| A clear word on home kitchens | An owner agrees to deal honestly with every customer. Nothing asks or says anything about food rules. | A short plain help page for people who sell food from home, pointing to the public health authority, and say beside "How does Jubilee keep listings honest?" what an owner is and is not answerable for. |
 | Notice, order size and allergens | A 60-character "Short detail" and the About text. A quote request has "Needed by", any date from today on. | Let a service carry a minimum notice the request respects, a minimum order and an allergens line. |
 | The telephone | No phone on a listing; a member may share theirs in a quote request. | Let an owner choose to show a phone number on the listing. |
 | Rita's help | One owner account per listing; no staff or delegate accounts. | Let an owner invite a helper who can read and answer requests without sharing a password. |

@@ -23,7 +23,7 @@ enum ViewerRelation {
   Visitor
   Member
   Owner
-  Verifier
+  Moderator
 }
 
 enum ReplyTimeBand {

@@ -1,16 +1,16 @@
 import { parity } from '../../fixtures/parity';
 import { AdminShellPage } from '../../pages/admin-shell.page';
-import { AdminVerificationsPage } from '../../pages/admin-verifications.page';
+import { AdminListingsPage } from '../../pages/admin-listings.page';
 
 // jb-admin-bar, the top bar of the admin application (L2-188): with the staff navigation for a
-// verifier, and without it for a staff member who holds only the admin role.
+// moderator, and without it for a staff member who holds only the admin role.
 parity('admin-bar', {
   cases: [
     {
-      name: 'verifier',
-      route: 'admin-verifications',
-      screen: (page) => new AdminVerificationsPage(page),
-      region: (screen: AdminVerificationsPage) => screen.adminBar,
+      name: 'moderator',
+      route: 'admin-listings',
+      screen: (page) => new AdminListingsPage(page),
+      region: (screen: AdminListingsPage) => screen.adminBar,
     },
     {
       name: 'admin-only',

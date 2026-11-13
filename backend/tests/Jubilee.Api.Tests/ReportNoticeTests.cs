@@ -6,14 +6,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Jubilee.Api.Tests;
 
+/// <summary>The Jubilee team's own address (<c>Moderation:TeamEmail</c>, ADR 0055, ADR 0057).</summary>
+public sealed class JubileeTeamEmailFactory : JubileeApiFactory
+{
+    protected override void ConfigureSettings(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder) =>
+        builder.UseSetting("Moderation:TeamEmail", "team@jubilee.test");
+}
+
 // Acceptance Test
 // Traces to: L2-039 AC3, L2-039 AC5, L2-105 AC1, L2-132
-// Description: a new report of a listing e-mails the verification team at once, through the outbox and in the
+// Description: a new report of a listing e-mails the Jubilee team at once, through the outbox and in the
 // same transaction as the report, with the reason, the description and the link to the report in the admin
 // application, and never the reporter (ADR 0055).
-public sealed class ReportNoticeTests(VerificationTeamEmailFactory factory) : IClassFixture<VerificationTeamEmailFactory>, IAsyncLifetime
+public sealed class ReportNoticeTests(JubileeTeamEmailFactory factory) : IClassFixture<JubileeTeamEmailFactory>, IAsyncLifetime
 {
-    private const string Team = "verification@jubilee.test";
+    private const string Team = "team@jubilee.test";
     private const string Detail = "The office address on the listing is closed; they moved last spring.";
 
     public async Task InitializeAsync()
@@ -54,6 +61,8 @@ public sealed class ReportNoticeTests(VerificationTeamEmailFactory factory) : IC
             Assert.Contains("Reason: The listing is misleading or out of date", mail.TextBody);
             Assert.Contains($"What happened: {Detail}", mail.TextBody);
             Assert.Contains($"Open the report: https://admin.jubilee.test/reports/{report.Id}", mail.TextBody);
+            Assert.Contains("The reporter's name is shown to the Jubilee team in the admin application only.", mail.TextBody);
+            Assert.DoesNotContain("verif", mail.TextBody, StringComparison.OrdinalIgnoreCase);
         });
     }
 

@@ -7,7 +7,7 @@ writes to it as she would write a note to the parish office: politely, in full s
 
 ## Feedback Eleanor might send
 
-**Moment check-in after submitting her listing: 3 of 5.** Under "What got in the way?":
+**Moment check-in after publishing her listing: 3 of 5.** Under "What got in the way?":
 
 > I work from home and was not sure about the address. I did not want my house shown to everyone.
 

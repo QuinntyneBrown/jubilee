@@ -137,7 +137,7 @@ export class CategoryPage {
         page.matchCount === 1 ? 'matches' : 'match'
       } your filters`;
     }
-    const count = `${formatCount(page.totalCount)} verified ${
+    const count = `${formatCount(page.totalCount)} ${
       page.totalCount === 1 ? 'business' : 'businesses'
     }`;
     if (!page.fact) return count;

@@ -34,7 +34,7 @@ middleware in `Jubilee API` that produce statuses and references.
   from browse." with "Back to browse" and "Search". It is the wildcard route and
   the target of every 404.
 - **`ForbiddenPage`** — shows "You don't have access to this page. This area is
-  for the owner of the listing or the Jubilee verification team." with "Back to
+  for the owner of the listing or the Jubilee team." with "Back to
   browse" and "Ask for access".
 - **`ServerErrorPage`** — shows "Something went wrong on our side. Your messages
   and requests are safe. Try again in a minute; if it keeps happening, tell us
@@ -102,7 +102,7 @@ middleware in `Jubilee API` that produce statuses and references.
 - **`HelpController`** and **`CreateAccessRequestCommandHandler`** — expose
   `POST /api/help/access-requests`. The handler stores an `AccessRequest` with
   the URL and the member's account and changes no role or permission, and tells
-  the team through `VerificationTeam.Tell` ("Access request: {address}", with
+  the team through `JubileeTeam.Tell` ("Access request: {address}", with
   the address, the member's name and e-mail address and the time), saved with
   the request so it is sent once (ADR 0056).
 

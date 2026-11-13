@@ -504,7 +504,7 @@ public sealed class SetConversationMutedCommandHandler(IAppDbContext db) : IRequ
     }
 }
 
-/// <summary>Reports a conversation to the verification team; a member may also block the business (L2-063).</summary>
+/// <summary>Reports a conversation to the Jubilee team; a member may also block the business (L2-063).</summary>
 public sealed record ReportConversationCommand(string Subject, Guid ConversationId, string? Reason, bool Block) : IRequest;
 
 public sealed class ReportConversationCommandHandler(IAppDbContext db, TimeProvider clock) : IRequestHandler<ReportConversationCommand>

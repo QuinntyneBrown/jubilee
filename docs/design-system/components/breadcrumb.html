@@ -123,7 +123,7 @@
       <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
     </header>
     <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
-      <p>Use a breadcrumb on pages two or more levels deep: category, product, request detail, help and legal pages, the admin verification detail. Do not use one on top-level pages reached from the top bar (Browse, Messages, Account) or as a replacement for the <a href="../components/link.html">back link</a> on phone-first flows.</p>
+      <p>Use a breadcrumb on pages two or more levels deep: category, product, request detail, help and legal pages, a listing in the admin application. Do not use one on top-level pages reached from the top bar (Browse, Messages, Account) or as a replacement for the <a href="../components/link.html">back link</a> on phone-first flows.</p>
       <ul>
         <li>Ancestors are links in <code>--color-fg-muted</code>; the current page is plain text in <code>--color-fg-default</code>, medium weight, with <code>aria-current="page"</code>.</li>
         <li>Separators are a slash drawn by CSS (<code>li + li::before</code>), so they are not read aloud.</li>
@@ -268,7 +268,7 @@
         <li><a href="../../mocks/pages/category/default.html">pages/category/default</a> (Browse / category)</li>
         <li><a href="../../mocks/pages/request-detail/default.html">pages/request-detail/default</a> (Your requests / request)</li>
         <li><a href="../../mocks/pages/help/default.html">pages/help/default</a> (Browse / Help)</li>
-        <li><a href="../../mocks/pages/admin-verification/default.html">pages/admin-verification/default</a> (admin detail)</li>
+        <li><a href="../../mocks/pages/admin-listing/default.html">pages/admin-listing/default</a> (admin detail)</li>
       </ul>
       <p>Drift fixed during extraction: none in markup: all 46 trails use the same <code>nav</code> + <code>ol</code> + <code>aria-current</code> structure. The CSS had no <code>data-state="hover"</code> hook for crumbs, so the forced hover cell above picks up the generic link hover instead of the breadcrumb's own (noted for a CSS fix).</p>
     </section>

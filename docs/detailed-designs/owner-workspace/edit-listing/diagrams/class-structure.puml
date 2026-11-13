@@ -26,7 +26,6 @@ class Listing {
   +string? Highlight
   +ListingStage Stage
   +int Version
-  +DateTimeOffset? RecheckRequestedAt
   +Edit(name, tagline, categorySlug, about, where, hours, website, highlight, now): bool
   +DescribeSpace(details: SpaceDetails): void
 }
@@ -78,7 +77,6 @@ class SaveListingCommand {
 
 class SaveListingCommandHandler {
   +Handle(request: SaveListingCommand): Task<ListingEditorDto>
-  -TellOfRecheck(listing, oldName, oldCategory, now): Task
 }
 
 class Workspace <<static>> {
@@ -105,8 +103,8 @@ class ListingEditorDto {
   +string CategorySlug
   +IReadOnlyList<CategoryOptionDto> Categories
   +IReadOnlyList<ListingPhotoDto> Photos
-  +bool RecheckRequested
   +SpaceDraftDto? Space
+  +string Subtitle
 }
 
 class ListingPhotoDto {
@@ -126,27 +124,8 @@ class ListingPagePhotoDto {
   +int Height
 }
 
-class VerificationSettings {
-  +string? TeamEmail
-  +string AdminBaseUrl
-}
-
 class AuditRecord {
   +{static} Make(...): AuditRecord
-}
-
-class Notification {
-  +string Kind
-  +string Title
-  +string Detail
-  +string Target
-}
-
-class OutboxMessage {
-  +string ToAddress
-  +string Subject
-  +string TextBody
-  +{static} Email(...): OutboxMessage
 }
 
 class ValidationFailedException {
@@ -214,10 +193,7 @@ SaveListingCommandHandler ..> Workspace : finds the listing with
 SaveListingCommandHandler --> Listing : calls Edit
 SaveListingCommandHandler ..> ValidationFailedException : throws per field
 SaveListingCommandHandler ..> ConflictException : throws LISTING_CHANGED
-SaveListingCommandHandler ..> VerificationSettings : reads TeamEmail
-SaveListingCommandHandler ..> AuditRecord : writes listing.recheck-requested
-SaveListingCommandHandler ..> Notification : tells the owner
-SaveListingCommandHandler ..> OutboxMessage : e-mails the owner and the team
+SaveListingCommandHandler ..> AuditRecord : writes listing.renamed with the old and new name and category
 SaveListingCommandHandler ..> ListingEditorDto : returns
 ListingEditorDto *-- "0..6" ListingPhotoDto : Photos
 Workspace ..> ListingEditorDto : builds

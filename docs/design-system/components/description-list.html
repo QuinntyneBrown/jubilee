@@ -152,7 +152,7 @@
       <div class="ds-example"><div class="ds-example__canvas">
 <dl class="dl well"><dt>Name</dt><dd>Naomi Laurent</dd><dt>E-mail</dt><dd>naomi@luzandre.example · confirmed</dd><dt>Member since</dt><dd>May 2026</dd><dt>Other listings</dt><dd>Laurent Photography (draft)</dd></dl>
       </div>
-        <div class="ds-example__caption"><span>Owner details in the <em>Approve listing</em> dialog: <code>.dl.well</code> sets the record on <code>--color-bg-surface-sunken</code>.</span></div>
+        <div class="ds-example__caption"><span>Owner details, as in the Owner panel of a listing in the admin application: <code>.dl.well</code> sets the record on <code>--color-bg-surface-sunken</code>.</span></div>
         <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;dl class="dl well"&gt;&lt;dt&gt;Name&lt;/dt&gt;&lt;dd&gt;Naomi Laurent&lt;/dd&gt;&lt;dt&gt;E-mail&lt;/dt&gt;&lt;dd&gt;naomi@luzandre.example · confirmed&lt;/dd&gt;&lt;dt&gt;Member since&lt;/dt&gt;&lt;dd&gt;May 2026&lt;/dd&gt;&lt;dt&gt;Other listings&lt;/dt&gt;&lt;dd&gt;Laurent Photography (draft)&lt;/dd&gt;&lt;/dl&gt;</code></pre></details></div>
     </section>
     <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
@@ -161,10 +161,10 @@
     <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
       <p>A description list is static content: it has no hover, focus, active or disabled state. Links and buttons inside a value keep their own states. What varies is the data.</p>
       <div class="ds-example"><div class="ds-example__canvas">
-<dl class="dl"><dt>Languages</dt><dd>English, Cantonese</dd><dt>Website</dt><dd><a href="../../mocks/pages/business/default.html">legacyfinancial.example</a></dd><dt>Status</dt><dd><span class="badge badge--success">Verified</span></dd><dt>Phone</dt><dd class="text-muted">Not given</dd></dl>
+<dl class="dl"><dt>Languages</dt><dd>English, Cantonese</dd><dt>Website</dt><dd><a href="../../mocks/pages/business/default.html">legacyfinancial.example</a></dd><dt>Status</dt><dd><span class="badge badge--success">Live</span></dd><dt>Phone</dt><dd class="text-muted">Not given</dd></dl>
       </div>
         <div class="ds-example__caption"><span>Values can be text, a link (with its own focus state), a badge, or an explicit "Not given". Never leave a <code>&lt;dd&gt;</code> empty.</span></div>
-        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;dl class="dl"&gt;&lt;dt&gt;Languages&lt;/dt&gt;&lt;dd&gt;English, Cantonese&lt;/dd&gt;&lt;dt&gt;Website&lt;/dt&gt;&lt;dd&gt;&lt;a href="../../mocks/pages/business/default.html"&gt;legacyfinancial.example&lt;/a&gt;&lt;/dd&gt;&lt;dt&gt;Status&lt;/dt&gt;&lt;dd&gt;&lt;span class="badge badge--success"&gt;Verified&lt;/span&gt;&lt;/dd&gt;&lt;dt&gt;Phone&lt;/dt&gt;&lt;dd class="text-muted"&gt;Not given&lt;/dd&gt;&lt;/dl&gt;</code></pre></details></div>
+        <details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;dl class="dl"&gt;&lt;dt&gt;Languages&lt;/dt&gt;&lt;dd&gt;English, Cantonese&lt;/dd&gt;&lt;dt&gt;Website&lt;/dt&gt;&lt;dd&gt;&lt;a href="../../mocks/pages/business/default.html"&gt;legacyfinancial.example&lt;/a&gt;&lt;/dd&gt;&lt;dt&gt;Status&lt;/dt&gt;&lt;dd&gt;&lt;span class="badge badge--success"&gt;Live&lt;/span&gt;&lt;/dd&gt;&lt;dt&gt;Phone&lt;/dt&gt;&lt;dd class="text-muted"&gt;Not given&lt;/dd&gt;&lt;/dl&gt;</code></pre></details></div>
       <h3>Loading</h3>
       <div class="ds-example"><div class="ds-example__canvas">
 <dl class="dl" aria-hidden="true"><dt><span class="skeleton skeleton--text" style="width: 5rem;"></span></dt><dd><span class="skeleton skeleton--text skeleton--w70"></span></dd><dt><span class="skeleton skeleton--text" style="width: 4rem;"></span></dt><dd><span class="skeleton skeleton--text skeleton--w50"></span></dd></dl>
@@ -268,7 +268,7 @@
         <li><a href="../../mocks/pages/business/default.html">pages/business/default</a> (business details)</li>
         <li><a href="../../mocks/pages/request-detail/default.html">pages/request-detail/default</a> (request details)</li>
         <li><a href="../../mocks/pages/product/default.html">pages/product/default</a> (product facts)</li>
-        <li><a href="../../mocks/dialogs/approve-listing/default.html">dialogs/approve-listing/default</a> (owner details in a well)</li>
+        <li><a href="../../mocks/pages/admin-listing/default.html">pages/admin-listing/default</a> (owner details)</li>
         <li><a href="../../mocks/dialogs/order-request/default.html">dialogs/order-request/default</a> (product facts in a dialog)</li>
       </ul>
       <p>Drift fixed during extraction: nearly every <code>.dl</code> carried inline <code>style="margin-top: var(--space-4)"</code>; spacing belongs to the parent (<code>.stack</code> or <code>.card__header</code>), so the docs drop it. The phone stacking rule for <code>.dl</code> sits inside the <code>.row--stack</code> media query, which is easy to miss when editing either. No mock had an empty value; no mock used a loading state for the list.</p>

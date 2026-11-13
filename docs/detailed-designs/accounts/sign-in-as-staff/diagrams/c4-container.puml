@@ -3,7 +3,7 @@
 LAYOUT_WITH_LEGEND()
 title Containers — Sign in as staff
 
-Person(staff, "Staff member", "Verifier or administrator on an allowed network")
+Person(staff, "Staff member", "Moderator or administrator on an allowed network")
 System_Boundary(j, "Jubilee") {
   Container(admin, "Jubilee Admin Web", "Angular SPA", "Staff sign-in screen")
   Container(api, "Jubilee API", "ASP.NET Core", "Staff sign-in - staff session")
