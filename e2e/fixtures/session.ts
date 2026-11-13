@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page, Route } from '@playwright/test';
 import { joanna } from './cast';
 
 /** Joanna as `GET /api/session` reports her once she has signed in with her e-mail (L2-006). */
@@ -154,4 +154,20 @@ export async function keepDraft(
     sessionStorage.setItem('jb-draft-kept', '1');
     localStorage.setItem('jubilee-drafts', JSON.stringify(drafts));
   }, kept);
+}
+
+/**
+ * Jubilee while it starts, as for a few minutes after a deployment (L2-003 AC9): every `/api`
+ * request is answered 503 "Jubilee is starting." until `ready()`, and from the recording after.
+ */
+export async function stubStarting(page: Page): Promise<{ ready(): Promise<void> }> {
+  const starting = (route: Route) =>
+    route.fulfill({
+      status: 503,
+      contentType: 'application/problem+json',
+      headers: { 'Retry-After': '5' },
+      body: JSON.stringify({ status: 503, title: 'Jubilee is starting.', code: 'UNAVAILABLE' }),
+    });
+  await page.route('**/api/**', starting);
+  return { ready: () => page.unroute('**/api/**', starting) };
 }

@@ -330,6 +330,11 @@ Set up on 11 November 2026 (ADR 0037). To repeat it:
    with a `Location` at `accounts.google.com`, and `GET /api/session` reports `"googleSignIn": true`.
 
 Without the two settings Google sign-in is off: the join and sign-in pages show no Google button.
+A missing button is not always a missing setting. For the few minutes `jubilee-to-app` takes to
+restart after a deployment, `server.js` answers `/api/session` with 503 "Jubilee is
+starting.", and a page opened then shows no Google button until the app's next request for the
+session is answered (L2-003 AC9; it asks again by itself, no reload is needed). Check the settings
+and `GET /api/session` (step 6) before setting anything again.
 `deploy.sh` stops before building when either setting is missing on `jubilee-to-app`, and after
 deploying fails unless `GET /api/session` reports `"googleSignIn": true`, so the button cannot
 disappear unnoticed. `SKIP_GOOGLE_CHECK=1 bash eng/azure/deploy.sh` deploys without Google sign-in

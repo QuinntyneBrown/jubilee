@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { joanna } from '../fixtures/cast';
 import { expect, test } from '../fixtures/jb-test';
 import { AccountMenuDialog } from '../pages/account-menu.dialog';
-import { refuseAsExpired } from '../fixtures/session';
+import { refuseAsExpired, stubStarting } from '../fixtures/session';
 import { SearchPage } from '../pages/search.page';
 import { ProductPage } from '../pages/product.page';
 import {
@@ -477,6 +477,28 @@ test.describe('continue with Google: off, cancelled or refused (L2-003)', () => 
     await expect(signIn.signIn).toBeVisible();
     await expect(signIn.google).toHaveCount(0);
     await expect(signIn.divider).toHaveCount(0);
+  });
+
+  test('AC9: a page opened while Jubilee is starting shows the Google button once Jubilee answers', async ({
+    page,
+    jb,
+  }) => {
+    // The session is asked for again after 200 ms here, not 5 seconds.
+    await page.addInitScript(() => {
+      Object.assign((globalThis as { __jbTimings?: object }).__jbTimings ?? {}, { backoff: [200] });
+    });
+    const jubilee = await stubStarting(page);
+    const signIn = new SignInPage(page);
+    await jb.goto('/sign-in');
+    await expect(signIn.signIn).toBeVisible();
+    await expect(signIn.google).toHaveCount(0);
+    await signIn.email.fill('joanna.adeyemi@example.com');
+
+    await jubilee.ready();
+
+    await expect(signIn.google).toBeVisible();
+    await expect(signIn.divider).toHaveText('or use email');
+    await expect(signIn.email).toHaveValue('joanna.adeyemi@example.com');
   });
 
   test('AC6: a visitor who cancelled at Google is told so calmly and keeps their place', async ({
