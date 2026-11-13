@@ -141,6 +141,16 @@ test.describe('delete your account (L2-017)', () => {
     await expect(dialog.consequences.nth(2)).toHaveText('This can’t be undone.');
   });
 
+  test('L2-129 AC1: the safe choice, Keep my account, has the focus when the dialog opens', async ({
+    page,
+    jb,
+  }) => {
+    const { dialog } = await open(page, jb);
+
+    await expect(dialog.consequences.nth(0)).toBeVisible();
+    await expect(dialog.keep).toBeFocused();
+  });
+
   test('AC1: one conversation and one request are written in the singular', async ({
     page,
     jb,
