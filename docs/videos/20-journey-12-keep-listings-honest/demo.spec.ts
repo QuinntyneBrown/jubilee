@@ -4,7 +4,7 @@ import { AdminListingPage } from '../../../e2e/pages/admin-listing.page';
 import { AdminListingsPage } from '../../../e2e/pages/admin-listings.page';
 import { TakeDownListingDialog } from '../../../e2e/pages/take-down-listing.dialog';
 
-// Video 19: journey 12, keep listings honest (ADR 0057, ADR 0058). The Jubilee team's Listings in
+// Video 20: journey 12, keep listings honest (ADR 0057, ADR 0059). The Jubilee team's Listings in
 // the admin application, a search by name, one listing with its owner, its flag and how members see
 // it, and "Take down listing" refused without a reason, then sent with one. The app is answered by the
 // stand-ins of the behaviour specs (ADR 0009); two cards say what the run did behind the screen. Built
@@ -75,7 +75,7 @@ test('journey 12: keep listings honest', async ({ demo }) => {
   await demo.card('Behind the screen', [
     'jubilee staff grant | revoke writes staff.role-granted or staff.role-revoked with the operator (cli|user) and the roles before and after; a command that changes nothing writes nothing.',
     'Each opening of /listings/:id writes owner.viewed with “Listing {id}” as the reason.',
-    'Proved by StaffCommandTests, AdminListingsTests and keep-listings-honest.spec.ts (ADR 0058).',
+    'Proved by StaffCommandTests, AdminListingsTests and keep-listings-honest.spec.ts (ADR 0059).',
   ]);
   await demo.scene('behind');
 

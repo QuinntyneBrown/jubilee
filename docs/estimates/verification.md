@@ -23,7 +23,7 @@ owner's notice and e-mail, the `listing.taken-down` audit record and the result 
 migration, which drops the queue, checklist and decision data. A role change made with
 `jubilee staff grant|revoke` is audited with the operator and the roles before and after (L2-098
 AC4), and each opening of a listing records `owner.viewed` with the listing as the reason (L2-150
-AC1, ADR 0058). The Owner card names the owner's other listings and drafts with their stages (L2-079
+AC1, ADR 0059). The Owner card names the owner's other listings and drafts with their stages (L2-079
 AC3, `AdminOtherListing`). Nothing is left in either design.
 
 handle-reports and feature-businesses (ADR 0033, ADR 0058) are complete: the reports list, one report and its six actions, the audit log, the owner and reporter notifications, the team's e-mail of a report of a listing or a conversation (`ReportNoticeTests`, `ConversationReportNoticeTests`), the count of unresolved reports in the admin bar (`moderation.spec.ts`, `ModerationTests`), holds, removals and featured weeks on every public page on the next request (`ModerationBoundTests`), and the featured weeks page. The notices and e-mails speak for "the Jubilee team" and the role is `moderator` (ADR 0057).

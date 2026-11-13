@@ -74,7 +74,7 @@ outbox as it sends every other e-mail.
   takedown when there is one. Each time it answers for a listing with an
   owner it records `owner.viewed` with `AuditLog.Record`: the target type
   `member`, the owner's subject and the reason "Listing {id}" (`L2-150` AC1,
-  ADR 0058).
+  ADR 0059).
 - **`AdminListingDto`** — `Id`, `Slug`, `Name`, `Tagline`, `About`, `Kind`,
   `CategorySlug`, `CategoryName`, `PublishedAt`, `Status` and `StatusLabel`
   (`live`, `paused`, `on-hold` or `taken-down`, from `AdminListings.StatusOf`),

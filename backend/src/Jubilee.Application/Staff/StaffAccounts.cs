@@ -27,7 +27,7 @@ internal static class StaffCommandRules
 
     /// <summary>
     /// A command that changed the account's roles is audited with the operator who ran the CLI and the roles before
-    /// and after; one that changed nothing writes nothing (L2-098 AC4, L2-180 AC1, ADR 0058).
+    /// and after; one that changed nothing writes nothing (L2-098 AC4, L2-180 AC1, ADR 0059).
     /// </summary>
     public static void Audit(IAppDbContext db, string? operatorName, string action, StaffMember account, string before, DateTimeOffset now)
     {

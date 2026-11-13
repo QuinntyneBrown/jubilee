@@ -1,4 +1,4 @@
-# 19 · Journey 12: Keep listings honest
+# 20 · Journey 12: Keep listings honest
 
 The transcript, written from `narration.json` by `tools/video-demo/build.mjs`.
 

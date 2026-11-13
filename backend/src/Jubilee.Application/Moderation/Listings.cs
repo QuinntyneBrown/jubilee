@@ -222,7 +222,7 @@ public sealed class GetAdminListingQueryHandler(IAppDbContext db, TimeProvider c
     {
         var listing = await AdminListings.Load(db, request.ListingId, cancellationToken);
 
-        // The Owner card is the owner's personal data: each reading is recorded with the listing as the reason (L2-150 AC1, ADR 0058).
+        // The Owner card is the owner's personal data: each reading is recorded with the listing as the reason (L2-150 AC1, ADR 0059).
         if (listing.OwnerId is { } ownerId)
         {
             AuditLog.Record(

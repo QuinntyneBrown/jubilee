@@ -1,13 +1,13 @@
-# 19 · Journey 12: Keep listings honest
+# 20 · Journey 12: Keep listings honest
 
 > **Runtime:** 1:22 (81.9 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 12
 
-**Video:** [19-journey-12-keep-listings-honest.mp4](19-journey-12-keep-listings-honest.mp4) · **Audio:** [19-journey-12-keep-listings-honest.mp3](19-journey-12-keep-listings-honest.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [20-journey-12-keep-listings-honest.mp4](20-journey-12-keep-listings-honest.mp4) · **Audio:** [20-journey-12-keep-listings-honest.mp3](20-journey-12-keep-listings-honest.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## What it shows
 
 The run of `docs/prompts/12-keep-listings-honest.md`, which took journey 12 from 93% to 100% (ADR
-0057, ADR 0058). Jubilee ships without verification: owners publish and are live straight away, and
+0057, ADR 0059). Jubilee ships without verification: owners publish and are live straight away, and
 the Jubilee team looks through what was published. In the admin application, "Listings" reads "6
 listings · 4 published in the last 7 days", newest first, with each status ("Live", "Paused", "On
 hold") and the tag "Flagged" on Luzandre.com. A search for "okafor" keeps Okafor & Sons Furniture.
@@ -27,7 +27,7 @@ Only the tests prove what the server does:
 
 - that each opening of a listing writes `owner.viewed` with the owner as the target and "Listing
   {id}" as the reason, and that a listing not found writes nothing (`AdminListingsTests`, L2-150 AC1,
-  ADR 0058). Not shown: it is said in the narration;
+  ADR 0059). Not shown: it is said in the narration;
 - that `jubilee staff grant` and `revoke` write `staff.role-granted` and `staff.role-revoked` with the
   operator (`cli|{user}`) and the roles before and after, and nothing for a command that changes
   nothing or is refused (`StaffCommandTests`, L2-098 AC4, L2-180 AC1). Not shown: it is said on a card;
@@ -56,8 +56,8 @@ Jubilee takes no payment: the team keeps listings honest, and members pay the bu
 
 ```sh
 pip install edge-tts
-node tools/video-demo/build.mjs docs/videos/19-journey-12-keep-listings-honest --check   # speak the lines, print their lengths
-node tools/video-demo/build.mjs docs/videos/19-journey-12-keep-listings-honest           # record and encode
+node tools/video-demo/build.mjs docs/videos/20-journey-12-keep-listings-honest --check   # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/20-journey-12-keep-listings-honest           # record and encode
 ```
 
 `narration.json` holds the lines and `demo.spec.ts` drives the app, one `demo.scene` per line. The
