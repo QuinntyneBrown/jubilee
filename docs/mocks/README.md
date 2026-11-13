@@ -7,10 +7,15 @@ keeps the mocks' BEM classes and accessible state semantics.
 - **87 screens, 466 mocks:** 50 pages (296 states), 30 dialogs (132 states), 7 notifications (38 states).
 - Every mock is responsive (360, 768 and 1280 px), themed light and dark through tokens, and
   keyboard-accessible.
-- **25 e-mails** in [`emails/`](emails/index.html) (L2-179, ADR 0038): each as the HTML a mail
+- **26 e-mails** in [`emails/`](emails/index.html) (L2-179, ADR 0038): each as the HTML a mail
   client shows at 600 px, a dark rendition and its plain-text part. They are built from the layout
   the backend embeds by `node tools/email-mocks/build.mjs`; change the layout or the script, not
   the files. They are not screens, so they are not in `manifest.json` or the matrix below.
+
+- **The static server error and maintenance pages** (`frontend/projects/jubilee/public/static/`, L2-115 AC3,
+  L2-117 AC1, ADR 0056) are built from `pages/server-error/default.html` and
+  `pages/maintenance/default.html` by `node tools/static-pages/build.mjs`: change the mock or the
+  script, then run it.
 
 - **`assets/og-image.html`** draws `og-image.png`, the 1200 × 630 link-preview image of every shared
   listing (L2-038 AC4, ADR 0055), from the tokens and the lockup. Screenshot it at 1200 × 630 and

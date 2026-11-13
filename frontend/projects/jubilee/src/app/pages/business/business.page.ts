@@ -285,7 +285,10 @@ export class BusinessPage {
   constructor() {
     this.hearts.attach();
     const params = this.route.paramMap.subscribe((map) => {
-      this.slug = map.get('slug') ?? '';
+      const slug = map.get('slug') ?? '';
+      // The address was moved to the listing's current slug below: the listing is already here.
+      if (slug === this.slug && this.state().status === 'loaded') return;
+      this.slug = slug;
       this.slugValue.set(this.slug);
       this.load();
     });
@@ -343,6 +346,7 @@ export class BusinessPage {
     this.state.set({ status: 'loading' });
     this.request = this.api.getListing(this.slug).subscribe({
       next: (listing) => {
+        if (listing.slug !== this.slug) this.moveTo(listing.slug);
         this.hints.remember(listing.slug, listing.kind, listing.name);
         this.hints.rememberProducts(listing.products);
         this.hints.rememberCategory(listing.related, listing.category.slug);
@@ -362,6 +366,19 @@ export class BusinessPage {
         }
         this.state.set({ status: 'error', reference: errorReference(error, 'JB-BIZ-503') });
       },
+    });
+  }
+
+  /**
+   * An old link of a renamed listing was redirected to its current slug (L2-113 AC2): the address
+   * shows the current one, and what the page sends from here uses it.
+   */
+  private moveTo(slug: string): void {
+    const from = `/b/${this.slug}`;
+    this.slug = slug;
+    this.slugValue.set(slug);
+    void this.router.navigateByUrl(this.router.url.replace(from, `/b/${slug}`), {
+      replaceUrl: true,
     });
   }
 

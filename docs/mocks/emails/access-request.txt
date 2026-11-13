@@ -1,0 +1,11 @@
+Subject: Access request: /my-business
+
+A member asked for access to a page they could not open. Nothing was granted; look at it and answer them.
+
+Page: https://app.jubilee.to/my-business
+Member: Joanna Adeyemi (joanna@example.com)
+Asked: 3:15 p.m. Eastern on Thursday 12 November
+
+Their roles and permissions are unchanged until the team changes them.
+
+Jubilee · Toronto's Christian marketplace

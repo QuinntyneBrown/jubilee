@@ -2,6 +2,7 @@ using System.Globalization;
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Errors;
+using Jubilee.Application.Listings;
 using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
@@ -436,6 +437,12 @@ public sealed partial class SaveListingCommandHandler(IAppDbContext db, TimeProv
         if (space is not null)
         {
             listing.DescribeSpace(space);
+        }
+
+        // The address follows the name; the old one keeps answering with 301 (L2-113 AC2, ADR 0056).
+        if (!string.Equals(oldName, listing.Name, StringComparison.Ordinal))
+        {
+            await ListingSlugs.FollowNameAsync(db, listing, now, cancellationToken);
         }
 
         if (reworded && listing.Stage == ListingStage.Live)

@@ -22,6 +22,7 @@ public sealed class ListingsController(ISender sender) : ControllerBase
 {
     [HttpGet]
     [SessionAwareCache]
+    [KeptSlugRedirect]
     public async Task<ActionResult<ListingPageDto>> Get(string slug, CancellationToken cancellationToken) =>
         Ok(await sender.Send(new GetListingPageQuery(slug, User.ToViewer()), cancellationToken));
 

@@ -22,7 +22,7 @@ box "Backend — Jubilee API" #D1FADF
 end box
 box "Backend — Jubilee Worker" #D1FADF
   participant "MaintenanceWatcherJob" as watcher
-  participant "LinkTokenExtensionService" as ext
+  participant "MaintenanceWindowService" as ext
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db

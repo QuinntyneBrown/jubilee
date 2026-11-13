@@ -19,6 +19,7 @@ public sealed class ProductPagesController(ISender sender) : ControllerBase
 {
     [HttpGet]
     [SessionAwareCache]
+    [KeptSlugRedirect]
     public async Task<ActionResult<ProductPageDto>> Get(string slug, string productSlug, CancellationToken cancellationToken) =>
         Ok(await sender.Send(new GetProductPageQuery(slug, productSlug, User.ToViewer()), cancellationToken));
 }

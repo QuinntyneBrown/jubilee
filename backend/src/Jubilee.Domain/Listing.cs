@@ -200,6 +200,9 @@ public sealed class Listing
         PausedAt = null;
     }
 
+    /// <summary>Gives the listing the slug of its new name (L2-113 AC2); the caller keeps the old one.</summary>
+    public void MoveTo(string slug) => Slug = slug;
+
     /// <summary>
     /// The owner's edit of the listing's page (L2-087). Returns true when the name or category changed,
     /// which asks the verification team to look again.

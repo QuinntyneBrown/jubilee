@@ -38,7 +38,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 20 | Manage profile and settings | Edit profile, change e-mail or password, choose which e-mails arrive. | 6 | 93% |
 | 21 | Share or report a listing | Share a listing's link or report a problem with it. | 3 | 100% |
 | 22 | Read policies and get help | Read the statement of faith, terms, privacy notice and help. | 2 | 85% |
-| 23 | Recover from errors | See clear pages for missing, forbidden, failed or maintenance states. | 3 | 79% |
+| 23 | Recover from errors | See clear pages for missing, forbidden, failed or maintenance states. | 3 | 100% |
 | 24 | Use Jubilee offline | Browse cached pages and queue messages on poor connections. | 7 | 83% |
 | 25 | Moderate reports and feature businesses | Staff handle reports and choose the featured businesses. | 5 | 82% |
 | 26 | Download data and delete account | Export personal data or permanently delete the account. | 5 | 83% |
@@ -48,7 +48,7 @@ journey that is implemented: the effort-weighted average of its feature designs 
 | 30 | Work in the admin application | Staff sign in to the admin application through single sign-on from an allowed network, work in its shell and sign out; old admin links in the app point there. | 20 | 92% |
 | 31 | Get ready for launch | Before Jubilee opens: see that it is launching soon, leave an e-mail address for the launch notice, or send a business's details to be listed on launch day; the team reads them with the CLI. | 7 | 95% |
 
-**Total: 217 days** for the 30 journeys, **95% complete** weighted by effort.
+**Total: 217 days** for the 30 journeys, **96% complete** weighted by effort.
 
 ## Notes
 

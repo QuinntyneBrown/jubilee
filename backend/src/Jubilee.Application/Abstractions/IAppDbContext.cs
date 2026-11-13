@@ -25,6 +25,8 @@ public interface IAppDbContext
 
     DbSet<AccessRequest> AccessRequests { get; }
 
+    DbSet<ListingSlug> ListingSlugs { get; }
+
     DbSet<ListingReport> ListingReports { get; }
 
     DbSet<ListingReportEntry> ListingReportEntries { get; }

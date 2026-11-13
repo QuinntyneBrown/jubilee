@@ -19,39 +19,37 @@ box "Frontend — Jubilee Web" #E0F2FE
   participant "Browser" as browser
   participant "NotFoundPage" as page
 end box
+box "App host — server.js" #FEF3C7
+  participant "server.js" as host
+end box
 box "Backend — Jubilee API" #D1FADF
-  participant "PageShellEndpoint" as shell
+  participant "DocumentsController" as docs
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "ListingSlugResolver" as resolver
+  participant "GetDocumentStatusQueryHandler" as handler
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
 end box
 actor -> browser : Follow a link such as /b/:slug
-browser -> shell : GET page URL
-shell -> shell : Match the path against the route manifest
-alt path matches no route
-  shell --> browser : 404 with the application shell (L2-113)
+browser -> host : GET page URL
+host -> docs : GET /api/documents/status?path= (cookie, 3 s at most)
+docs -> handler : GetDocumentStatusQuery
+handler -> db : Read the listing by slug, then ListingSlug
+db --> handler : Listing, kept slug or nothing
+handler --> docs : DocumentStatusDto
+docs --> host : { status, location }
+alt slug was renamed
+  host --> browser : 301 with Location /b/{current slug} (L2-113 AC2)
+  browser -> host : GET the current URL
+  host --> browser : 200 with the application shell
+  browser --> actor : Show the listing
+else listing missing or not public, or routes.json does not know the path
+  host --> browser : 404 with the application shell (L2-113 AC1, AC3)
   browser -> page : Bootstrap and render
   page --> actor : Show "We can't find that page." with "Back to browse" and "Search"
-else listing route
-  shell -> resolver : Resolve(slug)
-  resolver -> db : Read listing by slug, then ListingSlugHistory
-  db --> resolver : Listing or old slug or nothing
-  resolver --> shell : SlugResolution
-  alt slug was renamed
-    shell --> browser : 301 with Location /b/{current slug} (L2-113)
-    browser -> shell : GET the current URL
-    shell --> browser : 200 with the application shell
-    browser --> actor : Show the listing
-  else listing removed or not visible to this caller
-    shell --> browser : 404 with the application shell (L2-113)
-    browser -> page : Bootstrap and render
-    page --> actor : Show "We can't find that page."
-  else listing is live
-    shell --> browser : 200 with the application shell
-    browser --> actor : Show the listing
-  end
+else listing is live, or the API did not answer in time
+  host --> browser : 200 with the application shell
+  browser --> actor : Show the listing
 end
 @enduml

@@ -381,7 +381,7 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
 
         var space = Drafts.SpaceOf(input);
         var listing = Listing.Create(
-            await UniqueSlug(name, cancellationToken), name, tagline, space is null ? input.CategorySlug! : Category.RoomsSlug, now);
+            await Listings.ListingSlugs.UniqueAsync(db, name, null, cancellationToken), name, tagline, space is null ? input.CategorySlug! : Category.RoomsSlug, now);
         listing.SetKind(Drafts.KindOf(input.Kind));
         listing.AssignOwner(command.Subject);
 
@@ -418,28 +418,6 @@ public sealed partial class SubmitListingCommandHandler(IAppDbContext db, TimePr
     private static bool HasContactOrCode(string name, string tagline) =>
         Url().IsMatch(name) || Email().IsMatch(name) || Phone().IsMatch(name) || Discount().IsMatch(name)
         || Url().IsMatch(tagline) || Domain().IsMatch(tagline) || Email().IsMatch(tagline) || Phone().IsMatch(tagline) || Discount().IsMatch(tagline);
-
-    private async Task<string> UniqueSlug(string name, CancellationToken cancellationToken)
-    {
-        var baseSlug = Slugs.From(name, "business");
-        var taken = await db.Listings.AsNoTracking()
-            .Where(l => l.Slug == baseSlug || l.Slug.StartsWith(baseSlug + "-"))
-            .Select(l => l.Slug)
-            .ToListAsync(cancellationToken);
-        if (!taken.Contains(baseSlug))
-        {
-            return baseSlug;
-        }
-
-        for (var n = 2; ; n++)
-        {
-            var candidate = $"{baseSlug}-{n.ToString(CultureInfo.InvariantCulture)}";
-            if (!taken.Contains(candidate))
-            {
-                return candidate;
-            }
-        }
-    }
 
     private void AddItems(Listing listing, DraftInput input, DateTimeOffset now)
     {

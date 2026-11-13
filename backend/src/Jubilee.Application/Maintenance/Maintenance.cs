@@ -1,6 +1,8 @@
+using System.Globalization;
 using Jubilee.Application.Abstractions;
 using Jubilee.Application.Accounts;
 using Jubilee.Application.Errors;
+using Jubilee.Application.Verification;
 using Jubilee.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -71,7 +73,7 @@ public sealed record CreateAccessRequestCommand(string Subject, string? Url, str
 
 public sealed record AccessRequestedDto(Guid Id);
 
-public sealed class CreateAccessRequestCommandHandler(IAppDbContext db, TimeProvider clock)
+public sealed class CreateAccessRequestCommandHandler(IAppDbContext db, TimeProvider clock, AccountSettings account, VerificationSettings verification)
     : IRequestHandler<CreateAccessRequestCommand, AccessRequestedDto>
 {
     /// <summary>Requests one member may send in an hour; more are slowed down (L2-127).</summary>
@@ -104,7 +106,33 @@ public sealed class CreateAccessRequestCommandHandler(IAppDbContext db, TimeProv
 
         var created = AccessRequest.Create(request.Subject, url, key, now);
         db.AccessRequests.Add(created);
+        await TellTheTeam(request.Subject, url, now, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
         return new AccessRequestedDto(created.Id);
+    }
+
+    /// <summary>
+    /// E-mails the verification team, saved with the request so it is sent once or not at all (L2-114 AC2, ADR 0056).
+    /// </summary>
+    private async Task TellTheTeam(string subject, string url, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var member = Guid.TryParse(subject, out var id)
+            ? await db.Members.AsNoTracking().SingleOrDefaultAsync(m => m.Id == id, cancellationToken)
+            : null;
+        var who = member is null ? subject : $"{member.FirstName} {member.LastName} ({member.Email})";
+        var local = TorontoClock.Local(now);
+        var asked = $"{local.ToString("h:mm", CultureInfo.InvariantCulture)} {(local.Hour < 12 ? "a.m." : "p.m.")} Eastern on "
+            + local.ToString("dddd d MMMM", CultureInfo.InvariantCulture);
+        VerificationTeam.Tell(
+            db,
+            verification,
+            $"Access request: {url}",
+            "A member asked for access to a page they could not open. Nothing was granted; look at it and answer them.\n\n"
+            + $"Page: {account.PublicBaseUrl.TrimEnd('/')}{url}\n"
+            + $"Member: {who}\n"
+            + $"Asked: {asked}\n\n"
+            + "Their roles and permissions are unchanged until the team changes them.\n\n"
+            + "Jubilee · Toronto's Christian marketplace\n",
+            now);
     }
 }

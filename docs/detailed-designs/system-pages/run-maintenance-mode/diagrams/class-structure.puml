@@ -40,10 +40,9 @@ class MaintenanceWindow {
 }
 class MaintenanceWatcherJob {
   +ExecuteAsync(stoppingToken: CancellationToken): Task
-  -OnSwitchChanged(options: MaintenanceOptions): Task
 }
-class LinkTokenExtensionService {
-  +ExtendFor(window: MaintenanceWindow): Task<int>
+class MaintenanceWindowService {
+  +ObserveAsync(cancellationToken: CancellationToken): Task
 }
 class LinkToken {
   +Guid Id
@@ -64,8 +63,8 @@ MaintenanceMiddleware ..> IMaintenanceState : reads
 MaintenanceMiddleware ..> MaintenanceProblemDetails : writes
 MaintenanceWatcherJob ..> IMaintenanceState : observes
 MaintenanceWatcherJob --> MaintenanceWindow : opens / closes
-MaintenanceWatcherJob ..> LinkTokenExtensionService : calls
-LinkTokenExtensionService ..> MaintenanceWindow : reads length
-LinkTokenExtensionService --> "*" LinkToken : extends
+MaintenanceWatcherJob ..> MaintenanceWindowService : calls
+MaintenanceWindowService ..> MaintenanceWindow : reads length
+MaintenanceWindowService --> "*" LinkToken : extends
 LinkToken --> LinkTokenPurpose
 @enduml

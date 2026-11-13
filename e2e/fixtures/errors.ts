@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { fulfil, recordedAnswer } from './mock-api';
 
 // Stand-ins for the states the recording lacks in "recover from errors" (ADR 0009): an unhandled server
 // error on a read, maintenance mode, and the "Ask for access" endpoint. What the app sends is kept.
@@ -77,4 +78,17 @@ export async function stubHelp(
     return route.fulfill({ status: 201, json: { id: 'access-1' } });
   });
   return fake;
+}
+
+/**
+ * A listing renamed from `old` to `current` (L2-113 AC2). The API answers the old slug with 301 to the current one
+ * (`KeptSlugRedirectAttribute`, proved by `KeptSlugTests`) and the browser follows it; Playwright does not route
+ * the followed request, so the old slug is answered with what the browser receives at the end: the recorded
+ * answer of the current slug.
+ */
+export async function stubKeptSlug(page: Page, old: string, current: string): Promise<void> {
+  await page.route(`**/api/listings/${old}{,/**}`, async (route) => {
+    const url = route.request().url().replace(`/api/listings/${old}`, `/api/listings/${current}`);
+    await fulfil(route, await recordedAnswer(route, url));
+  });
 }

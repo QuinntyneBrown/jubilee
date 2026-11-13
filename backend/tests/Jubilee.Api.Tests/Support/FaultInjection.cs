@@ -65,6 +65,8 @@ public sealed class OutageAwareDbContext(AppDbContext inner, DatabaseOutage outa
 
     public DbSet<AccessRequest> AccessRequests => Use(inner.AccessRequests);
 
+    public DbSet<ListingSlug> ListingSlugs => Use(inner.ListingSlugs);
+
     public DbSet<ListingReportEntry> ListingReportEntries => Use(inner.ListingReportEntries);
 
     public DbSet<ListingView> ListingViews => Use(inner.ListingViews);

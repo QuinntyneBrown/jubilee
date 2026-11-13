@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Being updated · Jubilee</title>
+<link rel="icon" href="/jubilee-icon.svg" type="image/svg+xml">
+<!-- Built by tools/static-pages/build.mjs from docs/mocks/pages/maintenance/default.html; change the mock or the script, not this file. -->
+<style>
+/* ==========================================================================
+   Jubilee design system — tokens.css
+   The single source of truth for colour, type, space, layout, shape,
+   elevation, motion, z-order and interaction sizes. Extracted from
+   docs/mocks on 10 November 2026; see docs/design-system/README.md.
+
+   Three tiers:
+     1. Primitives  (--palette-*, --font-family-*, --font-size-*, --font-weight-*,
+                    --font-stretch-*, --line-height-*, --letter-spacing-*) raw values. Only
+                    semantic tokens read them.
+     2. Semantic    (--color-*, --text-*, --space-*, --layout-*, --radius-*,
+                    --border-width-*, --shadow-*, --duration-*, --ease-*, --z-*,
+                    --target-*, --focus-ring-*, --control-height-*, --icon-size-*,
+                    --avatar-size-*, --indicator-size) meaning-based aliases that
+                    components and pages consume. Themes override this tier only.
+     3. Component   (--btn-*, --field-*, --alert-*, ...) declared in
+                    assets/components.css; always alias a semantic token.
+
+   Themes: light is :root (and [data-theme="light"]). Dark applies with
+   [data-theme="dark"], or automatically when the OS prefers dark and the page
+   has not forced [data-theme="light"]. prefers-contrast, forced-colors and
+   prefers-reduced-motion adjust semantic tokens at the end of this file.
+
+   Jubilee brand: ink and cream neutrals; a gold accent that always carries
+   ink text and is never used as text; green for verified, links and success.
+   ========================================================================== */
+
+/* Archivo, the display face, ships with the design system (SIL OFL 1.1, see
+   assets/fonts/Archivo-OFL.txt) so headings and the wordmark render the same
+   from disk as in the design reference. One variable file: weight 400-900,
+   width 62-125%. */
+@font-face {
+  font-family: "Archivo";
+  src: url("/static/Archivo.woff2") format("woff2");
+  font-weight: 400 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---------- Primitives: colour ------------------------------------------ */
+  --palette-white: #ffffff;
+  --palette-black: #000000;
+
+  /* Ink and cream: the Jubilee neutrals (ink #0b0e14, cream #f4f2ec). */
+  --palette-ink-25: #faf9f5;
+  --palette-ink-50: #f4f2ec;
+  --palette-ink-100: #e9e6de;
+  --palette-ink-200: #dcdad2;
+  --palette-ink-300: #b9bcc4;
+  --palette-ink-350: #9a9fa9;
+  --palette-ink-400: #7d828c;
+  --palette-ink-500: #5b5f68;
+  --palette-ink-600: #4a505c;
+  --palette-ink-700: #2f3542;
+  --palette-ink-800: #1f2430;
+  --palette-ink-900: #141821;
+  --palette-ink-950: #0b0e14;
+  --palette-ink-975: #070a0f;
+
+  /* Gold: the brand accent (#ffb81c). Always carries ink text. */
+  --palette-gold-50: #fff7e0;
+  --palette-gold-100: #ffecb8;
+  --palette-gold-200: #ffdd85;
+  --palette-gold-300: #ffc94d;
+  --palette-gold-400: #ffb81c;
+  --palette-gold-500: #e6a100;
+  --palette-gold-600: #b87f00;
+  --palette-gold-900: #4d3500;
+  --palette-gold-950: #2b1e00;
+
+  /* Green: verified, links and success (#00875a). */
+  --palette-green-50: #e5f5ee;
+  --palette-green-100: #c2e8d7;
+  --palette-green-300: #5fc49b;
+  --palette-green-500: #00875a;
+  --palette-green-700: #006644;
+  --palette-green-900: #003d29;
+  --palette-green-950: #062a1e;
+
+  /* Blue: information only. */
+  --palette-blue-50: #ebf2ff;
+  --palette-blue-200: #adc6ff;
+  --palette-blue-300: #8ab4ff;
+  --palette-blue-600: #2563eb;
+  --palette-blue-800: #1e3fae;
+  --palette-blue-950: #0f1f3d;
+
+  /* Amber: warnings (kept apart from the gold accent). */
+  --palette-amber-50: #fff1dc;
+  --palette-amber-300: #f2b25c;
+  --palette-amber-500: #a85f00;
+  --palette-amber-700: #7d4600;
+  --palette-amber-950: #2e1d05;
+
+  /* Red: danger and destructive actions. */
+  --palette-red-50: #fdecec;
+  --palette-red-100: #fbd5d4;
+  --palette-red-300: #f59b96;
+  --palette-red-500: #d93a30;
+  --palette-red-600: #c42c22;
+  --palette-red-700: #a0221b;
+  --palette-red-950: #3a110d;
+
+  /* ---------- Primitives: typography -------------------------------------- */
+  --font-family-display: "Archivo", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --font-size-xs: 0.75rem;    /* 12px  captions, badges, tab-bar labels */
+  --font-size-sm: 0.875rem;   /* 14px  secondary text, labels, table cells */
+  --font-size-md: 1rem;       /* 16px  body, inputs, buttons */
+  --font-size-lg: 1.125rem;   /* 18px  lead paragraph, h4 */
+  --font-size-xl: 1.25rem;    /* 20px  h3, dialog titles */
+  --font-size-2xl: 1.5rem;    /* 24px  h2, wordmark, auth h1 */
+  --font-size-3xl: 1.875rem;  /* 30px  h1 on phones */
+  --font-size-4xl: 2.25rem;   /* 36px  h1 from 768px */
+  --font-size-5xl: 3rem;      /* 48px  hero h1 from 1024px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --font-stretch-wide: 110%;   /* wordmark: Archivo's width axis */
+
+  --line-height-tight: 1.2;    /* display, h1, h2 */
+  --line-height-snug: 1.3;     /* h3, h4 */
+  --line-height-normal: 1.5;   /* body, labels */
+  --line-height-relaxed: 1.65; /* long-form reading (legal pages) */
+
+  --letter-spacing-tighter: -0.03em; /* wordmark */
+  --letter-spacing-tight: -0.01em; /* headings */
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.04em;   /* all-caps overlines and badges */
+
+  /* ---------- Semantic: typography roles (font shorthands) --------------- */
+  --text-display: var(--font-weight-extrabold) var(--font-size-5xl) / var(--line-height-tight) var(--font-family-display);
+  --text-h1: var(--font-weight-extrabold) var(--font-size-4xl) / var(--line-height-tight) var(--font-family-display);
+  --text-h2: var(--font-weight-bold) var(--font-size-2xl) / var(--line-height-tight) var(--font-family-display);
+  --text-h3: var(--font-weight-bold) var(--font-size-xl) / var(--line-height-snug) var(--font-family-display);
+  --text-h4: var(--font-weight-semibold) var(--font-size-lg) / var(--line-height-snug) var(--font-family-display);
+  --text-body-lg: var(--font-weight-regular) var(--font-size-lg) / var(--line-height-normal) var(--font-family-sans);
+  --text-body: var(--font-weight-regular) var(--font-size-md) / var(--line-height-normal) var(--font-family-sans);
+  --text-body-sm: var(--font-weight-regular) var(--font-size-sm) / var(--line-height-normal) var(--font-family-sans);
+  --text-caption: var(--font-weight-regular) var(--font-size-xs) / var(--line-height-normal) var(--font-family-sans);
+  --text-label: var(--font-weight-medium) var(--font-size-sm) / var(--line-height-normal) var(--font-family-sans);
+  --text-overline: var(--font-weight-semibold) var(--font-size-xs) / var(--line-height-normal) var(--font-family-sans);
+  --text-code: var(--font-weight-regular) var(--font-size-sm) / var(--line-height-normal) var(--font-family-mono);
+
+  /* ---------- Semantic: spacing (4px base; the number is multiples of 4) -- */
+  --space-0: 0;
+  --space-0-5: 0.125rem; /* 2px  hairline gaps */
+  --space-1: 0.25rem;    /* 4px  icon-to-label, label-to-input */
+  --space-2: 0.5rem;     /* 8px  inside chips, between inline items */
+  --space-3: 0.75rem;    /* 12px compact padding, between buttons */
+  --space-4: 1rem;       /* 16px default padding, stack gap */
+  --space-5: 1.25rem;    /* 20px timeline rhythm, chip row offset */
+  --space-6: 1.5rem;     /* 24px card and dialog padding, form gap */
+  --space-8: 2rem;       /* 32px section gap */
+  --space-10: 2.5rem;    /* 40px hero padding (desktop), split gap */
+  --space-12: 3rem;      /* 48px empty-state padding, directory column gap */
+  --space-16: 4rem;      /* 64px page bottom padding */
+  --space-20: 5rem;      /* 80px */
+  --space-24: 6rem;      /* 96px off-screen offset (skip link) */
+
+  /* ---------- Semantic: layout -------------------------------------------- */
+  --layout-breakpoint-sm: 40rem;   /* 640px  large phones: dialogs centre, toasts dock right */
+  --layout-breakpoint-md: 48rem;   /* 768px  tablets: top-bar nav replaces the tab bar */
+  --layout-breakpoint-lg: 64rem;   /* 1024px laptops: search in the top bar, split detail layouts */
+  --layout-breakpoint-xl: 80rem;   /* 1280px desktops: container max */
+  --layout-breakpoint-2xl: 96rem;  /* 1536px wide screens: content stays at container max */
+
+  --layout-columns: 4;              /* grid columns at the current breakpoint */
+  --layout-gutter: var(--space-4);  /* gap between columns */
+  --layout-margin: var(--space-4);  /* viewport edge to content */
+  --layout-container-max: 80rem;    /* 1280px */
+  --layout-container-narrow: 42rem; /* 672px  forms, settings, request detail */
+  --layout-measure: 65ch;           /* max line length for prose */
+  --layout-sidebar-width: 16rem;    /* 256px */
+  --layout-topbar-height: 4rem;     /* 64px */
+  --layout-tabbar-height: 3.75rem;  /* 60px phone tab bar */
+
+  /* ---------- Semantic: shape --------------------------------------------- */
+  --radius-xs: 0.125rem;  /* 2px  checkbox, tab indicator */
+  --radius-sm: 0.25rem;   /* 4px  tooltips, code, menu items */
+  --radius-md: 0.625rem;  /* 10px inputs, menus, toasts, alerts, thumbnails */
+  --radius-lg: 1rem;      /* 16px cards, media tiles, dialogs, tables */
+  --radius-xl: 1.25rem;   /* 20px bottom sheets, CTA band */
+  --radius-full: 9999px;  /* buttons, chips, badges, avatars, search */
+
+  --border-width-hairline: 1px;
+  --border-width-thick: 2px;
+  --border-width-accent: 4px;  /* alert and error-summary leading edge */
+
+  /* ---------- Semantic: motion -------------------------------------------- */
+  --duration-instant: 0ms;
+  --duration-fast: 120ms;      /* hover, colour changes, tooltips */
+  --duration-base: 200ms;      /* menus, toasts, switches */
+  --duration-slow: 320ms;      /* dialogs, sheets, progress fill */
+  --duration-deliberate: 500ms;/* page-level transitions */
+  --duration-spin: 800ms;      /* one spinner revolution (status: never zeroed) */
+  --duration-loop: 1400ms;     /* shimmer, indeterminate bar, pulse cycles */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---------- Semantic: z-order ------------------------------------------- */
+  --z-base: 0;
+  --z-raised: 1;
+  --z-sticky: 100;     /* top bar, tab bar, sticky table headers */
+  --z-dropdown: 1000;  /* menus */
+  --z-overlay: 1200;   /* modal backdrop */
+  --z-modal: 1300;     /* dialogs, drawers */
+  --z-popover: 1400;
+  --z-toast: 1500;
+  --z-tooltip: 1600;   /* also the focused skip link */
+
+  /* ---------- Semantic: interaction and sizing ---------------------------- */
+  --target-min: 1.5rem;          /* 24px  WCAG 2.5.8 minimum target */
+  --target-comfortable: 2.75rem; /* 44px  nav links, tabs, rows, primary mobile actions */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --control-height-sm: 2rem;     /* 32px  small buttons, chips, menu items */
+  --control-height-md: 2.75rem;  /* 44px  default buttons and inputs */
+  --control-height-lg: 3rem;     /* 48px  large buttons, hero search */
+  --icon-size-sm: 1rem;          /* 16px  inline with captions, verified tick */
+  --icon-size-md: 1.25rem;       /* 20px  default */
+  --icon-size-lg: 1.5rem;        /* 24px  brand mark, empty-state glyph */
+  --avatar-size-sm: 2rem;        /* 32px  top bar, rows */
+  --avatar-size-md: 2.5rem;      /* 40px  lists, threads, dialog icons */
+  --avatar-size-lg: 3.5rem;      /* 56px  profile headers */
+  --indicator-size: 0.5rem;      /* 8px   status dots, unread dots */
+  --badge-height: 1.25rem;       /* 20px  badges and count badges */
+}
+
+/* Responsive layout tokens: columns, gutters and margins grow with the viewport.
+   Custom properties cannot be used inside @media, so the breakpoint values are
+   repeated here (48rem = --layout-breakpoint-md, 64rem = --layout-breakpoint-lg). */
+@media (min-width: 48rem) {
+  :root {
+    --layout-columns: 8;
+    --layout-gutter: var(--space-6);
+    --layout-margin: var(--space-8);
+  }
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --layout-columns: 12;
+    --layout-gutter: var(--space-8);
+    --layout-margin: var(--space-12);
+  }
+}
+
+/* ---------- Semantic: colour and elevation, light theme -------------------
+   Declared on :root AND [data-theme="light"] so a light-themed region inside a
+   dark page (the documentation's side-by-side previews) resolves correctly. */
+:root,
+[data-theme="light"] {
+  --color-bg-canvas: var(--palette-ink-50);          /* page background (cream) */
+  --color-bg-surface: var(--palette-white);          /* cards, panels, inputs */
+  --color-bg-surface-raised: var(--palette-white);   /* dialogs, menus, popovers */
+  --color-bg-surface-sunken: var(--palette-ink-100); /* wells, table headers */
+  --color-bg-subtle: var(--palette-ink-100);         /* hover rows, chips, media tiles */
+  --color-bg-subtle-hover: var(--palette-ink-200);
+  --color-bg-inverse: var(--palette-ink-950);        /* tooltips, toasts, own chat bubbles */
+  --color-bg-backdrop: rgb(11 14 20 / 0.6);          /* modal scrim (ink-950 at 60%) */
+  --color-bg-brand: var(--palette-ink-950);          /* top bar, hero band, CTA band: ink in both themes */
+  --color-bg-on-brand-subtle: var(--palette-ink-800);/* search field and chips on the brand band */
+
+  --color-fg-default: var(--palette-ink-950);        /* body text */
+  --color-fg-muted: var(--palette-ink-600);          /* secondary text */
+  --color-fg-subtle: var(--palette-ink-500);         /* placeholders, metadata */
+  --color-fg-disabled: var(--palette-ink-300);       /* disabled text; exempt from contrast (1.4.3) */
+  --color-fg-inverse: var(--palette-white);          /* text on --color-bg-inverse and solid fills */
+  --color-fg-link: var(--palette-green-700);
+  --color-fg-link-hover: var(--palette-green-900);
+  --color-fg-accent: var(--palette-green-700);       /* accent-coloured text on surfaces (never gold) */
+  --color-fg-on-accent: var(--palette-ink-950);      /* text on gold: always ink */
+  --color-fg-on-danger: var(--palette-white);
+  --color-fg-on-brand: var(--palette-white);
+  --color-fg-on-brand-muted: var(--palette-ink-300);
+
+  --color-border-default: var(--palette-ink-200);    /* dividers, card edges (decorative) */
+  --color-border-strong: var(--palette-ink-400);     /* form control edges (>= 3:1) */
+  --color-border-inverse: var(--palette-ink-700);
+  --color-border-on-brand: var(--palette-ink-700);
+
+  --color-accent: var(--palette-gold-400);           /* primary actions, selected chips, current tab */
+  --color-accent-hover: var(--palette-gold-300);
+  --color-accent-active: var(--palette-gold-500);
+  --color-accent-border: var(--palette-gold-600);    /* edge of gold controls: >= 3:1 on cream and white */
+  --color-accent-subtle: var(--palette-gold-50);     /* unread rows, avatar, empty-state icon */
+  --color-accent-subtle-hover: var(--palette-gold-100);
+
+  --color-focus-ring: var(--palette-ink-950);
+  --color-focus-ring-offset: var(--color-bg-surface);
+  --color-focus-ring-on-brand: var(--palette-gold-300);
+
+  --color-info-bg: var(--palette-blue-50);
+  --color-info-fg: var(--palette-blue-800);
+  --color-info-border: var(--palette-blue-300);
+  --color-info-icon: var(--palette-blue-600);
+  --color-info-icon-inverse: var(--palette-blue-300); /* status icon on --color-bg-inverse (toasts) */
+  --color-info-solid: var(--palette-blue-600);
+
+  --color-success-bg: var(--palette-green-50);
+  --color-success-fg: var(--palette-green-700);
+  --color-success-border: var(--palette-green-300);
+  --color-success-icon: var(--palette-green-500);
+  --color-success-icon-inverse: var(--palette-green-300);
+  --color-success-solid: var(--palette-green-500);   /* verified, complete steps, business avatar */
+
+  --color-warning-bg: var(--palette-amber-50);
+  --color-warning-fg: var(--palette-amber-700);
+  --color-warning-border: var(--palette-amber-300);
+  --color-warning-icon: var(--palette-amber-500);
+  --color-warning-icon-inverse: var(--palette-amber-300);
+  --color-warning-solid: var(--palette-amber-700);
+
+  --color-danger-bg: var(--palette-red-50);
+  --color-danger-fg: var(--palette-red-700);
+  --color-danger-border: var(--palette-red-300);
+  --color-danger-icon: var(--palette-red-500);
+  --color-danger-icon-inverse: var(--palette-red-300);
+  --color-danger-solid: var(--palette-red-600);      /* destructive buttons, invalid borders */
+  --color-danger-solid-hover: var(--palette-red-700);
+
+  --shadow-color: 20 25 35;
+  --shadow-1: 0 1px 2px rgb(var(--shadow-color) / 0.08);
+  --shadow-2: 0 2px 6px rgb(var(--shadow-color) / 0.10), 0 1px 2px rgb(var(--shadow-color) / 0.06);
+  --shadow-3: 0 8px 24px rgb(var(--shadow-color) / 0.14), 0 2px 6px rgb(var(--shadow-color) / 0.08);
+  --shadow-4: 0 20px 48px rgb(var(--shadow-color) / 0.22), 0 4px 12px rgb(var(--shadow-color) / 0.10);
+  --shadow-focus: 0 0 0 var(--focus-ring-offset) var(--color-focus-ring-offset), 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--color-focus-ring);
+
+  color-scheme: light;
+}
+
+/* ---------- Dark theme --------------------------------------------------------
+   Built from roles, not by inverting light: surfaces lighten as they rise
+   (canvas < surface < raised), statuses become deep tints with light text,
+   text on danger flips to dark. Keep this block and the media-query copy
+   below identical. */
+[data-theme="dark"] {
+  --color-bg-canvas: var(--palette-ink-950);
+  --color-bg-surface: var(--palette-ink-900);
+  --color-bg-surface-raised: var(--palette-ink-800);
+  --color-bg-surface-sunken: var(--palette-ink-975);
+  --color-bg-subtle: var(--palette-ink-800);
+  --color-bg-subtle-hover: var(--palette-ink-700);
+  --color-bg-inverse: var(--palette-ink-50);
+  --color-bg-backdrop: rgb(0 0 0 / 0.7);
+  --color-bg-brand: var(--palette-ink-950);
+  --color-bg-on-brand-subtle: var(--palette-ink-800);
+
+  --color-fg-default: var(--palette-ink-100);
+  --color-fg-muted: var(--palette-ink-300);
+  --color-fg-subtle: var(--palette-ink-350);
+  --color-fg-disabled: var(--palette-ink-600);
+  --color-fg-inverse: var(--palette-ink-950);
+  --color-fg-link: var(--palette-green-300);
+  --color-fg-link-hover: var(--palette-green-100);
+  --color-fg-accent: var(--palette-gold-300);
+  --color-fg-on-accent: var(--palette-ink-950);
+  --color-fg-on-danger: var(--palette-red-950);
+  --color-fg-on-brand: var(--palette-white);
+  --color-fg-on-brand-muted: var(--palette-ink-300);
+
+  --color-border-default: var(--palette-ink-700);
+  --color-border-strong: var(--palette-ink-350);
+  --color-border-inverse: var(--palette-ink-300);
+  --color-border-on-brand: var(--palette-ink-700);
+
+  --color-accent: var(--palette-gold-400);
+  --color-accent-hover: var(--palette-gold-300);
+  --color-accent-active: var(--palette-gold-200);
+  --color-accent-border: var(--palette-gold-400);
+  --color-accent-subtle: var(--palette-gold-950);
+  --color-accent-subtle-hover: var(--palette-gold-900);
+
+  --color-focus-ring: var(--palette-gold-300);
+  --color-focus-ring-offset: var(--color-bg-surface);
+  --color-focus-ring-on-brand: var(--palette-gold-300);
+
+  --color-info-bg: var(--palette-blue-950);
+  --color-info-fg: var(--palette-blue-200);
+  --color-info-border: var(--palette-blue-800);
+  --color-info-icon: var(--palette-blue-300);
+  --color-info-icon-inverse: var(--palette-blue-600);
+  --color-info-solid: var(--palette-blue-300);
+
+  --color-success-bg: var(--palette-green-950);
+  --color-success-fg: var(--palette-green-300);
+  --color-success-border: var(--palette-green-700);
+  --color-success-icon: var(--palette-green-300);
+  --color-success-icon-inverse: var(--palette-green-500);
+  --color-success-solid: var(--palette-green-300);
+
+  --color-warning-bg: var(--palette-amber-950);
+  --color-warning-fg: var(--palette-amber-300);
+  --color-warning-border: var(--palette-amber-700);
+  --color-warning-icon: var(--palette-amber-300);
+  --color-warning-icon-inverse: var(--palette-amber-500);
+  --color-warning-solid: var(--palette-amber-300);
+
+  --color-danger-bg: var(--palette-red-950);
+  --color-danger-fg: var(--palette-red-300);
+  --color-danger-border: var(--palette-red-700);
+  --color-danger-icon: var(--palette-red-300);
+  --color-danger-icon-inverse: var(--palette-red-600);
+  --color-danger-solid: var(--palette-red-300);
+  --color-danger-solid-hover: var(--palette-red-100);
+
+  --shadow-color: 0 0 0;
+  --shadow-1: 0 1px 2px rgb(var(--shadow-color) / 0.4);
+  --shadow-2: 0 2px 6px rgb(var(--shadow-color) / 0.45), 0 1px 2px rgb(var(--shadow-color) / 0.3);
+  --shadow-3: 0 8px 24px rgb(var(--shadow-color) / 0.5), 0 2px 6px rgb(var(--shadow-color) / 0.35);
+  --shadow-4: 0 20px 48px rgb(var(--shadow-color) / 0.6), 0 4px 12px rgb(var(--shadow-color) / 0.4);
+  --shadow-focus: 0 0 0 var(--focus-ring-offset) var(--color-focus-ring-offset), 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--color-focus-ring);
+
+  color-scheme: dark;
+}
+
+/* Follow the OS preference unless the page has explicitly chosen light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg-canvas: var(--palette-ink-950);
+    --color-bg-surface: var(--palette-ink-900);
+    --color-bg-surface-raised: var(--palette-ink-800);
+    --color-bg-surface-sunken: var(--palette-ink-975);
+    --color-bg-subtle: var(--palette-ink-800);
+    --color-bg-subtle-hover: var(--palette-ink-700);
+    --color-bg-inverse: var(--palette-ink-50);
+    --color-bg-backdrop: rgb(0 0 0 / 0.7);
+    --color-bg-brand: var(--palette-ink-950);
+    --color-bg-on-brand-subtle: var(--palette-ink-800);
+
+    --color-fg-default: var(--palette-ink-100);
+    --color-fg-muted: var(--palette-ink-300);
+    --color-fg-subtle: var(--palette-ink-350);
+    --color-fg-disabled: var(--palette-ink-600);
+    --color-fg-inverse: var(--palette-ink-950);
+    --color-fg-link: var(--palette-green-300);
+    --color-fg-link-hover: var(--palette-green-100);
+    --color-fg-accent: var(--palette-gold-300);
+    --color-fg-on-accent: var(--palette-ink-950);
+    --color-fg-on-danger: var(--palette-red-950);
+    --color-fg-on-brand: var(--palette-white);
+    --color-fg-on-brand-muted: var(--palette-ink-300);
+
+    --color-border-default: var(--palette-ink-700);
+    --color-border-strong: var(--palette-ink-350);
+    --color-border-inverse: var(--palette-ink-300);
+    --color-border-on-brand: var(--palette-ink-700);
+
+    --color-accent: var(--palette-gold-400);
+    --color-accent-hover: var(--palette-gold-300);
+    --color-accent-active: var(--palette-gold-200);
+    --color-accent-border: var(--palette-gold-400);
+    --color-accent-subtle: var(--palette-gold-950);
+    --color-accent-subtle-hover: var(--palette-gold-900);
+
+    --color-focus-ring: var(--palette-gold-300);
+    --color-focus-ring-offset: var(--color-bg-surface);
+    --color-focus-ring-on-brand: var(--palette-gold-300);
+
+    --color-info-bg: var(--palette-blue-950);
+    --color-info-fg: var(--palette-blue-200);
+    --color-info-border: var(--palette-blue-800);
+    --color-info-icon: var(--palette-blue-300);
+    --color-info-icon-inverse: var(--palette-blue-600);
+    --color-info-solid: var(--palette-blue-300);
+
+    --color-success-bg: var(--palette-green-950);
+    --color-success-fg: var(--palette-green-300);
+    --color-success-border: var(--palette-green-700);
+    --color-success-icon: var(--palette-green-300);
+    --color-success-icon-inverse: var(--palette-green-500);
+    --color-success-solid: var(--palette-green-300);
+
+    --color-warning-bg: var(--palette-amber-950);
+    --color-warning-fg: var(--palette-amber-300);
+    --color-warning-border: var(--palette-amber-700);
+    --color-warning-icon: var(--palette-amber-300);
+    --color-warning-icon-inverse: var(--palette-amber-500);
+    --color-warning-solid: var(--palette-amber-300);
+
+    --color-danger-bg: var(--palette-red-950);
+    --color-danger-fg: var(--palette-red-300);
+    --color-danger-border: var(--palette-red-700);
+    --color-danger-icon: var(--palette-red-300);
+    --color-danger-icon-inverse: var(--palette-red-600);
+    --color-danger-solid: var(--palette-red-300);
+    --color-danger-solid-hover: var(--palette-red-100);
+
+    --shadow-color: 0 0 0;
+    --shadow-1: 0 1px 2px rgb(var(--shadow-color) / 0.4);
+    --shadow-2: 0 2px 6px rgb(var(--shadow-color) / 0.45), 0 1px 2px rgb(var(--shadow-color) / 0.3);
+    --shadow-3: 0 8px 24px rgb(var(--shadow-color) / 0.5), 0 2px 6px rgb(var(--shadow-color) / 0.35);
+    --shadow-4: 0 20px 48px rgb(var(--shadow-color) / 0.6), 0 4px 12px rgb(var(--shadow-color) / 0.4);
+    --shadow-focus: 0 0 0 var(--focus-ring-offset) var(--color-focus-ring-offset), 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--color-focus-ring);
+
+    color-scheme: dark;
+  }
+}
+
+/* ---------- Preference overrides ------------------------------------------- */
+/* Reduced motion zeroes transition and reveal durations, so components need no
+   media query of their own. --duration-spin is kept: a spinner is a status
+   indicator. --duration-loop is kept too; looping decoration (shimmer, pulse,
+   indeterminate bar) is switched off in components.css instead, because a
+   near-zero infinite loop would flicker. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-base: 0.01ms;
+    --duration-slow: 0.01ms;
+    --duration-deliberate: 0.01ms;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-border-default: var(--color-border-strong);
+    --color-fg-muted: var(--color-fg-default);
+    --color-fg-subtle: var(--color-fg-muted);
+  }
+}
+
+/* Windows High Contrast / forced colours: hand control to system colours. */
+@media (forced-colors: active) {
+  :root {
+    --color-focus-ring: Highlight;
+    --color-border-default: CanvasText;
+    --color-border-strong: CanvasText;
+  }
+}
+*, *::before, *::after{box-sizing: border-box;}
+html{-webkit-text-size-adjust: 100%; scroll-behavior: smooth;}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior: auto;}}
+body{margin: 0;
+  font: var(--text-body);
+  color: var(--color-fg-default);
+  background: var(--color-bg-canvas);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;}
+main{flex: 1 0 auto; width: 100%;}
+h1, h2, h3, h4, p, ul, ol, figure, blockquote{margin: 0;}
+h1{font: var(--text-h1); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tight); text-wrap: balance;}
+@media (min-width: 48rem){h1{font-size: var(--font-size-4xl);}}
+h2{font: var(--text-h2); letter-spacing: var(--letter-spacing-tight); text-wrap: balance;}
+h3{font: var(--text-h3); text-wrap: balance;}
+h4{font: var(--text-h4);}
+p{max-width: var(--layout-measure); text-wrap: pretty;}
+small{font: var(--text-body-sm);}
+a{color: var(--color-fg-link); text-decoration: underline; text-underline-offset: 0.15em; text-decoration-thickness: 1px;}
+a:hover{color: var(--color-fg-link-hover); text-decoration-thickness: 2px;}
+code, kbd, pre{font: var(--text-code);}
+code{background: var(--color-bg-subtle); padding: 0.1em 0.35em; border-radius: var(--radius-sm);}
+kbd{background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-strong); border-bottom-width: var(--border-width-thick); border-radius: var(--radius-sm); padding: 0.05em 0.4em;}
+pre{background: var(--color-bg-surface-sunken); padding: var(--space-4); border-radius: var(--radius-md); overflow: auto;}
+img, svg, video{max-width: 100%; height: auto; display: block;}
+hr{border: 0; border-top: var(--border-width-hairline) solid var(--color-border-default); margin: var(--space-6) 0;}
+::selection{background: var(--color-accent-subtle-hover);}
+:focus-visible, [data-state="focus"]{outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-sm);}
+:focus:not(:focus-visible){outline: none;}
+.skip-link{position: absolute; left: var(--space-4); top: calc(-1 * var(--space-24));
+  z-index: var(--z-tooltip); padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-surface-raised); color: var(--color-fg-default);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-3); text-decoration: none;
+  transition: top var(--duration-fast) var(--ease-standard);}
+.skip-link:focus-visible{top: var(--space-4);}
+.btn{--btn-bg: var(--color-bg-surface); --btn-fg: var(--color-fg-default); --btn-border: var(--color-border-strong);
+  --btn-bg-hover: var(--color-bg-subtle); --btn-bg-active: var(--color-bg-subtle-hover);
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: var(--control-height-md); padding: 0 var(--space-4);
+  font: var(--text-label); font-size: var(--font-size-md); line-height: 1; white-space: nowrap;
+  color: var(--btn-fg); background: var(--btn-bg); border: var(--border-width-hairline) solid var(--btn-border); border-radius: var(--radius-full);
+  cursor: pointer; text-decoration: none; user-select: none; position: relative;
+  transition: background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);}
+.btn:hover, .btn[data-state="hover"]{background: var(--btn-bg-hover);}
+.btn:active, .btn[data-state="active"]{background: var(--btn-bg-active); transform: translateY(1px);}
+.btn:disabled, .btn[aria-disabled="true"], .btn[data-state="disabled"]{opacity: 0.5; cursor: not-allowed; transform: none;}
+.btn--primary{--btn-bg: var(--color-accent); --btn-fg: var(--color-fg-on-accent); --btn-border: var(--color-accent-border); --btn-bg-hover: var(--color-accent-hover); --btn-bg-active: var(--color-accent-active); font-weight: var(--font-weight-semibold);}
+.btn--primary:hover, .btn--primary[data-state="hover"]{box-shadow: var(--shadow-1);}
+.btn .icon{width: 1.25em; height: 1.25em; flex: none;}
+.btn[aria-busy="true"], .btn[data-state="loading"]{color: transparent; pointer-events: none;}
+.btn[aria-busy="true"]::after, .btn[data-state="loading"]::after{content: ""; position: absolute; inset: 0; margin: auto; width: var(--icon-size-md); height: var(--icon-size-md);
+  border: var(--border-width-thick) solid var(--btn-fg); border-right-color: transparent; border-radius: var(--radius-full);
+  animation: spin var(--duration-spin) linear infinite;}
+fieldset{border: 0; padding: 0; margin: 0; min-width: 0;}
+legend{font: var(--text-label); padding: 0; margin-bottom: var(--space-2);}
+.card{background: var(--color-bg-surface); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); box-shadow: var(--shadow-1); padding: var(--space-6);}
+ .card[aria-selected="true"], .card[data-state="selected"]{border-color: var(--color-accent-border); box-shadow: 0 0 0 var(--border-width-hairline) var(--color-accent-border);}
+.empty{display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-3); padding: var(--space-12) var(--space-6);}
+.empty__icon{width: calc(var(--avatar-size-md) + var(--space-6)); height: calc(var(--avatar-size-md) + var(--space-6)); border-radius: var(--radius-full); display: grid; place-items: center; background: var(--color-accent-subtle); color: var(--color-fg-accent); margin-bottom: var(--space-2);}
+.empty__title{font: var(--text-h3);}
+.empty__text{color: var(--color-fg-muted); max-width: 36ch;}
+.empty__actions{display: flex; gap: var(--space-3); margin-top: var(--space-2); flex-wrap: wrap; justify-content: center;}
+.icon{width: var(--icon-size-md); height: var(--icon-size-md); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none;}
+.icon--lg{width: var(--icon-size-lg); height: var(--icon-size-lg);}
+.auth-layout{min-height: 100dvh; display: grid; place-items: center; padding: var(--space-6) var(--layout-margin);}
+.auth-card{width: 100%; max-width: 26rem;}
+@keyframes spin{ to { rotate: 360deg; } }
+@keyframes fade-in{ from { opacity: 0; } }
+@keyframes fade-out{ to { opacity: 0; translate: 0 var(--space-2); } }
+@keyframes slide-up{ from { opacity: 0; translate: 0 var(--space-4); } }
+@keyframes scale-in{ from { opacity: 0; scale: 0.96; } }
+@keyframes slide-in-right{ from { translate: 100% 0; } }
+@keyframes slide-in-left{ from { translate: -100% 0; } }
+@keyframes toast-countdown{ from { width: 100%; } to { width: 0; } }
+@keyframes shimmer{ from { background-position: 100% 0; } to { background-position: 0 0; } }
+@keyframes indeterminate{ from { translate: -100% 0; } to { translate: 350% 0; } }
+@keyframes pulse{ 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce){.btn:active, .btn[data-state="active"]{transform: none;}}
+@media (forced-colors: active){.btn, .card{forced-color-adjust: none; border: 1px solid CanvasText;}
+.btn--primary{background: Highlight; color: HighlightText;}}
+@media print{ .skip-link{display: none !important;}}
+a[data-state="hover"]{color: var(--color-fg-link-hover); text-decoration-thickness: var(--border-width-thick);}
+.brand-mark{width: var(--icon-size-lg); height: var(--icon-size-lg); fill: none; stroke-width: 14.5; stroke-linecap: butt; stroke-linejoin: miter; flex: none;}
+.brand-mark__j{stroke: currentColor;}
+.brand-mark__bar{stroke: var(--color-accent);}
+.auth-layout{align-content: center; gap: var(--space-6);}
+.auth-brand{display: inline-flex; align-items: center; gap: var(--space-2); font-family: var(--font-family-display); font-weight: var(--font-weight-bold); font-stretch: var(--font-stretch-wide); font-size: var(--font-size-3xl); letter-spacing: var(--letter-spacing-tighter); color: var(--color-fg-default); text-decoration: none;}
+.auth-brand .brand-mark{width: var(--icon-size-lg); height: var(--icon-size-lg);}
+.auth-card h1{font-size: var(--font-size-2xl);}
+.empty__text{overflow-wrap: anywhere;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main" class="auth-layout"><a class="auth-brand" href="/"><svg class="brand-mark" aria-hidden="true" viewBox="0 0 100 100"><path class="brand-mark__j" d="M60 8V60A20 20 0 0 1 20 60V38"/><path class="brand-mark__bar" d="M36 27H84"/></svg>jubilee</a><div class="auth-card card"><div class="empty"><div class="empty__icon" aria-hidden="true"><svg class="icon icon--lg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.600 5.600l2.100 2.100M16.300 16.300l2.100 2.100M5.600 18.400l2.100-2.100M16.300 7.700l2.100-2.100"/></svg></div><h1 class="empty__title">Jubilee is being updated</h1><p class="empty__text"><!--back-by-->We’ll be back shortly.<!--/back-by--> Nothing you’ve sent is lost.</p><div class="empty__actions"><a class="btn btn--primary" href=""><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5l2 2M20 5v4h-4M20 12a8 8 0 0 1-14 5l-2-2M4 19v-4h4"/></svg>Check again</a></div></div></div></main>
+</body>
+</html>

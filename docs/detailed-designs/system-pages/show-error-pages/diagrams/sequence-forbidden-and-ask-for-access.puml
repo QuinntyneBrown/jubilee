@@ -20,39 +20,41 @@ box "Frontend — Jubilee Web" #E0F2FE
   participant "ForbiddenPage" as page
   participant "HelpApi" as client
 end box
+box "App host — server.js" #FEF3C7
+  participant "server.js" as host
+end box
 box "Backend — Jubilee API" #D1FADF
-  participant "PageShellEndpoint" as shell
+  participant "DocumentsController" as docs
   participant "HelpController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
   participant "CreateAccessRequestCommandHandler" as handler
+  participant "VerificationTeam" as team
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
-  database "Cache" as cache
   database "Jubilee database" as db
 end box
-actor -> browser : Open a protected page such as /admin/verifications
-browser -> shell : GET page URL
-shell -> cache : Read the session from the cookie
-cache --> shell : Session or nothing
+actor -> browser : Open the owner's workspace /my-business
+browser -> host : GET page URL with the session cookie
+host -> docs : GET /api/documents/status?path=/my-business&owner=true
 alt no session (visitor)
-  shell --> browser : 302 to /sign-in with the return URL (L2-114)
-  browser --> actor : Show the sign-in page
-else signed in without permission
-  shell -> shell : Check role and ownership for the route (L2-133)
-  shell --> browser : 403 with the application shell (L2-114)
-  browser -> page : Bootstrap and render
-  page --> actor : Show "You don't have access to this page." with "Back to browse" and "Ask for access"
+  docs --> host : { status: 200 }
+  host --> browser : 200 with the application shell
+  browser --> actor : memberGuard sends them to /sign-in with the return URL (L2-114 AC3)
+else signed in, owns no listing
+  docs --> host : { status: 403 }
+  host --> browser : 403 with the application shell (L2-114 AC1)
+  browser -> page : The page's data answers 403; show the forbidden page
+  page --> actor : "You don't have access to this page." with "Back to browse" and "Ask for access"
   actor -> page : Press "Ask for access"
   page -> client : askForAccess(url)
   client -> controller : POST /api/help/access-requests with an idempotency key (L2-132)
-  controller -> controller : Authenticate the session
-  controller -> handler : Send CreateAccessRequestCommand
-  handler -> db : Save AccessRequest with the URL and the member; grant nothing (L2-114)
-  db --> handler : Commit result
-  handler --> controller : Typed result
+  controller -> handler : CreateAccessRequestCommand
+  handler -> handler : Validate the address; 5 an hour at most (L2-127)
+  handler -> team : Tell("Access request: {address}", ...)
+  team -> db : Add the e-mail to the outbox
+  handler -> db : Save the AccessRequest and the e-mail together; grant nothing (L2-114 AC2)
   controller --> client : 201
-  client --> page : Request recorded
-  page --> actor : Confirm that the request was sent
+  page --> actor : Toast: the request was sent
 end
 @enduml

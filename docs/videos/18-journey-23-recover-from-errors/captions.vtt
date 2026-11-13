@@ -1,0 +1,106 @@
+WEBVTT
+
+00:00:00.405 --> 00:00:03.443
+Journey twenty-three: recover from errors.
+
+00:00:03.443 --> 00:00:08.652
+Anyone who meets a missing, forbidden, failed or maintenance page sees a
+
+00:00:08.652 --> 00:00:13.065
+clear page and a way forward. This run takes the journey from
+
+00:00:13.065 --> 00:00:15.453
+seventy-nine percent to complete.
+
+00:00:16.311 --> 00:00:21.031
+In this demo, Legacy Financial was once listed as Legacy Financial
+
+00:00:21.031 --> 00:00:26.181
+Group. Someone follows a link they were sent under the old name, and the
+
+00:00:26.181 --> 00:00:27.183
+listing opens.
+
+00:00:28.041 --> 00:00:32.397
+When an owner changes the business name, the listing's address now
+
+00:00:32.397 --> 00:00:36.819
+follows it, and the old one is kept. The old address answers with a
+
+00:00:36.819 --> 00:00:40.713
+permanent redirect, and is never given to another business.
+
+00:00:41.674 --> 00:00:46.222
+An address that is no page of Jubilee shows the not-found page, with
+
+00:00:46.222 --> 00:00:47.962
+Back to browse and Search.
+
+00:00:49.020 --> 00:00:52.605
+And now the server says so before the app even loads.
+
+00:00:52.605 --> 00:00:57.206
+The app's host checks each page load against the app's addresses and
+
+00:00:57.206 --> 00:01:01.941
+asks the API: four oh four for a missing page or a listing that is not
+
+00:01:01.941 --> 00:01:06.609
+public, four oh three for an area that is not yours, and three oh one
+
+00:01:06.609 --> 00:01:07.692
+for an old link.
+
+00:01:08.583 --> 00:01:13.247
+While Jubilee is being updated, every page load answers five oh three,
+
+00:01:13.247 --> 00:01:17.777
+with Retry After, and this page: a static copy, with no script, that
+
+00:01:17.777 --> 00:01:21.975
+says when Jubilee is back and that nothing you've sent is lost.
+
+00:01:22.714 --> 00:01:27.303
+If the app itself cannot be served, the host answers five hundred with a
+
+00:01:27.303 --> 00:01:31.764
+static copy of the error page: Try again, Get help, and a reference to
+
+00:01:31.764 --> 00:01:34.186
+quote, which leads support to the log.
+
+00:01:35.069 --> 00:01:39.667
+Joanna opens the owner's workspace, but she owns no listing.
+
+00:01:39.667 --> 00:01:44.189
+The page tells her plainly, and she presses Ask for access.
+
+00:01:44.890 --> 00:01:50.026
+The request is passed to the team. Nothing is granted.
+
+00:01:51.064 --> 00:01:56.115
+With the request, the verification team is now e-mailed: the page, who
+
+00:01:56.115 --> 00:02:01.094
+asked and when. A repeated press, or more than five in an hour, sends
+
+00:02:01.094 --> 00:02:02.032
+nothing more.
+
+00:02:02.887 --> 00:02:07.855
+Tests prove each criterion: API tests for the slugs, the statuses and
+
+00:02:07.855 --> 00:02:13.039
+the e-mail, host tests for every page-load status, and browser tests for
+
+00:02:13.039 --> 00:02:15.559
+the redirects and the static pages.
+
+00:02:16.412 --> 00:02:21.693
+Journey twenty-three is complete. Nothing new needs setting on Azure.
+
+00:02:21.693 --> 00:02:26.820
+Left for the owner: check the statuses after deploying, and run the
+
+00:02:26.820 --> 00:02:30.188
+visual, responsive and accessibility sweeps.
