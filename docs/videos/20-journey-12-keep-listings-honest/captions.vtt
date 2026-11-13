@@ -12,50 +12,50 @@ The Jubilee team looks through what was published, and takes down a
 00:00:11.067 --> 00:00:13.778
 listing that misrepresents a business.
 
-00:00:14.644 --> 00:00:19.907
+00:00:14.656 --> 00:00:19.919
 Listings shows every published listing, newest first, with its status.
 
-00:00:19.907 --> 00:00:24.794
+00:00:19.919 --> 00:00:24.806
 A name or tagline with a web address or a discount code is tagged
 
-00:00:24.794 --> 00:00:25.396
+00:00:24.806 --> 00:00:25.408
 Flagged.
 
-00:00:26.104 --> 00:00:29.728
+00:00:26.116 --> 00:00:29.740
 A search by name keeps the listings that match.
 
-00:00:30.801 --> 00:00:35.445
+00:00:30.901 --> 00:00:35.545
 One listing shows where it stands, its owner and their other listings,
 
-00:00:35.445 --> 00:00:40.221
+00:00:35.545 --> 00:00:40.321
 the flag, and how members see it. Opening it is now written to the audit
 
-00:00:40.221 --> 00:00:42.609
+00:00:40.321 --> 00:00:42.709
 log, with the listing as the reason.
 
-00:00:43.317 --> 00:00:47.585
+00:00:43.420 --> 00:00:47.688
 Take down listing asks for a reason for the owner.
 
-00:00:47.585 --> 00:00:50.061
+00:00:47.688 --> 00:00:50.164
 Without one, nothing is sent.
 
-00:00:50.765 --> 00:00:56.214
+00:00:50.867 --> 00:00:56.316
 With a reason, the listing leaves Jubilee at once, the owner is e-mailed
 
-00:00:56.214 --> 00:01:00.149
+00:00:56.316 --> 00:01:00.251
 why, and the page says so. The owner may list again.
 
-00:01:01.059 --> 00:01:06.094
+00:01:01.195 --> 00:01:06.230
 Behind the screen, each role change made with the jubilee staff command
 
-00:01:06.094 --> 00:01:10.704
+00:01:06.230 --> 00:01:10.840
 is now audited, with its operator and the roles before and after.
 
-00:01:10.704 --> 00:01:12.051
+00:01:10.840 --> 00:01:12.187
 The tests prove it.
 
-00:01:12.911 --> 00:01:18.500
+00:01:13.052 --> 00:01:18.641
 Journey twelve is complete. Nothing in the admin application approves,
 
-00:01:18.500 --> 00:01:20.975
+00:01:18.641 --> 00:01:21.116
 declines or verifies a listing.
