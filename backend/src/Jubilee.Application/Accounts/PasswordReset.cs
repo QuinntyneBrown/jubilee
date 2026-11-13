@@ -44,16 +44,26 @@ public sealed class RequestPasswordResetCommandHandler(
     }
 }
 
+/// <summary>Who hears of a security alert (ADR 0064): <c>Security:OnCallEmail</c>, else the Jubilee team; null when nobody is e-mailed.</summary>
+public sealed record SecuritySettings(string? OnCallEmail);
+
 /// <summary>
 /// The worker's side of a reset request: the only place that reads the account. It sends at most 3 links per address
-/// in an hour and makes earlier unused links stop working (L2-008 AC2 and AC4, L2-137).
+/// in an hour and makes earlier unused links stop working (L2-008 AC2 and AC4, L2-137). After each pass it alerts the
+/// on-call security contact when more than 100 requests arrived in 5 minutes (L2-143 AC4).
 /// </summary>
-public sealed class PasswordResetLinks(IAppDbContext db, AccountSettings settings, TimeProvider clock)
+public sealed class PasswordResetLinks(
+    IAppDbContext db, AccountSettings settings, SecuritySettings security, TimeProvider clock, ILogger<PasswordResetLinks> logger)
 {
     public const int LimitPerHour = 3;
 
     /// <summary>The hour the limit counts in.</summary>
     public static readonly TimeSpan Window = TimeSpan.FromHours(1);
+
+    /// <summary>More requests than this within <see cref="BurstWindow"/>, across all addresses, alert the on-call contact.</summary>
+    public const int BurstThreshold = 100;
+
+    public static readonly TimeSpan BurstWindow = TimeSpan.FromMinutes(5);
 
     public async Task<int> IssueAsync(CancellationToken cancellationToken)
     {
@@ -81,7 +91,41 @@ public sealed class PasswordResetLinks(IAppDbContext db, AccountSettings setting
             await db.SaveChangesAsync(cancellationToken);
         }
 
+        await AlertOnBurstAsync(cancellationToken);
         return issued;
+    }
+
+    private async Task AlertOnBurstAsync(CancellationToken cancellationToken)
+    {
+        var now = clock.GetUtcNow();
+        var since = now - BurstWindow;
+        var count = (await db.PasswordResetRequests.Select(r => r.RequestedAt).ToListAsync(cancellationToken)).Count(at => at > since);
+        if (count <= BurstThreshold)
+        {
+            return;
+        }
+
+        var raised = (await db.SecurityAlerts.Where(a => a.Kind == SecurityAlert.PasswordResetBurst).Select(a => a.RaisedAt)
+            .ToListAsync(cancellationToken)).Any(at => at > since);
+        if (raised)
+        {
+            return;
+        }
+
+        db.SecurityAlerts.Add(SecurityAlert.Raise(SecurityAlert.PasswordResetBurst, count, now));
+        if (!string.IsNullOrWhiteSpace(security.OnCallEmail))
+        {
+            // The count and the window only: never an address that was asked for.
+            db.OutboxMessages.Add(OutboxMessage.Email(
+                null,
+                security.OnCallEmail.Trim(),
+                "Security alert: a burst of password reset requests",
+                $"Jubilee received {count} password reset requests in the last 5 minutes, more than the {BurstThreshold} that raise this alert. Each address still gets at most 3 links an hour, and the answer is the same for every address.\n\nLook at the API's log for \"RateLimitTrip PasswordReset\" and the addresses the requests came from. You will not be alerted again for the next 5 minutes.\n\nJubilee · Toronto's Christian marketplace\n",
+                now));
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        logger.LogWarning("Security alert: {Count} password reset requests in 5 minutes", count);
     }
 
     private async Task IssueFor(Member member, DateTimeOffset now, CancellationToken cancellationToken)

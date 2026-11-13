@@ -378,6 +378,20 @@ public sealed class PasswordResetRequestConfiguration : IEntityTypeConfiguration
         builder.Property(r => r.EmailKey).HasMaxLength(254).IsRequired();
         builder.HasIndex(r => new { r.EmailKey, r.RequestedAt });
         builder.HasIndex(r => r.ProcessedAt);
+        // The burst alert counts the requests of the last 5 minutes across all addresses (L2-143 AC4).
+        builder.HasIndex(r => r.RequestedAt);
+    }
+}
+
+public sealed class SecurityAlertConfiguration : IEntityTypeConfiguration<SecurityAlert>
+{
+    public void Configure(EntityTypeBuilder<SecurityAlert> builder)
+    {
+        builder.ToTable("SecurityAlerts");
+        builder.HasKey(a => a.Id);
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.Kind).HasMaxLength(40).IsRequired();
+        builder.HasIndex(a => new { a.Kind, a.RaisedAt });
     }
 }
 

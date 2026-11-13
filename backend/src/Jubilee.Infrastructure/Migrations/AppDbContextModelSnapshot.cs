@@ -1580,6 +1580,8 @@ namespace Jubilee.Infrastructure.Migrations
 
                     b.HasIndex("ProcessedAt");
 
+                    b.HasIndex("RequestedAt");
+
                     b.HasIndex("EmailKey", "RequestedAt");
 
                     b.ToTable("PasswordResetRequests", (string)null);
@@ -1996,6 +1998,29 @@ namespace Jubilee.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("SavedItems", (string)null);
+                });
+
+            modelBuilder.Entity("Jubilee.Domain.SecurityAlert", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTimeOffset>("RaisedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Kind", "RaisedAt");
+
+                    b.ToTable("SecurityAlerts", (string)null);
                 });
 
             modelBuilder.Entity("Jubilee.Domain.Service", b =>

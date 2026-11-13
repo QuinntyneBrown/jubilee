@@ -220,6 +220,7 @@ public class JubileeApiFactory : WebApplicationFactory<Program>
             db.RemoveRange(db.BusinessPreRegistrations);
             db.RemoveRange(db.LinkTokens);
             db.RemoveRange(db.PasswordResetRequests);
+            db.RemoveRange(db.SecurityAlerts);
             db.RemoveRange(db.Members);
             db.RemoveRange(db.RecentSearches);
             db.RemoveRange(db.StockAlerts);
