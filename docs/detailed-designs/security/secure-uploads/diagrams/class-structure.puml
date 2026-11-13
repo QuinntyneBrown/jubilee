@@ -111,6 +111,19 @@ class ListingPhoto {
   +int Position
 }
 
+class UploadProductPhotoCommandHandler {
+  +Handle(command: UploadProductPhotoCommand): Task<ProductPhotoDto>
+}
+
+class ProductPhoto {
+  +Guid Id
+  +Guid ListingId
+  +string Key
+  +int Width
+  +int Height
+  +DateTimeOffset UploadedAt
+}
+
 UploadAttachmentCommandHandler ..> UploadAttachmentCommand : handles
 UploadAttachmentCommandHandler ..> ImageSanitizer : 1. checks
 UploadAttachmentCommandHandler ..> IMalwareScanner : 2. scans
@@ -130,4 +143,8 @@ AddPhotoCommandHandler --> "1" ListingPhoto : 3. creates
 SkiaImageProcessor ..|> IImageProcessor
 IImageProcessor ..> ProcessedImage : returns
 ProcessedImage "1" *-- "*" Rendition : contains
+UploadProductPhotoCommandHandler ..> IImageProcessor : 1. checks and re-encodes
+UploadProductPhotoCommandHandler ..> IMalwareScanner : 2. scans
+UploadProductPhotoCommandHandler ..> IMediaStore : 3. stores each rendition
+UploadProductPhotoCommandHandler --> "1" ProductPhoto : 4. creates
 @enduml

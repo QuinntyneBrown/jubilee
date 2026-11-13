@@ -1,6 +1,6 @@
 # 0024. Manage products and services decisions
 
-Status: accepted
+Status: accepted. Amended by ADR 0062, which ends the four deferrals below: product photos, the options and minimum order fields, drag to reorder and the saved-list consequence of a delete.
 
 ## Context
 

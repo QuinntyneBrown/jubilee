@@ -13,96 +13,103 @@ skinparam class {
 ' --------------------------
 title Class structure — Manage products
 
-enum ProductStatus {
-  Listed
-  SoldOut
-}
-
-class Listing {
-  +Guid Id
-  +Guid OwnerId
-  +int MaxProducts = 100
-  +AddProduct(details: ProductDetails): Product
-  +RemoveProduct(productId: Guid, now: DateTimeOffset): void
-  +ReorderProducts(productIds: IReadOnlyList<Guid>): void
-}
-
 class Product {
   +Guid Id
+  +Guid ListingId
+  +string Slug
   +string Name
   +int PriceCents
   +int? Stock
   +string? Description
-  +int MinimumOrderQuantity
-  +int SortOrder
+  +int MinimumQuantity
+  +string? OptionName
+  +int Position
+  +string? IdempotencyKey
   +Guid? PhotoId
+  +bool IsDeleted
   +DateTimeOffset? DeletedAt
   +bool IsSoldOut
-  +ProductStatus Status
-  +Update(details: ProductDetails): void
+  +Revise(name, priceCents, description): void
+  +SetMinimumQuantity(minimum): void
+  +SetOptions(optionName, options): void
+  +SetStock(stock): StockChange
+  +ShowPhoto(photo: ProductPhoto?): void
+  +Place(position, idempotencyKey): void
+  +MoveTo(position): void
+  +Delete(now): void
 }
 
 class ProductOption {
-  +string Name
-  +int SortOrder
+  +string Label
+  +int? Stock
+  +int Position
 }
 
-class ProductDetails {
-  +string Name
-  +int PriceCents
+class ProductPhoto {
+  +Guid Id
+  +Guid ListingId
+  +string Key
+  +int Width
+  +int Height
+  +DateTimeOffset UploadedAt
+  +{static} Upload(listingId, key, width, height, now): ProductPhoto
+}
+
+class SaveProductCommand {
+  +string Subject
+  +Guid? Id
+  +string? Name
+  +string? Price
   +int? Stock
   +string? Description
-  +int MinimumOrderQuantity
-  +IReadOnlyList<string> Options
+  +int? MinimumQuantity
+  +string? OptionName
+  +IReadOnlyList<OwnerProductOptionDto>? Options
+  +Guid? PhotoId
+  +string? IdempotencyKey
 }
 
-class AddProductCommand {
-  +Guid ListingId
-  +string Name
-  +string Price
-  +string Stock
-  +string? Description
-  +int MinimumOrderQuantity
-  +IReadOnlyList<string> Options
+class SaveProductCommandHandler {
+  +Handle(command): Task<ProductRowDto>
 }
 
-class ProductCommandValidator {
-  +decimal PriceMin = 0.01
-  +decimal PriceMax = 100000.00
-  +int StockMax = 9999
-  +int OptionsMax = 10
-  +int MinimumQuantityMax = 999
-  +Validate(command: AddProductCommand): ValidationResult
+class UploadProductPhotoCommandHandler {
+  +Handle(command: UploadProductPhotoCommand): Task<ProductPhotoDto>
 }
 
-class AddProductCommandHandler {
-  +Handle(command: AddProductCommand): Task<Result<ProductDto>>
+class CatalogueRules {
+  +int MaxOptions = 10
+  +int MaxOptionLabel = 40
+  +int PhotosPerHour = 30
+  +TimeSpan IdempotencyWindow = 24h
+  +Cents(price): int?
+  +Ordered(products): List<Product>
 }
 
-class DeleteProductCommandHandler {
-  +Handle(command: DeleteProductCommand): Task<Result>
-}
-
-class ReorderProductsCommandHandler {
-  +Handle(command: ReorderProductsCommand): Task<Result>
-}
-
-class ProductRow {
+class ProductRowDto {
   +Guid Id
   +string Name
   +int PriceCents
-  +ProductStatus Status
-  +int RequestCount
+  +bool SoldOut
+  +int MinimumQuantity
+  +IReadOnlyList<OwnerProductOptionDto> Options
+  +int Requests
+  +ProductPhotoDto? Photo
 }
 
-Listing "1" *-- "0..100" Product
+class ProductPhotoDto {
+  +Guid Id
+  +string Key
+  +int Width
+  +int Height
+}
+
 Product "1" *-- "0..10" ProductOption
-Product --> ProductStatus : derives
-ProductCommandValidator ..> AddProductCommand : validates
-AddProductCommandHandler ..> AddProductCommand : handles
-AddProductCommandHandler --> Listing : adds product
-AddProductCommandHandler ..> ProductDetails : builds
-DeleteProductCommandHandler --> Listing : removes product
-ReorderProductsCommandHandler --> Listing : reorders
-ProductRow ..> Product : projects
+Product "0..1" --> "0..1" ProductPhoto : Photo
+SaveProductCommandHandler ..> SaveProductCommand : handles
+SaveProductCommandHandler ..> CatalogueRules : uses
+SaveProductCommandHandler --> Product : adds or revises
+UploadProductPhotoCommandHandler --> ProductPhoto : records
+ProductRowDto ..> Product : projects
+ProductRowDto *-- ProductPhotoDto
 @enduml

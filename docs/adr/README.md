@@ -57,6 +57,7 @@ something else: a new record supersedes it and both say so.
 | [0060](0060-finish-give-feedback.md) | Finish give feedback: on a touch screen a chip is pressed over 44 px through an invisible hit area and is still drawn 32 px tall; a parity spec whose reference is absent compares with `components/<component>/<case>-<width>.png` as soon as the owner saves it | Accepted |
 | [0061](0061-finish-track-and-cancel-requests.md) | Finish track and cancel requests: the member's request pages listen to the event stream and ask on a timer only while it cannot connect, the owner marks a confirmed order fulfilled from Incoming requests and the customer is told, and the booking-completion and unanswered-request jobs run once per schedule through `JobRun` | Accepted |
 | [0062](0062-finish-get-ready-for-launch.md) | Finish get ready for launch: one ordered checklist of the launch settings in `eng/azure/README.md`, each step with its command and its check; the limits of the launch forms count the visitor's address the proxy states; the bot challenge is tested against a stand-in for Cloudflare's script | Accepted |
+| [0062](0062-finish-manage-products-and-services.md) | Finish manage products and services: one photo per product, uploaded, checked and scanned before the product is saved and shown in the owner's list and on the product page; options and minimum order in the product editor; products and services dragged by a handle with the move buttons kept; a deleted product reads “No longer available” on saved lists | Accepted |
 
 ## Format
 

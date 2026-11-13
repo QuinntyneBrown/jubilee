@@ -4,9 +4,11 @@ LAYOUT_WITH_LEGEND()
 title System Context — Manage products
 
 Person(owner, "Owner", "Member who owns a shop listing")
-Person(member, "Member", "Browses the shop and requests products")
+Person(member, "Member", "Browses the shop, saves and requests products")
 System(jubilee, "Jubilee", "Toronto's Christian marketplace")
+System_Ext(scanner, "Malware scanner", "clamd, asked before a photo is stored")
 
-Rel(owner, jubilee, "Adds edits deletes and reorders products using", "HTTPS")
+Rel(owner, jubilee, "Adds edits photographs deletes and reorders products using", "HTTPS")
 Rel(member, jubilee, "Sees product changes on the public shop in", "HTTPS")
+Rel(jubilee, scanner, "Scans each product photo with", "TCP")
 @enduml

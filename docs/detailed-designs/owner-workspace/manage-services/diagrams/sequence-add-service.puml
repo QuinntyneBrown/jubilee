@@ -18,15 +18,14 @@ actor "Owner" as actor
 box "Frontend — Jubilee Web" #E0F2FE
   participant "MyServicesPage" as page
   participant "ServiceEditorDialog" as dialog
-  participant "ServicesApi" as client
+  participant "CatalogueApi" as client
 end box
 box "Backend — Jubilee API" #D1FADF
-  participant "OwnerServicesController" as controller
+  participant "CatalogueController" as controller
 end box
 box "Backend — Jubilee Application and Domain" #ECFDF3
-  participant "ServiceCommandValidator" as validator
-  participant "AddServiceCommandHandler" as handler
-  participant "Listing" as entity
+  participant "SaveServiceCommandHandler" as handler
+  participant "Service" as entity
 end box
 box "Backend — Jubilee Infrastructure" #FFF4E5
   database "Jubilee database" as db
@@ -34,45 +33,35 @@ end box
 actor -> page : Press "Add service"
 page -> dialog : Open "Add a service"
 actor -> dialog : Choose pricing and what members can do
-alt Pricing is "Fixed price"
+alt Fixed price
   dialog -> dialog : Show and require "Price (CAD)" (L2-094)
-else Pricing is "Free" or "Ask for a quote"
+else Free or Ask for a quote
   dialog -> dialog : Hide and clear "Price (CAD)" (L2-094)
 end
-opt Members can "Book a time"
-  dialog -> dialog : Show duration and meeting modes (L2-094)
+opt Book a time
+  dialog -> dialog : Show length and meeting modes (L2-094)
 end
 actor -> dialog : Press "Add service"
-dialog -> client : Build typed request with idempotency key (L2-132)
-client -> controller : POST /api/owner/listings/{listingId}/services
-controller -> controller : Authenticate and apply ListingOwnerPolicy (L2-133)
-controller -> validator : Validate AddServiceCommand
-alt Invalid fields
-  validator --> controller : SERVICE_NAME_REQUIRED or PRICE_INVALID or DURATION_INVALID
-  controller --> client : 422 ProblemDetails with per-field codes
+dialog -> client : saveService(null, input with idempotencyKey) (L2-132)
+client -> controller : POST /api/my-business/services
+controller -> handler : Send SaveServiceCommand
+handler -> db : Find the owner's listing (403 when none)
+handler -> handler : Validate fields
+alt Invalid
+  handler --> controller : 422 with a code per field
+  controller --> client : ProblemDetails
   client --> dialog : Validation errors
   dialog --> actor : Show "Enter a name for the service." under the field
-else Valid fields
-  validator --> controller : Valid
-  controller -> handler : Send AddServiceCommand
-  handler -> db : Load listing with services
-  db --> handler : Listing
-  handler -> entity : AddService with 50 service limit (L2-093)
-  alt Limit reached
-    entity --> handler : Rule violated
-    handler --> controller : SERVICE_LIMIT_REACHED
-    controller --> client : 422 ProblemDetails
-    client --> dialog : Refusal
-    dialog --> actor : Show "You can list up to 50 services."
-  else Accepted
-    entity --> handler : Service
-    handler -> db : Save service and ServiceChanged outbox message
-    db --> handler : Commit result
-    handler --> controller : ServiceDto
-    controller --> client : 201 service
-    client --> dialog : Saved
-    dialog --> page : Close with service
-    page --> actor : Show the service in the list
-  end
+else Key already used
+  handler --> controller : The first service
+else New
+  handler -> db : Count services (409 SERVICE_LIMIT at 50, L2-093)
+  handler -> entity : Create and Revise
+  handler -> db : Save
+  handler --> controller : OwnerServiceRowDto
+  controller --> client : 201
+  client --> dialog : Saved
+  dialog --> page : Close with service
+  page --> actor : Show the service in the list; toast "Service added"
 end
 @enduml
