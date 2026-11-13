@@ -144,7 +144,11 @@ public sealed record DraftItemInput(
     string? InPersonPlace = null);
 
 public sealed record PublishedListingDto(
-    Guid ListingId, string Slug, string Name, string Kind, string Stage, DateTimeOffset SubmittedAt);
+    Guid ListingId, string Slug, string Name, string Kind, string Stage, DateTimeOffset SubmittedAt) : Listings.IAddressed
+{
+    /// <summary>The listing's address, written by <see cref="Listings.AddressBehavior{TRequest, TResponse}"/> (L2-244).</summary>
+    public string? Address { get; set; }
+}
 
 public static class Drafts
 {

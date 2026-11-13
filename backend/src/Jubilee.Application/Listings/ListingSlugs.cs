@@ -78,6 +78,16 @@ public static class ListingSlugs
             .Join(db.Listings.AsNoTracking().Where(l => l.DeletedAt == null), s => s.ListingId, l => l.Id, (s, l) => l.Slug)
             .SingleOrDefaultAsync(cancellationToken);
     }
+
+    /// <summary>
+    /// The current slug of the public listing that had <paramref name="slug"/>, or null: when it was never kept, and
+    /// when its listing is not public, so an address never names a hidden listing (L2-243 AC4, L2-245 AC2).
+    /// </summary>
+    public static Task<string?> CurrentPublicOfAsync(IAppDbContext db, string slug, CancellationToken cancellationToken) =>
+        db.ListingSlugs.AsNoTracking()
+            .Where(s => s.Slug == slug)
+            .Join(db.Listings.AsNoTracking().WherePublic(), s => s.ListingId, l => l.Id, (s, l) => l.Slug)
+            .SingleOrDefaultAsync(cancellationToken);
 }
 
 /// <summary>The current slug of the listing that had <paramref name="Slug"/>, or null (L2-113 AC2).</summary>

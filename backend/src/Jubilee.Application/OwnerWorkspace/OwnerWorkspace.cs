@@ -41,8 +41,11 @@ public sealed record MyBusinessDto(
     MyBusinessStatsDto? Stats,
     IReadOnlyList<NeedsReplyDto> NeedsReply,
     MyBusinessSummaryDto? Summary,
-    DateTimeOffset? AwayUntil = null)
+    DateTimeOffset? AwayUntil = null) : Listings.IAddressed
 {
+    /// <summary>The listing's address, written by <see cref="Listings.AddressBehavior{TRequest, TResponse}"/> (L2-244).</summary>
+    public string? Address { get; set; }
+
     /// <summary>The owner's listings, oldest first, then their drafts (L2-079 AC4); empty for a member who owns nothing.</summary>
     public IReadOnlyList<BusinessOptionDto> Businesses { get; init; } = [];
 }
@@ -71,7 +74,11 @@ public sealed record ListingEditorDto(
     IReadOnlyList<CategoryOptionDto> Categories,
     IReadOnlyList<ListingPhotoDto> Photos,
     Onboarding.SpaceDraftDto? Space = null,
-    string Subtitle = "");
+    string Subtitle = "") : Listings.IAddressed
+{
+    /// <summary>The listing's address, written by <see cref="Listings.AddressBehavior{TRequest, TResponse}"/> (L2-244).</summary>
+    public string? Address { get; set; }
+}
 
 public sealed record PauseResultDto(bool Paused, DateTimeOffset? PausedAt, string State);
 

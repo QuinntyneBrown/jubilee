@@ -91,3 +91,28 @@ public sealed class AddressSettings
     /// <summary>The address of the listing with <paramref name="slug"/>, or null where no domain is set.</summary>
     public string? AddressOf(string slug) => Domain.Length == 0 ? null : $"https://{slug}.{Domain}";
 }
+
+/// <summary>An answer about one listing that states its address (L2-244): the listing page, a publish, My business, the editor.</summary>
+public interface IAddressed
+{
+    string? Slug { get; }
+
+    /// <summary><c>https://{slug}.{domain}</c>, or null where no address domain is set or the answer has no listing.</summary>
+    string? Address { get; set; }
+}
+
+/// <summary>Writes the address on every answer that states one, so each handler need not (ADR 0067).</summary>
+public sealed class AddressBehavior<TRequest, TResponse>(AddressSettings settings) : MediatR.IPipelineBehavior<TRequest, TResponse>
+    where TRequest : notnull
+{
+    public async Task<TResponse> Handle(TRequest request, MediatR.RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    {
+        var response = await next(cancellationToken);
+        if (response is IAddressed { Slug: { } slug } addressed)
+        {
+            addressed.Address = settings.AddressOf(slug);
+        }
+
+        return response;
+    }
+}

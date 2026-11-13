@@ -120,8 +120,11 @@ public sealed record ListingPageDto(
     SpacePageDto? Space,
     IReadOnlyList<SpaceCardDto> RelatedSpaces,
     Guid? OpenRequestId = null,
-    bool RepliesFast = false)
+    bool RepliesFast = false) : IAddressed
 {
+    /// <summary>The listing's address, written by <see cref="AddressBehavior{TRequest, TResponse}"/> (L2-244).</summary>
+    public string? Address { get; set; }
+
     /// <summary>The owner's photos in their order, the cover first; empty when there are none (L2-221).</summary>
     public IReadOnlyList<ListingPagePhotoDto> Photos { get; init; } = [];
 }

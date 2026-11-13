@@ -7,7 +7,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
+        services.AddMediatR(c => c
+            .RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly)
+            .AddOpenBehavior(typeof(Listings.AddressBehavior<,>)));
         services.AddScoped<FeaturedSelector>();
         services.AddScoped<Content.ContentReader>();
         services.AddScoped<Maintenance.MaintenanceWindowService>();
