@@ -416,7 +416,7 @@ public sealed partial class PublishListingCommandHandler(IAppDbContext db, TimeP
     /// <summary>
     /// Saves the publish. When another publish took the same slug in the same moment, the unique index refuses this
     /// one: the listing takes the next free slug and is saved again, so the owner never fails on the address
-    /// (L2-242 AC3, ADR 0067). Any other failure is a real one.
+    /// (L2-242 AC3, ADR 0071). Any other failure is a real one.
     /// </summary>
     private async Task SaveWithFreeSlugAsync(Listing listing, DateTimeOffset now, CancellationToken cancellationToken)
     {

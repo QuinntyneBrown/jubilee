@@ -8,7 +8,7 @@ namespace Jubilee.Cli.Tests;
 // Acceptance Test
 // Traces to: L2-241 AC5
 // Description: `jubilee migrate` gives a listing that existed before the address rules a slug that keeps them, and
-// keeps its old slug so its old links redirect (L2-113 AC2); a listing whose slug keeps the rules keeps it (ADR 0067).
+// keeps its old slug so its old links redirect (L2-113 AC2); a listing whose slug keeps the rules keeps it (ADR 0071).
 public sealed class RealignSlugsTests
 {
     private static readonly DateTimeOffset Now = new(2026, 11, 10, 15, 0, 0, TimeSpan.Zero);

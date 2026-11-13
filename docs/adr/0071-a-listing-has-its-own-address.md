@@ -1,4 +1,4 @@
-# 0067. A listing has its own address: the app's host answers `{slug}.jubilee.to` with a redirect the API decides, the slug rules tighten to one DNS label, and the address is off until the owner sets its domain
+# 0071. A listing has its own address: the app's host answers `{slug}.jubilee.to` with a redirect the API decides, the slug rules tighten to one DNS label, and the address is off until the owner sets its domain
 
 ## Status
 

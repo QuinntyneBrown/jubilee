@@ -66,7 +66,7 @@ public static class JubileeCli
                 await PrepareSchemaAsync(db, sqlite);
                 await output.WriteLineAsync("Database is up to date.");
 
-                // Listings from before the address rules receive a slug that keeps them (L2-241 AC5, ADR 0067).
+                // Listings from before the address rules receive a slug that keeps them (L2-241 AC5, ADR 0071).
                 var realigned = await scope.ServiceProvider.GetRequiredService<ISender>().Send(new Jubilee.Application.Listings.RealignListingSlugsCommand());
                 if (realigned > 0)
                 {

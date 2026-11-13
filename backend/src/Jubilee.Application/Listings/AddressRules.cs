@@ -7,7 +7,7 @@ namespace Jubilee.Application.Listings;
 
 /// <summary>
 /// The shape of a listing's slug, which is the first label of its address <c>https://{slug}.jubilee.to</c>
-/// (L2-241, L2-242, ADR 0067): the letters a to z, the digits and single hyphens, 3 to 40 characters.
+/// (L2-241, L2-242, ADR 0071): the letters a to z, the digits and single hyphens, 3 to 40 characters.
 /// </summary>
 public static partial class AddressRules
 {
@@ -59,7 +59,7 @@ public static partial class AddressRules
 }
 
 /// <summary>
-/// The settings of listing addresses (<c>Addresses</c>, ADR 0067). <see cref="Domain"/> is the domain the addresses
+/// The settings of listing addresses (<c>Addresses</c>, ADR 0071). <see cref="Domain"/> is the domain the addresses
 /// sit under (<c>jubilee.to</c>), or empty where addresses are off and the app's own links are shared (L2-244 AC6).
 /// </summary>
 public sealed class AddressSettings
@@ -101,7 +101,7 @@ public interface IAddressed
     string? Address { get; set; }
 }
 
-/// <summary>Writes the address on every answer that states one, so each handler need not (ADR 0067).</summary>
+/// <summary>Writes the address on every answer that states one, so each handler need not (ADR 0071).</summary>
 public sealed class AddressBehavior<TRequest, TResponse>(AddressSettings settings) : MediatR.IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {

@@ -1,5 +1,5 @@
 // Builds the static copies of the server error, maintenance and not-found pages (L2-115 AC3,
-// L2-117 AC1, ADR 0056; L2-243, ADR 0067) from their mocks, into frontend/projects/jubilee/public/static/. The app's host
+// L2-117 AC1, ADR 0056; L2-243, ADR 0071) from their mocks, into frontend/projects/jubilee/public/static/. The app's host
 // (eng/azure/server.js) serves them for a page load the app cannot answer. Each copy is the mock's
 // <main>, the design-system tokens and the component rules it uses inlined, no script, and
 // Archivo from /static/Archivo.woff2 (copied there by the app's build). The host writes the
@@ -83,7 +83,7 @@ const pages = [
         ),
   },
   {
-    // Served at a listing's address that leads nowhere (L2-243 AC4 and AC6, ADR 0067). The host points its
+    // Served at a listing's address that leads nowhere (L2-243 AC4 and AC6, ADR 0071). The host points its
     // links, its icon and its font at the app's origin: an address serves no file of its own.
     mock: 'docs/mocks/pages/not-found/default.html',
     file: 'not-found.html',

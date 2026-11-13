@@ -5,7 +5,7 @@ using MediatR;
 namespace Jubilee.Application.Listings;
 
 /// <summary>
-/// Where the address <c>https://{Label}.{domain}{Path}</c> leads (L2-243, ADR 0067). The app's host asks, and
+/// Where the address <c>https://{Label}.{domain}{Path}</c> leads (L2-243, ADR 0071). The app's host asks, and
 /// redirects to the answer on the app's own origin.
 /// </summary>
 public sealed record ResolveAddressQuery(string Label, string? Path) : IRequest<AddressDto>;

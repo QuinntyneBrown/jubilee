@@ -16,7 +16,7 @@
 // With ADDRESS_DOMAIN and APP_ORIGIN set (the app's host), a request whose Host is one label under that domain is a
 // listing's own address, https://{slug}.jubilee.to: it is answered 301 to the listing's page on APP_ORIGIN, which
 // the API decides (GET /api/addresses/{label}), or with the static not-found page; never with a file, the API or a
-// cookie. A Host that is neither one of OWN_HOSTS nor under the domain is refused with 400 (ADR 0067).
+// cookie. A Host that is neither one of OWN_HOSTS nor under the domain is refused with 400 (ADR 0071).
 // server.test.js beside this file holds its tests: `node --test eng/azure/server.test.js`.
 'use strict';
 
@@ -581,7 +581,7 @@ async function pageLoad(req, res, known, urlPath) {
   return preview ? proxy(req, res, preview) : serve(req, res);
 }
 
-// ---- A listing's own address: https://{slug}.{ADDRESS_DOMAIN} (L2-242 AC6, L2-243, L2-246, ADR 0067) ----
+// ---- A listing's own address: https://{slug}.{ADDRESS_DOMAIN} (L2-242 AC6, L2-243, L2-246, ADR 0071) ----
 
 // Off unless both are set: the domain addresses sit under, and the origin of the app they lead to.
 const addressDomain = (process.env.ADDRESS_DOMAIN || '').trim().replace(/^\.+|\.+$/g, '').toLowerCase();
@@ -753,7 +753,7 @@ function serve(req, res) {
   res.setHeader('ETag', etag);
   res.setHeader('Last-Modified', found.mtime.toUTCString());
   if (ext === '.woff2' || ext === '.woff') {
-    // A font is fetched with CORS: the not-found page of a listing's address draws Archivo from the app (ADR 0067).
+    // A font is fetched with CORS: the not-found page of a listing's address draws Archivo from the app (ADR 0071).
     res.setHeader('Access-Control-Allow-Origin', '*');
   }
   res.setHeader(

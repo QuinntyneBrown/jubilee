@@ -18,7 +18,7 @@ public sealed class AddressDomainFactory : JubileeApiFactory
 // Traces to: L2-241 AC1, AC6; L2-244 AC1 to AC4; L2-245 AC1, AC3, AC5, AC6
 // Description: with an address domain set, the API states the address https://{slug}.jubilee.to of a listing where
 // the app shows it: the listing page, the answer to a publish, My business and the listing editor. The address
-// follows a change of name and nothing else; a draft has none (ADR 0067).
+// follows a change of name and nothing else; a draft has none (ADR 0071).
 public sealed class ListingAddressTests(AddressDomainFactory factory) : IClassFixture<AddressDomainFactory>, IAsyncLifetime
 {
     private Member _naomi = null!;

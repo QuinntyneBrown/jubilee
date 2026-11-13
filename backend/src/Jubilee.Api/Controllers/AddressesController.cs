@@ -9,7 +9,7 @@ namespace Jubilee.Api.Controllers;
 
 /// <summary>
 /// Where a listing's address <c>https://{label}.jubilee.to</c> leads, asked by the app's host before it redirects
-/// (L2-243, ADR 0067). Anonymous, and it reads no session: an address keeps none (L2-246 AC3).
+/// (L2-243, ADR 0071). Anonymous, and it reads no session: an address keeps none (L2-246 AC3).
 /// </summary>
 [ApiController]
 [Route("api/addresses")]

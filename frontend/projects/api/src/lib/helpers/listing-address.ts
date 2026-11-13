@@ -7,7 +7,7 @@ export interface ListingLink {
 }
 
 /**
- * The link to share for a listing (L2-244, ADR 0067): its address, `https://{slug}.jubilee.to`,
+ * The link to share for a listing (L2-244, ADR 0071): its address, `https://{slug}.jubilee.to`,
  * where the API states one; otherwise the listing's page on the app's own host, as in local
  * development and the end-to-end suite (L2-244 AC6).
  */

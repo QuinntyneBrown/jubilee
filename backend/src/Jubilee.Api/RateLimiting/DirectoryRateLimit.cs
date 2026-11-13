@@ -36,7 +36,7 @@ public sealed class RateLimitOptions
 
 /// <summary>
 /// Listing addresses have their own budget of 120 a minute per caller, so they cannot be walked to list the
-/// businesses on Jubilee faster than the directory allows (L2-246 AC8, ADR 0067).
+/// businesses on Jubilee faster than the directory allows (L2-246 AC8, ADR 0071).
 /// </summary>
 public static class AddressRateLimit
 {

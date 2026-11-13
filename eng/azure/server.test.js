@@ -4,7 +4,7 @@
 //
 // Traces to: L2-218 (AC8, AC9), L2-216 (AC6, AC10), L2-217 (AC6), L2-186, L2-038 (AC4), L2-113 (AC1 to AC3),
 // L2-114 (AC1), L2-115 (AC3), L2-117 (AC1), L2-119 (AC3), L2-242 (AC6), L2-243, L2-245 (AC2), L2-246; ADR 0040, ADR 0044,
-// ADR 0047, ADR 0055, ADR 0056, ADR 0067, ADR 0068.
+// ADR 0047, ADR 0055, ADR 0056, ADR 0068, ADR 0071.
 'use strict';
 
 const { test, after } = require('node:test');
@@ -793,7 +793,7 @@ test('Given a kept submission 12 months old, when the round runs, then it is del
   assert.equal(api.requests.length, 0);
 });
 
-// ---- A listing's own address (L2-242 AC6, L2-243, L2-245 AC2, L2-246; ADR 0067) ----
+// ---- A listing's own address (L2-242 AC6, L2-243, L2-245 AC2, L2-246; ADR 0071) ----
 
 const LUZANDRE = 'luzandre-com.jubilee.test';
 const located = (location) => () => ({ status: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location }) });

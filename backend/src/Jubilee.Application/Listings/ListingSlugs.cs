@@ -101,7 +101,7 @@ public sealed class FindCurrentSlugQueryHandler(IAppDbContext db) : MediatR.IReq
 
 /// <summary>
 /// Gives every listing whose slug breaks the address rules (not a well-formed label, or a reserved word) a slug that
-/// keeps them, and keeps the old one so it redirects (L2-241 AC5, ADR 0067). <c>jubilee migrate</c> sends it; a
+/// keeps them, and keeps the old one so it redirects (L2-241 AC5, ADR 0071). <c>jubilee migrate</c> sends it; a
 /// second run changes nothing. The answer is the number of listings realigned.
 /// </summary>
 public sealed record RealignListingSlugsCommand : MediatR.IRequest<int>;

@@ -23,7 +23,7 @@ The feature uses the following local terms.
 - **listing editor** — the Edit listing screen of the owner's workspace
 
 The mocks and the Magic Patterns design reference do not draw the address; the
-four places and their wording are set by `L2-244` and ADR 0067. E-mails and
+four places and their wording are set by `L2-244` and ADR 0071. E-mails and
 notifications are outside this feature: their links need a session and stay
 links of the app.
 

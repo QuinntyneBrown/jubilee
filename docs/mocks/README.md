@@ -21,7 +21,7 @@ keeps the mocks' BEM classes and accessible state semantics.
   listing (L2-038 AC4, ADR 0055), from the tokens and the lockup. Screenshot it at 1200 × 630 and
   copy the result to `frontend/projects/jubilee/public/og-image.png`.
 
-- **A listing's address** (L1-032, ADR 0067) is drawn where the owner sees it: "Your address" on the
+- **A listing's address** (L1-032, ADR 0071) is drawn where the owner sees it: "Your address" on the
   publish success states of `pages/list-business/`, on the "Your listing" card of
   `pages/my-business/` (with its note on the paused `statement-lapsed` state), as a read-only field
   in `pages/edit-listing/`, and as the link of `dialogs/share-listing/`. The Magic Patterns design

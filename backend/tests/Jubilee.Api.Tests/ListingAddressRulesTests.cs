@@ -18,7 +18,7 @@ public sealed class ReservedPizzaFactory : JubileeApiFactory
 // Traces to: L2-241 AC2, AC3, AC4; L2-242 AC1, AC2, AC4, AC5; L2-072 AC5
 // Description: the slug of a published listing is one DNS label made from the business name: lower case, no accents,
 // single hyphens, at most 40 characters, "business-{n}" when the name gives fewer than 3, and never a reserved word
-// or a slug another listing has or had (ADR 0067).
+// or a slug another listing has or had (ADR 0071).
 public sealed class ListingAddressRulesTests(ReservedPizzaFactory factory) : IClassFixture<ReservedPizzaFactory>, IAsyncLifetime
 {
     private int _member;

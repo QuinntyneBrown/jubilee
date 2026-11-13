@@ -24,7 +24,7 @@ The feature uses the following local terms.
 
 The feature has no screen. It sits in `Jubilee API` behind the publish and edit
 commands, and in `Jubilee CLI` for listings that existed before the rules
-(ADR 0067). Opening an address and showing it to the owner are separate designs:
+(ADR 0071). Opening an address and showing it to the owner are separate designs:
 [Open a listing by its address](../open-listing-by-address/README.md) and
 [Share the address of a listing](../share-listing-address/README.md).
 

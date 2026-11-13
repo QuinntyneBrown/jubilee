@@ -25,7 +25,7 @@ The feature uses the following local terms.
 - **wildcard certificate** — one TLS certificate valid for every label directly under a domain
 
 The safeguards sit in the app host, in `Jubilee API` and in the deployment
-(ADR 0067). The redirect itself is designed in
+(ADR 0071). The redirect itself is designed in
 [Open a listing by its address](../../listings/open-listing-by-address/README.md).
 
 ## Description

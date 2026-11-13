@@ -449,7 +449,7 @@ ADR 0069). Three things make that so:
 
 ## Listing addresses
 
-Every published listing has the address `https://{slug}.jubilee.to` (L1-032, ADR 0067). The app's
+Every published listing has the address `https://{slug}.jubilee.to` (L1-032, ADR 0071). The app's
 host (`server.js` on `jubilee-to-app`) answers it with a 301 to `https://app.jubilee.to/b/{slug}`,
 which the API decides (`GET /api/addresses/{label}`); an address serves no file, no `/api` and no
 cookie. Addresses are **off** until the steps below are done: until then the app shares

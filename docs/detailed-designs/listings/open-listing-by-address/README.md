@@ -25,7 +25,7 @@ The feature uses the following local terms.
 - **kept slug** — a slug a listing had before its name changed (ADR 0056)
 - **static not-found page** — a copy of the app's not-found page with no script, served where the app itself is not
 
-The app host answers the address; no separate site exists for it (ADR 0067).
+The app host answers the address; no separate site exists for it (ADR 0071).
 The host asks `Jubilee API` where the address leads, and the app's existing
 page load decides whether the listing page or the not-found page shows.
 

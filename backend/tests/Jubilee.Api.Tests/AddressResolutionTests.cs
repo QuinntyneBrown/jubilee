@@ -13,7 +13,7 @@ namespace Jubilee.Api.Tests;
 // Description: the app's host asks GET /api/addresses/{label}?path= where an address leads. The answer is a path of
 // the app under /b/{slug}; it is the same for a public, an unknown and a hidden listing, so nothing tells them apart.
 // An old address of a public listing leads to its current slug in one step. A label that cannot be a slug, a reserved
-// word and a path that tries to leave the listing answer 404 without touching the database (ADR 0067).
+// word and a path that tries to leave the listing answer 404 without touching the database (ADR 0071).
 public sealed class AddressResolutionTests(JubileeApiFactory factory) : IClassFixture<JubileeApiFactory>, IAsyncLifetime
 {
     private Member _naomi = null!;
