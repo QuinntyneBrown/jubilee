@@ -34,6 +34,26 @@ test("journey 24: use Jubilee offline", async ({ demo }) => {
   const menu = new AccountMenuRegion(page);
   const park = () => page.mouse.move(1270, 715, { steps: 12 });
 
+  // The recorder's browser does not report its emulated network to the page, so the page is told
+  // as a phone's browser would tell it: navigator.onLine follows the device.
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "onLine", {
+      configurable: true,
+      get: () => sessionStorage.getItem("jb-demo-offline") !== "1",
+    });
+  });
+  const offline = async () => {
+    await page.evaluate(() => sessionStorage.setItem("jb-demo-offline", "1"));
+    await deviceOffline(page);
+  };
+  const online = async () => {
+    await deviceOnline(page);
+    await page.evaluate(() => {
+      sessionStorage.removeItem("jb-demo-offline");
+      window.dispatchEvent(new Event("online"));
+    });
+  };
+
   await demo.jb.signInAs("member");
   const messages = await stubMessaging(page);
   // Online: a conversation and the browse home are opened, and the app shell is installed.
@@ -55,7 +75,7 @@ test("journey 24: use Jubilee offline", async ({ demo }) => {
   await demo.scene("shell", async () => {
     await demo.point(browse.featuredCards.first());
     await demo.pause(1200);
-    await deviceOffline(page);
+    await offline();
     await page.reload();
     await browse.featuredCards.first().waitFor({ timeout: 15_000 });
     await banner.root.waitFor({ timeout: 10_000 });
@@ -75,13 +95,18 @@ test("journey 24: use Jubilee offline", async ({ demo }) => {
     await conversation.bubble("tax return").status.waitFor({ timeout: 10_000 });
     await demo.point(conversation.bubble("tax return").status);
     await demo.pause(1500);
+    // The conversation keeps its newest message in view, which scrolls the banner away.
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+    await demo.point(banner.root);
+    await demo.pause(800);
   });
 
   await demo.scene("back", async () => {
-    await deviceOnline(page);
+    await online();
     await banner.root
       .getByText("1 saved message was sent", { exact: false })
       .waitFor({ timeout: 15_000 });
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
     await demo.point(banner.root);
     await demo.pause(2000);
     if (messages.sends.length !== 1) throw new Error("the queued message was not sent once");
@@ -145,7 +170,7 @@ test("journey 24: use Jubilee offline", async ({ demo }) => {
 
   await park();
   await demo.card("Behind the screen", [
-    "The service worker never keeps an /api answer; page loads still go to the server first.",
+    "The service worker leaves every /api request to the network and keeps none of them.",
     "A message the worker sent is never sent again by the page (offline-installed.spec.ts).",
     "A message waiting more than 24 hours is marked Not sent (L2-120 AC3).",
     "Attempts to reach Jubilee wait 5, 10, 20, 40, then 60 seconds (L2-121 AC3).",
