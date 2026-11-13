@@ -115,7 +115,8 @@
           "tagline": "Licensed electricians who show up when they say they will",
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "repliesFast": false
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -123,7 +124,8 @@
           "tagline": "Furnaces and air conditioners kept running, winter and summer",
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "repliesFast": false
         },
         {
           "slug": "waterworks-plumbing-drains",
@@ -131,7 +133,8 @@
           "tagline": "Treating Every Customer As Family",
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "repliesFast": false
         }
       ],
       "suggestions": [],
@@ -167,7 +170,8 @@
           "tagline": "Treating Every Customer As Family",
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "repliesFast": false
         },
         {
           "slug": "cornerstone-electric",
@@ -175,7 +179,8 @@
           "tagline": "Licensed electricians who show up when they say they will",
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "repliesFast": false
         },
         {
           "slug": "shepherds-heating-cooling",
@@ -183,7 +188,8 @@
           "tagline": "Furnaces and air conditioners kept running, winter and summer",
           "highlight": "Emergency calls",
           "categorySlug": "home-property",
-          "coverPhoto": null
+          "coverPhoto": null,
+          "repliesFast": false
         }
       ],
       "suggestions": [],
@@ -1230,7 +1236,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such category.",
-      "correlationId": "ad0745ce02434fc88304e4451772e61d",
+      "correlationId": "12b24540eb4741bea1543da3362c951f",
       "code": "category_not_found"
     }
   },
@@ -2114,7 +2120,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "aba8455a366140d1a2740b07afc75232",
+      "correlationId": "d2f6b29567784c618a89ddbee4bb3668",
       "code": "sign_in_required"
     }
   },
@@ -2151,7 +2157,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T15:12:47.855639+00:00",
+        "onJubileeSince": "2026-10-30T01:06:37.2646738+00:00",
         "replies": null
       },
       "services": [],
@@ -2230,7 +2236,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such business.",
-      "correlationId": "f396c67ac8824e96bc5758990dc4d09e",
+      "correlationId": "65829ce343584a94b69bc5b4ef3048d5",
       "code": "listing_not_found"
     }
   },
@@ -2259,7 +2265,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-24T18:12:47.855639+00:00",
+        "onJubileeSince": "2026-10-25T04:06:37.2646738+00:00",
         "replies": null
       },
       "services": [],
@@ -2317,7 +2323,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T14:12:47.855639+00:00",
+        "onJubileeSince": "2026-10-30T00:06:37.2646738+00:00",
         "replies": null
       },
       "services": [],
@@ -2420,7 +2426,7 @@
       },
       "services": [
         {
-          "id": "88138979-4727-4315-9da3-036e5752c5f2",
+          "id": "47b4c16f-a6e0-4098-bd79-3db90f9b59db",
           "name": "Discovery meeting",
           "detail": "30 min · In person or video",
           "priceKind": "free",
@@ -2428,7 +2434,7 @@
           "action": "book"
         },
         {
-          "id": "de7942ad-2c34-4cd9-9171-8a715cb1d0a7",
+          "id": "dedad871-29a3-49e1-ab06-22ffed8e2510",
           "name": "Retirement & RRSP review",
           "detail": "60 min · Bring your statements",
           "priceKind": "ask",
@@ -2436,7 +2442,7 @@
           "action": "book"
         },
         {
-          "id": "ab085dca-04d6-4741-aab5-7cc7e3ff7e44",
+          "id": "7edc2bb1-3717-47ab-8600-f60a11c96597",
           "name": "Life & disability insurance review",
           "detail": "45 min",
           "priceKind": "free",
@@ -2444,7 +2450,7 @@
           "action": "book"
         },
         {
-          "id": "fa1eab25-56e5-441e-bd51-444a8ff4a5d9",
+          "id": "03972f8e-c629-4404-8e30-a1563019803f",
           "name": "Estate & legacy plan",
           "detail": "Two sessions, written plan",
           "priceKind": "ask",
@@ -2506,7 +2512,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T16:12:47.855639+00:00",
+        "onJubileeSince": "2026-10-30T02:06:37.2646738+00:00",
         "replies": null
       },
       "services": [],
@@ -2609,7 +2615,7 @@
       },
       "services": [
         {
-          "id": "27793f7b-93b6-4552-9a7b-7fc3b86920f2",
+          "id": "09e3621a-be89-4357-b8dd-fc6e3d9eaf1b",
           "name": "Custom design consultation",
           "detail": "30 min · Video",
           "priceKind": "free",
@@ -2617,7 +2623,7 @@
           "action": "ask"
         },
         {
-          "id": "ae155c40-f521-4198-9226-20e2dc2b9c04",
+          "id": "9ef3a94d-3a15-4123-b612-9a98ab9f0854",
           "name": "Church merch package",
           "detail": "Tees, mugs and totes for your congregation",
           "priceKind": "ask",
@@ -2710,7 +2716,7 @@
   "GET /api/listings/luzandre/products/custom-church-team-tee": {
     "status": 200,
     "body": {
-      "id": "39b6deec-665e-4c16-b022-45b03ddddcb4",
+      "id": "9bf7f3a5-699d-48aa-8991-5d2621989a15",
       "slug": "custom-church-team-tee",
       "name": "Custom church team tee (min. 12)",
       "priceCents": 2200,
@@ -2778,13 +2784,14 @@
           "soldOut": false
         }
       ],
-      "stockAlertRequested": false
+      "stockAlertRequested": false,
+      "photo": null
     }
   },
   "GET /api/listings/luzandre/products/faith-heavyweight-tee-charcoal": {
     "status": 200,
     "body": {
-      "id": "b9966e59-e59e-4011-9894-d7158fbb0d06",
+      "id": "cab10da2-3224-4501-b771-3b4d4bb5c109",
       "slug": "faith-heavyweight-tee-charcoal",
       "name": "Faith heavyweight tee, charcoal",
       "priceCents": 3400,
@@ -2885,13 +2892,14 @@
           "soldOut": false
         }
       ],
-      "stockAlertRequested": false
+      "stockAlertRequested": false,
+      "photo": null
     }
   },
   "GET /api/listings/luzandre/products/gold-cross-stoneware-mug": {
     "status": 200,
     "body": {
-      "id": "8a639625-1fff-4295-a20f-9c6fd80dc140",
+      "id": "1cb8ab26-11b4-45b2-9323-bc40215e4887",
       "slug": "gold-cross-stoneware-mug",
       "name": "Gold cross stoneware mug",
       "priceCents": 2400,
@@ -2963,7 +2971,8 @@
           "soldOut": false
         }
       ],
-      "stockAlertRequested": false
+      "stockAlertRequested": false,
+      "photo": null
     }
   },
   "GET /api/listings/luzandre/products/no-such-product": {
@@ -2972,7 +2981,7 @@
       "title": "We can't find that.",
       "status": 404,
       "detail": "There is no such product.",
-      "correlationId": "20a0622963154d97a610737d76576cf5",
+      "correlationId": "ca91477b8ef74b16bf4b0f6fed9a3d6a",
       "code": "product_not_found"
     }
   },
@@ -3001,7 +3010,7 @@
         "languages": null,
         "delivery": null,
         "madeToOrder": null,
-        "onJubileeSince": "2026-10-29T17:12:47.855639+00:00",
+        "onJubileeSince": "2026-10-30T03:06:37.2646738+00:00",
         "replies": null
       },
       "services": [],
@@ -3079,7 +3088,7 @@
     "body": {
       "title": "Sign in to continue.",
       "status": 401,
-      "correlationId": "2fadd73207c140aa97f5f53c27cf9efa",
+      "correlationId": "3f510453c34a43f2930f9123b6eeee38",
       "code": "sign_in_required"
     }
   },
