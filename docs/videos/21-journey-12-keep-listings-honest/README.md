@@ -1,8 +1,8 @@
-# 20 · Journey 12: Keep listings honest
+# 21 · Journey 12: Keep listings honest
 
 > **Runtime:** 1:22 (81.9 s) · **Format:** 1920×1080, 30 fps, captions burned in · **Audience:** the repository owner and reviewers of journey 12
 
-**Video:** [20-journey-12-keep-listings-honest.mp4](20-journey-12-keep-listings-honest.mp4) · **Audio:** [20-journey-12-keep-listings-honest.mp3](20-journey-12-keep-listings-honest.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
+**Video:** [21-journey-12-keep-listings-honest.mp4](21-journey-12-keep-listings-honest.mp4) · **Audio:** [21-journey-12-keep-listings-honest.mp3](21-journey-12-keep-listings-honest.mp3) · [Transcript](script.md) · [Captions sidecar](captions.vtt)
 
 ## What it shows
 
@@ -56,8 +56,8 @@ Jubilee takes no payment: the team keeps listings honest, and members pay the bu
 
 ```sh
 pip install edge-tts
-node tools/video-demo/build.mjs docs/videos/20-journey-12-keep-listings-honest --check   # speak the lines, print their lengths
-node tools/video-demo/build.mjs docs/videos/20-journey-12-keep-listings-honest           # record and encode
+node tools/video-demo/build.mjs docs/videos/21-journey-12-keep-listings-honest --check   # speak the lines, print their lengths
+node tools/video-demo/build.mjs docs/videos/21-journey-12-keep-listings-honest           # record and encode
 ```
 
 `narration.json` holds the lines and `demo.spec.ts` drives the app, one `demo.scene` per line. The
