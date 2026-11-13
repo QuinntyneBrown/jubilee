@@ -33,6 +33,9 @@ import {
   Avatar,
   initialsOf,
   Card,
+  Field,
+  Input,
+  InputGroup,
   Row,
   RowActions,
   RowMeta,
@@ -57,7 +60,9 @@ import {
   PauseListingData,
   PauseListingDialog,
 } from '../../dialogs/pause-listing/pause-listing.dialog';
-import { ClockService } from 'api';
+import { ClockService, ListingLink, listingAddress } from 'api';
+import { DOCUMENT } from '@angular/common';
+import { CopyLink } from '../../services/copy-link';
 import { LoadState, errorReference } from 'api';
 import { StatementDue, dayLabel, longDay, threadTime } from 'api';
 import { NavigationStore } from '../../services/navigation.store';
@@ -84,6 +89,9 @@ const UNDO_MS = 8000;
     Skeleton,
     Avatar,
     Card,
+    Field,
+    Input,
+    InputGroup,
     Row,
     RowActions,
     RowMeta,
@@ -94,12 +102,15 @@ const UNDO_MS = 8000;
     Stat,
     StatGrid,
   ],
+  providers: [CopyLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'jb-page container page' },
   templateUrl: './my-business.page.html',
 })
 export class MyBusinessPage implements OnInit {
   private readonly api = inject(MY_BUSINESS_API);
+  protected readonly copyLink = inject(CopyLink);
+  private readonly origin = inject(DOCUMENT).location.origin;
   private readonly incoming = inject(INCOMING_REQUESTS_API);
   private readonly dialog = inject(Dialog);
   private readonly router = inject(Router);
@@ -194,6 +205,14 @@ export class MyBusinessPage implements OnInit {
   }
 
   /** "↑ 18% on last week" (L2-085 AC2). */
+  /** The listing's address with its "Copy" (L2-244 AC3); a listing that is not public has none. */
+  protected address(business: MyBusiness): ListingLink | null {
+    const shown = business.state === 'live' || business.state === 'paused';
+    return shown && business.slug
+      ? listingAddress(business.address, business.slug, this.origin)
+      : null;
+  }
+
   protected viewsDelta(business: MyBusiness): string {
     const stats = business.stats!;
     const before = stats.views.value - stats.views.change;

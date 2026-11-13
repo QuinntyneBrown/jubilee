@@ -27,6 +27,67 @@ const photo = (name = 'front.png') => ({
   ),
 });
 
+test.describe('the address of a listing on My business (L2-244)', () => {
+  test('AC3: a live listing shows its address with "Copy"', async ({ page, jb, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    const business = new MyBusinessPage(page);
+    await business.setWidth(1280);
+    await stubMyBusiness(page, { addressDomain: 'jubilee.to' });
+    await jb.goto(OVERVIEW);
+
+    await expect(business.address.value).toHaveValue('luzandre-com.jubilee.to');
+    await expect(business.address.value).toHaveAttribute('readonly', '');
+    await expect(business.address.help).toHaveCount(0);
+    await business.address.copy.click();
+
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      'https://luzandre-com.jubilee.to',
+    );
+    await expect(business.address.copy).toHaveText('Copied ✓');
+    await expect(business.address.status).toHaveText('Address copied');
+    await expect(business.address.copy).toHaveText('Copy', { timeout: 5000 });
+  });
+
+  test('AC3: a paused listing shows its address and says when it works again', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    await business.setWidth(1280);
+    await stubMyBusiness(page, { addressDomain: 'jubilee.to', paused: true });
+    await jb.goto(OVERVIEW);
+
+    await expect(business.address.value).toHaveValue('luzandre-com.jubilee.to');
+    await expect(business.address.help).toHaveText(
+      'Your address works again when you resume your listing.',
+    );
+  });
+
+  test('AC3: a listing that is not public shows no address', async ({ page, jb }) => {
+    const business = new MyBusinessPage(page);
+    await business.setWidth(1280);
+    await stubMyBusiness(page, { addressDomain: 'jubilee.to', state: 'removed' });
+    await jb.goto(OVERVIEW);
+
+    await expect(business.heading).toHaveText('Luzandre.com');
+    await expect(business.address.value).toHaveCount(0);
+  });
+
+  test('AC6, AC7: with no address domain the address is the page on this host, and it fits 360 px', async ({
+    page,
+    jb,
+  }) => {
+    const business = new MyBusinessPage(page);
+    await business.setWidth(360);
+    await stubMyBusiness(page);
+    await jb.goto(OVERVIEW);
+
+    await expect(business.address.value).toHaveValue(/^localhost:\d+\/b\/luzandre-com$/);
+    expect(await business.overflowsHorizontally()).toBe(false);
+    expect((await business.address.copy.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+  });
+});
+
 test.describe('run a business listing: My business (L2-085, L2-086, L2-096, L2-097)', () => {
   test('L2-085: a live listing shows the week in numbers and the sections of the workspace', async ({
     page,

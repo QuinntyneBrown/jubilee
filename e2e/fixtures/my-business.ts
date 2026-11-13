@@ -69,6 +69,10 @@ export interface FakeBusiness {
   /** The refusal of the next photo upload, by the API's code; null accepts it. */
   photoRefusal: { status: number; code: string } | null;
   state: string;
+  /** The listing's slug; a save that changes the name moves it, as the API does (L2-245 AC1). */
+  slug: string;
+  /** The domain of listing addresses; null where none is set, as in the recording (L2-244 AC6). */
+  addressDomain: string | null;
   /** The owner's other listings and drafts, after the one the fake describes (L2-079). */
   others: FakeBusinessOption[];
   /** How choosing another business is answered. */
@@ -164,6 +168,8 @@ export async function stubMyBusiness(
     resume: 'ok',
     photoRefusal: null,
     state: 'live',
+    slug: 'luzandre-com',
+    addressDomain: null,
     others: [],
     choose: 'ok',
     choices: [],
@@ -200,10 +206,13 @@ export async function stubMyBusiness(
         alt: photo.customAlt ?? `${fake.listing.name} photo ${index + 1}`,
       }));
 
+  const address = () => (fake.addressDomain ? `https://${fake.slug}.${fake.addressDomain}` : null);
+
   const editor = () => ({
     id: LUZANDRE,
     version: fake.version,
-    slug: 'luzandre-com',
+    slug: fake.slug,
+    address: address(),
     stage: fake.state === 'paused' ? 'live' : fake.state,
     paused: fake.paused,
     ...fake.listing,
@@ -254,7 +263,8 @@ export async function stubMyBusiness(
       listingId: current,
       businesses: businesses(),
       name: fake.listing.name,
-      slug: 'luzandre-com',
+      slug: fake.slug,
+      address: address(),
       tagline: fake.listing.tagline,
       categorySlug: fake.listing.categorySlug,
       categoryName: fake.listing.categorySlug === 'rooms-rentals' ? 'Rooms & rentals' : 'Shops',

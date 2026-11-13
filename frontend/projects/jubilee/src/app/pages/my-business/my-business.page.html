@@ -281,6 +281,32 @@
                     </li>
                   </ul>
                 }
+                @if (address(b); as link) {
+                  <div
+                    jb-field
+                    label="Your address"
+                    [hint]="
+                      b.paused ? 'Your address works again when you resume your listing.' : null
+                    "
+                    hintAfter
+                  >
+                    <jb-input-group>
+                      <input jb-input #addressField type="text" [value]="link.text" readonly />
+                      <button
+                        slot="suffix"
+                        jb-button
+                        variant="primary"
+                        type="button"
+                        (click)="copyLink.copy(link.url, addressField.element)"
+                      >
+                        {{ copyLink.copied() ? 'Copied ✓' : 'Copy' }}
+                      </button>
+                    </jb-input-group>
+                    <span class="visually-hidden" role="status" aria-live="polite">{{
+                      copyLink.copied() ? 'Address copied' : ''
+                    }}</span>
+                  </div>
+                }
                 @if (!b.paused) {
                   <div>
                     <button
